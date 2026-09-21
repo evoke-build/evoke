@@ -7,7 +7,7 @@
   --content-max-width: 800px;
   --menu-bar-height: 56px;
   --page-padding: 24px;
-  --mono-font: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  --mono-font: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --code-font-size: 0.875em;
   --accent: #ef7f2b;
   --radius: 10px;
@@ -120,7 +120,8 @@ html:not(.js) {
 /* Type */
 
 html {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-family: "Geist", "Geist Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: 0.002em;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -139,7 +140,7 @@ html {
 
 .content h1 {
   font-size: 3.2rem;
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: -0.022em;
   line-height: 1.15;
   margin: 0.5em 0 0.7em;
@@ -147,7 +148,7 @@ html {
 
 .content h2 {
   font-size: 2.15rem;
-  font-weight: 620;
+  font-weight: 560;
   letter-spacing: -0.012em;
   margin-block-start: 2.4em;
   margin-block-end: 0.6em;
@@ -155,7 +156,7 @@ html {
 
 .content h3 {
   font-size: 1.7rem;
-  font-weight: 620;
+  font-weight: 560;
   margin-block-start: 2em;
 }
 
@@ -185,7 +186,7 @@ html {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 14px 18px;
-  line-height: 1.55;
+  line-height: 1.85;
   overflow: auto;
 }
 

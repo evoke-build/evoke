@@ -150,6 +150,7 @@ for name in ["index.html", "use-cases.html", "install.sh", "og.png", "logo.png",
     shutil.copy(SITE / name, OUT / name)
 shutil.copy(SITE / "theme/favicon.png", OUT / "favicon.png")
 shutil.copytree(ROOT / "assets", OUT / "assets")
+shutil.copytree(SITE / "fonts", OUT / "fonts")
 versioned(OUT / "index.html")
 manual_pages = sorted(OUT.glob("manual/**/*.html"))
 for page in manual_pages:
