@@ -1,7 +1,7 @@
 # Your first reflex
 
-A reflex is a directory: a manifest and the file it runs. `evoke new` writes a working one; `evoke check` keeps it
-honest; a project beside it lets you try it before anyone installs it.
+A reflex is a directory: a manifest and the file it runs. `evoke new` writes a working one. `evoke check` keeps it
+honest. A project next to it lets you try it before anyone installs it.
 
 ## 1. Make it
 
@@ -46,8 +46,8 @@ import type { Reflex } from "./reflex.d.ts"
 export default (async ({ who }) => `Hello, ${who}!`) satisfies Reflex
 ```
 
-`reflex.d.ts` is generated from the manifest: `Args` with `who: string`, and the `Reflex` type that checks the
-body's arguments and its return. The body imports that one file and nothing else.
+`reflex.d.ts` is generated from the manifest. It holds `Args`, with `who: string`, and the `Reflex` type that
+checks the body's arguments and its return. The body imports that one file and nothing else.
 
 ## 2. Check it
 
@@ -56,10 +56,10 @@ $ cd hello && evoke check
   hello  read  runs hello.mts
 ```
 
-`evoke check` reads the manifest and names every line to fix; confirms the file `run` names exists, loads, and
-exports a function by default; reports lint; and rewrites `reflex.d.ts` when the arguments changed, printing
-`+ reflex.d.ts`. Inside a git repository with a version tag, it also diffs the contract against that tag:
-[Publishing](publishing.md).
+`evoke check` reads the manifest and names every line to fix. It confirms that the file `run` names exists,
+loads, and exports a function by default. It reports lint. When the arguments changed, it rewrites `reflex.d.ts`
+and prints `+ reflex.d.ts`. Inside a git repository with a version tag, it also diffs the contract against that
+tag: [Publishing](publishing.md).
 
 ```text
 $ evoke check
@@ -69,7 +69,7 @@ $ evoke check
 
 ## 3. Try it
 
-A reflex is decided on inside a project. Keep one beside your reflexes while you work:
+A reflex is decided on inside a project. Keep one next to your reflexes while you work:
 
 ```text
 ~/dev/
@@ -85,8 +85,8 @@ adapter = "jev"
 hello = "./hello"
 ```
 
-A project outside home must be trusted once; edits to the reflex itself never need it again, because trust binds to
-the project's own files, not the reflexes.
+A project outside home must be trusted once. Edits to the reflex itself never need it again. Trust binds to the
+project's own files, not to the reflexes.
 
 ```text
 $ cd ~/dev && evoke trust
@@ -101,13 +101,13 @@ $ evoke 'wave at "Grace"'
 Hello, Grace!
 ```
 
-`evoke test hello` runs the manifest's own examples and tests against the classifier and reports every miss;
+`evoke test hello` runs the manifest's own examples and tests against the classifier, and reports every miss.
 `evoke run hello who=Ada` calls the body without the classifier at all.
 
 ## 4. Make it yours
 
 From here, three pages carry the rest: the [manifest](manifest.md) key by key, the four kinds of
-[argument](arguments.md), and what a [body](body.md) receives and returns. Then [wording](wording.md), which decides
-accuracy more than anything else, and [publishing](publishing.md), which is a git tag.
+[argument](arguments.md), and what a [body](body.md) receives and returns. Then [wording](wording.md), which
+decides accuracy more than anything else. And [publishing](publishing.md), which is a git tag.
 
 **Next:** [The manifest](manifest.md).

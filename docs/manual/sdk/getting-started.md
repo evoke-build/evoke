@@ -1,8 +1,8 @@
 # Getting started with the SDK
 
-`@evoke-build/evoke` loads a project of reflexes, decides what an input asks for, and runs it — inside your
-application, with the same rules as the CLI. The rules run in `core.wasm`, the CLI's own core; the SDK adds files,
-the network and a process.
+`@evoke-build/evoke` loads a project of reflexes, decides what an input asks for, and runs it. It does this inside
+your application, with the same rules as the CLI. The rules run in `core.wasm`, the CLI's own core. The SDK adds
+files, the network and a process.
 
 Six things to learn, in order: `reflex()` · `load()` · `handle()` · a `Decision` · `run()` · `replay()`.
 
@@ -12,7 +12,7 @@ Six things to learn, in order: `reflex()` · `load()` · `handle()` · a `Decisi
 npm install @evoke-build/evoke
 ```
 
-Node 24 or newer, ES modules. The package ships three entries, so the main one imports no engine:
+You need Node 24 or newer, and ES modules. The package ships three entries, so the main one imports no engine:
 
 | Import                          | Holds                                                   |
 | :------------------------------ | :------------------------------------------------------ |
@@ -49,17 +49,17 @@ const handled = await project.handle(process.argv[2] ?? "", {
 console.log(handled.outcome === "ran" ? handled.result.text : handled.outcome)
 ```
 
-- `reflex()` takes the manifest as an object — the file's shape, without `run` and `config` — and the body. The
-  body's argument types are inferred from the manifest literal.
-- `load()` builds a project: here from code alone, with the adapter passed in.
-- `handle()` runs the whole loop — decide, ask until nothing is missing, confirm, run — with your two handlers, and
+- `reflex()` takes the manifest as an object, and the body. The object is the file's shape, without `run` and
+  `config`. The body's argument types are inferred from the manifest literal.
+- `load()` builds a project. Here it builds one from code alone, with the adapter passed in.
+- `handle()` runs the whole loop with your two handlers: decide, ask until nothing is missing, confirm, run. It
   returns `ran`, `abstained`, `declined` or `unanswered`.
 
 ## With files
 
-Beside an app, `evoke add evoke-build/reflexes` writes `evoke.toml`, `evoke.lock` and `evoke.d.ts` exactly as it
-does in your home project; overlays and vocabularies under the same root tune wording, including a reflex handed
-as code.
+Next to an app, `evoke add evoke-build/reflexes` writes `evoke.toml`, `evoke.lock` and `evoke.d.ts`, exactly as
+it does in your home project. Overlays and vocabularies under the same root tune the wording. That includes a
+reflex handed as code.
 
 ```ts
 import type { Reflexes } from "./evoke.d.ts"
@@ -69,7 +69,7 @@ const d = await project.decide("kill the lights in the den")
 if (d.outcome === "run" && d.reflex === "lights") console.log(d.values.room, d.values.state)   // typed by evoke.d.ts
 ```
 
-A `Decision` is a union narrowed by `outcome` — `run`, `confirm`, `ask`, `abstain` — then by `reflex`.
+A `Decision` is a union. Narrow it by `outcome`, one of `run`, `confirm`, `ask` and `abstain`, then by `reflex`.
 
 ## Tests, offline
 
@@ -80,6 +80,6 @@ const record = process.env.RECORD ? jev() : undefined                     // REC
 const project = await load({ reflexes: { timer }, adapter: replay("answers.toml", { record }) })
 ```
 
-Every run after the first is offline and deterministic.
+Every run after the first is offline, and always gives the same answers.
 
 **Next:** [Projects](projects.md).

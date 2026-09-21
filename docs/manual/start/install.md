@@ -1,7 +1,7 @@
 # Install
 
-`evoke` is one small native binary. Reflexes that run a JavaScript file need Node beside it; nothing else is
-installed on your behalf.
+`evoke` is one small native binary. Reflexes that run a JavaScript file need Node next to it. Nothing else is
+installed for you.
 
 ## What you need
 
@@ -12,13 +12,14 @@ installed on your behalf.
 | Reflexes that run a `.mts` or `.mjs` file | [Node](https://nodejs.org) 24 or newer on your `PATH` when you run `evoke add` or `evoke sync` |
 | Deciding                              | A key for the classifier: `TYPESAFE_API_KEY` for Jev, the first adapter |
 
-A reflex whose body is a program with arguments — an *argv* reflex — needs no runtime at all.
+Some reflexes run a program with arguments instead of a JavaScript file. Those are *argv* reflexes. They need no
+runtime at all.
 
 ## The binary
 
-On macOS or Linux, the script: it fetches the release built for your machine, checks it against the release's
-`SHA256SUMS` and puts `evoke` in `~/.local/bin` — `EVOKE_INSTALL` names another directory, `EVOKE_VERSION` picks a
-version:
+On macOS or Linux, use the script. It fetches the release built for your machine, checks it against the
+release's `SHA256SUMS`, and puts `evoke` in `~/.local/bin`. Set `EVOKE_INSTALL` to choose another directory. Set
+`EVOKE_VERSION` to pick a version.
 
 ```bash
 curl -fsSL https://evoke.build/install.sh | sh
@@ -43,10 +44,11 @@ $ evoke --version
 evoke 0.1.0
 ```
 
-The archives are on [GitHub releases](https://github.com/evoke-build/evoke/releases): `evoke-<target>.tar.gz` for
-`aarch64-apple-darwin`, `x86_64-apple-darwin`, `aarch64-unknown-linux-musl` and `x86_64-unknown-linux-musl` — the
-Linux binaries static — each holding `evoke`, `LICENSE` and `NOTICE`, with `SHA256SUMS` beside them and a build
-attestation `gh attestation verify <archive> --repo evoke-build/evoke` checks. To update: the script again, or
+The archives are on [GitHub releases](https://github.com/evoke-build/evoke/releases). Each is named
+`evoke-<target>.tar.gz`, for `aarch64-apple-darwin`, `x86_64-apple-darwin`, `aarch64-unknown-linux-musl` or
+`x86_64-unknown-linux-musl`. The Linux binaries are static. Each archive holds `evoke`, `LICENSE` and `NOTICE`.
+`SHA256SUMS` sits beside them, and so does a build attestation, which
+`gh attestation verify <archive> --repo evoke-build/evoke` checks. To update, run the script again, or
 `mise upgrade`.
 
 ## The SDK
@@ -55,18 +57,18 @@ attestation `gh attestation verify <archive> --repo evoke-build/evoke` checks. T
 npm install @evoke-build/evoke
 ```
 
-The package needs Node 24 or newer and is ES modules only; it carries the core as WebAssembly, so it has no build
-step and no dependencies. The SDK is its own manual section: [Getting started](../sdk/getting-started.md).
+The package needs Node 24 or newer, and it is ES modules only. It carries the core as WebAssembly, so it has no
+build step and no dependencies. The SDK has its own manual section: [Getting started](../sdk/getting-started.md).
 
 ## The key
 
-Jev is [TypeSafe AI](https://typesafe.ai)'s classifier. Put its key in your shell's environment; `evoke` reads it
-at the moment it decides and nowhere else, and never writes it to a file:
+Jev is [TypeSafe AI](https://typesafe.ai)'s classifier. Put its key in your shell's environment. `evoke` reads it
+only at the moment it decides, and never writes it to a file:
 
 ```bash
 export TYPESAFE_API_KEY=<value>
 ```
 
-Without it, the first decision tells you exactly this line and exits 3.
+Without the key, the first decision prints exactly this line and exits 3.
 
 **Next:** [The first ten minutes](first-run.md).

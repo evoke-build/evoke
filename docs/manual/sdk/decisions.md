@@ -1,7 +1,7 @@
 # Decisions
 
-One input decided is a `Decision`: a union narrowed by `outcome`, then by `reflex`. `decide` makes one; `fill`
-answers an ask; `run` runs a chosen call; `handle` does all of it.
+One input decided is a `Decision`. It is a union, narrowed by `outcome` and then by `reflex`. `decide` makes one.
+`fill` answers an ask. `run` runs a chosen call. `handle` does all of it.
 
 ## `decide(input, { tags?, signal? })`
 
@@ -9,20 +9,20 @@ answers an ask; `run` runs a chosen call; `handle` does all of it.
 const d = await project.decide("kill the lights in the den", { tags: ["home"] })
 ```
 
-Asks the adapter, reads its answers, gates them. Runs nothing. `tags` offers only the reflexes carrying one of
-them; `signal` aborts the adapter call, and `decide` rejects with the signal's own reason.
+Asks the adapter, reads its answers, and gates them. Runs nothing. `tags` offers only the reflexes carrying one
+of them. `signal` aborts the adapter call, and `decide` rejects with the signal's own reason.
 
 ## The four shapes
 
 | `outcome`   | Carries                                                                                           |
 | :---------- | :------------------------------------------------------------------------------------------------ |
 | `"run"`     | `reflex`, `args`, `values`, `call`, `effect`, `confidence`, `weakest`, `judgments`, `contenders`, `runner_up?` |
-| `"confirm"` | All of the above, plus `prompt: { own, template }` and `because: Cap[]` — every reason it stopped, in order |
+| `"confirm"` | All of the above, plus `prompt: { own, template }` and `because: Cap[]`: every reason it stopped, in order |
 | `"ask"`     | `reflex`, partial `args` and `values`, `unconsumed`, `missing: Missing[]`, and the judgments so far |
-| `"abstain"` | `contenders` — the ranking — and `judgments`                                                      |
+| `"abstain"` | `contenders`, the ranking, and `judgments`                                                        |
 
-Every decision also carries `input`, the sentence as decided; `plan`, the digest it was decided under; and
-`trace`, one entry per adapter call — `{ adapter, questions, ms }`.
+Every decision also carries three more things. `input` is the sentence as decided. `plan` is the digest it was
+decided under. `trace` has one entry per adapter call: `{ adapter, questions, ms }`.
 
 ```ts
 switch (d.outcome) {
@@ -36,9 +36,9 @@ switch (d.outcome) {
 ## `args` and `values`
 
 `args` is what the classifier read, typed: `{ type: "option", key }`, `{ type: "word", word, value? }`,
-`{ type: "pick", span, value }`, `{ type: "flag" }`. `values` is what the body receives: the key, the word's value
-else the word, the number or text, `true`. With `Reflexes` from `evoke.d.ts`, or a manifest handed as code,
-both are typed per reflex once `d.reflex` is known:
+`{ type: "pick", span, value }`, `{ type: "flag" }`. `values` is what the body receives: the key, the word's
+value or else the word, the number or text, `true`. With `Reflexes` from `evoke.d.ts`, or a manifest handed as
+code, both are typed per reflex once `d.reflex` is known:
 
 ```ts
 if (d.outcome === "run" && d.reflex === "lights") {
@@ -52,16 +52,17 @@ An app that wants a reflex's wording with a body of its own calls `decide`, swit
 
 ## Confirm
 
-`prompt.own` is `evoke`'s line — the call, the effect, the weakest judgment, each cap that names itself —
-and `prompt.template` the reflex's own question, filled in. `because` lists why it stopped: `destructive`,
+`prompt.own` is `evoke`'s line: the call, the effect, the weakest judgment, and each cap that names itself.
+`prompt.template` is the reflex's own question, filled in. `because` lists why it stopped: `destructive`,
 `no_gate`, `under_floor`, `unconsumed_span`, `two_things`. A confirm decision runs only with
 `run(d, { confirmed: true })`.
 
 ## Ask and `fill(d, given)`
 
-`missing` says, per argument, its `ask`, why it is missing — never stated, or a pick out of range — and what it may
-be: the options, the vocabulary's words, or which recognizer reads it. `fill` takes what a person answered, by
-argument name — an option's key, a word, or the text a pick reads — types it, and gates again, synchronously:
+`missing` says, per argument, its `ask`, why it is missing, and what it may be. Missing means never stated, or a
+pick out of range. What it may be is the options, the vocabulary's words, or which recognizer reads it. `fill`
+takes what a person answered, by argument name: an option's key, a word, or the text a pick reads. It types the
+answer and gates again, synchronously:
 
 ```ts
 const filled = project.fill(d, { room: "den" })       // a Decision again: run, confirm, or still an ask
@@ -72,13 +73,13 @@ A text that does not read is a `DiagnosticError` naming the argument and what it
 
 ## `run(d, { signal? })`
 
-Runs the chosen call's body — in-process for a reflex handed as code, in a child for a file, spawned for an argv —
-and resolves to `{ text, data? }`. A body's failure is a `FailureError`; `signal` aborts the body and `run`
+Runs the chosen call's body and resolves to `{ text, data? }`. A reflex handed as code runs in-process. A file
+runs in a child. An argv is spawned. A body's failure is a `FailureError`. `signal` aborts the body, and `run`
 rejects with the signal's reason. A decision made under another plan is refused as misuse, with a `TypeError`.
 
 ## `handle(input, { confirm?, ask?, tags?, signal? })`
 
-The whole loop: decide; ask and fill until nothing is missing; confirm; run.
+The whole loop: decide, then ask and fill until nothing is missing, then confirm, then run.
 
 ```ts
 const handled = await project.handle(input, {
@@ -92,9 +93,9 @@ const handled = await project.handle(input, {
 | `"ran"`           | The body ran: `decision` and `result`                                                         |
 | `"abstained"`     | `none` won, or the route was under its floor                                                  |
 | `"declined"`      | `confirm` returned `false`, `ask` returned `undefined`, or an answer changed nothing           |
-| `"unanswered"`    | A confirm or an ask was reached and no handler was given; the decision itself is the answer   |
+| `"unanswered"`    | A confirm or an ask was reached and no handler was given. The decision itself is the answer   |
 
-An answer that does not read is asked again once, as at the terminal; twice is a decline. Only a diagnostic, a
+An answer that does not read is asked again once, as at the terminal. Twice is a decline. Only a diagnostic, a
 fault or a failure throws.
 
 **Next:** [Adapters](adapters.md).

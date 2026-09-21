@@ -1,12 +1,12 @@
 # Outcomes
 
-Every input ends in one of four outcomes. This page shows each, what decides it, and the three commands that look
-at a decision without changing anything: `try`, `why` and `run`.
+Every input ends in one of four outcomes. This page shows each one and what decides it. It also covers the three
+commands that look at a decision without changing anything: `try`, `why` and `run`.
 
 ## Run
 
-Confidence cleared the floor for the winner's effect, every required argument was stated, nothing else asked for
-attention. The call prints with its confidence, the body runs, the result prints.
+Confidence cleared the bar for the winner's effect. Every required argument was stated. Nothing else needed
+attention. The call prints with its confidence, the program runs, and the result prints.
 
 ```text
 $ evoke "kill the lights in the den"
@@ -16,8 +16,8 @@ den lights off
 
 ## Confirm
 
-The call is complete, but something caps it at a question. `evoke`'s own line says what — the call, the effect, the
-weakest judgment, and any further reason — then the reflex's one-line prompt, then three answers.
+The call is complete, but something holds it at a question. `evoke`'s own line says what: the call, the effect,
+the weakest judgment, and any further reason. Then comes the reflex's one-line prompt, and three answers.
 
 ```text
 $ evoke "dim the office"
@@ -32,21 +32,22 @@ group-7 lights dim
 | `n`, `no`   | Declines, exit 2                                                                               |
 | `t`, `teach`| Records what you said as an example of this call in your overlay, then runs                    |
 
-What caps a decision at confirm, in the order the line names them:
+These are the reasons a decision stops at confirm, in the order the line names them:
 
-- **destructive** — a destructive reflex always confirms, however sure.
-- **no gate** — the adapter shipped no thresholds, so nothing auto-runs.
-- **under the floor** — the weakest judgment is under the floor for this effect.
-- **an unconsumed span** — you typed something recognizable, a number or a URL, that no argument took.
-- **two things** — a runner-up reflex fits well enough that the input may have asked for two things.
+- **destructive**: a destructive reflex always confirms, however sure.
+- **no gate**: the adapter shipped no thresholds, so nothing runs on its own.
+- **under the floor**: the weakest judgment is under the bar for this effect.
+- **an unconsumed span**: you typed something recognizable, like a number or a URL, and no argument took it.
+- **two things**: a runner-up reflex fits well enough that the input may have asked for two things.
 
-`[t]each` records only what the input stated: an argument filled at a prompt is not asserted. Read from the
-terminal, never stdin; with no terminal, a confirm exits 3 with the command to run yourself.
+`[t]each` records only what the input stated. An argument you filled in at a prompt is not recorded. The answer
+is read from the terminal, never from stdin. With no terminal, a confirm exits 3 with the command to run yourself.
 
 ## Ask
 
-The winner is clear but a required argument is missing: the input never stated it, or a value fell outside its
-range. `evoke` asks the argument's own question, offers what it may be, and gates again with your answer.
+The winner is clear, but a required argument is missing. Either the input never stated it, or the value fell
+outside its range. `evoke` asks the argument's own question, offers what it may be, and gates again with your
+answer.
 
 ```text
 $ evoke "kill the lights"
@@ -60,15 +61,17 @@ $ evoke "set the volume to 150 percent"
 volume set to 40%
 ```
 
-- A choice takes its number or its own text. A pick — a number, a duration, an address, a URL, a quoted phrase — takes
-  what you type, read the same way the input is; a quoted argument takes the whole line when nothing is quoted.
-- An answer that does not do is asked again with the reason on the line. An empty line asks again.
+- A choice takes its number or its own text. A pick takes what you type, read the same way as the input. A pick
+  is a number, a duration, an address, a URL, or a quoted phrase. A quoted argument takes the whole line when
+  nothing is quoted.
+- An answer that does not fit is asked again, with the reason on the line. An empty line asks again.
 - `+` at a vocabulary's prompt asks `Word?` and `Meaning?`, writes the word to your vocabulary, and goes on.
-- The end of input — `Ctrl-D` — declines, exit 2.
+- The end of input, `Ctrl-D`, declines with exit 2.
 
 ## Abstain
 
-`none` won the route, or the winner is under the route floor. The ranking prints and nothing runs, exit 2.
+`none` won the route, or the winner is under the route bar. The ranking prints, nothing runs, and the exit code
+is 2.
 
 ```text
 $ evoke "make it cosy"
@@ -78,21 +81,21 @@ $ evoke "make it cosy"
 
 ## What confidence is
 
-For each decision the adapter answers one question per reflex and per argument. **Confidence is the lowest top
-probability among the route and every argument question of the winner**, unstated arguments and flags included.
-The floors come from the adapter, calibrated so that each number means *the probability this is right*:
+For each decision, the adapter answers one question per reflex and one per argument. **Confidence is the lowest
+top probability among the route and every argument question of the winner.** Unstated arguments and flags count
+too. The bars come from the adapter. They are calibrated, so each number means *the probability this is right*:
 
 | Floor         | Jev  | Gates                                                          |
 | :------------ | :--- | :------------------------------------------------------------- |
 | `route`       | 0.5  | Under it, abstain                                              |
 | `read`        | 0.6  | A `read` reflex runs at or above it                            |
 | `write`       | 0.8  | A `write` reflex runs at or above it                           |
-| `fits`        | 0.3  | A *runner-up* at or above it caps the outcome at confirm       |
+| `fits`        | 0.3  | A *runner-up* at or above it holds the outcome at confirm      |
 | destructive   | —    | Always confirms                                                |
 
-You may raise or lower them for your own machine under `[adapters.jev]` in `evoke.toml`; `read` may never exceed
-`write`, and no number makes a destructive reflex skip its question. There is no `--yes`: unattended use is a
-threshold in a file you own, not a flag on a pipeline.
+You may raise or lower them for your own machine, under `[adapters.jev]` in `evoke.toml`. `read` may never exceed
+`write`. No number makes a destructive reflex skip its question. There is no `--yes`. To run unattended, set a bar
+in a file you own, not a flag on a pipeline.
 
 ```toml
 [adapters.jev]
@@ -101,9 +104,9 @@ gate = { write = 0.85 }
 
 ## `try` — decide, and show the work
 
-`evoke try "<input>"` decides without running and prints every judgment: the ranking, each argument's
+`evoke try "<input>"` decides without running, and prints every judgment: the ranking, each argument's
 distribution, each reflex's `fits`, then the outcome and the weakest judgment. It shares the cache with a real
-decision and is never logged.
+decision. It is never logged.
 
 ```text
 $ evoke try "kill the lights"
@@ -133,8 +136,8 @@ $ evoke why
 
 ## `run` — by name, no classifier
 
-`evoke run <call>` runs a call you write yourself. Nothing is decided, so nothing prints but the call; the effect
-policy still holds — a destructive call confirms — and every value is checked as a decision's would be.
+`evoke run <call>` runs a call you write yourself. Nothing is decided, so nothing prints but the call. The effect
+policy still holds: a destructive call confirms. Every value is checked, just as a decision's would be.
 
 ```text
 $ evoke run lights room=den state=off
@@ -149,14 +152,14 @@ $ evoke run lights state=off
 [3]
 ```
 
-The call grammar is `name arg=value…`; a value with spaces is quoted, `duration="10 minutes"`; a flag is its bare
-name. A word the vocabulary lacks, an option not offered, a number out of range, an argument the reflex does not
-have — each is refused with the command that shows what is allowed. A call by name is not logged.
+The call grammar is `name arg=value…`. A value with spaces is quoted: `duration="10 minutes"`. A flag is its bare
+name. A word the vocabulary lacks, an option not offered, a number out of range, or an argument the reflex does
+not have: each is refused, with the command that shows what is allowed. A call by name is not logged.
 
 ## The cache
 
-The adapter's answers are cached by the installed set and the sentence — not the decision. Repeat an input and it
-costs nothing; change a threshold and the same answers gate differently; `try` and `why` explain a cached decision
-exactly as a fresh one. `evoke test` never uses it.
+The adapter's answers are cached by the installed set and the sentence, not by the decision. Repeat an input and
+it costs nothing. Change a threshold, and the same answers gate differently. `try` and `why` explain a cached
+decision exactly like a fresh one. `evoke test` never uses the cache.
 
 **Next:** [Installing reflexes](installing.md).

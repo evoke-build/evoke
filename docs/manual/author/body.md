@@ -1,7 +1,7 @@
 # The body
 
-The body is what `run` names: a JavaScript file with a function as its default export, or a program with its
-arguments. `evoke` calls it once per decision, with the arguments filled, a context, and a deadline.
+The body is what `run` names. It is either a JavaScript file with a function as its default export, or a program
+with its arguments. `evoke` calls it once per decision, with the arguments filled in, a context, and a deadline.
 
 ## A file body
 
@@ -18,12 +18,12 @@ export default (async ({ room, state, brightness = 30 }, { config, signal }) => 
 }) satisfies Reflex
 ```
 
-- The file ends in `.mts` or `.mjs`, lives inside the reflex directory, and is a module whatever a nearby
-  `package.json` says. It runs on Node 24 or newer, which strips types natively: no build step.
-- It is **self-contained**: web APIs and `node:` builtins are there; anything else is bundled into the file. A
+- The file ends in `.mts` or `.mjs` and lives inside the reflex directory. It is a module, whatever a nearby
+  `package.json` says. It runs on Node 24 or newer, which strips types on its own. There is no build step.
+- It is **self-contained**. Web APIs and `node:` builtins are there. Anything else is bundled into the file. A
   reflex commits what it needs.
 - `satisfies Reflex` types the arguments from the manifest and checks the return. `evoke check` writes
-  `reflex.d.ts` beside the body whenever the arguments change; commit it.
+  `reflex.d.ts` next to the body whenever the arguments change. Commit it.
 
 ### What the body receives
 
@@ -33,15 +33,16 @@ export default (async ({ room, state, brightness = 30 }, { config, signal }) => 
 
 | Value        | Is                                                                                             |
 | :----------- | :--------------------------------------------------------------------------------------------- |
-| `args`       | Per argument: an option's key, a vocabulary word's value or the word, a pick's value — the number, the seconds, the text — `true` for a flag. An optional argument left unstated is absent |
-| `input`      | The sentence as typed. A selector cannot write, so a reminder's text arrives here               |
+| `args`       | Per argument: an option's key; a vocabulary word's value, or the word; a pick's value, meaning the number, the seconds, or the text; `true` for a flag. An optional argument left unstated is absent |
+| `input`      | The sentence as typed. The classifier cannot write, so free text like a reminder's message arrives here |
 | `config`     | Each `[config]` key as a string, secrets resolved from the environment for this run only        |
-| `signal`     | Aborted at the deadline, when the user declines, and on `SIGTERM`. Stop; never guess           |
+| `signal`     | Aborted at the deadline, when the user declines, and on `SIGTERM`. Stop. Never guess           |
 
 ### What it returns
 
-A string — the one line a person reads — or `{ text, data? }`, `data` being anything an app might use: a pid, a
-time, a path. Throwing is failure: the message prints, exit 1. Anything else returned is a failure too.
+A string: the one line a person reads. Or `{ text, data? }`, where `data` is anything an app might use: a pid, a
+time, a path. Throwing is failure: the message prints, and the exit code is 1. Anything else returned is a
+failure too.
 
 Say what happened, in one lowercase line: `volume 40%`, `locked`, `saved report.pdf to ~/Downloads (1.2 MB)`.
 
@@ -49,14 +50,15 @@ Say what happened, in one lowercase line: `volume 40%`, `locked`, `saved report.
 
 - **Environment.** Scrubbed: `PATH`, `HOME`, `TMPDIR`, `LANG` and `TERM`, nothing else. Secrets reach the body
   through `config`, never the environment.
-- **Deadline.** 30 seconds per decision, shared with the classifier's answer. What must outlive the run — a timer,
-  `caffeinate` — detaches and returns at once.
+- **Deadline.** 30 seconds per decision, shared with the classifier's answer. Anything that must outlive the
+  run, like a timer or `caffeinate`, detaches and returns at once.
 - **Output.** The result is what the function returns. The body's own `stdout` and `console` go to stderr, so a
   stray `console.log` never corrupts a result.
-- **Process.** The CLI starts the runtime as the decision begins, so a body is warm when the answer lands; its life
-  is bounded by `evoke`'s. On timeout or decline the group is ended: `SIGTERM`, a second's grace, `SIGKILL`.
-- **Platform.** A body that runs on one platform says so on its first line — `throw new Error("runs on macOS
-  only")` — rather than letting a missing program fail with `ENOENT`.
+- **Process.** The CLI starts the runtime as the decision begins, so a body is warm when the answer lands. Its
+  life is bounded by `evoke`'s. On timeout or decline, the process group is ended: `SIGTERM`, a second's grace,
+  then `SIGKILL`.
+- **Platform.** A body that runs on one platform says so on its first line: `throw new Error("runs on macOS
+  only")`. That beats letting a missing program fail with `ENOENT`.
 
 ## An argv body
 
@@ -64,13 +66,14 @@ Say what happened, in one lowercase line: `volume 40%`, `locked`, `saved report.
 run = ["networksetup", "-setairportpower", "en0", "{state}"]
 ```
 
-A program and its arguments, run directly — never through a shell. The first element is a literal, the program:
-a name found on `PATH`, or an absolute path, never a path relative to wherever `evoke` runs. A placeholder is a whole element and names an `options`, `vocab` or `pick` argument; it is
-replaced by the option key, the word's value or the word, or the pick's text. An element whose optional argument
-is unstated is dropped; a value that would start with `-` is refused. Config arrives as `EVOKE_CONFIG_<KEY>` and
-the input as `EVOKE_INPUT`; stdout is the result; a non-zero exit is failure. No runtime is needed.
+A program and its arguments, run directly, never through a shell. The first element is a literal: the program.
+It is a name found on `PATH`, or an absolute path. It is never a path relative to wherever `evoke` runs. A
+placeholder is a whole element. It names an `options`, `vocab` or `pick` argument, and is replaced by the option
+key, the word's value or the word, or the pick's text. An element whose optional argument is unstated is
+dropped. A value that would start with `-` is refused. Config arrives as `EVOKE_CONFIG_<KEY>`, and the input as
+`EVOKE_INPUT`. Stdout is the result. A non-zero exit is failure. No runtime is needed.
 
-Flags and literal braces are not expressible in an argv; write a file.
+Flags and literal braces cannot be expressed in an argv. Write a file instead.
 
 ## The generated types
 
@@ -88,13 +91,13 @@ export type Result = string | { text: string; data?: unknown }
 export type Reflex = (args: Args, context: Context) => Result | Promise<Result>
 ```
 
-Option keys become a union, `"on" | "off" | "dim"`; a word, a quoted text, an address and a URL are `string`; a
-number and a duration are `number`; a flag is `true`; an optional argument is marked `?`. Each member carries its
+Option keys become a union: `"on" | "off" | "dim"`. A word, a quoted text, an address and a URL are `string`. A
+number and a duration are `number`. A flag is `true`. An optional argument is marked `?`. Each member carries its
 `ask` or `about`, so an editor's hover shows the question. The file imports nothing.
 
 ## Testing a body
 
-A body is a function: import it and call it. The collection's own tests do exactly that, under `node --test`,
+A body is a function. Import it and call it. The collection's own tests do exactly that, under `node --test`,
 with a context built by hand: `{ input: "", config: { file }, signal: new AbortController().signal }`. Nothing of
 `evoke` is needed to unit-test a reflex.
 

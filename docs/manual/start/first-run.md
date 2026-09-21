@@ -1,6 +1,6 @@
 # The first ten minutes
 
-Ten minutes from an empty machine to a reflex that learned a phrase of yours. Every line below is what the
+Ten minutes, from an empty machine to a reflex that learned a phrase of yours. Every line below is what the
 terminal shows.
 
 ## 1. Say something
@@ -11,8 +11,9 @@ $ evoke "lock the screen"
 [3]
 ```
 
-Two things happened. `evoke` wrote your **home project** — `~/.config/evoke/evoke.toml`, one line, `adapter = "jev"`
-— and it told you the one thing it needs. `[3]` is the exit code: *needs a human*. Export the key and try again:
+Two things happened. `evoke` wrote your **home project**: the file `~/.config/evoke/evoke.toml`, with one line,
+`adapter = "jev"`. And it told you the one thing it needs. `[3]` is the exit code. It means *needs a human*. Export
+the key and try again:
 
 ```text
 $ evoke "lock the screen"
@@ -23,7 +24,7 @@ $ evoke "lock the screen"
 ## 2. Install the collection
 
 `evoke-build/reflexes` is the first-party collection: thirteen reflexes for what a Mac does at a word. Installing
-a repository installs every reflex in it:
+a repository installs every reflex in it.
 
 ```text
 $ evoke add evoke-build/reflexes
@@ -36,9 +37,9 @@ $ evoke add evoke-build/reflexes
   …
 ```
 
-One row per reflex: its local name, where it came from and at which tag, its effect, and what it runs. Then the
-**inactive** lines: a reflex that reads your words or a setting stays out of every decision until it has them, and
-each line ends in the command that gives it what it lacks. Nothing is guessed on your behalf.
+One row per reflex: its local name, where it came from, its tag, its effect, and what it runs. Then the
+**inactive** lines. A reflex that needs your words or a setting stays out of every decision until it has them. Each
+line ends with the command that gives it what it lacks. Nothing is guessed for you.
 
 ## 3. Use it
 
@@ -48,8 +49,9 @@ $ evoke "set the volume to 40 percent"
 volume 40%
 ```
 
-The indented line is `evoke`'s own, on stderr: the **call** it chose and its **confidence**. The last line is the
-reflex's result, on stdout. Confidence over the floor for a `write` reflex, so it ran without asking.
+The indented line is `evoke`'s own, on stderr. It shows the **call** it chose and its **confidence**. The last
+line is the reflex's result, on stdout. The confidence was over the bar for a `write` reflex, so it ran without
+asking.
 
 A less certain decision confirms first:
 
@@ -79,8 +81,8 @@ $ evoke "what time is it"
 
 ## 4. Give it your words
 
-Some reflexes take words only you can supply: your folders, your sites, your rooms. A **vocabulary** is that
-list, one file you own, and every reflex that names it reads it.
+Some reflexes need words only you can supply: your folders, your sites, your rooms. A **vocabulary** is that
+list. It is one file you own, and every reflex that names it reads it.
 
 ```text
 $ evoke vocab places add desktop "The desktop." --value /Users/you/Desktop
@@ -89,8 +91,8 @@ $ evoke "open my desktop folder"
   open place="desktop"  0.91
 ```
 
-The meaning is what the classifier reads; the value is what the reflex receives. A setting works the same way,
-and a secret is only ever named, never stored:
+The meaning is what the classifier reads. The value is what the reflex receives. A setting works the same way.
+A secret is only ever named, never stored:
 
 ```text
 $ evoke config note file notes.txt
@@ -101,7 +103,7 @@ $ evoke config lights token --env HUE_TOKEN
 
 ## 5. Teach it
 
-When a decision is not quite sure, `[t]each` records what you meant and runs:
+When a decision is not quite sure, `[t]each` records what you meant, then runs:
 
 ```text
 $ evoke "kill the lights"
@@ -115,8 +117,8 @@ $ evoke "kill the lights in the den"
 den lights off
 ```
 
-That one line in `overlays/lights.toml` is yours: an example the classifier now sees, in a file no update will
-touch. You can also teach from the command line, and teach what something is *not*:
+That one line in `overlays/lights.toml` is yours. It is an example the classifier now sees, in a file no update
+will touch. You can also teach from the command line. You can even teach what something is *not*:
 
 ```text
 $ evoke teach "lights out" lights state=off
@@ -127,8 +129,8 @@ $ evoke teach "what time is it" not timer
 
 ## 6. Look inside
 
-`try` decides without running and shows every judgment; `why` explains the last decision; `show` prints what is
-installed, or one reflex as it is used, with `+` in the gutter of every line that is yours.
+`try` decides without running and shows every judgment. `why` explains the last decision. `show` prints what is
+installed, or one reflex as it is used, with `+` next to every line that is yours.
 
 ```text
 $ evoke try "kill the lights in the den"
@@ -147,7 +149,7 @@ $ evoke try "kill the lights in the den"
 | Installed code, keyed by content hash  | `~/.cache/evoke/store/`                            |
 | The decision log, the REPL's history   | `~/.local/state/evoke/`                            |
 
-Your project holds only what you wrote, the lock, and generated types: put it in your dotfiles. Everything else
-is a cache `evoke sync` rebuilds on a new machine.
+Your project holds only what you wrote, the lock, and generated types. Put it in your dotfiles. Everything else
+is a cache, and `evoke sync` rebuilds it on a new machine.
 
 **Next:** [Concepts](concepts.md), or straight to [Saying things](../use/saying-things.md).

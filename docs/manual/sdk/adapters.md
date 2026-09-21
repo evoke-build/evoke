@@ -1,7 +1,7 @@
 # Adapters
 
-An adapter is the classifier behind a decision: an object that answers typed questions with probabilities. The
-core names no engine; a project names an adapter, and only your machine resolves the name.
+An adapter is the classifier behind a decision. It is an object that answers typed questions with probabilities.
+The core names no engine. A project names an adapter, and only your machine resolves the name.
 
 ## `jev()` — the first adapter
 
@@ -15,11 +15,11 @@ const project = await load({ reflexes, adapter: jev({ key, gate: { write: 0.85 }
 | Option | Meaning                                                                                       |
 | :----- | :-------------------------------------------------------------------------------------------- |
 | `key`  | The API key. Absent: `TYPESAFE_API_KEY` from the environment, read when `jev()` is called      |
-| `gate` | Floors over the defaults — `route` 0.5, `fits` 0.3, `read` 0.6, `write` 0.8 — as `[adapters.jev] gate` in `evoke.toml` |
+| `gate` | Floors over the defaults of `route` 0.5, `fits` 0.3, `read` 0.6 and `write` 0.8. The same as `[adapters.jev] gate` in `evoke.toml` |
 
-When `load` resolves `jev` by name from `evoke.toml`, it is built under the file's `[adapters.jev]` table; an
-adapter passed in replaces both. The transport keeps one connection alive for the process, retries once after a
-connect error or a server error, and never after a client error. No key is a `DiagnosticError` ending in
+When `load` resolves `jev` by name from `evoke.toml`, it is built under the file's `[adapters.jev]` table. An
+adapter passed in replaces both. The transport keeps one connection alive for the process. It retries once after
+a connect error or a server error, and never after a client error. No key is a `DiagnosticError` ending in
 `export TYPESAFE_API_KEY=<value>`.
 
 ## The contract
@@ -41,14 +41,15 @@ type Raw  = Record<string, Record<string, number>>    // per question, a number 
 ```
 
 - **State is only `{ request }`.** An adapter sees the input and the questions, nothing else.
-- **A choice answer is a distribution** over the keys offered, summing to 1; an omitted key reads as 0. A yes/no
-  answers `{ yes: p }`. The core validates every answer and fails closed: a missing question is a fault.
-- **`otherwise`** marks the sentinel — `none`, `unstated` — structurally, so an engine may abstain its own way.
-- **`gate`** is the adapter's own calibration; the core never rescales. Without one, every decision confirms.
-  `gate.fits` is the runner-up's floor: a second reflex clearing it turns a run into a confirm.
+- **A choice answer is a distribution** over the keys offered, summing to 1. An omitted key reads as 0. A yes/no
+  answers `{ yes: p }`. The core validates every answer and fails closed. A missing question is a fault.
+- **`otherwise`** marks the sentinel, `none` or `unstated`, in the structure. So an engine may abstain its own
+  way.
+- **`gate`** is the adapter's own calibration. The core never rescales. Without one, every decision confirms.
+  `gate.fits` is the runner-up's floor. A second reflex clearing it turns a run into a confirm.
 - **`answer` is stateless** and may be called with any subset of a plan's questions. `signal` aborts it at the
-  deadline; an adapter that ignores its signal is raced against it anyway.
-- **`id`** covers everything that could shift answers — model, version, prompt rendering, calibration — and is
+  deadline. An adapter that ignores its signal is raced against it anyway.
+- **`id`** covers everything that could shift answers: model, version, prompt rendering, calibration. It is
   pinned in the lock with the project's adapter name.
 
 ## Writing one
@@ -66,8 +67,9 @@ const mine: Adapter = {
 const project = await load({ root, adapter: mine })
 ```
 
-Any engine that can answer a closed choice with probabilities fits: a hosted model verbalizing them, a local model
-with log-probabilities, a zero-shot classifier. An embedding router cannot fill arguments on its own. A throw that
-is not `evoke`'s own becomes a transport `FaultError`; the caller's abort passes through as its own reason.
+Any engine that can answer a closed choice with probabilities fits. That could be a hosted model that spells them
+out, a local model with log-probabilities, or a zero-shot classifier. An embedding router cannot fill arguments
+on its own. A throw that is not `evoke`'s own becomes a transport `FaultError`. The caller's abort passes through
+as its own reason.
 
 **Next:** [Testing](testing.md).

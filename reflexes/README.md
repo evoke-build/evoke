@@ -1,8 +1,9 @@
 # evoke-build/reflexes
 
-The first-party reflexes for [evoke](https://github.com/evoke-build/evoke): what a Mac does at a word, the word
-decided by [Jev](https://typesafe.ai), TypeSafe AI's classifier. One directory per reflex — `reflex.toml`, and the file it runs where it runs one — nothing to build, nothing to install
-but `evoke` itself.
+The first-party reflexes for [evoke](https://github.com/evoke-build/evoke): what a Mac does at a word. The word
+is decided by [Jev](https://typesafe.ai), TypeSafe AI's classifier. Each reflex is one directory, with
+`reflex.toml` and the file it runs, where it runs one. There is nothing to build, and nothing to install but
+`evoke` itself.
 
 ```bash
 evoke add evoke-build/reflexes
@@ -26,8 +27,9 @@ evoke add evoke-build/reflexes
 
 ## Yours to set
 
-A reflex that reads your words or a setting stays inactive until it has them, and `evoke` says which line does it.
-`places` names your folders, each word's value its full path; `sites` your sites, each value its URL.
+A reflex that reads your words or a setting stays inactive until it has them. `evoke` says which line gives it
+what it needs. `places` names your folders, and each word's value is its full path. `sites` names your sites, and
+each value is its URL.
 
 ```bash
 evoke vocab places add desktop "The desktop." --value /Users/you/Desktop
@@ -37,6 +39,7 @@ evoke config note file ~/notes.txt
 
 ## Writing one
 
-`evoke new <name>` scaffolds a reflex; `evoke check` reads the manifest, loads the body and writes `reflex.d.ts`,
-the one file a body imports. Here, `npm ci` then `npm run check` and `npm test` type-check every body and run the
-tests. Licence: [MIT](LICENSE). Issues and changes: [evoke-build/evoke](https://github.com/evoke-build/evoke).
+`evoke new <name>` writes a working reflex to start from. `evoke check` reads the manifest, loads the body, and
+writes `reflex.d.ts`, the one file a body imports. Here, `npm ci` then `npm run check` and `npm test` type-check
+every body and run the tests. Licence: [MIT](LICENSE). Issues and changes:
+[evoke-build/evoke](https://github.com/evoke-build/evoke).

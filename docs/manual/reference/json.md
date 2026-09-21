@@ -1,9 +1,9 @@
 # The JSON line
 
-`--json` prints one line per input: the input, the decision's fields flattened beside it, the adapter calls made,
-and the result or the error when a body ran. It is the filter format, and the log holds the same line with the
-adapter's raw answers and the input's candidates beside it, which `why` reads. The SDK's `Decision` is the same
-object plus `values` and `plan`.
+`--json` prints one line per input. The line holds the input, the decision's fields flattened next to it, the
+adapter calls made, and the result or the error when a body ran. It is the filter format. The log holds the same
+line, with the adapter's raw answers and the input's candidates next to it. `why` reads that. The SDK's
+`Decision` is the same object, plus `values` and `plan`.
 
 ## Shape by outcome
 
@@ -24,11 +24,11 @@ object plus `values` and `plan`.
 | `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `unconsumed_span`, `two_things` |
 | `unconsumed` |     |         | ●   |         | Typed spans no argument took                                    |
 | `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because`, `choices`        |
-| `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call: `{ adapter, questions, ms }`; empty when the answers came from the cache |
+| `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call: `{ adapter, questions, ms }`. Empty when the answers came from the cache |
 | `result`     | ○   |         |     |         | `{ text, data? }` when the body ran                             |
 | `error`      | ○   |         |     |         | The failure's message when it did not                           |
 
-A call by name — `evoke run` — prints no line; nothing was decided.
+A call by name, `evoke run`, prints no line. Nothing was decided.
 
 ## Values
 
@@ -39,8 +39,8 @@ A call by name — `evoke run` — prints no line; nothing was decided.
 { "type": "flag" }
 ```
 
-A pick's `value` is what the body receives — the number, the seconds, the text — and its `span` is where it was
-read, in character offsets of the input.
+A pick's `value` is what the body receives: the number, the seconds, the text. Its `span` is where it was read,
+in character offsets of the input.
 
 ## Examples
 
@@ -50,7 +50,7 @@ A run, from `evoke try --json`:
 {"input":"kill the lights in the den","outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","confidence":0.85,"weakest":{"question":"lights.room","top":"den","p":0.85},"judgments":[{"question":"route","top":"lights","p":0.91},{"question":"lights.room","top":"den","p":0.85},{"question":"lights.state","top":"off","p":0.88}],"runner_up":{"reflex":"timer","route":0.02,"fits":0.05},"contenders":[{"reflex":"lights","route":0.91,"fits":0.7},{"reflex":"timer","route":0.02,"fits":0.05},{"reflex":"volume","route":0.01,"fits":0.05}],"trace":[]}
 ```
 
-An ask, from a filter with no terminal — the line stands for the prompt that could not be shown, exit 3:
+An ask, from a filter with no terminal. The line stands for the prompt that could not be shown, exit 3:
 
 ```json
 {"input":"kill the lights","outcome":"ask","reflex":"lights","args":{"state":{"type":"option","key":"off"}},"unconsumed":[],"confidence":0.58,"weakest":{"question":"lights.state","top":"off","p":0.58},"judgments":[{"question":"route","top":"lights","p":0.9},{"question":"lights.room","top":"unstated","p":0.75},{"question":"lights.state","top":"off","p":0.58}],"runner_up":{"reflex":"timer","route":0.02,"fits":0.05},"contenders":[{"reflex":"lights","route":0.9,"fits":0.7},{"reflex":"timer","route":0.02,"fits":0.05},{"reflex":"volume","route":0.02,"fits":0.05}],"missing":[{"arg":"room","ask":"Which room?","because":{"type":"unstated"},"choices":{"type":"vocab","words":{"den":"The TV room downstairs; also 'the snug'.","office":"The upstairs study."}}}],"trace":[]}
@@ -64,5 +64,5 @@ sentinels `none` and `unstated`.
 
 ## Rules of the wire
 
-Keys are `snake_case`. An absent optional is omitted, never `null`. A tagged value carries `type`; a decision
+Keys are `snake_case`. An absent optional is omitted, never `null`. A tagged value carries `type`. A decision
 carries `outcome`. Numbers are numbers: `0.85` and `0.850` are one value.

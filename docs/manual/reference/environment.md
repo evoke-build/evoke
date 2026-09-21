@@ -26,13 +26,13 @@
 | `$XDG_STATE_HOME/evoke/runtime`                  | The path of `node` a file body runs under                      | `add`, `sync`         |
 | `$XDG_STATE_HOME/evoke/history`                  | The REPL's lines, the last 1 000                               | the REPL              |
 
-`$XDG_STATE_HOME` defaults to `~/.local/state`, `$XDG_CACHE_HOME` to `~/.cache`. Everything under cache can be
-deleted; `sync` and the next decision rebuild it. No key and no config value is ever written under either; the
-log and the history hold what you typed and what a body returned, and are readable by you alone.
+`$XDG_STATE_HOME` defaults to `~/.local/state`, and `$XDG_CACHE_HOME` to `~/.cache`. Everything under cache can
+be deleted. `sync` and the next decision rebuild it. No key and no config value is ever written under either. The
+log and the history hold what you typed and what a body returned. Only you can read them.
 
 ## What a body sees
 
-A file body runs under a scrubbed environment of five variables — `PATH`, `HOME`, `TMPDIR`, `LANG`, `TERM` — and
+A file body runs under a scrubbed environment of five variables: `PATH`, `HOME`, `TMPDIR`, `LANG`, `TERM`. It
 receives its arguments, the input, its config and a signal through the call. An argv body gets the same five,
 plus:
 
@@ -45,5 +45,5 @@ Secrets reach a body only this way, for the length of one run.
 
 ## Time
 
-One decision has 30 seconds, shared by the adapter's answer and the body's run; a prompt never counts. The Jev
-transport gives a request 1.5 seconds once connected and retries once after a connect error or a server error.
+One decision has 30 seconds, shared by the adapter's answer and the body's run. A prompt never counts. The Jev
+transport gives a request 1.5 seconds once connected. It retries once after a connect error or a server error.

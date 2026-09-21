@@ -16,8 +16,8 @@ Everything `evoke` reads or writes in a project, and who owns each file.
 └── reflex.d.ts           evoke's        written by check: Args, Config, Context, Result, Reflex
 ```
 
-`evoke` edits your files in place, keeping comments and order, and verifies each write by reading it back; on
-failure it writes nothing and prints the line. The lock and the two `.d.ts` files are rendered whole.
+`evoke` edits your files in place, keeping comments and order. It verifies each write by reading it back. On
+failure it writes nothing, and prints the line. The lock and the two `.d.ts` files are rendered whole.
 
 ## `evoke.toml`
 
@@ -38,8 +38,8 @@ token  = { env = "HUE_TOKEN" }     # from a variable; the only form a secret may
 gate = { route = 0.5, fits = 0.3, read = 0.6, write = 0.8 }   # each a probability; read ≤ write
 ```
 
-Local names match `[a-z][a-z0-9_]*`; `none`, `unstated` and `fits` are reserved. A missing `evoke.toml` at a root
-means the default project: `adapter = "jev"`, nothing installed.
+Local names match `[a-z][a-z0-9_]*`. The names `none`, `unstated` and `fits` are reserved. A missing `evoke.toml`
+at a root means the default project: `adapter = "jev"`, nothing installed.
 
 ## `evoke.lock`
 
@@ -61,7 +61,7 @@ effect = "write"
 
 Per remote reflex: the ref without its pin, the tag, the commit, the content hash of the reflex directory, and the
 effect you consented to. Local reflexes are not locked. `h1` is a SHA-256 over `sha256sum`'s own lines for every
-file in the directory, in byte order of path, the project's five names skipped:
+file in the directory. Files are taken in byte order of path, and the project's five names are skipped:
 
 ```bash
 find . -type f | sed 's|^\./||' | LC_ALL=C sort | xargs sha256sum | sha256sum
@@ -87,7 +87,8 @@ options.dim = "…"                                    # new wording for an exis
 "light a candle" = false
 ```
 
-A contract key — `run`, a new argument, a new option key, a source, a range, `config` — makes the reflex inactive.
+A contract key makes the reflex inactive. That means `run`, a new argument, a new option key, a source, a range,
+or `config`.
 
 ## `vocab/<name>.toml`
 
@@ -96,8 +97,8 @@ den    = "The TV room downstairs; also 'the snug'."
 office = { what = "The upstairs study.", value = "group-7" }
 ```
 
-A word is one clean line, trimmed, spaces allowed, unique under identity; `none` and `unstated` are reserved.
-`what` is what the classifier reads; `value` is what the body receives instead of the word.
+A word is one clean line, trimmed, spaces allowed, and unique under identity. `none` and `unstated` are reserved.
+`what` is what the classifier reads. `value` is what the body receives instead of the word.
 
 ## `evoke.d.ts`
 
@@ -156,6 +157,6 @@ Written for a file body only, and only when it changed.
 
 ## Machine-local files
 
-Outside every project, under XDG: the store, the answer cache and the test baselines in `~/.cache/evoke/`; the
-log, trust, the runtime path and the REPL's history in `~/.local/state/evoke/`. [Environment](environment.md)
-lists each.
+These live outside every project, under XDG paths. The store, the answer cache and the test baselines are in
+`~/.cache/evoke/`. The log, trust, the runtime path and the REPL's history are in `~/.local/state/evoke/`.
+[Environment](environment.md) lists each.

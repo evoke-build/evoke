@@ -1,9 +1,10 @@
 # @evoke-build/evoke
 
-You invoke a function; you evoke a reflex. The SDK loads a project of reflexes — small programs a classifier selects
-and calls — decides what an input asks for, and runs it. The classifier is [Jev](https://typesafe.ai), TypeSafe AI's
-System One model, which answers closed questions with calibrated probabilities and generates no text; the rules run
-in `core.wasm`, the same core as the `evoke` CLI, and the SDK adds files, the network and a process.
+You invoke a function; you evoke a reflex. A reflex is a small program a classifier selects and calls. The SDK
+loads a project of reflexes, decides what an input asks for, and runs it. The classifier is
+[Jev](https://typesafe.ai), TypeSafe AI's System One model. It answers closed questions with calibrated
+probabilities, and never writes a word. The rules run in `core.wasm`, the same core as the `evoke` CLI. The SDK
+adds files, the network and a process.
 
 Six things to learn, in order: `reflex()` · `load()` · `handle()` · a `Decision` · `run()` · `replay()`.
 
@@ -34,14 +35,14 @@ const handled = await project.handle(process.argv[2] ?? "", {
 console.log(handled.outcome === "ran" ? handled.result.text : handled.outcome)
 ```
 
-A `Decision` is a union narrowed by `outcome` — `run`, `confirm`, `ask`, `abstain` — then by `reflex`. It carries
-`args` as the classifier read them, `values` as the body receives them, `call` as one line, `confidence`, the
-`prompt` of a confirm, the `missing` of an ask, and the `trace` of every adapter call.
+A `Decision` is a union. Narrow it by `outcome`, one of `run`, `confirm`, `ask` and `abstain`, then by `reflex`.
+It carries `args` as the classifier read them, `values` as the body receives them, `call` as one line,
+`confidence`, the `prompt` of a confirm, the `missing` of an ask, and the `trace` of every adapter call.
 
 ## With files
 
-`evoke add evoke-build/reflexes` beside the app writes `evoke.toml`, `evoke.lock` and `evoke.d.ts`; overlays and
-vocabularies under the same root tune wording, including a reflex handed as code.
+`evoke add evoke-build/reflexes` next to the app writes `evoke.toml`, `evoke.lock` and `evoke.d.ts`. Overlays and
+vocabularies under the same root tune the wording. That includes a reflex handed as code.
 
 ```ts
 import type { Reflexes } from "./evoke.d.ts"
@@ -61,10 +62,11 @@ const record = process.env.RECORD ? jev() : undefined                     // REC
 const project = await load({ reflexes: { timer }, adapter: replay("answers.toml", { record }) })
 ```
 
-Every run after is offline and deterministic; the file is the CLI's own `answers.toml`.
+Every run after the first is offline, and always gives the same answers. The file is the CLI's own `answers.toml`.
 
 ## Errors
 
 Every error ends in what to do: `lights: vocabulary "rooms" is empty  →  evoke vocab rooms add <word> "<meaning>"`.
-`DiagnosticError` is something a person fixes, `FaultError` the adapter, `FailureError` a body or the machine; each
-carries the structured value and, as `command`, the fixing line. Aborts reject with the signal's own reason.
+`DiagnosticError` is something a person fixes. `FaultError` is the adapter. `FailureError` is a body or the
+machine. Each carries the structured value, and the fixing line as `command`. Aborts reject with the signal's own
+reason.
