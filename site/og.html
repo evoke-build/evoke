@@ -2,28 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>evoke — the card behind a shared link; rendered once to og.png</title>
+  <title>evoke — the card behind a shared link; rendered once to og.png at twice the size</title>
   <style>
-    html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #101010; color: #e6e6e6;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, "Segoe UI", Roboto, sans-serif;
+    html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #0f0f10; color: #ececec;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, "Segoe UI", Roboto, sans-serif;
       -webkit-font-smoothing: antialiased; }
-    .card { position: relative; width: 1200px; height: 630px; padding: 92px 104px; box-sizing: border-box; }
-    .brand { display: flex; align-items: center; gap: 22px; font-size: 42px; font-weight: 650; letter-spacing: -0.02em; }
-    .brand img { width: 68px; height: 68px; }
-    h1 { font-size: 104px; font-weight: 700; letter-spacing: -0.045em; line-height: 0.98; margin: 62px 0 30px; }
+    .card { position: relative; width: 1200px; height: 630px; padding: 84px 96px 76px; box-sizing: border-box; }
+    .brand { display: flex; align-items: center; gap: 18px; font-size: 40px; font-weight: 650; letter-spacing: -0.02em; }
+    .brand img { width: 56px; height: 56px; }
+    h1 { font-size: 100px; font-weight: 700; letter-spacing: -0.045em; line-height: 0.96; margin: 46px 0 0; }
     h1 em { font-style: normal; color: #ef7f2b; }
-    p { font-size: 31px; line-height: 1.32; color: #a3a3a3; margin: 0; max-width: 920px; }
-    p strong { color: #e6e6e6; font-weight: 600; }
-    .url { position: absolute; right: 104px; bottom: 76px; font-size: 27px; color: #7a7a7a; letter-spacing: -0.01em; }
+    p { font-size: 28px; line-height: 1.38; color: #a4a4aa; margin: 30px 0 0; max-width: 690px; letter-spacing: -0.005em; }
+    p strong { color: #ececec; font-weight: 600; }
+    .url { position: absolute; left: 96px; bottom: 76px; font: 500 24px/1 ui-monospace, "SF Mono", Menlo, monospace; color: #7b7b82; letter-spacing: .01em; }
+    .url b { color: #ef7f2b; font-weight: 500; margin-right: 12px; }
+    .room { position: absolute; top: 0; right: 0; width: 520px; height: 630px; }
+    .room::before { content: ""; position: absolute; inset: 0; background: radial-gradient(60% 55% at 52% 44%, rgba(255, 213, 142, .16), transparent 72%); }
+    .room svg { position: absolute; inset: 0; width: 520px; height: 630px; }
+    .cord { stroke: #3f3f46; stroke-width: 2.5; }
+    .shade { fill: #26262b; stroke: #38383f; stroke-width: 1.5; }
+    .bulb { fill: #ffd58e; filter: drop-shadow(0 0 14px rgba(255, 213, 142, .95)); }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="brand"><img src="assets/logo.png" alt="">evoke</div>
-    <h1>Software, <em>by reflex.</em></h1>
-    <p>A sentence becomes a call of a small program, chosen by <strong>Jev</strong>, TypeSafe AI's classifier,
-      and run only when it is sure enough.</p>
-    <div class="url">evoke.build</div>
+    <div class="brand"><img src="../assets/logo.png" alt="">evoke</div>
+    <h1>Software,<br><em>by reflex.</em></h1>
+    <p><strong>Say it, and the right small program runs.</strong> A reflex is a recipe: written once, improved by
+      everyone.</p>
+    <div class="url"><b>$</b>evoke.build</div>
+    <div class="room" aria-hidden="true">
+      <svg viewBox="0 0 520 630">
+        <defs>
+          <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffd58e" stop-opacity=".5"/>
+            <stop offset="1" stop-color="#ffd58e" stop-opacity="0"/>
+          </linearGradient>
+          <radialGradient id="pool">
+            <stop offset="0" stop-color="#ffd58e" stop-opacity=".42"/>
+            <stop offset="1" stop-color="#ffd58e" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <path d="M228 212 L58 560 L462 560 L292 212 Z" fill="url(#cone)"/>
+        <ellipse cx="260" cy="560" rx="230" ry="18" fill="url(#pool)"/>
+        <line class="cord" x1="260" y1="0" x2="260" y2="150"/>
+        <path class="shade" d="M196 212 C196 172 224 150 260 150 C296 150 324 172 324 212 Z"/>
+        <circle class="bulb" cx="260" cy="218" r="12"/>
+      </svg>
+    </div>
   </div>
 </body>
 </html>
