@@ -209,7 +209,17 @@
     .cmd button.done { color: var(--accent-ink); border-color: var(--accent-ink); }
 
     /* The hero: the words, and a lamp that listens */
-    .hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 3.5rem; align-items: center; padding: 4.5rem 0 0; }
+    .hero { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 3.5rem; align-items: center; padding: 4.5rem 0 0; }
+    /* The lamp's light on the page: a glow behind it that follows its state, and fades at its own edges. */
+    .hero::before {
+      content: ""; position: absolute; inset: -3rem 0 -4rem; z-index: -1; pointer-events: none;
+      background: radial-gradient(40% 55% at 72% 48%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
+      mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
+      opacity: 0; transition: opacity 1.2s ease;
+    }
+    .hero:has(.demo[data-state="on"])::before { opacity: 1; }
+    .hero:has(.demo[data-state="dim"])::before { opacity: .4; }
     .hero h1 { font-size: clamp(2.8rem, 5.6vw, 4.4rem); font-weight: 700; letter-spacing: -0.04em; line-height: .98; margin: 0 0 1.3rem; }
     .hero h1 em { font-style: normal; color: var(--accent); }
     .hero .lede { font-size: 1.22rem; line-height: 1.5; color: var(--muted); max-width: 34rem; margin: 0 0 1.9rem; }
