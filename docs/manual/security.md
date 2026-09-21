@@ -7,7 +7,8 @@ the tool guarantees around them, and what it does not.
 
 - A body runs with your user, under a scrubbed environment of five variables — `PATH`, `HOME`, `TMPDIR`, `LANG`,
   `TERM` — and receives secrets only through its config, for one run. The scrubbing prevents leaks; it does not
-  contain malice. **Read what you install.**
+  contain malice. **Read what you install.** A reflex handed to the SDK as code is your application's own: it
+  runs in its process, unscrubbed, and must honour its `signal`, since nothing can end it from outside.
 - No code runs at install time. `add` fetches a tree, reads a manifest, lints it, and writes files; a body runs
   only at a decision, at `evoke run`, or when `evoke check` imports it to see that it exports a function.
 - There is no sandbox yet. Containment — Landlock on Linux, Seatbelt on macOS — comes together with a permissions
@@ -21,7 +22,9 @@ the tool guarantees around them, and what it does not.
   words, or a piece of the input read by a recognizer and checked against its range. Injected text can choose a
   call; it can never mint a value.
 - **The effect gate covers what it chooses.** A destructive reflex always confirms, and there is no `--yes`.
-  Unattended use is a threshold in a file you own and trust.
+  Unattended use is a threshold in a file you own and trust. A `read` or `write` reflex over its floor runs
+  without asking: what it does with a span it is handed — a URL, a quoted text — an injected sentence can make it
+  do, so its effect is the author's promise about exactly that.
 - **Prompts cannot be repainted.** Control characters and bidi overrides are refused in every manifest, overlay
   and vocabulary string and in every span, and `evoke`'s own line — the call, the effect, the weakest judgment —
   prints before the reflex's template.
@@ -41,11 +44,13 @@ the tool guarantees around them, and what it does not.
 - **Trust binds to content.** A project outside home decides only after `evoke trust`, and the digest of its four
   owned paths is checked at every run; a `git pull` that changed an overlay is a stop, not a surprise.
 - **The lock binds to content.** Every remote reflex is pinned by tag, commit and `h1`, and the store's copy is
-  re-hashed before every run. A tag that moved is refused.
+  re-hashed every time `evoke` starts. A tag that moved is refused.
 - **Fetching is narrow.** `git` is called with a strict ref grammar, `--end-of-options`, and an allow-list of
   `https` and `ssh`; symlinks and submodules are rejected; there is no checkout, no hook, no clone-time script.
 - **Secrets are referenced, never stored.** `evoke.toml` names a variable; the value exists in your environment
-  and reaches a body for the length of one run. Nothing under the cache or the state directory is a secret.
+  and reaches a body for the length of one run. `evoke` writes no key and no config value under the cache or the
+  state directory; the log and the REPL's history hold what you typed and what a body returned, readable by you
+  alone.
 - **Adapter names resolve on your machine only**, against the tool's built-ins — never from a project directory
   — so a cloned repository cannot point your decisions at a classifier of its choosing.
 - **The SDK never searches.** `load` takes an explicit root, never fetches, never writes, and hands each tenant

@@ -6,6 +6,9 @@
 import type { Agent } from "node:https"
 import { request } from "node:https"
 
+/** The most a response may carry: a decision's answers are kilobytes, so anything beyond is not the classifier. */
+const LIMIT = 10 * 1024 * 1024
+
 /** What the server answered. */
 export interface Response {
   status: number
@@ -49,9 +52,12 @@ export function post(
       response => {
         connected = true
         let text = ""
+        let received = 0
         response.setEncoding("utf8")
         response.on("data", (chunk: string) => {
-          text += chunk
+          received += Buffer.byteLength(chunk)
+          if (received > LIMIT) response.destroy(new Error(`more than ${LIMIT} bytes`))
+          else text += chunk
         })
         response.on("end", () => resolve({ status: response.statusCode ?? 0, body: text }))
         response.on("error", error => reject(new Transport(`reading the response: ${error.message}`, true)))

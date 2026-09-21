@@ -81,7 +81,9 @@ impl Store {
     }
 }
 
-fn hashed(files: &[(RelPath, Vec<u8>)]) -> Digest {
+/// The digest a tree would be kept under.
+#[must_use]
+pub fn hashed(files: &[(RelPath, Vec<u8>)]) -> Digest {
     let pairs: Vec<(RelPath, &[u8])> = files
         .iter()
         .map(|(path, bytes)| (path.clone(), bytes.as_slice()))

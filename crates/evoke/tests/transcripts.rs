@@ -360,7 +360,8 @@ fn remotes(flow: &Path, home: &Path, work: &Path) {
     if !remote.is_dir() {
         return;
     }
-    let mut gitconfig = String::new();
+    // The mirrors are local paths, a transport `evoke` itself never allows: the person's own configuration does.
+    let mut gitconfig = String::from("[protocol \"file\"]\n\tallow = always\n");
     for owner in sorted(&remote) {
         for repo in sorted(&owner) {
             let bare = work

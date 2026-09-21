@@ -187,6 +187,8 @@ name!(
         if s.is_empty() || s.split('/').any(|segment| segment.is_empty() || segment == ".") {
             return Err(format!("\"{s}\" is not a plain relative path"));
         }
+        // One clean line: a name a terminal shows as it is, and one `h1` lists without ambiguity.
+        crate::text::Clean::line(s).map_err(|why| format!("\"{s}\" {why}"))?;
         Ok(())
     }
 );

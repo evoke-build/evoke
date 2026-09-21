@@ -160,10 +160,8 @@ impl Using<'_> {
                         dismiss(warm);
                         return self.no_terminal(input, &line, "a confirm");
                     }
-                    if !json {
-                        terminal::note(&report::confirming(&chosen, &prompt));
-                    }
-                    match self.session.confirmed(&prompt, true) {
+                    let own = report::confirming(&chosen, &prompt);
+                    match self.session.confirmed(&own, &prompt, true) {
                         Ok(Some(Confirmed::Yes)) => break chosen,
                         Ok(Some(Confirmed::Teach)) => {
                             if let Err(exit) = self.teach(input, &chosen) {

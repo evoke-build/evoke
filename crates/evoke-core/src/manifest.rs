@@ -1158,6 +1158,13 @@ fn argv(d: &mut Diagnostics, node: Node, known: &Known) -> Option<Run> {
             );
             None
         }
+        None if text.contains('/') && !text.starts_with('/') => {
+            d.fail(
+                at,
+                format!("run's program \"{text}\" is a relative path; name one on PATH or by its absolute path"),
+            );
+            None
+        }
         None => literal(d, at, text),
     });
     let mut elements = Vec::new();

@@ -7,9 +7,10 @@ import type { Reflex } from "./reflex.d.ts"
 
 export default (async ({ text }, { config }) => {
   const file = expand(config.file)
+  const line = text.replace(/\s*\n\s*/g, " ")
   await mkdir(dirname(file), { recursive: true })
-  await appendFile(file, `${today()}  ${text}\n`)
-  return `noted "${text}" in ${shown(file)}`
+  await appendFile(file, `${today()}  ${line}\n`)
+  return `noted "${line}" in ${shown(file)}`
 }) satisfies Reflex
 
 /** The day as `2026-09-20`, local time. */

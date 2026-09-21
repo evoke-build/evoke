@@ -94,7 +94,7 @@ fn problem(exit: &Exit) -> Option<Diagnostic> {
 #[must_use]
 pub fn failure(failure: &Failure) -> String {
     match &failure.cause {
-        Some(cause) => format!("{}: {cause}", failure.what),
+        Some(cause) => format!("{}: {}", failure.what, plain(cause)),
         None => failure.what.clone(),
     }
 }
@@ -315,7 +315,7 @@ pub fn tried(decided: &Decided, route_floor: Option<evoke_core::Prob>) -> Text {
 /// `why`: the input, the block `try` shows, and what came of it.
 #[must_use]
 pub fn why(line: &Line) -> Text {
-    let mut lines = vec![Text::from(quoted(line.input.as_str()))];
+    let mut lines = vec![Text::from(plain(&quoted(line.input.as_str())))];
     lines.extend(
         block(
             line.reflex(),

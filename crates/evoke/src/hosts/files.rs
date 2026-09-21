@@ -111,13 +111,17 @@ pub fn read(path: &Path) -> Result<Option<String>, Failure> {
     }
 }
 
-/// A file written whole, its directory made first.
+/// A file written whole — beside its place, then moved in, so a crash mid-write leaves the old file whole — its
+/// directory made first.
 pub fn write(path: &Path, text: &str) -> Result<(), Failure> {
     if let Some(dir) = path.parent() {
         fs::create_dir_all(dir)
             .map_err(|error| failed(&format!("creating {}", dir.display()), &error))?;
     }
-    fs::write(path, text).map_err(|error| failed(&format!("writing {}", path.display()), &error))
+    let staged = path.with_extension(format!("{}.tmp", std::process::id()));
+    fs::write(&staged, text)
+        .and_then(|()| fs::rename(&staged, path))
+        .map_err(|error| failed(&format!("writing {}", path.display()), &error))
 }
 
 /// An owned file with an edit applied, not yet written: the caller re-parses `text` through the core, then writes.

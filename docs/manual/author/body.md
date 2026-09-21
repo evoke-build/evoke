@@ -64,8 +64,8 @@ Say what happened, in one lowercase line: `volume 40%`, `locked`, `saved report.
 run = ["networksetup", "-setairportpower", "en0", "{state}"]
 ```
 
-A program and its arguments, run directly — never through a shell. The first element is a literal, the program
-found on `PATH`. A placeholder is a whole element and names an `options`, `vocab` or `pick` argument; it is
+A program and its arguments, run directly — never through a shell. The first element is a literal, the program:
+a name found on `PATH`, or an absolute path, never a path relative to wherever `evoke` runs. A placeholder is a whole element and names an `options`, `vocab` or `pick` argument; it is
 replaced by the option key, the word's value or the word, or the pick's text. An element whose optional argument
 is unstated is dropped; a value that would start with `-` is refused. Config arrives as `EVOKE_CONFIG_<KEY>` and
 the input as `EVOKE_INPUT`; stdout is the result; a non-zero exit is failure. No runtime is needed.

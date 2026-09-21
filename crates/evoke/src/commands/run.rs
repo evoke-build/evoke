@@ -44,8 +44,8 @@ fn called(session: &mut Session<'_>, written: &Written) -> Exit {
                     fix: Fix::Rerun,
                 });
             }
-            terminal::note(&report::confirming(&chosen, &prompt));
-            match session.confirmed(&prompt, false) {
+            let own = report::confirming(&chosen, &prompt);
+            match session.confirmed(&own, &prompt, false) {
                 Ok(Some(Confirmed::No) | None) => {
                     dismiss(warm);
                     return Exit::Declined(Decline::Refused);

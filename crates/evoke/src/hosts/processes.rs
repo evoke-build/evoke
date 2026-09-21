@@ -295,7 +295,8 @@ fn scrubbed(program: &Path, environment: &Environment) -> Command {
 }
 
 /// Everything the child writes until it closes stdout, then its status; past the deadline and the loader's grace
-/// the group is ended and the wait is the failure.
+/// — for the output, and again for the exit, so a child that closes stdout and lingers is ended too — the group
+/// is ended and the wait is the failure.
 fn collect(
     mut stdout: ChildStdout,
     child: &mut Child,
@@ -309,7 +310,10 @@ fn collect(
     });
     match receiver.recv_timeout(deadline.remaining() + 2 * GRACE) {
         Ok(Ok(output)) => {
-            let status = child.wait().map_err(|error| format!("waiting: {error}"))?;
+            let Some(status) = exited(child, deadline.remaining() + 2 * GRACE) else {
+                end(child);
+                return Err("did not finish before the deadline".to_owned());
+            };
             Ok((String::from_utf8_lossy(&output).into_owned(), status))
         }
         Ok(Err(error)) => {
@@ -330,7 +334,7 @@ fn end(child: &mut Child) {
     unsafe {
         libc::killpg(group, libc::SIGTERM);
     }
-    if !gone(child, GRACE) {
+    if exited(child, GRACE).is_none() {
         unsafe {
             libc::killpg(group, libc::SIGKILL);
         }
@@ -338,14 +342,15 @@ fn end(child: &mut Child) {
     }
 }
 
-/// Whether the child exits within the duration, polled.
-fn gone(child: &mut Child, within: Duration) -> bool {
+/// The child's status when it exits within the duration, polled; none when it is still there.
+fn exited(child: &mut Child, within: Duration) -> Option<ExitStatus> {
     let until = Instant::now() + within;
     loop {
         match child.try_wait() {
-            Ok(Some(_)) | Err(_) => return true,
-            Ok(None) if Instant::now() >= until => return false,
+            Ok(Some(status)) => return Some(status),
+            Ok(None) if Instant::now() >= until => return None,
             Ok(None) => thread::sleep(Duration::from_millis(5)),
+            Err(_) => return None,
         }
     }
 }

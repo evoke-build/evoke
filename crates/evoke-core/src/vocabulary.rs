@@ -94,7 +94,7 @@ fn meaning(d: &mut Diagnostics, node: Node) -> Option<Meaning> {
                 None
             };
             let value = match table.take("value") {
-                Some(node) => Some(d.str(&node)?.to_owned()),
+                Some(node) => Some(d.line(&node)?.as_str().to_owned()),
                 None => None,
             };
             for (_, node) in table.entries() {

@@ -34,7 +34,8 @@ The manifest is the file's shape without `run` and `config`: a body closes over 
 inferred from the literal — an option key union, a word or a quoted pick as `string`, a number or a duration as
 `number`, a flag as `true`, an optional argument optional — so the body's `args` are typed with nothing generated.
 A manifest that does not read throws at `load`, since it is your own code, its problems ending in `reflex(<name>)`.
-The body runs in-process, under the deadline's `signal`.
+The body runs in-process: it is your application's code, unscrubbed, and nothing can end it from outside, so it
+honours the deadline's `signal`.
 
 ## Generated types
 

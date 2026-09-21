@@ -93,6 +93,8 @@ export async function child(
     env: scrubbed(),
     stdio: ["pipe", "pipe", "inherit"],
   })
+  // A loader gone before it read is reported by its exit, not by the pipe.
+  started.stdin?.on("error", () => {})
   started.stdin?.write(`${JSON.stringify(fed)}\n`)
   // Stdin stays open until the child is gone: a body's life is bounded by its parent's.
   const { output, code, timedOut, error } = await collected(started, envelope.deadline + 2 * GRACE, signal)

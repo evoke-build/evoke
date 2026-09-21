@@ -7,6 +7,7 @@
 use std::fmt::Write as _;
 use std::fs;
 use std::io::{self, Write};
+use std::os::unix::fs::OpenOptionsExt as _;
 use std::path::{Path, PathBuf};
 
 use evoke_core::{Baseline, Digest, Fix, Identity, Raw};
@@ -43,10 +44,10 @@ impl State {
         )
     }
 
-    /// The REPL's history file, its directory made: `$XDG_STATE_HOME/evoke/history`.
+    /// The REPL's history file, made readable by its owner alone: `$XDG_STATE_HOME/evoke/history`.
     pub fn history(&self) -> Result<PathBuf, Failure> {
         let path = self.state.join("history");
-        dir_of(&path)?;
+        own(&path)?.map_err(|error| failed(&format!("opening {}", path.display()), &error))?;
         Ok(path)
     }
 
@@ -121,14 +122,10 @@ impl State {
             .join(format!("{}.json", hex(plan)))
     }
 
-    /// One more line of the log.
+    /// One more line of the log, a file its owner alone reads: it holds what was typed and what a body returned.
     pub fn log(&self, line: &str) -> Result<(), Failure> {
         let path = self.state.join("log.jsonl");
-        dir_of(&path)?;
-        fs::OpenOptions::new()
-            .append(true)
-            .create(true)
-            .open(&path)
+        own(&path)?
             .and_then(|mut log| writeln!(log, "{line}"))
             .map_err(|error| failed(&format!("appending to {}", path.display()), &error))
     }
@@ -178,9 +175,23 @@ fn read(path: &Path) -> Result<Option<String>, Failure> {
     }
 }
 
+/// A file written whole — beside its place, then moved in — its directory made first.
 fn write(path: &Path, text: &str) -> Result<(), Failure> {
     dir_of(path)?;
-    fs::write(path, text).map_err(|error| failed(&format!("writing {}", path.display()), &error))
+    let staged = path.with_extension(format!("{}.tmp", std::process::id()));
+    fs::write(&staged, text)
+        .and_then(|()| fs::rename(&staged, path))
+        .map_err(|error| failed(&format!("writing {}", path.display()), &error))
+}
+
+/// A file of the person's own opened for appending, made mode 0600 when it is not there yet, its directory made.
+fn own(path: &Path) -> Result<io::Result<fs::File>, Failure> {
+    dir_of(path)?;
+    Ok(fs::OpenOptions::new()
+        .append(true)
+        .create(true)
+        .mode(0o600)
+        .open(path))
 }
 
 fn dir_of(path: &Path) -> Result<(), Failure> {

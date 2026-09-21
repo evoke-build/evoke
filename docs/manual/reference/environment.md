@@ -27,7 +27,8 @@
 | `$XDG_STATE_HOME/evoke/history`                  | The REPL's lines, the last 1 000                               | the REPL              |
 
 `$XDG_STATE_HOME` defaults to `~/.local/state`, `$XDG_CACHE_HOME` to `~/.cache`. Everything under cache can be
-deleted; `sync` and the next decision rebuild it. Nothing under either directory is a secret.
+deleted; `sync` and the next decision rebuild it. No key and no config value is ever written under either; the
+log and the history hold what you typed and what a body returned, and are readable by you alone.
 
 ## What a body sees
 

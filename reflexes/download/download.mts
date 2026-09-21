@@ -1,5 +1,6 @@
 // Download a URL into your downloads folder or the place named — a path, `~` allowed, a bare word under your home —
-// as the file the URL names, never over one already there; a download the deadline cuts short leaves nothing.
+// as the file the URL names — never a hidden one, never over one already there; a download the deadline cuts short
+// leaves nothing.
 import { open, rm, stat } from "node:fs/promises"
 import { homedir } from "node:os"
 import { join, resolve } from "node:path"
@@ -10,6 +11,7 @@ import type { Reflex } from "./reflex.d.ts"
 export default (async ({ url, to }, { signal }) => {
   const dir = to === undefined ? join(homedir(), "Downloads") : expand(to)
   const name = fileName(url)
+  if (name.startsWith(".")) throw new Error(`${name} would be a hidden file`)
   const path = join(dir, name)
   const response = await fetch(url, { signal })
   if (!response.ok) throw new Error(`${new URL(url).host} answered ${response.status}`)

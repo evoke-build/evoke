@@ -137,29 +137,8 @@ pub fn open<'a>(
         Store::of(environment).map_err(|failure| reporter.exit(&input, Exit::Failed(failure)))?;
     let snapshot =
         files::snapshot(&root).map_err(|failure| reporter.exit(&input, Exit::Failed(failure)))?;
-    if !root.home {
-        let blessed = state
-            .trust(&root.path)
-            .map_err(|failure| reporter.exit(&input, Exit::Failed(failure)))?;
-        let because = match blessed {
-            None => Some("is not trusted"),
-            Some(digest) if digest != files::digest_of(&snapshot) => {
-                Some("changed since you trusted it")
-            }
-            Some(_) => None,
-        };
-        if let Some(because) = because {
-            return Err(reporter.exit(
-                &input,
-                Exit::Human(Diagnostic {
-                    reflex: None,
-                    at: None,
-                    message: format!("{} {because}", reporter.paths.root),
-                    fix: Fix::Trust,
-                }),
-            ));
-        }
-    }
+    still_trusted(&state, &root, &snapshot, &reporter.paths.root)
+        .map_err(|exit| reporter.exit(&input, exit))?;
     let ground = Ground {
         root: &root,
         snapshot: &snapshot,
@@ -640,9 +619,7 @@ impl Session<'_> {
 
     /// The lock written whole, then trust re-blessed.
     pub fn write_lock(&self, lock: &Lock) -> Result<(), Exit> {
-        files::write(&self.root.path.join("evoke.lock"), &render_lock(lock))
-            .map_err(Exit::Failed)?;
-        self.rebless()
+        self.write_owned(&self.root.path.join("evoke.lock"), &render_lock(lock))
     }
 
     /// `evoke.d.ts` rendered whole from the installed set, silently, after every write that changes the set; it
@@ -655,11 +632,21 @@ impl Session<'_> {
         .map_err(Exit::Failed)
     }
 
-    /// Outside home, the trust entry refreshed to what the owned files now say — never made.
-    fn rebless(&self) -> Result<(), Exit> {
+    /// An owned file written — outside home, only while the root is still what was blessed, so a change made
+    /// beside a running session is a stop and never adopted — then the trust entry refreshed to what the owned
+    /// files now say, never made.
+    fn write_owned(&self, path: &Path, text: &str) -> Result<(), Exit> {
         if self.root.home {
-            return Ok(());
+            return files::write(path, text).map_err(Exit::Failed);
         }
+        let snapshot = files::snapshot(&self.root).map_err(Exit::Failed)?;
+        still_trusted(
+            &self.state,
+            &self.root,
+            &snapshot,
+            &self.reporter.paths.root,
+        )?;
+        files::write(path, text).map_err(Exit::Failed)?;
         let snapshot = files::snapshot(&self.root).map_err(Exit::Failed)?;
         self.state
             .rebless(&self.root.path, &files::digest_of(&snapshot))
@@ -788,8 +775,7 @@ impl Session<'_> {
             }
         };
         read.map_err(|problems| self.reporter.human(input, problems))?;
-        files::write(&edited.path, &edited.text).map_err(Exit::Failed)?;
-        self.rebless()?;
+        self.write_owned(&edited.path, &edited.text)?;
         Ok(edited)
     }
 
@@ -861,23 +847,44 @@ impl Session<'_> {
 
     /// The text shown on the terminal and what was typed; none at the end of input.
     pub fn prompt(&mut self, text: &str) -> Result<Option<String>, Exit> {
-        if !self.has_tty() {
-            return Err(Exit::Failed(Failure {
-                what: "opening the terminal".to_owned(),
-                cause: None,
-                fix: Fix::Rerun,
-            }));
-        }
+        self.prompt_ready()?;
         let tty = self.tty.as_mut().expect("the terminal is open");
         tty.prompt(text).map_err(Exit::Failed)
     }
 
-    /// The confirm prompt until `y`, `n` or — where a lesson can be taught — `t`; none at the end of input.
+    /// A prompt needs the terminal; without one the run has failed.
+    fn prompt_ready(&mut self) -> Result<(), Exit> {
+        if self.has_tty() {
+            return Ok(());
+        }
+        Err(Exit::Failed(Failure {
+            what: "opening the terminal".to_owned(),
+            cause: None,
+            fix: Fix::Rerun,
+        }))
+    }
+
+    /// One of `evoke`'s own lines, shown on the terminal itself ahead of a prompt.
+    fn show(&mut self, line: &terminal::Text) -> Result<(), Exit> {
+        self.prompt_ready()?;
+        let tty = self.tty.as_mut().expect("the terminal is open");
+        tty.show(&line.to_string()).map_err(Exit::Failed)
+    }
+
+    /// `evoke`'s own line — the call, the effect, the weakest judgment — then the confirm prompt until `y`, `n`
+    /// or, where a lesson can be taught, `t`; none at the end of input. Under `--json` stderr keeps quiet, so the
+    /// line goes to the terminal itself: a template is never shown without it ahead.
     pub fn confirmed(
         &mut self,
+        own: &terminal::Text,
         prompt: &Prompt,
         teachable: bool,
     ) -> Result<Option<Confirmed>, Exit> {
+        if self.reporter.json {
+            self.show(own)?;
+        } else {
+            terminal::note(own);
+        }
         loop {
             let Some(typed) = self.prompt(&report::confirm_prompt(prompt, teachable))? else {
                 return Ok(None);
@@ -890,6 +897,25 @@ impl Session<'_> {
             }
         }
     }
+}
+
+/// Outside home, whether the root is what was blessed: not trusted, or changed since, is a stop with `evoke trust`
+/// as the fix. `shown` is the root as the report prints it.
+fn still_trusted(state: &State, root: &Root, snapshot: &Snapshot, shown: &str) -> Result<(), Exit> {
+    if root.home {
+        return Ok(());
+    }
+    let because = match state.trust(&root.path).map_err(Exit::Failed)? {
+        None => "is not trusted",
+        Some(digest) if digest != files::digest_of(snapshot) => "changed since you trusted it",
+        Some(_) => return Ok(()),
+    };
+    Err(Exit::Human(Diagnostic {
+        reflex: None,
+        at: None,
+        message: format!("{shown} {because}"),
+        fix: Fix::Trust,
+    }))
 }
 
 /// A loader that has nothing to run.

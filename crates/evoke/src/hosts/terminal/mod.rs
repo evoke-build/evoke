@@ -114,6 +114,15 @@ pub fn tty() -> Option<Tty> {
 }
 
 impl Tty {
+    /// Shows one line on the terminal, ahead of a prompt.
+    pub fn show(&mut self, line: &str) -> Result<(), Failure> {
+        self.writer
+            .write_all(line.as_bytes())
+            .and_then(|()| self.writer.write_all(b"\n"))
+            .and_then(|()| self.writer.flush())
+            .map_err(|error| failed("showing the prompt", &error.to_string()))
+    }
+
     /// Shows the text and reads what was typed, without its line end; none at the end of input.
     pub fn prompt(&mut self, text: &str) -> Result<Option<String>, Failure> {
         let asked = self

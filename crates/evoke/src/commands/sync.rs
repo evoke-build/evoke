@@ -9,8 +9,8 @@ use evoke_core::project::Location;
 use super::session::{self, Opening, Session};
 use super::{Exit, about};
 use crate::args::Command;
-use crate::hosts::git;
 use crate::hosts::{Environment, terminal};
+use crate::hosts::{git, store};
 use crate::report::{self, Gutter};
 
 pub fn run(command: &Command, environment: &Environment) -> Exit {
@@ -103,9 +103,9 @@ fn realise(session: &Session<'_>, name: &LocalName, location: &Location) -> Resu
     else {
         return Err(moved("has no reflex.toml"));
     };
-    let kept = session.store.keep(tree.files).map_err(Exit::Failed)?;
-    if kept.h1 != locked.h1 {
+    if store::hashed(&tree.files) != locked.h1 {
         return Err(moved("does not hash to the lock"));
     }
+    session.store.keep(tree.files).map_err(Exit::Failed)?;
     Ok(true)
 }

@@ -7,9 +7,10 @@
 //! author's development project beside a root reflex never ships.
 
 use std::io;
+use std::os::unix::fs::DirBuilderExt as _;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::sync::atomic::{AtomicU32, Ordering};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use evoke_core::Version;
 use evoke_core::name::RelPath;
@@ -17,14 +18,18 @@ use evoke_core::project::{Commit, Reference, Repo};
 
 use super::{Failure, failed};
 
-/// What git may speak: the ref grammar allows https and ssh; file serves a local mirror reached through
-/// `url.<path>.insteadOf`, as the spec's remotes are.
-const PROTOCOLS: [&str; 4] = [
+/// What every git call is told: only https and ssh are spoken — a local mirror reached through
+/// `url.<path>.insteadOf` needs `protocol.file.allow` in the person's own configuration — and no hook runs from
+/// any repository git touches.
+const CONFIG: [&str; 4] = [
     "protocol.allow=never",
     "protocol.https.allow=always",
     "protocol.ssh.allow=always",
-    "protocol.file.allow=always",
+    "core.hooksPath=/dev/null",
 ];
+
+/// The one local transport: a repository on this machine, read by `check`.
+const LOCAL: [&str; 2] = ["-c", "protocol.file.allow=always"];
 
 /// The project's own names, skipped inside a reflex directory by fetch and so by `h1`.
 const OWNED: [&str; 5] = [
@@ -105,17 +110,16 @@ pub fn repository(dir: &Path) -> Result<Option<Repository>, Failure> {
 /// The version tags of a repository on this machine, oldest first.
 pub fn local_tags(repository: &Repository) -> Result<Vec<Tag>, Failure> {
     let what = format!("listing the tags of {}", repository.git_dir.display());
-    let listing = text(
-        None,
-        &[
-            "ls-remote",
-            "--tags",
-            "--refs",
-            "--end-of-options",
-            &repository.git_dir.display().to_string(),
-        ],
-        &what,
-    )?;
+    let git_dir = repository.git_dir.display().to_string();
+    let mut args = LOCAL.to_vec();
+    args.extend([
+        "ls-remote",
+        "--tags",
+        "--refs",
+        "--end-of-options",
+        &git_dir,
+    ]);
+    let listing = text(None, &args, &what)?;
     Ok(versions(&listing))
 }
 
@@ -345,8 +349,8 @@ fn bytes(dir: Option<&Path>, args: &[&str], what: &str) -> Result<Vec<u8>, Failu
     if let Some(dir) = dir {
         command.arg("--git-dir").arg(dir);
     }
-    for protocol in PROTOCOLS {
-        command.arg("-c").arg(protocol);
+    for setting in CONFIG {
+        command.arg("-c").arg(setting);
     }
     command
         .args(args)
@@ -371,23 +375,37 @@ fn last_line(stderr: &str) -> &str {
         .map_or("git failed", str::trim)
 }
 
-/// A scratch repository under the temporary directory, removed when the fetch is over.
+/// A scratch repository under the temporary directory, removed when the fetch is over. Made exclusively, mode
+/// 0700, under a name no one could have placed first: a directory already there — anyone's, in a shared `/tmp` —
+/// is never entered, since git would read its configuration and hooks.
 struct Scratch {
     path: PathBuf,
 }
 
-static FETCHES: AtomicU32 = AtomicU32::new(0);
-
 impl Scratch {
     fn new(what: &str) -> Result<Self, Failure> {
-        let path = std::env::temp_dir().join(format!(
-            "evoke-fetch-{}-{}",
-            std::process::id(),
-            FETCHES.fetch_add(1, Ordering::Relaxed)
-        ));
-        std::fs::create_dir_all(&path)
-            .map_err(|error| failed(what, &format!("creating {}: {error}", path.display())))?;
-        Ok(Self { path })
+        let temp = std::env::temp_dir();
+        let pid = std::process::id();
+        for _ in 0..64 {
+            let nanos = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .map_or(0, |since| since.subsec_nanos());
+            let path = temp.join(format!("evoke-fetch-{pid}-{nanos:09}"));
+            match std::fs::DirBuilder::new().mode(0o700).create(&path) {
+                Ok(()) => return Ok(Self { path }),
+                Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {}
+                Err(error) => {
+                    return Err(failed(
+                        what,
+                        &format!("creating {}: {error}", path.display()),
+                    ));
+                }
+            }
+        }
+        Err(failed(
+            what,
+            &format!("no free scratch directory under {}", temp.display()),
+        ))
     }
 }
 
