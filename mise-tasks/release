@@ -13,7 +13,7 @@ git rev-parse -q --verify "refs/tags/v$version" >/dev/null && fail "v$version is
 mise run changelog --cut "$version"
 sed -i.bak "s/^\(version *= *\)\"[^\"]*\"/\1\"$version\"/" Cargo.toml && rm Cargo.toml.bak
 cargo update --workspace --offline --quiet
-(cd sdk && npm version "$version" --no-git-tag-version >/dev/null)
+(cd sdk && npm version "$version" --allow-same-version --no-git-tag-version >/dev/null)
 
 git add CHANGELOG.md Cargo.toml Cargo.lock sdk/package.json sdk/package-lock.json
 git commit --quiet --message "chore: release $version"

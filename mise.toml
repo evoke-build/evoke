@@ -6,13 +6,13 @@ lockfile = true
 
 # Exact versions only: bin/dx mise use --pin <tool>@<version>
 [tools]
-cargo-deny             = "0.20.2"
-node                   = "24.20.0"
-python                 = "3.14.7"
-rust                   = { version = "1.98.1", components = ["rustfmt", "clippy"], targets = ["wasm32-unknown-unknown"] }
-shellcheck             = "0.11.0"
-taplo                  = "0.10.0"
-"ubi:rust-lang/mdBook" = { version = "0.5.4", exe = "mdbook" }
+cargo-deny                = "0.20.2"
+"github:rust-lang/mdBook" = { version = "0.5.4", exe = "mdbook" }
+node                      = "24.20.0"
+python                    = "3.14.7"
+rust                      = { version = "1.98.1", components = ["rustfmt", "clippy"], targets = ["wasm32-unknown-unknown"] }
+shellcheck                = "0.11.0"
+taplo                     = "0.10.0"
 
 [tasks.lint]
 depends = ["sdk", "reflexes"]

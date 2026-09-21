@@ -42,6 +42,46 @@ checksum = "sha256:975a22143262fd27476d19ee00c7af67978426e40e1dee94eed6bbade1cf8
 url = "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.20.2/cargo-deny-0.20.2-x86_64-pc-windows-msvc.tar.gz"
 url_api = "https://api.github.com/repos/EmbarkStudios/cargo-deny/releases/assets/471599057"
 
+[[tools."github:rust-lang/mdBook"]]
+version = "0.5.4"
+backend = "github:rust-lang/mdBook"
+specifiers = ["0.5.4"]
+
+[tools."github:rust-lang/mdBook"."platforms.linux-arm64"]
+checksum = "sha256:753e5c5c363ee8a56972344dcf91466f005a51db84a7aeffe427ae3ef83d6d44"
+url = "https://github.com/rust-lang/mdBook/releases/download/v0.5.4/mdbook-v0.5.4-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/rust-lang/mdBook/releases/assets/468210015"
+
+[tools."github:rust-lang/mdBook"."platforms.linux-arm64-musl"]
+checksum = "sha256:753e5c5c363ee8a56972344dcf91466f005a51db84a7aeffe427ae3ef83d6d44"
+url = "https://github.com/rust-lang/mdBook/releases/download/v0.5.4/mdbook-v0.5.4-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/rust-lang/mdBook/releases/assets/468210015"
+
+[tools."github:rust-lang/mdBook"."platforms.linux-x64"]
+checksum = "sha256:3f28de05dafca9d0f2eab99c662116b0e37b89b1d96a08f8f430b9eeae958cd7"
+url = "https://github.com/rust-lang/mdBook/releases/download/v0.5.4/mdbook-v0.5.4-x86_64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/rust-lang/mdBook/releases/assets/468209394"
+
+[tools."github:rust-lang/mdBook"."platforms.linux-x64-musl"]
+checksum = "sha256:5222beabd3e37dc5be0d18ff99b79058469354db5c220153a1b92db5ba12be89"
+url = "https://github.com/rust-lang/mdBook/releases/download/v0.5.4/mdbook-v0.5.4-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/rust-lang/mdBook/releases/assets/468209670"
+
+[tools."github:rust-lang/mdBook"."platforms.macos-arm64"]
+checksum = "sha256:03e8a6d8b13a2971e0b3280affd03b388373c1485e26f73407c3a76b0b1838df"
+url = "https://github.com/rust-lang/mdBook/releases/download/v0.5.4/mdbook-v0.5.4-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/rust-lang/mdBook/releases/assets/468209418"
+
+[tools."github:rust-lang/mdBook"."platforms.macos-x64"]
+checksum = "sha256:a47d7bf0d5d670cff9ee6cce95537cbeb62dc10704d9e7131ffbd13e2b59a5de"
+url = "https://github.com/rust-lang/mdBook/releases/download/v0.5.4/mdbook-v0.5.4-x86_64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/rust-lang/mdBook/releases/assets/468210169"
+
+[tools."github:rust-lang/mdBook"."platforms.windows-x64"]
+checksum = "sha256:8a6b2421aa522de06d746871d2b8fff9c8d71773467e310a4516d2566e7f2de4"
+url = "https://github.com/rust-lang/mdBook/releases/download/v0.5.4/mdbook-v0.5.4-x86_64-pc-windows-msvc.zip"
+url_api = "https://api.github.com/repos/rust-lang/mdBook/releases/assets/468210971"
+
 [[tools.node]]
 version = "24.20.0"
 backend = "core:node"
@@ -201,14 +241,3 @@ url_api = "https://api.github.com/repos/tamasfe/taplo/releases/assets/257323116"
 [tools.taplo."platforms.windows-x64"]
 url = "https://github.com/tamasfe/taplo/releases/download/0.10.0/taplo-windows-x86_64.zip"
 url_api = "https://api.github.com/repos/tamasfe/taplo/releases/assets/257323062"
-
-[[tools."ubi:rust-lang/mdBook"]]
-version = "0.5.4"
-backend = "ubi:rust-lang/mdBook"
-specifiers = ["0.5.4"]
-
-[tools."ubi:rust-lang/mdBook".options]
-exe = "mdbook"
-
-[tools."ubi:rust-lang/mdBook"."platforms.linux-arm64-mdbook-mdbook"]
-checksum = "blake3:6d9f6e08d50c3bc6aab297c780c8fa709f43aafdeb672dfa98fdcbb19148fcee"
