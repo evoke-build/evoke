@@ -165,6 +165,8 @@
     ::selection { background: color-mix(in srgb, var(--accent) 32%, transparent); }
     :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
     .wrap { max-width: 76rem; margin: 0 auto; padding: 0 1.5rem; }
+    /* A grid or flex item never widens its track: what is wider than the track scrolls inside its own box. */
+    .hero > *, .showcase .grid > *, .showcase .side > *, .split > *, .stack > *, .sheet > *, .install > *, .cta > .cmd { min-width: 0; }
     [id] { scroll-margin-top: 4.5rem; }
 
     /* The bar */
@@ -303,8 +305,8 @@
     /* The showcase: a manifest and a terminal */
     .showcase { position: relative; margin-top: 5.5rem; }
     .showcase::before {
-      content: ""; position: absolute; inset: -4rem -10% -3rem; z-index: -1; pointer-events: none;
-      background: radial-gradient(60% 55% at 28% 18%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
+      content: ""; position: absolute; inset: -4rem 0 -3rem; z-index: -1; pointer-events: none;
+      background: radial-gradient(42% 55% at 30% 18%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
     }
     .showcase .grid { display: grid; grid-template-columns: 1.12fr 1fr; gap: 1.1rem; align-items: start; }
     .showcase .panel pre { font-size: .8rem; padding: 1rem 1.1rem; }
