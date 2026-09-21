@@ -21,10 +21,11 @@ curl -fsSL https://evoke.build/install.sh | sh    # the CLI, on macOS and Linux
 npm install @evoke-build/evoke                    # the SDK
 ```
 
-Start with the [manual](docs/manual/README.md), also at [evoke.build](https://evoke.build).
-[Install](docs/manual/start/install.md), then [the first ten minutes](docs/manual/start/first-run.md).
-Then [write a reflex](docs/manual/author/first-reflex.md), or
-[put decisions in your app](docs/manual/sdk/getting-started.md).
+Start with the [manual](https://evoke.build/manual/) at [evoke.build](https://evoke.build).
+[Install](https://evoke.build/manual/start/install.html), then
+[the first ten minutes](https://evoke.build/manual/start/first-run.html). Then
+[write a reflex](https://evoke.build/manual/author/first-reflex.html), or
+[put decisions in your app](https://evoke.build/manual/sdk/getting-started.html).
 
 ## Repository
 
@@ -34,8 +35,8 @@ Then [write a reflex](docs/manual/author/first-reflex.md), or
 | [sdk/](sdk/README.md)                 | `@evoke-build/evoke`: TypeScript over the same core, compiled to WebAssembly                        |
 | [spec/](spec/README.md)               | The executable spec — schemas, golden vectors, transcripts — and the tests of both hosts            |
 | [reflexes/](reflexes/README.md)       | The first-party collection, published as `evoke-build/reflexes`                                     |
-| [docs/manual/](docs/manual/README.md) | The manual                                                                                          |
-| [site/](site/install.sh)              | evoke.build: the landing page, the install script, and the manual rendered by mdBook                |
+| [docs/manual/](https://evoke.build/manual/) | The manual, as published at evoke.build                                                       |
+| [site/](https://evoke.build)          | evoke.build: the landing page, the install script, and the manual rendered by mdBook                |
 
 ## Developing
 

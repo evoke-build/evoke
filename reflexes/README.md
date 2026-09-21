@@ -1,6 +1,6 @@
 # evoke-build/reflexes
 
-The first-party reflexes for [evoke](https://github.com/evoke-build/evoke): what a Mac does at a word. The word
+The first-party reflexes for [evoke](https://evoke.build): what a Mac does at a word. The word
 is decided by [Jev](https://typesafe.ai), TypeSafe AI's classifier. Each reflex is one directory, with
 `reflex.toml` and the file it runs, where it runs one. There is nothing to build, and nothing to install but
 `evoke` itself.
@@ -40,6 +40,7 @@ evoke config note file ~/notes.txt
 ## Writing one
 
 `evoke new <name>` writes a working reflex to start from. `evoke check` reads the manifest, loads the body, and
-writes `reflex.d.ts`, the one file a body imports. Here, `npm ci` then `npm run check` and `npm test` type-check
-every body and run the tests. Licence: [MIT](LICENSE). Issues and changes:
+writes `reflex.d.ts`, the one file a body imports. The whole craft is in
+[the manual](https://evoke.build/manual/author/first-reflex.html). Here, `npm ci` then `npm run check` and
+`npm test` type-check every body and run the tests. Licence: [MIT](LICENSE). Issues and changes:
 [evoke-build/evoke](https://github.com/evoke-build/evoke).

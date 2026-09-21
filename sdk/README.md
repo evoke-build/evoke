@@ -6,7 +6,8 @@ loads a project of reflexes, decides what an input asks for, and runs it. The cl
 probabilities. The rules run in `core.wasm`, the same core as the `evoke` CLI. The SDK adds files, the network
 and a process.
 
-Six things to learn, in order: `reflex()` · `load()` · `handle()` · a `Decision` · `run()` · `replay()`.
+Six things to learn, in order: `reflex()` · `load()` · `handle()` · a `Decision` · `run()` · `replay()`. Each is
+explained in full in [the manual](https://evoke.build/manual/sdk/getting-started.html).
 
 ## The first hour
 
