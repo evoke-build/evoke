@@ -172,8 +172,8 @@
     /* The bar */
     header.top {
       position: sticky; top: 0; z-index: 2;
-      background: color-mix(in srgb, var(--bg) 86%, transparent);
-      -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+      background: color-mix(in srgb, var(--bg) 70%, transparent);
+      -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
       border-bottom: 1px solid var(--line);
     }
     header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 3.5rem; }
@@ -209,17 +209,7 @@
     .cmd button.done { color: var(--accent-ink); border-color: var(--accent-ink); }
 
     /* The hero: the words, and a lamp that listens */
-    .hero { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 3.5rem; align-items: center; padding: 4.5rem 0 0; }
-    /* The lamp's light on the page: a glow behind it that follows its state, and fades at its own edges. */
-    .hero::before {
-      content: ""; position: absolute; inset: -3rem 0 -4rem; z-index: -1; pointer-events: none;
-      background: radial-gradient(40% 55% at 72% 48%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
-      -webkit-mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
-      mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
-      opacity: 0; transition: opacity 1.2s ease;
-    }
-    .hero:has(.demo[data-state="on"])::before { opacity: 1; }
-    .hero:has(.demo[data-state="dim"])::before { opacity: .4; }
+    .hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 3.5rem; align-items: center; padding: 4.5rem 0 0; }
     .hero h1 { font-size: clamp(2.8rem, 5.6vw, 4.4rem); font-weight: 700; letter-spacing: -0.04em; line-height: .98; margin: 0 0 1.3rem; }
     .hero h1 em { font-style: normal; color: var(--accent); }
     .hero .lede { font-size: 1.22rem; line-height: 1.5; color: var(--muted); max-width: 34rem; margin: 0 0 1.9rem; }
@@ -306,6 +296,20 @@
     .demo .own b { color: var(--term-in); font-weight: 600; }
     .demo .own i { font-style: normal; color: var(--term-ok); }
 
+    /* Glows: a soft spotlight behind a section, masked at its own edges so it never shows a band. The hero's is
+       the lamp's light, and follows it: full when the lights are on, low when dim, dark when off. */
+    .hero, .showcase, .work { position: relative; }
+    .hero::before, .showcase::before, .work::before {
+      content: ""; position: absolute; inset: -4rem 0 -3rem; z-index: -1; pointer-events: none;
+      background: radial-gradient(42% 52% at var(--glow-x, 30%) var(--glow-y, 32%), color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
+      mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
+    }
+    .hero::before { --glow-x: 72%; --glow-y: 48%; inset: -3rem 0 -4rem; opacity: 0; transition: opacity 1.2s ease; }
+    .hero:has(.demo[data-state="on"])::before { opacity: 1; }
+    .hero:has(.demo[data-state="dim"])::before { opacity: .4; }
+    .work::before { --glow-y: 28%; }
+
     /* Section furniture */
     section { padding: 5rem 0 0; }
     .rule { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 1.1rem; margin: 0 0 1.25rem; }
@@ -320,13 +324,7 @@
     a.more { font-size: .95rem; font-weight: 560; }
 
     /* The showcase: a manifest and a terminal */
-    .showcase { position: relative; margin-top: 5.5rem; }
-    .showcase::before {
-      content: ""; position: absolute; inset: -4rem 0 -3rem; z-index: -1; pointer-events: none;
-      background: radial-gradient(42% 50% at 30% 32%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
-      -webkit-mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
-      mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
-    }
+    .showcase { margin-top: 5.5rem; }
     .showcase .grid { display: grid; grid-template-columns: 1.12fr 1fr; gap: 1.1rem; align-items: start; }
     .showcase .panel pre { font-size: .8rem; padding: 1rem 1.1rem; }
     .showcase .panel.term pre { font-size: .78rem; padding-left: 1rem; padding-right: 1rem; }
