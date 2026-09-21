@@ -283,9 +283,14 @@
     .demo[data-state="on"] .bulb { fill: var(--lamp); filter: drop-shadow(0 0 9px rgba(255, 213, 142, .95)); }
     .demo[data-state="dim"] .bulb { fill: #c69c5c; filter: drop-shadow(0 0 4px rgba(255, 213, 142, .55)); }
     .demo .floor { stroke: #1c1c21; stroke-width: 1; }
-    .demo .strip { padding: .9rem 1.15rem 1rem; font: .8rem/1.75 var(--mono); border-top: 1px solid rgba(255, 255, 255, .07); }
+    .demo .head .trail { margin-left: auto; display: flex; gap: .95rem; font-size: .66rem; letter-spacing: .07em; text-transform: uppercase; }
+    .demo .head .trail b { font-weight: 500; color: var(--term-dim); opacity: .55; transition: color .35s ease, opacity .35s ease; }
+    .demo .head .trail b.on { color: var(--accent); opacity: 1; }
+    .demo .strip { height: calc(5 * 1.75em + 1.9rem); padding: .9rem 1.15rem 1rem; font: .8rem/1.75 var(--mono); border-top: 1px solid rgba(255, 255, 255, .07); overflow: hidden; }
     .demo .line { display: block; min-height: 1.75em; white-space: pre-wrap; overflow-wrap: anywhere; opacity: 0; transition: opacity .3s ease; }
     .demo .line.show { opacity: 1; }
+    .demo .strip.clear .line { opacity: 0; transition-duration: .2s; }
+    .demo .add { color: var(--term-ok); }
     .demo .own b { color: var(--term-in); font-weight: 600; }
     .demo .own i { font-style: normal; color: var(--term-ok); }
 
@@ -386,6 +391,7 @@
       .cta .cmd { max-width: none; }
       .cta .cmd code { white-space: normal; overflow-wrap: anywhere; line-height: 1.45; }
       .demo .room { height: 12.5rem; }
+      .demo .strip { height: calc(6 * 1.75em + 1.9rem); }
     }
   </style>
 </head>
@@ -418,7 +424,7 @@
         <p class="kinds">a CLI · a package manager · a TypeScript SDK</p>
       </div>
       <div class="panel term demo" data-state="off" aria-label="A lamp answering three sentences">
-        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>install</b><b>your words</b><b>say it</b></span></div>
         <div class="room">
           <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
             <defs>
@@ -442,9 +448,9 @@
           </svg>
         </div>
         <div class="strip" aria-live="off">
-          <span class="line say"></span>
-          <span class="line own"></span>
-          <span class="line out"></span>
+          <span class="line say show"><span class="p">$</span> <span class="in">evoke "lights on in the den"</span></span>
+          <span class="line own show">  <b>lights</b> room="den" state="on"  <i>0.91</i></span>
+          <span class="line out show">den lights on</span>
         </div>
       </div>
     </div>
@@ -720,42 +726,68 @@ Ceiling and lamp lights only."""</span>
       })
     }
 
-    // The lamp: three sentences, decided and run, on a loop.
+    // The lamp: install the reflex, give it your words, then say it; three sentences decided and run, on a loop.
     {
       const demo = document.querySelector(".demo")
-      const [say, own, out] = demo.querySelectorAll(".line")
-      const steps = [
-        ["lights on in the den", 'room="den" state="on"', "0.91", "den lights on", "on"],
-        ["dim the den to 30 percent", 'room="den" state="dim" brightness="30 percent"', "0.88", "den lights dim 30%", "dim"],
-        ["kill the lights in the den", 'room="den" state="off"', "0.85", "den lights off", "off"],
-      ]
+      const strip = demo.querySelector(".strip")
+      const trail = demo.querySelectorAll(".trail b")
       const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
-      const text = (el, html) => { el.innerHTML = html; el.classList.add("show") }
-      const clear = el => { el.classList.remove("show") }
-      const prompt = typed => `<span class="p">$</span> <span class="in">evoke "${typed}</span>`
-      const decided = (call, p) => `  <b>lights</b> ${call}  <i>${p}</i>`
+      const line = (cls, text) => { const s = document.createElement("span"); s.className = "line " + cls; if (text !== undefined) s.textContent = text; return s }
+      const decided = (call, p) => {
+        const s = line("own"), b = document.createElement("b"), i = document.createElement("i")
+        b.textContent = "lights"; i.textContent = p
+        s.append("  ", b, " " + call + "  ", i)
+        return s
+      }
+      const prompt = (text, cursor) => {
+        const s = line("say"), p = document.createElement("span"), input = document.createElement("span")
+        p.className = "p"; p.textContent = "$"; input.className = "in"; input.textContent = text
+        s.append(p, " ", input)
+        if (cursor) { const c = document.createElement("span"); c.className = "cursor"; s.append(c) }
+        return s
+      }
+      const show = s => { strip.append(s); strip.scrollTop = strip.scrollHeight; requestAnimationFrame(() => s.classList.add("show")); return s }
+      const scenes = [
+        { step: 0, say: "evoke add radhi/home/lights", busy: "fetching radhi/home/lights", hold: 3400, lines: [
+          () => line("add", "+ lights  radhi/home/lights 1.2.0  write  runs lights.mts"),
+          () => line("own", '  inactive  lights: vocabulary "rooms" is empty  →  evoke vocab rooms add <word> "<meaning>"'),
+        ] },
+        { step: 1, say: 'evoke vocab rooms add den "The TV room downstairs."', busy: null, hold: 2600, lines: [
+          () => line("add", '+ vocab/rooms.toml  den = "The TV room downstairs."'),
+        ] },
+        { step: 2, say: 'evoke "lights on in the den"', busy: "", hold: 2700, state: "on", lines: [
+          () => decided('room="den" state="on"', "0.91"), () => line("out", "den lights on"),
+        ] },
+        { step: 2, say: 'evoke "dim the den to 30 percent"', busy: "", hold: 2700, state: "dim", lines: [
+          () => decided('room="den" state="dim" brightness="30 percent"', "0.88"), () => line("out", "den lights dim 30%"),
+        ] },
+        { step: 2, say: 'evoke "kill the lights in the den"', busy: "", hold: 3200, state: "off", lines: [
+          () => decided('room="den" state="off"', "0.85"), () => line("out", "den lights off"),
+        ] },
+      ]
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        const [said, call, p, result, state] = steps[0]
-        text(say, prompt(said) + '<span class="in">"</span>'); text(own, decided(call, p)); text(out, result)
-        demo.dataset.state = state
+        trail[2].classList.add("on")
+        demo.dataset.state = "on"
       } else {
         const spinner = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
         const run = async () => {
-          for (;;) for (const [said, call, p, result, state] of steps) {
+          for (;;) for (const scene of scenes) {
             if (document.hidden) await new Promise(resolve => document.addEventListener("visibilitychange", resolve, { once: true }))
-            clear(say); clear(own); clear(out)
-            await wait(500)
-            let typed = ""
-            for (const ch of said) { typed += ch; text(say, prompt(typed) + '<span class="cursor"></span>'); await wait(34 + Math.random() * 42) }
-            await wait(180)
-            text(say, prompt(said) + '<span class="in">"</span>')
-            await wait(260)
-            for (let i = 0; i < 10; i++) { text(own, `  ${spinner[i]}`); await wait(60) }
-            text(own, decided(call, p))
+            trail.forEach((b, i) => b.classList.toggle("on", i === scene.step))
+            strip.classList.add("clear"); await wait(240); strip.replaceChildren(); strip.classList.remove("clear")
             await wait(420)
-            demo.dataset.state = state
-            text(out, result)
-            await wait(2800)
+            const typed = show(prompt("", true)), input = typed.querySelector(".in")
+            let text = ""
+            for (const ch of scene.say) { text += ch; input.textContent = text; await wait(30 + Math.random() * 40) }
+            await wait(220); typed.querySelector(".cursor").remove()
+            if (scene.busy !== null) {
+              const busy = show(line("own"))
+              for (let i = 0; i < 10; i++) { busy.textContent = "  " + spinner[i] + (scene.busy ? " " + scene.busy : ""); await wait(65) }
+              busy.remove()
+            }
+            for (const make of scene.lines) { show(make()); await wait(170) }
+            if (scene.state) demo.dataset.state = scene.state
+            await wait(scene.hold)
           }
         }
         run()
