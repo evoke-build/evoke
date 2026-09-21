@@ -550,82 +550,8 @@
       </div>
     </div>
 
-    <div class="showcase" id="reflex">
-      <div class="rule"><p class="label">A reflex</p><span class="num">01</span></div>
-      <h2>The manifest is the recipe.</h2>
-      <p class="sub">One readable file defines the decision: what it does, what it is not for, what to ask, and what
-        to run. Jev reads it, and nothing else.</p>
-      <div class="grid">
-        <div class="panel">
-          <div class="head"><i></i>lights/reflex.toml<span class="who">the author's</span></div>
-<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
-
-<span class="k">description</span> <span class="o">=</span> <span class="s">"""
-Turn the lights in one room on, off, or dim them.
-Ceiling and lamp lights only."""</span>
-<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span>
-  <span class="s">"colour scenes and schedules"</span><span class="o">,</span>
-  <span class="s">"asking whether a light is on"</span><span class="o">,</span>
-<span class="o">]</span>
-<span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
-<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Set the <span class="ph">{room}</span> lights <span class="ph">{state}</span>?"</span>
-<span class="k">run</span>     <span class="o">=</span> <span class="s">"lights.mts"</span>
-
-<span class="t">[args.room]</span>        <span class="c"># the options are the user's words</span>
-<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which room?"</span>
-<span class="k">vocab</span> <span class="o">=</span> <span class="s">"rooms"</span>
-
-<span class="t">[args.state]</span>       <span class="c"># the options are the author's</span>
-<span class="k">ask</span>         <span class="o">=</span> <span class="s">"What should the lights do?"</span>
-<span class="k">options.on</span>  <span class="o">=</span> <span class="s">"Switch on."</span>
-<span class="k">options.off</span> <span class="o">=</span> <span class="s">"Switch off."</span>
-<span class="k">options.dim</span> <span class="o">=</span> <span class="s">"Lower the brightness without switching off."</span>
-
-<span class="t">[args.brightness]</span>  <span class="c"># the value is a span of the input</span>
-<span class="k">ask</span>      <span class="o">=</span> <span class="s">"How bright, in percent?"</span>
-<span class="k">pick</span>     <span class="o">=</span> <span class="s">"number"</span>
-<span class="k">range</span>    <span class="o">=</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">100</span><span class="o">]</span>
-<span class="k">optional</span> <span class="o">=</span> <span class="n">true</span>
-
-<span class="t">[examples]</span>         <span class="c"># sent to the classifier</span>
-<span class="s">"turn on the kitchen lights"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"on"</span> <span class="o">}</span>
-<span class="s">"dim the den to 30 percent"</span>  <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"dim"</span><span class="o">,</span> <span class="k">brightness</span> <span class="o">=</span> <span class="s">"30 percent"</span> <span class="o">}</span></pre>
-        </div>
-        <div class="side">
-          <div class="panel term" aria-label="A terminal session">
-            <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre><span class="p">$</span> <span class="in">evoke "kill the lights"</span>
-<span class="own">  Which room?  [1] den  [2] office  [+] add one  &gt;</span> <span class="in">1</span>
-<span class="own">  <span class="name">lights</span> room="den" state="off" · write · weakest: state <span class="mid">0.58</span>
-  Set the den lights off?  [y]es [n]o [t]each &gt;</span> <span class="in">t</span>
-<span class="add">+ overlays/lights.toml  [examples] "kill the lights" = { state = "off" }</span>
-<span class="out">den lights off</span>
-<span class="p">$</span> <span class="in">evoke "kill the lights in the den"</span>
-<span class="own">  <span class="name">lights</span> room="den" state="off"  <span class="hi">0.85</span></span>
-<span class="out">den lights off</span>
-<span class="p">$</span> <span class="cursor"></span></pre>
-          </div>
-          <div class="panel">
-            <div class="head"><i></i>vocab/rooms.toml<span class="who you">yours</span></div>
-<pre><span class="k">den</span>    <span class="o">=</span> <span class="s">"The TV room downstairs; also 'the snug'."</span>
-<span class="k">office</span> <span class="o">=</span> <span class="s">"The upstairs study."</span></pre>
-          </div>
-          <div class="panel">
-            <div class="head"><i></i>overlays/lights.toml<span class="who you">yours, taught</span></div>
-<pre><span class="t">[examples]</span>
-<span class="s">"kill the lights"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"off"</span> <span class="o">}</span></pre>
-          </div>
-        </div>
-      </div>
-      <ol class="notes">
-        <li><b>1</b><span><strong>No room was named</strong>, so evoke asked. The rooms are your words.</span></li>
-        <li><b>2</b><span><strong>Not sure of the state</strong>, it checked before running.</span></li>
-        <li><b>3</b><span><strong><code>t</code> taught it.</strong> One line, in a file no update touches.</span></li>
-      </ol>
-    </div>
-
     <section id="work" class="work">
-      <div class="rule"><p class="label">At work</p><span class="num">02</span></div>
+      <div class="rule"><p class="label">At work</p><span class="num">01</span></div>
       <h2>Six sentences, at work.</h2>
       <p class="sub">Real sessions from an ops channel, an inbox, a payments desk, a plant floor, a runbook and a
         lesson. <strong>Each one as files anyone can install, and as code your app keeps.</strong></p>
@@ -724,6 +650,80 @@ Ceiling and lamp lights only."""</span>
       </div>
       <p class="after"><a class="more" href="use-cases.html">All six, with every file and every line →</a></p>
     </section>
+
+    <div class="showcase" id="reflex">
+      <div class="rule"><p class="label">A reflex</p><span class="num">02</span></div>
+      <h2>The manifest is the recipe.</h2>
+      <p class="sub">One readable file defines the decision: what it does, what it is not for, what to ask, and what
+        to run. Jev reads it, and nothing else.</p>
+      <div class="grid">
+        <div class="panel">
+          <div class="head"><i></i>lights/reflex.toml<span class="who">the author's</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""
+Turn the lights in one room on, off, or dim them.
+Ceiling and lamp lights only."""</span>
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span>
+  <span class="s">"colour scenes and schedules"</span><span class="o">,</span>
+  <span class="s">"asking whether a light is on"</span><span class="o">,</span>
+<span class="o">]</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Set the <span class="ph">{room}</span> lights <span class="ph">{state}</span>?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="s">"lights.mts"</span>
+
+<span class="t">[args.room]</span>        <span class="c"># the options are the user's words</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which room?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"rooms"</span>
+
+<span class="t">[args.state]</span>       <span class="c"># the options are the author's</span>
+<span class="k">ask</span>         <span class="o">=</span> <span class="s">"What should the lights do?"</span>
+<span class="k">options.on</span>  <span class="o">=</span> <span class="s">"Switch on."</span>
+<span class="k">options.off</span> <span class="o">=</span> <span class="s">"Switch off."</span>
+<span class="k">options.dim</span> <span class="o">=</span> <span class="s">"Lower the brightness without switching off."</span>
+
+<span class="t">[args.brightness]</span>  <span class="c"># the value is a span of the input</span>
+<span class="k">ask</span>      <span class="o">=</span> <span class="s">"How bright, in percent?"</span>
+<span class="k">pick</span>     <span class="o">=</span> <span class="s">"number"</span>
+<span class="k">range</span>    <span class="o">=</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">100</span><span class="o">]</span>
+<span class="k">optional</span> <span class="o">=</span> <span class="n">true</span>
+
+<span class="t">[examples]</span>         <span class="c"># sent to the classifier</span>
+<span class="s">"turn on the kitchen lights"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"on"</span> <span class="o">}</span>
+<span class="s">"dim the den to 30 percent"</span>  <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"dim"</span><span class="o">,</span> <span class="k">brightness</span> <span class="o">=</span> <span class="s">"30 percent"</span> <span class="o">}</span></pre>
+        </div>
+        <div class="side">
+          <div class="panel term" aria-label="A terminal session">
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre><span class="p">$</span> <span class="in">evoke "kill the lights"</span>
+<span class="own">  Which room?  [1] den  [2] office  [+] add one  &gt;</span> <span class="in">1</span>
+<span class="own">  <span class="name">lights</span> room="den" state="off" · write · weakest: state <span class="mid">0.58</span>
+  Set the den lights off?  [y]es [n]o [t]each &gt;</span> <span class="in">t</span>
+<span class="add">+ overlays/lights.toml  [examples] "kill the lights" = { state = "off" }</span>
+<span class="out">den lights off</span>
+<span class="p">$</span> <span class="in">evoke "kill the lights in the den"</span>
+<span class="own">  <span class="name">lights</span> room="den" state="off"  <span class="hi">0.85</span></span>
+<span class="out">den lights off</span>
+<span class="p">$</span> <span class="cursor"></span></pre>
+          </div>
+          <div class="panel">
+            <div class="head"><i></i>vocab/rooms.toml<span class="who you">yours</span></div>
+<pre><span class="k">den</span>    <span class="o">=</span> <span class="s">"The TV room downstairs; also 'the snug'."</span>
+<span class="k">office</span> <span class="o">=</span> <span class="s">"The upstairs study."</span></pre>
+          </div>
+          <div class="panel">
+            <div class="head"><i></i>overlays/lights.toml<span class="who you">yours, taught</span></div>
+<pre><span class="t">[examples]</span>
+<span class="s">"kill the lights"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"off"</span> <span class="o">}</span></pre>
+          </div>
+        </div>
+      </div>
+      <ol class="notes">
+        <li><b>1</b><span><strong>No room was named</strong>, so evoke asked. The rooms are your words.</span></li>
+        <li><b>2</b><span><strong>Not sure of the state</strong>, it checked before running.</span></li>
+        <li><b>3</b><span><strong><code>t</code> taught it.</strong> One line, in a file no update touches.</span></li>
+      </ol>
+    </div>
 
     <section id="shared">
       <div class="rule"><p class="label">Shared</p><span class="num">03</span></div>
