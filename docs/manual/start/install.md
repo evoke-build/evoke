@@ -16,10 +16,12 @@ A reflex whose body is a program with arguments — an *argv* reflex — needs n
 
 ## The binary
 
-With [Homebrew](https://brew.sh), on macOS or Linux — the tap once, then the name:
+With [Homebrew](https://brew.sh), on macOS or Linux — the tap once, trusted, since Homebrew 7 loads a
+third-party tap only when you say so; then the name:
 
 ```bash
 brew tap evoke-build/tap
+brew trust evoke-build/tap
 brew install evoke
 ```
 
