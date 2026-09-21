@@ -17,3 +17,4 @@ site-url           = "/manual/"
 no-section-label   = true
 smart-punctuation  = false
 additional-css     = ["manual.css"]
+additional-js      = ["manual.js"]

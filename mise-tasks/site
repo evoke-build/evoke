@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#MISE description="Build evoke.build into target/site: the landing page and the use-cases page, the install script, the manual rendered by mdBook with a canonical link, a description, a card and a breadcrumb trail on every page, the sitemap dated by git, and robots.txt — checking first that every link in the manual resolves"
+#MISE description="Build evoke.build into target/site: the landing page and the use-cases page, the install script, the manual rendered by mdBook with the site's bar and the six sentences on every page, a canonical link, a description, a card and a breadcrumb trail on every page, the sitemap dated by git, and robots.txt — checking first that every link in the manual resolves"
 """The manual's README is its index: its tables become mdBook's SUMMARY.md, so the site's structure has one source.
 What a search engine or a shared link needs is written here, once, from the pages themselves and from git."""
 import html as html_text, json, re, shutil, subprocess, sys
@@ -119,6 +119,39 @@ def described(page):
     page.write_text(text.replace("</head>", head, 1))
 
 
+AT_WORK = """                    <aside class="at-work" aria-label="The use cases">
+                        <div class="words">
+                            <p class="label">At work</p>
+                            <h2>Six sentences, at work.</h2>
+                            <p>Real sessions from an ops channel, an inbox, a payments desk, a plant floor, a runbook and
+                                a lesson. Each one as files anyone can install, and as code your app keeps.</p>
+                            <a class="go" href="{root}use-cases.html">See them run &rarr;</a>
+                        </div>
+                        <ul class="said">
+                            <li><a href="{root}use-cases.html#ops"><i>$</i> evoke "scale checkout to 6 in staging"</a></li>
+                            <li><a href="{root}use-cases.html#stream"><i>$</i> evoke &lt; inbox.txt</a></li>
+                            <li><a href="{root}use-cases.html#bank"><i>$</i> evoke "pay Acme 12400 from ops"</a></li>
+                            <li><a href="{root}use-cases.html#plant"><i>$</i> evoke "the filler is jammed, stop it"</a></li>
+                            <li><a href="{root}use-cases.html#runbook"><i>$</i> node runbook.ts "drain the primary"</a></li>
+                            <li><a href="{root}use-cases.html#teach"><i>$</i> evoke "make db-3 shut up for 90 minutes"</a></li>
+                        </ul>
+                    </aside>
+"""
+
+
+def furnished(page):
+    """A manual page furnished: the brand in the bar leads home, a Use cases link joins the bar, and the six sentences
+    close the page. The pages nobody lands on, print and 404, stay bare."""
+    if page.name in UNLISTED:
+        return
+    text = page.read_text()
+    root = "../" * (len(page.relative_to(OUT / "manual").parts) - 1) + "../"
+    text = text.replace('<h1 class="menu-title">evoke</h1>', f'<h1 class="menu-title"><a href="{root}">evoke</a></h1>', 1)
+    text = text.replace('<div class="right-buttons">\n', f'<div class="right-buttons">\n                        <a class="use-cases" href="{root}use-cases.html">Use cases</a>\n', 1)
+    text = text.replace("                    </main>", AT_WORK.replace("{root}", root) + "                    </main>", 1)
+    page.write_text(text)
+
+
 def versioned(landing):
     """The landing page's structured data names the version Cargo.toml names."""
     version = re.search(r'^version\s*=\s*"([^"]+)"', (ROOT / "Cargo.toml").read_text(), re.M)[1]
@@ -154,6 +187,7 @@ shutil.copytree(SITE / "fonts", OUT / "fonts")
 versioned(OUT / "index.html")
 manual_pages = sorted(OUT.glob("manual/**/*.html"))
 for page in manual_pages:
+    furnished(page)
     described(page)
 shutil.copy(OUT / "manual/404.html", OUT / "404.html")
 listed = [OUT / "index.html", OUT / "use-cases.html", OUT / "manual/index.html"] + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
