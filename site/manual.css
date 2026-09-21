@@ -1,16 +1,395 @@
-/* The manual's own touches over mdBook's theme: the brand colour on links, tables that read like the source. */
+/* The manual's theme over mdBook's: the landing page's palette, the system's own fonts, quiet chrome. Every
+   value mdBook's themes define is set here once for light and once for dark, so the theme menu only chooses
+   between the two. */
+
 :root {
-  --links: #e8792a;
-  --sidebar-active: #e8792a;
+  --sidebar-target-width: 280px;
+  --content-max-width: 800px;
+  --menu-bar-height: 56px;
+  --page-padding: 24px;
+  --mono-font: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  --code-font-size: 0.875em;
+  --accent: #ef7f2b;
+  --radius: 10px;
 }
+
+.light,
+.rust,
+html:not(.js) {
+  --bg: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #6b6b6b;
+  --line: #e7e5e0;
+  --panel: #f7f6f3;
+  --sidebar-bg: #fbfaf8;
+  --sidebar-fg: #3d3d3d;
+  --sidebar-non-existant: #aaaaaa;
+  --sidebar-active: #ef7f2b;
+  --sidebar-spacer: #e7e5e0;
+  --scrollbar: #c9c7c2;
+  --icons: #8a8a8a;
+  --icons-hover: #1a1a1a;
+  --links: #d4661a;
+  --inline-code-color: #1a1a1a;
+  --theme-popup-bg: #ffffff;
+  --theme-popup-border: #e7e5e0;
+  --theme-hover: #f2f0ec;
+  --quote-bg: #fbf6f1;
+  --quote-border: #ef7f2b;
+  --warning-border: #ef7f2b;
+  --table-border-color: #e7e5e0;
+  --table-header-bg: transparent;
+  --table-alternate-bg: transparent;
+  --searchbar-border-color: #e7e5e0;
+  --searchbar-bg: #ffffff;
+  --searchbar-fg: #1a1a1a;
+  --searchbar-shadow-color: transparent;
+  --searchresults-header-fg: #6b6b6b;
+  --searchresults-border-color: #e7e5e0;
+  --searchresults-li-bg: #f7f6f3;
+  --search-mark-bg: #ffe2c9;
+  --color-scheme: light;
+  --copy-button-filter: invert(55%);
+  --copy-button-filter-hover: invert(15%);
+  --footnote-highlight: #ffe2c9;
+  --overlay-bg: rgba(0, 0, 0, 0.25);
+  --sidebar-header-border-color: #e7e5e0;
+}
+
+.navy,
+.coal,
+.ayu {
+  --bg: #101010;
+  --fg: #e6e6e6;
+  --muted: #9a9a9a;
+  --line: #262626;
+  --panel: #191919;
+  --sidebar-bg: #141414;
+  --sidebar-fg: #bdbdbd;
+  --sidebar-non-existant: #555555;
+  --sidebar-active: #f4934a;
+  --sidebar-spacer: #262626;
+  --scrollbar: #3a3a3a;
+  --icons: #7a7a7a;
+  --icons-hover: #e6e6e6;
+  --links: #f4934a;
+  --inline-code-color: #e6e6e6;
+  --theme-popup-bg: #191919;
+  --theme-popup-border: #2c2c2c;
+  --theme-hover: #232323;
+  --quote-bg: #1c1815;
+  --quote-border: #ef7f2b;
+  --warning-border: #ef7f2b;
+  --table-border-color: #262626;
+  --table-header-bg: transparent;
+  --table-alternate-bg: transparent;
+  --searchbar-border-color: #2c2c2c;
+  --searchbar-bg: #191919;
+  --searchbar-fg: #e6e6e6;
+  --searchbar-shadow-color: transparent;
+  --searchresults-header-fg: #9a9a9a;
+  --searchresults-border-color: #2c2c2c;
+  --searchresults-li-bg: #191919;
+  --search-mark-bg: #4a2d14;
+  --color-scheme: dark;
+  --copy-button-filter: invert(55%);
+  --copy-button-filter-hover: invert(95%);
+  --footnote-highlight: #4a2d14;
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+  --sidebar-header-border-color: #2c2c2c;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.js) {
+    --bg: #101010;
+    --fg: #e6e6e6;
+    --muted: #9a9a9a;
+    --line: #262626;
+    --panel: #191919;
+    --sidebar-bg: #141414;
+    --sidebar-fg: #bdbdbd;
+    --links: #f4934a;
+    --inline-code-color: #e6e6e6;
+    --theme-hover: #232323;
+    --quote-bg: #1c1815;
+    --table-border-color: #262626;
+    --color-scheme: dark;
+  }
+}
+
+/* Type */
+
+html {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
 .content main {
-  max-width: 800px;
+  padding: 12px 0 64px;
 }
-table {
+
+.content p,
+.content li {
+  line-height: 1.65;
+}
+
+.content li + li {
+  margin-top: 0.3em;
+}
+
+.content h1 {
+  font-size: 3.2rem;
+  font-weight: 650;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+  margin: 0.5em 0 0.7em;
+}
+
+.content h2 {
+  font-size: 2.15rem;
+  font-weight: 620;
+  letter-spacing: -0.012em;
+  margin-block-start: 2.4em;
+  margin-block-end: 0.6em;
+}
+
+.content h3 {
+  font-size: 1.7rem;
+  font-weight: 620;
+  margin-block-start: 2em;
+}
+
+.content a,
+.content a:visited {
+  color: var(--links);
+}
+
+.content .header:link,
+.content .header:visited {
+  color: var(--fg);
+}
+
+/* Code */
+
+:not(pre) > code {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 0.1em 0.38em;
+  font-size: 0.86em;
+  color: var(--inline-code-color);
+}
+
+.content pre {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  line-height: 1.55;
+  overflow: auto;
+}
+
+.content pre > code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.hljs {
+  background: transparent !important;
+  color: var(--fg);
+}
+
+.content pre > .buttons {
+  margin: 8px 8px 0 0;
+}
+
+.content pre > .buttons button {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg);
+  padding: 4px;
+}
+
+/* Tables, quotes, keys */
+
+.content table {
   width: 100%;
+  margin: 1.2em 0;
+  font-size: 0.95em;
 }
-table th,
-table td {
+
+.content table thead tr {
+  border: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.content table th {
   text-align: left;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 8px 12px 10px;
+}
+
+.content table td {
+  padding: 9px 12px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
   vertical-align: top;
+  line-height: 1.5;
+}
+
+.content table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.content blockquote {
+  margin: 1.4em 0;
+  padding: 10px 18px;
+  border: 0;
+  border-left: 3px solid var(--quote-border);
+  border-radius: 0 8px 8px 0;
+}
+
+.content kbd {
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  box-shadow: none;
+  background: var(--panel);
+}
+
+/* The bar */
+
+#mdbook-menu-bar {
+  height: var(--menu-bar-height);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+
+#mdbook-menu-bar.bordered {
+  border-bottom-color: var(--line);
+}
+
+.menu-title {
+  font-size: 1.7rem;
+  font-weight: 650;
+  letter-spacing: -0.012em;
+}
+
+.menu-title::before {
+  content: "";
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  margin-right: 8px;
+  vertical-align: -5px;
+  background: url("/assets/logo.png") center / contain no-repeat;
+}
+
+.icon-button {
+  color: var(--icons);
+}
+
+#mdbook-searchbar {
+  border: 1px solid var(--searchbar-border-color);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 1.5rem;
+}
+
+#mdbook-searchbar:focus,
+#mdbook-searchbar.active {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+  border-color: var(--accent);
+}
+
+.theme-popup {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* The sidebar */
+
+.sidebar {
+  font-size: 1.45rem;
+  border-right: 1px solid var(--line);
+}
+
+.sidebar .sidebar-scrollbox {
+  padding: 18px 12px 30px;
+}
+
+.chapter li.part-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 22px 10px 6px;
+}
+
+/* The open page's own headings, listed under it */
+.chapter li.header-item {
+  font-size: 1.3rem;
+  color: var(--muted);
+  margin: 1px 0;
+}
+
+.chapter li.header-item a {
+  padding: 4px 10px;
+}
+
+.chapter a.current-header {
+  color: var(--sidebar-active);
+}
+
+.chapter li.chapter-item {
+  margin-block-start: 2px;
+}
+
+.chapter li a {
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: var(--sidebar-fg);
+}
+
+.chapter li a:hover {
+  background: var(--theme-hover);
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.chapter li a.active {
+  color: var(--sidebar-active);
+  background: color-mix(in srgb, var(--accent) 11%, transparent);
+}
+
+.sidebar .sidebar-resize-handle {
+  background: transparent;
+}
+
+/* Previous and next */
+
+.nav-chapters {
+  color: var(--icons);
+}
+
+.nav-chapters:hover {
+  background: var(--panel);
+  color: var(--fg);
+}
+
+.nav-wrapper {
+  border-top: 1px solid var(--line);
+  margin-top: 40px;
+  padding-top: 20px;
+}
+
+.mobile-nav-chapters {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
 }

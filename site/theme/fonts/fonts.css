@@ -1,0 +1,2 @@
+/* The manual uses the system's own fonts (manual.css); nothing to load. Overriding this file keeps mdBook's
+   bundled fonts out of the build. */

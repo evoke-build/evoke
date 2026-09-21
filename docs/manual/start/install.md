@@ -16,17 +16,9 @@ A reflex whose body is a program with arguments — an *argv* reflex — needs n
 
 ## The binary
 
-With [Homebrew](https://brew.sh), on macOS or Linux — the tap once, trusted, since Homebrew 7 loads a
-third-party tap only when you say so; then the name:
-
-```bash
-brew tap evoke-build/tap
-brew trust evoke-build/tap
-brew install evoke
-```
-
-With the script, which fetches the release built for your machine, checks it against the release's `SHA256SUMS`
-and puts `evoke` in `~/.local/bin` — `EVOKE_INSTALL` names another directory, `EVOKE_VERSION` picks a version:
+On macOS or Linux, the script: it fetches the release built for your machine, checks it against the release's
+`SHA256SUMS` and puts `evoke` in `~/.local/bin` — `EVOKE_INSTALL` names another directory, `EVOKE_VERSION` picks a
+version:
 
 ```bash
 curl -fsSL https://evoke.build/install.sh | sh
@@ -54,8 +46,8 @@ evoke 0.1.0
 The archives are on [GitHub releases](https://github.com/evoke-build/evoke/releases): `evoke-<target>.tar.gz` for
 `aarch64-apple-darwin`, `x86_64-apple-darwin`, `aarch64-unknown-linux-musl` and `x86_64-unknown-linux-musl` — the
 Linux binaries static — each holding `evoke`, `LICENSE` and `NOTICE`, with `SHA256SUMS` beside them and a build
-attestation `gh attestation verify <archive> --repo evoke-build/evoke` checks. To update: `brew upgrade evoke`, the
-script again, or `mise upgrade`.
+attestation `gh attestation verify <archive> --repo evoke-build/evoke` checks. To update: the script again, or
+`mise upgrade`.
 
 ## The SDK
 

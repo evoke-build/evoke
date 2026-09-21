@@ -14,9 +14,8 @@ den lights off
 ```
 
 ```bash
-brew tap evoke-build/tap && brew trust evoke-build/tap && brew install evoke
-curl -fsSL https://evoke.build/install.sh | sh                                 # or the script
-npm install @evoke-build/evoke                                                 # the SDK
+curl -fsSL https://evoke.build/install.sh | sh    # the CLI, on macOS and Linux
+npm install @evoke-build/evoke                    # the SDK
 ```
 
 Start with the [manual](docs/manual/README.md), also at [evoke.build](https://evoke.build):

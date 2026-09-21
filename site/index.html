@@ -5,111 +5,303 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>evoke — software, by reflex</title>
   <meta name="description" content="evoke turns a sentence into a call of a small program — a reflex — chosen by a classifier that never generates text, gated by confidence, and run only when the call is safe enough to run.">
-  <meta name="theme-color" content="#ef7f2b">
-  <link rel="icon" href="assets/logo.png">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101010" media="(prefers-color-scheme: dark)">
+  <meta property="og:title" content="evoke — software, by reflex">
+  <meta property="og:description" content="A sentence becomes a call of a small program, chosen by a classifier, gated by confidence. A CLI, a package manager and a TypeScript SDK.">
+  <meta property="og:url" content="https://evoke.build/">
+  <meta property="og:image" content="https://evoke.build/assets/logo.png">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <style>
     :root {
       color-scheme: light dark;
       --bg: #ffffff;
-      --fg: #1c1c1c;
-      --muted: #6a6a6a;
+      --fg: #1a1a1a;
+      --muted: #6b6b6b;
+      --line: #e7e5e0;
+      --panel: #f7f6f3;
       --accent: #ef7f2b;
-      --panel: #f6f5f3;
-      --line: #e6e4e0;
+      --accent-ink: #d4661a;
+      --term-bg: #1b1a19;
+      --term-fg: #ebe8e3;
+      --term-dim: #8f8c86;
+      --radius: 12px;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #141414;
-        --fg: #ececec;
+        --bg: #101010;
+        --fg: #e6e6e6;
         --muted: #9a9a9a;
-        --panel: #1e1e1e;
-        --line: #2c2c2c;
+        --line: #262626;
+        --panel: #191919;
+        --accent-ink: #f4934a;
+        --term-bg: #171717;
       }
     }
     * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
       margin: 0;
-      font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       background: var(--bg);
       color: var(--fg);
       -webkit-font-smoothing: antialiased;
     }
-    main { max-width: 40rem; margin: 0 auto; padding: 5rem 1.25rem 4rem; }
-    header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-    header img { width: 64px; height: 64px; }
-    h1 { font-size: 2.25rem; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
-    .lede { font-size: 1.35rem; font-weight: 500; margin: 0 0 0.75rem; }
-    p { margin: 0 0 1.25rem; }
-    h2 { font-size: 1.1rem; font-weight: 600; margin: 2.5rem 0 0.75rem; }
-    pre {
-      margin: 0 0 0.75rem;
-      padding: 0.9rem 1.1rem;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      font: 0.92rem/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      overflow-x: auto;
-    }
-    pre .out { color: var(--muted); }
-    .ways { display: grid; gap: 0.5rem; margin-bottom: 0.75rem; }
-    .ways div { display: grid; grid-template-columns: 6rem 1fr; align-items: center; gap: 0.75rem; }
-    .ways span { color: var(--muted); font-size: 0.95rem; }
-    .ways pre { margin: 0; }
-    nav { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.5rem; }
-    a { color: var(--accent); text-decoration: none; }
+    a { color: var(--accent-ink); text-decoration: none; }
     a:hover { text-decoration: underline; }
-    nav a {
-      padding: 0.55rem 1rem;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      color: var(--fg);
-      font-weight: 500;
+    code, pre, kbd { font-family: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+    .wrap { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; }
+
+    header.top {
+      position: sticky; top: 0; z-index: 2;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
     }
-    nav a:hover { text-decoration: none; border-color: var(--accent); }
-    nav a.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-    footer { margin-top: 4rem; color: var(--muted); font-size: 0.9rem; }
-    @media (max-width: 480px) {
-      main { padding-top: 3rem; }
-      .ways div { grid-template-columns: 1fr; gap: 0.25rem; }
+    header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 3.5rem; }
+    .brand { display: flex; align-items: center; gap: .6rem; color: var(--fg); font-weight: 650; letter-spacing: -0.012em; font-size: 1.1rem; }
+    .brand:hover { text-decoration: none; }
+    .brand img { width: 26px; height: 26px; }
+    nav.links { display: flex; gap: 1.5rem; }
+    nav.links a { color: var(--muted); font-size: .95rem; font-weight: 500; }
+    nav.links a:hover { color: var(--fg); text-decoration: none; }
+
+    .hero { padding: 5.5rem 0 3rem; }
+    .hero h1 {
+      font-size: clamp(2.6rem, 6vw, 4.2rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.02;
+      margin: 0 0 1.2rem;
+      max-width: 14em;
+    }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero p.lede { font-size: 1.2rem; line-height: 1.55; color: var(--muted); max-width: 40rem; margin: 0 0 2rem; }
+    .hero p.lede strong { color: var(--fg); font-weight: 600; }
+    .cta { display: flex; flex-wrap: wrap; gap: .75rem; }
+    .button {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .7rem 1.15rem; border-radius: 9px;
+      border: 1px solid var(--line); color: var(--fg);
+      font-weight: 560; font-size: .98rem;
+    }
+    .button:hover { text-decoration: none; border-color: var(--muted); }
+    .button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .button.primary:hover { background: var(--accent-ink); border-color: var(--accent-ink); }
+
+    .terminal {
+      margin: 3rem 0 0;
+      background: var(--term-bg); color: var(--term-fg);
+      border-radius: var(--radius);
+      border: 1px solid color-mix(in srgb, var(--term-bg) 70%, #fff 8%);
+      box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .45);
+      overflow: hidden;
+    }
+    .terminal .bar { display: flex; align-items: center; gap: .45rem; padding: .75rem 1rem; border-bottom: 1px solid rgba(255, 255, 255, .07); }
+    .terminal .bar i { width: 11px; height: 11px; border-radius: 50%; background: #3b3a38; display: inline-block; }
+    .terminal .bar span { margin-left: .5rem; font-size: .8rem; color: var(--term-dim); }
+    .terminal pre { margin: 0; padding: 1.1rem 1.25rem 1.25rem; font-size: .92rem; line-height: 1.6; overflow-x: auto; }
+    .terminal .p { color: var(--accent); }
+    .terminal .dim { color: var(--term-dim); }
+    .terminal .in { color: #fff; }
+    .terminal .out { color: var(--term-fg); }
+
+    section { padding: 4.5rem 0 0; }
+    section h2 { font-size: 1.75rem; font-weight: 650; letter-spacing: -0.022em; margin: 0 0 .5rem; }
+    section p.sub { color: var(--muted); font-size: 1.05rem; max-width: 42rem; margin: 0 0 2rem; }
+
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .card { border: 1px solid var(--line); border-radius: var(--radius); padding: 1.35rem 1.35rem 1.25rem; background: var(--bg); }
+    .card h3 { margin: 0 0 .45rem; font-size: 1.08rem; font-weight: 640; letter-spacing: -0.01em; }
+    .card p { margin: 0 0 .9rem; color: var(--muted); font-size: .96rem; }
+    .card code { font-size: .85em; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: .08em .35em; color: var(--fg); }
+    .card a.more { font-size: .93rem; font-weight: 560; }
+
+    .split { display: grid; grid-template-columns: 1.1fr 1fr; gap: 2.5rem; align-items: center; }
+    .split .text p { color: var(--muted); font-size: 1.02rem; margin: 0 0 1rem; }
+    .split .text p strong { color: var(--fg); font-weight: 600; }
+    .code {
+      background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 1.1rem 1.25rem; font-size: .88rem; line-height: 1.6; overflow-x: auto; margin: 0;
+    }
+    .code .k { color: var(--accent-ink); }
+    .code .s { color: var(--fg); }
+    .code .c { color: var(--muted); }
+
+    .install { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .way { border: 1px solid var(--line); border-radius: var(--radius); padding: 1.15rem 1.25rem; }
+    .way h3 { margin: 0 0 .25rem; font-size: 1rem; font-weight: 640; }
+    .way p { margin: 0 0 .8rem; color: var(--muted); font-size: .93rem; }
+    .cmd { display: flex; align-items: center; gap: .6rem; background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: .6rem .5rem .6rem .9rem; }
+    .cmd code { flex: 1; font-size: .9rem; white-space: nowrap; overflow-x: auto; }
+    .cmd button {
+      flex: none; border: 1px solid var(--line); background: var(--bg); color: var(--muted);
+      border-radius: 6px; padding: .3rem .55rem; font: inherit; font-size: .78rem; cursor: pointer;
+    }
+    .cmd button:hover { color: var(--fg); border-color: var(--muted); }
+    .cmd button.done { color: var(--accent-ink); border-color: var(--accent-ink); }
+    p.after { color: var(--muted); font-size: .95rem; margin: 1.25rem 0 0; }
+
+    footer { margin-top: 5.5rem; border-top: 1px solid var(--line); padding: 2rem 0 3rem; color: var(--muted); font-size: .9rem; }
+    footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; }
+    footer nav { display: flex; gap: 1.25rem; }
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--fg); }
+
+    @media (max-width: 840px) {
+      .cards { grid-template-columns: 1fr; }
+      .split { grid-template-columns: 1fr; gap: 1.5rem; }
+      .install { grid-template-columns: 1fr; }
+      .hero { padding-top: 3.5rem; }
+      nav.links { gap: 1.1rem; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <header>
-      <img src="assets/logo.png" alt="">
-      <h1>evoke</h1>
-    </header>
-    <p class="lede">Software, by reflex.</p>
-    <p><code>evoke</code> turns a sentence into a call of a small program — a <em>reflex</em> — chosen by a
-      classifier that never generates text, gated by confidence, and run only when the call is safe enough to run.
-      One tool does three jobs: a CLI you talk to, a package manager that installs reflexes from git, and a
-      TypeScript SDK that puts the same decisions inside your app.</p>
-<pre>$ evoke "kill the lights in the den"
-<span class="out">  lights room="den" state="off"  0.85</span>
-den lights off</pre>
-
-    <h2>Install</h2>
-    <div class="ways">
-      <div><span>Homebrew</span><pre>brew tap evoke-build/tap &amp;&amp; brew trust evoke-build/tap
-brew install evoke</pre></div>
-      <div><span>The script</span><pre>curl -fsSL https://evoke.build/install.sh | sh</pre></div>
-      <div><span>The SDK</span><pre>npm install @evoke-build/evoke</pre></div>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="assets/logo.png" alt="">evoke</a>
+      <nav class="links">
+        <a href="manual/">Manual</a>
+        <a href="manual/sdk/getting-started.html">SDK</a>
+        <a href="https://github.com/evoke-build/evoke">GitHub</a>
+      </nav>
     </div>
-    <p>macOS and Linux; Windows through WSL. Then <a href="manual/start/first-run.html">the first ten minutes</a>:
-      your key, the first-party reflexes, your first lesson.</p>
+  </header>
 
-    <nav>
-      <a class="primary" href="manual/">Read the manual</a>
-      <a href="manual/author/first-reflex.html">Write a reflex</a>
-      <a href="manual/sdk/getting-started.html">Use the SDK</a>
-      <a href="https://github.com/evoke-build/evoke">GitHub</a>
-    </nav>
+  <main class="wrap">
+    <div class="hero">
+      <h1>Software, <em>by reflex.</em></h1>
+      <p class="lede"><strong>evoke</strong> turns a sentence into a call of a small program — a <em>reflex</em> —
+        chosen by a classifier that never generates text, gated by confidence, and run only when the call is safe
+        enough to run.</p>
+      <div class="cta">
+        <a class="button primary" href="manual/start/install.html">Get started</a>
+        <a class="button" href="manual/">Read the manual</a>
+      </div>
 
-    <footer>
-      <a href="https://github.com/evoke-build/evoke/blob/main/LICENSE">Apache-2.0</a>; the collection is MIT.
-      The name and the logo are <a href="https://github.com/evoke-build/evoke/blob/main/TRADEMARK.md">trademarks</a>.
-    </footer>
+      <div class="terminal" aria-label="A terminal session">
+        <div class="bar"><i></i><i></i><i></i><span>evoke</span></div>
+<pre><span class="p">$</span> <span class="in">evoke "set the volume to 40 percent"</span>
+<span class="dim">  volume level="40 percent"  0.93</span>
+<span class="out">volume 40%</span>
+<span class="p">$</span> <span class="in">evoke "dim the office"</span>
+<span class="dim">  lights room="office" state="dim" · write · weakest: state 0.70
+  Set the office lights dim?  [y]es [n]o [t]each &gt;</span> <span class="in">y</span>
+<span class="out">group-7 lights dim</span>
+<span class="p">$</span> <span class="in">evoke "what time is it"</span>
+<span class="dim">  none 0.70 · timer 0.20 · lights 0.05 · volume 0.05</span></pre>
+      </div>
+    </div>
+
+    <section>
+      <h2>One tool, three jobs</h2>
+      <p class="sub">The same decisions, whether you type them, install them, or ship them inside your application.</p>
+      <div class="cards">
+        <div class="card">
+          <h3>A CLI you talk to</h3>
+          <p>Say what you want. <code>evoke</code> shows the call it chose and its confidence, then runs, confirms,
+            asks for what is missing, or abstains — and every line that needs you ends in the command that does it.</p>
+          <a class="more" href="manual/use/saying-things.html">Saying things →</a>
+        </div>
+        <div class="card">
+          <h3>A package manager</h3>
+          <p>A reflex is a directory in a git repository at a tag. <code>evoke add owner/repo</code> fetches it,
+            lints its wording, pins it by content in <code>evoke.lock</code>, and never runs code to install it.</p>
+          <a class="more" href="manual/use/installing.html">Installing reflexes →</a>
+        </div>
+        <div class="card">
+          <h3>A TypeScript SDK</h3>
+          <p>The CLI's core, compiled to WebAssembly, inside your app: load a project, decide, run — with a typed
+            decision for every outcome and a recorded adapter for tests that never touch the network.</p>
+          <a class="more" href="manual/sdk/getting-started.html">Getting started →</a>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="split">
+        <div class="text">
+          <h2>The manifest is the product</h2>
+          <p>The classifier is never trained. It answers closed questions — <em>which of these? is this stated?</em>
+            — from a reflex's own wording, so <strong>the wording is the tuning</strong>. One line is documentation,
+            tuning, test and customization at once.</p>
+          <p>The author owns the contract: what runs, the arguments, their options. Everything else is wording you
+            may override in a file of your own, which no update ever touches. A value is always one of the author's
+            options, one of your words, or a span of what you typed: a sentence can choose a call, never invent one.</p>
+          <a class="more" href="manual/author/first-reflex.html">Write a reflex in ten minutes →</a>
+        </div>
+<pre class="code"><span class="c"># hello/reflex.toml</span>
+<span class="k">reflex</span> = 1
+
+<span class="k">description</span> = <span class="s">"""
+Say hello to someone.
+A greeting with the name given, printed back."""</span>
+<span class="k">effect</span>  = <span class="s">"read"</span>
+<span class="k">confirm</span> = <span class="s">"Say hello to {who}?"</span>
+<span class="k">run</span>     = <span class="s">"hello.mts"</span>
+
+<span class="k">[args.who]</span>
+<span class="k">ask</span>  = <span class="s">"Who should be greeted?"</span>
+<span class="k">pick</span> = <span class="s">"quoted"</span>
+
+<span class="k">[examples]</span>
+<span class="s">'say hello to "Ada"'</span> = { <span class="k">who</span> = <span class="s">"Ada"</span> }</pre>
+      </div>
+    </section>
+
+    <section id="install">
+      <h2>Install</h2>
+      <p class="sub">One small native binary on macOS and Linux; Node beside it for reflexes written as JavaScript.
+        The SDK is a package.</p>
+      <div class="install">
+        <div class="way">
+          <h3>The CLI</h3>
+          <p>Fetches the release built for your machine, checks it against the release's digests, and puts
+            <code>evoke</code> in <code>~/.local/bin</code>.</p>
+          <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy>Copy</button></div>
+        </div>
+        <div class="way">
+          <h3>The SDK</h3>
+          <p>Node 24 or newer, ES modules, no dependencies; the core travels inside it as WebAssembly.</p>
+          <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy>Copy</button></div>
+        </div>
+      </div>
+      <p class="after">Then <a href="manual/start/first-run.html">the first ten minutes</a>: your key, the first-party
+        reflexes, your first lesson. Every other way — mise, from source — is on the
+        <a href="manual/start/install.html">install page</a>.</p>
+    </section>
   </main>
+
+  <footer>
+    <div class="wrap">
+      <div><a href="https://github.com/evoke-build/evoke/blob/main/LICENSE">Apache-2.0</a>; the collection is MIT.
+        The name and the logo are <a href="https://github.com/evoke-build/evoke/blob/main/TRADEMARK.md">trademarks</a>.</div>
+      <nav>
+        <a href="manual/">Manual</a>
+        <a href="manual/reference/cli.html">Reference</a>
+        <a href="manual/security.html">Security</a>
+        <a href="https://github.com/evoke-build/evoke">GitHub</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    for (const button of document.querySelectorAll("[data-copy]")) {
+      button.addEventListener("click", async () => {
+        const text = button.parentElement.querySelector("code").textContent
+        try {
+          await navigator.clipboard.writeText(text)
+          button.textContent = "Copied"
+          button.classList.add("done")
+          setTimeout(() => { button.textContent = "Copy"; button.classList.remove("done") }, 1600)
+        } catch {
+          button.textContent = "Select it"
+        }
+      })
+    }
+  </script>
 </body>
 </html>
