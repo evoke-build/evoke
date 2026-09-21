@@ -217,8 +217,10 @@
     .cta { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; }
     .cta .cmd { flex: 1 1 100%; max-width: 30rem; margin-top: .25rem; }
     .cta .cmd code { font-size: .86rem; }
-    .hero .by { margin: 1.6rem 0 0; max-width: 32rem; font-size: .95rem; line-height: 1.55; color: var(--muted); }
-    .hero .by a { color: var(--fg); font-weight: 560; }
+    .jobs { list-style: none; margin: 1.9rem 0 0; padding: 1.1rem 0 0; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: .65rem 2.25rem; max-width: 34rem; }
+    .jobs a { display: inline-flex; align-items: baseline; gap: .6rem; color: var(--muted); font-size: .95rem; font-weight: 500; transition: color .15s; }
+    .jobs a:hover { color: var(--fg); text-decoration: none; }
+    .jobs code { font-size: .8rem; color: var(--accent-ink); background: none; border: 0; padding: 0; white-space: nowrap; }
 
     /* Panels: an editor, a terminal */
     .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
@@ -418,8 +420,11 @@
           <a class="button" href="manual/">Read the manual</a>
           <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy>Copy</button></div>
         </div>
-        <p class="by">Decided by <a href="#jev">Jev</a>, TypeSafe AI's classifier. A CLI, a package manager and a
-          TypeScript SDK.</p>
+        <ul class="jobs" aria-label="What evoke is">
+          <li><a href="manual/use/saying-things.html"><code>$</code>a CLI</a></li>
+          <li><a href="manual/use/installing.html"><code>+</code>a package manager</a></li>
+          <li><a href="manual/sdk/getting-started.html"><code>{ }</code>a TypeScript SDK</a></li>
+        </ul>
       </div>
       <div class="panel term demo" data-state="off" aria-label="A lamp answering three sentences">
         <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>install</b><b>your words</b><b>say it</b></span></div>
