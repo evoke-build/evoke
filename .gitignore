@@ -16,6 +16,8 @@ mise.*.local.toml
 target/
 sdk/core.wasm
 sdk/runtime/
+sdk/LICENSE
+sdk/NOTICE
 sdk/dist/
 sdk/build/
 sdk/node_modules/

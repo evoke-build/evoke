@@ -16,10 +16,11 @@ A reflex whose body is a program with arguments — an *argv* reflex — needs n
 
 ## The binary
 
-With [Homebrew](https://brew.sh), on macOS or Linux:
+With [Homebrew](https://brew.sh), on macOS or Linux — the tap once, then the name:
 
 ```bash
-brew install evoke-build/tap/evoke
+brew tap evoke-build/tap
+brew install evoke
 ```
 
 With the script, which fetches the release built for your machine, checks it against the release's `SHA256SUMS`

@@ -39,9 +39,9 @@ run         = ["npm ci --no-audit --no-fund"]
 
 [tasks.sdk]
 depends     = ["wasm"]
-description = "Build the SDK: its tools installed as locked, then the TypeScript compiled to sdk/dist"
+description = "Build the SDK: its tools installed as locked, the TypeScript compiled to sdk/dist, the licence and notice beside them for the package"
 dir         = "sdk"
-run         = ["npm ci --no-audit --no-fund", "npm run build"]
+run         = ["npm ci --no-audit --no-fund", "npm run build", "cp ../LICENSE ../NOTICE ."]
 
 [tasks.test]
 depends     = ["sdk", "reflexes"]

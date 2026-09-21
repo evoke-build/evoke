@@ -15,7 +15,8 @@
   "files": [
     "dist",
     "core.wasm",
-    "runtime"
+    "runtime",
+    "NOTICE"
   ],
   "exports": {
     ".": {
