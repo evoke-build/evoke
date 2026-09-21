@@ -82,4 +82,4 @@ const project = await load({ reflexes: { timer }, adapter: replay("answers.toml"
 
 Every run after the first is offline, and always gives the same answers.
 
-**Next:** [Projects](projects.md).
+**Next:** [Projects in code](projects.md).

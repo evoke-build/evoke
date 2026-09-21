@@ -1,4 +1,4 @@
-# Projects
+# Projects in code
 
 `load()` reads a project once and compiles it. A project is the owned files under a root, the reflexes handed as
 code, and who answers. `load()` never fetches and never writes.

@@ -63,7 +63,7 @@ One tool does three jobs. A **CLI** you talk to. A **package manager** that inst
 | Page                                        | Read it when                                                       |
 | :------------------------------------------ | :----------------------------------------------------------------- |
 | [Getting started](sdk/getting-started.md)   | The first hour: one file, one reflex, one decision                 |
-| [Projects](sdk/projects.md)                 | `load()`, roots, reflexes as code, `with()`, generated types        |
+| [Projects in code](sdk/projects.md)         | `load()`, roots, reflexes as code, `with()`, generated types        |
 | [Decisions](sdk/decisions.md)               | The `Decision` union, `fill`, `run`, `handle`                       |
 | [Adapters](sdk/adapters.md)                 | `jev()`, thresholds, and writing an adapter of your own             |
 | [Testing](sdk/testing.md)                   | `replay()`: offline, deterministic tests over a recording           |

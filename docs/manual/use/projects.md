@@ -18,7 +18,7 @@ The CLI looks for the nearest `evoke.toml`, upward from the working directory. I
 one line, `adapter = "jev"`. Any project but home must be [trusted](installing.md#trust) before `evoke` decides in
 it.
 
-The SDK takes an explicit root and never searches: [SDK projects](../sdk/projects.md).
+The SDK takes an explicit root and never searches: [Projects in code](../sdk/projects.md).
 
 ## `evoke.toml`
 

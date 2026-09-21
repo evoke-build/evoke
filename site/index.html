@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>evoke — Software, by reflex</title>
-  <meta name="description" content="Say it, and the right small program runs. evoke chooses it with Jev, TypeSafe AI's classifier, and runs it only when it is sure enough. Reflexes are recipes anyone can write, share and improve. A CLI, a package manager and a TypeScript SDK.">
+  <title>evoke — Software, by reflex, decided by Jev</title>
+  <meta name="description" content="Say it, and the right small program runs. Chosen by Jev, TypeSafe AI's classifier, run only when it is sure enough. A CLI, a package manager, a TypeScript SDK.">
   <link rel="canonical" href="https://evoke.build/">
+  <meta name="robots" content="max-image-preview:large">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#101010" media="(prefers-color-scheme: dark)">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="evoke">
+  <meta property="og:locale" content="en_US">
   <meta property="og:title" content="evoke — Software, by reflex">
   <meta property="og:description" content="A sentence becomes a call of a small program, chosen by Jev, TypeSafe AI's classifier, and run only when it is sure enough. Reflexes are recipes: written once, shared, improved by everyone.">
   <meta property="og:url" content="https://evoke.build/">
@@ -21,6 +23,7 @@
   <meta name="twitter:title" content="evoke — Software, by reflex">
   <meta name="twitter:description" content="A sentence becomes a call of a small program, chosen by Jev, TypeSafe AI's classifier, and run only when it is sure enough.">
   <meta name="twitter:image" content="https://evoke.build/og.png">
+  <meta name="twitter:image:alt" content="evoke — Software, by reflex.">
   <link rel="icon" href="favicon.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <script type="application/ld+json">
@@ -35,19 +38,36 @@
         "description": "A sentence becomes a call of a small program, chosen by Jev, TypeSafe AI's classifier, and run only when it is sure enough. Reflexes are recipes anyone can write, share and improve. A CLI, a package manager that installs reflexes from git, and a TypeScript SDK.",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "macOS, Linux",
+        "softwareVersion": "0.1.0",
+        "softwareRequirements": "Node 24 or newer, for reflexes written in JavaScript",
+        "image": "https://evoke.build/og.png",
         "license": "https://www.apache.org/licenses/LICENSE-2.0",
+        "isAccessibleForFree": true,
         "installUrl": "https://evoke.build/manual/start/install.html",
         "downloadUrl": "https://github.com/evoke-build/evoke/releases",
+        "releaseNotes": "https://github.com/evoke-build/evoke/releases",
+        "softwareHelp": { "@type": "CreativeWork", "url": "https://evoke.build/manual/" },
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
         "author": { "@id": "https://evoke.build/#organization" },
         "sameAs": ["https://github.com/evoke-build/evoke", "https://www.npmjs.com/package/@evoke-build/evoke"]
+      },
+      {
+        "@type": "SoftwareSourceCode",
+        "@id": "https://evoke.build/#source",
+        "name": "evoke",
+        "codeRepository": "https://github.com/evoke-build/evoke",
+        "programmingLanguage": ["Rust", "TypeScript"],
+        "runtimePlatform": ["macOS", "Linux", "Node.js 24"],
+        "license": "https://www.apache.org/licenses/LICENSE-2.0",
+        "targetProduct": { "@id": "https://evoke.build/#software" },
+        "author": { "@id": "https://evoke.build/#organization" }
       },
       {
         "@type": "Organization",
         "@id": "https://evoke.build/#organization",
         "name": "evoke-build",
         "url": "https://evoke.build/",
-        "logo": "https://evoke.build/assets/logo.png",
+        "logo": { "@type": "ImageObject", "url": "https://evoke.build/logo-512.png", "width": 512, "height": 512 },
         "sameAs": ["https://github.com/evoke-build"]
       },
       {
@@ -55,6 +75,7 @@
         "@id": "https://evoke.build/#website",
         "name": "evoke",
         "url": "https://evoke.build/",
+        "inLanguage": "en",
         "publisher": { "@id": "https://evoke.build/#organization" }
       }
     ]
@@ -369,7 +390,7 @@
 <body>
   <header class="top">
     <div class="wrap">
-      <a class="brand" href="/"><img src="logo.png" alt="">evoke</a>
+      <a class="brand" href="/"><img src="logo.png" alt="" width="26" height="26">evoke</a>
       <nav class="links">
         <a href="manual/">Manual</a>
         <a class="wide" href="manual/sdk/getting-started.html">SDK</a>

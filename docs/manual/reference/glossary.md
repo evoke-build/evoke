@@ -1,5 +1,7 @@
 # Glossary
 
+Every term `evoke` uses, one line each.
+
 | Term             | Meaning                                                                                                   |
 | :--------------- | :-------------------------------------------------------------------------------------------------------- |
 | **Abstain**      | The outcome when *none* wins the route, or the winner is under the route floor. Exit 2                    |

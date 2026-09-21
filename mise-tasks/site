@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-#MISE description="Build evoke.build into target/site: the landing page, the install script, the manual rendered by mdBook with a canonical link and a description on every page, the sitemap and robots.txt — checking first that every link in the manual resolves"
+#MISE description="Build evoke.build into target/site: the landing page, the install script, the manual rendered by mdBook with a canonical link, a description, a card and a breadcrumb trail on every page, the sitemap dated by git, and robots.txt — checking first that every link in the manual resolves"
 """The manual's README is its index: its tables become mdBook's SUMMARY.md, so the site's structure has one source.
-What a search engine or a shared link needs is written here, once, from the pages themselves."""
-import html as html_text, re, shutil, subprocess, sys
+What a search engine or a shared link needs is written here, once, from the pages themselves and from git."""
+import html as html_text, json, re, shutil, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 MANUAL, SITE, OUT, SRC = ROOT / "docs/manual", ROOT / "site", ROOT / "target/site", ROOT / "target/site-src"
 URL = "https://evoke.build/"
 CARD = URL + "og.png"
+CARD_ALT = "evoke — Software, by reflex."
 LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)\)")
 UNLISTED = {"404.html", "print.html", "toc.html"}
 
@@ -30,7 +31,7 @@ def links_resolve():
 
 def summary():
     """SUMMARY.md from the README: the README first, then each `###` section as a part, each table row a page."""
-    lines = ["[The evoke manual](README.md)", ""]
+    lines = ["[The manual](README.md)", ""]
     manual = (MANUAL / "README.md").read_text().split("\n## The manual\n", 1)[1].split("\n## ", 1)[0]
     for line in manual.splitlines():
         if line.startswith("### "):
@@ -46,6 +47,20 @@ def address(page):
     return URL + (rel[: -len("index.html")] if rel.endswith("index.html") else rel)
 
 
+def source(page):
+    """The file in the repository a built page comes from."""
+    rel = page.relative_to(OUT).as_posix()
+    if rel == "index.html":
+        return SITE / "index.html"
+    if rel == "manual/index.html":
+        return MANUAL / "README.md"
+    return MANUAL / (rel[len("manual/") : -len(".html")] + ".md")
+
+
+def git(*args):
+    return subprocess.run(["git", *args], capture_output=True, text=True, cwd=ROOT).stdout.strip()
+
+
 def description(page_html):
     """The page's first paragraph, as one line of at most 160 characters, ending at a word."""
     main = page_html.split("<main", 1)[-1]
@@ -58,37 +73,71 @@ def description(page_html):
     return text
 
 
+def trail(page, name):
+    """The page's place, for a search engine: evoke, the manual, the page. The last step needs no address."""
+    steps = [{"@type": "ListItem", "position": 1, "name": "evoke", "item": URL}]
+    if page != OUT / "manual/index.html":
+        steps.append({"@type": "ListItem", "position": 2, "name": "Manual", "item": URL + "manual/"})
+    steps.append({"@type": "ListItem", "position": len(steps) + 1, "name": name})
+    return json.dumps({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": steps}, ensure_ascii=False)
+
+
 def described(page):
-    """A manual page with what a search engine and a shared link read: canonical, description, the card."""
+    """A manual page with what a search engine and a shared link read: canonical, description, the card, the trail."""
     text = page.read_text()
     titled = re.search(r"<title>(.*?)</title>", text)
     if page.name in UNLISTED or titled is None:
         page.write_text(text.replace("</head>", '<meta name="robots" content="noindex">\n</head>', 1))
         return
     title = html_text.unescape(titled[1])
+    name = title.removesuffix(" - evoke")
     summary_line = description(text) or re.search(r'<meta name="description" content="([^"]*)">', text)[1]
     quoted = html_text.escape(summary_line, quote=True)
+    heading = html_text.escape(title, quote=True)
     head = "\n".join([
         f'<link rel="canonical" href="{address(page)}">',
+        '<meta name="robots" content="max-image-preview:large">',
         '<meta property="og:type" content="article">',
         '<meta property="og:site_name" content="evoke">',
-        f'<meta property="og:title" content="{html_text.escape(title, quote=True)}">',
+        '<meta property="og:locale" content="en_US">',
+        f'<meta property="og:title" content="{heading}">',
         f'<meta property="og:description" content="{quoted}">',
         f'<meta property="og:url" content="{address(page)}">',
         f'<meta property="og:image" content="{CARD}">',
+        '<meta property="og:image:width" content="1200">',
+        '<meta property="og:image:height" content="630">',
+        f'<meta property="og:image:alt" content="{CARD_ALT}">',
         '<meta name="twitter:card" content="summary_large_image">',
+        f'<meta name="twitter:title" content="{heading}">',
+        f'<meta name="twitter:description" content="{quoted}">',
+        f'<meta name="twitter:image" content="{CARD}">',
+        f'<meta name="twitter:image:alt" content="{CARD_ALT}">',
+        f'<script type="application/ld+json">{trail(page, name)}</script>',
         "</head>",
     ])
     text = re.sub(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{quoted}">', text, count=1)
     page.write_text(text.replace("</head>", head, 1))
 
 
+def versioned(landing):
+    """The landing page's structured data names the version Cargo.toml names."""
+    version = re.search(r'^version\s*=\s*"([^"]+)"', (ROOT / "Cargo.toml").read_text(), re.M)[1]
+    landing.write_text(re.sub(r'"softwareVersion": "[^"]*"', f'"softwareVersion": "{version}"', landing.read_text(), count=1))
+
+
 def sitemap(pages):
-    entries = "\n".join(f"  <url><loc>{address(page)}</loc></url>" for page in pages)
+    """Every listed page, dated by the last commit that touched its source. A clone without history dates nothing:
+    a search engine trusts a date only while every date is right."""
+    dated = git("rev-parse", "--is-shallow-repository") == "false"
+    entries = []
+    for page in pages:
+        date = git("log", "-1", "--format=%cs", "--", str(source(page))) if dated else ""
+        entries.append(f"  <url><loc>{address(page)}</loc>{f'<lastmod>{date}</lastmod>' if date else ''}</url>")
     (OUT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + entries + "\n</urlset>\n")
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(entries) + "\n</urlset>\n")
     (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /manual/print.html\n\nSitemap: {URL}sitemap.xml\n")
+    return dated
 
 
 links_resolve()
@@ -97,14 +146,15 @@ shutil.rmtree(SRC, ignore_errors=True)
 shutil.copytree(MANUAL, SRC)
 (SRC / "SUMMARY.md").write_text(summary())
 subprocess.run(["mdbook", "build", str(SITE)], check=True)
-for name in ["index.html", "install.sh", "og.png", "logo.png", "apple-touch-icon.png"]:
+for name in ["index.html", "install.sh", "og.png", "logo.png", "logo-512.png", "apple-touch-icon.png"]:
     shutil.copy(SITE / name, OUT / name)
 shutil.copy(SITE / "theme/favicon.png", OUT / "favicon.png")
 shutil.copytree(ROOT / "assets", OUT / "assets")
+versioned(OUT / "index.html")
 manual_pages = sorted(OUT.glob("manual/**/*.html"))
 for page in manual_pages:
     described(page)
 shutil.copy(OUT / "manual/404.html", OUT / "404.html")
 listed = [OUT / "index.html", OUT / "manual/index.html"] + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
-sitemap(listed)
-print(f"site: {OUT.relative_to(ROOT)} — {len(listed)} pages in the sitemap")
+dated = sitemap(listed)
+print(f"site: {OUT.relative_to(ROOT)} — {len(listed)} pages in the sitemap{'' if dated else ', undated: the clone has no history'}")
