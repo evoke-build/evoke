@@ -140,15 +140,16 @@ AT_WORK = """                    <aside class="at-work" aria-label="The use case
 
 
 def furnished(page):
-    """A manual page furnished: the brand in the bar leads home, a Use cases link joins the bar, and the six sentences
-    close the page. The pages nobody lands on, print and 404, stay bare."""
-    if page.name in UNLISTED:
-        return
+    """A manual page furnished: the browser's chrome takes the page's colour, the brand in the bar leads home, a Use
+    cases link joins the bar, and the six sentences close the page. The pages nobody lands on, print and 404, take
+    only the colour."""
     text = page.read_text()
-    root = "../" * (len(page.relative_to(OUT / "manual").parts) - 1) + "../"
-    text = text.replace('<h1 class="menu-title">evoke</h1>', f'<h1 class="menu-title"><a href="{root}">evoke</a></h1>', 1)
-    text = text.replace('<div class="right-buttons">\n', f'<div class="right-buttons">\n                        <a class="use-cases" href="{root}use-cases.html">Use cases</a>\n', 1)
-    text = text.replace("                    </main>", AT_WORK.replace("{root}", root) + "                    </main>", 1)
+    text = text.replace('<meta name="theme-color" content="#ffffff">', '<meta name="theme-color" content="#101010">', 1)
+    if page.name not in UNLISTED:
+        root = "../" * (len(page.relative_to(OUT / "manual").parts) - 1) + "../"
+        text = text.replace('<h1 class="menu-title">evoke</h1>', f'<h1 class="menu-title"><a href="{root}">evoke</a></h1>', 1)
+        text = text.replace('<div class="right-buttons">\n', f'<div class="right-buttons">\n                        <a class="use-cases" href="{root}use-cases.html">Use cases</a>\n', 1)
+        text = text.replace("                    </main>", AT_WORK.replace("{root}", root) + "                    </main>", 1)
     page.write_text(text)
 
 

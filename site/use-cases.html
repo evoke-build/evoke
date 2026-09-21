@@ -7,8 +7,7 @@
   <meta name="description" content="Six use cases, each a live scene: an ops channel, an inbox, a payments desk, a plant floor, a runbook, and a lesson. Every recipe as a file anyone can install, and as code your app keeps.">
   <link rel="canonical" href="https://evoke.build/use-cases.html">
   <meta name="robots" content="max-image-preview:large">
-  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#101010" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#0f0f10">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="evoke">
   <meta property="og:locale" content="en_US">
@@ -54,65 +53,41 @@
   }
   </script>
   <style>
+    /* Palette: the site is dark, whatever the system prefers */
     :root {
-      color-scheme: light dark;
-      --bg: #ffffff;
-      --fg: #17171a;
-      --muted: #67676e;
-      --faint: #9a9aa1;
-      --line: #e8e6e1;
-      --line-strong: #d8d5ce;
-      --panel: #faf9f7;
-      --panel-head: #f3f1ec;
+      color-scheme: dark;
+      --bg: #0f0f10;
+      --fg: #ececec;
+      --muted: #9c9ca3;
+      --faint: #6c6c73;
+      --line: #232326;
+      --line-strong: #303035;
+      --panel: #151517;
+      --panel-head: #1b1b1e;
       --accent: #ef7f2b;
-      --accent-ink: #c9651a;
-      --accent-soft: rgba(239, 127, 43, .10);
+      --accent-ink: #f4934a;
+      --accent-soft: rgba(244, 147, 74, .12);
       --radius: 14px;
       --radius-s: 9px;
-      --term-bg: #1a1918;
-      --term-head: #22211f;
+      --term-bg: #141416;
+      --term-head: #1a1a1d;
       --term-fg: #ebe8e3;
       --term-dim: #8f8c86;
       --term-in: #ffffff;
       --term-ok: #8fd48a;
       --term-mid: #f0c060;
       --term-no: #ff7b73;
-      --tk-key: #c9651a;
-      --tk-table: #5a5ecf;
-      --tk-string: #2f7d4f;
-      --tk-num: #a3690f;
-      --tk-comment: #8a8a8a;
-      --tk-punct: #8a8a8a;
-      --tk-kw: #5a5ecf;
-      --tk-ph: #a3690f;
-      --shadow: 0 30px 60px -30px rgba(0, 0, 0, .35);
+      --tk-key: #f0a15c;
+      --tk-table: #a3a6ff;
+      --tk-string: #9ad18f;
+      --tk-num: #f0c060;
+      --tk-comment: #7d7d7d;
+      --tk-punct: #7d7d7d;
+      --tk-kw: #a3a6ff;
+      --tk-ph: #f0c060;
+      --shadow: 0 30px 60px -30px rgba(0, 0, 0, .6);
       --mono: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
       --lamp: #ffd58e;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #0f0f10;
-        --fg: #ececec;
-        --muted: #9c9ca3;
-        --faint: #6c6c73;
-        --line: #232326;
-        --line-strong: #303035;
-        --panel: #151517;
-        --panel-head: #1b1b1e;
-        --accent-ink: #f4934a;
-        --accent-soft: rgba(244, 147, 74, .12);
-        --term-bg: #141416;
-        --term-head: #1a1a1d;
-        --tk-key: #f0a15c;
-        --tk-table: #a3a6ff;
-        --tk-string: #9ad18f;
-        --tk-num: #f0c060;
-        --tk-comment: #7d7d7d;
-        --tk-punct: #7d7d7d;
-        --tk-kw: #a3a6ff;
-        --tk-ph: #f0c060;
-        --shadow: 0 30px 60px -30px rgba(0, 0, 0, .6);
-      }
     }
 
     /* Type: Geist and JetBrains Mono, served here, never swapped in after first paint */
@@ -165,7 +140,7 @@
     /* Buttons and commands */
     .button {
       display: inline-flex; align-items: center; gap: .5rem;
-      padding: .7rem 1.15rem; border-radius: var(--radius-s);
+      padding: .7rem 1.3rem; border-radius: 999px;
       border: 1px solid var(--line-strong); color: var(--fg);
       font-weight: 500; font-size: .98rem; line-height: 1.2;
       transition: border-color .15s, background-color .15s;
@@ -173,13 +148,13 @@
     .button:hover { text-decoration: none; border-color: var(--muted); }
     .button.primary { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 70%, transparent); }
     .button.primary:hover { background: var(--accent-ink); border-color: var(--accent-ink); }
-    .button.small { padding: .42rem .8rem; font-size: .88rem; }
+    .button.small { padding: .42rem .95rem; font-size: .88rem; }
     .cmd { display: flex; align-items: center; gap: .6rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-s); padding: .55rem .5rem .55rem .9rem; }
     .cmd code { flex: 1; font-size: .9rem; white-space: nowrap; overflow-x: auto; color: var(--fg); }
     .cmd code::before { content: "$ "; color: var(--accent); }
     .cmd button {
       flex: none; border: 1px solid var(--line); background: var(--bg); color: var(--muted);
-      border-radius: 6px; padding: .3rem .55rem; font: inherit; font-size: .78rem; cursor: pointer;
+      border-radius: 999px; padding: .3rem .7rem; font: inherit; font-size: .78rem; cursor: pointer;
       transition: color .15s, border-color .15s;
     }
     .cmd button:hover { color: var(--fg); border-color: var(--muted); }

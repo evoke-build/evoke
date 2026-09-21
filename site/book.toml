@@ -15,6 +15,7 @@ git-repository-url = "https://github.com/evoke-build/evoke"
 edit-url-template  = "https://github.com/evoke-build/evoke/edit/main/docs/manual/{path}"
 site-url           = "/manual/"
 no-section-label   = true
+default-theme      = "coal"
 smart-punctuation  = false
 additional-css     = ["manual.css"]
 additional-js      = ["manual.js"]

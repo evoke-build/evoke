@@ -1,8 +1,8 @@
-/* The manual's theme over mdBook's: the landing page's palette, the system's own fonts, quiet chrome. Every
-   value mdBook's themes define is set here once for light and once for dark, so the theme menu only chooses
-   between the two. */
+/* The manual's theme over mdBook's: the landing page's palette, dark whatever the system prefers, quiet chrome.
+   Every value mdBook's themes define is set here once, on the root at the rank of mdBook's own no-script rule,
+   so whichever theme its script lands on, or none, reads the same, and its theme menu is hidden. */
 
-:root {
+html:root {
   --sidebar-target-width: 280px;
   --content-max-width: 800px;
   --menu-bar-height: 56px;
@@ -11,69 +11,14 @@
   --code-font-size: 0.875em;
   --accent: #ef7f2b;
   --radius: 10px;
-  --term-bg: #1a1918;
-  --term-line: #2c2a27;
+  --term-bg: #141416;
+  --term-line: #232326;
   --term-fg: #ebe8e3;
   --term-dim: #8f8c86;
   --term-in: #ffffff;
   --term-ok: #8fd48a;
   --term-mid: #f0c060;
   --term-no: #ff7b73;
-}
-
-.light,
-.rust,
-html:not(.js) {
-  --bg: #ffffff;
-  --fg: #1a1a1a;
-  --muted: #6b6b6b;
-  --line: #e7e5e0;
-  --panel: #f7f6f3;
-  --sidebar-bg: #fbfaf8;
-  --sidebar-fg: #3d3d3d;
-  --sidebar-non-existant: #aaaaaa;
-  --sidebar-active: #ef7f2b;
-  --sidebar-spacer: #e7e5e0;
-  --scrollbar: #c9c7c2;
-  --icons: #8a8a8a;
-  --icons-hover: #1a1a1a;
-  --links: #d4661a;
-  --inline-code-color: #1a1a1a;
-  --tk-key: #c9651a;
-  --tk-table: #5a5ecf;
-  --tk-string: #2f7d4f;
-  --tk-num: #a3690f;
-  --tk-comment: #8a8a8a;
-  --tk-punct: #8a8a8a;
-  --tk-kw: #5a5ecf;
-  --theme-popup-bg: #ffffff;
-  --theme-popup-border: #e7e5e0;
-  --theme-hover: #f2f0ec;
-  --quote-bg: #fbf6f1;
-  --quote-border: #ef7f2b;
-  --warning-border: #ef7f2b;
-  --table-border-color: #e7e5e0;
-  --table-header-bg: transparent;
-  --table-alternate-bg: transparent;
-  --searchbar-border-color: #e7e5e0;
-  --searchbar-bg: #ffffff;
-  --searchbar-fg: #1a1a1a;
-  --searchbar-shadow-color: transparent;
-  --searchresults-header-fg: #6b6b6b;
-  --searchresults-border-color: #e7e5e0;
-  --searchresults-li-bg: #f7f6f3;
-  --search-mark-bg: #ffe2c9;
-  --color-scheme: light;
-  --copy-button-filter: invert(55%);
-  --copy-button-filter-hover: invert(15%);
-  --footnote-highlight: #ffe2c9;
-  --overlay-bg: rgba(0, 0, 0, 0.25);
-  --sidebar-header-border-color: #e7e5e0;
-}
-
-.navy,
-.coal,
-.ayu {
   --bg: #101010;
   --fg: #e6e6e6;
   --muted: #9a9a9a;
@@ -96,10 +41,6 @@ html:not(.js) {
   --tk-comment: #7d7d7d;
   --tk-punct: #7d7d7d;
   --tk-kw: #a3a6ff;
-  --term-bg: #141416;
-  --term-line: #232326;
-  --theme-popup-bg: #191919;
-  --theme-popup-border: #2c2c2c;
   --theme-hover: #232323;
   --quote-bg: #1c1815;
   --quote-border: #ef7f2b;
@@ -121,24 +62,6 @@ html:not(.js) {
   --footnote-highlight: #4a2d14;
   --overlay-bg: rgba(0, 0, 0, 0.5);
   --sidebar-header-border-color: #2c2c2c;
-}
-
-@media (prefers-color-scheme: dark) {
-  html:not(.js) {
-    --bg: #101010;
-    --fg: #e6e6e6;
-    --muted: #9a9a9a;
-    --line: #262626;
-    --panel: #191919;
-    --sidebar-bg: #141414;
-    --sidebar-fg: #bdbdbd;
-    --links: #f4934a;
-    --inline-code-color: #e6e6e6;
-    --theme-hover: #232323;
-    --quote-bg: #1c1815;
-    --table-border-color: #262626;
-    --color-scheme: dark;
-  }
 }
 
 /* Type */
@@ -336,9 +259,10 @@ html {
   border-color: var(--accent);
 }
 
-.theme-popup {
-  border-radius: 8px;
-  overflow: hidden;
+/* One theme, so no menu to choose it */
+#mdbook-theme-toggle,
+#mdbook-theme-list {
+  display: none;
 }
 
 /* The sidebar */
@@ -516,9 +440,9 @@ pre.term .buttons button:hover { color: var(--term-fg); }
 
 .at-work .go {
   display: inline-block;
-  padding: 1rem 1.7rem;
+  padding: 1rem 1.9rem;
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: 999px;
   background: var(--bg);
   color: var(--fg) !important;
   font-weight: 500;
