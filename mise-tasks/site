@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#MISE description="Build evoke.build into target/site: the landing page, the install script, the manual rendered by mdBook with a canonical link, a description, a card and a breadcrumb trail on every page, the sitemap dated by git, and robots.txt — checking first that every link in the manual resolves"
+#MISE description="Build evoke.build into target/site: the landing page and the use-cases page, the install script, the manual rendered by mdBook with a canonical link, a description, a card and a breadcrumb trail on every page, the sitemap dated by git, and robots.txt — checking first that every link in the manual resolves"
 """The manual's README is its index: its tables become mdBook's SUMMARY.md, so the site's structure has one source.
 What a search engine or a shared link needs is written here, once, from the pages themselves and from git."""
 import html as html_text, json, re, shutil, subprocess, sys
@@ -50,8 +50,8 @@ def address(page):
 def source(page):
     """The file in the repository a built page comes from."""
     rel = page.relative_to(OUT).as_posix()
-    if rel == "index.html":
-        return SITE / "index.html"
+    if "/" not in rel:
+        return SITE / rel
     if rel == "manual/index.html":
         return MANUAL / "README.md"
     return MANUAL / (rel[len("manual/") : -len(".html")] + ".md")
@@ -146,7 +146,7 @@ shutil.rmtree(SRC, ignore_errors=True)
 shutil.copytree(MANUAL, SRC)
 (SRC / "SUMMARY.md").write_text(summary())
 subprocess.run(["mdbook", "build", str(SITE)], check=True)
-for name in ["index.html", "install.sh", "og.png", "logo.png", "logo-512.png", "apple-touch-icon.png"]:
+for name in ["index.html", "use-cases.html", "install.sh", "og.png", "logo.png", "logo-512.png", "apple-touch-icon.png"]:
     shutil.copy(SITE / name, OUT / name)
 shutil.copy(SITE / "theme/favicon.png", OUT / "favicon.png")
 shutil.copytree(ROOT / "assets", OUT / "assets")
@@ -155,6 +155,6 @@ manual_pages = sorted(OUT.glob("manual/**/*.html"))
 for page in manual_pages:
     described(page)
 shutil.copy(OUT / "manual/404.html", OUT / "404.html")
-listed = [OUT / "index.html", OUT / "manual/index.html"] + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
+listed = [OUT / "index.html", OUT / "use-cases.html", OUT / "manual/index.html"] + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
 dated = sitemap(listed)
 print(f"site: {OUT.relative_to(ROOT)} — {len(listed)} pages in the sitemap{'' if dated else ', undated: the clone has no history'}")

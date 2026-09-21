@@ -1,0 +1,1529 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>evoke — Six sentences, at work</title>
+  <meta name="description" content="Six use cases, each a live scene: an ops channel, an inbox, a payments desk, a plant floor, a runbook, and a lesson. Every recipe as a file anyone can install, and as code your app keeps.">
+  <link rel="canonical" href="https://evoke.build/use-cases.html">
+  <meta name="robots" content="max-image-preview:large">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101010" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="evoke">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="evoke — Six sentences, at work">
+  <meta property="og:description" content="An ops channel, an inbox, a payments desk, a plant floor, a runbook, and a lesson. Each sentence becomes a call of a small program, checked before it runs.">
+  <meta property="og:url" content="https://evoke.build/use-cases.html">
+  <meta property="og:image" content="https://evoke.build/og.png">
+  <meta property="og:image:width" content="2400">
+  <meta property="og:image:height" content="1260">
+  <meta property="og:image:alt" content="evoke — Software, by reflex.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="evoke — Six sentences, at work">
+  <meta name="twitter:description" content="Each sentence becomes a call of a small program, checked before it runs. The same recipe as a file anyone can install, or as code your app keeps.">
+  <meta name="twitter:image" content="https://evoke.build/og.png">
+  <meta name="twitter:image:alt" content="evoke — Software, by reflex.">
+  <link rel="icon" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://evoke.build/use-cases.html",
+        "url": "https://evoke.build/use-cases.html",
+        "name": "Six sentences, at work",
+        "description": "Six use cases, each a live scene: an ops channel, an inbox, a payments desk, a plant floor, a runbook, and a lesson. Every recipe as a file anyone can install, and as code your app keeps.",
+        "inLanguage": "en",
+        "isPartOf": { "@id": "https://evoke.build/#website" },
+        "about": { "@id": "https://evoke.build/#software" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "evoke", "item": "https://evoke.build/" },
+          { "@type": "ListItem", "position": 2, "name": "Use cases" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #ffffff;
+      --fg: #17171a;
+      --muted: #67676e;
+      --faint: #9a9aa1;
+      --line: #e8e6e1;
+      --line-strong: #d8d5ce;
+      --panel: #faf9f7;
+      --panel-head: #f3f1ec;
+      --accent: #ef7f2b;
+      --accent-ink: #c9651a;
+      --accent-soft: rgba(239, 127, 43, .10);
+      --radius: 14px;
+      --radius-s: 9px;
+      --term-bg: #1a1918;
+      --term-head: #22211f;
+      --term-fg: #ebe8e3;
+      --term-dim: #8f8c86;
+      --term-in: #ffffff;
+      --term-ok: #8fd48a;
+      --term-mid: #f0c060;
+      --term-no: #ff7b73;
+      --tk-key: #c9651a;
+      --tk-table: #5a5ecf;
+      --tk-string: #2f7d4f;
+      --tk-num: #a3690f;
+      --tk-comment: #8a8a8a;
+      --tk-punct: #8a8a8a;
+      --tk-kw: #5a5ecf;
+      --tk-ph: #a3690f;
+      --shadow: 0 30px 60px -30px rgba(0, 0, 0, .35);
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+      --lamp: #ffd58e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f0f10;
+        --fg: #ececec;
+        --muted: #9c9ca3;
+        --faint: #6c6c73;
+        --line: #232326;
+        --line-strong: #303035;
+        --panel: #151517;
+        --panel-head: #1b1b1e;
+        --accent-ink: #f4934a;
+        --accent-soft: rgba(244, 147, 74, .12);
+        --term-bg: #141416;
+        --term-head: #1a1a1d;
+        --tk-key: #f0a15c;
+        --tk-table: #a3a6ff;
+        --tk-string: #9ad18f;
+        --tk-num: #f0c060;
+        --tk-comment: #7d7d7d;
+        --tk-punct: #7d7d7d;
+        --tk-kw: #a3a6ff;
+        --tk-ph: #f0c060;
+        --shadow: 0 30px 60px -30px rgba(0, 0, 0, .6);
+      }
+    }
+
+    /* Base */
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent-ink); text-decoration: none; }
+    a:hover { text-decoration: underline; text-underline-offset: .15em; }
+    h1, h2, h3 { text-wrap: balance; }
+    p, li, dd { text-wrap: pretty; }
+    code, pre, kbd { font-family: var(--mono); }
+    p code, li code, h3 code { font-size: .86em; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: .05em .35em; color: var(--fg); white-space: nowrap; }
+    ::selection { background: color-mix(in srgb, var(--accent) 32%, transparent); }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+    .wrap { max-width: 76rem; margin: 0 auto; padding: 0 1.5rem; }
+    /* A grid or flex item never widens its track: what is wider than the track scrolls inside its own box. */
+    .case .grid > *, .side > *, .install > *, .run .grid > * { min-width: 0; }
+    [id] { scroll-margin-top: 4.5rem; }
+
+    /* The bar */
+    header.top {
+      position: sticky; top: 0; z-index: 3;
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+    header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 3.5rem; }
+    .brand { display: flex; align-items: center; gap: .6rem; color: var(--fg); font-weight: 650; letter-spacing: -0.012em; font-size: 1.1rem; }
+    .brand:hover { text-decoration: none; }
+    .brand img { width: 26px; height: 26px; }
+    nav.links { display: flex; align-items: center; gap: 1.5rem; }
+    nav.links a { color: var(--muted); font-size: .95rem; font-weight: 500; }
+    nav.links a:hover, nav.links a.here { color: var(--fg); text-decoration: none; }
+    nav.links a.button { color: var(--fg); }
+
+    /* Buttons and commands */
+    .button {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .7rem 1.15rem; border-radius: var(--radius-s);
+      border: 1px solid var(--line-strong); color: var(--fg);
+      font-weight: 560; font-size: .98rem; line-height: 1.2;
+      transition: border-color .15s, background-color .15s;
+    }
+    .button:hover { text-decoration: none; border-color: var(--muted); }
+    .button.primary { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 70%, transparent); }
+    .button.primary:hover { background: var(--accent-ink); border-color: var(--accent-ink); }
+    .button.small { padding: .42rem .8rem; font-size: .88rem; }
+    .cmd { display: flex; align-items: center; gap: .6rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-s); padding: .55rem .5rem .55rem .9rem; }
+    .cmd code { flex: 1; font-size: .9rem; white-space: nowrap; overflow-x: auto; color: var(--fg); }
+    .cmd code::before { content: "$ "; color: var(--accent); }
+    .cmd button {
+      flex: none; border: 1px solid var(--line); background: var(--bg); color: var(--muted);
+      border-radius: 6px; padding: .3rem .55rem; font: inherit; font-size: .78rem; cursor: pointer;
+      transition: color .15s, border-color .15s;
+    }
+    .cmd button:hover { color: var(--fg); border-color: var(--muted); }
+    .cmd button.done { color: var(--accent-ink); border-color: var(--accent-ink); }
+
+    /* The opening */
+    .hero { padding: 4.5rem 0 0; }
+    .hero .copy { max-width: 46rem; }
+    .hero h1 { font-size: clamp(2.8rem, 5.6vw, 4.4rem); font-weight: 700; letter-spacing: -0.04em; line-height: .98; margin: 0 0 1.3rem; }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero .lede { font-size: 1.22rem; line-height: 1.5; color: var(--muted); max-width: 36rem; margin: 0; }
+    .hero .lede strong { color: var(--fg); font-weight: 600; }
+    .index { list-style: none; margin: 1.9rem 0 0; padding: 1.1rem 0 0; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: .65rem 2rem; }
+    .index a { display: inline-flex; align-items: baseline; gap: .6rem; color: var(--muted); font-size: .95rem; font-weight: 500; transition: color .15s; }
+    .index a:hover { color: var(--fg); text-decoration: none; }
+    .index code { font-size: .78rem; color: var(--accent-ink); background: none; border: 0; padding: 0; letter-spacing: .06em; }
+
+    /* Panels: an editor, a terminal */
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .panel .head {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .6rem .95rem;
+      background: var(--panel-head);
+      border-bottom: 1px solid var(--line);
+      font: 500 .78rem/1.4 var(--mono);
+      color: var(--muted);
+    }
+    .panel .head i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
+    .panel pre { margin: 0; padding: 1rem 1.15rem 1.1rem; font-size: .8rem; line-height: 1.68; overflow-x: auto; color: var(--fg); }
+    .panel pre .k { color: var(--tk-key); }
+    .panel pre .t { color: var(--tk-table); font-weight: 600; }
+    .panel pre .s { color: var(--tk-string); }
+    .panel pre .n { color: var(--tk-num); }
+    .panel pre .c { color: var(--tk-comment); font-style: italic; }
+    .panel pre .o { color: var(--tk-punct); }
+    .panel pre .w { color: var(--tk-kw); }
+    .panel pre .ph { color: var(--tk-ph); font-weight: 600; }
+    .panel.term { background: var(--term-bg); border-color: color-mix(in srgb, var(--term-bg) 60%, #fff 10%); color: var(--term-fg); box-shadow: var(--shadow); }
+    .panel.term .head { background: var(--term-head); border-color: rgba(255, 255, 255, .06); color: var(--term-dim); }
+    .panel.term .head .dots { display: flex; gap: 6px; margin-right: .3rem; }
+    .panel.term .head .dots i { width: 10px; height: 10px; opacity: .85; }
+    .panel.term .head .dots i:nth-child(1) { background: #ff5f57; }
+    .panel.term .head .dots i:nth-child(2) { background: #febc2e; }
+    .panel.term .head .dots i:nth-child(3) { background: #28c840; }
+    .who {
+      margin-left: auto; font-family: inherit; font-size: .64rem; letter-spacing: .07em; text-transform: uppercase;
+      padding: .16rem .55rem; border-radius: 99px; border: 1px solid var(--line-strong); color: var(--muted); line-height: 1.4; white-space: nowrap;
+    }
+    .who.you { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 45%, transparent); background: var(--accent-soft); }
+
+    /* A panel with tabs: files, code, the app */
+    .tabbed .head { padding: .45rem .7rem .45rem .95rem; }
+    .tabbed .tabs { display: flex; gap: .15rem; margin-left: .2rem; overflow-x: auto; scrollbar-width: none; }
+    .tabbed .tabs::-webkit-scrollbar { display: none; }
+    .tabbed [role="tab"] {
+      border: 0; background: none; color: var(--muted); cursor: pointer; white-space: nowrap;
+      font: 500 .78rem/1.4 var(--mono); padding: .3rem .65rem; border-radius: 7px;
+      transition: color .15s, background-color .15s, box-shadow .15s;
+    }
+    .tabbed [role="tab"]:hover { color: var(--fg); }
+    .tabbed [role="tab"][aria-selected="true"] { color: var(--fg); background: var(--bg); box-shadow: 0 0 0 1px var(--line-strong); }
+    .tabbed [role="tabpanel"][hidden] { display: none; }
+    .tabbed pre { font-size: .78rem; }
+    .tabbed .file { display: flex; align-items: center; gap: .6rem; padding: .7rem 1.15rem 0; font: 500 .74rem/1.4 var(--mono); color: var(--faint); }
+    .tabbed .file + pre { padding-top: .55rem; }
+    .tabbed pre + .file { border-top: 1px solid var(--line); padding-top: .8rem; }
+
+    /* A stage: a room that answers, and the lines that made it */
+    .demo .room { position: relative; height: 15rem; background: #101013; overflow: hidden; }
+    .demo .room svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .demo .room text { font: 500 12px var(--mono); fill: #9a978f; }
+    .demo .room text.dim { fill: #5f5f66; }
+    .demo .head .trail { margin-left: auto; display: flex; gap: .95rem; font-size: .66rem; letter-spacing: .07em; text-transform: uppercase; }
+    .demo .head .trail b { font-weight: 500; color: var(--term-dim); opacity: .55; transition: color .35s ease, opacity .35s ease; }
+    .demo .head .trail b.on { color: var(--accent); opacity: 1; }
+    .demo .strip { height: calc(var(--lines, 5) * 1.75em + 1.9rem); padding: .9rem 1.15rem 1rem; font: .8rem/1.75 var(--mono); border-top: 1px solid rgba(255, 255, 255, .07); overflow: hidden; }
+    .demo .line { display: block; min-height: 1.75em; white-space: pre-wrap; overflow-wrap: anywhere; opacity: 0; transition: opacity .3s ease; }
+    .demo .line.show { opacity: 1; }
+    .demo .strip.clear .line { opacity: 0; transition-duration: .2s; }
+    .demo .p { color: var(--accent); }
+    .demo .in { color: var(--term-in); }
+    .demo .own { color: var(--term-dim); }
+    .demo .out { color: var(--term-fg); }
+    .demo .add { color: var(--term-ok); }
+    .demo .line b { color: var(--term-in); font-weight: 600; }
+    .demo .line i { font-style: normal; color: var(--term-ok); }
+    .demo .line i.mid { color: var(--term-mid); }
+    .cursor { display: inline-block; width: .55em; height: 1.05em; background: var(--term-fg); vertical-align: -0.15em; margin-left: 1px; animation: blink 1.1s steps(2, start) infinite; }
+    @keyframes blink { to { visibility: hidden; } }
+    @keyframes belt { to { stroke-dashoffset: -24; } }
+    @keyframes pulse { 50% { filter: drop-shadow(0 0 8px rgba(240, 192, 96, .75)); } }
+
+    /* 01 · the ops board */
+    .ops .pod { fill: #26262b; stroke: #36363d; transition: fill .45s ease, stroke .45s ease, filter .45s ease; }
+    .ops .pod:nth-child(2) { transition-delay: .06s; }
+    .ops .pod:nth-child(3) { transition-delay: .12s; }
+    .ops .pod:nth-child(4) { transition-delay: .18s; }
+    .ops .pod:nth-child(5) { transition-delay: .24s; }
+    .ops .pod:nth-child(6) { transition-delay: .3s; }
+    .ops[data-checkout="2"] .checkout .pod:nth-child(-n+2), .ops[data-checkout="6"] .checkout .pod:nth-child(-n+6),
+    .ops[data-payments="3"] .payments .pod:nth-child(-n+3), .ops[data-payments="1"] .payments .pod:nth-child(-n+1) {
+      fill: var(--accent); stroke: var(--accent); filter: drop-shadow(0 0 5px rgba(239, 127, 43, .5));
+    }
+    .ops .chip { fill: #1c1c21; stroke: #36363d; transition: fill .5s, stroke .5s; }
+    .ops .chip + text { fill: #5f5f66; transition: fill .5s; }
+    .ops[data-release="42"] .v42, .ops[data-release="41"] .v41 { fill: #22233a; stroke: #7c80f0; }
+    .ops[data-release="42"] .v42 + text, .ops[data-release="41"] .v41 + text { fill: #c9cbff; }
+    .ops .bell .body { fill: #34343a; transition: fill .8s; }
+    .ops .bell .clapper { fill: #34343a; transition: fill .8s; }
+    .ops[data-bell="ring"] .bell .body, .ops[data-bell="ring"] .bell .clapper { fill: var(--lamp); }
+    .ops .wave { fill: none; stroke: var(--lamp); stroke-width: 2; stroke-linecap: round; opacity: .85; transition: opacity .7s; }
+    .ops[data-bell="quiet"] .wave { opacity: 0; }
+    .ops .tag { opacity: 0; transition: opacity .7s .3s; }
+    .ops[data-bell="quiet"] .tag { opacity: 1; }
+
+    /* 02 · the stream */
+    .stream .belt { stroke: #26262b; stroke-width: 2; stroke-dasharray: 2 10; stroke-linecap: round; animation: belt 1.4s linear infinite; }
+    .stream .item rect { fill: #1d1d22; stroke: #3a3a42; }
+    .stream .item text { fill: #d6d3cc; }
+    .stream .item { transition: transform 1s cubic-bezier(.2, .7, .2, 1), opacity .8s; }
+    .stream .i1 { transform: translate(70px, 54px); }
+    .stream .i2 { transform: translate(70px, 104px); }
+    .stream .i3 { transform: translate(70px, 154px); }
+    .stream[data-l1="ran"] .i1 { transform: translate(228px, 54px); }
+    .stream[data-l2="queued"] .i2 { transform: translate(228px, 104px); }
+    .stream[data-l3="none"] .i3 { transform: translate(228px, 154px); opacity: .45; }
+    .stream .lane .mark { fill: #1a1a1e; stroke: #36363d; stroke-width: 1.5; transition: stroke .5s; }
+    .stream .lane path { fill: none; stroke: #5f5f66; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: stroke .5s; }
+    .stream .lane .face { fill: #5f5f66; transition: fill .5s; }
+    .stream[data-l1="ran"] .ran .mark, .stream[data-l1="ran"] .ran path { stroke: var(--term-ok); }
+    .stream[data-l2="queued"] .person .mark, .stream[data-l2="queued"] .person path { stroke: var(--term-mid); }
+    .stream[data-l2="queued"] .person .face { fill: var(--term-mid); }
+    .stream[data-l3="none"] .none .mark { stroke: #4a4a52; }
+
+    /* 03 · the desk */
+    .bank .seat .head { fill: #34343a; transition: fill .6s; }
+    .bank .seat .body { fill: none; stroke: #34343a; stroke-width: 3; stroke-linecap: round; transition: stroke .6s; }
+    .bank[data-card="maker"] .maker .head, .bank[data-card="checker"] .checker .head { fill: var(--lamp); }
+    .bank[data-card="maker"] .maker .body, .bank[data-card="checker"] .checker .body { stroke: var(--lamp); }
+    .bank .queue { fill: none; stroke: #36363d; stroke-dasharray: 5 6; }
+    .bank .card { transform: translate(80px, 140px); opacity: 0; transition: transform 1s cubic-bezier(.2, .7, .2, 1), opacity .6s; }
+    .bank .card rect { fill: #1d1d22; stroke: #4a4a52; transition: stroke .5s; }
+    .bank .card text { fill: #ebe8e3; font-size: 11px; }
+    .bank .card text.dim { fill: #8f8c86; }
+    .bank[data-card="maker"] .card { opacity: 1; }
+    .bank[data-card="queue"] .card { transform: translate(210px, 140px); opacity: 1; }
+    .bank[data-card="checker"] .card { transform: translate(340px, 140px); opacity: 1; }
+    .bank .stamp { opacity: 0; transition: opacity .4s; }
+    .bank .stamp circle { fill: #101013; stroke-width: 2; }
+    .bank .stamp path { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .bank .stamp.yes circle, .bank .stamp.yes path { stroke: var(--term-ok); }
+    .bank .stamp.no circle, .bank .stamp.no path { stroke: var(--term-no); }
+    .bank[data-stamp="yes"] .stamp.yes, .bank[data-stamp="no"] .stamp.no { opacity: 1; }
+    .bank[data-stamp="yes"] .card rect { stroke: var(--term-ok); }
+    .bank[data-stamp="no"] .card rect { stroke: var(--term-no); }
+
+    /* 04 · the floor */
+    .plant .rail { stroke: #222226; stroke-width: 10; stroke-linecap: round; }
+    .plant .flow { stroke: var(--lamp); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 5 19; opacity: .9; animation: belt 1.5s linear infinite; transition: opacity 1.2s ease; }
+    .plant[data-line3="stop"] .b3 .flow, .plant[data-line2="stop"] .b2 .flow { animation-play-state: paused; opacity: .16; }
+    .plant .stopped { fill: var(--term-mid); opacity: 0; transition: opacity .6s .4s; }
+    .plant[data-line3="stop"] .b3 .stopped, .plant[data-line2="stop"] .b2 .stopped { opacity: 1; }
+
+    /* 05 · the chain */
+    .runbook .wire { stroke: #26262b; stroke-width: 3; stroke-linecap: round; }
+    .runbook .pulse { stroke: var(--term-ok); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 4 14; opacity: 0; transition: opacity .6s; animation: belt 1.2s linear infinite; }
+    .runbook .ring { fill: #1a1a1e; stroke: #36363d; stroke-width: 2; transition: stroke .5s; }
+    .runbook .core { fill: #34343a; transition: fill .5s; }
+    .runbook[data-drain="ran"] .drain .ring, .runbook[data-failover="ran"] .failover .ring, .runbook[data-verify="ran"] .verify .ring { stroke: var(--term-ok); }
+    .runbook[data-drain="ran"] .drain .core, .runbook[data-failover="ran"] .failover .core, .runbook[data-verify="ran"] .verify .core { fill: var(--term-ok); }
+    .runbook[data-failover="confirm"] .failover .ring { stroke: var(--term-mid); animation: pulse 1.1s ease-in-out infinite; }
+    .runbook[data-failover="confirm"] .failover .core { fill: var(--term-mid); }
+    .runbook[data-drain="ran"] .l1 .pulse, .runbook[data-failover="ran"] .l2 .pulse { opacity: 1; }
+
+    /* 06 · the bar */
+    .teach .track { stroke: #26262b; stroke-width: 8; stroke-linecap: round; }
+    .teach .track.ok { stroke: rgba(143, 212, 138, .22); }
+    .teach .tick { stroke: #6a6a72; stroke-width: 2; }
+    .teach .mark { transform: translate(371px, 86px); transition: transform 1.1s cubic-bezier(.2, .7, .2, 1); }
+    .teach .dot { fill: var(--term-mid); filter: drop-shadow(0 0 6px rgba(240, 192, 96, .55)); transition: fill .8s, filter .8s; }
+    .teach .val { fill: var(--term-mid); transition: opacity .5s; }
+    .teach .val.after { opacity: 0; fill: var(--term-ok); }
+    .teach[data-mark="after"] .mark { transform: translate(443px, 86px); }
+    .teach[data-mark="after"] .dot { fill: var(--term-ok); filter: drop-shadow(0 0 6px rgba(143, 212, 138, .55)); }
+    .teach[data-mark="after"] .val.before { opacity: 0; }
+    .teach[data-mark="after"] .val.after { opacity: 1; }
+    .teach .paper { fill: #1a1a1e; stroke: #36363d; transition: stroke .6s; }
+    .teach .lesson { fill: #ebe8e3; font-size: 11px; opacity: 0; transition: opacity .6s .2s; }
+    .teach .lesson .plus { fill: var(--term-ok); }
+    .teach[data-lesson="1"] .lesson { opacity: 1; }
+    .teach[data-lesson="1"] .paper { stroke: rgba(143, 212, 138, .55); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cursor, .stream .belt, .plant .flow, .runbook .pulse, .runbook .ring { animation: none; }
+      html { scroll-behavior: auto; }
+    }
+
+    /* Section furniture */
+    section { padding: 5rem 0 0; }
+    .rule { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 1.1rem; margin: 0 0 1.25rem; }
+    .label { font-size: .76rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--accent-ink); margin: 0; }
+    .rule .num { font: 500 .74rem/1 var(--mono); color: var(--faint); letter-spacing: .08em; }
+    section h2 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); font-weight: 650; letter-spacing: -0.028em; line-height: 1.12; margin: 0 0 .7rem; max-width: 30ch; }
+    p.sub { color: var(--muted); font-size: 1.08rem; line-height: 1.55; max-width: 46rem; margin: 0 0 2rem; }
+    p.sub strong { color: var(--fg); font-weight: 600; }
+    p.after { color: var(--muted); font-size: .97rem; margin: 1.5rem 0 0; }
+
+    /* A case: the stage beside the files, the code and the app */
+    .case .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 1.25rem; align-items: start; }
+    @media (min-width: 1360px) { .case .grid, .run .grid { margin-left: -2.5rem; margin-right: -2.5rem; } }
+    .case .demo { position: sticky; top: 4.75rem; }
+    .side { display: grid; gap: 1.1rem; }
+    .notes { list-style: none; margin: .1rem 0 0; padding: 0 .25rem; display: grid; gap: .55rem; }
+    .notes li { display: flex; gap: .7rem; align-items: flex-start; color: var(--muted); font-size: .95rem; line-height: 1.5; }
+    .notes li strong { color: var(--fg); font-weight: 600; }
+    .notes b { flex: none; width: 1.4rem; height: 1.4rem; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); font: 600 .7rem/1.4rem var(--mono); text-align: center; margin-top: .1rem; }
+
+    /* Run it */
+    .run .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; }
+    .install { display: grid; gap: 1.1rem; }
+    .way { border: 1px solid var(--line); border-radius: var(--radius); padding: 1.2rem 1.3rem; background: var(--panel); }
+    .way h3 { margin: 0 0 .25rem; font-size: 1.02rem; font-weight: 640; }
+    .way p { margin: 0 0 .85rem; color: var(--muted); font-size: .95rem; }
+    .way .cmd { background: var(--bg); }
+
+    footer { margin-top: 5.5rem; border-top: 1px solid var(--line); padding: 2.25rem 0 3rem; color: var(--muted); font-size: .9rem; }
+    footer .tag { margin: 0 0 1.4rem; font: 500 .9rem/1.5 var(--mono); color: var(--faint); }
+    footer .row { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; }
+    footer nav { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--fg); }
+
+    @media (max-width: 960px) {
+      .case .grid, .run .grid { grid-template-columns: 1fr; }
+      .case .demo { position: static; }
+      section { padding-top: 4rem; }
+      .hero { padding-top: 3.5rem; }
+      nav.links { gap: 1rem; }
+      nav.links a.wide { display: none; }
+    }
+    @media (max-width: 560px) {
+      .demo .room { height: 12.5rem; }
+      .demo .strip { height: calc(8 * 1.75em + 1.9rem); }
+      .who { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="./"><img src="logo.png" alt="" width="26" height="26">evoke</a>
+      <nav class="links">
+        <a href="manual/">Manual</a>
+        <a class="here" href="use-cases.html" aria-current="page">Use cases</a>
+        <a class="wide" href="manual/sdk/getting-started.html">SDK</a>
+        <a class="wide" href="./#jev">Jev</a>
+        <a class="wide" href="https://github.com/evoke-build/evoke">GitHub</a>
+        <a class="button small" href="#run">Install</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="hero">
+      <div class="copy">
+      <h1>Six sentences, <em>at work.</em></h1>
+      <p class="lede"><strong>Each one becomes a call of a small program, checked before it runs.</strong> The same
+        recipe as a file anyone can install, or as code your app keeps. Every scene is a real session.</p>
+      </div>
+      <ul class="index" aria-label="The six use cases">
+        <li><a href="#ops"><code>01</code>An ops channel</a></li>
+        <li><a href="#stream"><code>02</code>An inbox</a></li>
+        <li><a href="#bank"><code>03</code>A payments desk</a></li>
+        <li><a href="#plant"><code>04</code>A plant floor</a></li>
+        <li><a href="#runbook"><code>05</code>A runbook</a></li>
+        <li><a href="#teach"><code>06</code>A lesson</a></li>
+      </ul>
+    </div>
+
+    <section class="case" id="ops">
+      <div class="rule"><p class="label">An ops channel</p><span class="num">01</span></div>
+      <h2>Scale, silence, roll back.</h2>
+      <p class="sub">Three recipes for one channel. The one that wraps <code>kubectl</code> is a manifest and nothing
+        else. <strong>A write runs when the bar is met. A rollback always asks.</strong></p>
+      <div class="grid">
+        <div class="panel term demo ops" data-scene="ops" data-checkout="2" data-payments="3" data-release="42" data-bell="ring" aria-label="An ops board answering four sentences">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/ops<span class="trail" aria-hidden="true"><b>run</b><b>ask</b><b>confirm</b></span></div>
+          <div class="room">
+            <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <g class="row checkout" transform="translate(0 46)">
+                <text x="76" y="17">checkout</text>
+                <g class="pods" transform="translate(170 0)">
+                  <rect class="pod" x="0" y="0" width="24" height="24" rx="7"/>
+                  <rect class="pod" x="32" y="0" width="24" height="24" rx="7"/>
+                  <rect class="pod" x="64" y="0" width="24" height="24" rx="7"/>
+                  <rect class="pod" x="96" y="0" width="24" height="24" rx="7"/>
+                  <rect class="pod" x="128" y="0" width="24" height="24" rx="7"/>
+                  <rect class="pod" x="160" y="0" width="24" height="24" rx="7"/>
+                </g>
+                <g class="release" transform="translate(392 0)">
+                  <rect class="chip v42" x="0" y="0" width="42" height="24" rx="7"/><text x="21" y="16" text-anchor="middle">v42</text>
+                  <rect class="chip v41" x="52" y="0" width="42" height="24" rx="7"/><text x="73" y="16" text-anchor="middle">v41</text>
+                </g>
+              </g>
+              <g class="row payments" transform="translate(0 104)">
+                <text x="76" y="17">payments</text>
+                <g class="pods" transform="translate(170 0)">
+                  <rect class="pod" x="0" y="0" width="24" height="24" rx="7"/>
+                  <rect class="pod" x="32" y="0" width="24" height="24" rx="7"/>
+                  <rect class="pod" x="64" y="0" width="24" height="24" rx="7"/>
+                  <rect class="pod" x="96" y="0" width="24" height="24" rx="7"/>
+                  <rect class="pod" x="128" y="0" width="24" height="24" rx="7"/>
+                  <rect class="pod" x="160" y="0" width="24" height="24" rx="7"/>
+                </g>
+              </g>
+              <g class="row host" transform="translate(0 162)">
+                <text x="76" y="17">db-3</text>
+                <g class="bell" transform="translate(176 -4)">
+                  <path class="body" d="M11 24 H33 V22 C33 18 30 16 30 10 A8 8 0 0 0 14 10 C14 16 11 18 11 22 Z"/>
+                  <circle class="clapper" cx="22" cy="28" r="2.6"/>
+                  <path class="wave" d="M42 7 q5 8 0 16"/>
+                  <path class="wave" d="M49 3 q9 12 0 24"/>
+                  <path class="wave" d="M56 -1 q13 16 0 32"/>
+                </g>
+                <text class="tag" x="262" y="17">silenced until 01:12 AM</text>
+              </g>
+            </svg>
+          </div>
+          <div class="strip" aria-live="off">
+            <span class="line say show"><span class="p">$</span> <span class="in">evoke "silence db-3 for 2 hours"</span></span>
+            <span class="line own show">  <b>silence</b> host="db-3" duration="2 hours"  <i>0.99</i></span>
+            <span class="line out show">db-3 silenced until 01:12 AM</span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="panel tabbed">
+            <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The ops channel as files, as code, and the app">
+              <button role="tab" id="ops-t1" aria-controls="ops-p1" aria-selected="true">files</button>
+              <button role="tab" id="ops-t2" aria-controls="ops-p2" aria-selected="false" tabindex="-1">code</button>
+              <button role="tab" id="ops-t3" aria-controls="ops-p3" aria-selected="false" tabindex="-1">the app</button>
+            </div></div>
+            <div role="tabpanel" id="ops-p1" aria-labelledby="ops-t1">
+              <div class="file">scale/reflex.toml<span class="who">the author's</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
+<span class="s">Scale a service to a number of replicas.</span>
+<span class="s">One deployment in one environment; the number is set, never added to."""</span>
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span>
+  "restarting or rolling back a service",
+  "resizing a database or a disk",
+  "autoscaling rules",
+]
+<span class="k">tags</span>    <span class="o">=</span> <span class="o">[</span><span class="s">"ops"</span><span class="o">]</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Scale <span class="ph">{service}</span> in <span class="ph">{env}</span> to <span class="ph">{replicas}</span>?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="o">[</span>
+  "kubectl", "-n", "{env}", "scale", "deployment", "{service}",
+  "--replicas", "{replicas}",
+]
+
+<span class="t">[args.service]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which service?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"services"</span>
+
+<span class="t">[args.env]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which environment?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"envs"</span>
+
+<span class="t">[args.replicas]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"How many replicas?"</span>
+<span class="k">pick</span>  <span class="o">=</span> <span class="s">"number"</span>
+<span class="k">range</span> <span class="o">=</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">20</span><span class="o">]</span>
+
+<span class="t">[examples]</span>
+<span class="s">"scale checkout to 6 in staging"</span>   <span class="o">=</span> <span class="o">{</span> <span class="k">replicas</span> <span class="o">=</span> <span class="s">"6"</span> <span class="o">}</span>
+<span class="s">"run 3 replicas of search in prod"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">replicas</span> <span class="o">=</span> <span class="s">"3"</span> <span class="o">}</span>
+<span class="s">"take payments down to 1 replica"</span>  <span class="o">=</span> <span class="o">{</span> <span class="k">replicas</span> <span class="o">=</span> <span class="s">"1"</span> <span class="o">}</span>
+
+<span class="t">[tests]</span>
+<span class="s">"bring checkout up to 12 in prod"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">replicas</span> <span class="o">=</span> <span class="s">"12"</span> <span class="o">}</span>
+<span class="s">"scale checkout"</span>                  <span class="o">=</span> <span class="o">{</span> <span class="k">replicas</span> <span class="o">=</span> <span class="n">false</span> <span class="o">}</span>
+<span class="s">"restart checkout"</span>                <span class="o">=</span> <span class="n">false</span></pre>
+              <div class="file">vocab/services.toml<span class="who you">yours</span></div>
+<pre><span class="k">checkout</span> <span class="o">=</span> <span class="o">{</span> <span class="k">what</span> <span class="o">=</span> <span class="s">"The checkout API."</span><span class="o">,</span> <span class="k">value</span> <span class="o">=</span> <span class="s">"checkout-api"</span> <span class="o">}</span>
+<span class="k">search</span>   <span class="o">=</span> <span class="o">{</span> <span class="k">what</span> <span class="o">=</span> <span class="s">"The search API."</span><span class="o">,</span> <span class="k">value</span> <span class="o">=</span> <span class="s">"search-api"</span> <span class="o">}</span>
+<span class="k">payments</span> <span class="o">=</span> <span class="o">{</span> <span class="k">what</span> <span class="o">=</span> <span class="s">"Payments; also 'the gateway'."</span><span class="o">,</span> <span class="k">value</span> <span class="o">=</span> <span class="s">"payments-svc"</span> <span class="o">}</span></pre>
+            </div>
+            <div role="tabpanel" id="ops-p2" aria-labelledby="ops-t2" hidden>
+              <div class="file">reflexes.ts<span class="who you">yours</span></div>
+<pre><span class="w">import</span> <span class="o">{</span> execFile <span class="o">}</span> <span class="w">from</span> <span class="s">"node:child_process"</span>
+<span class="w">import</span> <span class="o">{</span> promisify <span class="o">}</span> <span class="w">from</span> <span class="s">"node:util"</span>
+<span class="w">import</span> <span class="o">{</span> <span class="w">type</span> Vocab<span class="o">,</span> reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+
+<span class="w">const</span> kubectl <span class="o">=</span> <span class="w">async</span> <span class="o">(...</span>args<span class="o">:</span> string<span class="o">[])</span> <span class="o">=&gt;</span>
+  <span class="o">(</span><span class="w">await</span> promisify<span class="o">(</span>execFile<span class="o">)(</span><span class="s">"kubectl"</span><span class="o">,</span> args<span class="o">)).</span>stdout<span class="o">.</span>trim<span class="o">()</span>
+
+<span class="w">export</span> <span class="w">const</span> scale <span class="o">=</span> reflex<span class="o">({</span>
+  <span class="k">description</span><span class="o">:</span> <span class="s">"Scale a service to a number of replicas.\n"</span> <span class="o">+</span>
+    <span class="s">"One deployment in one environment; the number is set, never added to."</span><span class="o">,</span>
+  <span class="k">not_for</span><span class="o">:</span> <span class="o">[</span>
+    <span class="s">"restarting or rolling back a service"</span><span class="o">,</span>
+    <span class="s">"resizing a database or a disk"</span><span class="o">,</span>
+    <span class="s">"autoscaling rules"</span><span class="o">,</span>
+  <span class="o">],</span>
+  <span class="k">effect</span><span class="o">:</span> <span class="s">"write"</span><span class="o">,</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="s">"Scale <span class="ph">{service}</span> in <span class="ph">{env}</span> to <span class="ph">{replicas}</span>?"</span><span class="o">,</span>
+  <span class="k">args</span><span class="o">:</span> <span class="o">{</span>
+    <span class="k">service</span><span class="o">:</span>  <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"Which service?"</span><span class="o">,</span> <span class="k">vocab</span><span class="o">:</span> <span class="s">"services"</span> <span class="o">},</span>
+    <span class="k">env</span><span class="o">:</span>      <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"Which environment?"</span><span class="o">,</span> <span class="k">vocab</span><span class="o">:</span> <span class="s">"envs"</span> <span class="o">},</span>
+    <span class="k">replicas</span><span class="o">:</span> <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"How many replicas?"</span><span class="o">,</span> <span class="k">pick</span><span class="o">:</span> <span class="s">"number"</span><span class="o">,</span> <span class="k">range</span><span class="o">:</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">20</span><span class="o">]</span> <span class="o">},</span>
+  <span class="o">},</span>
+  <span class="k">examples</span><span class="o">:</span> <span class="o">{</span>
+    <span class="s">"scale checkout to 6 in staging"</span><span class="o">:</span>   <span class="o">{</span> <span class="k">replicas</span><span class="o">:</span> <span class="s">"6"</span> <span class="o">},</span>
+    <span class="s">"run 3 replicas of search in prod"</span><span class="o">:</span> <span class="o">{</span> <span class="k">replicas</span><span class="o">:</span> <span class="s">"3"</span> <span class="o">},</span>
+    <span class="s">"take payments down to 1 replica"</span><span class="o">:</span>  <span class="o">{</span> <span class="k">replicas</span><span class="o">:</span> <span class="s">"1"</span> <span class="o">},</span>
+  <span class="o">},</span>
+<span class="o">},</span> <span class="o">({</span> service<span class="o">,</span> env<span class="o">,</span> replicas <span class="o">})</span> <span class="o">=&gt;</span>
+  kubectl<span class="o">(</span><span class="s">"-n"</span><span class="o">,</span> env<span class="o">,</span> <span class="s">"scale"</span><span class="o">,</span> <span class="s">"deployment"</span><span class="o">,</span> service<span class="o">,</span> <span class="s">`--replicas=${replicas}`</span><span class="o">))</span>
+
+<span class="c">// silence and rollback follow, the same way</span>
+
+<span class="c">// The team's names, in the file's form; from a database in a real app.</span>
+<span class="w">export</span> <span class="w">const</span> vocab<span class="o">:</span> Vocab <span class="o">=</span> <span class="o">{</span>
+  <span class="k">services</span><span class="o">:</span> <span class="o">{</span>
+    <span class="k">checkout</span><span class="o">:</span> <span class="o">{</span> <span class="k">what</span><span class="o">:</span> <span class="s">"The checkout API."</span><span class="o">,</span> <span class="k">value</span><span class="o">:</span> <span class="s">"checkout-api"</span> <span class="o">},</span>
+    <span class="k">search</span><span class="o">:</span>   <span class="o">{</span> <span class="k">what</span><span class="o">:</span> <span class="s">"The search API."</span><span class="o">,</span> <span class="k">value</span><span class="o">:</span> <span class="s">"search-api"</span> <span class="o">},</span>
+    <span class="k">payments</span><span class="o">:</span> <span class="o">{</span> <span class="k">what</span><span class="o">:</span> <span class="s">"Payments; also 'the gateway'."</span><span class="o">,</span> <span class="k">value</span><span class="o">:</span> <span class="s">"payments-svc"</span> <span class="o">},</span>
+  <span class="o">},</span>
+  <span class="k">envs</span><span class="o">:</span> <span class="o">{</span>
+    <span class="k">staging</span><span class="o">:</span> <span class="s">"The pre-production cluster."</span><span class="o">,</span>
+    <span class="k">prod</span><span class="o">:</span>    <span class="o">{</span> <span class="k">what</span><span class="o">:</span> <span class="s">"Production; also 'live'."</span><span class="o">,</span> <span class="k">value</span><span class="o">:</span> <span class="s">"production"</span> <span class="o">},</span>
+  <span class="o">},</span>
+  <span class="k">hosts</span><span class="o">:</span> <span class="o">{</span>
+    <span class="s">"db-3"</span><span class="o">:</span>  <span class="s">"The primary Postgres host."</span><span class="o">,</span>
+    <span class="s">"web-1"</span><span class="o">:</span> <span class="s">"The first web node."</span><span class="o">,</span>
+  <span class="o">},</span>
+<span class="o">}</span></pre>
+            </div>
+            <div role="tabpanel" id="ops-p3" aria-labelledby="ops-t3" hidden>
+              <div class="file">app.ts<span class="who">loads the files</span></div>
+<pre><span class="c">// The project next to this file: reflex.toml, vocab/, overlays/.</span>
+<span class="c">// One sentence in, one line out.</span>
+<span class="w">import</span> <span class="o">{</span> load <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+<span class="w">import</span> <span class="o">{</span> done<span class="o">,</span> handlers <span class="o">}</span> <span class="w">from</span> <span class="s">"../terminal.ts"</span>
+
+<span class="w">const</span> ops <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> root<span class="o">:</span> <span class="w">import</span><span class="o">.</span>meta<span class="o">.</span>dirname <span class="o">})</span>
+<span class="w">const</span> handled <span class="o">=</span> <span class="w">await</span> ops<span class="o">.</span>handle<span class="o">(</span>process<span class="o">.</span>argv<span class="o">[</span><span class="n">2</span><span class="o">]</span> <span class="o">??</span> <span class="s">""</span><span class="o">,</span> handlers<span class="o">)</span>
+console<span class="o">.</span>log<span class="o">(</span>handled<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"ran"</span> <span class="o">?</span> handled<span class="o">.</span>result<span class="o">.</span>text <span class="o">:</span> handled<span class="o">.</span>outcome<span class="o">)</span>
+done<span class="o">()</span></pre>
+              <div class="file">code.ts<span class="who">loads the code</span></div>
+<pre><span class="c">// The reflexes above, loaded from code alone: no files,</span>
+<span class="c">// the team's names handed over with `with`.</span>
+<span class="w">import</span> <span class="o">{</span> load <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+<span class="w">import</span> <span class="o">{</span> jev <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke/jev"</span>
+<span class="w">import</span> <span class="o">{</span> done<span class="o">,</span> handlers <span class="o">}</span> <span class="w">from</span> <span class="s">"../terminal.ts"</span>
+<span class="w">import</span> <span class="o">{</span> rollback<span class="o">,</span> scale<span class="o">,</span> silence<span class="o">,</span> vocab <span class="o">}</span> <span class="w">from</span> <span class="s">"./reflexes.ts"</span>
+
+<span class="w">const</span> reflexes <span class="o">=</span> <span class="o">{</span> scale<span class="o">,</span> silence<span class="o">,</span> rollback <span class="o">}</span>
+<span class="w">const</span> ops <span class="o">=</span> <span class="o">(</span><span class="w">await</span> load<span class="o">({</span> reflexes<span class="o">,</span> <span class="k">adapter</span><span class="o">:</span> jev<span class="o">()</span> <span class="o">})).</span>with<span class="o">({</span> vocab <span class="o">})</span>
+<span class="w">const</span> handled <span class="o">=</span> <span class="w">await</span> ops<span class="o">.</span>handle<span class="o">(</span>process<span class="o">.</span>argv<span class="o">[</span><span class="n">2</span><span class="o">]</span> <span class="o">??</span> <span class="s">""</span><span class="o">,</span> handlers<span class="o">)</span>
+console<span class="o">.</span>log<span class="o">(</span>handled<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"ran"</span> <span class="o">?</span> handled<span class="o">.</span>result<span class="o">.</span>text <span class="o">:</span> handled<span class="o">.</span>outcome<span class="o">)</span>
+done<span class="o">()</span></pre>
+            </div>
+          </div>
+          <ol class="notes">
+            <li><b>1</b><span><strong>kubectl, no code.</strong> An argv recipe is a manifest and nothing else.</span></li>
+            <li><b>2</b><span><strong>Your names, from a vocabulary.</strong> The value is what the program gets. Jev sees the word.</span></li>
+            <li><b>3</b><span><strong>In code, the same text.</strong> <code>with</code> hands the names over, from a database in a real app.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="case" id="stream">
+      <div class="rule"><p class="label">An inbox</p><span class="num">02</span></div>
+      <h2>Lines in, decisions out.</h2>
+      <p class="sub">The same three recipes, fed a file. <strong>What is sure runs.</strong> What needs a person is
+        queued with its ranking. What is nobody's stays untouched.</p>
+      <div class="grid">
+        <div class="panel term demo stream" data-scene="stream" aria-label="Three lines sorted into three lanes">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/ops<span class="trail" aria-hidden="true"><b>ran</b><b>queued</b><b>nobody's</b></span></div>
+          <div class="room">
+            <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <text class="dim" x="70" y="38">inbox.txt</text>
+              <line class="belt" x1="232" y1="67" x2="380" y2="67"/>
+              <line class="belt" x1="232" y1="117" x2="380" y2="117"/>
+              <line class="belt" x1="232" y1="167" x2="380" y2="167"/>
+              <g class="item i1"><rect width="150" height="26" rx="7"/><text x="11" y="17">scale checkout to 6</text></g>
+              <g class="item i2"><rect width="150" height="26" rx="7"/><text x="11" y="17">silence db-3</text></g>
+              <g class="item i3"><rect width="150" height="26" rx="7"/><text x="11" y="17">what is the weather</text></g>
+              <g class="lane ran" transform="translate(392 54)"><circle class="mark" cx="13" cy="13" r="12"/><path d="M8 13.5 l3.5 3.5 l7 -8"/><text x="34" y="17">ran</text></g>
+              <g class="lane person" transform="translate(392 104)"><circle class="mark" cx="13" cy="13" r="12"/><circle class="face" cx="13" cy="9.5" r="3.2"/><path d="M7.5 19.5 a5.5 5.5 0 0 1 11 0"/><text x="34" y="17">a person</text></g>
+              <g class="lane none" transform="translate(392 154)"><circle class="mark" cx="13" cy="13" r="12"/><path d="M8.5 13 h9"/><text x="34" y="17">nobody's</text></g>
+            </svg>
+          </div>
+          <div class="strip" style="--lines: 6" aria-live="off">
+            <span class="line say show"><span class="p">$</span> <span class="in">node queue.ts &lt; inbox.txt</span></span>
+            <span class="line out show">deployment.apps/checkout-api scaled</span>
+            <span class="line out show">queued · ask · "silence db-3"</span>
+            <span class="line out show">queued · abstain · "what is the weather like"</span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="panel tabbed">
+            <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The inbox as files and as code">
+              <button role="tab" id="stream-t1" aria-controls="stream-p1" aria-selected="true">files</button>
+              <button role="tab" id="stream-t2" aria-controls="stream-p2" aria-selected="false" tabindex="-1">code</button>
+            </div></div>
+            <div role="tabpanel" id="stream-p1" aria-labelledby="stream-t1">
+              <div class="file">inbox.txt<span class="who you">yours</span></div>
+<pre>scale checkout to 6 in staging
+silence db-3
+what is the weather like</pre>
+            </div>
+            <div role="tabpanel" id="stream-p2" aria-labelledby="stream-t2" hidden>
+              <div class="file">queue.ts<span class="who you">yours</span></div>
+<pre><span class="c">// The inbox as a stream. What is sure runs; the rest is queued for a person,</span>
+<span class="c">// with the ranking or the missing pieces.</span>
+<span class="w">import</span> <span class="o">{</span> createInterface <span class="o">}</span> <span class="w">from</span> <span class="s">"node:readline"</span>
+<span class="w">import</span> <span class="o">{</span> load <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+
+<span class="w">const</span> ops <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> root<span class="o">:</span> <span class="w">import</span><span class="o">.</span>meta<span class="o">.</span>dirname <span class="o">})</span>
+<span class="w">for</span> <span class="w">await</span> <span class="o">(</span><span class="w">const</span> line <span class="w">of</span> createInterface<span class="o">({</span> input<span class="o">:</span> process<span class="o">.</span>stdin <span class="o">}))</span> <span class="o">{</span>
+  <span class="w">const</span> d <span class="o">=</span> <span class="w">await</span> ops<span class="o">.</span>decide<span class="o">(</span>line<span class="o">)</span>
+  <span class="w">if</span> <span class="o">(</span>d<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"run"</span><span class="o">)</span> console<span class="o">.</span>log<span class="o">((</span><span class="w">await</span> ops<span class="o">.</span>run<span class="o">(</span>d<span class="o">)).</span>text<span class="o">)</span>
+  <span class="w">else</span> console<span class="o">.</span>log<span class="o">(</span><span class="s">`queued · ${d.outcome} · "${line}"`</span><span class="o">)</span>
+<span class="o">}</span></pre>
+            </div>
+          </div>
+          <ol class="notes">
+            <li><b>1</b><span><strong>At the terminal, exit 3 is the queue.</strong> <code>evoke &lt; inbox.txt</code> names the command a person should run.</span></li>
+            <li><b>2</b><span><strong>The ranking travels with it.</strong> Every decision carries its contenders and what is missing.</span></li>
+            <li><b>3</b><span><strong>Nothing was invented.</strong> A question about the weather is nobody's, and stays so.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="case" id="bank">
+      <div class="rule"><p class="label">A payments desk</p><span class="num">03</span></div>
+      <h2>The maker types. The checker says yes.</h2>
+      <p class="sub">A payee is one of your words, never invented. <strong>Paying is destructive, so the decision
+        waits as plain data</strong> until a second person confirms it.</p>
+      <div class="grid">
+        <div class="panel term demo bank" data-scene="bank" aria-label="A payment moving from the maker to the checker">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/desk<span class="trail" aria-hidden="true"><b>maker</b><b>queue</b><b>checker</b></span></div>
+          <div class="room">
+            <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <g class="seat maker" transform="translate(150 54)"><circle class="head" r="11"/><path class="body" d="M-17 36 a17 17 0 0 1 34 0"/><text y="62" text-anchor="middle">maker</text></g>
+              <g class="seat checker" transform="translate(410 54)">
+                <circle class="head" r="11"/><path class="body" d="M-17 36 a17 17 0 0 1 34 0"/><text y="62" text-anchor="middle">checker</text>
+                <g class="stamp yes" transform="translate(22 -14)"><circle r="10"/><path d="M-5 0.5 l3.5 3.5 l7 -8"/></g>
+                <g class="stamp no" transform="translate(22 -14)"><circle r="10"/><path d="M-4.5 -4.5 l9 9 M4.5 -4.5 l-9 9"/></g>
+              </g>
+              <g class="slot" transform="translate(210 140)"><rect class="queue" width="140" height="46" rx="10"/><text class="dim" x="70" y="68" text-anchor="middle">a queue · plain data</text></g>
+              <g class="card">
+                <rect width="140" height="46" rx="10"/>
+                <text x="14" y="20">pay acme 12400</text>
+                <text class="dim" x="14" y="36">ops · destructive</text>
+              </g>
+            </svg>
+          </div>
+          <div class="strip" style="--lines: 6" aria-live="off">
+            <span class="line say show"><span class="p">$</span> <span class="in">node checker.ts</span></span>
+            <span class="line out show">pay payee="acme" account="ops" amount="12400" ref="invoice 8812"</span>
+            <span class="line out show">pay payee="acme" account="ops" amount="12400" ref="invoice 8812" · destructive · weakest: route 1.00</span>
+            <span class="line out show">paid 12400 from acc_ops, transfer tr_0f3a</span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="panel tabbed">
+            <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The payments desk as files, as code, and the app">
+              <button role="tab" id="bank-t1" aria-controls="bank-p1" aria-selected="true">files</button>
+              <button role="tab" id="bank-t2" aria-controls="bank-p2" aria-selected="false" tabindex="-1">code</button>
+              <button role="tab" id="bank-t3" aria-controls="bank-p3" aria-selected="false" tabindex="-1">the app</button>
+            </div></div>
+            <div role="tabpanel" id="bank-p1" aria-labelledby="bank-t1">
+              <div class="file">pay/reflex.toml<span class="who">the author's</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
+<span class="s">Pay an approved payee from one of our accounts.</span>
+<span class="s">One transfer, released after a second person confirms it."""</span>
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span>
+  "adding or changing a payee",
+  "moving money between our own accounts",
+  "asking a balance",
+]
+<span class="k">tags</span>    <span class="o">=</span> <span class="o">[</span><span class="s">"treasury"</span><span class="o">]</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"destructive"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Pay <span class="ph">{payee}</span> <span class="ph">{amount}</span> from <span class="ph">{account}</span>?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="s">"pay.mts"</span>
+
+<span class="t">[config]</span>
+<span class="k">api</span>   <span class="o">=</span> <span class="s">"The payments API address"</span>
+<span class="k">token</span> <span class="o">=</span> <span class="o">{</span> <span class="k">about</span> <span class="o">=</span> <span class="s">"The payments API token"</span><span class="o">,</span> <span class="k">secret</span> <span class="o">=</span> <span class="n">true</span> <span class="o">}</span>
+
+<span class="t">[args.payee]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which payee?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"payees"</span>
+
+<span class="t">[args.account]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"From which account?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"accounts"</span>
+
+<span class="t">[args.amount]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"How much?"</span>
+<span class="k">pick</span>  <span class="o">=</span> <span class="s">"number"</span>
+<span class="k">range</span> <span class="o">=</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">250000</span><span class="o">]</span>
+
+<span class="t">[args.ref]</span>
+<span class="k">ask</span>      <span class="o">=</span> <span class="s">"What reference?"</span>
+<span class="k">pick</span>     <span class="o">=</span> <span class="s">"quoted"</span>
+<span class="k">optional</span> <span class="o">=</span> <span class="n">true</span>
+
+<span class="t">[examples]</span>
+<span class="s">'pay Acme 12400 from ops, ref "8812"'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">amount</span> <span class="o">=</span> <span class="s">"12400"</span><span class="o">,</span> <span class="k">ref</span> <span class="o">=</span> <span class="s">"8812"</span> <span class="o">}</span>
+<span class="s">"send 950 to the cleaners from the office account"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">amount</span> <span class="o">=</span> <span class="s">"950"</span> <span class="o">}</span>
+<span class="s">"wire 3200 to Acme from treasury"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">amount</span> <span class="o">=</span> <span class="s">"3200"</span> <span class="o">}</span>
+
+<span class="t">[tests]</span>
+<span class="s">'settle 18000 with Acme, ref "Q3"'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">amount</span> <span class="o">=</span> <span class="s">"18000"</span><span class="o">,</span> <span class="k">ref</span> <span class="o">=</span> <span class="s">"Q3"</span> <span class="o">}</span>
+<span class="s">"pay Acme from ops"</span>                <span class="o">=</span> <span class="o">{</span> <span class="k">amount</span> <span class="o">=</span> <span class="n">false</span> <span class="o">}</span>
+<span class="s">"add Acme as a new payee"</span>          <span class="o">=</span> <span class="n">false</span></pre>
+              <div class="file">vocab/payees.toml<span class="who you">yours</span></div>
+<pre><span class="k">acme</span>     <span class="o">=</span> <span class="o">{</span> <span class="k">what</span> <span class="o">=</span> <span class="s">"Acme, the packaging supplier."</span><span class="o">,</span> <span class="k">value</span> <span class="o">=</span> <span class="s">"py_acme"</span> <span class="o">}</span>
+<span class="k">cleaners</span> <span class="o">=</span> <span class="o">{</span> <span class="k">what</span> <span class="o">=</span> <span class="s">"Blitz, the office cleaners."</span><span class="o">,</span> <span class="k">value</span> <span class="o">=</span> <span class="s">"py_blitz"</span> <span class="o">}</span></pre>
+            </div>
+            <div role="tabpanel" id="bank-p2" aria-labelledby="bank-t2" hidden>
+              <div class="file">code.ts<span class="who you">yours</span></div>
+<pre><span class="w">import</span> <span class="o">{</span> load<span class="o">,</span> reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+<span class="w">import</span> <span class="o">{</span> jev <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke/jev"</span>
+
+<span class="w">const</span> pay <span class="o">=</span> reflex<span class="o">({</span>
+  <span class="k">description</span><span class="o">:</span> <span class="s">"Pay an approved payee from one of our accounts.\n"</span> <span class="o">+</span>
+    <span class="s">"One transfer, released after a second person confirms it."</span><span class="o">,</span>
+  <span class="k">not_for</span><span class="o">:</span> <span class="o">[</span>
+    <span class="s">"adding or changing a payee"</span><span class="o">,</span>
+    <span class="s">"moving money between our own accounts"</span><span class="o">,</span>
+    <span class="s">"asking a balance"</span><span class="o">,</span>
+  <span class="o">],</span>
+  <span class="k">effect</span><span class="o">:</span> <span class="s">"destructive"</span><span class="o">,</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="s">"Pay <span class="ph">{payee}</span> <span class="ph">{amount}</span> from <span class="ph">{account}</span>?"</span><span class="o">,</span>
+  <span class="k">args</span><span class="o">:</span> <span class="o">{</span>
+    <span class="k">payee</span><span class="o">:</span>   <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"Which payee?"</span><span class="o">,</span> <span class="k">vocab</span><span class="o">:</span> <span class="s">"payees"</span> <span class="o">},</span>
+    <span class="k">account</span><span class="o">:</span> <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"From which account?"</span><span class="o">,</span> <span class="k">vocab</span><span class="o">:</span> <span class="s">"accounts"</span> <span class="o">},</span>
+    <span class="k">amount</span><span class="o">:</span>  <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"How much?"</span><span class="o">,</span> <span class="k">pick</span><span class="o">:</span> <span class="s">"number"</span><span class="o">,</span> <span class="k">range</span><span class="o">:</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">250000</span><span class="o">]</span> <span class="o">},</span>
+    <span class="k">ref</span><span class="o">:</span>     <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"What reference?"</span><span class="o">,</span> <span class="k">pick</span><span class="o">:</span> <span class="s">"quoted"</span><span class="o">,</span> <span class="k">optional</span><span class="o">:</span> <span class="n">true</span> <span class="o">},</span>
+  <span class="o">},</span>
+  <span class="k">examples</span><span class="o">:</span> <span class="o">{</span>
+    <span class="s">'pay Acme 12400 from ops, ref "8812"'</span><span class="o">:</span> <span class="o">{</span> <span class="k">amount</span><span class="o">:</span> <span class="s">"12400"</span><span class="o">,</span> <span class="k">ref</span><span class="o">:</span> <span class="s">"8812"</span> <span class="o">},</span>
+    <span class="s">"send 950 to the cleaners from the office account"</span><span class="o">:</span> <span class="o">{</span> <span class="k">amount</span><span class="o">:</span> <span class="s">"950"</span> <span class="o">},</span>
+  <span class="o">},</span>
+<span class="o">},</span> <span class="w">async</span> <span class="o">({</span> payee<span class="o">,</span> account<span class="o">,</span> amount<span class="o">,</span> ref <span class="o">},</span> <span class="o">{</span> signal <span class="o">})</span> <span class="o">=&gt;</span> <span class="o">{</span>
+  <span class="w">const</span> response <span class="o">=</span> <span class="w">await</span> fetch<span class="o">(</span><span class="s">`${process.env.PAYMENTS_API}/transfers`</span><span class="o">,</span> <span class="o">{</span>
+    <span class="k">method</span><span class="o">:</span> <span class="s">"POST"</span><span class="o">,</span>
+    <span class="k">headers</span><span class="o">:</span> <span class="o">{</span>
+      <span class="k">authorization</span><span class="o">:</span> <span class="s">`Bearer ${process.env.PAYMENTS_TOKEN}`</span><span class="o">,</span>
+      <span class="s">"content-type"</span><span class="o">:</span> <span class="s">"application/json"</span><span class="o">,</span>
+    <span class="o">},</span>
+    <span class="k">body</span><span class="o">:</span> JSON<span class="o">.</span>stringify<span class="o">({</span> <span class="w">from</span><span class="o">:</span> account<span class="o">,</span> <span class="k">to</span><span class="o">:</span> payee<span class="o">,</span> amount<span class="o">,</span> <span class="k">reference</span><span class="o">:</span> ref <span class="o">}),</span>
+    signal<span class="o">,</span>
+  <span class="o">})</span>
+  <span class="w">if</span> <span class="o">(!</span>response<span class="o">.</span>ok<span class="o">)</span> <span class="w">throw</span> <span class="w">new</span> Error<span class="o">(</span><span class="s">`payments answered ${response.status}`</span><span class="o">)</span>
+  <span class="w">const</span> <span class="o">{</span> id <span class="o">}</span> <span class="o">=</span> <span class="o">(</span><span class="w">await</span> response<span class="o">.</span>json<span class="o">())</span> <span class="w">as</span> <span class="o">{</span> <span class="k">id</span><span class="o">:</span> string <span class="o">}</span>
+  <span class="w">return</span> <span class="o">{</span> <span class="k">text</span><span class="o">:</span> <span class="s">`paid ${amount} from ${account}, transfer ${id}`</span><span class="o">,</span> <span class="k">data</span><span class="o">:</span> <span class="o">{</span> id <span class="o">}</span> <span class="o">}</span>
+<span class="o">})</span>
+
+<span class="c">// This desk's payees, from the database; nothing else is a word.</span>
+<span class="w">const</span> desk <span class="o">=</span> <span class="o">(</span><span class="w">await</span> load<span class="o">({</span> reflexes<span class="o">:</span> <span class="o">{</span> pay <span class="o">},</span> adapter<span class="o">:</span> jev<span class="o">()</span> <span class="o">})).</span>with<span class="o">({</span>
+  <span class="k">vocab</span><span class="o">:</span> <span class="o">{</span>
+    <span class="k">payees</span><span class="o">:</span> <span class="o">{</span>
+      <span class="k">acme</span><span class="o">:</span>     <span class="o">{</span> <span class="k">what</span><span class="o">:</span> <span class="s">"Acme, the packaging supplier."</span><span class="o">,</span> <span class="k">value</span><span class="o">:</span> <span class="s">"py_acme"</span> <span class="o">},</span>
+      <span class="k">cleaners</span><span class="o">:</span> <span class="o">{</span> <span class="k">what</span><span class="o">:</span> <span class="s">"Blitz, the office cleaners."</span><span class="o">,</span> <span class="k">value</span><span class="o">:</span> <span class="s">"py_blitz"</span> <span class="o">},</span>
+    <span class="o">},</span>
+    <span class="k">accounts</span><span class="o">:</span> <span class="o">{</span>
+      <span class="k">ops</span><span class="o">:</span>    <span class="o">{</span> <span class="k">what</span><span class="o">:</span> <span class="s">"The operations account."</span><span class="o">,</span> <span class="k">value</span><span class="o">:</span> <span class="s">"acc_ops"</span> <span class="o">},</span>
+      <span class="k">office</span><span class="o">:</span> <span class="o">{</span> <span class="k">what</span><span class="o">:</span> <span class="s">"The office account."</span><span class="o">,</span> <span class="k">value</span><span class="o">:</span> <span class="s">"acc_office"</span> <span class="o">},</span>
+    <span class="o">},</span>
+  <span class="o">},</span>
+<span class="o">})</span>
+
+<span class="c">// then the maker and the checker, line for line as in checker.ts</span></pre>
+            </div>
+            <div role="tabpanel" id="bank-p3" aria-labelledby="bank-t3" hidden>
+              <div class="file">checker.ts<span class="who">loads the files</span></div>
+<pre><span class="c">// The desk decides; the decision waits in a queue as plain data;</span>
+<span class="c">// a second person reads the call and runs it.</span>
+<span class="w">import</span> <span class="o">{</span> load <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+
+<span class="w">const</span> desk <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> root<span class="o">:</span> <span class="w">import</span><span class="o">.</span>meta<span class="o">.</span>dirname <span class="o">})</span>
+
+<span class="c">// maker</span>
+<span class="w">const</span> decided <span class="o">=</span> <span class="w">await</span> desk<span class="o">.</span>decide<span class="o">(</span><span class="s">'pay Acme 12400 from ops, ref "invoice 8812"'</span><span class="o">)</span>
+<span class="w">if</span> <span class="o">(</span>decided<span class="o">.</span>outcome <span class="o">!==</span> <span class="s">"confirm"</span><span class="o">)</span> <span class="w">throw</span> <span class="w">new</span> Error<span class="o">(</span>decided<span class="o">.</span>outcome<span class="o">)</span>
+<span class="c">// through the queue and back: a decision is plain data</span>
+<span class="w">const</span> queued<span class="o">:</span> <span class="w">typeof</span> decided <span class="o">=</span> JSON<span class="o">.</span>parse<span class="o">(</span>JSON<span class="o">.</span>stringify<span class="o">(</span>decided<span class="o">))</span>
+
+<span class="c">// checker: the call, then the effect, the weakest judgment and why it stopped</span>
+console<span class="o">.</span>log<span class="o">(</span>queued<span class="o">.</span>call<span class="o">)</span>
+console<span class="o">.</span>log<span class="o">(</span>queued<span class="o">.</span>prompt<span class="o">.</span>own<span class="o">)</span>
+console<span class="o">.</span>log<span class="o">((</span><span class="w">await</span> desk<span class="o">.</span>run<span class="o">(</span>queued<span class="o">,</span> <span class="o">{</span> <span class="k">confirmed</span><span class="o">:</span> <span class="n">true</span> <span class="o">})).</span>text<span class="o">)</span></pre>
+            </div>
+          </div>
+          <ol class="notes">
+            <li><b>1</b><span><strong>A payee is a word.</strong> Its value is an id in the payments system. Jev never sees it.</span></li>
+            <li><b>2</b><span><strong>The decision is plain data.</strong> It waits in any queue, and only <code>confirmed: true</code> runs it.</span></li>
+            <li><b>3</b><span><strong>Each desk, its own words.</strong> <code>with</code> compiles the desk's payees in milliseconds.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="case" id="plant">
+      <div class="rule"><p class="label">A plant floor</p><span class="num">04</span></div>
+      <h2>Stop the filler.</h2>
+      <p class="sub">A line is a word whose value is the controller's id. <strong>The night shift's phrases live in an
+        overlay the plant owns</strong>, and the shipped recipe never changes.</p>
+      <div class="grid">
+        <div class="panel term demo plant" data-scene="plant" aria-label="Three production lines, two of them stopped at a word">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/plant<span class="trail" aria-hidden="true"><b>say it</b><b>confirm</b><b>stopped</b></span></div>
+          <div class="room">
+            <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <g class="belt b2" transform="translate(0 52)"><text x="74" y="6">line 2 · the labeller</text><line class="rail" x1="74" y1="26" x2="486" y2="26"/><line class="flow" x1="74" y1="26" x2="486" y2="26"/><text class="stopped" x="486" y="6" text-anchor="end">stopped</text></g>
+              <g class="belt b3" transform="translate(0 112)"><text x="74" y="6">line 3 · the filler</text><line class="rail" x1="74" y1="26" x2="486" y2="26"/><line class="flow" x1="74" y1="26" x2="486" y2="26"/><text class="stopped" x="486" y="6" text-anchor="end">stopped</text></g>
+              <g class="belt b5" transform="translate(0 172)"><text x="74" y="6">packaging</text><line class="rail" x1="74" y1="26" x2="486" y2="26"/><line class="flow" x1="74" y1="26" x2="486" y2="26"/><text class="stopped" x="486" y="6" text-anchor="end">stopped</text></g>
+            </svg>
+          </div>
+          <div class="strip" aria-live="off">
+            <span class="line say show"><span class="p">$</span> <span class="in">evoke "the filler is jammed, stop it"</span></span>
+            <span class="line own show">  <b>stop</b> line="line 3" · destructive · weakest: route <i>0.98</i></span>
+            <span class="line own show">  Stop line 3 at the end of this cycle?  [y]es [n]o [t]each &gt; <span class="in">y</span></span>
+            <span class="line out show">L3 stops at the end of this cycle</span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="panel tabbed">
+            <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The plant floor as files and as code">
+              <button role="tab" id="plant-t1" aria-controls="plant-p1" aria-selected="true">files</button>
+              <button role="tab" id="plant-t2" aria-controls="plant-p2" aria-selected="false" tabindex="-1">the words</button>
+              <button role="tab" id="plant-t3" aria-controls="plant-p3" aria-selected="false" tabindex="-1">code</button>
+            </div></div>
+            <div role="tabpanel" id="plant-p1" aria-labelledby="plant-t1">
+              <div class="file">stop/reflex.toml<span class="who">the author's</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
+<span class="s">Stop a production line.</span>
+<span class="s">A controlled stop at the end of the cycle; restart at the panel."""</span>
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span><span class="s">"an emergency stop"</span><span class="o">,</span> <span class="s">"pausing one machine"</span><span class="o">,</span> <span class="s">"holding a work order"</span><span class="o">]</span>
+<span class="k">tags</span>    <span class="o">=</span> <span class="o">[</span><span class="s">"floor"</span><span class="o">]</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"destructive"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Stop <span class="ph">{line}</span>?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="s">"stop.mts"</span>
+
+<span class="t">[config]</span>
+<span class="k">gateway</span> <span class="o">=</span> <span class="s">"The line controller gateway address"</span>
+
+<span class="t">[args.line]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which line?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"lines"</span>
+
+<span class="t">[examples]</span>
+<span class="s">"stop line 3"</span>                  <span class="o">=</span> <span class="o">{</span><span class="o">}</span>
+<span class="s">"shut the packaging line down"</span> <span class="o">=</span> <span class="o">{</span><span class="o">}</span>
+<span class="s">"bring line 2 to a stop"</span>       <span class="o">=</span> <span class="o">{</span><span class="o">}</span>
+
+<span class="t">[tests]</span>
+<span class="s">"halt line 3 after this cycle"</span> <span class="o">=</span> <span class="o">{</span><span class="o">}</span>
+<span class="s">"emergency stop"</span>               <span class="o">=</span> <span class="n">false</span>
+<span class="s">"hold work order 4471"</span>         <span class="o">=</span> <span class="n">false</span></pre>
+            </div>
+            <div role="tabpanel" id="plant-p2" aria-labelledby="plant-t2" hidden>
+              <div class="file">vocab/lines.toml<span class="who you">the plant's</span></div>
+<pre><span class="s">"line 2"</span>    <span class="o">=</span> <span class="o">{</span> <span class="k">what</span> <span class="o">=</span> <span class="s">"Line 2, labelling; also 'the labeller'."</span><span class="o">,</span> <span class="k">value</span> <span class="o">=</span> <span class="s">"L2"</span> <span class="o">}</span>
+<span class="s">"line 3"</span>    <span class="o">=</span> <span class="o">{</span> <span class="k">what</span> <span class="o">=</span> <span class="s">"Line 3, bottling; also 'the filler'."</span><span class="o">,</span> <span class="k">value</span> <span class="o">=</span> <span class="s">"L3"</span> <span class="o">}</span>
+<span class="s">"packaging"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">what</span> <span class="o">=</span> <span class="s">"The packaging line, end of the hall."</span><span class="o">,</span> <span class="k">value</span> <span class="o">=</span> <span class="s">"L5"</span> <span class="o">}</span></pre>
+              <div class="file">overlays/stop.toml<span class="who you">the night shift's</span></div>
+<pre><span class="c"># The night shift's words. The shipped recipe is untouched.</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Stop <span class="ph">{line}</span> at the end of this cycle?"</span>
+
+<span class="t">[examples]</span>
+<span class="s">"kill the filler"</span>                      <span class="o">=</span> <span class="o">{</span> <span class="k">line</span> <span class="o">=</span> <span class="s">"line 3"</span> <span class="o">}</span>
+<span class="s">"take the labeller down"</span>               <span class="o">=</span> <span class="o">{</span> <span class="k">line</span> <span class="o">=</span> <span class="s">"line 2"</span> <span class="o">}</span>
+<span class="s">"shut packaging at the end of the run"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">line</span> <span class="o">=</span> <span class="s">"packaging"</span> <span class="o">}</span>
+
+<span class="t">[tests]</span>
+<span class="s">"the filler is jammed, stop it"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">line</span> <span class="o">=</span> <span class="s">"line 3"</span> <span class="o">}</span>
+<span class="s">"e-stop"</span>                        <span class="o">=</span> <span class="n">false</span></pre>
+            </div>
+            <div role="tabpanel" id="plant-p3" aria-labelledby="plant-t3" hidden>
+              <div class="file">code.ts<span class="who you">yours</span></div>
+<pre><span class="w">import</span> <span class="o">{</span> load<span class="o">,</span> reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+<span class="w">import</span> <span class="o">{</span> done<span class="o">,</span> handlers <span class="o">}</span> <span class="w">from</span> <span class="s">"../terminal.ts"</span>
+
+<span class="w">const</span> stop <span class="o">=</span> reflex<span class="o">({</span>
+  <span class="k">description</span><span class="o">:</span> <span class="s">"Stop a production line.\n"</span> <span class="o">+</span>
+    <span class="s">"A controlled stop at the end of the cycle; restart at the panel."</span><span class="o">,</span>
+  <span class="k">not_for</span><span class="o">:</span> <span class="o">[</span><span class="s">"an emergency stop"</span><span class="o">,</span> <span class="s">"pausing one machine"</span><span class="o">,</span> <span class="s">"holding a work order"</span><span class="o">],</span>
+  <span class="k">effect</span><span class="o">:</span> <span class="s">"destructive"</span><span class="o">,</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="s">"Stop <span class="ph">{line}</span>?"</span><span class="o">,</span>
+  <span class="k">args</span><span class="o">:</span> <span class="o">{</span> <span class="k">line</span><span class="o">:</span> <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"Which line?"</span><span class="o">,</span> <span class="k">vocab</span><span class="o">:</span> <span class="s">"lines"</span> <span class="o">}</span> <span class="o">},</span>
+  <span class="k">examples</span><span class="o">:</span> <span class="o">{</span>
+    <span class="s">"stop line 3"</span><span class="o">:</span> <span class="o">{},</span>
+    <span class="s">"shut the packaging line down"</span><span class="o">:</span> <span class="o">{},</span>
+    <span class="s">"bring line 2 to a stop"</span><span class="o">:</span> <span class="o">{},</span>
+  <span class="o">},</span>
+<span class="o">},</span> <span class="w">async</span> <span class="o">({</span> line <span class="o">},</span> <span class="o">{</span> signal <span class="o">})</span> <span class="o">=&gt;</span> <span class="o">{</span>
+  <span class="w">const</span> response <span class="o">=</span> <span class="w">await</span> fetch<span class="o">(</span><span class="s">`${process.env.GATEWAY}/lines/${line}/run`</span><span class="o">,</span> <span class="o">{</span>
+    <span class="k">method</span><span class="o">:</span> <span class="s">"POST"</span><span class="o">,</span>
+    <span class="k">headers</span><span class="o">:</span> <span class="o">{</span> <span class="s">"content-type"</span><span class="o">:</span> <span class="s">"application/json"</span> <span class="o">},</span>
+    <span class="k">body</span><span class="o">:</span> JSON<span class="o">.</span>stringify<span class="o">({</span> run<span class="o">:</span> <span class="n">false</span><span class="o">,</span> <span class="k">when</span><span class="o">:</span> <span class="s">"end of cycle"</span> <span class="o">}),</span>
+    signal<span class="o">,</span>
+  <span class="o">})</span>
+  <span class="w">if</span> <span class="o">(!</span>response<span class="o">.</span>ok<span class="o">)</span> <span class="w">throw</span> <span class="w">new</span> Error<span class="o">(</span><span class="s">`the gateway answered ${response.status}`</span><span class="o">)</span>
+  <span class="w">return</span> <span class="s">`${line} stops at the end of this cycle`</span>
+<span class="o">})</span>
+
+  <span class="w">if</span> <span class="o">(!</span>response<span class="o">.</span>ok<span class="o">)</span> <span class="w">throw</span> <span class="w">new</span> Error<span class="o">(</span><span class="s">`the MES answered ${response.status}`</span><span class="o">)</span>
+  <span class="w">return</span> <span class="s">`work order ${order} on hold: ${reason}`</span>
+<span class="o">})</span>
+
+<span class="c">// The words are files the floor edits:</span>
+<span class="c">// words/vocab/lines.toml and words/overlays/stop.toml</span>
+<span class="w">const</span> plant <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span>
+  <span class="k">root</span><span class="o">:</span> <span class="s">`${import.meta.dirname}/words`</span><span class="o">,</span>
+  <span class="k">reflexes</span><span class="o">:</span> <span class="o">{</span> stop <span class="o">},</span>
+<span class="o">})</span>
+<span class="w">const</span> handled <span class="o">=</span> <span class="w">await</span> plant<span class="o">.</span>handle<span class="o">(</span>process<span class="o">.</span>argv<span class="o">[</span><span class="n">2</span><span class="o">]</span> <span class="o">??</span> <span class="s">""</span><span class="o">,</span> handlers<span class="o">)</span>
+console<span class="o">.</span>log<span class="o">(</span>handled<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"ran"</span> <span class="o">?</span> handled<span class="o">.</span>result<span class="o">.</span>text <span class="o">:</span> handled<span class="o">.</span>outcome<span class="o">)</span>
+done<span class="o">()</span></pre>
+            </div>
+          </div>
+          <ol class="notes">
+            <li><b>1</b><span><strong>A line is a word.</strong> Its value, <code>L3</code>, is what the gateway gets.</span></li>
+            <li><b>2</b><span><strong>The overlay is the plant's.</strong> The shipped recipe never changes. The night shift's phrases are one file.</span></li>
+            <li><b>3</b><span><strong>Reflexes in code, words in files.</strong> The floor edits <code>words/</code>, never the code.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="case" id="runbook">
+      <div class="rule"><p class="label">A runbook</p><span class="num">05</span></div>
+      <h2>Each step names the next.</h2>
+      <p class="sub">Three recipes in a chain. <strong>Every hop passes the bar</strong>, and only the destructive one
+        stops for a person.</p>
+      <div class="grid">
+        <div class="panel term demo runbook" data-scene="runbook" aria-label="Three steps lighting up in turn, the middle one after a yes">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/runbook<span class="trail" aria-hidden="true"><b>drain</b><b>failover</b><b>verify</b></span></div>
+          <div class="room">
+            <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <g class="link l1"><line class="wire" x1="140" y1="104" x2="252" y2="104"/><line class="pulse" x1="140" y1="104" x2="252" y2="104"/></g>
+              <g class="link l2"><line class="wire" x1="308" y1="104" x2="420" y2="104"/><line class="pulse" x1="308" y1="104" x2="420" y2="104"/></g>
+              <g class="node drain" transform="translate(112 104)"><circle class="ring" r="26"/><circle class="core" r="7"/><text y="50" text-anchor="middle">drain</text><text class="dim" y="66" text-anchor="middle">write</text></g>
+              <g class="node failover" transform="translate(280 104)"><circle class="ring" r="26"/><circle class="core" r="7"/><text y="50" text-anchor="middle">failover</text><text class="dim" y="66" text-anchor="middle">destructive</text></g>
+              <g class="node verify" transform="translate(448 104)"><circle class="ring" r="26"/><circle class="core" r="7"/><text y="50" text-anchor="middle">verify</text><text class="dim" y="66" text-anchor="middle">read</text></g>
+            </svg>
+          </div>
+          <div class="strip" aria-live="off">
+            <span class="line say show"><span class="p">$</span> <span class="in">node runbook.ts "drain the primary"</span></span>
+            <span class="line out show">primary drained</span>
+            <span class="line own show">Promote the replica now?  [y]es [n]o &gt; <span class="in">y</span></span>
+            <span class="line out show">replica promoted</span>
+            <span class="line out show">writes landing on the new primary</span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="panel tabbed">
+            <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The runbook as files, as code, and the app">
+              <button role="tab" id="runbook-t1" aria-controls="runbook-p1" aria-selected="true">files</button>
+              <button role="tab" id="runbook-t2" aria-controls="runbook-p2" aria-selected="false" tabindex="-1">code</button>
+              <button role="tab" id="runbook-t3" aria-controls="runbook-p3" aria-selected="false" tabindex="-1">the app</button>
+            </div></div>
+            <div role="tabpanel" id="runbook-p1" aria-labelledby="runbook-t1">
+              <div class="file">drain/reflex.toml<span class="who">the author's</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
+<span class="s">Drain traffic from the primary database.</span>
+<span class="s">New connections go to the replica; open ones finish."""</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Drain the primary?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="s">"drain.mts"</span>
+
+<span class="t">[examples]</span>
+<span class="s">"drain the primary"</span> <span class="o">=</span> <span class="o">{</span><span class="o">}</span></pre>
+              <div class="file">drain/drain.mts<span class="who">the author's</span></div>
+<pre><span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"./reflex.d.ts"</span>
+
+<span class="w">export</span> <span class="w">default</span> <span class="o">(</span><span class="w">async</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="o">({</span>
+  <span class="k">text</span><span class="o">:</span> <span class="s">"primary drained"</span><span class="o">,</span>
+  <span class="k">data</span><span class="o">:</span> <span class="o">{</span> <span class="k">next</span><span class="o">:</span> <span class="s">"fail over to the replica"</span> <span class="o">},</span>
+<span class="o">}))</span> <span class="w">satisfies</span> Reflex</pre>
+            </div>
+            <div role="tabpanel" id="runbook-p2" aria-labelledby="runbook-t2" hidden>
+              <div class="file">runbook.ts<span class="who you">yours</span></div>
+<pre><span class="c">// The same runbook, in code. Three reflexes, one loop.</span>
+<span class="w">import</span> <span class="o">{</span> load<span class="o">,</span> reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+<span class="w">import</span> <span class="o">{</span> jev <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke/jev"</span>
+<span class="w">import</span> <span class="o">{</span> done<span class="o">,</span> handlers <span class="o">}</span> <span class="w">from</span> <span class="s">"../terminal.ts"</span>
+
+<span class="w">const</span> drain <span class="o">=</span> reflex<span class="o">({</span>
+  <span class="k">description</span><span class="o">:</span> <span class="s">"Drain traffic from the primary database.\n"</span> <span class="o">+</span>
+    <span class="s">"New connections go to the replica; open ones finish."</span><span class="o">,</span>
+  <span class="k">effect</span><span class="o">:</span> <span class="s">"write"</span><span class="o">,</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="s">"Drain the primary?"</span><span class="o">,</span>
+  <span class="k">examples</span><span class="o">:</span> <span class="o">{</span> <span class="s">"drain the primary"</span><span class="o">:</span> <span class="o">{}</span> <span class="o">},</span>
+<span class="o">},</span> <span class="w">async</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="o">({</span>
+  <span class="k">text</span><span class="o">:</span> <span class="s">"primary drained"</span><span class="o">,</span>
+  <span class="k">data</span><span class="o">:</span> <span class="o">{</span> <span class="k">next</span><span class="o">:</span> <span class="s">"fail over to the replica"</span> <span class="o">},</span>
+<span class="o">}))</span>
+
+<span class="w">const</span> failover <span class="o">=</span> reflex<span class="o">({</span>
+  <span class="k">description</span><span class="o">:</span> <span class="s">"Promote the replica to primary.\n"</span> <span class="o">+</span>
+    <span class="s">"The old primary is demoted; it cannot be undone from here."</span><span class="o">,</span>
+  <span class="k">effect</span><span class="o">:</span> <span class="s">"destructive"</span><span class="o">,</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="s">"Promote the replica now?"</span><span class="o">,</span>
+  <span class="k">examples</span><span class="o">:</span> <span class="o">{</span> <span class="s">"fail over to the replica"</span><span class="o">:</span> <span class="o">{}</span> <span class="o">},</span>
+<span class="o">},</span> <span class="w">async</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="o">({</span>
+  <span class="k">text</span><span class="o">:</span> <span class="s">"replica promoted"</span><span class="o">,</span>
+  <span class="k">data</span><span class="o">:</span> <span class="o">{</span> <span class="k">next</span><span class="o">:</span> <span class="s">"check that writes land on the new primary"</span> <span class="o">},</span>
+<span class="o">}))</span>
+
+<span class="w">const</span> verify <span class="o">=</span> reflex<span class="o">({</span>
+  <span class="k">description</span><span class="o">:</span> <span class="s">"Check that writes land on the current primary."</span><span class="o">,</span>
+  <span class="k">effect</span><span class="o">:</span> <span class="s">"read"</span><span class="o">,</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="s">"Check writes?"</span><span class="o">,</span>
+  <span class="k">examples</span><span class="o">:</span> <span class="o">{</span> <span class="s">"check that writes land on the new primary"</span><span class="o">:</span> <span class="o">{}</span> <span class="o">},</span>
+<span class="o">},</span> <span class="w">async</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="s">"writes landing on the new primary"</span><span class="o">)</span>
+
+<span class="w">const</span> reflexes <span class="o">=</span> <span class="o">{</span> drain<span class="o">,</span> failover<span class="o">,</span> verify <span class="o">}</span>
+<span class="w">const</span> runbook <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> reflexes<span class="o">,</span> <span class="k">adapter</span><span class="o">:</span> jev<span class="o">()</span> <span class="o">})</span>
+
+<span class="w">let</span> next<span class="o">:</span> string <span class="o">|</span> <span class="n">undefined</span> <span class="o">=</span> process<span class="o">.</span>argv<span class="o">[</span><span class="n">2</span><span class="o">]</span>
+<span class="w">while</span> <span class="o">(</span>next<span class="o">)</span> <span class="o">{</span>
+  <span class="w">const</span> step <span class="o">=</span> <span class="w">await</span> runbook<span class="o">.</span>handle<span class="o">(</span>next<span class="o">,</span> handlers<span class="o">)</span>
+  <span class="w">if</span> <span class="o">(</span>step<span class="o">.</span>outcome <span class="o">!==</span> <span class="s">"ran"</span><span class="o">)</span> <span class="w">break</span>
+  console<span class="o">.</span>log<span class="o">(</span>step<span class="o">.</span>result<span class="o">.</span>text<span class="o">)</span>
+  next <span class="o">=</span> <span class="o">(</span>step<span class="o">.</span>result<span class="o">.</span>data <span class="w">as</span> <span class="o">{</span> next<span class="o">?:</span> string <span class="o">}</span> <span class="o">|</span> <span class="n">undefined</span><span class="o">)?.</span>next
+<span class="o">}</span>
+done<span class="o">()</span></pre>
+            </div>
+            <div role="tabpanel" id="runbook-p3" aria-labelledby="runbook-t3" hidden>
+              <div class="file">app.ts<span class="who">loads the files</span></div>
+<pre><span class="c">// A runbook as sentences, from files. Each step's body names the next step</span>
+<span class="c">// in words; only the destructive one stops for a person.</span>
+<span class="w">import</span> <span class="o">{</span> load <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+<span class="w">import</span> <span class="o">{</span> done<span class="o">,</span> handlers <span class="o">}</span> <span class="w">from</span> <span class="s">"../terminal.ts"</span>
+
+<span class="w">const</span> runbook <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> root<span class="o">:</span> <span class="w">import</span><span class="o">.</span>meta<span class="o">.</span>dirname <span class="o">})</span>
+
+<span class="w">let</span> next<span class="o">:</span> string <span class="o">|</span> <span class="n">undefined</span> <span class="o">=</span> process<span class="o">.</span>argv<span class="o">[</span><span class="n">2</span><span class="o">]</span>
+<span class="w">while</span> <span class="o">(</span>next<span class="o">)</span> <span class="o">{</span>
+  <span class="w">const</span> step <span class="o">=</span> <span class="w">await</span> runbook<span class="o">.</span>handle<span class="o">(</span>next<span class="o">,</span> handlers<span class="o">)</span>
+  <span class="w">if</span> <span class="o">(</span>step<span class="o">.</span>outcome <span class="o">!==</span> <span class="s">"ran"</span><span class="o">)</span> <span class="w">break</span>
+  console<span class="o">.</span>log<span class="o">(</span>step<span class="o">.</span>result<span class="o">.</span>text<span class="o">)</span>
+  next <span class="o">=</span> <span class="o">(</span>step<span class="o">.</span>result<span class="o">.</span>data <span class="w">as</span> <span class="o">{</span> next<span class="o">?:</span> string <span class="o">}</span> <span class="o">|</span> <span class="n">undefined</span><span class="o">)?.</span>next
+<span class="o">}</span>
+done<span class="o">()</span></pre>
+            </div>
+          </div>
+          <ol class="notes">
+            <li><b>1</b><span><strong>A step names the next.</strong> The program returns <code>data.next</code>, a sentence.</span></li>
+            <li><b>2</b><span><strong>Every hop passes the bar.</strong> Drain is a write, verify is a read.</span></li>
+            <li><b>3</b><span><strong>Only the failover asks.</strong> A destructive recipe always confirms.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="case" id="teach">
+      <div class="rule"><p class="label">A lesson</p><span class="num">06</span></div>
+      <h2>A miss becomes a lesson.</h2>
+      <p class="sub">Claude proposes the line, <code>evoke teach</code> checks it at the door, <code>evoke test</code>
+        keeps it only when nothing regresses, and <strong>git is the undo.</strong></p>
+      <div class="grid">
+        <div class="panel term demo teach" data-scene="teach" data-mark="before" aria-label="A confidence rising past the bar after one lesson">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/ops<span class="trail" aria-hidden="true"><b>miss</b><b>lesson</b><b>run</b></span></div>
+          <div class="room">
+            <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <text x="90" y="48">the write bar</text>
+              <line class="track" x1="90" y1="86" x2="470" y2="86"/>
+              <line class="track ok" x1="394" y1="86" x2="470" y2="86"/>
+              <g transform="translate(394 86)"><line class="tick" y1="-13" y2="13"/><text class="dim" y="-20" text-anchor="middle">0.80</text></g>
+              <g class="mark"><circle class="dot" r="8"/><text class="val before" y="32" text-anchor="middle">host 0.74</text><text class="val after" y="32" text-anchor="middle">host 0.93</text></g>
+              <g transform="translate(90 144)"><rect class="paper" width="380" height="58" rx="10"/><text class="dim" x="14" y="21">overlays/silence.toml</text><text class="lesson" x="14" y="43"><tspan class="plus">+</tspan> "make db-3 shut up for 90 minutes" = { … }</text></g>
+            </svg>
+          </div>
+          <div class="strip" style="--lines: 6" aria-live="off">
+            <span class="line say show"><span class="p">$</span> <span class="in">evoke try "make db-3 shut up for 90 minutes"</span></span>
+            <span class="line own show">  <b>silence</b> <i>1.00</i> · none 0.00 · scale 0.00 · rollback 0.00</span>
+            <span class="line own show">  host      <b>db-3</b> <i>0.93</i> · unstated 0.07 · web-1 0.00</span>
+            <span class="line own show">  duration  <b>"90 minutes"</b> <i>1.00</i> · unstated 0.00</span>
+            <span class="line own show">  fits      silence 0.82 · scale 0.08 · rollback 0.08</span>
+            <span class="line own show">  <b>run</b> · weakest: host <i>0.93</i></span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="panel tabbed">
+            <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The lesson as code and the file it wrote">
+              <button role="tab" id="teach-t1" aria-controls="teach-p1" aria-selected="true">code</button>
+              <button role="tab" id="teach-t2" aria-controls="teach-p2" aria-selected="false" tabindex="-1">the file it wrote</button>
+            </div></div>
+            <div role="tabpanel" id="teach-p1" aria-labelledby="teach-t1">
+              <div class="file">teach.ts<span class="who you">yours</span></div>
+<pre><span class="c">// What evoke could not decide becomes wording. A model proposes the lessons,</span>
+<span class="c">// evoke test disposes, git undoes.</span>
+<span class="w">import</span> <span class="o">{</span> execFile <span class="o">}</span> <span class="w">from</span> <span class="s">"node:child_process"</span>
+<span class="w">import</span> <span class="o">{</span> readFile <span class="o">}</span> <span class="w">from</span> <span class="s">"node:fs/promises"</span>
+<span class="w">import</span> <span class="o">{</span> promisify <span class="o">}</span> <span class="w">from</span> <span class="s">"node:util"</span>
+<span class="w">import</span> Anthropic <span class="w">from</span> <span class="s">"@anthropic-ai/sdk"</span>
+<span class="w">import</span> <span class="o">{</span> zodOutputFormat <span class="o">}</span> <span class="w">from</span> <span class="s">"@anthropic-ai/sdk/helpers/zod"</span>
+<span class="w">import</span> <span class="o">{</span> z <span class="o">}</span> <span class="w">from</span> <span class="s">"zod"</span>
+
+<span class="w">const</span> run <span class="o">=</span> promisify<span class="o">(</span>execFile<span class="o">)</span>
+<span class="c">// evoke's own lines are on stderr; stdout is a reflex's result</span>
+<span class="w">const</span> evoke <span class="o">=</span> <span class="w">async</span> <span class="o">(...</span>args<span class="o">:</span> string<span class="o">[])</span> <span class="o">=&gt;</span> <span class="o">(</span><span class="w">await</span> run<span class="o">(</span><span class="s">"evoke"</span><span class="o">,</span> args<span class="o">)).</span>stderr
+
+<span class="c">// A miss: a sentence nobody's, or one that stopped under the bar</span>
+<span class="w">const</span> logFile <span class="o">=</span> <span class="s">`${process.env.HOME}/.local/state/evoke/log.jsonl`</span>
+<span class="w">const</span> log <span class="o">=</span> <span class="w">await</span> readFile<span class="o">(</span>logFile<span class="o">,</span> <span class="s">"utf8"</span><span class="o">)</span>
+<span class="w">const</span> decisions <span class="o">=</span> log<span class="o">.</span>trim<span class="o">().</span>split<span class="o">(</span><span class="s">"\n"</span><span class="o">).</span>map<span class="o">(</span>line <span class="o">=&gt;</span> JSON<span class="o">.</span>parse<span class="o">(</span>line<span class="o">))</span>
+<span class="w">const</span> missed <span class="o">=</span> <span class="o">(</span>d<span class="o">:</span> <span class="o">{</span> <span class="k">outcome</span><span class="o">:</span> string<span class="o">;</span> because<span class="o">?:</span> <span class="o">{</span> <span class="k">type</span><span class="o">:</span> string <span class="o">}[]</span> <span class="o">})</span> <span class="o">=&gt;</span>
+  d<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"abstain"</span> <span class="o">||</span> d<span class="o">.</span>because<span class="o">?.</span>some<span class="o">(</span>b <span class="o">=&gt;</span> b<span class="o">.</span><span class="w">type</span> <span class="o">===</span> <span class="s">"under_floor"</span><span class="o">)</span>
+<span class="w">const</span> undecided <span class="o">=</span> <span class="w">new</span> Map<span class="o">&lt;</span>string<span class="o">,</span> string<span class="o">&gt;(</span>
+  decisions<span class="o">.</span>filter<span class="o">(</span>missed<span class="o">).</span>map<span class="o">(</span>d <span class="o">=&gt;</span> <span class="o">[</span>d<span class="o">.</span>input<span class="o">,</span> d<span class="o">.</span>call <span class="o">??</span> <span class="s">"nothing"</span><span class="o">]),</span>
+<span class="o">)</span>
+
+<span class="w">const</span> names <span class="o">=</span> <span class="o">(</span><span class="w">await</span> evoke<span class="o">(</span><span class="s">"show"</span><span class="o">)).</span>trim<span class="o">().</span>split<span class="o">(</span><span class="s">"\n"</span><span class="o">)</span>
+  <span class="o">.</span>map<span class="o">(</span>row <span class="o">=&gt;</span> row<span class="o">.</span>trim<span class="o">().</span>split<span class="o">(/</span>\s<span class="o">+/)[</span><span class="n">0</span><span class="o">]!)</span>
+  <span class="o">.</span>filter<span class="o">(</span>name <span class="o">=&gt;</span> name <span class="o">!==</span> <span class="s">"inactive"</span><span class="o">)</span>
+<span class="w">const</span> manifests <span class="o">=</span> <span class="w">await</span> Promise<span class="o">.</span>all<span class="o">(</span>names<span class="o">.</span>map<span class="o">(</span>name <span class="o">=&gt;</span> evoke<span class="o">(</span><span class="s">"show"</span><span class="o">,</span> name<span class="o">)))</span>
+
+<span class="w">const</span> brief <span class="o">=</span> `Below are the reflexes <span class="w">of</span> an evoke project<span class="o">,</span> then sentences it
+could not settle<span class="o">.</span> For each sentence that can only mean one reflex<span class="o">,</span> write the
+call it means <span class="w">in</span> evoke's grammar<span class="o">,</span> <span class="s">"name arg=value …"</span><span class="o">:</span> only option keys<span class="o">,</span>
+vocabulary words and exact spans <span class="w">of</span> the sentence may be values<span class="o">.</span> Leave out a
+sentence that fits no reflex<span class="o">,</span> or two<span class="o">.</span>`
+<span class="w">const</span> misses <span class="o">=</span> <span class="o">[...</span>undecided<span class="o">]</span>
+  <span class="o">.</span>map<span class="o">(([</span>input<span class="o">,</span> call<span class="o">])</span> <span class="o">=&gt;</span> <span class="s">`${input}\n  evoke proposed: ${call}`</span><span class="o">)</span>
+<span class="w">const</span> Lessons <span class="o">=</span> z<span class="o">.</span>object<span class="o">({</span>
+  <span class="k">lessons</span><span class="o">:</span> z<span class="o">.</span>array<span class="o">(</span>z<span class="o">.</span>object<span class="o">({</span> utterance<span class="o">:</span> z<span class="o">.</span>string<span class="o">(),</span> call<span class="o">:</span> z<span class="o">.</span>string<span class="o">()</span> <span class="o">})),</span>
+<span class="o">})</span>
+<span class="w">const</span> <span class="o">{</span> parsed_output <span class="o">}</span> <span class="o">=</span> <span class="w">await</span> <span class="w">new</span> Anthropic<span class="o">().</span>messages<span class="o">.</span>parse<span class="o">({</span>
+  <span class="k">model</span><span class="o">:</span> <span class="s">"claude-opus-5"</span><span class="o">,</span>
+  <span class="k">max_tokens</span><span class="o">:</span> <span class="n">4000</span><span class="o">,</span>
+  <span class="k">system</span><span class="o">:</span> <span class="s">`${brief}\n\n${manifests.join("\n")}`</span><span class="o">,</span>
+  <span class="k">messages</span><span class="o">:</span> <span class="o">[{</span> role<span class="o">:</span> <span class="s">"user"</span><span class="o">,</span> <span class="k">content</span><span class="o">:</span> misses<span class="o">.</span>join<span class="o">(</span><span class="s">"\n"</span><span class="o">)</span> <span class="o">}],</span>
+  <span class="k">output_config</span><span class="o">:</span> <span class="o">{</span> <span class="k">format</span><span class="o">:</span> zodOutputFormat<span class="o">(</span>Lessons<span class="o">)</span> <span class="o">},</span>
+<span class="o">})</span>
+
+<span class="c">// A value evoke does not know is refused at the door</span>
+<span class="w">for</span> <span class="o">(</span><span class="w">const</span> <span class="o">{</span> utterance<span class="o">,</span> call <span class="o">}</span> <span class="w">of</span> parsed_output<span class="o">?.</span>lessons <span class="o">??</span> <span class="o">[])</span> <span class="o">{</span>
+  process<span class="o">.</span>stdout<span class="o">.</span>write<span class="o">(</span><span class="w">await</span> evoke<span class="o">(</span><span class="s">"teach"</span><span class="o">,</span> utterance<span class="o">,</span> call<span class="o">))</span>
+<span class="o">}</span>
+<span class="c">// Green keeps the lessons; a regression drops them</span>
+try <span class="o">{</span>
+  process<span class="o">.</span>stdout<span class="o">.</span>write<span class="o">(</span><span class="w">await</span> evoke<span class="o">(</span><span class="s">"test"</span><span class="o">))</span>
+<span class="o">}</span> catch <span class="o">{</span>
+  <span class="w">await</span> run<span class="o">(</span><span class="s">"git"</span><span class="o">,</span> <span class="o">[</span><span class="s">"checkout"</span><span class="o">,</span> <span class="s">"--"</span><span class="o">,</span> <span class="s">"overlays"</span><span class="o">])</span>
+  console<span class="o">.</span>log<span class="o">(</span><span class="s">"a regression: the lessons are undone"</span><span class="o">)</span>
+<span class="o">}</span></pre>
+            </div>
+            <div role="tabpanel" id="teach-p2" aria-labelledby="teach-t2" hidden>
+              <div class="file">overlays/silence.toml<span class="who you">yours, taught</span></div>
+<pre><span class="t">[examples]</span>
+<span class="s">"make db-3 shut up for 90 minutes"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">host</span> <span class="o">=</span> <span class="s">"db-3"</span><span class="o">,</span> <span class="k">duration</span> <span class="o">=</span> <span class="s">"90 minutes"</span> <span class="o">}</span></pre>
+            </div>
+          </div>
+          <ol class="notes">
+            <li><b>1</b><span><strong>A miss is a sentence under the bar.</strong> From the log, with the call Jev proposed.</span></li>
+            <li><b>2</b><span><strong>Checked at the door.</strong> <code>evoke teach</code> refuses a value the recipe does not know.</span></li>
+            <li><b>3</b><span><strong>Kept only if green.</strong> <code>evoke test</code> judges every record. A regression is undone with git.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="run" id="run">
+      <div class="rule"><p class="label">Run it</p><span class="num">07</span></div>
+      <h2>Every scene above is a real session.</h2>
+      <p class="sub">The two handlers every app shares are twenty lines. <strong>Install evoke, add the SDK, and say it
+        yourself.</strong></p>
+      <div class="grid">
+        <div class="panel">
+          <div class="head"><i></i>terminal.ts<span class="who you">yours</span></div>
+<pre><span class="c">// The two handlers every app here shares.</span>
+<span class="c">// A confirm is a question; an ask is a numbered menu, or a blank to type into.</span>
+<span class="w">import</span> <span class="o">{</span> createInterface <span class="o">}</span> <span class="w">from</span> <span class="s">"node:readline/promises"</span>
+<span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Handlers <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+
+<span class="w">const</span> <span class="o">{</span> <span class="k">stdin</span><span class="o">:</span> input<span class="o">,</span> <span class="k">stdout</span><span class="o">:</span> output <span class="o">}</span> <span class="o">=</span> process
+<span class="w">const</span> terminal <span class="o">=</span> createInterface<span class="o">({</span> input<span class="o">,</span> output <span class="o">})</span>
+
+<span class="c">// Fits a project of any reflexes</span>
+<span class="w">export</span> <span class="w">const</span> handlers<span class="o">:</span> Handlers<span class="o">&lt;</span>any<span class="o">&gt;</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="w">async</span> d <span class="o">=&gt;</span> <span class="o">{</span>
+    <span class="w">const</span> typed <span class="o">=</span> <span class="w">await</span> terminal<span class="o">.</span>question<span class="o">(</span><span class="s">`${d.prompt.template}  [y]es [n]o &gt; `</span><span class="o">)</span>
+    <span class="w">return</span> typed<span class="o">.</span>startsWith<span class="o">(</span><span class="s">"y"</span><span class="o">)</span>
+  <span class="o">},</span>
+  <span class="k">ask</span><span class="o">:</span> <span class="w">async</span> d <span class="o">=&gt;</span> <span class="o">{</span>
+    <span class="w">const</span> given<span class="o">:</span> Record<span class="o">&lt;</span>string<span class="o">,</span> string<span class="o">&gt;</span> <span class="o">=</span> <span class="o">{}</span>
+    <span class="w">for</span> <span class="o">(</span><span class="w">const</span> <span class="o">{</span> arg<span class="o">,</span> ask<span class="o">,</span> choices <span class="o">}</span> <span class="w">of</span> d<span class="o">.</span>missing<span class="o">)</span> <span class="o">{</span>
+      <span class="w">const</span> keys <span class="o">=</span> choices<span class="o">.</span><span class="w">type</span> <span class="o">===</span> <span class="s">"options"</span> <span class="o">?</span> Object<span class="o">.</span>keys<span class="o">(</span>choices<span class="o">.</span>options<span class="o">)</span>
+        <span class="o">:</span> choices<span class="o">.</span><span class="w">type</span> <span class="o">===</span> <span class="s">"vocab"</span> <span class="o">?</span> Object<span class="o">.</span>keys<span class="o">(</span>choices<span class="o">.</span>words<span class="o">)</span> <span class="o">:</span> <span class="o">[]</span>
+      <span class="w">const</span> menu <span class="o">=</span> keys<span class="o">.</span>map<span class="o">((</span>key<span class="o">,</span> i<span class="o">)</span> <span class="o">=&gt;</span> <span class="s">`[${i + 1}] ${key}`</span><span class="o">).</span>join<span class="o">(</span><span class="s">"  "</span><span class="o">)</span>
+      <span class="w">const</span> typed <span class="o">=</span> <span class="w">await</span> terminal<span class="o">.</span>question<span class="o">(</span><span class="s">`${ask}  ${menu}${menu &amp;&amp; "  "}&gt; `</span><span class="o">)</span>
+      given<span class="o">[</span>arg<span class="o">]</span> <span class="o">=</span> keys<span class="o">[</span>Number<span class="o">(</span>typed<span class="o">)</span> <span class="o">-</span> <span class="n">1</span><span class="o">]</span> <span class="o">??</span> typed
+    <span class="o">}</span>
+    <span class="w">return</span> given
+  <span class="o">},</span>
+<span class="o">}</span>
+
+<span class="w">export</span> <span class="w">const</span> done <span class="o">=</span> <span class="o">()</span> <span class="o">=&gt;</span> terminal<span class="o">.</span>close<span class="o">()</span></pre>
+        </div>
+        <div class="install">
+          <div class="way">
+            <h3>The CLI</h3>
+            <p>Fetches the release for your machine, checks its digest, and puts <code>evoke</code> in <code>~/.local/bin</code>.</p>
+            <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy>Copy</button></div>
+          </div>
+          <div class="way">
+            <h3>The SDK</h3>
+            <p>Node 24 or newer, ES modules, no dependencies. The core ships inside as WebAssembly.</p>
+            <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy>Copy</button></div>
+          </div>
+          <p class="after">Then <a href="manual/start/first-run.html">the first ten minutes</a>, and
+            <a href="manual/sdk/getting-started.html">the SDK's first hour</a>.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p class="tag">You invoke a function; you evoke a reflex.</p>
+      <div class="row">
+        <div><a href="https://github.com/evoke-build/evoke/blob/main/LICENSE">Apache-2.0</a>; the collection is MIT.
+          The name and the logo are <a href="https://github.com/evoke-build/evoke/blob/main/TRADEMARK.md">trademarks</a>.
+          Jev is <a href="https://typesafe.ai">TypeSafe AI</a>'s.</div>
+        <nav>
+          <a href="manual/">Manual</a>
+          <a href="use-cases.html">Use cases</a>
+          <a href="manual/reference/cli.html">Reference</a>
+          <a href="manual/security.html">Security</a>
+          <a href="https://github.com/evoke-build/reflexes">Collection</a>
+          <a href="https://github.com/evoke-build/evoke">GitHub</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    for (const button of document.querySelectorAll("[data-copy]")) {
+      button.addEventListener("click", async () => {
+        const text = button.parentElement.querySelector("code").textContent
+        try {
+          await navigator.clipboard.writeText(text)
+          button.textContent = "Copied"
+          button.classList.add("done")
+          setTimeout(() => { button.textContent = "Copy"; button.classList.remove("done") }, 1600)
+        } catch {
+          button.textContent = "Select it"
+        }
+      })
+    }
+
+    // Tabs: files, code, the app. Arrow keys move between them.
+    for (const panel of document.querySelectorAll(".tabbed")) {
+      const tabs = [...panel.querySelectorAll('[role="tab"]')], panes = [...panel.querySelectorAll('[role="tabpanel"]')]
+      const select = i => {
+        tabs.forEach((tab, j) => { tab.setAttribute("aria-selected", String(i === j)); tab.tabIndex = i === j ? 0 : -1 })
+        panes.forEach((pane, j) => { pane.hidden = i !== j })
+      }
+      tabs.forEach((tab, i) => {
+        tab.addEventListener("click", () => select(i))
+        tab.addEventListener("keydown", event => {
+          const move = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0
+          if (!move) return
+          event.preventDefault()
+          const next = (i + move + tabs.length) % tabs.length
+          select(next); tabs[next].focus()
+        })
+      })
+    }
+
+    // The stages: each answers its sentences on a loop, while it is on screen. A line may change the room as it lands.
+    {
+      const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
+      const spinner = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+      const rich = (s, text) => {
+        for (const part of text.split(/(\{(?:n|hi|mid):[^}]*\})/)) {
+          const m = part.match(/^\{(n|hi|mid):([^}]*)\}$/)
+          if (!m) { if (part) s.append(part); continue }
+          const el = document.createElement(m[1] === "n" ? "b" : "i")
+          if (m[1] === "mid") el.className = "mid"
+          el.textContent = m[2]
+          s.append(el)
+        }
+        return s
+      }
+      const line = (cls, text) => { const s = document.createElement("span"); s.className = "line " + cls; return text === undefined ? s : rich(s, text) }
+      const prompt = () => {
+        const s = line("say"), p = document.createElement("span"), input = document.createElement("span"), cursor = document.createElement("span")
+        p.className = "p"; p.textContent = "$"; input.className = "in"; cursor.className = "cursor"
+        s.append(p, " ", input, cursor)
+        return s
+      }
+      const type = async (el, text) => { let typed = ""; for (const ch of text) { typed += ch; el.textContent = typed; await wait(28 + Math.random() * 40) } }
+      const set = (demo, values) => { for (const [key, value] of Object.entries(values ?? {})) demo.dataset[key] = value }
+
+      const scenes = {
+        ops: { final: { checkout: "6", payments: "1", release: "41", bell: "quiet" }, scenes: [
+          { step: 0, say: 'evoke "scale checkout to 6 in staging"', busy: "", lines: [
+            { text: '  {n:scale} service="checkout" env="staging" replicas="6"  {hi:0.90}', set: { checkout: "6" } },
+            { cls: "out", text: "deployment.apps/checkout-api scaled" },
+          ] },
+          { step: 1, say: 'evoke "take payments down to 1 replica"', busy: "", lines: [
+            { ask: "  Which environment?  [1] staging  [2] prod  [+] add one  > ", answer: "2" },
+            { text: '  {n:scale} service="payments" env="prod" replicas="1"  {hi:0.95}', set: { payments: "1" } },
+            { cls: "out", text: "deployment.apps/payments-svc scaled" },
+          ] },
+          { step: 2, say: 'evoke "roll checkout back in prod"', busy: "", lines: [
+            { text: '  {n:rollback} service="checkout" env="prod" · destructive · weakest: service {hi:0.99}' },
+            { ask: "  Roll checkout back in prod?  [y]es [n]o [t]each > ", answer: "y", after: { release: "41" } },
+            { cls: "out", text: "deployment.apps/checkout-api rolled back" },
+          ], hold: 2900 },
+          { step: 0, say: 'evoke "silence db-3 for 2 hours"', busy: "", lines: [
+            { text: '  {n:silence} host="db-3" duration="2 hours"  {hi:0.99}', set: { bell: "quiet" } },
+            { cls: "out", text: "db-3 silenced until 01:12 AM" },
+          ], hold: 3400 },
+        ] },
+        stream: { final: { l1: "ran", l2: "queued", l3: "none" }, scenes: [
+          { say: "evoke < inbox.txt", busy: "", lines: [
+            { step: 0, text: '  {n:scale} service="checkout" env="staging" replicas="6"  {hi:0.90}', set: { l1: "ran" } },
+            { cls: "out", text: "deployment.apps/checkout-api scaled" },
+            { step: 1, text: '  an ask needs a terminal  →  evoke "silence db-3"', set: { l2: "queued" }, pause: 600 },
+            { step: 2, text: "  {n:none} {hi:1.00} · silence 0.00 · rollback 0.00 · scale 0.00", set: { l3: "none" } },
+            { text: "[3]" },
+          ], hold: 3400 },
+          { say: "node queue.ts < inbox.txt", busy: "", lines: [
+            { step: 0, cls: "out", text: "deployment.apps/checkout-api scaled", set: { l1: "ran" } },
+            { step: 1, cls: "out", text: 'queued · ask · "silence db-3"', set: { l2: "queued" }, pause: 600 },
+            { step: 2, cls: "out", text: 'queued · abstain · "what is the weather like"', set: { l3: "none" } },
+          ], hold: 3400 },
+        ] },
+        bank: { final: { card: "checker", stamp: "yes" }, scenes: [
+          { say: "node checker.ts", busy: "", lines: [
+            { step: 0, cls: "out", text: 'pay payee="acme" account="ops" amount="12400" ref="invoice 8812"', set: { card: "maker" }, pause: 900 },
+            { step: 1, cls: "out", text: 'pay payee="acme" account="ops" amount="12400" ref="invoice 8812" · destructive · weakest: route 1.00', set: { card: "queue" }, pause: 1300 },
+            { step: 2, cls: "out", text: "paid 12400 from acc_ops, transfer tr_0f3a", set: { card: "checker", stamp: "yes" } },
+          ], hold: 3400 },
+          { say: 'evoke "pay Acme from ops"', busy: "", lines: [
+            { step: 0, ask: "  How much?  > ", answer: "12400", after: { card: "maker" } },
+            { step: 1, text: '  {n:pay} payee="acme" account="ops" amount="12400" · destructive · weakest: route {hi:1.00}', set: { card: "queue" }, pause: 700 },
+            { step: 2, ask: "  Pay acme 12400 from ops?  [y]es [n]o [t]each > ", answer: "n", set: { card: "checker" }, after: { stamp: "no" } },
+            { text: "[2]" },
+          ], hold: 3000 },
+        ] },
+        plant: { final: { line3: "stop", line2: "stop" }, scenes: [
+          { say: 'evoke "the filler is jammed, stop it"', busy: "", lines: [
+            { step: 0, text: '  {n:stop} line="line 3" · destructive · weakest: route {hi:0.98}' },
+            { step: 1, ask: "  Stop line 3 at the end of this cycle?  [y]es [n]o [t]each > ", answer: "y" },
+            { step: 2, cls: "out", text: "L3 stops at the end of this cycle", set: { line3: "stop" } },
+          ], hold: 3000 },
+          { say: 'node app.ts "take the labeller down"', busy: "", lines: [
+            { step: 1, ask: "Stop line 2 at the end of this cycle?  [y]es [n]o > ", answer: "y" },
+            { step: 2, cls: "out", text: "L2 stops at the end of this cycle", set: { line2: "stop" } },
+          ], hold: 3400 },
+        ] },
+        runbook: { final: { drain: "ran", failover: "ran", verify: "ran" }, scenes: [
+          { say: 'node runbook.ts "drain the primary"', busy: "", lines: [
+            { step: 0, cls: "out", text: "primary drained", set: { drain: "ran" }, pause: 900 },
+            { step: 1, ask: "Promote the replica now?  [y]es [n]o > ", answer: "y", set: { failover: "confirm" }, after: { failover: "ran" } },
+            { cls: "out", text: "replica promoted", pause: 900 },
+            { step: 2, cls: "out", text: "writes landing on the new primary", set: { verify: "ran" } },
+          ], hold: 4200 },
+        ] },
+        teach: { final: { mark: "after", lesson: "1" }, scenes: [
+          { step: 0, say: 'evoke try "make db-3 shut up for 90 minutes"', busy: "", lines: [
+            { text: "  {n:silence} {hi:1.00} · rollback 0.00 · none 0.00 · scale 0.00" },
+            { text: "  host      {n:db-3} {mid:0.74} · unstated 0.26 · web-1 0.00" },
+            { text: '  duration  {n:"90 minutes"} {hi:1.00} · unstated 0.00' },
+            { text: "  fits      silence 0.79 · scale 0.07 · rollback 0.09" },
+            { text: '  {n:confirm} · silence host="db-3" duration="90 minutes" · write · weakest: host {mid:0.74}', set: { mark: "before" } },
+          ], hold: 3000 },
+          { step: 1, say: "node ../teach.ts", busy: "asking claude-opus-5", lines: [
+            { cls: "add", text: '+ overlays/silence.toml  [examples] "make db-3 shut up for 90 minutes" = { host = "db-3", duration = "90 minutes" }', set: { lesson: "1" }, pause: 700 },
+            { text: "  scale     6 passed" },
+            { text: "  silence   7 passed" },
+            { text: "  rollback  6 passed" },
+          ], hold: 3000 },
+          { step: 2, say: 'evoke try "make db-3 shut up for 90 minutes"', busy: "", lines: [
+            { text: "  {n:silence} {hi:1.00} · none 0.00 · scale 0.00 · rollback 0.00" },
+            { text: "  host      {n:db-3} {hi:0.93} · unstated 0.07 · web-1 0.00", set: { mark: "after" } },
+            { text: '  duration  {n:"90 minutes"} {hi:1.00} · unstated 0.00' },
+            { text: "  fits      silence 0.82 · scale 0.08 · rollback 0.08" },
+            { text: "  {n:run} · weakest: host {hi:0.93}" },
+          ], hold: 4200 },
+        ] },
+      }
+
+      const demos = [...document.querySelectorAll(".demo[data-scene]")]
+      const seen = new Map(demos.map(demo => [demo, { visible: false, waiters: [] }]))
+      const wake = demo => { const s = seen.get(demo); if (s.visible && !document.hidden) { for (const w of s.waiters) w(); s.waiters = [] } }
+      const onScreen = demo => { const s = seen.get(demo); return s.visible && !document.hidden ? Promise.resolve() : new Promise(resolve => s.waiters.push(resolve)) }
+      const watcher = new IntersectionObserver(entries => { for (const entry of entries) { seen.get(entry.target).visible = entry.isIntersecting; wake(entry.target) } }, { threshold: .25 })
+      document.addEventListener("visibilitychange", () => { for (const demo of demos) wake(demo) })
+
+      const play = async (demo, { scenes }) => {
+        const strip = demo.querySelector(".strip"), trail = demo.querySelectorAll(".trail b")
+        const initial = { ...demo.dataset }
+        const step = i => { if (i !== undefined) trail.forEach((b, j) => b.classList.toggle("on", j === i)) }
+        const show = s => { strip.append(s); strip.scrollTop = strip.scrollHeight; requestAnimationFrame(() => s.classList.add("show")); return s }
+        for (;;) {
+          for (const key of Object.keys(demo.dataset)) delete demo.dataset[key]
+          set(demo, initial)
+          for (const scene of scenes) {
+            await onScreen(demo)
+            step(scene.step)
+            strip.classList.add("clear"); await wait(240); strip.replaceChildren(); strip.classList.remove("clear")
+            await wait(420)
+            const typed = show(prompt())
+            await type(typed.querySelector(".in"), scene.say)
+            await wait(220); typed.querySelector(".cursor").remove()
+            if (scene.busy !== undefined) {
+              const busy = show(line("own"))
+              for (let i = 0; i < 10; i++) { busy.textContent = "  " + spinner[i] + (scene.busy ? " " + scene.busy : ""); await wait(65) }
+              busy.remove()
+            }
+            for (const entry of scene.lines) {
+              step(entry.step)
+              if (entry.ask !== undefined) {
+                const s = show(line("own", entry.ask)); set(demo, entry.set)
+                const input = document.createElement("span"); input.className = "in"; s.append(input)
+                await wait(520); await type(input, entry.answer); await wait(260); set(demo, entry.after)
+              } else {
+                show(line(entry.cls ?? "own", entry.text)); set(demo, entry.set)
+              }
+              await wait(entry.pause ?? 170)
+            }
+            set(demo, scene.set)
+            await wait(scene.hold ?? 2600)
+          }
+        }
+      }
+
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        for (const demo of demos) { set(demo, scenes[demo.dataset.scene].final); demo.querySelector(".trail b:last-child").classList.add("on") }
+      } else {
+        for (const demo of demos) { watcher.observe(demo); play(demo, scenes[demo.dataset.scene]) }
+      }
+    }
+  </script>
+</body>
+</html>
