@@ -32,7 +32,7 @@ curl -fsSL https://evoke.build/install.sh | sh
 With [mise](https://mise.jdx.dev):
 
 ```bash
-mise use --global ubi:evoke-build/evoke
+mise use --global github:evoke-build/evoke
 ```
 
 From source, with a current Rust toolchain:
