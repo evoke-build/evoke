@@ -1,0 +1,6 @@
+{
+  "input": {
+    "text": "café lights"
+  },
+  "expect": "café lights"
+}

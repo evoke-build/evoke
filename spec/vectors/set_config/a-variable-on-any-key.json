@@ -1,0 +1,30 @@
+{
+  "input": {
+    "name": "lights",
+    "key": "bridge",
+    "setting": {
+      "type": "env",
+      "var": "HUE_BRIDGE"
+    },
+    "spec": {
+      "about": "Hue bridge address",
+      "secret": false
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "set",
+      "file": {
+        "type": "project"
+      },
+      "path": [
+        "config",
+        "lights",
+        "bridge"
+      ],
+      "value": {
+        "env": "HUE_BRIDGE"
+      }
+    }
+  }
+}

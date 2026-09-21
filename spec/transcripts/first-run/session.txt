@@ -1,0 +1,8 @@
+$ evoke "lock the screen"
+  jev needs TYPESAFE_API_KEY  →  export TYPESAFE_API_KEY=<value>
+[3]
+$ cat .config/evoke/evoke.toml
+adapter = "jev"
+$ TYPESAFE_API_KEY=sk-example evoke "lock the screen"
+  no reflexes are installed  →  evoke add evoke-build/reflexes
+[3]

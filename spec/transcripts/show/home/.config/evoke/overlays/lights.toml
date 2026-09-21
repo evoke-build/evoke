@@ -1,0 +1,5 @@
+[args.state]
+ask = "On, off or dim?"
+
+[examples]
+"kill the lights" = { state = "off" }

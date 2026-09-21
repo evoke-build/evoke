@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "don't let the laptop sleep for 2 hours"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 31,
+        "end": 38,
+        "text": "2 hours"
+      },
+      "value": {
+        "type": "duration",
+        "value": 7200
+      }
+    }
+  ]
+}

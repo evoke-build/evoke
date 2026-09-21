@@ -1,0 +1,50 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "input": "kill the lights",
+    "tags": [
+      "time"
+    ],
+    "scope": "full"
+  },
+  "expect": {
+    "ok": {
+      "state": {
+        "request": "kill the lights"
+      },
+      "questions": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "timer": {
+              "what": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+              "not_for": [
+                "keeping the laptop awake",
+                "alarms at a time of day",
+                "asking the time"
+              ],
+              "examples": [
+                "set a timer for 10 minutes",
+                "25 minute timer",
+                "timer for 3 minutes called \"eggs\"",
+                "count down 90 seconds"
+              ]
+            },
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        },
+        "fits.timer": {
+          "type": "yesno",
+          "ask": "Does `timer` do the specific thing the request asks for?",
+          "yes": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+          "no": "Something else, such as: keeping the laptop awake; alarms at a time of day; asking the time."
+        }
+      },
+      "proposed": []
+    }
+  }
+}

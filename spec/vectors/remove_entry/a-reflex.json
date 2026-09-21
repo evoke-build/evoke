@@ -1,0 +1,15 @@
+{
+  "input": {
+    "name": "lights"
+  },
+  "expect": {
+    "type": "remove",
+    "file": {
+      "type": "project"
+    },
+    "path": [
+      "reflexes",
+      "lights"
+    ]
+  }
+}

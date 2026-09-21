@@ -1,0 +1,11 @@
+{
+  "input": {
+    "locked": "write",
+    "upstream": "read"
+  },
+  "expect": {
+    "type": "needs_accept",
+    "locked": "write",
+    "upstream": "read"
+  }
+}

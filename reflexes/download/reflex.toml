@@ -1,0 +1,31 @@
+reflex = 1
+
+description = """
+Download a file from a URL.
+Into your downloads folder or a place you name; nothing is opened or run."""
+
+not_for = ["opening a page in the browser", "cloning a repository"]
+tags    = ["web", "files"]
+effect  = "write"
+confirm = "Download {url}?"
+run     = "download.mts"
+
+[args.url]
+ask  = "Which URL?"
+pick = "url"
+
+[args.to]
+ask      = "Into which folder?"
+vocab    = "places"
+optional = true
+
+[examples]
+"download https://example.com/report.pdf"             = { url = "https://example.com/report.pdf" }
+"fetch https://example.com/photos.zip to the desktop" = { url = "https://example.com/photos.zip" }
+"save https://example.com/notes.txt"                  = { url = "https://example.com/notes.txt" }
+
+[tests]
+"grab https://example.com/data.csv into my projects folder" = { url = "https://example.com/data.csv" }
+"get https://example.com/setup.sh"                          = { url = "https://example.com/setup.sh" }
+"download the file"                                         = { url = false }
+"open https://example.com in the browser"                   = false

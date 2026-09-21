@@ -1,0 +1,28 @@
+{
+  "input": {
+    "name": "lights",
+    "key": "bridge",
+    "setting": {
+      "type": "plain",
+      "value": "10.0.0.2"
+    },
+    "spec": {
+      "about": "Hue bridge address",
+      "secret": false
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "set",
+      "file": {
+        "type": "project"
+      },
+      "path": [
+        "config",
+        "lights",
+        "bridge"
+      ],
+      "value": "10.0.0.2"
+    }
+  }
+}

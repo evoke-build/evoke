@@ -1,0 +1,13 @@
+{
+  "input": {
+    "text": "radhi"
+  },
+  "expect": {
+    "err": {
+      "message": "\"radhi\" is not a ref: owner/repo[/dir][@tag] or <url>[#dir][@tag]",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

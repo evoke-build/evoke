@@ -1,0 +1,21 @@
+# The two tasks every change must pass, run as on a laptop: mise installs the pinned tools, then lint and test.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: jdx/mise-action@v4
+        with:
+          cache: true
+      - run: mise run lint
+      - run: mise run test

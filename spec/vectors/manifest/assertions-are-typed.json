@@ -1,0 +1,107 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "lights"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Turn the lights in one room on, off, or dim them.\"\nconfirm = \"Set the lights {state}?\"\nrun = \"lights.mts\"\n\n[args.state]\nask = \"What should the lights do?\"\noptions.on = \"Switch on.\"\noptions.off = \"Switch off.\"\noptions.dim = \"Lower the brightness without switching off.\"\n\n[args.brightness]\nask = \"How bright?\"\npick = \"number\"\noptional = true\n\n[examples]\n\"warm it up\"    = { colour = \"warm\" }\n\"lights on\"     = { state = true }\n\"make it bright\" = { state = \"bright\" }\n\"dim to 30\"     = { brightness = \"30 percent\" }\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "lights",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "lights"
+          },
+          "line": 19,
+          "column": 1
+        },
+        "message": "\"warm it up\" asserts colour, which is not an argument",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "lights"
+            },
+            "line": 19,
+            "column": 1
+          }
+        }
+      },
+      {
+        "reflex": "lights",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "lights"
+          },
+          "line": 20,
+          "column": 1
+        },
+        "message": "\"lights on\" asserts state = true; state takes an option key",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "lights"
+            },
+            "line": 20,
+            "column": 1
+          }
+        }
+      },
+      {
+        "reflex": "lights",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "lights"
+          },
+          "line": 21,
+          "column": 1
+        },
+        "message": "\"make it bright\" asserts state = \"bright\"; the options are on, off, dim",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "lights"
+            },
+            "line": 21,
+            "column": 1
+          }
+        }
+      },
+      {
+        "reflex": "lights",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "lights"
+          },
+          "line": 22,
+          "column": 1
+        },
+        "message": "\"dim to 30\" asserts brightness = \"30 percent\", which is not in the utterance",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "lights"
+            },
+            "line": 22,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "reflexes": {
+    "lights": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "$ref": "fixtures/lights.json"
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {
+        "bridge": {
+          "type": "plain",
+          "value": "10.0.0.2"
+        },
+        "token": {
+          "type": "env",
+          "var": "HUE_TOKEN",
+          "set": true
+        }
+      }
+    },
+    "timer": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "$ref": "fixtures/timer.json"
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    }
+  },
+  "vocab": {
+    "rooms": {
+      "den": {
+        "what": "The TV room downstairs; also 'the snug'."
+      },
+      "office": {
+        "what": "The upstairs study.",
+        "value": "group-7"
+      }
+    }
+  },
+  "adapter": "jev-1.13.0",
+  "evoke": "0.1.0"
+}

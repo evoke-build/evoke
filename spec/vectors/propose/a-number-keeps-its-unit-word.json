@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "set the volume to 40 percent"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 18,
+        "end": 28,
+        "text": "40 percent"
+      },
+      "value": {
+        "type": "number",
+        "value": 40
+      }
+    }
+  ]
+}

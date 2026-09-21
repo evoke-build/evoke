@@ -1,0 +1,24 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "written": {
+      "reflex": "lights",
+      "args": {
+        "room": "attic",
+        "state": "off"
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "reflex": "lights",
+      "message": "\"attic\" is not in vocabulary \"rooms\"",
+      "fix": {
+        "type": "vocab_add",
+        "vocab": "rooms"
+      }
+    }
+  }
+}

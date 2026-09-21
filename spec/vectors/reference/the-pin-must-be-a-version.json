@@ -1,0 +1,13 @@
+{
+  "input": {
+    "text": "radhi/home@1.2"
+  },
+  "expect": {
+    "err": {
+      "message": "\"radhi/home@1.2\": what follows @ must be a version, [v]X.Y.Z",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

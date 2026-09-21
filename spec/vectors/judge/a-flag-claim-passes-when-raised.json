@@ -1,0 +1,34 @@
+{
+  "input": {
+    "case": {
+      "reflex": "screenshot",
+      "utterance": {
+        "text": "grab the screen to the clipboard",
+        "id": "grab the screen to the clipboard"
+      },
+      "expect": {
+        "area": "screen",
+        "clipboard": true
+      },
+      "from": "examples"
+    },
+    "decision": {
+      "outcome": "run",
+      "reflex": "screenshot",
+      "args": {
+        "area": {
+          "type": "option",
+          "key": "screen"
+        },
+        "clipboard": {
+          "type": "flag"
+        }
+      },
+      "call": "screenshot area=\"screen\" clipboard",
+      "effect": "write"
+    }
+  },
+  "expect": {
+    "type": "pass"
+  }
+}

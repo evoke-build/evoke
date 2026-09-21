@@ -1,0 +1,27 @@
+# TOML formatting and checks, run by: bin/dx mise run lint
+exclude = ["mise.lock", "target/**", "internal/**"]
+
+[formatting]
+align_entries = true
+column_width  = 120
+
+# The schemas of spec/schemas/ validate the seeds and every fixture.
+[[rule]]
+include = ["reflexes/*/reflex.toml", "spec/**/reflex.toml"]
+[rule.schema]
+path = "spec/schemas/reflex.json"
+
+[[rule]]
+include = ["spec/**/overlays/*.toml"]
+[rule.schema]
+path = "spec/schemas/overlay.json"
+
+[[rule]]
+include = ["spec/**/vocab/*.toml"]
+[rule.schema]
+path = "spec/schemas/vocabulary.json"
+
+[[rule]]
+include = ["spec/**/evoke.toml"]
+[rule.schema]
+path = "spec/schemas/evoke.json"

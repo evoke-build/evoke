@@ -1,0 +1,8 @@
+$ evoke "start a timer"
+  How long?  > 10 minutes
+  timer duration="10 minutes"  0.92
+10 minute timer started
+$ evoke "set the volume to 150 percent"
+  How loud, in percent?  150 percent is outside 0–100  > 40
+  volume level="40"  0.93
+volume set to 40%

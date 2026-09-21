@@ -1,0 +1,27 @@
+{
+  "input": {
+    "name": "lights",
+    "location": {
+      "type": "remote",
+      "reference": {
+        "repo": {
+          "type": "github",
+          "owner": "radhi",
+          "name": "home"
+        },
+        "dir": "lights"
+      }
+    }
+  },
+  "expect": {
+    "type": "set",
+    "file": {
+      "type": "project"
+    },
+    "path": [
+      "reflexes",
+      "lights"
+    ],
+    "value": "radhi/home/lights"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "input": {
+    "case": {
+      "reflex": "timer",
+      "utterance": {
+        "text": "ping me in 2 hours",
+        "id": "ping me in 2 hours"
+      },
+      "expect": {
+        "duration": "2 hours"
+      },
+      "from": "tests"
+    },
+    "decision": {
+      "outcome": "run",
+      "reflex": "timer",
+      "args": {
+        "duration": {
+          "type": "pick",
+          "span": {
+            "start": 11,
+            "end": 18,
+            "text": "2 hours"
+          },
+          "value": {
+            "type": "duration",
+            "value": 7200
+          }
+        }
+      },
+      "call": "timer duration=\"2 hours\"",
+      "effect": "write"
+    }
+  },
+  "expect": {
+    "type": "pass"
+  }
+}

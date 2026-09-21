@@ -1,0 +1,140 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "asking": {
+      "reflex": "lights",
+      "args": {
+        "state": {
+          "type": "option",
+          "key": "off"
+        }
+      },
+      "unconsumed": [],
+      "confidence": 0.75,
+      "weakest": {
+        "question": "lights.room",
+        "top": "unstated",
+        "p": 0.75
+      },
+      "judgments": [
+        {
+          "question": "route",
+          "top": "lights",
+          "p": 0.9
+        },
+        {
+          "question": "lights.room",
+          "top": "unstated",
+          "p": 0.75
+        },
+        {
+          "question": "lights.state",
+          "top": "off",
+          "p": 0.9
+        }
+      ],
+      "runner_up": {
+        "reflex": "timer",
+        "route": 0.02,
+        "fits": 0.05
+      },
+      "contenders": [
+        {
+          "reflex": "lights",
+          "route": 0.9,
+          "fits": 0.6
+        },
+        {
+          "reflex": "timer",
+          "route": 0.02,
+          "fits": 0.05
+        }
+      ]
+    },
+    "given": {
+      "room": {
+        "type": "word",
+        "word": "den"
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "outcome": "confirm",
+    "reflex": "lights",
+    "args": {
+      "room": {
+        "type": "word",
+        "word": "den"
+      },
+      "state": {
+        "type": "option",
+        "key": "off"
+      }
+    },
+    "call": "lights room=\"den\" state=\"off\"",
+    "effect": "write",
+    "confidence": 0.75,
+    "weakest": {
+      "question": "lights.room",
+      "top": "unstated",
+      "p": 0.75
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "lights",
+        "p": 0.9
+      },
+      {
+        "question": "lights.room",
+        "top": "unstated",
+        "p": 0.75
+      },
+      {
+        "question": "lights.state",
+        "top": "off",
+        "p": 0.9
+      }
+    ],
+    "runner_up": {
+      "reflex": "timer",
+      "route": 0.02,
+      "fits": 0.05
+    },
+    "contenders": [
+      {
+        "reflex": "lights",
+        "route": 0.9,
+        "fits": 0.6
+      },
+      {
+        "reflex": "timer",
+        "route": 0.02,
+        "fits": 0.05
+      }
+    ],
+    "prompt": {
+      "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.75",
+      "template": "Set the den lights off?"
+    },
+    "because": [
+      {
+        "type": "under_floor",
+        "judgment": {
+          "question": "lights.room",
+          "top": "unstated",
+          "p": 0.75
+        },
+        "floor": 0.8
+      }
+    ]
+  }
+}

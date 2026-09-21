@@ -1,0 +1,9 @@
+{
+  "input": {
+    "fix": {
+      "type": "rerun"
+    },
+    "invoked": "evoke \"kill the lights\""
+  },
+  "expect": "evoke \"kill the lights\""
+}

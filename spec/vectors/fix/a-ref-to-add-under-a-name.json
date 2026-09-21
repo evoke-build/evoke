@@ -1,0 +1,9 @@
+{
+  "input": {
+    "fix": {
+      "type": "add_ref",
+      "reference": "radhi/home/lights"
+    }
+  },
+  "expect": "evoke add radhi/home/lights --as <name>"
+}

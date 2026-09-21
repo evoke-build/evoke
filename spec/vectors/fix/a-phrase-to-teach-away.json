@@ -1,0 +1,10 @@
+{
+  "input": {
+    "fix": {
+      "type": "teach_not",
+      "utterance": "kill the lights",
+      "reflex": "timer"
+    }
+  },
+  "expect": "evoke teach \"kill the lights\" not timer"
+}

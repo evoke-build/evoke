@@ -1,0 +1,31 @@
+reflex = 1
+
+description = """
+Start an email in your mail app.
+To one address, with an optional subject; nothing goes out until you press send."""
+
+not_for = ["reading or searching mail", "chat and text messages"]
+tags    = ["mail"]
+effect  = "read"
+confirm = "Write to {to}?"
+run     = "mail.mts"
+
+[args.to]
+ask  = "To which address?"
+pick = "email"
+
+[args.subject]
+ask      = "What is the subject?"
+pick     = "quoted"
+optional = true
+
+[examples]
+"email ana@example.com"                                 = { to = "ana@example.com" }
+'write to sam@example.com about "friday"'               = { to = "sam@example.com", subject = "friday" }
+'new mail to team@example.com, subject "standup notes"' = { to = "team@example.com", subject = "standup notes" }
+
+[tests]
+"send a message to jo@example.com"         = { to = "jo@example.com" }
+'compose "invoice" to billing@example.com' = { to = "billing@example.com", subject = "invoice" }
+"email ana"                                = { to = false }
+"check my inbox"                           = false

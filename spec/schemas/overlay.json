@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://evoke.build/schemas/overlay.json",
+  "title": "overlays/<name>.toml",
+  "description": "Your sparse manifest for one reflex, merged over the shipped one: tables merge by key, every value replaces whole. Wording only; a contract key makes the reflex inactive. Reference: docs/manual/reference/files.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "$ref": "#/definitions/text",
+      "description": "Replaces the shipped description whole."
+    },
+    "not_for": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/line" },
+      "description": "Replaces the shipped list whole."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/name" },
+      "uniqueItems": true,
+      "description": "Replaces the shipped list whole."
+    },
+    "effect": {
+      "enum": ["read", "write", "destructive"],
+      "description": "May only tighten the shipped effect. A loosening line makes the reflex inactive."
+    },
+    "confirm": {
+      "$ref": "#/definitions/line",
+      "description": "Replaces the shipped prompt. A {placeholder} names a required argument."
+    },
+    "args": {
+      "type": "object",
+      "description": "Wording per argument, by its current name or a former one declared with was.",
+      "propertyNames": { "$ref": "#/definitions/arg_name" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ask": { "$ref": "#/definitions/line" },
+          "options": {
+            "type": "object",
+            "description": "New wording for existing option keys only.",
+            "propertyNames": { "$ref": "#/definitions/option_key" },
+            "additionalProperties": { "$ref": "#/definitions/line" }
+          }
+        }
+      }
+    },
+    "examples": {
+      "$ref": "#/definitions/records",
+      "description": "Your examples; sent to the classifier. Naming a shipped utterance moves it here and replaces its value. Your records may assert vocab arguments."
+    },
+    "tests": {
+      "$ref": "#/definitions/records",
+      "description": "Your tests; held out. Naming a shipped example here stops sending it."
+    }
+  },
+  "definitions": {
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000-\\u0009\\u000b-\\u001f\\u007f-\\u009f\\u061c\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]+$"
+    },
+    "line": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f\\u061c\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]+$"
+    },
+    "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "arg_name": { "$ref": "#/definitions/name" },
+    "option_key": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f\\u061c\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]+$",
+      "not": { "enum": ["none", "unstated"] }
+    },
+    "records": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/definitions/line" },
+      "additionalProperties": {
+        "oneOf": [
+          { "const": false },
+          {
+            "type": "object",
+            "propertyNames": { "$ref": "#/definitions/arg_name" },
+            "additionalProperties": {
+              "oneOf": [{ "$ref": "#/definitions/line" }, { "type": "boolean" }]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

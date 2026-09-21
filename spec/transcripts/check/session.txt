@@ -1,0 +1,21 @@
+$ git clone -q -b main https://github.com/radhi/home && cd home/lights && evoke check
+  lights  write  runs lights.mts
++ reflex.d.ts
+  1.2.0  same
+$ cp next/reflex.toml home/lights/reflex.toml && cd home/lights && evoke check
+  lights  write  runs lights.mts
++ reflex.d.ts
+  1.2.0 → 2.0.0  major
+    args.state  renamed power
+$ mkdir bodyless && printf 'reflex = 1\ndescription = "Nothing."\nconfirm = "Nothing?"\nrun = "nothing.mts"\n' > bodyless/reflex.toml && cd bodyless && evoke check
+  bodyless: runs nothing.mts, which does not exist  →  evoke check
+[3]
+$ mkdir dull && printf 'reflex = 1\ndescription = "Nothing."\nconfirm = "Nothing?"\nrun = "dull.mts"\n' > dull/reflex.toml && printf 'export default 5\n' > dull/dull.mts && cd dull && evoke check
+  dull: the default export of dull.mts is not a function  →  evoke check
+[3]
+$ mkdir broken && printf 'reflex = 1\ndescription = "Nothing."\nconfirm = "Nothing?"\nrun = "nothing.ts"\n' > broken/reflex.toml && cd broken && evoke check
+  broken: run: "nothing.ts" must end in .mts or .mjs  →  ~/broken/reflex.toml:4:1
+[3]
+$ evoke check
+  no reflex.toml here  →  evoke new <name>
+[3]

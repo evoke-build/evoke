@@ -1,0 +1,77 @@
+{
+  "input": {
+    "set": {
+      "reflexes": {
+        "lights": {
+          "wording": {
+            "ok": {
+              "manifest": {
+                "$ref": "fixtures/lights.json"
+              },
+              "yours": []
+            }
+          },
+          "consented": "write",
+          "configured": {
+            "bridge": {
+              "type": "plain",
+              "value": "10.0.0.2"
+            },
+            "token": {
+              "type": "env",
+              "var": "HUE_TOKEN",
+              "set": false
+            }
+          }
+        }
+      },
+      "vocab": {
+        "rooms": {
+          "den": {
+            "what": "The TV room downstairs; also 'the snug'."
+          },
+          "office": {
+            "what": "The upstairs study.",
+            "value": "group-7"
+          }
+        }
+      },
+      "adapter": "jev-1.13.0",
+      "evoke": "0.1.0"
+    }
+  },
+  "expect": {
+    "ok": {
+      "digest": "h1:6cb52b7b2cd7b30216e1c9a17f530aee3225c57d34800f206821baf4223da5fa",
+      "active": {},
+      "inactive": {
+        "lights": [
+          {
+            "reflex": "lights",
+            "message": "HUE_TOKEN is not set",
+            "fix": {
+              "type": "export_key",
+              "var": "HUE_TOKEN"
+            }
+          }
+        ]
+      },
+      "slots": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        }
+      },
+      "values": {
+        "rooms": {
+          "office": "group-7"
+        }
+      },
+      "deadline": 30000
+    }
+  }
+}

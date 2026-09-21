@@ -1,0 +1,15 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "input": "timer for 10 minutes called \"eggs\"",
+    "tags": [],
+    "scope": "full"
+  },
+  "expect": {
+    "ok": {
+      "$ref": "fixtures/request-egg-timer.json"
+    }
+  }
+}

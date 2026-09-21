@@ -1,0 +1,41 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "overlay",
+        "name": "lights"
+      },
+      "toml": "[examples]\n\"kill the lights\" = { state = \"off\" }\n\n[tests]\n\"KILL the lights\" = false\n"
+    },
+    "of": {
+      "$ref": "fixtures/lights.json"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "lights",
+        "at": {
+          "file": {
+            "type": "overlay",
+            "name": "lights"
+          },
+          "line": 5,
+          "column": 1
+        },
+        "message": "\"KILL the lights\" repeats \"kill the lights\"",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "overlay",
+              "name": "lights"
+            },
+            "line": 5,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

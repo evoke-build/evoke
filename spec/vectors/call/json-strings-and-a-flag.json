@@ -1,0 +1,15 @@
+{
+  "input": {
+    "text": "timer duration=\"10 minutes\" label=\"say \\\"hi\\\"\" quiet"
+  },
+  "expect": {
+    "ok": {
+      "reflex": "timer",
+      "args": {
+        "duration": "10 minutes",
+        "label": "say \"hi\"",
+        "quiet": null
+      }
+    }
+  }
+}

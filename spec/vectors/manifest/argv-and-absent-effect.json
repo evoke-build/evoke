@@ -1,0 +1,41 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "trash"
+      },
+      "toml": "reflex = 1\n\ndescription = \"\"\"\nEmpty the trash.\nEverything in it is gone for good.\"\"\"\n\nnot_for = [\"deleting one file\", \"clearing downloads or caches\"]\ntags    = [\"files\"]\nconfirm = \"Empty the trash?\"\nrun     = [\"osascript\", \"-e\", 'tell application \"Finder\" to empty the trash']\n\n[examples]\n\"empty the trash\" = {}\n\"empty the bin\"   = {}\n\n[tests]\n\"purge the trash\"      = {}\n\"delete the old draft\" = false\n"
+    }
+  },
+  "expect": {
+    "ok": {
+      "description": "Empty the trash.\nEverything in it is gone for good.",
+      "not_for": [
+        "deleting one file",
+        "clearing downloads or caches"
+      ],
+      "tags": [
+        "files"
+      ],
+      "effect": "destructive",
+      "confirm": "Empty the trash?",
+      "run": [
+        "osascript",
+        "-e",
+        "tell application \"Finder\" to empty the trash"
+      ],
+      "config": {},
+      "args": {},
+      "examples": {
+        "empty the trash": {},
+        "empty the bin": {}
+      },
+      "tests": {
+        "purge the trash": {},
+        "delete the old draft": false
+      },
+      "unknown": []
+    }
+  }
+}

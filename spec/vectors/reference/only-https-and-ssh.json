@@ -1,0 +1,13 @@
+{
+  "input": {
+    "text": "git://example.com/r"
+  },
+  "expect": {
+    "err": {
+      "message": "\"git://example.com/r\" uses scheme \"git\"; https and ssh are allowed",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "digest": "h1:f31cd556ad0f7d0ca4f41e7059808a2768938ec0b66f98239cadc454d0a638c8",
+  "active": {
+    "screenshot": {
+      "effect": "write",
+      "run": "screenshot.mts",
+      "confirm": "Take a screenshot?",
+      "args": {
+        "area": {
+          "ask": "The whole screen, a window, or a selection?",
+          "options": {
+            "screen": "Everything on every display.",
+            "window": "One window, chosen by clicking it."
+          },
+          "optional": true,
+          "was": []
+        },
+        "clipboard": {
+          "ask": "To the clipboard instead of a file?",
+          "flag": true,
+          "was": []
+        }
+      },
+      "config": {},
+      "tags": [
+        "screen"
+      ]
+    }
+  },
+  "inactive": {},
+  "slots": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "screenshot": {
+          "what": "Capture the screen, a window or a selection.\nSaved to the desktop as PNG, or copied to the clipboard.",
+          "not_for": [
+            "recording the screen"
+          ],
+          "examples": [
+            "take a screenshot",
+            "screenshot this window",
+            "grab the screen to the clipboard"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "fits.screenshot": {
+      "type": "yesno",
+      "ask": "Does `screenshot` do the specific thing the request asks for?",
+      "yes": "Capture the screen, a window or a selection.\nSaved to the desktop as PNG, or copied to the clipboard.",
+      "no": "Something else, such as: recording the screen."
+    },
+    "screenshot.area": {
+      "type": "choice",
+      "ask": "The whole screen, a window, or a selection?",
+      "options": {
+        "screen": {
+          "what": "Everything on every display.",
+          "examples": [
+            "grab the screen to the clipboard"
+          ]
+        },
+        "window": {
+          "what": "One window, chosen by clicking it.",
+          "examples": [
+            "screenshot this window"
+          ]
+        },
+        "unstated": {
+          "what": "The request does not say.",
+          "examples": [
+            "take a screenshot"
+          ]
+        }
+      },
+      "otherwise": "unstated"
+    },
+    "screenshot.clipboard": {
+      "type": "choice",
+      "ask": "To the clipboard instead of a file?",
+      "options": {
+        "yes": {
+          "what": "The request asks for this.",
+          "examples": [
+            "grab the screen to the clipboard"
+          ]
+        },
+        "no": "The request asks for the opposite.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    }
+  },
+  "values": {},
+  "deadline": 30000
+}

@@ -1,0 +1,7 @@
+$ evoke
+> kill the lights in the den
+  lights room="den" state="off"  0.85
+den lights off
+> what time is it
+  none 0.70 · timer 0.20 · lights 0.05 · volume 0.05
+>

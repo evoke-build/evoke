@@ -1,0 +1,56 @@
+# Tools and tasks, pinned. Run with `mise run <task>` — or `bin/dx mise run <task>` from a host that keeps a devbox.
+min_version = "2026.9.0"
+
+[settings]
+lockfile = true
+
+# Exact versions only: bin/dx mise use --pin <tool>@<version>
+[tools]
+cargo-deny = "0.20.2"
+node       = "24.20.0"
+python     = "3.14.7"
+rust       = { version = "1.98.1", components = ["rustfmt", "clippy"], targets = ["wasm32-unknown-unknown"] }
+shellcheck = "0.11.0"
+taplo      = "0.10.0"
+
+[tasks.lint]
+depends = ["sdk", "reflexes"]
+description = "Lint everything: shell, TOML, the spec's shapes, Rust format and clippy with warnings denied, the wasm32 build of the boundary over the pure crates, the dependency audit, the SDK's and the collection's type checks"
+env = { RUST_LOG = "warn" }
+run = [
+  "shellcheck bin/* mise-tasks/publish-reflexes",
+  "taplo fmt --check",
+  "taplo check",
+  "mise run lint-spec",
+  "cargo fmt --all --check",
+  "cargo clippy --workspace --all-targets -- -D warnings",
+  "cargo clippy -p evoke-wasm --target wasm32-unknown-unknown -- -D warnings",
+  "cargo deny check",
+  "npm --prefix sdk run check",
+  "npm --prefix reflexes run check",
+]
+
+[tasks.reflexes]
+description = "Install the collection's tools as locked, for its type check and tests"
+dir         = "reflexes"
+run         = ["npm ci --no-audit --no-fund"]
+
+[tasks.sdk]
+depends     = ["wasm"]
+description = "Build the SDK: its tools installed as locked, then the TypeScript compiled to sdk/dist"
+dir         = "sdk"
+run         = ["npm ci --no-audit --no-fund", "npm run build"]
+
+[tasks.test]
+depends     = ["sdk", "reflexes"]
+description = "Run every test: the workspace's — the spec's vectors through the op table, its transcripts and every reflex directory through the binary — then the SDK's, the vectors again through core.wasm, then the collection's"
+run         = ["cargo test --workspace", "npm --prefix sdk test", "npm --prefix reflexes test"]
+
+[tasks.wasm]
+description = "Build the core for the SDK: evoke-wasm for wasm32 under the wasm profile, placed as sdk/core.wasm with the loader beside it"
+run = [
+  "cargo build -p evoke-wasm --target wasm32-unknown-unknown --profile wasm",
+  "mkdir -p sdk/runtime",
+  "cp target/wasm32-unknown-unknown/wasm/evoke_wasm.wasm sdk/core.wasm",
+  "cp crates/evoke/runtime/loader.mjs sdk/runtime/loader.mjs",
+]

@@ -1,0 +1,6 @@
+{
+  "input": {
+    "text": "kill the lights"
+  },
+  "expect": "kill the lights"
+}

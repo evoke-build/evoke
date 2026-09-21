@@ -1,0 +1,31 @@
+{
+  "input": {
+    "chosen": {
+      "reflex": "lights",
+      "args": {
+        "room": {
+          "type": "word",
+          "word": "den"
+        },
+        "state": {
+          "type": "option",
+          "key": "off"
+        }
+      },
+      "call": "lights room=\"den\" state=\"off\"",
+      "effect": "write"
+    },
+    "active": {
+      "$ref": "fixtures/active-lights.json"
+    }
+  },
+  "expect": {
+    "err": {
+      "reflex": "lights",
+      "message": "lights runs a file, not an argv",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "lights"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Turn the lights in one room on, off, or dim them.\"\nconfirm = \"Set the lights {state}?\"\nrun = [\"hue\", \"{state}\", \"{clipboard}\", \"{\"]\n\n[args.state]\nask = \"What should the lights do?\"\noptions.on = \"Switch on.\"\noptions.off = \"Switch off.\"\noptions.dim = \"Lower the brightness without switching off.\"\n\n[args.clipboard]\nask = \"To the clipboard?\"\nflag = true\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "lights",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "lights"
+          },
+          "line": 5,
+          "column": 1
+        },
+        "message": "run names {clipboard}, a flag; flags need a file body",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "lights"
+            },
+            "line": 5,
+            "column": 1
+          }
+        }
+      },
+      {
+        "reflex": "lights",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "lights"
+          },
+          "line": 5,
+          "column": 1
+        },
+        "message": "run element \"{\" is neither a literal nor a {placeholder}",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "lights"
+            },
+            "line": 5,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

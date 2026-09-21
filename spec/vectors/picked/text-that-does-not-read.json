@@ -1,0 +1,7 @@
+{
+  "input": {
+    "text": "soon",
+    "recognizer": "duration"
+  },
+  "expect": null
+}

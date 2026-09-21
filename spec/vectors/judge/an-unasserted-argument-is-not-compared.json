@@ -1,0 +1,47 @@
+{
+  "input": {
+    "case": {
+      "reflex": "lights",
+      "utterance": {
+        "text": "turn on the kitchen lights at 50",
+        "id": "turn on the kitchen lights at 50"
+      },
+      "expect": {
+        "state": "on"
+      },
+      "from": "examples"
+    },
+    "decision": {
+      "outcome": "run",
+      "reflex": "lights",
+      "args": {
+        "room": {
+          "type": "word",
+          "word": "office",
+          "value": "group-7"
+        },
+        "state": {
+          "type": "option",
+          "key": "on"
+        },
+        "brightness": {
+          "type": "pick",
+          "span": {
+            "start": 30,
+            "end": 32,
+            "text": "50"
+          },
+          "value": {
+            "type": "number",
+            "value": 50
+          }
+        }
+      },
+      "call": "lights room=\"office\" state=\"on\" brightness=\"50\"",
+      "effect": "write"
+    }
+  },
+  "expect": {
+    "type": "pass"
+  }
+}

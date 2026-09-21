@@ -1,0 +1,13 @@
+{
+  "input": {
+    "text": "./lights"
+  },
+  "expect": {
+    "err": {
+      "message": "\"./lights\" is local; a ref names a repository",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

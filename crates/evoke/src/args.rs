@@ -1,0 +1,905 @@
+//! The grammar of decision 0015, pure: a first argument exactly a command word selects the command, else the
+//! arguments are input; `--help`, `-h` and `--version` in the first place are what they say; `--` forces input;
+//! stdin lines are input. In: the arguments after the program, and whether stdin is a pipe. Out: a `Command` with
+//! validated arguments — a blank input is none — or a `Diagnostic`.
+
+use std::ffi::OsString;
+use std::fmt::{self, Write as _};
+
+use evoke_core::name::{ConfigKey, LocalName, Tag, VarName, VocabName, Word};
+use evoke_core::project::{Reference, Setting};
+use evoke_core::vocabulary::Meaning;
+use evoke_core::{Clean, Diagnostic, Fix, Version, VocabChange, Written, call, reference};
+
+/// The line to rerun when no command parsed.
+pub const USAGE: &str = "evoke \"<input>\"";
+
+/// Every command word, so a new one never reads as input; the ones not built yet are refused by name.
+const WORDS: [&str; 20] = [
+    "try",
+    "why",
+    "run",
+    "add",
+    "remove",
+    "update",
+    "sync",
+    "trust",
+    "show",
+    "teach",
+    "vocab",
+    "config",
+    "test",
+    "new",
+    "check",
+    "edit",
+    "search",
+    "publish",
+    "adapter",
+    "calibrate",
+];
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Command {
+    /// `evoke [--json] [--tag <tag>]… ["<input>"]`: decide, gate, run.
+    Use(Arguments),
+    /// `evoke try [--json] [--tag <tag>]… "<input>"`: decide only.
+    Try(Arguments),
+    /// `evoke why`: the last decision, explained from the log.
+    Why,
+    /// `evoke run <call>`: no classifier; the effect policy holds.
+    Run(Written),
+    /// `evoke teach ["<utterance>"] <call> | not <name>`: the utterance omitted means the last input.
+    Teach {
+        utterance: Option<String>,
+        lesson: Taught,
+    },
+    /// `evoke show [name]`: what is installed, or one effective manifest.
+    Show(Option<LocalName>),
+    /// `evoke vocab <name> [add <word> "<meaning>" [--value v] | remove <word>]`: the words, or one changed.
+    Vocab {
+        name: VocabName,
+        change: Option<VocabChange>,
+    },
+    /// `evoke config <name> <key> <value> | --env VAR`: one setting.
+    Config {
+        reflex: LocalName,
+        key: ConfigKey,
+        setting: Setting,
+    },
+    /// `evoke add <ref>… [--as name]`: fetch, lint, the thief report, then the project and the lock written.
+    Add {
+        refs: Vec<Ref>,
+        name: Option<LocalName>,
+    },
+    /// `evoke remove <name>`: the entry gone from the project and the lock; your files stay.
+    Remove(LocalName),
+    /// `evoke update [name] [--accept name]`: every unpinned remote reflex to its newest tag, or one; a looser
+    /// effect accepted.
+    Update {
+        reflex: Option<LocalName>,
+        accept: Option<LocalName>,
+    },
+    /// `evoke sync`: the lock realised in the store and the runtime recorded; nothing changes.
+    Sync,
+    /// `evoke trust`: this project blessed at its content.
+    Trust,
+    /// `evoke new <name>`: a working reflex under `./<name>/` from the template.
+    New(LocalName),
+    /// `evoke check`: the reflex here — its lines to fix, lint, its types, its contract against the newest tag.
+    Check,
+    /// `evoke test [name]`: every example and test of every active reflex, or of one, judged over the whole set.
+    Test(Option<LocalName>),
+    /// `evoke --help`, or `-h`: every command, and what it does.
+    Help,
+    /// `evoke --version`: `evoke <version>`.
+    Version,
+}
+
+/// A ref as typed at `add`, parsed.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Ref {
+    pub written: String,
+    pub reference: Reference,
+    pub pin: Option<Version>,
+}
+
+/// What `use` and `try` take.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Arguments {
+    pub json: bool,
+    pub tags: Vec<Tag>,
+    pub input: Inputs,
+}
+
+/// Where the input comes from: the argument, one per line of a piped stdin, or the terminal — the REPL.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Inputs {
+    One(String),
+    Stdin,
+    Terminal,
+}
+
+/// What `teach` says about the utterance: the call it makes, or that it is not this reflex's.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Taught {
+    Call(Written),
+    Not(LocalName),
+}
+
+impl fmt::Display for Taught {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Call(written) => write!(f, "{written}"),
+            Self::Not(name) => write!(f, "not {name}"),
+        }
+    }
+}
+
+impl Command {
+    /// The literal command that decides `input` again — for `teach`, that teaches the utterance again: what
+    /// `Fix::Rerun` prints.
+    #[must_use]
+    pub fn invoked(&self, input: &str) -> String {
+        let (word, arguments) = match self {
+            Self::Use(arguments) => (None, arguments),
+            Self::Try(arguments) => (Some("try"), arguments),
+            Self::Why => return "evoke why".to_owned(),
+            Self::Run(written) => return format!("evoke run {written}"),
+            Self::Teach { lesson, .. } => return format!("evoke teach {} {lesson}", quoted(input)),
+            Self::Show(None) => return "evoke show".to_owned(),
+            Self::Show(Some(name)) => return format!("evoke show {name}"),
+            Self::Vocab { name, change } => {
+                let mut line = format!("evoke vocab {name}");
+                match change {
+                    None => {}
+                    Some(VocabChange::Add { word, meaning }) => {
+                        let _ = write!(
+                            line,
+                            " add {} {}",
+                            self::word(word.as_str()),
+                            self::word(meaning.what.as_str())
+                        );
+                        if let Some(value) = &meaning.value {
+                            let _ = write!(line, " --value {}", self::word(value));
+                        }
+                    }
+                    Some(VocabChange::Remove { word }) => {
+                        let _ = write!(line, " remove {}", self::word(word.as_str()));
+                    }
+                }
+                return line;
+            }
+            Self::Config {
+                reflex,
+                key,
+                setting,
+            } => {
+                let value = match setting {
+                    Setting::Plain { value } => word(value),
+                    Setting::Env { var } => format!("--env {var}"),
+                };
+                return format!("evoke config {reflex} {key} {value}");
+            }
+            Self::Add { refs, name } => {
+                let mut line = "evoke add".to_owned();
+                for r in refs {
+                    let _ = write!(line, " {}", r.written);
+                }
+                if let Some(name) = name {
+                    let _ = write!(line, " --as {name}");
+                }
+                return line;
+            }
+            Self::Remove(name) => return format!("evoke remove {name}"),
+            Self::Update { reflex, accept } => {
+                let mut line = "evoke update".to_owned();
+                if let Some(reflex) = reflex {
+                    let _ = write!(line, " {reflex}");
+                }
+                if let Some(accept) = accept {
+                    let _ = write!(line, " --accept {accept}");
+                }
+                return line;
+            }
+            Self::Sync => return "evoke sync".to_owned(),
+            Self::Trust => return "evoke trust".to_owned(),
+            Self::New(name) => return format!("evoke new {name}"),
+            Self::Check => return "evoke check".to_owned(),
+            Self::Test(None) => return "evoke test".to_owned(),
+            Self::Test(Some(name)) => return format!("evoke test {name}"),
+            Self::Help => return "evoke --help".to_owned(),
+            Self::Version => return "evoke --version".to_owned(),
+        };
+        let mut line = "evoke".to_owned();
+        if let Some(word) = word {
+            line.push(' ');
+            line.push_str(word);
+        }
+        if arguments.json {
+            line.push_str(" --json");
+        }
+        for tag in &arguments.tags {
+            let _ = write!(line, " --tag {tag}");
+        }
+        line.push(' ');
+        line.push_str(&quoted(input));
+        line
+    }
+
+    /// The input as the setup lines name it before one is read.
+    #[must_use]
+    pub fn placeholder(&self) -> String {
+        match self {
+            Self::Use(Arguments {
+                input: Inputs::One(input),
+                ..
+            })
+            | Self::Try(Arguments {
+                input: Inputs::One(input),
+                ..
+            }) => self.invoked(input),
+            Self::Teach {
+                utterance: Some(utterance),
+                ..
+            } => self.invoked(utterance),
+            Self::Teach {
+                utterance: None, ..
+            } => self.invoked("<utterance>"),
+            _ => self.invoked("<input>"),
+        }
+    }
+}
+
+/// A JSON string: how an input or an utterance is written back.
+fn quoted(text: &str) -> String {
+    serde_json::Value::String(text.to_owned()).to_string()
+}
+
+/// A word as a shell would need it: bare when it is one plain word, else a JSON string.
+fn word(text: &str) -> String {
+    let plain = !text.is_empty()
+        && text
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-' | '/' | ':' | '@'));
+    if plain { text.to_owned() } else { quoted(text) }
+}
+
+/// The command the arguments spell, every argument validated.
+pub fn parse(
+    arguments: impl IntoIterator<Item = OsString>,
+    stdin_is_pipe: bool,
+) -> Result<Command, Diagnostic> {
+    let arguments: Vec<String> = arguments
+        .into_iter()
+        .map(|argument| {
+            argument
+                .into_string()
+                .map_err(|_| rerun("an argument is not UTF-8"))
+        })
+        .collect::<Result<_, _>>()?;
+    let Some((word, rest)) = arguments.split_first() else {
+        return deciding("evoke", &arguments, stdin_is_pipe).map(Command::Use);
+    };
+    match word.as_str() {
+        "--help" | "-h" => Ok(Command::Help),
+        "--version" => Ok(Command::Version),
+        "try" => {
+            let arguments = deciding("try", rest, stdin_is_pipe)?;
+            if arguments.input == Inputs::Terminal {
+                return Err(rerun("try needs an input"));
+            }
+            Ok(Command::Try(arguments))
+        }
+        "why" => {
+            if rest.is_empty() {
+                Ok(Command::Why)
+            } else {
+                Err(rerun("why takes no arguments"))
+            }
+        }
+        "run" => {
+            if rest.is_empty() {
+                return Err(rerun(
+                    "run needs a call: evoke run <name> [<arg>=<value> | <flag>]…",
+                ));
+            }
+            call(&line(rest)).map(Command::Run)
+        }
+        "teach" => teach(rest),
+        "show" => match rest {
+            [] => Ok(Command::Show(None)),
+            [name] => LocalName::new(name)
+                .map(Some)
+                .map(Command::Show)
+                .map_err(rerun),
+            _ => Err(rerun("show takes one name")),
+        },
+        "vocab" => vocab(rest),
+        "config" => config(rest),
+        "add" => add(rest),
+        "remove" => match rest {
+            [name] => LocalName::new(name).map(Command::Remove).map_err(rerun),
+            _ => Err(rerun("remove takes one name: evoke remove <name>")),
+        },
+        "update" => update(rest),
+        "sync" if rest.is_empty() => Ok(Command::Sync),
+        "sync" => Err(rerun("sync takes no arguments")),
+        "trust" if rest.is_empty() => Ok(Command::Trust),
+        "trust" => Err(rerun("trust takes no arguments")),
+        "new" => match rest {
+            [name] => LocalName::new(name).map(Command::New).map_err(rerun),
+            _ => Err(rerun("new takes one name: evoke new <name>")),
+        },
+        "check" if rest.is_empty() => Ok(Command::Check),
+        "check" => Err(rerun("check takes no arguments")),
+        "test" => match rest {
+            [] => Ok(Command::Test(None)),
+            [name] => LocalName::new(name)
+                .map(Some)
+                .map(Command::Test)
+                .map_err(rerun),
+            _ => Err(rerun("test takes one name: evoke test [<name>]")),
+        },
+        word if WORDS.contains(&word) => Err(rerun(format!("evoke {word} is not available yet"))),
+        _ => deciding("evoke", &arguments, stdin_is_pipe).map(Command::Use),
+    }
+}
+
+/// `[--json] [--tag <tag>]… [--] [<input>]`.
+fn deciding(
+    word: &str,
+    arguments: &[String],
+    stdin_is_pipe: bool,
+) -> Result<Arguments, Diagnostic> {
+    let mut json = false;
+    let mut tags = Vec::new();
+    let mut inputs = Vec::new();
+    let mut rest = arguments.iter();
+    while let Some(argument) = rest.next() {
+        match argument.as_str() {
+            "--json" => json = true,
+            "--tag" => {
+                let tag = rest.next().ok_or_else(|| rerun("--tag needs a tag"))?;
+                tags.push(Tag::new(tag).map_err(rerun)?);
+            }
+            "--" => inputs.extend(rest.by_ref().cloned()),
+            flag if flag.starts_with('-') && flag.len() > 1 => {
+                return Err(rerun(format!(
+                    "{flag} is not a flag of {word}; the flags are --json and --tag <tag>"
+                )));
+            }
+            input => inputs.push(input.to_owned()),
+        }
+    }
+    let input = match (inputs.len(), stdin_is_pipe) {
+        (0, true) => Inputs::Stdin,
+        (0, false) => Inputs::Terminal,
+        (1, _) if !inputs[0].trim().is_empty() => Inputs::One(inputs.remove(0)),
+        (1, _) => return Err(rerun(format!("{word} needs an input"))),
+        _ => {
+            return Err(rerun(format!(
+                "{word} takes one input; use -- before an input that starts with -"
+            )));
+        }
+    };
+    Ok(Arguments { json, tags, input })
+}
+
+/// `["<utterance>"] (<call> | not <name>)`: the first argument is the utterance unless it is a local name or
+/// `not`, in which case the utterance is the last input.
+fn teach(arguments: &[String]) -> Result<Command, Diagnostic> {
+    const NEEDS: &str = "teach needs a call or not <name>: evoke teach [\"<utterance>\"] <name> [<arg>=<value> | <flag>]… | not <name>";
+    let Some((first, rest)) = arguments.split_first() else {
+        return Err(rerun(NEEDS));
+    };
+    let (utterance, lesson) = if first == "not" || LocalName::new(first).is_ok() {
+        (None, arguments)
+    } else {
+        (Some(first.clone()), rest)
+    };
+    let lesson = match lesson {
+        [] => return Err(rerun(NEEDS)),
+        [not, name] if not == "not" => Taught::Not(LocalName::new(name).map_err(rerun)?),
+        [not, ..] if not == "not" => return Err(rerun("not takes one name")),
+        tokens => Taught::Call(call(&line(tokens))?),
+    };
+    Ok(Command::Teach { utterance, lesson })
+}
+
+/// The call line from its argv elements: one element is the line as `evoke` printed it; several are its tokens,
+/// and a value the shell already delimited — `duration="10 minutes"` reaching us as `duration=10 minutes` — is
+/// quoted for the grammar.
+fn line(elements: &[String]) -> String {
+    match elements {
+        [line] => line.clone(),
+        tokens => tokens
+            .iter()
+            .map(|token| match token.split_once('=') {
+                Some((arg, value))
+                    if !value.starts_with('"')
+                        && value.contains(|c: char| c.is_whitespace() || c == '"' || c == '=') =>
+                {
+                    format!("{arg}={}", quoted(value))
+                }
+                _ => token.clone(),
+            })
+            .collect::<Vec<_>>()
+            .join(" "),
+    }
+}
+
+/// `<name> [add <word> "<meaning>" [--value v] | remove <word>]`.
+fn vocab(arguments: &[String]) -> Result<Command, Diagnostic> {
+    let Some((name, rest)) = arguments.split_first() else {
+        return Err(rerun(
+            "vocab needs a name: evoke vocab <name> [add <word> \"<meaning>\" [--value v] | remove <word>]",
+        ));
+    };
+    let name = VocabName::new(name).map_err(rerun)?;
+    let change = match rest {
+        [] => None,
+        [verb, rest @ ..] if verb == "add" => {
+            let mut value = None;
+            let mut words = Vec::new();
+            let mut rest = rest.iter();
+            while let Some(argument) = rest.next() {
+                match argument.as_str() {
+                    "--value" => {
+                        value = Some(
+                            rest.next()
+                                .ok_or_else(|| rerun("--value needs a value"))?
+                                .clone(),
+                        );
+                    }
+                    flag if flag.starts_with("--") => {
+                        return Err(rerun(format!(
+                            "{flag} is not a flag of vocab add; the flag is --value <v>"
+                        )));
+                    }
+                    word => words.push(word),
+                }
+            }
+            let [word, meaning] = words.as_slice() else {
+                return Err(rerun(format!(
+                    "vocab {name} add takes a word and its meaning: evoke vocab {name} add <word> \"<meaning>\" [--value v]"
+                )));
+            };
+            let word = Word::new(word).map_err(|why| rerun(format!("word {why}")))?;
+            let what = Clean::line(meaning)
+                .map_err(|why| rerun(format!("the meaning \"{meaning}\" {why}")))?;
+            Some(VocabChange::Add {
+                word,
+                meaning: Meaning { what, value },
+            })
+        }
+        [verb, word] if verb == "remove" => Some(VocabChange::Remove {
+            word: Word::new(word).map_err(|why| rerun(format!("word {why}")))?,
+        }),
+        [verb, ..] if verb == "remove" => {
+            return Err(rerun(format!("vocab {name} remove takes one word")));
+        }
+        [verb, ..] => {
+            return Err(rerun(format!(
+                "vocab {name} takes add or remove, not {verb}"
+            )));
+        }
+    };
+    Ok(Command::Vocab { name, change })
+}
+
+/// `<name> <key> <value> | --env VAR`.
+fn config(arguments: &[String]) -> Result<Command, Diagnostic> {
+    const NEEDS: &str =
+        "config takes a reflex, a key and a value: evoke config <name> <key> <value> | --env <VAR>";
+    let (reflex, key, setting) = match arguments {
+        [reflex, key, env, var] if env == "--env" => (
+            reflex,
+            key,
+            Setting::Env {
+                var: VarName::new(var).map_err(rerun)?,
+            },
+        ),
+        [reflex, key, value] if !value.starts_with("--") => (
+            reflex,
+            key,
+            Setting::Plain {
+                value: value.clone(),
+            },
+        ),
+        [_, _, env] if env == "--env" => return Err(rerun("--env needs a variable")),
+        _ => return Err(rerun(NEEDS)),
+    };
+    Ok(Command::Config {
+        reflex: LocalName::new(reflex).map_err(rerun)?,
+        key: ConfigKey::new(key).map_err(rerun)?,
+        setting,
+    })
+}
+
+/// `<ref>… [--as <name>]`: every ref parsed; `--as` names one reflex, so it goes with one ref.
+fn add(arguments: &[String]) -> Result<Command, Diagnostic> {
+    let mut refs = Vec::new();
+    let mut name = None;
+    let mut rest = arguments.iter();
+    while let Some(argument) = rest.next() {
+        match argument.as_str() {
+            "--as" => {
+                let text = rest.next().ok_or_else(|| rerun("--as needs a name"))?;
+                name = Some(LocalName::new(text).map_err(rerun)?);
+            }
+            flag if flag.starts_with('-') && flag.len() > 1 => {
+                return Err(rerun(format!(
+                    "{flag} is not a flag of add; the flag is --as <name>"
+                )));
+            }
+            text => {
+                let (reference, pin) = reference(text)?;
+                refs.push(Ref {
+                    written: text.to_owned(),
+                    reference,
+                    pin,
+                });
+            }
+        }
+    }
+    if refs.is_empty() {
+        return Err(rerun(
+            "add needs a ref: evoke add <owner/repo[/dir][@tag]>… [--as <name>]",
+        ));
+    }
+    if name.is_some() && refs.len() > 1 {
+        return Err(rerun("--as names one reflex; add one ref with it"));
+    }
+    Ok(Command::Add { refs, name })
+}
+
+/// `[<name>] [--accept <name>]`.
+fn update(arguments: &[String]) -> Result<Command, Diagnostic> {
+    let mut reflex = None;
+    let mut accept = None;
+    let mut rest = arguments.iter();
+    while let Some(argument) = rest.next() {
+        match argument.as_str() {
+            "--accept" => {
+                let text = rest.next().ok_or_else(|| rerun("--accept needs a name"))?;
+                accept = Some(LocalName::new(text).map_err(rerun)?);
+            }
+            flag if flag.starts_with('-') && flag.len() > 1 => {
+                return Err(rerun(format!(
+                    "{flag} is not a flag of update; the flag is --accept <name>"
+                )));
+            }
+            text => {
+                if reflex.is_some() {
+                    return Err(rerun(
+                        "update takes one name: evoke update [<name>] [--accept <name>]",
+                    ));
+                }
+                reflex = Some(LocalName::new(text).map_err(rerun)?);
+            }
+        }
+    }
+    Ok(Command::Update { reflex, accept })
+}
+
+fn rerun(message: impl Into<String>) -> Diagnostic {
+    Diagnostic {
+        reflex: None,
+        at: None,
+        message: message.into(),
+        fix: Fix::Rerun,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn parsed(arguments: &[&str], stdin_is_pipe: bool) -> Result<Command, Diagnostic> {
+        parse(arguments.iter().map(OsString::from), stdin_is_pipe)
+    }
+
+    fn arguments_of(arguments: &[&str], stdin_is_pipe: bool) -> Arguments {
+        match parsed(arguments, stdin_is_pipe) {
+            Ok(Command::Try(arguments) | Command::Use(arguments)) => arguments,
+            Ok(_) => panic!("not a deciding command"),
+            Err(error) => panic!("{}", error.message),
+        }
+    }
+
+    #[test]
+    fn the_first_word_selects_the_command() {
+        assert!(matches!(parsed(&["try", "x"], false), Ok(Command::Try(_))));
+        assert!(matches!(parsed(&["x"], false), Ok(Command::Use(_))));
+        assert!(matches!(
+            parsed(&["--json", "x"], false),
+            Ok(Command::Use(_))
+        ));
+        assert_eq!(parsed(&["why"], false), Ok(Command::Why));
+        assert_eq!(
+            parsed(&["edit", "lights"], false).unwrap_err().message,
+            "evoke edit is not available yet"
+        );
+        assert_eq!(
+            parsed(&["why", "now"], false).unwrap_err().message,
+            "why takes no arguments"
+        );
+    }
+
+    #[test]
+    fn help_and_version_are_flags_in_the_first_place_and_words_nowhere() {
+        assert_eq!(parsed(&["--help"], false), Ok(Command::Help));
+        assert_eq!(parsed(&["-h"], true), Ok(Command::Help));
+        assert_eq!(parsed(&["--help", "show"], false), Ok(Command::Help));
+        assert_eq!(parsed(&["--version"], false), Ok(Command::Version));
+        assert_eq!(Command::Help.invoked(""), "evoke --help");
+        assert_eq!(Command::Version.invoked(""), "evoke --version");
+        // `help` stays an utterance, and after `--` even `--help` is one.
+        assert_eq!(
+            arguments_of(&["help"], false).input,
+            Inputs::One("help".to_owned())
+        );
+        assert_eq!(
+            arguments_of(&["--", "--help"], false).input,
+            Inputs::One("--help".to_owned())
+        );
+        assert!(parsed(&["show", "--help"], false).is_err());
+    }
+
+    #[test]
+    fn the_grammar_of_the_arguments() {
+        let plain = arguments_of(&["kill the lights"], false);
+        assert_eq!(plain.input, Inputs::One("kill the lights".to_owned()));
+        assert!(!plain.json && plain.tags.is_empty());
+        let full = arguments_of(&["try", "--json", "--tag", "home", "--", "--dash"], true);
+        assert!(full.json);
+        assert_eq!(full.tags[0].as_str(), "home");
+        assert_eq!(full.input, Inputs::One("--dash".to_owned()));
+        assert_eq!(arguments_of(&["try"], true).input, Inputs::Stdin);
+        assert_eq!(arguments_of(&[], true).input, Inputs::Stdin);
+        assert_eq!(arguments_of(&[], false).input, Inputs::Terminal);
+        assert_eq!(
+            arguments_of(&["-"], false).input,
+            Inputs::One("-".to_owned())
+        );
+    }
+
+    #[test]
+    fn the_tune_commands_and_their_lines() {
+        let lines = [
+            (
+                &["run", "lights", "room=den", "state=off"][..],
+                "evoke run lights room=den state=off",
+            ),
+            (
+                &["run", "timer duration=\"10 minutes\""],
+                "evoke run timer duration=\"10 minutes\"",
+            ),
+            (
+                &["run", "timer", "duration=10 minutes", "label=\"eggs\""],
+                "evoke run timer duration=\"10 minutes\" label=eggs",
+            ),
+            (
+                &["teach", "start one", "timer", "duration=10 minutes"],
+                "evoke teach \"start one\" timer duration=\"10 minutes\"",
+            ),
+            (
+                &["teach", "kill the lights", "lights", "state=off"],
+                "evoke teach \"kill the lights\" lights state=off",
+            ),
+            (
+                &["teach", "lights", "state=off"],
+                "evoke teach \"<utterance>\" lights state=off",
+            ),
+            (
+                &["teach", "what time is it", "not", "timer"],
+                "evoke teach \"what time is it\" not timer",
+            ),
+            (
+                &["teach", "not", "timer"],
+                "evoke teach \"<utterance>\" not timer",
+            ),
+            (&["show"], "evoke show"),
+            (&["show", "lights"], "evoke show lights"),
+            (&["vocab", "rooms"], "evoke vocab rooms"),
+            (
+                &["vocab", "rooms", "add", "den", "The TV room."],
+                "evoke vocab rooms add den \"The TV room.\"",
+            ),
+            (
+                &[
+                    "vocab", "rooms", "add", "the snug", "The den.", "--value", "group-7",
+                ],
+                "evoke vocab rooms add \"the snug\" \"The den.\" --value group-7",
+            ),
+            (
+                &["vocab", "rooms", "remove", "den"],
+                "evoke vocab rooms remove den",
+            ),
+            (
+                &["config", "lights", "bridge", "10.0.0.2"],
+                "evoke config lights bridge 10.0.0.2",
+            ),
+            (
+                &["config", "lights", "token", "--env", "HUE_TOKEN"],
+                "evoke config lights token --env HUE_TOKEN",
+            ),
+        ];
+        for (arguments, line) in lines {
+            let command = parsed(arguments, false)
+                .unwrap_or_else(|error| panic!("{arguments:?}: {}", error.message));
+            assert_eq!(command.placeholder(), line, "{arguments:?}");
+        }
+        assert!(matches!(
+            parsed(&["teach", "kill the lights", "lights", "state=off"], false),
+            Ok(Command::Teach {
+                utterance: Some(_),
+                lesson: Taught::Call(_)
+            })
+        ));
+        assert!(matches!(
+            parsed(&["teach", "lights", "state=off"], false),
+            Ok(Command::Teach {
+                utterance: None,
+                ..
+            })
+        ));
+        let Ok(Command::Vocab {
+            change: Some(VocabChange::Add { meaning, .. }),
+            ..
+        }) = parsed(
+            &["vocab", "rooms", "add", "den", "The den.", "--value", "g"],
+            false,
+        )
+        else {
+            panic!("an add");
+        };
+        assert_eq!(meaning.value.as_deref(), Some("g"));
+    }
+
+    #[test]
+    fn the_install_commands_and_their_lines() {
+        let lines = [
+            (
+                &["add", "radhi/home/lights", "radhi/timer@1.0.1"][..],
+                "evoke add radhi/home/lights radhi/timer@1.0.1",
+            ),
+            (
+                &["add", "radhi/home/lights", "--as", "lamps"],
+                "evoke add radhi/home/lights --as lamps",
+            ),
+            (&["remove", "lights"], "evoke remove lights"),
+            (&["update"], "evoke update"),
+            (&["update", "lights"], "evoke update lights"),
+            (
+                &["update", "--accept", "lights"],
+                "evoke update --accept lights",
+            ),
+            (&["sync"], "evoke sync"),
+            (&["trust"], "evoke trust"),
+        ];
+        for (arguments, line) in lines {
+            let command = parsed(arguments, false)
+                .unwrap_or_else(|error| panic!("{arguments:?}: {}", error.message));
+            assert_eq!(command.placeholder(), line, "{arguments:?}");
+        }
+        let Ok(Command::Add { refs, name }) =
+            parsed(&["add", "radhi/timer@1.0.1", "--as", "eggs"], false)
+        else {
+            panic!("an add");
+        };
+        assert_eq!(
+            refs[0].pin.map(|pin| pin.to_string()),
+            Some("1.0.1".to_owned())
+        );
+        assert_eq!(name.map(|name| name.to_string()), Some("eggs".to_owned()));
+    }
+
+    #[test]
+    fn the_author_commands_and_their_lines() {
+        let lines = [
+            (&["new", "hello"][..], "evoke new hello"),
+            (&["check"], "evoke check"),
+            (&["test"], "evoke test"),
+            (&["test", "timer"], "evoke test timer"),
+        ];
+        for (arguments, line) in lines {
+            let command = parsed(arguments, false)
+                .unwrap_or_else(|error| panic!("{arguments:?}: {}", error.message));
+            assert_eq!(command.placeholder(), line, "{arguments:?}");
+        }
+        for arguments in [
+            &["new"][..],
+            &["new", "Hello"],
+            &["new", "a", "b"],
+            &["check", "lights"],
+            &["test", "a", "b"],
+            &["test", "none"],
+        ] {
+            assert_eq!(
+                parsed(arguments, false).unwrap_err().fix,
+                Fix::Rerun,
+                "{arguments:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn the_invoked_line_repeats_the_command() {
+        let full = parsed(&["try", "--json", "--tag", "home", "x"], false).unwrap();
+        assert_eq!(
+            full.invoked("say \"hi\""),
+            "evoke try --json --tag home \"say \\\"hi\\\"\""
+        );
+        let bare = parsed(&["--tag", "home", "x"], false).unwrap();
+        assert_eq!(bare.invoked("x"), "evoke --tag home \"x\"");
+        assert_eq!(bare.placeholder(), "evoke --tag home \"x\"");
+        assert_eq!(
+            parsed(&[], true).unwrap().placeholder(),
+            "evoke \"<input>\""
+        );
+        assert_eq!(Command::Why.invoked(""), "evoke why");
+        let teach = parsed(&["teach", "lights", "state=off"], false).unwrap();
+        assert_eq!(
+            teach.invoked("dim the office"),
+            "evoke teach \"dim the office\" lights state=off"
+        );
+    }
+
+    #[test]
+    fn everything_else_is_a_diagnostic_that_reruns() {
+        for arguments in [
+            &["try"][..],
+            &["try", ""],
+            &["try", "  "],
+            &["try", "a", "b"],
+            &["try", "--tag"],
+            &["try", "--tag", "Home", "x"],
+            &["try", "--loud", "x"],
+            &[""],
+            &["a", "b"],
+            &["--tag"],
+            &["run"],
+            &["run", "Lights"],
+            &["teach"],
+            &["teach", "kill the lights"],
+            &["teach", "kill the lights", "not"],
+            &["teach", "kill the lights", "not", "a", "b"],
+            &["show", "a", "b"],
+            &["show", "Lights"],
+            &["vocab"],
+            &["vocab", "rooms", "add", "den"],
+            &["vocab", "rooms", "add", "den", "x", "--value"],
+            &["vocab", "rooms", "add", "none", "x"],
+            &["vocab", "rooms", "remove"],
+            &["vocab", "rooms", "drop", "den"],
+            &["config", "lights", "bridge"],
+            &["config", "lights", "token", "--env"],
+            &["config", "lights", "token", "--env", "1x"],
+            &["add"],
+            &["add", "./lights"],
+            &["add", "radhi/home", "radhi/timer", "--as", "x"],
+            &["add", "radhi/home", "--as"],
+            &["add", "radhi/home", "--json"],
+            &["remove"],
+            &["remove", "a", "b"],
+            &["update", "a", "b"],
+            &["update", "--accept"],
+            &["sync", "now"],
+            &["trust", "me"],
+        ] {
+            let error = parsed(arguments, false).unwrap_err();
+            assert_eq!(error.fix, Fix::Rerun, "{arguments:?}");
+        }
+        assert_eq!(
+            parsed(&["try"], false).unwrap_err().message,
+            "try needs an input"
+        );
+        assert_eq!(
+            parsed(&["vocab", "rooms", "add", "none", "x"], false)
+                .unwrap_err()
+                .message,
+            "word \"none\" is reserved"
+        );
+    }
+}

@@ -1,0 +1,142 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "lights",
+          "route": 0.9,
+          "fits": 0.6
+        },
+        {
+          "reflex": "timer",
+          "route": 0.02,
+          "fits": 0.05
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "lights",
+          "p": 0.9
+        },
+        {
+          "question": "lights.room",
+          "top": "unstated",
+          "p": 0.75
+        },
+        {
+          "question": "lights.state",
+          "top": "off",
+          "p": 0.9
+        }
+      ],
+      "winner": {
+        "reflex": "lights",
+        "args": {
+          "state": {
+            "type": "option",
+            "key": "off"
+          }
+        },
+        "missing": [
+          {
+            "arg": "room",
+            "ask": "Which room?",
+            "because": {
+              "type": "unstated"
+            },
+            "choices": {
+              "type": "vocab",
+              "words": {
+                "den": "The TV room downstairs; also 'the snug'.",
+                "office": "The upstairs study."
+              }
+            }
+          }
+        ],
+        "unconsumed": [],
+        "runner_up": {
+          "reflex": "timer",
+          "route": 0.02,
+          "fits": 0.05
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "outcome": "ask",
+    "reflex": "lights",
+    "args": {
+      "state": {
+        "type": "option",
+        "key": "off"
+      }
+    },
+    "unconsumed": [],
+    "confidence": 0.75,
+    "weakest": {
+      "question": "lights.room",
+      "top": "unstated",
+      "p": 0.75
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "lights",
+        "p": 0.9
+      },
+      {
+        "question": "lights.room",
+        "top": "unstated",
+        "p": 0.75
+      },
+      {
+        "question": "lights.state",
+        "top": "off",
+        "p": 0.9
+      }
+    ],
+    "runner_up": {
+      "reflex": "timer",
+      "route": 0.02,
+      "fits": 0.05
+    },
+    "contenders": [
+      {
+        "reflex": "lights",
+        "route": 0.9,
+        "fits": 0.6
+      },
+      {
+        "reflex": "timer",
+        "route": 0.02,
+        "fits": 0.05
+      }
+    ],
+    "missing": [
+      {
+        "arg": "room",
+        "ask": "Which room?",
+        "because": {
+          "type": "unstated"
+        },
+        "choices": {
+          "type": "vocab",
+          "words": {
+            "den": "The TV room downstairs; also 'the snug'.",
+            "office": "The upstairs study."
+          }
+        }
+      }
+    ]
+  }
+}

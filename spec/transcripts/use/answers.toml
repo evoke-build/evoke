@@ -1,0 +1,40 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md).
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.6
+write = 0.8
+
+[answers."kill the lights"]
+route          = { lights = 0.9, timer = 0.02, volume = 0.02, none = 0.06 }
+"fits.lights"  = { yes = 0.7 }
+"fits.timer"   = { yes = 0.05 }
+"fits.volume"  = { yes = 0.05 }
+"lights.room"  = { den = 0.2, office = 0.05, unstated = 0.75 }
+"lights.state" = { off = 0.58, on = 0.3, dim = 0.1, unstated = 0.02 }
+
+[answers."kill the lights in the den"]
+route          = { lights = 0.91, timer = 0.02, volume = 0.01, none = 0.06 }
+"fits.lights"  = { yes = 0.7 }
+"fits.timer"   = { yes = 0.05 }
+"fits.volume"  = { yes = 0.05 }
+"lights.room"  = { den = 0.85, office = 0.05, unstated = 0.1 }
+"lights.state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
+
+[answers."dim the office"]
+route          = { lights = 0.92, timer = 0.01, volume = 0.02, none = 0.05 }
+"fits.lights"  = { yes = 0.7 }
+"fits.timer"   = { yes = 0.05 }
+"fits.volume"  = { yes = 0.05 }
+"lights.room"  = { office = 0.9, den = 0.02, unstated = 0.08 }
+"lights.state" = { dim = 0.7, off = 0.2, on = 0.05, unstated = 0.05 }
+
+[answers."turn on the den lights"]
+route          = { lights = 0.93, timer = 0.01, volume = 0.01, none = 0.05 }
+"fits.lights"  = { yes = 0.7 }
+"fits.timer"   = { yes = 0.05 }
+"fits.volume"  = { yes = 0.05 }
+"lights.room"  = { den = 0.9, office = 0.02, unstated = 0.08 }
+"lights.state" = { on = 0.75, off = 0.1, dim = 0.1, unstated = 0.05 }

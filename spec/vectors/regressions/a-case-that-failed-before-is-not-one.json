@@ -1,0 +1,58 @@
+{
+  "input": {
+    "before": {
+      "lights": {
+        "make it darker in here": {
+          "type": "fail",
+          "mismatch": {
+            "type": "arg",
+            "arg": "state",
+            "read": "off"
+          }
+        }
+      }
+    },
+    "judged": [
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "make it darker in here",
+            "id": "make it darker in here"
+          },
+          "expect": {
+            "state": "dim"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "type": "fail",
+            "mismatch": {
+              "type": "arg",
+              "arg": "state",
+              "read": "off"
+            }
+          },
+          {
+            "type": "fail",
+            "mismatch": {
+              "type": "arg",
+              "arg": "state",
+              "read": "off"
+            }
+          },
+          {
+            "type": "fail",
+            "mismatch": {
+              "type": "arg",
+              "arg": "state",
+              "read": "off"
+            }
+          }
+        ]
+      ]
+    ]
+  },
+  "expect": []
+}

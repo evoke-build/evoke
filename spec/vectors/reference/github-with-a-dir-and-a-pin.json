@@ -1,0 +1,18 @@
+{
+  "input": {
+    "text": "radhi/home/lights@v1.2.0"
+  },
+  "expect": {
+    "ok": [
+      {
+        "repo": {
+          "type": "github",
+          "owner": "radhi",
+          "name": "home"
+        },
+        "dir": "lights"
+      },
+      "1.2.0"
+    ]
+  }
+}

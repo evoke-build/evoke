@@ -1,0 +1,63 @@
+{
+  "input": {
+    "before": {
+      "lights": {
+        "turn on the kitchen lights": {
+          "type": "pass"
+        }
+      }
+    },
+    "judged": [
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "make it darker in here",
+            "id": "make it darker in here"
+          },
+          "expect": {
+            "state": "dim"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "type": "fail",
+            "mismatch": {
+              "type": "arg",
+              "arg": "state",
+              "read": "off"
+            }
+          },
+          {
+            "type": "fail",
+            "mismatch": {
+              "type": "arg",
+              "arg": "state",
+              "read": "off"
+            }
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "turn on the kitchen lights",
+            "id": "turn on the kitchen lights"
+          },
+          "expect": {
+            "state": "on"
+          },
+          "from": "examples"
+        },
+        [
+          {
+            "type": "pass"
+          }
+        ]
+      ]
+    ]
+  },
+  "expect": []
+}

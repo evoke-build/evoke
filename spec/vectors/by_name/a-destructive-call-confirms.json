@@ -1,0 +1,36 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-power.json"
+    },
+    "written": {
+      "reflex": "power",
+      "args": {
+        "action": "restart"
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "outcome": "confirm",
+      "reflex": "power",
+      "args": {
+        "action": {
+          "type": "option",
+          "key": "restart"
+        }
+      },
+      "call": "power action=\"restart\"",
+      "effect": "destructive",
+      "prompt": {
+        "own": "power action=\"restart\" · destructive",
+        "template": "Really restart now?"
+      },
+      "because": [
+        {
+          "type": "destructive"
+        }
+      ]
+    }
+  }
+}

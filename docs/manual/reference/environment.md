@@ -1,0 +1,48 @@
+# Environment
+
+## Variables `evoke` reads
+
+| Variable            | Read by                        | Means                                                                    |
+| :------------------ | :----------------------------- | :----------------------------------------------------------------------- |
+| `TYPESAFE_API_KEY`  | The Jev adapter, when deciding | The classifier's key. Never written to a file                            |
+| `EVOKE_ANSWERS`     | The `replay` adapter           | A recording to answer from, with `adapter = "replay"` in `evoke.toml`     |
+| `<VAR>` of a `--env` setting | A body's run           | A config value, most often a secret, resolved for that run only          |
+| `NO_COLOR`          | The terminal                   | Set and not empty: no colour. The spinner and the line editor stay        |
+| `TERM`              | The terminal                   | Unset, empty or `dumb`: no colour, no spinner, no line editor            |
+| `HOME`, `XDG_CONFIG_HOME`, `XDG_STATE_HOME`, `XDG_CACHE_HOME` | Paths | Where the project and the machine-local state live |
+| `PATH`              | `add`, `sync`, argv bodies     | Where `node` and an argv's program are found; `git` too                  |
+| `GIT_*`             | Fetching                       | Your git configuration and credentials apply; `GIT_TERMINAL_PROMPT=0` is set |
+
+## Paths
+
+| Path                                             | Holds                                                        | Written by            |
+| :----------------------------------------------- | :----------------------------------------------------------- | :-------------------- |
+| `$XDG_CONFIG_HOME/evoke/` · `~/.config/evoke/`    | The home project                                             | you, `add`, `teach`, … |
+| `$XDG_CACHE_HOME/evoke/store/<h1>/`              | Fetched reflex directories, by content hash                   | `add`, `sync`         |
+| `$XDG_CACHE_HOME/evoke/answers/<plan>/`          | The adapter's answers, per installed set and utterance        | every decision, `try` |
+| `$XDG_CACHE_HOME/evoke/baselines/<plan>.json`    | `evoke test`'s last verdicts per installed set                | `test`                |
+| `$XDG_STATE_HOME/evoke/log.jsonl`                | One JSON line per decision; `why` reads the last              | every decision        |
+| `$XDG_STATE_HOME/evoke/trust.toml`               | Trusted project roots and their content digests                | `trust`, every write  |
+| `$XDG_STATE_HOME/evoke/runtime`                  | The path of `node` a file body runs under                      | `add`, `sync`         |
+| `$XDG_STATE_HOME/evoke/history`                  | The REPL's lines, the last 1 000                               | the REPL              |
+
+`$XDG_STATE_HOME` defaults to `~/.local/state`, `$XDG_CACHE_HOME` to `~/.cache`. Everything under cache can be
+deleted; `sync` and the next decision rebuild it. Nothing under either directory is a secret.
+
+## What a body sees
+
+A file body runs under a scrubbed environment of five variables — `PATH`, `HOME`, `TMPDIR`, `LANG`, `TERM` — and
+receives its arguments, the input, its config and a signal through the call. An argv body gets the same five,
+plus:
+
+| Variable              | Holds                                          |
+| :-------------------- | :--------------------------------------------- |
+| `EVOKE_CONFIG_<KEY>`  | Each `[config]` key, upper-cased, as its value  |
+| `EVOKE_INPUT`         | The sentence as typed                          |
+
+Secrets reach a body only this way, for the length of one run.
+
+## Time
+
+One decision has 30 seconds, shared by the adapter's answer and the body's run; a prompt never counts. The Jev
+transport gives a request 1.5 seconds once connected and retries once after a connect error or a server error.

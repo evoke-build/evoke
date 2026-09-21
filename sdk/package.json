@@ -1,0 +1,46 @@
+{
+  "name": "@evoke-build/evoke",
+  "version": "0.1.0",
+  "description": "You invoke a function; you evoke a reflex. The SDK: load a project, decide, run.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/evoke-build/evoke",
+    "directory": "sdk"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "dist",
+    "core.wasm",
+    "runtime"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./jev": {
+      "types": "./dist/jev.d.ts",
+      "default": "./dist/jev.js"
+    },
+    "./testing": {
+      "types": "./dist/testing.d.ts",
+      "default": "./dist/testing.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "check": "node scripts/vectors.mts && tsc -p tsconfig.json",
+    "test": "node --test 'test/**/*.test.mts'"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.6",
+    "typescript": "5.9.3"
+  }
+}

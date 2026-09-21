@@ -1,0 +1,13 @@
+{
+  "input": {
+    "text": "radhi/--as"
+  },
+  "expect": {
+    "err": {
+      "message": "\"--as\" is not a ref segment: [A-Za-z0-9._][A-Za-z0-9._-]*",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

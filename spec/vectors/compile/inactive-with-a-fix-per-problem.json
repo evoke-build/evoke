@@ -1,0 +1,139 @@
+{
+  "input": {
+    "set": {
+      "reflexes": {
+        "lights": {
+          "wording": {
+            "ok": {
+              "manifest": {
+                "$ref": "fixtures/lights.json"
+              },
+              "yours": []
+            }
+          },
+          "consented": "write",
+          "configured": {}
+        },
+        "timer": {
+          "wording": {
+            "ok": {
+              "manifest": {
+                "$ref": "fixtures/timer.json"
+              },
+              "yours": []
+            }
+          },
+          "consented": "write",
+          "configured": {}
+        }
+      },
+      "vocab": {},
+      "adapter": "jev-1.13.0",
+      "evoke": "0.1.0"
+    }
+  },
+  "expect": {
+    "ok": {
+      "digest": "h1:a62e686f35c674c9b0064e2abdd8fe4985a8050f96524bb55134ce9942e4f108",
+      "active": {
+        "timer": {
+          "effect": "write",
+          "run": "timer.mts",
+          "confirm": "Start a {duration} timer?",
+          "args": {
+            "duration": {
+              "ask": "How long?",
+              "pick": "duration",
+              "optional": false,
+              "was": []
+            },
+            "label": {
+              "ask": "What is the timer for?",
+              "pick": "quoted",
+              "optional": true,
+              "was": []
+            }
+          },
+          "config": {},
+          "tags": [
+            "time"
+          ]
+        }
+      },
+      "inactive": {
+        "lights": [
+          {
+            "reflex": "lights",
+            "message": "vocabulary \"rooms\" is empty",
+            "fix": {
+              "type": "vocab_add",
+              "vocab": "rooms"
+            }
+          },
+          {
+            "reflex": "lights",
+            "message": "config \"bridge\" is not set",
+            "fix": {
+              "type": "config_set",
+              "reflex": "lights",
+              "key": "bridge"
+            }
+          },
+          {
+            "reflex": "lights",
+            "message": "config \"token\" is not set",
+            "fix": {
+              "type": "config_env",
+              "reflex": "lights",
+              "key": "token"
+            }
+          }
+        ]
+      },
+      "slots": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "timer": {
+              "what": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+              "not_for": [
+                "keeping the laptop awake",
+                "alarms at a time of day",
+                "asking the time"
+              ],
+              "examples": [
+                "set a timer for 10 minutes",
+                "25 minute timer",
+                "timer for 3 minutes called \"eggs\"",
+                "count down 90 seconds"
+              ]
+            },
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        },
+        "fits.timer": {
+          "type": "yesno",
+          "ask": "Does `timer` do the specific thing the request asks for?",
+          "yes": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+          "no": "Something else, such as: keeping the laptop awake; alarms at a time of day; asking the time."
+        },
+        "timer.duration": {
+          "type": "pick",
+          "ask": "How long?",
+          "pick": "duration",
+          "optional": false
+        },
+        "timer.label": {
+          "type": "pick",
+          "ask": "What is the timer for?",
+          "pick": "quoted",
+          "optional": true
+        }
+      },
+      "values": {},
+      "deadline": 30000
+    }
+  }
+}

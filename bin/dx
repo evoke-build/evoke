@@ -1,0 +1,15 @@
+#!/bin/sh
+# dx — run a command with the project's mise toolchain, inside the OrbStack machine `devbox` when there is one.
+#
+#   bin/dx <command> [args...]      e.g. bin/dx mise run lint
+#
+# From macOS with OrbStack it enters `devbox` at the same path and working directory; anywhere else it runs the
+# command directly.
+set -eu
+
+[ $# -gt 0 ] || { echo "usage: bin/dx <command> [args...]" >&2; exit 64; }
+
+if [ "$(uname -s)" = "Darwin" ] && command -v orb >/dev/null 2>&1; then
+  exec orb -m devbox mise exec -- "$@"
+fi
+exec mise exec -- "$@"

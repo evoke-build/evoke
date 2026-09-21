@@ -1,0 +1,22 @@
+# Per device: Claude Code, the private notes, mise overrides, secrets, editors
+.claude/
+CLAUDE.local.md
+internal/
+mise.local.toml
+mise.*.local.toml
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Built, never committed
+target/
+sdk/core.wasm
+sdk/runtime/
+sdk/dist/
+sdk/build/
+sdk/node_modules/
+reflexes/node_modules/

@@ -1,0 +1,13 @@
+{
+  "input": {
+    "text": "lights room=den room=office"
+  },
+  "expect": {
+    "err": {
+      "message": "room is given twice",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

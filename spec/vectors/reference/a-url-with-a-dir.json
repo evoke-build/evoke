@@ -1,0 +1,17 @@
+{
+  "input": {
+    "text": "https://example.com/r.git#lights@1.2.0"
+  },
+  "expect": {
+    "ok": [
+      {
+        "repo": {
+          "type": "url",
+          "url": "https://example.com/r.git"
+        },
+        "dir": "lights"
+      },
+      "1.2.0"
+    ]
+  }
+}

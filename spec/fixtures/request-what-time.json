@@ -1,0 +1,84 @@
+{
+  "state": {
+    "request": "what time is it"
+  },
+  "questions": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "lights": {
+          "what": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
+          "not_for": [
+            "colour scenes and schedules",
+            "asking whether a light is on"
+          ],
+          "examples": [
+            "turn on the kitchen lights",
+            "dim the office to 30 percent"
+          ]
+        },
+        "timer": {
+          "what": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+          "not_for": [
+            "keeping the laptop awake",
+            "alarms at a time of day",
+            "asking the time"
+          ],
+          "examples": [
+            "set a timer for 10 minutes",
+            "25 minute timer",
+            "timer for 3 minutes called \"eggs\"",
+            "count down 90 seconds"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "fits.lights": {
+      "type": "yesno",
+      "ask": "Does `lights` do the specific thing the request asks for?",
+      "yes": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
+      "no": "Something else, such as: colour scenes and schedules; asking whether a light is on."
+    },
+    "lights.room": {
+      "type": "choice",
+      "ask": "Which room?",
+      "options": {
+        "den": "The TV room downstairs; also 'the snug'.",
+        "office": "The upstairs study.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "lights.state": {
+      "type": "choice",
+      "ask": "What should the lights do?",
+      "options": {
+        "on": {
+          "what": "Switch on.",
+          "examples": [
+            "turn on the kitchen lights"
+          ]
+        },
+        "off": "Switch off.",
+        "dim": {
+          "what": "Lower the brightness without switching off.",
+          "examples": [
+            "dim the office to 30 percent"
+          ]
+        },
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.timer": {
+      "type": "yesno",
+      "ask": "Does `timer` do the specific thing the request asks for?",
+      "yes": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+      "no": "Something else, such as: keeping the laptop awake; alarms at a time of day; asking the time."
+    }
+  },
+  "proposed": []
+}

@@ -1,0 +1,91 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-power.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "power",
+          "route": 0.95,
+          "fits": 0.8
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "power",
+          "p": 0.95
+        },
+        {
+          "question": "power.action",
+          "top": "restart",
+          "p": 0.97
+        }
+      ],
+      "winner": {
+        "reflex": "power",
+        "args": {
+          "action": {
+            "type": "option",
+            "key": "restart"
+          }
+        },
+        "missing": [],
+        "unconsumed": []
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "outcome": "confirm",
+    "reflex": "power",
+    "args": {
+      "action": {
+        "type": "option",
+        "key": "restart"
+      }
+    },
+    "call": "power action=\"restart\"",
+    "effect": "destructive",
+    "confidence": 0.95,
+    "weakest": {
+      "question": "route",
+      "top": "power",
+      "p": 0.95
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "power",
+        "p": 0.95
+      },
+      {
+        "question": "power.action",
+        "top": "restart",
+        "p": 0.97
+      }
+    ],
+    "contenders": [
+      {
+        "reflex": "power",
+        "route": 0.95,
+        "fits": 0.8
+      }
+    ],
+    "prompt": {
+      "own": "power action=\"restart\" · destructive · weakest: route 0.95",
+      "template": "Really restart now?"
+    },
+    "because": [
+      {
+        "type": "destructive"
+      }
+    ]
+  }
+}

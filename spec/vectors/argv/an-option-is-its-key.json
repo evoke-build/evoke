@@ -1,0 +1,48 @@
+{
+  "input": {
+    "chosen": {
+      "reflex": "wifi",
+      "args": {
+        "state": {
+          "type": "option",
+          "key": "off"
+        }
+      },
+      "call": "wifi state=\"off\"",
+      "effect": "write"
+    },
+    "active": {
+      "effect": "write",
+      "run": [
+        "networksetup",
+        "-setairportpower",
+        "en0",
+        "{state}"
+      ],
+      "confirm": "Turn Wi-Fi {state}?",
+      "args": {
+        "state": {
+          "ask": "On or off?",
+          "options": {
+            "on": "Switch the radio on.",
+            "off": "Switch the radio off."
+          },
+          "optional": false,
+          "was": []
+        }
+      },
+      "config": {},
+      "tags": [
+        "network"
+      ]
+    }
+  },
+  "expect": {
+    "ok": [
+      "networksetup",
+      "-setairportpower",
+      "en0",
+      "off"
+    ]
+  }
+}

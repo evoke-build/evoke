@@ -1,0 +1,27 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "lights"
+      },
+      "json": {
+        "reflex": 1,
+        "description": "\nTurn the lights on.",
+        "confirm": "Lights on?",
+        "args": {}
+      }
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "lights",
+        "message": "description's first line, the summary, is empty",
+        "fix": {
+          "type": "check"
+        }
+      }
+    ]
+  }
+}

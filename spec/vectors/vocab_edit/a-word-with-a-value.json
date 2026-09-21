@@ -1,0 +1,27 @@
+{
+  "input": {
+    "name": "rooms",
+    "change": {
+      "type": "add",
+      "word": "office",
+      "meaning": {
+        "what": "The upstairs study.",
+        "value": "group-7"
+      }
+    }
+  },
+  "expect": {
+    "type": "set",
+    "file": {
+      "type": "vocab",
+      "name": "rooms"
+    },
+    "path": [
+      "office"
+    ],
+    "value": {
+      "what": "The upstairs study.",
+      "value": "group-7"
+    }
+  }
+}

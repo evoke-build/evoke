@@ -1,0 +1,6 @@
+{
+  "input": {
+    "text": "I'm stepping away, lock it"
+  },
+  "expect": "i'm stepping away, lock it"
+}

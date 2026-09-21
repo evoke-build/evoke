@@ -1,0 +1,27 @@
+reflex = 1
+
+description = """
+Set the output volume.
+A percentage of the maximum; 0 is silent."""
+
+not_for = ["muting and unmuting", "screen brightness", "one app's volume"]
+tags    = ["sound"]
+effect  = "write"
+confirm = "Set the volume to {level}?"
+run     = "volume.mts"
+
+[args.level]
+ask   = "How loud, in percent?"
+pick  = "number"
+range = [0, 100]
+
+[examples]
+"set the volume to 40 percent" = { level = "40 percent" }
+"volume 15"                    = { level = "15" }
+"turn the sound up to 80"      = { level = "80" }
+
+[tests]
+"make it 100 percent loud"   = { level = "100 percent" }
+"turn the volume down a bit" = { level = false }
+"mute the sound"             = false
+"set the brightness to 50"   = false

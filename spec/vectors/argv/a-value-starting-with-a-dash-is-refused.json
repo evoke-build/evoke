@@ -1,0 +1,57 @@
+{
+  "input": {
+    "chosen": {
+      "reflex": "volume",
+      "args": {
+        "level": {
+          "type": "pick",
+          "span": {
+            "start": 14,
+            "end": 16,
+            "text": "-5"
+          },
+          "value": {
+            "type": "number",
+            "value": -5
+          }
+        }
+      },
+      "call": "volume level=\"-5\"",
+      "effect": "write"
+    },
+    "active": {
+      "effect": "write",
+      "run": [
+        "osascript",
+        "-e",
+        "{level}"
+      ],
+      "confirm": "Set the volume to {level}?",
+      "args": {
+        "level": {
+          "ask": "How loud?",
+          "pick": "number",
+          "range": [
+            -10,
+            100
+          ],
+          "optional": false,
+          "was": []
+        }
+      },
+      "config": {},
+      "tags": [
+        "sound"
+      ]
+    }
+  },
+  "expect": {
+    "err": {
+      "reflex": "volume",
+      "message": "level is \"-5\", which starts with -; an argv cannot carry it",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

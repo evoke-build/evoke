@@ -1,0 +1,80 @@
+{
+  "input": {
+    "chosen": {
+      "reflex": "timer",
+      "args": {
+        "duration": {
+          "type": "pick",
+          "span": {
+            "start": 10,
+            "end": 20,
+            "text": "10 minutes"
+          },
+          "value": {
+            "type": "duration",
+            "value": 600
+          }
+        },
+        "label": {
+          "type": "pick",
+          "span": {
+            "start": 29,
+            "end": 33,
+            "text": "eggs"
+          },
+          "value": {
+            "type": "quoted",
+            "value": "eggs"
+          }
+        },
+        "loud": {
+          "type": "flag"
+        }
+      },
+      "call": "timer duration=\"10 minutes\" label=\"eggs\" loud",
+      "effect": "write"
+    },
+    "active": {
+      "effect": "write",
+      "run": "timer.mts",
+      "confirm": "Start a {duration} timer?",
+      "args": {
+        "duration": {
+          "ask": "How long?",
+          "pick": "duration",
+          "optional": false,
+          "was": []
+        },
+        "label": {
+          "ask": "What is the timer for?",
+          "pick": "quoted",
+          "optional": true,
+          "was": []
+        },
+        "loud": {
+          "ask": "Ring until dismissed?",
+          "flag": true,
+          "was": []
+        }
+      },
+      "config": {},
+      "tags": [
+        "time"
+      ]
+    },
+    "input": "timer for 10 minutes called \"eggs\", loud",
+    "deadline": 30000
+  },
+  "expect": {
+    "reflex": "timer",
+    "run": "timer.mts",
+    "args": {
+      "duration": 600,
+      "label": "eggs",
+      "loud": true
+    },
+    "input": "timer for 10 minutes called \"eggs\", loud",
+    "config": {},
+    "deadline": 30000
+  }
+}

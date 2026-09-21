@@ -1,0 +1,17 @@
+#!/bin/sh
+#MISE description="Publish reflexes/ to evoke-build/reflexes: the directory's own history by git subtree split, pushed as main, and tagged when a tag is given"
+# Usage: mise run publish-reflexes [tag]    tag: [v]X.Y.Z, set on the split of HEAD
+# The collection's main is always the split of the product's HEAD: contributions land in the product, never in
+# the collection's repository, so the push may rewrite it.
+set -eu
+cd "$(dirname "$0")/.."
+
+remote=${REFLEXES_REMOTE:-git@github.com:evoke-build/reflexes.git}
+if [ -n "$(git status --porcelain -- reflexes)" ]; then
+  echo "reflexes/ has uncommitted changes; commit them first" >&2
+  exit 1
+fi
+split=$(git subtree split --prefix=reflexes HEAD)
+git push --force "$remote" "$split:refs/heads/main"
+[ $# -eq 0 ] || git push "$remote" "$split:refs/tags/$1"
+echo "published reflexes/ at $split${1:+ as $1}"

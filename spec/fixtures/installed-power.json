@@ -1,0 +1,19 @@
+{
+  "reflexes": {
+    "power": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "$ref": "fixtures/power.json"
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    }
+  },
+  "vocab": {},
+  "adapter": "jev-1.13.0",
+  "evoke": "0.1.0"
+}

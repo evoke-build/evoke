@@ -1,0 +1,27 @@
+{
+  "input": {
+    "utterance": {
+      "text": "kill the lights",
+      "id": "kill the lights"
+    },
+    "lesson": {
+      "reflex": "lights",
+      "record": {
+        "state": "dim",
+        "brightness": "30 percent"
+      }
+    },
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    }
+  },
+  "expect": {
+    "err": {
+      "reflex": "lights",
+      "message": "\"30 percent\" is not in \"kill the lights\"",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

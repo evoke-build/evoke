@@ -1,0 +1,39 @@
+$ evoke --help
+evoke 0.1.0 · you invoke a function; you evoke a reflex
+
+use
+  evoke "<input>"                         decide, gate, run
+  evoke                                   the REPL; a piped line is one input
+  evoke try "<input>"                     decide only, and show every judgment
+    --json                                one JSON line per input, for a filter
+    --tag <tag>                           only the reflexes carrying the tag
+    --                                    the rest is input, even a command word
+  evoke why                               the last decision, explained
+  evoke run <call>                        by name, without the classifier
+
+install
+  evoke add <ref>… [--as <name>]          fetch, lint, lock, install
+  evoke remove <name>
+  evoke update [<name>]                   each remote reflex to its newest tag
+  evoke update --accept <name>            a moved contract or effect, accepted
+  evoke sync                              the lock realised on this machine
+  evoke trust                             this project, trusted at its content
+
+tune
+  evoke show [<name>]                     the installed reflexes, or one as used
+  evoke teach ["<utterance>"] <call>      the utterance means this call
+  evoke teach ["<utterance>"] not <name>  the utterance is not this reflex
+    ["<utterance>"] omitted means the last input
+  evoke vocab <name>                      the words and their meanings
+  evoke vocab <name> add <word> "<meaning>" [--value <v>]
+  evoke vocab <name> remove <word>
+  evoke config <name> <key> <value>       a setting; a secret as --env <VAR>
+  evoke test [<name>]                     every example and test, judged
+
+author
+  evoke new <name>                        a working reflex from the template
+  evoke check                             lint, types, contract against its tag
+
+exit  0 ran · 1 failed · 2 declined · 3 needs a human · 4 adapter failed
+$ evoke --version
+evoke 0.1.0

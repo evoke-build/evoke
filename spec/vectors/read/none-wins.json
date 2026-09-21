@@ -1,0 +1,57 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "request": {
+      "$ref": "fixtures/request-what-time.json"
+    },
+    "raw": {
+      "route": {
+        "none": 0.7,
+        "timer": 0.2,
+        "lights": 0.1
+      },
+      "fits.lights": {
+        "yes": 0.05
+      },
+      "lights.room": {
+        "den": 0.1,
+        "office": 0.1,
+        "unstated": 0.8
+      },
+      "lights.state": {
+        "on": 0.1,
+        "off": 0.1,
+        "dim": 0.1,
+        "unstated": 0.7
+      },
+      "fits.timer": {
+        "yes": 0.3
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "ranking": [
+        {
+          "reflex": "timer",
+          "route": 0.2,
+          "fits": 0.3
+        },
+        {
+          "reflex": "lights",
+          "route": 0.1,
+          "fits": 0.05
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "none",
+          "p": 0.7
+        }
+      ]
+    }
+  }
+}

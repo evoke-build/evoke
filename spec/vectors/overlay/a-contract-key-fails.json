@@ -1,0 +1,64 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "overlay",
+        "name": "lights"
+      },
+      "toml": "run = \"mine.mts\"\n\n[args.brightness]\nrange = [1, 50]\n"
+    },
+    "of": {
+      "$ref": "fixtures/lights.json"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "lights",
+        "at": {
+          "file": {
+            "type": "overlay",
+            "name": "lights"
+          },
+          "line": 1,
+          "column": 1
+        },
+        "message": "run is contract, not wording; an overlay cannot change it",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "overlay",
+              "name": "lights"
+            },
+            "line": 1,
+            "column": 1
+          }
+        }
+      },
+      {
+        "reflex": "lights",
+        "at": {
+          "file": {
+            "type": "overlay",
+            "name": "lights"
+          },
+          "line": 4,
+          "column": 1
+        },
+        "message": "args.brightness.range is contract, not wording; an overlay cannot change it",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "overlay",
+              "name": "lights"
+            },
+            "line": 4,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

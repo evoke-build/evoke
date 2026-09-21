@@ -1,0 +1,13 @@
+{
+  "input": {
+    "text": "  "
+  },
+  "expect": {
+    "err": {
+      "message": "a call is <name> (<arg>=<value> | <flag>)*",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

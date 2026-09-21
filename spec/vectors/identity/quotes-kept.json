@@ -1,0 +1,6 @@
+{
+  "input": {
+    "text": "Note \"buy milk\"!"
+  },
+  "expect": "note \"buy milk\""
+}

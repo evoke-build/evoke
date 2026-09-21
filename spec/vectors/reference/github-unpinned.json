@@ -1,0 +1,17 @@
+{
+  "input": {
+    "text": "radhi/timer"
+  },
+  "expect": {
+    "ok": [
+      {
+        "repo": {
+          "type": "github",
+          "owner": "radhi",
+          "name": "timer"
+        }
+      },
+      null
+    ]
+  }
+}

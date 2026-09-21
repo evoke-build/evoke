@@ -1,0 +1,95 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-power.json"
+    },
+    "asking": {
+      "reflex": "power",
+      "args": {},
+      "unconsumed": [],
+      "confidence": 0.9,
+      "weakest": {
+        "question": "power.action",
+        "top": "unstated",
+        "p": 0.9
+      },
+      "judgments": [
+        {
+          "question": "route",
+          "top": "power",
+          "p": 0.95
+        },
+        {
+          "question": "power.action",
+          "top": "unstated",
+          "p": 0.9
+        }
+      ],
+      "contenders": [
+        {
+          "reflex": "power",
+          "route": 0.95,
+          "fits": 0.8
+        }
+      ]
+    },
+    "given": {
+      "action": {
+        "type": "option",
+        "key": "restart"
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "outcome": "confirm",
+    "reflex": "power",
+    "args": {
+      "action": {
+        "type": "option",
+        "key": "restart"
+      }
+    },
+    "call": "power action=\"restart\"",
+    "effect": "destructive",
+    "confidence": 0.9,
+    "weakest": {
+      "question": "power.action",
+      "top": "unstated",
+      "p": 0.9
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "power",
+        "p": 0.95
+      },
+      {
+        "question": "power.action",
+        "top": "unstated",
+        "p": 0.9
+      }
+    ],
+    "contenders": [
+      {
+        "reflex": "power",
+        "route": 0.95,
+        "fits": 0.8
+      }
+    ],
+    "prompt": {
+      "own": "power action=\"restart\" · destructive · weakest: action 0.90",
+      "template": "Really restart now?"
+    },
+    "because": [
+      {
+        "type": "destructive"
+      }
+    ]
+  }
+}

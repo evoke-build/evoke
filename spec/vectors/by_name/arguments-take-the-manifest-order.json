@@ -1,0 +1,32 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "written": {
+      "reflex": "lights",
+      "args": {
+        "state": "off",
+        "room": "den"
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "outcome": "run",
+      "reflex": "lights",
+      "args": {
+        "room": {
+          "type": "word",
+          "word": "den"
+        },
+        "state": {
+          "type": "option",
+          "key": "off"
+        }
+      },
+      "call": "lights room=\"den\" state=\"off\"",
+      "effect": "write"
+    }
+  }
+}

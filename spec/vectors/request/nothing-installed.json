@@ -1,0 +1,32 @@
+{
+  "input": {
+    "plan": {
+      "digest": "h1:347b7ea9df3e0f92aa6fa2754174f7c68d37fd87810467e8454ae18062a48e8b",
+      "active": {},
+      "inactive": {},
+      "slots": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        }
+      },
+      "values": {},
+      "deadline": 30000
+    },
+    "input": "kill the lights",
+    "tags": [],
+    "scope": "full"
+  },
+  "expect": {
+    "err": {
+      "message": "no reflexes are installed",
+      "fix": {
+        "type": "add"
+      }
+    }
+  }
+}

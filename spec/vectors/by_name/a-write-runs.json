@@ -1,0 +1,45 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "written": {
+      "reflex": "lights",
+      "args": {
+        "room": "den",
+        "state": "off",
+        "brightness": "50"
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "outcome": "run",
+      "reflex": "lights",
+      "args": {
+        "room": {
+          "type": "word",
+          "word": "den"
+        },
+        "state": {
+          "type": "option",
+          "key": "off"
+        },
+        "brightness": {
+          "type": "pick",
+          "span": {
+            "start": 0,
+            "end": 2,
+            "text": "50"
+          },
+          "value": {
+            "type": "number",
+            "value": 50
+          }
+        }
+      },
+      "call": "lights room=\"den\" state=\"off\" brightness=\"50\"",
+      "effect": "write"
+    }
+  }
+}

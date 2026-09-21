@@ -1,0 +1,38 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "lights"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Turn the lights in one room on, off, or dim them.\"\nconfirm = \"Set the lights {state}?\"\nrun = \"lights.mts\"\n\n[args.state]\nask = \"What should the lights do?\"\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "lights",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "lights"
+          },
+          "line": 7,
+          "column": 1
+        },
+        "message": "args.state has no source: options, vocab, pick or flag",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "lights"
+            },
+            "line": 7,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

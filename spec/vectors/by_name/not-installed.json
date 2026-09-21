@@ -1,0 +1,22 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "written": {
+      "reflex": "volume",
+      "args": {
+        "level": "40"
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "reflex": "volume",
+      "message": "volume is not installed",
+      "fix": {
+        "type": "show"
+      }
+    }
+  }
+}

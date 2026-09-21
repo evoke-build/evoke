@@ -1,0 +1,17 @@
+{
+  "name": "@evoke-build/reflexes",
+  "private": true,
+  "description": "The first-party reflexes: what a Mac does at a word.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "check": "tsc -p tsconfig.json",
+    "test": "node --test 'test/*.test.mts'"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.6",
+    "typescript": "5.9.3"
+  }
+}

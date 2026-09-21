@@ -1,0 +1,12 @@
+$ cd app && evoke "kill the lights in the den"
+  ~/app is not trusted  →  evoke trust
+[3]
+$ cd app && evoke trust
++ trusted ~/app
+$ cd app && evoke "kill the lights in the den"
+  lights room="den" state="off"  0.85
+den lights off
+$ cd app && printf '"lights out" = { state = "off" }\n' >> overlays/lights.toml
+$ cd app && evoke "kill the lights in the den"
+  ~/app changed since you trusted it  →  evoke trust
+[3]

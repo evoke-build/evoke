@@ -1,0 +1,25 @@
+$ evoke vocab rooms
+  den = "The TV room downstairs; also 'the snug'."
+  office = { what = "The upstairs study.", value = "group-7" }
+$ evoke vocab rooms add attic "The loft upstairs." --value group-9
++ vocab/rooms.toml  attic = { what = "The loft upstairs.", value = "group-9" }
+$ evoke vocab rooms remove attic
+- vocab/rooms.toml  attic
+$ evoke vocab rooms remove attic
+  "attic" is not in vocabulary "rooms"  →  evoke vocab rooms remove attic
+[3]
+$ evoke "kill the lights"
+  Which room?  [1] den  [2] office  [+] add one  > +
+  Word?  > attic
+  Meaning?  > The loft upstairs.
++ vocab/rooms.toml  attic = "The loft upstairs."
+  lights room="attic" state="off" · write · weakest: state 0.58
+  Set the attic lights off?  [y]es [n]o [t]each > y
+attic lights off
+$ evoke vocab rooms
+  den = "The TV room downstairs; also 'the snug'."
+  office = { what = "The upstairs study.", value = "group-7" }
+  attic = "The loft upstairs."
+$ evoke vocab places
+  vocabulary "places" is empty  →  evoke vocab places add <word> "<meaning>"
+[3]

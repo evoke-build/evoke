@@ -1,0 +1,24 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "written": {
+      "reflex": "lights",
+      "args": {
+        "room": "den",
+        "state": "dim",
+        "brightness": "150"
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "reflex": "lights",
+      "message": "150 is outside 1–100",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

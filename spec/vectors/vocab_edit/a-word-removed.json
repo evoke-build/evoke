@@ -1,0 +1,19 @@
+{
+  "input": {
+    "name": "rooms",
+    "change": {
+      "type": "remove",
+      "word": "den"
+    }
+  },
+  "expect": {
+    "type": "remove",
+    "file": {
+      "type": "vocab",
+      "name": "rooms"
+    },
+    "path": [
+      "den"
+    ]
+  }
+}

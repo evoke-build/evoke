@@ -1,0 +1,15 @@
+$ evoke add radhi/home/lights radhi/timer
++ lights  radhi/home/lights 1.2.0  write  runs lights.mts
++ timer   radhi/timer 1.0.1        write  runs timer.mts
+  inactive  lights: vocabulary "rooms" is empty  →  evoke vocab rooms add <word> "<meaning>"
+  inactive  lights: config "bridge" is not set   →  evoke config lights bridge <value>
+  inactive  lights: config "token" is not set    →  evoke config lights token --env <VAR>
+$ evoke vocab rooms add den "The TV room downstairs; also 'the snug'."
++ vocab/rooms.toml  den = "The TV room downstairs; also 'the snug'."
+$ evoke config lights bridge 10.0.0.2 && evoke config lights token --env HUE_TOKEN
++ evoke.toml  [config.lights] bridge = "10.0.0.2"
++ evoke.toml  [config.lights] token = { env = "HUE_TOKEN" }
+$ evoke show
+  lights  radhi/home/lights 1.2.0  write  runs lights.mts
+  timer   radhi/timer 1.0.1        write  runs timer.mts
+  inactive  lights: HUE_TOKEN is not set  →  export HUE_TOKEN=<value>

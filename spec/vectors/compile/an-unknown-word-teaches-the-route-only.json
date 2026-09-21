@@ -1,0 +1,248 @@
+{
+  "input": {
+    "set": {
+      "reflexes": {
+        "lights": {
+          "wording": {
+            "ok": {
+              "manifest": {
+                "description": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
+                "not_for": [
+                  "colour scenes and schedules",
+                  "asking whether a light is on"
+                ],
+                "tags": [
+                  "home",
+                  "lighting"
+                ],
+                "effect": "write",
+                "confirm": "Set the {room} lights {state}?",
+                "run": "lights.mts",
+                "config": {
+                  "bridge": {
+                    "about": "Hue bridge address",
+                    "secret": false
+                  },
+                  "token": {
+                    "about": "Hue API key",
+                    "secret": true
+                  }
+                },
+                "args": {
+                  "room": {
+                    "ask": "Which room?",
+                    "vocab": "rooms",
+                    "optional": false,
+                    "was": []
+                  },
+                  "state": {
+                    "ask": "What should the lights do?",
+                    "options": {
+                      "on": "Switch on.",
+                      "off": "Switch off.",
+                      "dim": "Lower the brightness without switching off."
+                    },
+                    "optional": false,
+                    "was": []
+                  },
+                  "brightness": {
+                    "ask": "How bright, in percent?",
+                    "pick": "number",
+                    "range": [
+                      1,
+                      100
+                    ],
+                    "optional": true,
+                    "was": []
+                  }
+                },
+                "examples": {
+                  "turn on the kitchen lights": {
+                    "state": "on"
+                  },
+                  "dim the office to 30 percent": {
+                    "state": "dim",
+                    "brightness": "30 percent"
+                  },
+                  "lights off in the attic": {
+                    "state": "off",
+                    "room": "attic"
+                  }
+                },
+                "tests": {
+                  "make it darker in here": {
+                    "state": "dim"
+                  },
+                  "light a candle": false
+                },
+                "unknown": []
+              },
+              "yours": [
+                [
+                  "examples",
+                  "lights off in the attic"
+                ]
+              ]
+            }
+          },
+          "consented": "write",
+          "configured": {
+            "bridge": {
+              "type": "plain",
+              "value": "10.0.0.2"
+            },
+            "token": {
+              "type": "env",
+              "var": "HUE_TOKEN",
+              "set": true
+            }
+          }
+        }
+      },
+      "vocab": {
+        "rooms": {
+          "den": {
+            "what": "The TV room downstairs; also 'the snug'."
+          },
+          "office": {
+            "what": "The upstairs study.",
+            "value": "group-7"
+          }
+        }
+      },
+      "adapter": "jev-1.13.0",
+      "evoke": "0.1.0"
+    }
+  },
+  "expect": {
+    "ok": {
+      "digest": "h1:f60f608baedb798bbe8697a15e2cb6a54bc249d8ec9402485186ffe74a17a618",
+      "active": {
+        "lights": {
+          "effect": "write",
+          "run": "lights.mts",
+          "confirm": "Set the {room} lights {state}?",
+          "args": {
+            "room": {
+              "ask": "Which room?",
+              "vocab": "rooms",
+              "optional": false,
+              "was": []
+            },
+            "state": {
+              "ask": "What should the lights do?",
+              "options": {
+                "on": "Switch on.",
+                "off": "Switch off.",
+                "dim": "Lower the brightness without switching off."
+              },
+              "optional": false,
+              "was": []
+            },
+            "brightness": {
+              "ask": "How bright, in percent?",
+              "pick": "number",
+              "range": [
+                1,
+                100
+              ],
+              "optional": true,
+              "was": []
+            }
+          },
+          "config": {
+            "bridge": {
+              "type": "plain",
+              "value": "10.0.0.2"
+            },
+            "token": {
+              "type": "env",
+              "var": "HUE_TOKEN"
+            }
+          },
+          "tags": [
+            "home",
+            "lighting"
+          ]
+        }
+      },
+      "inactive": {},
+      "slots": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "lights": {
+              "what": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
+              "not_for": [
+                "colour scenes and schedules",
+                "asking whether a light is on"
+              ],
+              "examples": [
+                "turn on the kitchen lights",
+                "dim the office to 30 percent",
+                "lights off in the attic"
+              ]
+            },
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        },
+        "fits.lights": {
+          "type": "yesno",
+          "ask": "Does `lights` do the specific thing the request asks for?",
+          "yes": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
+          "no": "Something else, such as: colour scenes and schedules; asking whether a light is on."
+        },
+        "lights.room": {
+          "type": "choice",
+          "ask": "Which room?",
+          "options": {
+            "den": "The TV room downstairs; also 'the snug'.",
+            "office": "The upstairs study.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "lights.state": {
+          "type": "choice",
+          "ask": "What should the lights do?",
+          "options": {
+            "on": {
+              "what": "Switch on.",
+              "examples": [
+                "turn on the kitchen lights"
+              ]
+            },
+            "off": {
+              "what": "Switch off.",
+              "examples": [
+                "lights off in the attic"
+              ]
+            },
+            "dim": {
+              "what": "Lower the brightness without switching off.",
+              "examples": [
+                "dim the office to 30 percent"
+              ]
+            },
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "lights.brightness": {
+          "type": "pick",
+          "ask": "How bright, in percent?",
+          "pick": "number",
+          "optional": true
+        }
+      },
+      "values": {
+        "rooms": {
+          "office": "group-7"
+        }
+      },
+      "deadline": 30000
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "input": {
+    "manifest": {
+      "$ref": "fixtures/lights.json"
+    }
+  },
+  "expect": []
+}

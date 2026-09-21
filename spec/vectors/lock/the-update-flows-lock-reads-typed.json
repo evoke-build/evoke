@@ -1,0 +1,35 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "lock"
+      },
+      "toml": "# Written by evoke; the commit and h1 are what spec/README.md's recipe yields for remote/.\nlock  = 1\nevoke = \"0.1.0\"\n\n[adapter]\nname = \"replay\"\nid   = \"replay\"\n\n[reflexes.lights]\nref    = \"radhi/home/lights\"\ntag    = \"1.2.0\"\ncommit = \"7a498d11d5375f3cb65c575c3186bc64ecac7f52\"\nh1     = \"h1:a30b1bbcf52390c4b1311685ceee9f886b81b7699cde1374040979ad00c25d3a\"\neffect = \"write\"\n"
+    }
+  },
+  "expect": {
+    "ok": {
+      "evoke": "0.1.0",
+      "adapter": {
+        "name": "replay",
+        "id": "replay"
+      },
+      "reflexes": {
+        "lights": {
+          "reference": {
+            "repo": {
+              "type": "github",
+              "owner": "radhi",
+              "name": "home"
+            },
+            "dir": "lights"
+          },
+          "tag": "1.2.0",
+          "commit": "7a498d11d5375f3cb65c575c3186bc64ecac7f52",
+          "h1": "h1:a30b1bbcf52390c4b1311685ceee9f886b81b7699cde1374040979ad00c25d3a",
+          "effect": "write"
+        }
+      }
+    }
+  }
+}

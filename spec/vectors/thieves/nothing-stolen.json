@@ -1,0 +1,36 @@
+{
+  "input": {
+    "newcomers": [
+      "awake"
+    ],
+    "routed": [
+      [
+        {
+          "reflex": "timer",
+          "utterance": {
+            "text": "count down 90 seconds",
+            "id": "count down 90 seconds"
+          },
+          "expect": {
+            "duration": "90 seconds"
+          },
+          "from": "examples"
+        },
+        "timer"
+      ],
+      [
+        {
+          "reflex": "awake",
+          "utterance": {
+            "text": "keep the laptop awake",
+            "id": "keep the laptop awake"
+          },
+          "expect": {},
+          "from": "examples"
+        },
+        "awake"
+      ]
+    ]
+  },
+  "expect": []
+}

@@ -1,0 +1,45 @@
+{
+  "description": "Capture the screen, a window or a selection.\nSaved to the desktop as PNG, or copied to the clipboard.",
+  "not_for": [
+    "recording the screen"
+  ],
+  "tags": [
+    "screen"
+  ],
+  "effect": "write",
+  "confirm": "Take a screenshot?",
+  "run": "screenshot.mts",
+  "config": {},
+  "args": {
+    "area": {
+      "ask": "The whole screen, a window, or a selection?",
+      "options": {
+        "screen": "Everything on every display.",
+        "window": "One window, chosen by clicking it."
+      },
+      "optional": true,
+      "was": []
+    },
+    "clipboard": {
+      "ask": "To the clipboard instead of a file?",
+      "flag": true,
+      "was": []
+    }
+  },
+  "examples": {
+    "take a screenshot": {
+      "area": false
+    },
+    "screenshot this window": {
+      "area": "window"
+    },
+    "grab the screen to the clipboard": {
+      "area": "screen",
+      "clipboard": true
+    }
+  },
+  "tests": {
+    "record my screen": false
+  },
+  "unknown": []
+}

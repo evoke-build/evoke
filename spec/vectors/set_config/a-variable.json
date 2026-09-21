@@ -1,0 +1,30 @@
+{
+  "input": {
+    "name": "lights",
+    "key": "token",
+    "setting": {
+      "type": "env",
+      "var": "HUE_TOKEN"
+    },
+    "spec": {
+      "about": "Hue API key",
+      "secret": true
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "set",
+      "file": {
+        "type": "project"
+      },
+      "path": [
+        "config",
+        "lights",
+        "token"
+      ],
+      "value": {
+        "env": "HUE_TOKEN"
+      }
+    }
+  }
+}

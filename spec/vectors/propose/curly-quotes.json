@@ -1,0 +1,40 @@
+{
+  "input": {
+    "input": "timer for 3 minutes called “eggs” or ‘toast’"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 10,
+        "end": 19,
+        "text": "3 minutes"
+      },
+      "value": {
+        "type": "duration",
+        "value": 180
+      }
+    },
+    {
+      "span": {
+        "start": 28,
+        "end": 32,
+        "text": "eggs"
+      },
+      "value": {
+        "type": "quoted",
+        "value": "eggs"
+      }
+    },
+    {
+      "span": {
+        "start": 38,
+        "end": 43,
+        "text": "toast"
+      },
+      "value": {
+        "type": "quoted",
+        "value": "toast"
+      }
+    }
+  ]
+}

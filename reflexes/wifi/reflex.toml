@@ -1,0 +1,27 @@
+reflex = 1
+
+description = """
+Turn Wi-Fi on or off.
+The laptop's radio; which network to join is chosen elsewhere."""
+
+not_for = ["joining or leaving a network", "Bluetooth", "airplane mode"]
+tags    = ["network"]
+effect  = "write"
+confirm = "Turn Wi-Fi {state}?"
+run     = ["networksetup", "-setairportpower", "en0", "{state}"]
+
+[args.state]
+ask         = "On or off?"
+options.on  = "Switch the radio on."
+options.off = "Switch the radio off."
+
+[examples]
+"turn off the wifi" = { state = "off" }
+"wifi on"           = { state = "on" }
+"go offline"        = { state = "off" }
+
+[tests]
+"switch the wireless back on" = { state = "on" }
+"kill the wifi"               = { state = "off" }
+"toggle wifi"                 = { state = false }
+"connect to the hotel wifi"   = false

@@ -1,0 +1,15 @@
+{
+  "input": {
+    "previous": {
+      "$ref": "fixtures/lights.json"
+    },
+    "next": {
+      "$ref": "fixtures/lights.json"
+    }
+  },
+  "expect": {
+    "renamed": [],
+    "stale": [],
+    "orphaned": []
+  }
+}

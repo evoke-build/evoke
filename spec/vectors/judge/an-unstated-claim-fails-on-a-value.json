@@ -1,0 +1,43 @@
+{
+  "input": {
+    "case": {
+      "reflex": "timer",
+      "utterance": {
+        "text": "start a timer",
+        "id": "start a timer"
+      },
+      "expect": {
+        "duration": false
+      },
+      "from": "tests"
+    },
+    "decision": {
+      "outcome": "run",
+      "reflex": "timer",
+      "args": {
+        "duration": {
+          "type": "pick",
+          "span": {
+            "start": 16,
+            "end": 26,
+            "text": "10 minutes"
+          },
+          "value": {
+            "type": "duration",
+            "value": 600
+          }
+        }
+      },
+      "call": "timer duration=\"10 minutes\"",
+      "effect": "write"
+    }
+  },
+  "expect": {
+    "type": "fail",
+    "mismatch": {
+      "type": "arg",
+      "arg": "duration",
+      "read": "10 minutes"
+    }
+  }
+}

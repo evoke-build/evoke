@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://evoke.build/schemas/evoke.json",
+  "title": "evoke.toml",
+  "description": "A project: the reflexes you installed, their settings, and the adapter that decides. Reference: docs/manual/reference/files.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["adapter"],
+  "properties": {
+    "adapter": {
+      "$ref": "#/definitions/name",
+      "description": "The adapter that answers, by name. Resolved only against evoke's built-ins, never from a path."
+    },
+    "reflexes": {
+      "type": "object",
+      "description": "local name = where the reflex comes from. The local name is what the classifier reads and the overlay's file name.",
+      "propertyNames": { "$ref": "#/definitions/local_name" },
+      "additionalProperties": { "$ref": "#/definitions/ref" }
+    },
+    "config": {
+      "type": "object",
+      "description": "Per reflex, the settings its manifest declares under [config]. Secrets are referenced, never stored.",
+      "propertyNames": { "$ref": "#/definitions/local_name" },
+      "additionalProperties": {
+        "type": "object",
+        "propertyNames": { "$ref": "#/definitions/name" },
+        "additionalProperties": {
+          "oneOf": [
+            { "type": "string", "description": "The value, stored plain." },
+            {
+              "type": "object",
+              "required": ["env"],
+              "additionalProperties": false,
+              "properties": {
+                "env": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+                  "description": "The environment variable holding the value; the only way to set a secret."
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "adapters": {
+      "type": "object",
+      "description": "Settings per adapter, under its name. A table for an unselected adapter is inert.",
+      "propertyNames": { "$ref": "#/definitions/name" },
+      "additionalProperties": { "type": "object" },
+      "properties": {
+        "jev": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "gate": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "Overrides of Jev's calibrated thresholds; each number means P(correct). read may not exceed write.",
+              "properties": {
+                "route": { "$ref": "#/definitions/probability" },
+                "fits": { "$ref": "#/definitions/probability" },
+                "read": { "$ref": "#/definitions/probability" },
+                "write": { "$ref": "#/definitions/probability" }
+              }
+            }
+          }
+        },
+        "replay": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "The recorded adapter takes no settings; EVOKE_ANSWERS names its recording."
+        }
+      }
+    }
+  },
+  "definitions": {
+    "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "local_name": {
+      "allOf": [{ "$ref": "#/definitions/name" }, { "not": { "enum": ["none", "unstated", "fits"] } }],
+      "description": "A reflex's local name. none, unstated and fits are reserved."
+    },
+    "probability": { "type": "number", "minimum": 0, "maximum": 1 },
+    "ref": {
+      "type": "string",
+      "anyOf": [
+        {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9._][A-Za-z0-9._-]*(/[A-Za-z0-9._][A-Za-z0-9._-]*)*(@v?[0-9]+\\.[0-9]+\\.[0-9]+)?$",
+          "description": "owner/repo[/dir][@tag] on GitHub. Unpinned, update moves it; @tag pins it."
+        },
+        {
+          "pattern": "^(https|ssh)://[^\\s#@]+(#[^\\s@]+)?(@v?[0-9]+\\.[0-9]+\\.[0-9]+)?$",
+          "description": "<git url>[#dir][@tag]; https and ssh only."
+        },
+        {
+          "pattern": "^\\.\\.?/",
+          "description": "A local reflex directory, relative to this file. Never locked; its effect is its own."
+        }
+      ]
+    }
+  }
+}

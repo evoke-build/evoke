@@ -1,0 +1,21 @@
+{
+  "input": {
+    "previous": {
+      "$ref": "fixtures/lights.json"
+    },
+    "next": {
+      "$ref": "fixtures/lights-2.0.0.json"
+    }
+  },
+  "expect": {
+    "level": "major",
+    "changes": [
+      {
+        "type": "arg_renamed",
+        "from": "state",
+        "to": "power"
+      }
+    ],
+    "violations": []
+  }
+}

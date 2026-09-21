@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+#MISE description="Check the executable spec's shapes: vectors, fixtures and transcripts (spec/README.md)"
+"""Shape only; the rules themselves are checked by the suites that run the spec."""
+import json, re, sys
+from pathlib import Path
+
+SPEC = Path(__file__).resolve().parent.parent / "spec"
+problems = []
+
+
+def refs(obj, where):
+    if isinstance(obj, dict):
+        if "$ref" in obj:
+            target = (SPEC / obj["$ref"]).resolve()
+            if not target.is_file():
+                problems.append(f"{where}: $ref {obj['$ref']} does not exist")
+        for v in obj.values():
+            refs(v, where)
+    elif isinstance(obj, list):
+        for v in obj:
+            refs(v, where)
+
+
+for path in sorted(SPEC.glob("fixtures/*.json")):
+    refs(json.loads(path.read_text()), path)
+
+for path in sorted(SPEC.glob("vectors/*/*.json")):
+    case = json.loads(path.read_text())
+    if not isinstance(case, dict) or set(case) != {"input", "expect"}:
+        problems.append(f"{path}: a case is {{ input, expect }}")
+        continue
+    refs(case, path)
+
+for flow in sorted(p for p in SPEC.glob("transcripts/*") if p.is_dir() and p.name != "home"):
+    session = flow / "session.txt"
+    if not session.is_file():
+        problems.append(f"{flow}: no session.txt")
+        continue
+    lines = [l for l in session.read_text().splitlines() if not l.startswith("#")]
+    if not lines or not lines[0].startswith("$ "):
+        problems.append(f"{session}: must start with a command")
+    for n, line in enumerate(lines, 1):
+        if line == "[0]":
+            problems.append(f"{session}:{n}: exit 0 is implied, not written")
+        if "  →  " in line and not (line.startswith("  ") and line.split("  →  ")[-1].strip()):
+            problems.append(f"{session}:{n}: a diagnostic is indented and ends with its fixing command")
+
+if problems:
+    print("\n".join(problems))
+    sys.exit(1)
+print(f"spec ok: {len(list(SPEC.glob('vectors/*/*.json')))} vectors, {len(list(SPEC.glob('fixtures/*.json')))} fixtures, "
+      f"{len([p for p in SPEC.glob('transcripts/*') if p.is_dir() and p.name != 'home'])} transcripts")

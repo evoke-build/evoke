@@ -1,0 +1,117 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "request": {
+      "$ref": "fixtures/request-dim-150.json"
+    },
+    "raw": {
+      "route": {
+        "lights": 0.93,
+        "timer": 0.02,
+        "none": 0.05
+      },
+      "fits.lights": {
+        "yes": 0.8
+      },
+      "lights.room": {
+        "den": 0.9,
+        "office": 0.02,
+        "unstated": 0.08
+      },
+      "lights.state": {
+        "on": 0.02,
+        "off": 0.03,
+        "dim": 0.93,
+        "unstated": 0.02
+      },
+      "lights.brightness": {
+        "22-33": 0.9,
+        "unstated": 0.1
+      },
+      "fits.timer": {
+        "yes": 0.05
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "ranking": [
+        {
+          "reflex": "lights",
+          "route": 0.93,
+          "fits": 0.8
+        },
+        {
+          "reflex": "timer",
+          "route": 0.02,
+          "fits": 0.05
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "lights",
+          "p": 0.93
+        },
+        {
+          "question": "lights.room",
+          "top": "den",
+          "p": 0.9
+        },
+        {
+          "question": "lights.state",
+          "top": "dim",
+          "p": 0.93
+        },
+        {
+          "question": "lights.brightness",
+          "top": "22-33",
+          "p": 0.9
+        }
+      ],
+      "winner": {
+        "reflex": "lights",
+        "args": {
+          "room": {
+            "type": "word",
+            "word": "den"
+          },
+          "state": {
+            "type": "option",
+            "key": "dim"
+          }
+        },
+        "missing": [
+          {
+            "arg": "brightness",
+            "ask": "How bright, in percent?",
+            "because": {
+              "type": "out_of_range",
+              "span": {
+                "start": 22,
+                "end": 33,
+                "text": "150 percent"
+              },
+              "range": [
+                1,
+                100
+              ]
+            },
+            "choices": {
+              "type": "pick",
+              "pick": "number"
+            }
+          }
+        ],
+        "unconsumed": [],
+        "runner_up": {
+          "reflex": "timer",
+          "route": 0.02,
+          "fits": 0.05
+        }
+      }
+    }
+  }
+}

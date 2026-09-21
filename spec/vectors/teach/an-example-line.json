@@ -1,0 +1,33 @@
+{
+  "input": {
+    "utterance": {
+      "text": "kill the lights",
+      "id": "kill the lights"
+    },
+    "lesson": {
+      "reflex": "lights",
+      "record": {
+        "state": "off"
+      }
+    },
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "set",
+      "file": {
+        "type": "overlay",
+        "name": "lights"
+      },
+      "path": [
+        "examples",
+        "kill the lights"
+      ],
+      "value": {
+        "state": "off"
+      }
+    }
+  }
+}

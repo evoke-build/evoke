@@ -1,0 +1,20 @@
+{
+  "input": {
+    "name": "lights",
+    "location": {
+      "type": "local",
+      "path": "./lights"
+    }
+  },
+  "expect": {
+    "type": "set",
+    "file": {
+      "type": "project"
+    },
+    "path": [
+      "reflexes",
+      "lights"
+    ],
+    "value": "./lights"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "input": {
+    "text": "lights room=den state=off"
+  },
+  "expect": {
+    "ok": {
+      "reflex": "lights",
+      "args": {
+        "room": "den",
+        "state": "off"
+      }
+    }
+  }
+}

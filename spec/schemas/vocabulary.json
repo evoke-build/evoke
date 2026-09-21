@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://evoke.build/schemas/vocabulary.json",
+  "title": "vocab/<name>.toml",
+  "description": "Your closed set for every argument that names this vocabulary: word = meaning. Packages never ship or write one. Reference: docs/manual/reference/files.md.",
+  "type": "object",
+  "propertyNames": {
+    "type": "string",
+    "pattern": "^[^\\s\\u0000-\\u001f\\u007f-\\u009f\\u061c\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]([^\\u0000-\\u001f\\u007f-\\u009f\\u061c\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]*[^\\s\\u0000-\\u001f\\u007f-\\u009f\\u061c\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069])?$",
+    "not": { "enum": ["none", "unstated"] },
+    "description": "The word the classifier chooses and the body receives unless a value is set. Trimmed; spaces allowed; none and unstated are reserved."
+  },
+  "additionalProperties": {
+    "oneOf": [
+      { "$ref": "#/definitions/line" },
+      {
+        "type": "object",
+        "required": ["what"],
+        "additionalProperties": false,
+        "properties": {
+          "what": {
+            "$ref": "#/definitions/line",
+            "description": "What the word means, in your words; other names for it help."
+          },
+          "value": {
+            "type": "string",
+            "description": "What the body receives instead of the word. Never shown to the classifier."
+          }
+        }
+      }
+    ]
+  },
+  "definitions": {
+    "line": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f\\u061c\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]+$"
+    }
+  }
+}

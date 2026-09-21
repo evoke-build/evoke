@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "volume 15"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 7,
+        "end": 9,
+        "text": "15"
+      },
+      "value": {
+        "type": "number",
+        "value": 15
+      }
+    }
+  ]
+}

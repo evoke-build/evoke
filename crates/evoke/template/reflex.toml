@@ -1,0 +1,21 @@
+reflex = 1
+
+description = """
+Say hello to someone.
+A greeting with the name given, printed back."""
+not_for = ["saying goodbye"]
+effect = "read"
+confirm = "Say hello to {who}?"
+run = "{name}.mts"
+
+[args.who]
+ask  = "Who should be greeted?"
+pick = "quoted"
+
+[examples]
+'say hello to "Ada"' = { who = "Ada" }
+'greet "Grace"'      = { who = "Grace" }
+
+[tests]
+'wave at "Linus"' = { who = "Linus" }
+"what time is it" = false

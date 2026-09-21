@@ -1,0 +1,26 @@
+$ evoke run lights room=den state=off
+  lights room="den" state="off"
+den lights off
+$ evoke run lights room=office state=on
+  lights room="office" state="on"
+group-7 lights on
+$ evoke run timer duration="10 minutes"
+  timer duration="10 minutes"
+10 minute timer started
+$ evoke run power action=restart
+  power action="restart" · destructive
+  Really restart now?  [y]es [n]o > n
+[2]
+$ evoke run power action=restart
+  power action="restart" · destructive
+  Really restart now?  [y]es [n]o > y
+restart in 5 seconds
+$ evoke run lights room=attic state=off
+  lights: "attic" is not in vocabulary "rooms"  →  evoke vocab rooms add <word> "<meaning>"
+[3]
+$ evoke run lights state=off
+  lights: lights needs room  →  evoke show lights
+[3]
+$ evoke run volume level=150
+  volume: 150 is outside 0–100  →  evoke run volume level=150
+[3]

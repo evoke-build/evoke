@@ -1,0 +1,64 @@
+{
+  "input": {
+    "before": {
+      "timer": {
+        "ping me in 2 hours": {
+          "type": "pass"
+        }
+      }
+    },
+    "judged": [
+      [
+        {
+          "reflex": "timer",
+          "utterance": {
+            "text": "ping me in 2 hours",
+            "id": "ping me in 2 hours"
+          },
+          "expect": {
+            "duration": "2 hours"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "type": "fail",
+            "mismatch": {
+              "type": "route",
+              "read": null
+            }
+          },
+          {
+            "type": "fail",
+            "mismatch": {
+              "type": "route",
+              "read": null
+            }
+          },
+          {
+            "type": "pass"
+          }
+        ]
+      ]
+    ]
+  },
+  "expect": [
+    {
+      "case": {
+        "reflex": "timer",
+        "utterance": {
+          "text": "ping me in 2 hours",
+          "id": "ping me in 2 hours"
+        },
+        "expect": {
+          "duration": "2 hours"
+        },
+        "from": "tests"
+      },
+      "now": {
+        "type": "route",
+        "read": null
+      }
+    }
+  ]
+}

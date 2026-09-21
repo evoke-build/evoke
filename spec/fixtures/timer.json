@@ -1,0 +1,58 @@
+{
+  "description": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+  "not_for": [
+    "keeping the laptop awake",
+    "alarms at a time of day",
+    "asking the time"
+  ],
+  "tags": [
+    "time"
+  ],
+  "effect": "write",
+  "confirm": "Start a {duration} timer?",
+  "run": "timer.mts",
+  "config": {},
+  "args": {
+    "duration": {
+      "ask": "How long?",
+      "pick": "duration",
+      "optional": false,
+      "was": []
+    },
+    "label": {
+      "ask": "What is the timer for?",
+      "pick": "quoted",
+      "optional": true,
+      "was": []
+    }
+  },
+  "examples": {
+    "set a timer for 10 minutes": {
+      "duration": "10 minutes"
+    },
+    "25 minute timer": {
+      "duration": "25 minute"
+    },
+    "timer for 3 minutes called \"eggs\"": {
+      "duration": "3 minutes",
+      "label": "eggs"
+    },
+    "count down 90 seconds": {
+      "duration": "90 seconds"
+    }
+  },
+  "tests": {
+    "ping me in 2 hours": {
+      "duration": "2 hours"
+    },
+    "start a \"laundry\" timer, 45 minutes": {
+      "duration": "45 minutes",
+      "label": "laundry"
+    },
+    "start a timer": {
+      "duration": false
+    },
+    "what time is it": false
+  },
+  "unknown": []
+}

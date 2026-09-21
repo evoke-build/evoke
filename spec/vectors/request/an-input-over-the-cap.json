@@ -1,0 +1,18 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "input": "kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights kill the lights k",
+    "tags": [],
+    "scope": "full"
+  },
+  "expect": {
+    "err": {
+      "message": "the input is 2001 characters long; 2000 is the cap",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

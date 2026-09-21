@@ -1,0 +1,13 @@
+{
+  "input": {
+    "lock": {
+      "evoke": "0.1.0",
+      "adapter": {
+        "name": "jev",
+        "id": "jev-1.13.0"
+      },
+      "reflexes": {}
+    }
+  },
+  "expect": "# Written by evoke; evoke sync realises it on another machine and never changes it.\nlock  = 1\nevoke = \"0.1.0\"\n\n[adapter]\nname = \"jev\"\nid   = \"jev-1.13.0\"\n"
+}

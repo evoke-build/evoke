@@ -1,0 +1,38 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "lights"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Turn the lights in one room on, off, or dim them.\"\nconfirm = \"Set the lights {state}?\"\nrun = \"lights.mts\"\n\n[args.state]\nask = \"What should the lights do?\"\noptions.on = \"Switch on.\"\noptions.off = \"Switch off.\"\noptions.dim = \"Lower the brightness without switching off.\"\n\n[args.room]\nask = \"Which room?\"\nvocab = \"rooms\"\n\n[examples]\n\"lights off in the den\" = { state = \"off\", room = \"den\" }\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "lights",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "lights"
+          },
+          "line": 18,
+          "column": 1
+        },
+        "message": "\"lights off in the den\" asserts room, a vocab argument; only your own files may",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "lights"
+            },
+            "line": 18,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

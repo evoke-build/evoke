@@ -1,0 +1,6 @@
+{
+  "input": {
+    "text": "what time is it …"
+  },
+  "expect": "what time is it"
+}

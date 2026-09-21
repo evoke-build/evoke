@@ -1,0 +1,100 @@
+{
+  "input": {
+    "previous": {
+      "$ref": "fixtures/lights.json"
+    },
+    "next": {
+      "description": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
+      "not_for": [
+        "colour scenes and schedules",
+        "asking whether a light is on"
+      ],
+      "tags": [
+        "home",
+        "lighting"
+      ],
+      "effect": "write",
+      "confirm": "Set the {room} lights {state}?",
+      "run": [
+        "hue",
+        "set",
+        "{room}",
+        "{state}"
+      ],
+      "config": {
+        "bridge": {
+          "about": "Hue bridge address",
+          "secret": false
+        }
+      },
+      "args": {
+        "room": {
+          "ask": "Which room?",
+          "options": {
+            "den": "The den."
+          },
+          "optional": false,
+          "was": []
+        },
+        "state": {
+          "ask": "What should the lights do?",
+          "options": {
+            "on": "Switch on.",
+            "off": "Switch off."
+          },
+          "optional": false,
+          "was": []
+        },
+        "brightness": {
+          "ask": "How bright, in percent?",
+          "pick": "number",
+          "range": [
+            0,
+            100
+          ],
+          "optional": true,
+          "was": []
+        }
+      },
+      "examples": {
+        "turn on the kitchen lights": {
+          "state": "on"
+        },
+        "dim the office to 30 percent": {
+          "brightness": "30 percent"
+        }
+      },
+      "tests": {
+        "make it darker in here": {},
+        "light a candle": false
+      },
+      "unknown": []
+    }
+  },
+  "expect": {
+    "level": "major",
+    "changes": [
+      {
+        "type": "source_changed",
+        "arg": "room"
+      },
+      {
+        "type": "option_removed",
+        "arg": "state",
+        "key": "dim"
+      },
+      {
+        "type": "range_changed",
+        "arg": "brightness"
+      },
+      {
+        "type": "run_changed"
+      },
+      {
+        "type": "config_removed",
+        "key": "token"
+      }
+    ],
+    "violations": []
+  }
+}

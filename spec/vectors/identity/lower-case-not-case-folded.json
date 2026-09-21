@@ -1,0 +1,6 @@
+{
+  "input": {
+    "text": "Straße vs STRASSE"
+  },
+  "expect": "straße vs strasse"
+}

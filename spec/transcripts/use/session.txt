@@ -1,0 +1,17 @@
+$ evoke "kill the lights"
+  Which room?  [1] den  [2] office  [+] add one  > 1
+  lights room="den" state="off" · write · weakest: state 0.58
+  Set the den lights off?  [y]es [n]o [t]each > t
++ overlays/lights.toml  [examples] "kill the lights" = { state = "off" }
+den lights off
+$ evoke "kill the lights in the den"
+  lights room="den" state="off"  0.85
+den lights off
+$ evoke "dim the office"
+  lights room="office" state="dim" · write · weakest: state 0.70
+  Set the office lights dim?  [y]es [n]o [t]each > n
+[2]
+$ evoke "turn on the den lights"
+  lights room="den" state="on" · write · weakest: state 0.75
+  Set the den lights on?  [y]es [n]o [t]each > y
+den lights on

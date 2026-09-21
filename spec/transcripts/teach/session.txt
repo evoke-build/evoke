@@ -1,0 +1,16 @@
+$ evoke teach "kill the lights" lights state=off
++ overlays/lights.toml  [examples] "kill the lights" = { state = "off" }
+$ evoke teach "lights off in the attic" lights room=attic state=off
+  lights: "attic" is not in vocabulary "rooms"  →  evoke vocab rooms add <word> "<meaning>"
+[3]
+$ evoke teach "what time is it" not timer
++ overlays/timer.toml  [examples] "what time is it" = false
+$ evoke "dim the office"
+  lights room="office" state="dim" · write · weakest: state 0.70
+  Set the office lights dim?  [y]es [n]o [t]each > y
+group-7 lights dim
+$ evoke teach lights state=dim
++ overlays/lights.toml  [examples] "dim the office" = { state = "dim" }
+$ evoke teach lights colour=blue
+  lights: lights has no argument colour  →  evoke show lights
+[3]

@@ -1,0 +1,18 @@
+$ evoke test
+  lights  3 passed · 1 failed
+    "make it darker in here"  state: expected "dim", read "off"
+  timer   8 passed
+  1 of 12 cases failed  →  evoke test
+[1]
+$ EVOKE_ANSWERS=~/drift.toml evoke test
+  lights  3 passed · 1 failed
+    "make it darker in here"  state: expected "dim", read "off"
+  timer   7 passed · 1 failed
+    "ping me in 2 hours"  route: expected timer, read none · regression
+  2 of 12 cases failed  →  evoke test
+[1]
+$ EVOKE_ANSWERS=~/drift.toml evoke test timer
+  timer  7 passed · 1 failed
+    "ping me in 2 hours"  route: expected timer, read none
+  1 of 8 cases failed  →  evoke test timer
+[1]

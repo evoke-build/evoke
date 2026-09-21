@@ -1,0 +1,39 @@
+{
+  "input": {
+    "case": {
+      "reflex": "lights",
+      "utterance": {
+        "text": "turn on the kitchen lights",
+        "id": "turn on the kitchen lights"
+      },
+      "expect": {
+        "state": "on"
+      },
+      "from": "examples"
+    },
+    "decision": {
+      "outcome": "run",
+      "reflex": "lights",
+      "args": {
+        "room": {
+          "type": "word",
+          "word": "den"
+        },
+        "state": {
+          "type": "option",
+          "key": "off"
+        }
+      },
+      "call": "lights room=\"den\" state=\"off\"",
+      "effect": "write"
+    }
+  },
+  "expect": {
+    "type": "fail",
+    "mismatch": {
+      "type": "arg",
+      "arg": "state",
+      "read": "off"
+    }
+  }
+}

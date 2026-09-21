@@ -1,0 +1,58 @@
+{
+  "input": {
+    "chosen": {
+      "reflex": "lights",
+      "args": {
+        "room": {
+          "type": "word",
+          "word": "office",
+          "value": "group-7"
+        },
+        "state": {
+          "type": "option",
+          "key": "dim"
+        },
+        "brightness": {
+          "type": "pick",
+          "span": {
+            "start": 18,
+            "end": 28,
+            "text": "30 percent"
+          },
+          "value": {
+            "type": "number",
+            "value": 30
+          }
+        }
+      },
+      "call": "lights room=\"office\" state=\"dim\" brightness=\"30 percent\"",
+      "effect": "write"
+    },
+    "active": {
+      "$ref": "fixtures/active-lights.json"
+    },
+    "input": "dim the office to 30 percent",
+    "deadline": 29950
+  },
+  "expect": {
+    "reflex": "lights",
+    "run": "lights.mts",
+    "args": {
+      "room": "group-7",
+      "state": "dim",
+      "brightness": 30
+    },
+    "input": "dim the office to 30 percent",
+    "config": {
+      "bridge": {
+        "type": "plain",
+        "value": "10.0.0.2"
+      },
+      "token": {
+        "type": "env",
+        "var": "HUE_TOKEN"
+      }
+    },
+    "deadline": 29950
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "overlay",
+        "name": "lights"
+      },
+      "toml": "[args.state]\nask = \"On, off, or dimmed?\"\n\n[examples]\n\"kill the lights\" = { state = \"off\" }\n"
+    },
+    "of": {
+      "$ref": "fixtures/lights-2.0.0.json"
+    }
+  },
+  "expect": {
+    "ok": {
+      "args": {
+        "power": {
+          "ask": "On, off, or dimmed?",
+          "options": {}
+        }
+      },
+      "examples": {
+        "kill the lights": {
+          "power": "off"
+        }
+      },
+      "tests": {},
+      "renamed": [
+        [
+          "state",
+          "power"
+        ]
+      ],
+      "orphaned": []
+    }
+  }
+}

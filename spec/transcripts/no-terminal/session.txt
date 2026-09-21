@@ -1,0 +1,15 @@
+# no tty: these commands run without a terminal, as in CI or a cron job.
+$ echo "kill the lights" | evoke
+  an ask needs a terminal  →  evoke "kill the lights"
+[3]
+$ echo "kill the lights" | evoke --json
+{"input":"kill the lights","outcome":"ask","reflex":"lights","args":{"state":{"type":"option","key":"off"}},"unconsumed":[],"confidence":0.58,"weakest":{"question":"lights.state","top":"off","p":0.58},"judgments":[{"question":"route","top":"lights","p":0.9},{"question":"lights.room","top":"unstated","p":0.75},{"question":"lights.state","top":"off","p":0.58}],"runner_up":{"reflex":"timer","route":0.02,"fits":0.05},"contenders":[{"reflex":"lights","route":0.9,"fits":0.7},{"reflex":"timer","route":0.02,"fits":0.05},{"reflex":"volume","route":0.02,"fits":0.05}],"missing":[{"arg":"room","ask":"Which room?","because":{"type":"unstated"},"choices":{"type":"vocab","words":{"den":"The TV room downstairs; also 'the snug'.","office":"The upstairs study."}}}],"trace":[]}
+[3]
+$ echo "kill the lights in the den" | evoke
+  lights room="den" state="off"  0.85
+den lights off
+$ printf 'kill the lights in the den\nstart a timer\n' | evoke
+  lights room="den" state="off"  0.85
+den lights off
+  an ask needs a terminal  →  evoke "start a timer"
+[3]

@@ -1,0 +1,122 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "lights",
+          "route": 0.91,
+          "fits": 0.7
+        },
+        {
+          "reflex": "timer",
+          "route": 0.03,
+          "fits": 0.1
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "lights",
+          "p": 0.91
+        },
+        {
+          "question": "lights.room",
+          "top": "office",
+          "p": 0.85
+        },
+        {
+          "question": "lights.state",
+          "top": "off",
+          "p": 0.88
+        }
+      ],
+      "winner": {
+        "reflex": "lights",
+        "args": {
+          "room": {
+            "type": "word",
+            "word": "office",
+            "value": "forged"
+          },
+          "state": {
+            "type": "option",
+            "key": "off"
+          }
+        },
+        "missing": [],
+        "unconsumed": [],
+        "runner_up": {
+          "reflex": "timer",
+          "route": 0.03,
+          "fits": 0.1
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "outcome": "run",
+    "reflex": "lights",
+    "args": {
+      "room": {
+        "type": "word",
+        "word": "office",
+        "value": "group-7"
+      },
+      "state": {
+        "type": "option",
+        "key": "off"
+      }
+    },
+    "call": "lights room=\"office\" state=\"off\"",
+    "effect": "write",
+    "confidence": 0.85,
+    "weakest": {
+      "question": "lights.room",
+      "top": "office",
+      "p": 0.85
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "lights",
+        "p": 0.91
+      },
+      {
+        "question": "lights.room",
+        "top": "office",
+        "p": 0.85
+      },
+      {
+        "question": "lights.state",
+        "top": "off",
+        "p": 0.88
+      }
+    ],
+    "runner_up": {
+      "reflex": "timer",
+      "route": 0.03,
+      "fits": 0.1
+    },
+    "contenders": [
+      {
+        "reflex": "lights",
+        "route": 0.91,
+        "fits": 0.7
+      },
+      {
+        "reflex": "timer",
+        "route": 0.03,
+        "fits": 0.1
+      }
+    ]
+  }
+}

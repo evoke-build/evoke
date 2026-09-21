@@ -1,0 +1,38 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "lights"
+      },
+      "toml": "description = \"Turn the lights in one room on, off, or dim them.\"\nconfirm = \"Set the lights {state}?\"\nrun = \"lights.mts\"\n\n[args.state]\nask = \"What should the lights do?\"\noptions.on = \"Switch on.\"\noptions.off = \"Switch off.\"\noptions.dim = \"Lower the brightness without switching off.\"\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "lights",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "lights"
+          },
+          "line": 1,
+          "column": 1
+        },
+        "message": "reflex = 1 is required",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "lights"
+            },
+            "line": 1,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

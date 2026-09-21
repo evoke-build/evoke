@@ -1,0 +1,28 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "overlay",
+        "name": "lights"
+      },
+      "toml": "[examples]\n\"lights off in the den\" = { state = \"off\", room = \"den\" }\n"
+    },
+    "of": {
+      "$ref": "fixtures/lights.json"
+    }
+  },
+  "expect": {
+    "ok": {
+      "args": {},
+      "examples": {
+        "lights off in the den": {
+          "state": "off",
+          "room": "den"
+        }
+      },
+      "tests": {},
+      "renamed": [],
+      "orphaned": []
+    }
+  }
+}

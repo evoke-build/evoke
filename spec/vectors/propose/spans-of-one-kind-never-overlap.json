@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "2 hours then 30 minutes"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 0,
+        "end": 7,
+        "text": "2 hours"
+      },
+      "value": {
+        "type": "duration",
+        "value": 7200
+      }
+    },
+    {
+      "span": {
+        "start": 13,
+        "end": 23,
+        "text": "30 minutes"
+      },
+      "value": {
+        "type": "duration",
+        "value": 1800
+      }
+    }
+  ]
+}

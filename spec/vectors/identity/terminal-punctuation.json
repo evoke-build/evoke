@@ -1,0 +1,6 @@
+{
+  "input": {
+    "text": "Lock the screen!?."
+  },
+  "expect": "lock the screen"
+}

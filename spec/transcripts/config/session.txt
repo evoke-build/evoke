@@ -1,0 +1,27 @@
+$ evoke show
+  lights  ./lights  write  runs lights.mts
+  timer   ./timer   write  runs timer.mts
+  volume  ./volume  write  runs volume.mts
+  inactive  lights: config "bridge" is not set  →  evoke config lights bridge <value>
+  inactive  lights: config "token" is not set   →  evoke config lights token --env <VAR>
+$ evoke config lights bridge 10.0.0.2
++ evoke.toml  [config.lights] bridge = "10.0.0.2"
+$ evoke config lights token hue-example
+  lights: config "token" is a secret; it is set from a variable  →  evoke config lights token --env <VAR>
+[3]
+$ evoke config lights token --env HUE_TOKEN
++ evoke.toml  [config.lights] token = { env = "HUE_TOKEN" }
+$ evoke config lights colour blue
+  lights: lights declares no config "colour"  →  evoke show lights
+[3]
+$ evoke config lamps bridge 10.0.0.2
+  lamps: lamps is not installed  →  evoke show
+[3]
+$ evoke show
+  lights  ./lights  write  runs lights.mts
+  timer   ./timer   write  runs timer.mts
+  volume  ./volume  write  runs volume.mts
+  inactive  lights: HUE_TOKEN is not set  →  export HUE_TOKEN=<value>
+$ HUE_TOKEN=hue-example evoke run lights room=den state=off
+  lights room="den" state="off"
+den lights off

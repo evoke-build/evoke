@@ -1,0 +1,140 @@
+{
+  "input": {
+    "set": {
+      "$ref": "fixtures/installed.json"
+    }
+  },
+  "expect": [
+    {
+      "reflex": "lights",
+      "utterance": {
+        "text": "turn on the kitchen lights",
+        "id": "turn on the kitchen lights"
+      },
+      "expect": {
+        "state": "on"
+      },
+      "from": "examples"
+    },
+    {
+      "reflex": "lights",
+      "utterance": {
+        "text": "dim the office to 30 percent",
+        "id": "dim the office to 30 percent"
+      },
+      "expect": {
+        "state": "dim",
+        "brightness": "30 percent"
+      },
+      "from": "examples"
+    },
+    {
+      "reflex": "lights",
+      "utterance": {
+        "text": "make it darker in here",
+        "id": "make it darker in here"
+      },
+      "expect": {
+        "state": "dim"
+      },
+      "from": "tests"
+    },
+    {
+      "reflex": "lights",
+      "utterance": {
+        "text": "light a candle",
+        "id": "light a candle"
+      },
+      "expect": false,
+      "from": "tests"
+    },
+    {
+      "reflex": "timer",
+      "utterance": {
+        "text": "set a timer for 10 minutes",
+        "id": "set a timer for 10 minutes"
+      },
+      "expect": {
+        "duration": "10 minutes"
+      },
+      "from": "examples"
+    },
+    {
+      "reflex": "timer",
+      "utterance": {
+        "text": "25 minute timer",
+        "id": "25 minute timer"
+      },
+      "expect": {
+        "duration": "25 minute"
+      },
+      "from": "examples"
+    },
+    {
+      "reflex": "timer",
+      "utterance": {
+        "text": "timer for 3 minutes called \"eggs\"",
+        "id": "timer for 3 minutes called \"eggs\""
+      },
+      "expect": {
+        "duration": "3 minutes",
+        "label": "eggs"
+      },
+      "from": "examples"
+    },
+    {
+      "reflex": "timer",
+      "utterance": {
+        "text": "count down 90 seconds",
+        "id": "count down 90 seconds"
+      },
+      "expect": {
+        "duration": "90 seconds"
+      },
+      "from": "examples"
+    },
+    {
+      "reflex": "timer",
+      "utterance": {
+        "text": "ping me in 2 hours",
+        "id": "ping me in 2 hours"
+      },
+      "expect": {
+        "duration": "2 hours"
+      },
+      "from": "tests"
+    },
+    {
+      "reflex": "timer",
+      "utterance": {
+        "text": "start a \"laundry\" timer, 45 minutes",
+        "id": "start a \"laundry\" timer, 45 minutes"
+      },
+      "expect": {
+        "duration": "45 minutes",
+        "label": "laundry"
+      },
+      "from": "tests"
+    },
+    {
+      "reflex": "timer",
+      "utterance": {
+        "text": "start a timer",
+        "id": "start a timer"
+      },
+      "expect": {
+        "duration": false
+      },
+      "from": "tests"
+    },
+    {
+      "reflex": "timer",
+      "utterance": {
+        "text": "what time is it",
+        "id": "what time is it"
+      },
+      "expect": false,
+      "from": "tests"
+    }
+  ]
+}

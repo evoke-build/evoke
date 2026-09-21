@@ -1,0 +1,18 @@
+{
+  "input": {
+    "text": "10 minutes",
+    "recognizer": "duration"
+  },
+  "expect": {
+    "type": "pick",
+    "span": {
+      "start": 0,
+      "end": 10,
+      "text": "10 minutes"
+    },
+    "value": {
+      "type": "duration",
+      "value": 600
+    }
+  }
+}

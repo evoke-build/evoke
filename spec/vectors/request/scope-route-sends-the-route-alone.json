@@ -1,0 +1,53 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "input": "kill the lights",
+    "tags": [],
+    "scope": "route"
+  },
+  "expect": {
+    "ok": {
+      "state": {
+        "request": "kill the lights"
+      },
+      "questions": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "lights": {
+              "what": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
+              "not_for": [
+                "colour scenes and schedules",
+                "asking whether a light is on"
+              ],
+              "examples": [
+                "turn on the kitchen lights",
+                "dim the office to 30 percent"
+              ]
+            },
+            "timer": {
+              "what": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+              "not_for": [
+                "keeping the laptop awake",
+                "alarms at a time of day",
+                "asking the time"
+              ],
+              "examples": [
+                "set a timer for 10 minutes",
+                "25 minute timer",
+                "timer for 3 minutes called \"eggs\"",
+                "count down 90 seconds"
+              ]
+            },
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        }
+      },
+      "proposed": []
+    }
+  }
+}

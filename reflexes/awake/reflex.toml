@@ -1,0 +1,27 @@
+reflex = 1
+
+description = """
+Keep the laptop awake, display on.
+For a duration, or until you cancel it."""
+
+not_for = ["timers and reminders", "putting the laptop to sleep", "screen brightness"]
+tags    = ["power"]
+effect  = "write"
+confirm = "Keep the laptop awake?"
+run     = "awake.mts"
+
+[args.duration]
+ask      = "For how long?"
+pick     = "duration"
+optional = true
+
+[examples]
+"keep the laptop awake for 2 hours" = { duration = "2 hours" }
+"don't let the laptop sleep"        = { duration = false }
+"stay awake for 45 minutes"         = { duration = "45 minutes" }
+
+[tests]
+"no sleeping for the next 3 hours" = { duration = "3 hours" }
+"stop the screen from going dark"  = { duration = false }
+"wake me up in 20 minutes"         = false
+"put the laptop to sleep"          = false

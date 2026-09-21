@@ -1,0 +1,38 @@
+{
+  "input": {
+    "case": {
+      "reflex": "timer",
+      "utterance": {
+        "text": "what time is it",
+        "id": "what time is it"
+      },
+      "expect": false,
+      "from": "tests"
+    },
+    "decision": {
+      "outcome": "abstain",
+      "contenders": [
+        {
+          "reflex": "lights",
+          "route": 0.1,
+          "fits": 0.05
+        },
+        {
+          "reflex": "timer",
+          "route": 0.05,
+          "fits": 0.05
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "none",
+          "p": 0.85
+        }
+      ]
+    }
+  },
+  "expect": {
+    "type": "pass"
+  }
+}

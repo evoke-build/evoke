@@ -1,0 +1,10 @@
+{
+  "input": {
+    "locked": "write",
+    "upstream": "destructive"
+  },
+  "expect": {
+    "type": "tightened",
+    "effect": "destructive"
+  }
+}

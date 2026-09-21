@@ -1,0 +1,23 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "written": {
+      "reflex": "lights",
+      "args": {
+        "state": "off"
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "reflex": "lights",
+      "message": "lights needs room",
+      "fix": {
+        "type": "show",
+        "reflex": "lights"
+      }
+    }
+  }
+}

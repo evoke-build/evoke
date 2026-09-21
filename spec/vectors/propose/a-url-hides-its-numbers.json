@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "download https://example.com/2024/report.pdf"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 9,
+        "end": 44,
+        "text": "https://example.com/2024/report.pdf"
+      },
+      "value": {
+        "type": "url",
+        "value": "https://example.com/2024/report.pdf"
+      }
+    }
+  ]
+}

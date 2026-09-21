@@ -1,0 +1,22 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "written": {
+      "reflex": "timer",
+      "args": {
+        "duration": "soon"
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "reflex": "timer",
+      "message": "\"soon\" is not a duration",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

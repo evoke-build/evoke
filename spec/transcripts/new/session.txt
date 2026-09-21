@@ -1,0 +1,9 @@
+$ evoke new hello
++ hello/reflex.toml
++ hello/hello.mts
++ hello/reflex.d.ts
+$ cd hello && evoke check
+  hello  read  runs hello.mts
+$ evoke new hello
+  hello already exists  →  evoke new <name>
+[3]

@@ -1,0 +1,69 @@
+{
+  "input": {
+    "previous": {
+      "$ref": "fixtures/lights.json"
+    },
+    "next": {
+      "$ref": "fixtures/lights-2.0.0.json"
+    },
+    "yours": {
+      "not_for": [
+        "colour scenes"
+      ],
+      "args": {
+        "power": {
+          "options": {
+            "dim": "Dim them."
+          }
+        },
+        "colour": {
+          "ask": "Which colour?",
+          "options": {}
+        }
+      },
+      "examples": {
+        "kill the lights": {
+          "power": "off"
+        }
+      },
+      "tests": {},
+      "renamed": [
+        [
+          "state",
+          "power"
+        ]
+      ],
+      "orphaned": [
+        [
+          "args",
+          "colour"
+        ]
+      ]
+    }
+  },
+  "expect": {
+    "renamed": [
+      [
+        "state",
+        "power"
+      ]
+    ],
+    "stale": [
+      [
+        "args",
+        "power",
+        "options",
+        "dim"
+      ],
+      [
+        "not_for"
+      ]
+    ],
+    "orphaned": [
+      [
+        "args",
+        "colour"
+      ]
+    ]
+  }
+}

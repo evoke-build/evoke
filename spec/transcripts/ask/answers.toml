@@ -1,0 +1,26 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md).
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.6
+write = 0.8
+
+[answers."start a timer"]
+route          = { timer = 0.92, lights = 0.02, volume = 0.01, none = 0.05 }
+"fits.lights"  = { yes = 0.05 }
+"fits.timer"   = { yes = 0.8 }
+"fits.volume"  = { yes = 0.05 }
+"lights.room"  = { unstated = 0.8, den = 0.1, office = 0.1 }
+"lights.state" = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
+
+[answers."set the volume to 150 percent"]
+route               = { volume = 0.93, lights = 0.02, timer = 0.01, none = 0.04 }
+"fits.lights"       = { yes = 0.05 }
+"fits.timer"        = { yes = 0.05 }
+"fits.volume"       = { yes = 0.8 }
+"lights.room"       = { unstated = 0.8, den = 0.1, office = 0.1 }
+"lights.state"      = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
+"lights.brightness" = { "18-29" = 0.1, unstated = 0.9 }
+"volume.level"      = { "18-29" = 0.95, unstated = 0.05 }

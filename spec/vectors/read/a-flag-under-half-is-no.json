@@ -1,0 +1,68 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-screenshot.json"
+    },
+    "request": {
+      "$ref": "fixtures/request-screenshot-window.json"
+    },
+    "raw": {
+      "route": {
+        "screenshot": 0.95,
+        "none": 0.05
+      },
+      "fits.screenshot": {
+        "yes": 0.9
+      },
+      "screenshot.area": {
+        "screen": 0.05,
+        "window": 0.9,
+        "unstated": 0.05
+      },
+      "screenshot.clipboard": {
+        "yes": 0.45,
+        "no": 0.275,
+        "unstated": 0.275
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "ranking": [
+        {
+          "reflex": "screenshot",
+          "route": 0.95,
+          "fits": 0.9
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "screenshot",
+          "p": 0.95
+        },
+        {
+          "question": "screenshot.area",
+          "top": "window",
+          "p": 0.9
+        },
+        {
+          "question": "screenshot.clipboard",
+          "top": "no",
+          "p": 0.55
+        }
+      ],
+      "winner": {
+        "reflex": "screenshot",
+        "args": {
+          "area": {
+            "type": "option",
+            "key": "window"
+          }
+        },
+        "missing": [],
+        "unconsumed": []
+      }
+    }
+  }
+}

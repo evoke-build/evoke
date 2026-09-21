@@ -1,0 +1,23 @@
+{
+  "input": {
+    "name": "rooms",
+    "change": {
+      "type": "add",
+      "word": "den",
+      "meaning": {
+        "what": "The TV room downstairs; also 'the snug'."
+      }
+    }
+  },
+  "expect": {
+    "type": "set",
+    "file": {
+      "type": "vocab",
+      "name": "rooms"
+    },
+    "path": [
+      "den"
+    ],
+    "value": "The TV room downstairs; also 'the snug'."
+  }
+}

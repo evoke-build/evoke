@@ -1,0 +1,19 @@
+[package]
+name                 = "evoke-core"
+description          = "The rules, pure: parse, merge, compile, propose, read, gate, diff"
+version.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+repository.workspace = true
+publish.workspace    = true
+
+[lints]
+workspace = true
+
+[dependencies]
+indexmap.workspace              = true
+serde.workspace                 = true
+serde_json.workspace            = true
+sha2.workspace                  = true
+toml_edit.workspace             = true
+unicode-normalization.workspace = true

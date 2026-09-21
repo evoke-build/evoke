@@ -1,0 +1,7 @@
+adapter = "replay"
+
+[reflexes]
+lights = "./lights"
+
+[config.lights]
+bridge = "10.0.0.2"

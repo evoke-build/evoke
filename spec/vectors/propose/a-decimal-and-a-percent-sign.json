@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "dim the den to 12.5%"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 15,
+        "end": 20,
+        "text": "12.5%"
+      },
+      "value": {
+        "type": "number",
+        "value": 12.5
+      }
+    }
+  ]
+}

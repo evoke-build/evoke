@@ -1,0 +1,8 @@
+adapter = "replay"
+
+[reflexes]
+lights = "radhi/home/lights"
+
+[config.lights]
+bridge = "10.0.0.2"
+token  = { env = "HUE_TOKEN" }

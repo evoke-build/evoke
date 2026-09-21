@@ -1,0 +1,84 @@
+{
+  "digest": "h1:4c41dc4c9bc9cf5c6a5ee20d3baab92572b00178d95c9d232991e5842b0237bb",
+  "active": {
+    "power": {
+      "effect": "destructive",
+      "run": "power.mts",
+      "confirm": "Really {action} now?",
+      "args": {
+        "action": {
+          "ask": "Sleep, restart or shut down?",
+          "options": {
+            "sleep": "Suspend; wakes on the lid or a key.",
+            "restart": "Reboot.",
+            "shutdown": "Power off."
+          },
+          "optional": false,
+          "was": []
+        }
+      },
+      "config": {},
+      "tags": [
+        "power"
+      ]
+    }
+  },
+  "inactive": {},
+  "slots": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "power": {
+          "what": "Sleep, restart or shut down the laptop.\nApps are asked to quit first; unsaved work can block it or be lost.",
+          "not_for": [
+            "locking the screen",
+            "turning the display off",
+            "keeping the laptop awake"
+          ],
+          "examples": [
+            "put the laptop to sleep",
+            "restart the computer",
+            "shut down"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "fits.power": {
+      "type": "yesno",
+      "ask": "Does `power` do the specific thing the request asks for?",
+      "yes": "Sleep, restart or shut down the laptop.\nApps are asked to quit first; unsaved work can block it or be lost.",
+      "no": "Something else, such as: locking the screen; turning the display off; keeping the laptop awake."
+    },
+    "power.action": {
+      "type": "choice",
+      "ask": "Sleep, restart or shut down?",
+      "options": {
+        "sleep": {
+          "what": "Suspend; wakes on the lid or a key.",
+          "examples": [
+            "put the laptop to sleep"
+          ]
+        },
+        "restart": {
+          "what": "Reboot.",
+          "examples": [
+            "restart the computer"
+          ]
+        },
+        "shutdown": {
+          "what": "Power off.",
+          "examples": [
+            "shut down"
+          ]
+        },
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    }
+  },
+  "values": {},
+  "deadline": 30000
+}

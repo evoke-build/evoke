@@ -1,0 +1,194 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "lock"
+      },
+      "toml": "lock = 2\ncolour = 1\n\n[adapter]\nname = \"replay\"\n\n[reflexes.lights]\nref    = \"./lights\"\ncommit = \"abc\"\nh1     = \"abc\"\neffect = \"loud\"\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "at": {
+          "file": {
+            "type": "lock"
+          },
+          "line": 1,
+          "column": 1
+        },
+        "message": "lock must be 1, not 2",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "lock"
+            },
+            "line": 1,
+            "column": 1
+          }
+        }
+      },
+      {
+        "at": {
+          "file": {
+            "type": "lock"
+          },
+          "line": 1,
+          "column": 1
+        },
+        "message": "evoke is required",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "lock"
+            },
+            "line": 1,
+            "column": 1
+          }
+        }
+      },
+      {
+        "at": {
+          "file": {
+            "type": "lock"
+          },
+          "line": 2,
+          "column": 1
+        },
+        "message": "colour is not a key of evoke.lock: lock, evoke, adapter, reflexes",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "lock"
+            },
+            "line": 2,
+            "column": 1
+          }
+        }
+      },
+      {
+        "at": {
+          "file": {
+            "type": "lock"
+          },
+          "line": 4,
+          "column": 1
+        },
+        "message": "adapter.id is required",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "lock"
+            },
+            "line": 4,
+            "column": 1
+          }
+        }
+      },
+      {
+        "at": {
+          "file": {
+            "type": "lock"
+          },
+          "line": 7,
+          "column": 1
+        },
+        "message": "reflexes.lights.tag is required",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "lock"
+            },
+            "line": 7,
+            "column": 1
+          }
+        }
+      },
+      {
+        "at": {
+          "file": {
+            "type": "lock"
+          },
+          "line": 8,
+          "column": 1
+        },
+        "message": "reflexes.lights.ref: \"./lights\" is local; a ref names a repository",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "lock"
+            },
+            "line": 8,
+            "column": 1
+          }
+        }
+      },
+      {
+        "at": {
+          "file": {
+            "type": "lock"
+          },
+          "line": 9,
+          "column": 1
+        },
+        "message": "reflexes.lights.commit: \"abc\" is not a commit: 40 or 64 lowercase hex",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "lock"
+            },
+            "line": 9,
+            "column": 1
+          }
+        }
+      },
+      {
+        "at": {
+          "file": {
+            "type": "lock"
+          },
+          "line": 10,
+          "column": 1
+        },
+        "message": "reflexes.lights.h1: \"abc\" is not a digest: h1:<64 hex>",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "lock"
+            },
+            "line": 10,
+            "column": 1
+          }
+        }
+      },
+      {
+        "at": {
+          "file": {
+            "type": "lock"
+          },
+          "line": 11,
+          "column": 1
+        },
+        "message": "reflexes.lights.effect must be read, write or destructive",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "lock"
+            },
+            "line": 11,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "input": {
+    "lock": {
+      "evoke": "0.1.0",
+      "adapter": {
+        "name": "jev",
+        "id": "jev-1.13.0"
+      },
+      "reflexes": {
+        "timer": {
+          "reference": {
+            "repo": {
+              "type": "github",
+              "owner": "radhi",
+              "name": "timer"
+            }
+          },
+          "tag": "1.0.1",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "h1": "h1:0000000000000000000000000000000000000000000000000000000000000000",
+          "effect": "write"
+        },
+        "lamps": {
+          "reference": {
+            "repo": {
+              "type": "url",
+              "url": "https://example.com/r.git"
+            },
+            "dir": "lights"
+          },
+          "tag": "2.0.0",
+          "commit": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "h1": "h1:1111111111111111111111111111111111111111111111111111111111111111",
+          "effect": "destructive"
+        }
+      }
+    }
+  },
+  "expect": "# Written by evoke; evoke sync realises it on another machine and never changes it.\nlock  = 1\nevoke = \"0.1.0\"\n\n[adapter]\nname = \"jev\"\nid   = \"jev-1.13.0\"\n\n[reflexes.timer]\nref    = \"radhi/timer\"\ntag    = \"1.0.1\"\ncommit = \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"\nh1     = \"h1:0000000000000000000000000000000000000000000000000000000000000000\"\neffect = \"write\"\n\n[reflexes.lamps]\nref    = \"https://example.com/r.git#lights\"\ntag    = \"2.0.0\"\ncommit = \"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"\nh1     = \"h1:1111111111111111111111111111111111111111111111111111111111111111\"\neffect = \"destructive\"\n"
+}

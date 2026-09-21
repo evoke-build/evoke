@@ -1,0 +1,93 @@
+{
+  "input": {
+    "args": {
+      "state": {
+        "type": "option",
+        "key": "off"
+      },
+      "room": {
+        "type": "word",
+        "word": "den"
+      },
+      "office": {
+        "type": "word",
+        "word": "office",
+        "value": "group-7"
+      },
+      "level": {
+        "type": "pick",
+        "span": {
+          "start": 18,
+          "end": 20,
+          "text": "40"
+        },
+        "value": {
+          "type": "number",
+          "value": 40
+        }
+      },
+      "duration": {
+        "type": "pick",
+        "span": {
+          "start": 10,
+          "end": 20,
+          "text": "10 minutes"
+        },
+        "value": {
+          "type": "duration",
+          "value": 600
+        }
+      },
+      "to": {
+        "type": "pick",
+        "span": {
+          "start": 5,
+          "end": 20,
+          "text": "ada@example.com"
+        },
+        "value": {
+          "type": "email",
+          "value": "ada@example.com"
+        }
+      },
+      "site": {
+        "type": "pick",
+        "span": {
+          "start": 5,
+          "end": 24,
+          "text": "https://example.com"
+        },
+        "value": {
+          "type": "url",
+          "value": "https://example.com"
+        }
+      },
+      "label": {
+        "type": "pick",
+        "span": {
+          "start": 29,
+          "end": 33,
+          "text": "eggs"
+        },
+        "value": {
+          "type": "quoted",
+          "value": "eggs"
+        }
+      },
+      "loud": {
+        "type": "flag"
+      }
+    }
+  },
+  "expect": {
+    "state": "off",
+    "room": "den",
+    "office": "group-7",
+    "level": 40,
+    "duration": 600,
+    "to": "ada@example.com",
+    "site": "https://example.com",
+    "label": "eggs",
+    "loud": true
+  }
+}

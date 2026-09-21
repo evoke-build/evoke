@@ -1,0 +1,41 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "request": {
+      "$ref": "fixtures/request-den-off.json"
+    },
+    "raw": {
+      "route": {
+        "lights": 1.2,
+        "timer": -0.2,
+        "none": 0.0
+      },
+      "fits.lights": {
+        "yes": 0.7
+      },
+      "lights.room": {
+        "den": 0.85,
+        "office": 0.05,
+        "unstated": 0.1
+      },
+      "lights.state": {
+        "on": 0.05,
+        "off": 0.88,
+        "dim": 0.05,
+        "unstated": 0.02
+      },
+      "fits.timer": {
+        "yes": 0.1
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "type": "malformed",
+      "question": "route",
+      "message": "1.2 is not a probability"
+    }
+  }
+}

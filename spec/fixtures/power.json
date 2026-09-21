@@ -1,0 +1,45 @@
+{
+  "description": "Sleep, restart or shut down the laptop.\nApps are asked to quit first; unsaved work can block it or be lost.",
+  "not_for": [
+    "locking the screen",
+    "turning the display off",
+    "keeping the laptop awake"
+  ],
+  "tags": [
+    "power"
+  ],
+  "effect": "destructive",
+  "confirm": "Really {action} now?",
+  "run": "power.mts",
+  "config": {},
+  "args": {
+    "action": {
+      "ask": "Sleep, restart or shut down?",
+      "options": {
+        "sleep": "Suspend; wakes on the lid or a key.",
+        "restart": "Reboot.",
+        "shutdown": "Power off."
+      },
+      "optional": false,
+      "was": []
+    }
+  },
+  "examples": {
+    "put the laptop to sleep": {
+      "action": "sleep"
+    },
+    "restart the computer": {
+      "action": "restart"
+    },
+    "shut down": {
+      "action": "shutdown"
+    }
+  },
+  "tests": {
+    "reboot": {
+      "action": "restart"
+    },
+    "lock the screen": false
+  },
+  "unknown": []
+}

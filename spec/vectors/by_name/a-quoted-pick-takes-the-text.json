@@ -1,0 +1,48 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "written": {
+      "reflex": "timer",
+      "args": {
+        "duration": "10 minutes",
+        "label": "eggs"
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "outcome": "run",
+      "reflex": "timer",
+      "args": {
+        "duration": {
+          "type": "pick",
+          "span": {
+            "start": 0,
+            "end": 10,
+            "text": "10 minutes"
+          },
+          "value": {
+            "type": "duration",
+            "value": 600
+          }
+        },
+        "label": {
+          "type": "pick",
+          "span": {
+            "start": 0,
+            "end": 4,
+            "text": "eggs"
+          },
+          "value": {
+            "type": "quoted",
+            "value": "eggs"
+          }
+        }
+      },
+      "call": "timer duration=\"10 minutes\" label=\"eggs\"",
+      "effect": "write"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "input": {
+    "text": "ssh://example.com/r"
+  },
+  "expect": {
+    "ok": [
+      {
+        "repo": {
+          "type": "url",
+          "url": "ssh://example.com/r"
+        }
+      },
+      null
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "overlay",
+        "name": "lights"
+      },
+      "toml": "[args.colour]\nask = \"Which colour?\"\n\n[examples]\n\"kill the lights\" = { state = \"off\", colour = \"warm\" }\n"
+    },
+    "of": {
+      "$ref": "fixtures/lights.json"
+    }
+  },
+  "expect": {
+    "ok": {
+      "args": {},
+      "examples": {
+        "kill the lights": {
+          "state": "off"
+        }
+      },
+      "tests": {},
+      "renamed": [],
+      "orphaned": [
+        [
+          "args",
+          "colour"
+        ],
+        [
+          "examples",
+          "kill the lights",
+          "colour"
+        ]
+      ]
+    }
+  }
+}

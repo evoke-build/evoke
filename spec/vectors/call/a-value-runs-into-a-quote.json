@@ -1,0 +1,13 @@
+{
+  "input": {
+    "text": "lights room=den\"x"
+  },
+  "expect": {
+    "err": {
+      "message": "room: a value is bare text or a JSON string, then a space",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

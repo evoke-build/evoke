@@ -1,0 +1,25 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "written": {
+      "reflex": "lights",
+      "args": {
+        "room": "den",
+        "state": "off",
+        "colour": "blue"
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "reflex": "lights",
+      "message": "lights has no argument colour",
+      "fix": {
+        "type": "show",
+        "reflex": "lights"
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "set a timer for 10 minutes"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 16,
+        "end": 26,
+        "text": "10 minutes"
+      },
+      "value": {
+        "type": "duration",
+        "value": 600
+      }
+    }
+  ]
+}

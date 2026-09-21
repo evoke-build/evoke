@@ -1,0 +1,11 @@
+{
+  "input": {
+    "text": "lock"
+  },
+  "expect": {
+    "ok": {
+      "reflex": "lock",
+      "args": {}
+    }
+  }
+}

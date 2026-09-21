@@ -1,0 +1,36 @@
+{
+  "input": {
+    "case": {
+      "reflex": "screenshot",
+      "utterance": {
+        "text": "grab the screen to the clipboard",
+        "id": "grab the screen to the clipboard"
+      },
+      "expect": {
+        "area": "screen",
+        "clipboard": true
+      },
+      "from": "examples"
+    },
+    "decision": {
+      "outcome": "run",
+      "reflex": "screenshot",
+      "args": {
+        "area": {
+          "type": "option",
+          "key": "screen"
+        }
+      },
+      "call": "screenshot area=\"screen\"",
+      "effect": "write"
+    }
+  },
+  "expect": {
+    "type": "fail",
+    "mismatch": {
+      "type": "arg",
+      "arg": "clipboard",
+      "read": false
+    }
+  }
+}

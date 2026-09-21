@@ -1,0 +1,13 @@
+{
+  "input": {
+    "text": "Lights room=den"
+  },
+  "expect": {
+    "err": {
+      "message": "\"Lights\" is not a name: [a-z][a-z0-9_]*",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

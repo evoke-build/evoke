@@ -1,0 +1,26 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-screenshot.json"
+    },
+    "written": {
+      "reflex": "screenshot",
+      "args": {
+        "clipboard": null
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "outcome": "run",
+      "reflex": "screenshot",
+      "args": {
+        "clipboard": {
+          "type": "flag"
+        }
+      },
+      "call": "screenshot clipboard",
+      "effect": "write"
+    }
+  }
+}

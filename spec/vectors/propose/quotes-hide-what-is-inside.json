@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "note \"call ana@example.com in 5 minutes\""
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 6,
+        "end": 39,
+        "text": "call ana@example.com in 5 minutes"
+      },
+      "value": {
+        "type": "quoted",
+        "value": "call ana@example.com in 5 minutes"
+      }
+    }
+  ]
+}

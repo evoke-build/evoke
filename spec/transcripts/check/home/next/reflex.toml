@@ -1,0 +1,39 @@
+reflex = 1
+
+description = """
+Control the lights of one room: on, off or dimmed.
+Ceiling and lamp lights; scenes live elsewhere."""
+not_for = ["colour scenes and schedules", "asking whether a light is on"]
+tags = ["home", "lighting"]
+effect = "write"
+confirm = "Set the {room} lights {power}?"
+run = "lights.mts"
+
+[config]
+bridge = "Hue bridge address"
+token  = { about = "Hue API key", secret = true }
+
+[args.room]
+ask   = "Which room?"
+vocab = "rooms"
+
+[args.power]
+ask         = "What should the lights do?"
+options.on  = "Switch on."
+options.off = "Switch off."
+options.dim = "Lower the brightness; the lights stay on."
+was         = ["state"]
+
+[args.brightness]
+ask      = "How bright, in percent?"
+pick     = "number"
+range    = [1, 100]
+optional = true
+
+[examples]
+"turn on the kitchen lights"   = { power = "on" }
+"dim the office to 30 percent" = { power = "dim", brightness = "30 percent" }
+
+[tests]
+"make it darker in here" = { power = "dim" }
+"light a candle"         = false

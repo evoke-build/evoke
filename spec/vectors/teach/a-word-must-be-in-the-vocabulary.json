@@ -1,0 +1,28 @@
+{
+  "input": {
+    "utterance": {
+      "text": "lights off in the attic",
+      "id": "lights off in the attic"
+    },
+    "lesson": {
+      "reflex": "lights",
+      "record": {
+        "state": "off",
+        "room": "attic"
+      }
+    },
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    }
+  },
+  "expect": {
+    "err": {
+      "reflex": "lights",
+      "message": "\"attic\" is not in vocabulary \"rooms\"",
+      "fix": {
+        "type": "vocab_add",
+        "vocab": "rooms"
+      }
+    }
+  }
+}

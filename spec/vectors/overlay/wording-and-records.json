@@ -1,0 +1,45 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "overlay",
+        "name": "lights"
+      },
+      "toml": "description = \"Turn the lights in one room on or off, or dim them; also lamps.\"\nnot_for = [\"colour scenes\"]\neffect = \"destructive\"\nconfirm = \"Lights in the {room}: {state}?\"\n\n[args.state]\nask = \"On, off, or dimmed?\"\noptions.dim = \"Dim them.\"\n\n[examples]\n\"kill the lights\" = { state = \"off\" }\n\"make it darker in here\" = { state = \"dim\" }\n\n[tests]\n\"turn on the kitchen lights\" = false\n"
+    },
+    "of": {
+      "$ref": "fixtures/lights.json"
+    }
+  },
+  "expect": {
+    "ok": {
+      "description": "Turn the lights in one room on or off, or dim them; also lamps.",
+      "not_for": [
+        "colour scenes"
+      ],
+      "effect": "destructive",
+      "confirm": "Lights in the {room}: {state}?",
+      "args": {
+        "state": {
+          "ask": "On, off, or dimmed?",
+          "options": {
+            "dim": "Dim them."
+          }
+        }
+      },
+      "examples": {
+        "kill the lights": {
+          "state": "off"
+        },
+        "make it darker in here": {
+          "state": "dim"
+        }
+      },
+      "tests": {
+        "turn on the kitchen lights": false
+      },
+      "renamed": [],
+      "orphaned": []
+    }
+  }
+}

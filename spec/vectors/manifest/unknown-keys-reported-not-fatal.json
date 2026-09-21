@@ -1,0 +1,46 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "lights"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Turn the lights in one room on, off, or dim them.\"\nconfirm = \"Set the lights {state}?\"\nrun = \"lights.mts\"\ncolour = \"warm\"\n\n[args.state]\nask = \"What should the lights do?\"\noptions.on = \"Switch on.\"\noptions.off = \"Switch off.\"\noptions.dim = \"Lower the brightness without switching off.\"\ndefault = \"on\"\n"
+    }
+  },
+  "expect": {
+    "ok": {
+      "description": "Turn the lights in one room on, off, or dim them.",
+      "not_for": [],
+      "tags": [],
+      "effect": "destructive",
+      "confirm": "Set the lights {state}?",
+      "run": "lights.mts",
+      "config": {},
+      "args": {
+        "state": {
+          "ask": "What should the lights do?",
+          "options": {
+            "on": "Switch on.",
+            "off": "Switch off.",
+            "dim": "Lower the brightness without switching off."
+          },
+          "optional": false,
+          "was": []
+        }
+      },
+      "examples": {},
+      "tests": {},
+      "unknown": [
+        [
+          "colour"
+        ],
+        [
+          "args",
+          "state",
+          "default"
+        ]
+      ]
+    }
+  }
+}

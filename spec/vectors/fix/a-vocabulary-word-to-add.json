@@ -1,0 +1,9 @@
+{
+  "input": {
+    "fix": {
+      "type": "vocab_add",
+      "vocab": "rooms"
+    }
+  },
+  "expect": "evoke vocab rooms add <word> \"<meaning>\""
+}

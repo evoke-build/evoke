@@ -1,0 +1,14 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md).
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.6
+write = 0.8
+
+[answers."kill the lights in the den"]
+route          = { lights = 0.93, none = 0.07 }
+"fits.lights"  = { yes = 0.7 }
+"lights.room"  = { den = 0.95, office = 0.02, unstated = 0.03 }
+"lights.power" = { off = 0.96, on = 0.02, dim = 0.01, unstated = 0.01 }

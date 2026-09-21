@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "timer 10m"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 6,
+        "end": 9,
+        "text": "10m"
+      },
+      "value": {
+        "type": "duration",
+        "value": 600
+      }
+    }
+  ]
+}

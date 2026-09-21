@@ -1,0 +1,20 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "lock"
+      },
+      "toml": "lock = 1\nevoke = \"0.1.0\"\n\n[adapter]\nname = \"jev\"\nid = \"jev-1.13.0\"\n"
+    }
+  },
+  "expect": {
+    "ok": {
+      "evoke": "0.1.0",
+      "adapter": {
+        "name": "jev",
+        "id": "jev-1.13.0"
+      },
+      "reflexes": {}
+    }
+  }
+}

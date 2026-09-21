@@ -1,0 +1,44 @@
+{
+  "input": {
+    "case": {
+      "reflex": "lights",
+      "utterance": {
+        "text": "turn on the kitchen lights",
+        "id": "turn on the kitchen lights"
+      },
+      "expect": {
+        "state": "on"
+      },
+      "from": "examples"
+    },
+    "decision": {
+      "outcome": "abstain",
+      "contenders": [
+        {
+          "reflex": "lights",
+          "route": 0.1,
+          "fits": 0.05
+        },
+        {
+          "reflex": "timer",
+          "route": 0.05,
+          "fits": 0.05
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "none",
+          "p": 0.85
+        }
+      ]
+    }
+  },
+  "expect": {
+    "type": "fail",
+    "mismatch": {
+      "type": "route",
+      "read": null
+    }
+  }
+}

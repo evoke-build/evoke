@@ -1,0 +1,58 @@
+{
+  "input": {
+    "chosen": {
+      "reflex": "say",
+      "args": {
+        "text": {
+          "type": "pick",
+          "span": {
+            "start": 5,
+            "end": 10,
+            "text": "hello"
+          },
+          "value": {
+            "type": "quoted",
+            "value": "hello"
+          }
+        }
+      },
+      "call": "say text=\"hello\"",
+      "effect": "read"
+    },
+    "active": {
+      "effect": "read",
+      "run": [
+        "say",
+        "-v",
+        "{voice}",
+        "{text}"
+      ],
+      "confirm": "Say {text}?",
+      "args": {
+        "text": {
+          "ask": "What should be said?",
+          "pick": "quoted",
+          "optional": false,
+          "was": []
+        },
+        "voice": {
+          "ask": "Which voice?",
+          "vocab": "voices",
+          "optional": true,
+          "was": []
+        }
+      },
+      "config": {},
+      "tags": [
+        "sound"
+      ]
+    }
+  },
+  "expect": {
+    "ok": [
+      "say",
+      "-v",
+      "hello"
+    ]
+  }
+}

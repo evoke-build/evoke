@@ -1,0 +1,13 @@
+{
+  "input": {
+    "text": "example.com:radhi/home"
+  },
+  "expect": {
+    "err": {
+      "message": "\"example.com:radhi/home\" is scp-like; write ssh://<host>/<path>",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "request": {
+      "$ref": "fixtures/request-den-off.json"
+    },
+    "raw": {
+      "route": {
+        "lights": 0.91,
+        "timer": 0.03,
+        "none": 0.06
+      },
+      "fits.lights": {
+        "yes": 0.7
+      },
+      "lights.room": {
+        "den": 0.85,
+        "office": 0.05,
+        "unstated": 0.1
+      },
+      "lights.state": {
+        "on": 0.05,
+        "off": 0.88,
+        "dim": 0.05,
+        "unstated": 0.02
+      },
+      "fits.timer": {
+        "yes": 0.1
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "ranking": [
+        {
+          "reflex": "lights",
+          "route": 0.91,
+          "fits": 0.7
+        },
+        {
+          "reflex": "timer",
+          "route": 0.03,
+          "fits": 0.1
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "lights",
+          "p": 0.91
+        },
+        {
+          "question": "lights.room",
+          "top": "den",
+          "p": 0.85
+        },
+        {
+          "question": "lights.state",
+          "top": "off",
+          "p": 0.88
+        }
+      ],
+      "winner": {
+        "reflex": "lights",
+        "args": {
+          "room": {
+            "type": "word",
+            "word": "den"
+          },
+          "state": {
+            "type": "option",
+            "key": "off"
+          }
+        },
+        "missing": [],
+        "unconsumed": [],
+        "runner_up": {
+          "reflex": "timer",
+          "route": 0.03,
+          "fits": 0.1
+        }
+      }
+    }
+  }
+}

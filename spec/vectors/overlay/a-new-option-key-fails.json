@@ -1,0 +1,41 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "overlay",
+        "name": "lights"
+      },
+      "toml": "[args.state]\noptions.bright = \"Full brightness.\"\n"
+    },
+    "of": {
+      "$ref": "fixtures/lights.json"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "lights",
+        "at": {
+          "file": {
+            "type": "overlay",
+            "name": "lights"
+          },
+          "line": 2,
+          "column": 1
+        },
+        "message": "args.state.options.bright is new; an overlay rewords existing options",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "overlay",
+              "name": "lights"
+            },
+            "line": 2,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

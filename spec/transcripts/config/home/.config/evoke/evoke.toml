@@ -1,0 +1,6 @@
+adapter = "replay"
+
+[reflexes]
+lights = "./lights"
+timer  = "./timer"
+volume = "./volume"

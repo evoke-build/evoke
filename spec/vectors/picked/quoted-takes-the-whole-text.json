@@ -1,0 +1,18 @@
+{
+  "input": {
+    "text": "eggs",
+    "recognizer": "quoted"
+  },
+  "expect": {
+    "type": "pick",
+    "span": {
+      "start": 0,
+      "end": 4,
+      "text": "eggs"
+    },
+    "value": {
+      "type": "quoted",
+      "value": "eggs"
+    }
+  }
+}

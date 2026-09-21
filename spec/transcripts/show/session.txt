@@ -1,0 +1,42 @@
+$ evoke show
+  lights  ./lights  write  runs lights.mts
+  timer   ./timer   write  runs timer.mts
+  volume  ./volume  write  runs volume.mts
+$ evoke show lights
+  description = "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only."
+  not_for = ["colour scenes and schedules", "asking whether a light is on"]
+  tags = ["home", "lighting"]
+  effect = "write"
+  confirm = "Set the {room} lights {state}?"
+  run = "lights.mts"
+
+  [config]
+  bridge = "Hue bridge address"
+
+  [args.room]
+  ask = "Which room?"
+  vocab = "rooms"
+
+  [args.state]
++ ask = "On, off or dim?"
+  options.on = "Switch on."
+  options.off = "Switch off."
+  options.dim = "Lower the brightness without switching off."
+
+  [args.brightness]
+  ask = "How bright, in percent?"
+  pick = "number"
+  range = [1, 100]
+  optional = true
+
+  [examples]
+  "turn on the kitchen lights" = { state = "on" }
+  "dim the office to 30 percent" = { state = "dim", brightness = "30 percent" }
++ "kill the lights" = { state = "off" }
+
+  [tests]
+  "make it darker in here" = { state = "dim" }
+  "light a candle" = false
+$ evoke show lamps
+  lamps: lamps is not installed  →  evoke show
+[3]

@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "wait 1.5 hours"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 5,
+        "end": 14,
+        "text": "1.5 hours"
+      },
+      "value": {
+        "type": "duration",
+        "value": 5400
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "input": {
+    "text": "timer label=\"eggs"
+  },
+  "expect": {
+    "err": {
+      "message": "label: the string is not closed",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

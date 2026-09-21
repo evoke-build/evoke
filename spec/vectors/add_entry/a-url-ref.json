@@ -1,0 +1,26 @@
+{
+  "input": {
+    "name": "lights",
+    "location": {
+      "type": "remote",
+      "reference": {
+        "repo": {
+          "type": "url",
+          "url": "https://example.com/r.git"
+        },
+        "dir": "lights"
+      }
+    }
+  },
+  "expect": {
+    "type": "set",
+    "file": {
+      "type": "project"
+    },
+    "path": [
+      "reflexes",
+      "lights"
+    ],
+    "value": "https://example.com/r.git#lights"
+  }
+}

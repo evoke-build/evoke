@@ -1,0 +1,19 @@
+{
+  "input": {
+    "set": {
+      "$ref": "fixtures/installed.json"
+    },
+    "limits": {
+      "options": 2
+    }
+  },
+  "expect": {
+    "err": {
+      "message": "route has 3 options; the adapter takes at most 2",
+      "fix": {
+        "type": "remove",
+        "reflex": "timer"
+      }
+    }
+  }
+}

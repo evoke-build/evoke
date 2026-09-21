@@ -1,0 +1,33 @@
+reflex = 1
+
+description = """
+Capture the screen, a window or a selection.
+Saved to the desktop as PNG, or copied to the clipboard."""
+
+not_for = ["recording the screen", "photos from the camera"]
+tags    = ["screen"]
+effect  = "write"
+confirm = "Take a screenshot?"
+run     = "screenshot.mts"
+
+[args.area]
+ask               = "The whole screen, a window, or a selection?"
+options.screen    = "The whole screen."
+options.window    = "One window, chosen by clicking it."
+options.selection = "A rectangle you drag out."
+optional          = true
+
+[args.clipboard]
+ask  = "To the clipboard instead of a file?"
+flag = true
+
+[examples]
+"take a screenshot"                        = { area = false }
+"screenshot this window"                   = { area = "window" }
+"grab part of the screen to the clipboard" = { area = "selection", clipboard = true }
+
+[tests]
+"snap the whole screen"              = { area = "screen" }
+"screenshot a selection"             = { area = "selection" }
+"copy a screenshot to the clipboard" = { area = false, clipboard = true }
+"record my screen"                   = false

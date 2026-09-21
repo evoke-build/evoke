@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "email ana@example.com the link https://example.com/report.pdf."
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 6,
+        "end": 21,
+        "text": "ana@example.com"
+      },
+      "value": {
+        "type": "email",
+        "value": "ana@example.com"
+      }
+    },
+    {
+      "span": {
+        "start": 31,
+        "end": 61,
+        "text": "https://example.com/report.pdf"
+      },
+      "value": {
+        "type": "url",
+        "value": "https://example.com/report.pdf"
+      }
+    }
+  ]
+}
