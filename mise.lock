@@ -201,3 +201,14 @@ url_api = "https://api.github.com/repos/tamasfe/taplo/releases/assets/257323116"
 [tools.taplo."platforms.windows-x64"]
 url = "https://github.com/tamasfe/taplo/releases/download/0.10.0/taplo-windows-x86_64.zip"
 url_api = "https://api.github.com/repos/tamasfe/taplo/releases/assets/257323062"
+
+[[tools."ubi:rust-lang/mdBook"]]
+version = "0.5.4"
+backend = "ubi:rust-lang/mdBook"
+specifiers = ["0.5.4"]
+
+[tools."ubi:rust-lang/mdBook".options]
+exe = "mdbook"
+
+[tools."ubi:rust-lang/mdBook"."platforms.linux-arm64-mdbook-mdbook"]
+checksum = "blake3:6d9f6e08d50c3bc6aab297c780c8fa709f43aafdeb672dfa98fdcbb19148fcee"

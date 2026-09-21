@@ -16,35 +16,52 @@ A reflex whose body is a program with arguments — an *argv* reflex — needs n
 
 ## The binary
 
-Binaries on GitHub releases, a Homebrew tap and the mise registry come with release 0.1. Until then, build from
-source with a current Rust toolchain:
+With [Homebrew](https://brew.sh), on macOS or Linux:
 
 ```bash
-git clone https://github.com/evoke-build/evoke && cd evoke && cargo install --path crates/evoke
+brew install evoke-build/tap/evoke
 ```
 
-Then:
+With the script, which fetches the release built for your machine, checks it against the release's `SHA256SUMS`
+and puts `evoke` in `~/.local/bin` — `EVOKE_INSTALL` names another directory, `EVOKE_VERSION` picks a version:
 
 ```bash
-evoke --version
+curl -fsSL https://evoke.build/install.sh | sh
 ```
+
+With [mise](https://mise.jdx.dev):
+
+```bash
+mise use --global ubi:evoke-build/evoke
+```
+
+From source, with a current Rust toolchain:
+
+```bash
+cargo install --locked --git https://github.com/evoke-build/evoke evoke
+```
+
+Every way ends the same:
+
+```text
+$ evoke --version
+evoke 0.1.0
+```
+
+The archives are on [GitHub releases](https://github.com/evoke-build/evoke/releases): `evoke-<target>.tar.gz` for
+`aarch64-apple-darwin`, `x86_64-apple-darwin`, `aarch64-unknown-linux-musl` and `x86_64-unknown-linux-musl` — the
+Linux binaries static — each holding `evoke`, `LICENSE` and `NOTICE`, with `SHA256SUMS` beside them and a build
+attestation `gh attestation verify <archive> --repo evoke-build/evoke` checks. To update: `brew upgrade evoke`, the
+script again, or `mise upgrade`.
 
 ## The SDK
 
-`@evoke-build/evoke` reaches npm with release 0.1. Until then, build it from the same clone: the core as
-WebAssembly, then the TypeScript.
-
 ```bash
-rustup target add wasm32-unknown-unknown
-cargo build -p evoke-wasm --target wasm32-unknown-unknown --profile wasm
-mkdir -p sdk/runtime
-cp target/wasm32-unknown-unknown/wasm/evoke_wasm.wasm sdk/core.wasm
-cp crates/evoke/runtime/loader.mjs sdk/runtime/loader.mjs
-cd sdk && npm ci && npm run build
+npm install @evoke-build/evoke
 ```
 
-The package needs Node 24 or newer and is ES modules only. The SDK is its own manual section:
-[Getting started](../sdk/getting-started.md).
+The package needs Node 24 or newer and is ES modules only; it carries the core as WebAssembly, so it has no build
+step and no dependencies. The SDK is its own manual section: [Getting started](../sdk/getting-started.md).
 
 ## The key
 

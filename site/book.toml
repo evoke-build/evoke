@@ -1,0 +1,19 @@
+# The manual as a site, rendered by mdBook: `mise run site` copies docs/manual beside a SUMMARY.md made from its
+# README, builds it here, and lays the result under target/site/manual with the landing page and install script.
+[book]
+title       = "The evoke manual"
+description = "Software, by reflex. What evoke does, in the user's words."
+language    = "en"
+src         = "../target/site-src"
+
+[build]
+build-dir      = "../target/site/manual"
+create-missing = false
+
+[output.html]
+git-repository-url = "https://github.com/evoke-build/evoke"
+edit-url-template  = "https://github.com/evoke-build/evoke/edit/main/docs/manual/{path}"
+site-url           = "/manual/"
+no-section-label   = true
+smart-punctuation  = false
+additional-css     = ["manual.css"]

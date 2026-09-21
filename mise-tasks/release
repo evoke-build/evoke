@@ -1,0 +1,25 @@
+#!/bin/sh
+#MISE description="Cut a release: the version into Cargo.toml and sdk/package.json, the changelog dated, one commit, one tag; the push builds it"
+# Usage: mise run release <X.Y.Z>    on a clean main, with what changed written under CHANGELOG.md's Unreleased
+set -eu
+cd "$(dirname "$0")/.."
+
+version=${1:?usage: mise run release <X.Y.Z>}
+fail() { echo "release: $1" >&2; exit 1; }
+[ -z "$(git status --porcelain)" ] || fail "the tree has uncommitted changes; commit them first"
+[ "$(git branch --show-current)" = main ] || fail "a release is cut on main"
+git rev-parse -q --verify "refs/tags/v$version" >/dev/null && fail "v$version is already tagged"
+
+mise run changelog --cut "$version"
+sed -i.bak "s/^\(version *= *\)\"[^\"]*\"/\1\"$version\"/" Cargo.toml && rm Cargo.toml.bak
+cargo update --workspace --offline --quiet
+(cd sdk && npm version "$version" --no-git-tag-version >/dev/null)
+
+git add CHANGELOG.md Cargo.toml Cargo.lock sdk/package.json sdk/package-lock.json
+git commit --quiet --message "chore: release $version"
+git tag --annotate "v$version" --message "evoke $version"
+cat <<DONE
+tagged v$version; to release it:
+  git push --follow-tags origin main
+  mise run publish-reflexes v$version
+DONE

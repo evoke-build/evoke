@@ -6,22 +6,24 @@ lockfile = true
 
 # Exact versions only: bin/dx mise use --pin <tool>@<version>
 [tools]
-cargo-deny = "0.20.2"
-node       = "24.20.0"
-python     = "3.14.7"
-rust       = { version = "1.98.1", components = ["rustfmt", "clippy"], targets = ["wasm32-unknown-unknown"] }
-shellcheck = "0.11.0"
-taplo      = "0.10.0"
+cargo-deny             = "0.20.2"
+node                   = "24.20.0"
+python                 = "3.14.7"
+rust                   = { version = "1.98.1", components = ["rustfmt", "clippy"], targets = ["wasm32-unknown-unknown"] }
+shellcheck             = "0.11.0"
+taplo                  = "0.10.0"
+"ubi:rust-lang/mdBook" = { version = "0.5.4", exe = "mdbook" }
 
 [tasks.lint]
 depends = ["sdk", "reflexes"]
-description = "Lint everything: shell, TOML, the spec's shapes, Rust format and clippy with warnings denied, the wasm32 build of the boundary over the pure crates, the dependency audit, the SDK's and the collection's type checks"
+description = "Lint everything: shell, TOML, the spec's shapes, the manual's links and the site build, Rust format and clippy with warnings denied, the wasm32 build of the boundary over the pure crates, the dependency audit, the SDK's and the collection's type checks"
 env = { RUST_LOG = "warn" }
 run = [
-  "shellcheck bin/* mise-tasks/publish-reflexes",
+  "shellcheck bin/* site/install.sh mise-tasks/formula mise-tasks/package mise-tasks/publish-reflexes mise-tasks/release",
   "taplo fmt --check",
   "taplo check",
   "mise run lint-spec",
+  "mise run site",
   "cargo fmt --all --check",
   "cargo clippy --workspace --all-targets -- -D warnings",
   "cargo clippy -p evoke-wasm --target wasm32-unknown-unknown -- -D warnings",

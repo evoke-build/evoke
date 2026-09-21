@@ -1,0 +1,16 @@
+/* The manual's own touches over mdBook's theme: the brand colour on links, tables that read like the source. */
+:root {
+  --links: #e8792a;
+  --sidebar-active: #e8792a;
+}
+.content main {
+  max-width: 800px;
+}
+table {
+  width: 100%;
+}
+table th,
+table td {
+  text-align: left;
+  vertical-align: top;
+}

@@ -1,0 +1,12 @@
+#!/bin/sh
+#MISE description="Build the CLI for one target and pack it: target/dist/evoke-<target>.tar.gz holding evoke, LICENSE and NOTICE"
+# Usage: mise run package <target>    e.g. aarch64-apple-darwin — installed first: rustup target add <target>
+# The archive is what a release attaches, the install script fetches and the Homebrew formula names.
+set -eu
+cd "$(dirname "$0")/.."
+
+target=${1:?usage: mise run package <target>}
+cargo build --release --locked --target "$target" -p evoke
+mkdir -p target/dist
+tar -czf "target/dist/evoke-$target.tar.gz" -C "target/$target/release" evoke -C "$PWD" LICENSE NOTICE
+echo "target/dist/evoke-$target.tar.gz"

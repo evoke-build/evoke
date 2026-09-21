@@ -20,8 +20,6 @@ Node 24 or newer, ES modules. The package ships three entries, so the main one i
 | `@evoke-build/evoke/jev`        | `jev()`, the first adapter                               |
 | `@evoke-build/evoke/testing`    | `replay()`, the recorded adapter for tests               |
 
-Until release 0.1 reaches npm, [build it from source](../start/install.md#the-sdk).
-
 ## The first hour
 
 One file. A reflex handed as code, a project with nothing on disk, and the whole loop in one call:

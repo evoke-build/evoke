@@ -13,9 +13,14 @@ $ evoke "kill the lights in the den"
 den lights off
 ```
 
-Start with the [manual](docs/manual/README.md): [install](docs/manual/start/install.md), then
-[the first ten minutes](docs/manual/start/first-run.md); [write a reflex](docs/manual/author/first-reflex.md);
-[put decisions in your app](docs/manual/sdk/getting-started.md).
+```bash
+brew install evoke-build/tap/evoke        # or: curl -fsSL https://evoke.build/install.sh | sh
+npm install @evoke-build/evoke            # the SDK
+```
+
+Start with the [manual](docs/manual/README.md), also at [evoke.build](https://evoke.build):
+[install](docs/manual/start/install.md), then [the first ten minutes](docs/manual/start/first-run.md);
+[write a reflex](docs/manual/author/first-reflex.md); [put decisions in your app](docs/manual/sdk/getting-started.md).
 
 ## Repository
 
@@ -26,6 +31,7 @@ Start with the [manual](docs/manual/README.md): [install](docs/manual/start/inst
 | [spec/](spec/README.md)               | The executable spec — schemas, golden vectors, transcripts — and the tests of both hosts            |
 | [reflexes/](reflexes/README.md)       | The first-party collection, published as `evoke-build/reflexes`                                     |
 | [docs/manual/](docs/manual/README.md) | The manual                                                                                          |
+| [site/](site/install.sh)              | evoke.build: the landing page, the install script, and the manual rendered by mdBook                |
 
 ## Developing
 

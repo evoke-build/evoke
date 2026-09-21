@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>evoke — software, by reflex</title>
+  <meta name="description" content="evoke turns a sentence into a call of a small program — a reflex — chosen by a classifier that never generates text, gated by confidence, and run only when the call is safe enough to run.">
+  <meta name="theme-color" content="#ef7f2b">
+  <link rel="icon" href="assets/logo.png">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #ffffff;
+      --fg: #1c1c1c;
+      --muted: #6a6a6a;
+      --accent: #ef7f2b;
+      --panel: #f6f5f3;
+      --line: #e6e4e0;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #141414;
+        --fg: #ececec;
+        --muted: #9a9a9a;
+        --panel: #1e1e1e;
+        --line: #2c2c2c;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+    }
+    main { max-width: 40rem; margin: 0 auto; padding: 5rem 1.25rem 4rem; }
+    header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    header img { width: 64px; height: 64px; }
+    h1 { font-size: 2.25rem; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
+    .lede { font-size: 1.35rem; font-weight: 500; margin: 0 0 0.75rem; }
+    p { margin: 0 0 1.25rem; }
+    h2 { font-size: 1.1rem; font-weight: 600; margin: 2.5rem 0 0.75rem; }
+    pre {
+      margin: 0 0 0.75rem;
+      padding: 0.9rem 1.1rem;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font: 0.92rem/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      overflow-x: auto;
+    }
+    pre .out { color: var(--muted); }
+    .ways { display: grid; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .ways div { display: grid; grid-template-columns: 6rem 1fr; align-items: center; gap: 0.75rem; }
+    .ways span { color: var(--muted); font-size: 0.95rem; }
+    .ways pre { margin: 0; }
+    nav { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.5rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    nav a {
+      padding: 0.55rem 1rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--fg);
+      font-weight: 500;
+    }
+    nav a:hover { text-decoration: none; border-color: var(--accent); }
+    nav a.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    footer { margin-top: 4rem; color: var(--muted); font-size: 0.9rem; }
+    @media (max-width: 480px) {
+      main { padding-top: 3rem; }
+      .ways div { grid-template-columns: 1fr; gap: 0.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <img src="assets/logo.png" alt="">
+      <h1>evoke</h1>
+    </header>
+    <p class="lede">Software, by reflex.</p>
+    <p><code>evoke</code> turns a sentence into a call of a small program — a <em>reflex</em> — chosen by a
+      classifier that never generates text, gated by confidence, and run only when the call is safe enough to run.
+      One tool does three jobs: a CLI you talk to, a package manager that installs reflexes from git, and a
+      TypeScript SDK that puts the same decisions inside your app.</p>
+<pre>$ evoke "kill the lights in the den"
+<span class="out">  lights room="den" state="off"  0.85</span>
+den lights off</pre>
+
+    <h2>Install</h2>
+    <div class="ways">
+      <div><span>Homebrew</span><pre>brew install evoke-build/tap/evoke</pre></div>
+      <div><span>The script</span><pre>curl -fsSL https://evoke.build/install.sh | sh</pre></div>
+      <div><span>The SDK</span><pre>npm install @evoke-build/evoke</pre></div>
+    </div>
+    <p>macOS and Linux; Windows through WSL. Then <a href="manual/start/first-run.html">the first ten minutes</a>:
+      your key, the first-party reflexes, your first lesson.</p>
+
+    <nav>
+      <a class="primary" href="manual/">Read the manual</a>
+      <a href="manual/author/first-reflex.html">Write a reflex</a>
+      <a href="manual/sdk/getting-started.html">Use the SDK</a>
+      <a href="https://github.com/evoke-build/evoke">GitHub</a>
+    </nav>
+
+    <footer>
+      <a href="https://github.com/evoke-build/evoke/blob/main/LICENSE">Apache-2.0</a>; the collection is MIT.
+      The name and the logo are <a href="https://github.com/evoke-build/evoke/blob/main/TRADEMARK.md">trademarks</a>.
+    </footer>
+  </main>
+</body>
+</html>

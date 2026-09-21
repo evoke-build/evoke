@@ -92,5 +92,5 @@ One tool does three jobs: a **CLI** you talk to, a **package manager** that inst
 - Every line that needs something from you ends in the literal command that does it: `  →  evoke trust`.
 - macOS and Linux; Windows through WSL. The [collection](collection.md)'s bodies are macOS's.
 
-`evoke` is [Apache-2.0](../../LICENSE); the collection is MIT. The name and the logo are
-[trademarks](../../TRADEMARK.md).
+`evoke` is [Apache-2.0](https://github.com/evoke-build/evoke/blob/main/LICENSE); the collection is MIT. The name
+and the logo are [trademarks](https://github.com/evoke-build/evoke/blob/main/TRADEMARK.md).

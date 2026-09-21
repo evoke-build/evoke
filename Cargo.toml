@@ -34,6 +34,12 @@ toml_edit             = { version = "0.25.15", default-features = false, feature
 unicode-normalization = "0.1.25"
 ureq                  = { version = "3.4.2", default-features = false, features = ["rustls"] }
 
+# The CLI as released: one unit, link-time optimised, stripped. A panic still unwinds — `main` catches it once.
+[profile.release]
+lto           = true
+codegen-units = 1
+strip         = true
+
 # The SDK's core.wasm: small over fast, one unit, a panic aborting — a trap the loader reports as a bug.
 [profile.wasm]
 inherits      = "release"

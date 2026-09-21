@@ -1,0 +1,125 @@
+# A version tag, vX.Y.Z, becomes a release: the checks CI runs, then the four binaries, the GitHub release with the
+# changelog's section as its notes, the Homebrew formula pushed to the tap, and the SDK published to npm. Each
+# publishing step is skipped when its result already exists, so a run can be repeated after a failure.
+#
+# Needs, once, from the owner: the repository evoke-build/homebrew-tap and the secret HOMEBREW_TAP_TOKEN, a token
+# that may write its contents; on npm, @evoke-build/evoke with this file as its trusted publisher.
+name: Release
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    uses: ./.github/workflows/ci.yml
+
+  build:
+    needs: check
+    strategy:
+      matrix:
+        include:
+          - { target: aarch64-apple-darwin, on: macos-15 }
+          - { target: x86_64-apple-darwin, on: macos-15 }
+          - { target: aarch64-unknown-linux-musl, on: ubuntu-24.04-arm }
+          - { target: x86_64-unknown-linux-musl, on: ubuntu-24.04 }
+    runs-on: ${{ matrix.on }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v4
+        with:
+          cache: true
+      - if: runner.os == 'Linux'
+        run: sudo apt-get install --yes --no-install-recommends musl-tools
+      - run: rustup target add ${{ matrix.target }}
+      - run: mise run package ${{ matrix.target }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: evoke-${{ matrix.target }}
+          path: target/dist/evoke-${{ matrix.target }}.tar.gz
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v4
+        with:
+          cache: true
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+      - name: The binary says what the tag says
+        run: |
+          tar -xzf dist/evoke-x86_64-unknown-linux-musl.tar.gz evoke
+          test "$(./evoke --version)" = "evoke ${GITHUB_REF_NAME#v}"
+      - run: cd dist && sha256sum evoke-*.tar.gz > SHA256SUMS
+      - uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: dist/evoke-*.tar.gz
+      - name: The release, with the changelog's section as its notes
+        run: |
+          mise run changelog "${GITHUB_REF_NAME#v}" > notes.md
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 ||
+            gh release create "$GITHUB_REF_NAME" --title "evoke ${GITHUB_REF_NAME#v}" --notes-file notes.md
+          gh release upload --clobber "$GITHUB_REF_NAME" dist/*
+
+  tap:
+    needs: release
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v4
+        with:
+          cache: true
+      - run: gh release download "$GITHUB_REF_NAME" --pattern SHA256SUMS
+      - name: The formula, pushed to the tap
+        env:
+          TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          test -n "$TOKEN" || { echo "the secret HOMEBREW_TAP_TOKEN is not set" >&2; exit 1; }
+          git clone --depth 1 "https://x-access-token:$TOKEN@github.com/evoke-build/homebrew-tap" tap
+          mkdir -p tap/Formula
+          mise run formula "${GITHUB_REF_NAME#v}" SHA256SUMS > tap/Formula/evoke.rb
+          cd tap
+          git add Formula/evoke.rb
+          git diff --cached --quiet && { echo "the tap already has evoke ${GITHUB_REF_NAME#v}"; exit 0; }
+          git -c user.name=github-actions[bot] -c user.email=41898282+github-actions[bot]@users.noreply.github.com \
+            commit --quiet --message "evoke ${GITHUB_REF_NAME#v}"
+          git push
+
+  npm:
+    needs: release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v4
+        with:
+          cache: true
+      - run: mise run sdk
+      - name: The package, unless this version is on npm
+        working-directory: sdk
+        run: |
+          version=${GITHUB_REF_NAME#v}
+          test "$(node --print 'require("./package.json").version')" = "$version"
+          if [ -n "$(npm view "@evoke-build/evoke@$version" version 2>/dev/null)" ]; then
+            echo "@evoke-build/evoke@$version is already on npm"
+          else
+            npm publish
+          fi

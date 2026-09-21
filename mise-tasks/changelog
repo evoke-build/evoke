@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+#MISE description="Read CHANGELOG.md: print a version's section, or cut the Unreleased section as a version dated today"
+"""Usage: mise run changelog <version>          the section of that version, for a release's notes; none is an error
+          mise run changelog --cut <version>    the Unreleased section becomes `## [<version>] - <today>`, and a new
+                                                empty Unreleased section is opened above it"""
+import datetime, re, sys
+from pathlib import Path
+
+CHANGELOG = Path(__file__).resolve().parent.parent / "CHANGELOG.md"
+HEADING = re.compile(r"^## \[(?P<version>[^\]]+)\](?P<rest>.*)$", re.MULTILINE)
+
+
+def fail(message):
+    print(f"changelog: {message}", file=sys.stderr)
+    sys.exit(1)
+
+
+def sections(text):
+    """(version, body) for each `## [version]` heading, in file order; the body is what follows, up to the next."""
+    found = list(HEADING.finditer(text))
+    return [(m["version"], text[m.end() : found[i + 1].start() if i + 1 < len(found) else len(text)].strip("\n"))
+            for i, m in enumerate(found)]
+
+
+args = sys.argv[1:]
+text = CHANGELOG.read_text()
+if len(args) == 1:
+    version = args[0]
+    body = dict(sections(text)).get(version)
+    if body is None:
+        fail(f"CHANGELOG.md has no section `## [{version}]`")
+    print(body)
+elif len(args) == 2 and args[0] == "--cut":
+    version = args[1]
+    if not re.fullmatch(r"\d+\.\d+\.\d+", version):
+        fail(f"a version is X.Y.Z, not `{version}`")
+    entries = dict(sections(text))
+    if version in entries:
+        fail(f"CHANGELOG.md already has `## [{version}]`")
+    if not entries.get("Unreleased"):
+        fail("the `## [Unreleased]` section is empty; write what changed first")
+    today = datetime.date.today().isoformat()
+    CHANGELOG.write_text(text.replace("## [Unreleased]", f"## [Unreleased]\n\n## [{version}] - {today}", 1))
+    print(f"CHANGELOG.md: [Unreleased] cut as [{version}] - {today}")
+else:
+    fail(__doc__)
