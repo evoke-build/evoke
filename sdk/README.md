@@ -3,8 +3,8 @@
 You invoke a function; you evoke a reflex. A reflex is a small program a classifier selects and calls. The SDK
 loads a project of reflexes, decides what an input asks for, and runs it. The classifier is
 [Jev](https://typesafe.ai), TypeSafe AI's System One model. It answers closed questions with calibrated
-probabilities, and never writes a word. The rules run in `core.wasm`, the same core as the `evoke` CLI. The SDK
-adds files, the network and a process.
+probabilities. The rules run in `core.wasm`, the same core as the `evoke` CLI. The SDK adds files, the network
+and a process.
 
 Six things to learn, in order: `reflex()` · `load()` · `handle()` · a `Decision` · `run()` · `replay()`.
 

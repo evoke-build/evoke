@@ -4,10 +4,11 @@
 
 **Software, by reflex.** Say what you want, and `evoke` runs the small program that does it. The program and its
 arguments are chosen by [Jev](https://typesafe.ai), TypeSafe AI's System One classifier. Jev answers closed
-questions with calibrated probabilities. It never generates a word. A confidence gate decides whether the call
-runs, confirms or asks. What runs is always a *reflex*: a small program someone wrote and you installed from git.
-One tool does three jobs. A CLI you talk to. A package manager that installs reflexes from git. A TypeScript SDK
-that puts the same decisions inside your app. Jev is the first adapter; the design is bound to no engine.
+questions with calibrated probabilities. A confidence gate decides whether the call runs, confirms or asks. What
+runs is always a *reflex*: a recipe someone wrote, and you installed from git. Anyone can write one, share it,
+and improve it. One tool does three jobs. A CLI you talk to. A package manager that installs reflexes from git.
+A TypeScript SDK that puts the same decisions inside your app. Jev is the first adapter; the design is bound to
+no engine.
 
 ```text
 $ evoke "kill the lights in the den"

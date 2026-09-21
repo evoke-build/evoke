@@ -52,7 +52,7 @@ evoke "mute the office lights"
 
 ## What the classifier can and cannot do
 
-It selects. It never writes. An argument's value is one of three things: one of the author's options, one of
+It selects. An argument's value is one of three things: one of the author's options, one of
 your vocabulary words, or a piece of what you typed, taken word for word. That piece can be a number, a duration,
 an email address, a URL, or a quoted phrase, and it is checked against its range. So a sentence can choose a call,
 but it can never invent a value. And what it chooses still passes the gate. That is the shape of every guarantee
