@@ -341,9 +341,8 @@
     <div class="hero">
       <p class="eyebrow">Decided by <a href="#jev">Jev</a>, TypeSafe AI's classifier</p>
       <h1>Software, <em>by reflex.</em></h1>
-      <p class="lede">Say what you want. <strong>evoke</strong> runs the small program that does it — chosen by a
-        classifier that never writes a word, gated by how sure it is, and run only when the call is safe enough to
-        run.</p>
+      <p class="lede">Say what you want. <strong>evoke</strong> runs the small program that does it. A classifier
+        picks the program and never writes a word. It only runs when it is sure enough.</p>
       <div class="cta">
         <a class="button primary" href="manual/start/install.html">Get started</a>
         <a class="button" href="manual/">Read the manual</a>
@@ -419,17 +418,17 @@ Ceiling and lamp lights only."""</span>
           </div>
         </div>
       </div>
-      <p class="caption"><strong>Jev reads the manifest and nothing else about the reflex.</strong> The rooms are
-        yours: a vocabulary the reflex names and you fill, so "which room?" offers your words. The sentence had no
-        room, so it asked; it was not sure of the state, so it confirmed; <code>t</code> taught it — one line into an
-        overlay no update will touch — and the next sentence ran without a question. Every line is what the terminal
-        shows.</p>
+      <p class="caption"><strong>Jev reads the manifest, and nothing else about the reflex.</strong> The rooms are
+        yours. You fill a vocabulary, and "which room?" offers your words. The first sentence named no room, so
+        evoke asked. It was not sure of the state, so it checked. Pressing <code>t</code> taught it: one line went
+        into an overlay, a file no update touches. The next sentence ran without a question. Every line is what the
+        terminal shows.</p>
 
       <div class="stats" aria-label="Four facts">
-        <div class="stat"><b>0 words</b><span>generated, ever. Jev selects; it never writes.</span></div>
-        <div class="stat"><b>1 request</b><span>per decision: the route, every argument, every fit — in one pass.</span></div>
-        <div class="stat"><b>3 effects</b><span>read · write · destructive, each with its own floor for running unasked.</span></div>
-        <div class="stat"><b>30 s</b><span>and it stops. One deadline for the answer and the run; it never guesses.</span></div>
+        <div class="stat"><b>0 words</b><span>generated, ever. Jev picks. It never writes.</span></div>
+        <div class="stat"><b>1 request</b><span>per decision. The route, every argument, every fit, all at once.</span></div>
+        <div class="stat"><b>3 effects</b><span>read, write, destructive. Each has its own bar for running unasked.</span></div>
+        <div class="stat"><b>30 s</b><span>then it stops. One deadline for the answer and the run. It never guesses.</span></div>
       </div>
     </div>
 
@@ -438,18 +437,17 @@ Ceiling and lamp lights only."""</span>
         <div>
           <p class="label">The idea</p>
           <h2>Language as the interface, without the generation.</h2>
-          <p>For forty years software has waited to be operated: a menu, a flag, a form, a click in the right
-            place. The text box promised something else — say it, and it happens — and paid for it with
-            generation: a model writing on your behalf, differently each time, at a price and a pace no one could
-            budget.</p>
-          <p><strong>evoke takes the other path.</strong> It never asks a model to write. It asks a classifier a
-            closed question — which of these programs, which of these values, was this even stated? — and Jev
-            answers each with a calibrated probability, in a fraction of a second, for almost nothing. What runs is
-            always a small program someone wrote and you installed, with arguments that are always one of the
-            author's options, one of your own words, or a span of what you typed.</p>
-          <p>That is a reflex: the shortest path from a sentence to an action, with nothing made up along the way.
-            Wording becomes the interface. Git becomes the registry. Confidence — not a prompt — decides what may
-            run without asking.</p>
+          <p>For forty years, software waited to be operated. A menu. A flag. A form. The right click in the right
+            place. The text box promised something else: say it, and it happens. But it paid with generation. A
+            model writes on your behalf, differently each time, at a price and a speed nobody can plan for.</p>
+          <p><strong>evoke takes the other path.</strong> It never asks a model to write. It asks a classifier
+            closed questions. Which of these programs? Which of these values? Was this even said? Jev answers each
+            one with a probability, in a fraction of a second, for almost nothing. What runs is always a small
+            program someone wrote and you installed. Its arguments are always one of the author's options, one of
+            your own words, or a piece of what you typed.</p>
+          <p>That is a reflex: the shortest path from a sentence to an action, with nothing made up on the way.
+            Wording becomes the interface. Git becomes the registry. Confidence decides what may run without
+            asking. Not a prompt.</p>
         </div>
         <blockquote class="pull">The next layer of software is not a bigger model that writes more. It is small
           programs, described well, chosen by reflex.
@@ -460,18 +458,18 @@ Ceiling and lamp lights only."""</span>
     <section id="how">
       <p class="label">One decision</p>
       <h2>Three steps, and every judgment on the table.</h2>
-      <p class="sub">Every active reflex's manifest becomes questions. Jev answers them all at once; the gate reads
-        the weakest answer; the body runs — or you are asked first. <code>evoke try</code> shows the whole thing.</p>
+      <p class="sub">Every installed reflex's manifest turns into questions. Jev answers them all at once. The gate
+        reads the weakest answer. Then the program runs, or you are asked first. <code>evoke try</code> shows all
+        of it.</p>
       <div class="steps">
-        <div class="step"><i>01 · DECIDE</i><h3>Which reflex, which values</h3><p>One request carries the route,
-          each argument of each reflex — with "unstated" among its options — and whether each reflex fits. Each
-          comes back as a probability.</p></div>
-        <div class="step"><i>02 · GATE</i><h3>The weakest answer rules</h3><p>Confidence is the lowest of them.
-          Against the floor for the winner's effect it settles the outcome: run, confirm, ask, or abstain. A
-          destructive reflex always confirms.</p></div>
-        <div class="step"><i>03 · RUN</i><h3>A small program, a scrubbed room</h3><p>The body runs with its
-          arguments, five environment variables, and a deadline shared with the answer; its one line of text comes
-          back.</p></div>
+        <div class="step"><i>01 · DECIDE</i><h3>Which reflex, which values</h3><p>One request carries every
+          question: the route, each argument of each reflex, and how well each reflex fits. Every answer comes back
+          as a probability.</p></div>
+        <div class="step"><i>02 · GATE</i><h3>The weakest answer rules</h3><p>Confidence is the lowest answer. Each
+          effect has a bar. Over the bar, it runs. Under it, evoke confirms, asks, or gives up. A destructive reflex
+          always confirms.</p></div>
+        <div class="step"><i>03 · RUN</i><h3>A small program, a clean room</h3><p>The program runs with its
+          arguments, five environment variables, and a deadline. It returns one line of text.</p></div>
       </div>
       <div class="panel term">
         <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
@@ -488,9 +486,9 @@ Ceiling and lamp lights only."""</span>
   fits   lights 0.70 · timer 0.05 · volume 0.05
   <span class="name">run</span> · weakest: room <span class="hi">0.85</span></span></pre>
       </div>
-      <p class="caption">Three words changed the outcome. Without a room the weakest answer was the state at 0.58,
-        under the floor for a <code>write</code>, so it asked; with one, the weakest was the room at 0.85, over it,
-        so it ran.</p>
+      <p class="caption">Three words changed the outcome. Without a room, the weakest answer was the state at 0.58.
+        That is under the bar for a <code>write</code>, so it asked. With a room, the weakest was 0.85. Over the
+        bar, so it ran.</p>
     </section>
 
     <section id="jev">
@@ -498,24 +496,24 @@ Ceiling and lamp lights only."""</span>
       <h2>Jev decides.</h2>
       <div class="jev">
         <div>
-          <p><strong>Jev</strong> is <a href="https://typesafe.ai">TypeSafe AI</a>'s System One model: a classifier
-            that returns typed decisions with calibrated probabilities and generates no text. It takes no
-            fine-tuning. Everything it knows about a reflex arrives in the request, from the reflex's own wording —
-            its description, what it is not for, its examples.</p>
-          <p>evoke asks it every question of a decision in one pass and reads the answers as probabilities, never
-            as prose. Where a generating model would have to be trusted, a classifier can be checked: the
-            question was closed, the options were yours, and the number says how sure it was.</p>
-          <p>Jev is the first adapter, not the only possible one. The core names no engine; an adapter is a small
-            mapping from questions to a request and from a response to answers, and a project names the one it
-            uses in a file you own.</p>
+          <p><strong>Jev</strong> is <a href="https://typesafe.ai">TypeSafe AI</a>'s System One model. It is a
+            classifier. It returns typed decisions with calibrated probabilities, and it generates no text. It needs
+            no fine-tuning. Everything it knows about a reflex arrives in the request, from the reflex's own
+            wording: its description, what it is not for, its examples.</p>
+          <p>evoke asks Jev every question of a decision in one go. It reads the answers as probabilities, never as
+            prose. A generating model has to be trusted. A classifier can be checked. The question was closed. The
+            options were yours. The number says how sure it was.</p>
+          <p>Jev is the first adapter, not the only possible one. The core names no engine. An adapter is a small
+            mapping: questions in, a request out; a response in, answers out. Your project names the adapter it
+            uses, in a file you own.</p>
         </div>
         <ul>
-          <li>Closed questions, calibrated answers. <span>Which of these? Was it stated? How well does this fit?</span></li>
-          <li>Nothing generated. <span>A value is an option, one of your words, or a span of your input — never a
+          <li>Closed questions, calibrated answers. <span>Which of these? Was it said? How well does it fit?</span></li>
+          <li>Nothing generated. <span>A value is an option, one of your words, or a piece of your input. Never a
             model's invention.</span></li>
-          <li>Wording is the tuning. <span>Change a description, add an example, and the next decision reads it.
-            No training run, no weights.</span></li>
-          <li>Pluggable. <span>Two question types cross the adapter boundary; anything that answers them can
+          <li>Wording is the tuning. <span>Change a description or add an example. The next decision reads it. No
+            training, no weights.</span></li>
+          <li>Pluggable. <span>Two kinds of question cross the adapter boundary. Anything that answers them can
             decide.</span></li>
           <li>Reproducible in tests. <span>A recorded adapter replays real answers, offline, byte for byte.</span></li>
         </ul>
@@ -525,27 +523,27 @@ Ceiling and lamp lights only."""</span>
     <section id="jobs">
       <p class="label">One tool</p>
       <h2>Three jobs, the same decisions.</h2>
-      <p class="sub">Whether you type it, install it, or ship it inside your application, the rules are one core
-        — Rust in the CLI, the same core as WebAssembly in the SDK.</p>
+      <p class="sub">Type it, install it, or ship it inside your app. The rules are one core: Rust in the CLI, the
+        same core as WebAssembly in the SDK.</p>
       <div class="cards">
         <div class="card">
           <h3>A CLI you talk to</h3>
-          <p>Say what you want. <code>evoke</code> shows the call it chose and its confidence, then runs, confirms,
-            asks for what is missing, or abstains — and every line that needs you ends in the command that does it.
-            A REPL, a pipe, and <code>--json</code> for scripts.</p>
+          <p>Say what you want. <code>evoke</code> shows the call it chose and how sure it is. Then it runs,
+            confirms, asks for what is missing, or gives up. Every line that needs you ends with the command that
+            helps. There is a REPL, a pipe, and <code>--json</code> for scripts.</p>
           <a class="more" href="manual/use/saying-things.html">Saying things →</a>
         </div>
         <div class="card">
           <h3>A package manager</h3>
-          <p>A reflex is a directory in a git repository at a tag. <code>evoke add owner/repo</code> fetches it,
-            lints its wording, pins it by content in <code>evoke.lock</code>, and never runs code to install it.
-            No accounts, no registry service, no build step.</p>
+          <p>A reflex is a folder in a git repository, at a tag. <code>evoke add owner/repo</code> fetches it,
+            checks its wording, and pins it by content in <code>evoke.lock</code>. It never runs code to install.
+            No accounts. No registry service. No build step.</p>
           <a class="more" href="manual/use/installing.html">Installing reflexes →</a>
         </div>
         <div class="card">
           <h3>A TypeScript SDK</h3>
-          <p>The CLI's core inside your app: load a project, decide, run — with a typed decision for every outcome,
-            a vocabulary per tenant, and a recorded adapter for tests that never touch the network.</p>
+          <p>The CLI's core inside your app. Load a project, decide, run. Every outcome is a typed decision. Each
+            tenant gets its own vocabulary. A recorded adapter makes tests that never touch the network.</p>
           <a class="more" href="manual/sdk/getting-started.html">Getting started →</a>
         </div>
       </div>
@@ -556,12 +554,12 @@ Ceiling and lamp lights only."""</span>
         <div class="text">
           <p class="label">Yours to tune</p>
           <h2>Wording is the tuning. Your files are yours.</h2>
-          <p>An overlay is your wording for one reflex, merged over the shipped manifest: it adds and replaces,
-            never deletes, and <strong>no update ever rewrites it</strong>. <code>evoke show</code> prints a reflex
-            as it is used, with <code>+</code> in the gutter of every line that is yours.</p>
-          <p><code>evoke update</code> never prompts and never blocks. It reports what changed upstream — a rewritten
-            description is taken unless you overrode it, a renamed argument carries your examples along — and a
-            loosened effect waits until you accept it.</p>
+          <p>An overlay is your wording for one reflex. It sits on top of the shipped manifest. It adds and
+            replaces, never deletes. <strong>No update ever rewrites it.</strong> <code>evoke show</code> prints a
+            reflex as it is used, with <code>+</code> next to every line that is yours.</p>
+          <p><code>evoke update</code> never prompts and never blocks. It tells you what changed upstream. A
+            rewritten description is taken, unless you overrode it. A renamed argument carries your examples along.
+            A loosened effect waits until you accept it.</p>
           <a class="more" href="manual/use/tuning.html">Tuning →</a>
         </div>
         <div class="stack">
@@ -629,12 +627,12 @@ Ceiling and lamp lights only."""</span>
         <div class="text">
           <p class="label">Inside your app</p>
           <h2>The first hour is one file.</h2>
-          <p>A reflex handed as code, a project with nothing on disk, and the whole loop in one call: decide, ask
-            until nothing is missing, confirm, run. The body's argument types are inferred from the manifest
-            literal; a <strong>Decision</strong> is a union you narrow by outcome, then by reflex.</p>
-          <p>Beside a real project, <code>evoke add</code> writes the lock and a <code>.d.ts</code> that types every
-            installed reflex. Each tenant gets its own vocabulary and its own plan; a recorded adapter makes every
-            test offline and deterministic.</p>
+          <p>A reflex written as code, a project with nothing on disk, and the whole loop in one call: decide, ask
+            until nothing is missing, confirm, run. The argument types come from the manifest. A
+            <strong>Decision</strong> is a union. Narrow it by outcome, then by reflex.</p>
+          <p>Next to a real project, <code>evoke add</code> writes the lock and a <code>.d.ts</code> that types every
+            installed reflex. Each tenant gets its own vocabulary and its own plan. A recorded adapter makes every
+            test offline and repeatable.</p>
           <a class="more" href="manual/sdk/getting-started.html">Getting started with the SDK →</a>
         </div>
       </div>
@@ -643,17 +641,17 @@ Ceiling and lamp lights only."""</span>
     <section id="publish">
       <p class="label">The ecosystem</p>
       <h2>Publishing is a git tag.</h2>
-      <p class="sub">No accounts, no upload, no registry to keep alive. A repository is a collection; a tag is a
-        version; content is what the lock pins. The first-party collection,
+      <p class="sub">No accounts. No upload. No registry to keep alive. A repository is a collection. A tag is a
+        version. The lock pins the content. The first-party collection,
         <a href="https://github.com/evoke-build/reflexes">evoke-build/reflexes</a>, is thirteen reflexes for what a
         Mac does at a word.</p>
       <div class="flow">
         <div><h3>Write</h3><p>Three files from a template that already works. <code>evoke check</code> keeps the
           manifest honest, types the body, and says what the next version must be.</p></div>
-        <div><h3>Publish</h3><p>A tag is a version and tags are immutable; a fix is a new tag. One tag covers a whole
+        <div><h3>Publish</h3><p>A tag is a version. Tags never change; a fix is a new tag. One tag covers a whole
           collection.</p></div>
-        <div><h3>Install</h3><p>Fetched, linted, tested against the reflexes already there for phrases it would
-          steal, pinned by content. No code runs.</p></div>
+        <div><h3>Install</h3><p>Fetched, checked, and tested against the reflexes already there, so it steals no
+          phrases. Pinned by content. No code runs.</p></div>
       </div>
       <div class="panel term">
         <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
@@ -672,21 +670,21 @@ Ceiling and lamp lights only."""</span>
     <section id="trust">
       <p class="label">Security</p>
       <h2>What a sentence can and cannot do.</h2>
-      <p class="sub">A fetched reflex runs as you; <code>add</code> and <code>update</code> are the trust decisions.
-        Around them, these hold.</p>
+      <p class="sub">A fetched reflex runs as you. <code>add</code> and <code>update</code> are where you decide to
+        trust it. Around that, these promises hold.</p>
       <ul class="promises">
         <li><b>State is only the sentence.</b><span>The classifier sees your input and the questions built from
-          installed manifests — nothing else of yours.</span></li>
-        <li><b>Injected text can choose a call. It can never mint a value.</b><span>Every argument is an author's
-          option, one of your words, or a checked span of the input.</span></li>
-        <li><b>A destructive reflex always confirms.</b><span>There is no <code>--yes</code>. Unattended use is a
-          threshold in a file you own and trust.</span></li>
-        <li><b>No code runs at install time.</b><span><code>add</code> fetches a tree, reads a manifest, lints it,
-          and writes files. A body runs only at a decision.</span></li>
-        <li><b>Trust binds to content.</b><span>The lock pins tag, commit and hash; the store is re-hashed at every
-          start; a tag that moved is refused.</span></li>
+          installed manifests. Nothing else of yours.</span></li>
+        <li><b>Injected text can choose a call. It can never invent a value.</b><span>Every argument is an author's
+          option, one of your words, or a checked piece of the input.</span></li>
+        <li><b>A destructive reflex always confirms.</b><span>There is no <code>--yes</code>. To run unattended, set
+          a bar in a file you own and trust.</span></li>
+        <li><b>No code runs at install time.</b><span><code>add</code> fetches files, reads a manifest, checks it,
+          and writes files. A program runs only at a decision.</span></li>
+        <li><b>Trust binds to content.</b><span>The lock pins tag, commit and hash. The store is hashed again at every
+          start. A tag that moved is refused.</span></li>
         <li><b>Prompts cannot be repainted.</b><span>Control characters and bidi overrides are refused in every
-          string, and evoke's own line prints before any reflex's.</span></li>
+          string. evoke's own line prints before any reflex's.</span></li>
       </ul>
       <p class="after"><a href="manual/security.html">Everything guaranteed, and what is not →</a></p>
     </section>
@@ -694,23 +692,23 @@ Ceiling and lamp lights only."""</span>
     <section id="install">
       <p class="label">Start</p>
       <h2>Install</h2>
-      <p class="sub">One small native binary on macOS and Linux; Node beside it for reflexes written as JavaScript.
-        The SDK is a package.</p>
+      <p class="sub">One small native binary on macOS and Linux. Node next to it, for reflexes written in
+        JavaScript. The SDK is an npm package.</p>
       <div class="install">
         <div class="way">
           <h3>The CLI</h3>
-          <p>Fetches the release built for your machine, checks it against the release's digests, and puts
-            <code>evoke</code> in <code>~/.local/bin</code>.</p>
+          <p>Fetches the release for your machine, checks its digest, and puts <code>evoke</code> in
+            <code>~/.local/bin</code>.</p>
           <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy>Copy</button></div>
         </div>
         <div class="way">
           <h3>The SDK</h3>
-          <p>Node 24 or newer, ES modules, no dependencies; the core travels inside it as WebAssembly.</p>
+          <p>Node 24 or newer, ES modules, no dependencies. The core ships inside it as WebAssembly.</p>
           <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy>Copy</button></div>
         </div>
       </div>
       <p class="after">Then <a href="manual/start/first-run.html">the first ten minutes</a>: your key, the first-party
-        reflexes, your first lesson. Every other way — mise, from source — is on the
+        reflexes, your first lesson. Other ways, mise and from source, are on the
         <a href="manual/start/install.html">install page</a>.</p>
     </section>
   </main>
