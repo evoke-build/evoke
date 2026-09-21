@@ -1,8 +1,9 @@
 # @evoke-build/evoke
 
-You invoke a function; you evoke a reflex. The SDK loads a project of reflexes — mini programs a classifier selects
-and calls — decides what an input asks for, and runs it. The rules run in `core.wasm`, the same core as the `evoke`
-CLI; the SDK adds files, the network and a process.
+You invoke a function; you evoke a reflex. The SDK loads a project of reflexes — small programs a classifier selects
+and calls — decides what an input asks for, and runs it. The classifier is [Jev](https://typesafe.ai), TypeSafe AI's
+System One model, which answers closed questions with calibrated probabilities and generates no text; the rules run
+in `core.wasm`, the same core as the `evoke` CLI, and the SDK adds files, the network and a process.
 
 Six things to learn, in order: `reflex()` · `load()` · `handle()` · a `Decision` · `run()` · `replay()`.
 

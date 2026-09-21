@@ -2,7 +2,7 @@
 # README, builds it here, and lays the result under target/site/manual with the landing page and install script.
 [book]
 title       = "evoke"
-description = "Software, by reflex. What evoke does, in the user's words."
+description = "The evoke manual: a sentence becomes a call of a small program, chosen by Jev, a classifier that never generates text. The CLI, the package manager and the TypeScript SDK, in the user's words."
 language    = "en"
 src         = "../target/site-src"
 

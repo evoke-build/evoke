@@ -3,17 +3,63 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>evoke — software, by reflex</title>
-  <meta name="description" content="evoke turns a sentence into a call of a small program — a reflex — chosen by a classifier that never generates text, gated by confidence, and run only when the call is safe enough to run.">
+  <title>evoke — Software, by reflex</title>
+  <meta name="description" content="Say it, and the right small program runs. evoke chooses it with Jev, a classifier that never generates text, and runs it only when it is sure enough. A CLI, a package manager and a TypeScript SDK.">
+  <link rel="canonical" href="https://evoke.build/">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#101010" media="(prefers-color-scheme: dark)">
-  <meta property="og:title" content="evoke — software, by reflex">
-  <meta property="og:description" content="A sentence becomes a call of a small program, chosen by a classifier, gated by confidence. A CLI, a package manager and a TypeScript SDK.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="evoke">
+  <meta property="og:title" content="evoke — Software, by reflex">
+  <meta property="og:description" content="A sentence becomes a call of a small program, chosen by Jev — a classifier that never generates text — and run only when it is sure enough. CLI, package manager, TypeScript SDK.">
   <meta property="og:url" content="https://evoke.build/">
-  <meta property="og:image" content="https://evoke.build/assets/logo.png">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="https://evoke.build/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="evoke — Software, by reflex.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="evoke — Software, by reflex">
+  <meta name="twitter:description" content="A sentence becomes a call of a small program, chosen by Jev — a classifier that never generates text — and run only when it is sure enough.">
+  <meta name="twitter:image" content="https://evoke.build/og.png">
   <link rel="icon" href="favicon.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://evoke.build/#software",
+        "name": "evoke",
+        "url": "https://evoke.build/",
+        "description": "A sentence becomes a call of a small program, chosen by Jev, a classifier that never generates text, and run only when it is sure enough. A CLI, a package manager that installs reflexes from git, and a TypeScript SDK.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "macOS, Linux",
+        "license": "https://www.apache.org/licenses/LICENSE-2.0",
+        "installUrl": "https://evoke.build/manual/start/install.html",
+        "downloadUrl": "https://github.com/evoke-build/evoke/releases",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "author": { "@id": "https://evoke.build/#organization" },
+        "sameAs": ["https://github.com/evoke-build/evoke", "https://www.npmjs.com/package/@evoke-build/evoke"]
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://evoke.build/#organization",
+        "name": "evoke-build",
+        "url": "https://evoke.build/",
+        "logo": "https://evoke.build/assets/logo.png",
+        "sameAs": ["https://github.com/evoke-build"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://evoke.build/#website",
+        "name": "evoke",
+        "url": "https://evoke.build/",
+        "publisher": { "@id": "https://evoke.build/#organization" }
+      }
+    ]
+  }
+  </script>
   <style>
     :root {
       color-scheme: light dark;
@@ -41,7 +87,7 @@
       }
     }
     * { box-sizing: border-box; }
-    html { -webkit-text-size-adjust: 100%; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
     body {
       margin: 0;
       font: 16px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
@@ -52,6 +98,7 @@
     a { color: var(--accent-ink); text-decoration: none; }
     a:hover { text-decoration: underline; }
     code, pre, kbd { font-family: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+    p code, li code { font-size: .88em; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: .06em .35em; color: var(--fg); }
     .wrap { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; }
 
     header.top {
@@ -68,17 +115,22 @@
     nav.links a { color: var(--muted); font-size: .95rem; font-weight: 500; }
     nav.links a:hover { color: var(--fg); text-decoration: none; }
 
-    .hero { padding: 5.5rem 0 3rem; }
+    .hero { padding: 5rem 0 3rem; }
+    .eyebrow {
+      font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+      margin: 0 0 1.4rem;
+    }
+    .eyebrow::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: .55rem; vertical-align: 1px; }
+    .eyebrow a { color: var(--fg); }
     .hero h1 {
-      font-size: clamp(2.6rem, 6vw, 4.2rem);
+      font-size: clamp(2.7rem, 6.4vw, 4.5rem);
       font-weight: 700;
-      letter-spacing: -0.035em;
-      line-height: 1.02;
-      margin: 0 0 1.2rem;
-      max-width: 14em;
+      letter-spacing: -0.038em;
+      line-height: 1;
+      margin: 0 0 1.25rem;
     }
     .hero h1 em { font-style: normal; color: var(--accent); }
-    .hero p.lede { font-size: 1.2rem; line-height: 1.55; color: var(--muted); max-width: 40rem; margin: 0 0 2rem; }
+    .hero p.lede { font-size: 1.22rem; line-height: 1.55; color: var(--muted); max-width: 42rem; margin: 0 0 2rem; }
     .hero p.lede strong { color: var(--fg); font-weight: 600; }
     .cta { display: flex; flex-wrap: wrap; gap: .75rem; }
     .button {
@@ -102,26 +154,38 @@
     .terminal .bar { display: flex; align-items: center; gap: .45rem; padding: .75rem 1rem; border-bottom: 1px solid rgba(255, 255, 255, .07); }
     .terminal .bar i { width: 11px; height: 11px; border-radius: 50%; background: #3b3a38; display: inline-block; }
     .terminal .bar span { margin-left: .5rem; font-size: .8rem; color: var(--term-dim); }
-    .terminal pre { margin: 0; padding: 1.1rem 1.25rem 1.25rem; font-size: .92rem; line-height: 1.6; overflow-x: auto; }
+    .terminal pre { margin: 0; padding: 1.1rem 1.25rem 1.25rem; font-size: .92rem; line-height: 1.62; overflow-x: auto; }
     .terminal .p { color: var(--accent); }
     .terminal .dim { color: var(--term-dim); }
     .terminal .in { color: #fff; }
     .terminal .out { color: var(--term-fg); }
+    .terminal .add { color: #9ecf8a; }
+    .caption { color: var(--muted); font-size: .93rem; margin: .9rem 0 0; }
 
-    section { padding: 4.5rem 0 0; }
-    section h2 { font-size: 1.75rem; font-weight: 650; letter-spacing: -0.022em; margin: 0 0 .5rem; }
-    section p.sub { color: var(--muted); font-size: 1.05rem; max-width: 42rem; margin: 0 0 2rem; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 3.5rem; }
+    .stat { border-top: 1px solid var(--line); padding-top: 1rem; }
+    .stat b { display: block; font-size: 1.9rem; font-weight: 650; letter-spacing: -0.03em; line-height: 1.1; }
+    .stat span { display: block; color: var(--muted); font-size: .92rem; margin-top: .35rem; line-height: 1.45; }
 
-    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-    .card { border: 1px solid var(--line); border-radius: var(--radius); padding: 1.35rem 1.35rem 1.25rem; background: var(--bg); }
-    .card h3 { margin: 0 0 .45rem; font-size: 1.08rem; font-weight: 640; letter-spacing: -0.01em; }
-    .card p { margin: 0 0 .9rem; color: var(--muted); font-size: .96rem; }
-    .card code { font-size: .85em; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: .08em .35em; color: var(--fg); }
-    .card a.more { font-size: .93rem; font-weight: 560; }
+    section { padding: 5rem 0 0; }
+    section h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 650; letter-spacing: -0.026em; line-height: 1.15; margin: 0 0 .6rem; }
+    section p.sub { color: var(--muted); font-size: 1.05rem; max-width: 44rem; margin: 0 0 2rem; }
+    .label { font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); margin: 0 0 .8rem; }
 
-    .split { display: grid; grid-template-columns: 1.1fr 1fr; gap: 2.5rem; align-items: center; }
-    .split .text p { color: var(--muted); font-size: 1.02rem; margin: 0 0 1rem; }
-    .split .text p strong { color: var(--fg); font-weight: 600; }
+    .thesis { display: grid; grid-template-columns: 1.15fr .85fr; gap: 3.5rem; align-items: start; }
+    .thesis p { font-size: 1.08rem; line-height: 1.68; margin: 0 0 1.1rem; }
+    .thesis p strong { font-weight: 600; }
+    .pull {
+      border-left: 3px solid var(--accent); padding: .3rem 0 .3rem 1.4rem; margin: 0;
+      font-size: 1.5rem; line-height: 1.32; font-weight: 600; letter-spacing: -0.018em;
+    }
+    .pull small { display: block; margin-top: .9rem; font-size: .92rem; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+
+    .steps { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem; }
+    .step { border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem 1.3rem; }
+    .step i { display: block; font-style: normal; font-size: .8rem; font-weight: 600; color: var(--accent-ink); letter-spacing: .06em; margin-bottom: .5rem; }
+    .step h3 { margin: 0 0 .4rem; font-size: 1.05rem; font-weight: 640; }
+    .step p { margin: 0; color: var(--muted); font-size: .95rem; }
     .code {
       background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
       padding: 1.1rem 1.25rem; font-size: .88rem; line-height: 1.6; overflow-x: auto; margin: 0;
@@ -129,6 +193,37 @@
     .code .k { color: var(--accent-ink); }
     .code .s { color: var(--fg); }
     .code .c { color: var(--muted); }
+    .code .d { color: var(--muted); }
+    .code b { font-weight: 600; color: var(--fg); }
+
+    .jev { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; border: 1px solid var(--line); border-radius: var(--radius); padding: 2rem; }
+    .jev p { margin: 0 0 1rem; color: var(--muted); font-size: 1rem; }
+    .jev p strong { color: var(--fg); font-weight: 600; }
+    .jev ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .7rem; }
+    .jev li { padding-left: 1.25rem; position: relative; color: var(--fg); font-size: .97rem; }
+    .jev li::before { content: ""; position: absolute; left: 0; top: .62em; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+    .jev li span { color: var(--muted); }
+
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .card { border: 1px solid var(--line); border-radius: var(--radius); padding: 1.35rem 1.35rem 1.25rem; background: var(--bg); }
+    .card h3 { margin: 0 0 .45rem; font-size: 1.08rem; font-weight: 640; letter-spacing: -0.01em; }
+    .card p { margin: 0 0 .9rem; color: var(--muted); font-size: .96rem; }
+    .card a.more, a.more { font-size: .93rem; font-weight: 560; }
+
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center; }
+    .split.code-first { grid-template-columns: 1.15fr 1fr; }
+    .split .text p { color: var(--muted); font-size: 1.02rem; margin: 0 0 1rem; }
+    .split .text p strong { color: var(--fg); font-weight: 600; }
+
+    .flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .flow .code { font-size: .86rem; }
+    .flow h3 { margin: 0 0 .5rem; font-size: 1rem; font-weight: 640; }
+    .flow p { margin: .6rem 0 0; color: var(--muted); font-size: .92rem; }
+
+    .promises { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem 2rem; margin: 0; padding: 0; list-style: none; }
+    .promises li { border-top: 1px solid var(--line); padding-top: .8rem; font-size: .97rem; }
+    .promises li b { display: block; font-weight: 620; margin-bottom: .15rem; }
+    .promises li span { color: var(--muted); }
 
     .install { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .way { border: 1px solid var(--line); border-radius: var(--radius); padding: 1.15rem 1.25rem; }
@@ -146,26 +241,29 @@
 
     footer { margin-top: 5.5rem; border-top: 1px solid var(--line); padding: 2rem 0 3rem; color: var(--muted); font-size: .9rem; }
     footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; }
-    footer nav { display: flex; gap: 1.25rem; }
+    footer nav { display: flex; flex-wrap: wrap; gap: 1.25rem; }
     footer a { color: var(--muted); }
     footer a:hover { color: var(--fg); }
 
-    @media (max-width: 840px) {
-      .cards { grid-template-columns: 1fr; }
-      .split { grid-template-columns: 1fr; gap: 1.5rem; }
-      .install { grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
+      .stats { grid-template-columns: 1fr 1fr; }
+      .thesis, .jev, .split, .install, .promises { grid-template-columns: 1fr; }
+      .thesis { gap: 1.5rem; }
+      .steps, .cards, .flow { grid-template-columns: 1fr; }
       .hero { padding-top: 3.5rem; }
-      nav.links { gap: 1.1rem; }
+      nav.links { gap: 1rem; }
+      section { padding-top: 3.75rem; }
     }
   </style>
 </head>
 <body>
   <header class="top">
     <div class="wrap">
-      <a class="brand" href="/"><img src="assets/logo.png" alt="">evoke</a>
+      <a class="brand" href="/"><img src="logo.png" alt="">evoke</a>
       <nav class="links">
         <a href="manual/">Manual</a>
         <a href="manual/sdk/getting-started.html">SDK</a>
+        <a href="#jev">Jev</a>
         <a href="https://github.com/evoke-build/evoke">GitHub</a>
       </nav>
     </div>
@@ -173,10 +271,11 @@
 
   <main class="wrap">
     <div class="hero">
+      <p class="eyebrow">Decided by <a href="#jev">Jev</a>, TypeSafe AI's classifier</p>
       <h1>Software, <em>by reflex.</em></h1>
-      <p class="lede"><strong>evoke</strong> turns a sentence into a call of a small program — a <em>reflex</em> —
-        chosen by a classifier that never generates text, gated by confidence, and run only when the call is safe
-        enough to run.</p>
+      <p class="lede">Say what you want. <strong>evoke</strong> runs the small program that does it — chosen by a
+        classifier that never writes a word, gated by how sure it is, and run only when the call is safe enough to
+        run.</p>
       <div class="cta">
         <a class="button primary" href="manual/start/install.html">Get started</a>
         <a class="button" href="manual/">Read the manual</a>
@@ -187,50 +286,144 @@
 <pre><span class="p">$</span> <span class="in">evoke "set the volume to 40 percent"</span>
 <span class="dim">  volume level="40 percent"  0.93</span>
 <span class="out">volume 40%</span>
-<span class="p">$</span> <span class="in">evoke "dim the office"</span>
-<span class="dim">  lights room="office" state="dim" · write · weakest: state 0.70
-  Set the office lights dim?  [y]es [n]o [t]each &gt;</span> <span class="in">y</span>
-<span class="out">group-7 lights dim</span>
-<span class="p">$</span> <span class="in">evoke "what time is it"</span>
-<span class="dim">  none 0.70 · timer 0.20 · lights 0.05 · volume 0.05</span></pre>
+<span class="p">$</span> <span class="in">evoke "kill the lights"</span>
+<span class="dim">  Which room?  [1] den  [2] office  [+] add one  &gt;</span> <span class="in">1</span>
+<span class="dim">  lights room="den" state="off" · write · weakest: state 0.58
+  Set the den lights off?  [y]es [n]o [t]each &gt;</span> <span class="in">t</span>
+<span class="add">+ overlays/lights.toml  [examples] "kill the lights" = { state = "off" }</span>
+<span class="out">den lights off</span>
+<span class="p">$</span> <span class="in">evoke "kill the lights in the den"</span>
+<span class="dim">  lights room="den" state="off"  0.85</span>
+<span class="out">den lights off</span></pre>
+      </div>
+      <p class="caption">A run, a question, a lesson taught in one keystroke — and the phrase it learned, in a
+        file you own. Every line is what the terminal shows.</p>
+
+      <div class="stats" aria-label="Four facts">
+        <div class="stat"><b>0 words</b><span>generated, ever. Jev selects; it never writes.</span></div>
+        <div class="stat"><b>1 request</b><span>per decision: the route, every argument, every fit — in one pass.</span></div>
+        <div class="stat"><b>3 effects</b><span>read · write · destructive, each with its own floor for running unasked.</span></div>
+        <div class="stat"><b>30 s</b><span>and it stops. One deadline for the answer and the run; it never guesses.</span></div>
       </div>
     </div>
 
-    <section>
-      <h2>One tool, three jobs</h2>
-      <p class="sub">The same decisions, whether you type them, install them, or ship them inside your application.</p>
+    <section id="why">
+      <div class="thesis">
+        <div>
+          <p class="label">The idea</p>
+          <h2>Language as the interface, without the generation.</h2>
+          <p>For forty years software has waited to be operated: a menu, a flag, a form, a click in the right
+            place. The text box promised something else — say it, and it happens — and paid for it with
+            generation: a model writing on your behalf, differently each time, at a price and a pace no one could
+            budget.</p>
+          <p><strong>evoke takes the other path.</strong> It never asks a model to write. It asks a classifier a
+            closed question — which of these programs, which of these values, was this even stated? — and Jev
+            answers each with a calibrated probability, in a fraction of a second, for almost nothing. What runs is
+            always a small program someone wrote and you installed, with arguments that are always one of the
+            author's options, one of your own words, or a span of what you typed.</p>
+          <p>That is a reflex: the shortest path from a sentence to an action, with nothing made up along the way.
+            Wording becomes the interface. Git becomes the registry. Confidence — not a prompt — decides what may
+            run without asking.</p>
+        </div>
+        <blockquote class="pull">The next layer of software is not a bigger model that writes more. It is small
+          programs, described well, chosen by reflex.
+          <small>A sentence can choose a call. It cannot invent one.</small></blockquote>
+      </div>
+    </section>
+
+    <section id="how">
+      <p class="label">One decision</p>
+      <h2>Three steps, and every judgment on the table.</h2>
+      <p class="sub">Every active reflex's manifest becomes questions. Jev answers them all at once; the gate reads
+        the weakest answer; the body runs — or you are asked first. <code>evoke try</code> shows the whole thing.</p>
+      <div class="steps">
+        <div class="step"><i>01 · DECIDE</i><h3>Which reflex, which values</h3><p>One request carries the route,
+          each argument of each reflex — with "unstated" among its options — and whether each reflex fits. Each
+          comes back as a probability.</p></div>
+        <div class="step"><i>02 · GATE</i><h3>The weakest answer rules</h3><p>Confidence is the lowest of them.
+          Against the floor for the winner's effect it settles the outcome: run, confirm, ask, or abstain. A
+          destructive reflex always confirms.</p></div>
+        <div class="step"><i>03 · RUN</i><h3>A small program, a scrubbed room</h3><p>The body runs with its
+          arguments, five environment variables, and a deadline shared with the answer; its one line of text comes
+          back.</p></div>
+      </div>
+<pre class="code"><span class="c">$ evoke try "kill the lights in the den"</span>
+  <b>lights</b> 0.91 · none 0.06 · timer 0.02 · volume 0.01
+  room   <b>den</b> 0.85 · unstated 0.10 · office 0.05
+  state  <b>off</b> 0.88 · on 0.05 · dim 0.05 · unstated 0.02
+  fits   lights 0.70 · timer 0.05 · volume 0.05
+  <span class="k">run</span> · weakest: room 0.85</pre>
+    </section>
+
+    <section id="jev">
+      <p class="label">The classifier</p>
+      <h2>Jev decides.</h2>
+      <div class="jev">
+        <div>
+          <p><strong>Jev</strong> is <a href="https://typesafe.ai">TypeSafe AI</a>'s System One model: a classifier
+            that returns typed decisions with calibrated probabilities and generates no text. It takes no
+            fine-tuning. Everything it knows about a reflex arrives in the request, from the reflex's own wording —
+            its description, what it is not for, its examples.</p>
+          <p>evoke asks it every question of a decision in one pass and reads the answers as probabilities, never
+            as prose. Where a generating model would have to be trusted, a classifier can be checked: the
+            question was closed, the options were yours, and the number says how sure it was.</p>
+          <p>Jev is the first adapter, not the only possible one. The core names no engine; an adapter is a small
+            mapping from questions to a request and from a response to answers, and a project names the one it
+            uses in a file you own.</p>
+        </div>
+        <ul>
+          <li>Closed questions, calibrated answers. <span>Which of these? Was it stated? How well does this fit?</span></li>
+          <li>Nothing generated. <span>A value is an option, one of your words, or a span of your input — never a
+            model's invention.</span></li>
+          <li>Wording is the tuning. <span>Change a description, add an example, and the next decision reads it.
+            No training run, no weights.</span></li>
+          <li>Pluggable. <span>Two question types cross the adapter boundary; anything that answers them can
+            decide.</span></li>
+          <li>Reproducible in tests. <span>A recorded adapter replays real answers, offline, byte for byte.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="jobs">
+      <p class="label">One tool</p>
+      <h2>Three jobs, the same decisions.</h2>
+      <p class="sub">Whether you type it, install it, or ship it inside your application, the rules are one core
+        — Rust in the CLI, the same core as WebAssembly in the SDK.</p>
       <div class="cards">
         <div class="card">
           <h3>A CLI you talk to</h3>
           <p>Say what you want. <code>evoke</code> shows the call it chose and its confidence, then runs, confirms,
-            asks for what is missing, or abstains — and every line that needs you ends in the command that does it.</p>
+            asks for what is missing, or abstains — and every line that needs you ends in the command that does it.
+            A REPL, a pipe, and <code>--json</code> for scripts.</p>
           <a class="more" href="manual/use/saying-things.html">Saying things →</a>
         </div>
         <div class="card">
           <h3>A package manager</h3>
           <p>A reflex is a directory in a git repository at a tag. <code>evoke add owner/repo</code> fetches it,
-            lints its wording, pins it by content in <code>evoke.lock</code>, and never runs code to install it.</p>
+            lints its wording, pins it by content in <code>evoke.lock</code>, and never runs code to install it.
+            No accounts, no registry service, no build step.</p>
           <a class="more" href="manual/use/installing.html">Installing reflexes →</a>
         </div>
         <div class="card">
           <h3>A TypeScript SDK</h3>
-          <p>The CLI's core, compiled to WebAssembly, inside your app: load a project, decide, run — with a typed
-            decision for every outcome and a recorded adapter for tests that never touch the network.</p>
+          <p>The CLI's core inside your app: load a project, decide, run — with a typed decision for every outcome,
+            a vocabulary per tenant, and a recorded adapter for tests that never touch the network.</p>
           <a class="more" href="manual/sdk/getting-started.html">Getting started →</a>
         </div>
       </div>
     </section>
 
-    <section>
+    <section id="manifest">
       <div class="split">
         <div class="text">
-          <h2>The manifest is the product</h2>
-          <p>The classifier is never trained. It answers closed questions — <em>which of these? is this stated?</em>
-            — from a reflex's own wording, so <strong>the wording is the tuning</strong>. One line is documentation,
-            tuning, test and customization at once.</p>
+          <p class="label">The unit</p>
+          <h2>The manifest is the product.</h2>
+          <p>A reflex is a directory: a manifest and the file it runs. The manifest says what the reflex does, what
+            it is not for, what it asks, and what it runs. <strong>Its wording is the whole model</strong> — one
+            line is documentation, tuning, test and customization at once.</p>
           <p>The author owns the contract: what runs, the arguments, their options. Everything else is wording you
-            may override in a file of your own, which no update ever touches. A value is always one of the author's
-            options, one of your words, or a span of what you typed: a sentence can choose a call, never invent one.</p>
+            may override in a file of your own, which no update ever touches. Teach it a phrase and it lands there,
+            as one line.</p>
           <a class="more" href="manual/author/first-reflex.html">Write a reflex in ten minutes →</a>
         </div>
 <pre class="code"><span class="c"># hello/reflex.toml</span>
@@ -239,6 +432,7 @@
 <span class="k">description</span> = <span class="s">"""
 Say hello to someone.
 A greeting with the name given, printed back."""</span>
+<span class="k">not_for</span> = [<span class="s">"saying goodbye"</span>]
 <span class="k">effect</span>  = <span class="s">"read"</span>
 <span class="k">confirm</span> = <span class="s">"Say hello to {who}?"</span>
 <span class="k">run</span>     = <span class="s">"hello.mts"</span>
@@ -248,11 +442,113 @@ A greeting with the name given, printed back."""</span>
 <span class="k">pick</span> = <span class="s">"quoted"</span>
 
 <span class="k">[examples]</span>
-<span class="s">'say hello to "Ada"'</span> = { <span class="k">who</span> = <span class="s">"Ada"</span> }</pre>
+<span class="s">'say hello to "Ada"'</span> = { <span class="k">who</span> = <span class="s">"Ada"</span> }
+
+<span class="c"># overlays/hello.toml — yours, one line, taught or typed</span>
+<span class="k">[examples]</span>
+<span class="s">'wave at "Grace"'</span> = { <span class="k">who</span> = <span class="s">"Grace"</span> }</pre>
       </div>
     </section>
 
+    <section id="sdk">
+      <div class="split code-first">
+<pre class="code"><span class="k">import</span> { load, reflex } <span class="k">from</span> <span class="s">"@evoke-build/evoke"</span>
+<span class="k">import</span> { jev } <span class="k">from</span> <span class="s">"@evoke-build/evoke/jev"</span>
+
+<span class="k">const</span> timer = reflex({
+  description: <span class="s">"Start a countdown timer."</span>,
+  effect: <span class="s">"write"</span>,
+  confirm: <span class="s">"Start a {duration} timer?"</span>,
+  args: {
+    duration: { ask: <span class="s">"How long?"</span>, pick: <span class="s">"duration"</span> },
+  },
+  examples: {
+    <span class="s">"timer for ten minutes"</span>: { duration: <span class="s">"ten minutes"</span> },
+  },
+}, <span class="k">async</span> ({ duration }) => {   <span class="c">// duration: number</span>
+  setTimeout(() => console.log(<span class="s">"ring"</span>), duration * 1000)
+  <span class="k">return</span> <span class="s">`ringing in ${duration} s`</span>
+})
+
+<span class="k">const</span> project = <span class="k">await</span> load({
+  reflexes: { timer },
+  adapter: jev(),
+})
+<span class="k">const</span> handled = <span class="k">await</span> project.handle(<span class="s">"timer for ten minutes"</span>, {
+  confirm: <span class="k">async</span> d => <span class="k">true</span>,
+  ask: <span class="k">async</span> d => ({ duration: <span class="s">"10 minutes"</span> }),
+})</pre>
+        <div class="text">
+          <p class="label">Inside your app</p>
+          <h2>The first hour is one file.</h2>
+          <p>A reflex handed as code, a project with nothing on disk, and the whole loop in one call: decide, ask
+            until nothing is missing, confirm, run. The body's argument types are inferred from the manifest
+            literal; a <strong>Decision</strong> is a union you narrow by outcome, then by reflex.</p>
+          <p>Beside a real project, <code>evoke add</code> writes the lock and a <code>.d.ts</code> that types every
+            installed reflex. Each tenant gets its own vocabulary and its own plan; a recorded adapter makes every
+            test offline and deterministic.</p>
+          <a class="more" href="manual/sdk/getting-started.html">Getting started with the SDK →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="publish">
+      <p class="label">The ecosystem</p>
+      <h2>Publishing is a git tag.</h2>
+      <p class="sub">No accounts, no upload, no registry to keep alive. A repository is a collection; a tag is a
+        version; content is what the lock pins. The first-party collection is thirteen reflexes for what a Mac
+        does at a word.</p>
+      <div class="flow">
+        <div>
+<pre class="code"><span class="c">$</span> evoke new hello
+<span class="d">+ hello/reflex.toml
++ hello/hello.mts
++ hello/reflex.d.ts</span></pre>
+          <h3>Write</h3>
+          <p>Three files from a template that already works; <code>evoke check</code> keeps the manifest honest and
+            types the body.</p>
+        </div>
+        <div>
+<pre class="code"><span class="c">$</span> git tag v1.0.0 && git push --tags
+<span class="d">→ published</span></pre>
+          <h3>Publish</h3>
+          <p>Tags are immutable versions. <code>evoke check</code> diffs the contract against the last tag and says
+            what the next one must be.</p>
+        </div>
+        <div>
+<pre class="code"><span class="c">$</span> evoke add you/hello
+<span class="d">+ hello  you/hello 1.0.0  read  runs hello.mts</span></pre>
+          <h3>Install</h3>
+          <p>Fetched, linted, tested against the reflexes already there for phrases it would steal, pinned by
+            content. No code runs.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="trust">
+      <p class="label">Security</p>
+      <h2>What a sentence can and cannot do.</h2>
+      <p class="sub">A fetched reflex runs as you; <code>add</code> and <code>update</code> are the trust decisions.
+        Around them, these hold.</p>
+      <ul class="promises">
+        <li><b>State is only the sentence.</b><span>The classifier sees your input and the questions built from
+          installed manifests — nothing else of yours.</span></li>
+        <li><b>Injected text can choose a call. It can never mint a value.</b><span>Every argument is an author's
+          option, one of your words, or a checked span of the input.</span></li>
+        <li><b>A destructive reflex always confirms.</b><span>There is no <code>--yes</code>. Unattended use is a
+          threshold in a file you own and trust.</span></li>
+        <li><b>No code runs at install time.</b><span><code>add</code> fetches a tree, reads a manifest, lints it,
+          and writes files. A body runs only at a decision.</span></li>
+        <li><b>Trust binds to content.</b><span>The lock pins tag, commit and hash; the store is re-hashed at every
+          start; a tag that moved is refused.</span></li>
+        <li><b>Prompts cannot be repainted.</b><span>Control characters and bidi overrides are refused in every
+          string, and evoke's own line prints before any reflex's.</span></li>
+      </ul>
+      <p class="after"><a href="manual/security.html">Everything guaranteed, and what is not →</a></p>
+    </section>
+
     <section id="install">
+      <p class="label">Start</p>
       <h2>Install</h2>
       <p class="sub">One small native binary on macOS and Linux; Node beside it for reflexes written as JavaScript.
         The SDK is a package.</p>
@@ -278,11 +574,13 @@ A greeting with the name given, printed back."""</span>
   <footer>
     <div class="wrap">
       <div><a href="https://github.com/evoke-build/evoke/blob/main/LICENSE">Apache-2.0</a>; the collection is MIT.
-        The name and the logo are <a href="https://github.com/evoke-build/evoke/blob/main/TRADEMARK.md">trademarks</a>.</div>
+        The name and the logo are <a href="https://github.com/evoke-build/evoke/blob/main/TRADEMARK.md">trademarks</a>.
+        Jev is <a href="https://typesafe.ai">TypeSafe AI</a>'s.</div>
       <nav>
         <a href="manual/">Manual</a>
         <a href="manual/reference/cli.html">Reference</a>
         <a href="manual/security.html">Security</a>
+        <a href="https://github.com/evoke-build/reflexes">Collection</a>
         <a href="https://github.com/evoke-build/evoke">GitHub</a>
       </nav>
     </div>

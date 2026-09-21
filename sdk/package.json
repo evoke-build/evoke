@@ -1,7 +1,17 @@
 {
   "name": "@evoke-build/evoke",
   "version": "0.1.0",
-  "description": "You invoke a function; you evoke a reflex. The SDK: load a project, decide, run.",
+  "description": "You invoke a function; you evoke a reflex. The SDK: load a project of reflexes, decide with Jev, run.",
+  "keywords": [
+    "jev",
+    "typesafe",
+    "classifier",
+    "natural-language",
+    "reflex",
+    "cli",
+    "sdk",
+    "automation"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

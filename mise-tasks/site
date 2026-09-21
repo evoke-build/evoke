@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-#MISE description="Build evoke.build into target/site: the landing page, the install script, the logo, and docs/manual rendered by mdBook — checking first that every link in the manual resolves"
-"""The manual's README is its index: its tables become mdBook's SUMMARY.md, so the site's structure has one source."""
-import re, shutil, subprocess, sys
+#MISE description="Build evoke.build into target/site: the landing page, the install script, the manual rendered by mdBook with a canonical link and a description on every page, the sitemap and robots.txt — checking first that every link in the manual resolves"
+"""The manual's README is its index: its tables become mdBook's SUMMARY.md, so the site's structure has one source.
+What a search engine or a shared link needs is written here, once, from the pages themselves."""
+import html as html_text, re, shutil, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 MANUAL, SITE, OUT, SRC = ROOT / "docs/manual", ROOT / "site", ROOT / "target/site", ROOT / "target/site-src"
+URL = "https://evoke.build/"
+CARD = URL + "og.png"
 LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)\)")
+UNLISTED = {"404.html", "print.html", "toc.html"}
 
 
 def links_resolve():
-    """Every relative link in the manual names a file of the manual — the site, like the repository, is whole."""
+    """Every relative link in the manual names a page of the manual — the site, like the repository, is whole."""
     problems = []
     for page in sorted(MANUAL.rglob("*.md")):
         for _, target in LINK.findall(page.read_text()):
@@ -36,15 +40,71 @@ def summary():
     return "\n".join(lines) + "\n"
 
 
+def address(page):
+    """The page's public address: a directory's index is the directory."""
+    rel = page.relative_to(OUT).as_posix()
+    return URL + (rel[: -len("index.html")] if rel.endswith("index.html") else rel)
+
+
+def description(page_html):
+    """The page's first paragraph, as one line of at most 160 characters, ending at a word."""
+    main = page_html.split("<main", 1)[-1]
+    found = re.search(r"<p>(.*?)</p>", main, re.S)
+    if not found:
+        return None
+    text = " ".join(html_text.unescape(re.sub(r"<[^>]+>", "", found[1])).split())
+    if len(text) > 160:
+        text = text[:157].rsplit(" ", 1)[0].rstrip(",;:—-") + "…"
+    return text
+
+
+def described(page):
+    """A manual page with what a search engine and a shared link read: canonical, description, the card."""
+    text = page.read_text()
+    titled = re.search(r"<title>(.*?)</title>", text)
+    if page.name in UNLISTED or titled is None:
+        page.write_text(text.replace("</head>", '<meta name="robots" content="noindex">\n</head>', 1))
+        return
+    title = html_text.unescape(titled[1])
+    summary_line = description(text) or re.search(r'<meta name="description" content="([^"]*)">', text)[1]
+    quoted = html_text.escape(summary_line, quote=True)
+    head = "\n".join([
+        f'<link rel="canonical" href="{address(page)}">',
+        '<meta property="og:type" content="article">',
+        '<meta property="og:site_name" content="evoke">',
+        f'<meta property="og:title" content="{html_text.escape(title, quote=True)}">',
+        f'<meta property="og:description" content="{quoted}">',
+        f'<meta property="og:url" content="{address(page)}">',
+        f'<meta property="og:image" content="{CARD}">',
+        '<meta name="twitter:card" content="summary_large_image">',
+        "</head>",
+    ])
+    text = re.sub(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{quoted}">', text, count=1)
+    page.write_text(text.replace("</head>", head, 1))
+
+
+def sitemap(pages):
+    entries = "\n".join(f"  <url><loc>{address(page)}</loc></url>" for page in pages)
+    (OUT / "sitemap.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + entries + "\n</urlset>\n")
+    (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /manual/print.html\n\nSitemap: {URL}sitemap.xml\n")
+
+
 links_resolve()
 shutil.rmtree(OUT, ignore_errors=True)
 shutil.rmtree(SRC, ignore_errors=True)
 shutil.copytree(MANUAL, SRC)
 (SRC / "SUMMARY.md").write_text(summary())
 subprocess.run(["mdbook", "build", str(SITE)], check=True)
-shutil.copy(SITE / "index.html", OUT / "index.html")
-shutil.copy(SITE / "install.sh", OUT / "install.sh")
+for name in ["index.html", "install.sh", "og.png", "logo.png", "apple-touch-icon.png"]:
+    shutil.copy(SITE / name, OUT / name)
 shutil.copy(SITE / "theme/favicon.png", OUT / "favicon.png")
-shutil.copy(SITE / "apple-touch-icon.png", OUT / "apple-touch-icon.png")
 shutil.copytree(ROOT / "assets", OUT / "assets")
-print(f"site: {OUT.relative_to(ROOT)} — {sum(1 for _ in OUT.rglob('*.html'))} pages")
+manual_pages = sorted(OUT.glob("manual/**/*.html"))
+for page in manual_pages:
+    described(page)
+shutil.copy(OUT / "manual/404.html", OUT / "404.html")
+listed = [OUT / "index.html", OUT / "manual/index.html"] + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
+sitemap(listed)
+print(f"site: {OUT.relative_to(ROOT)} — {len(listed)} pages in the sitemap")

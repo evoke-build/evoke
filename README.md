@@ -2,10 +2,12 @@
 
 # evoke
 
-**Software, by reflex.** `evoke` turns a sentence into a call of a small program — a *reflex* — chosen by a classifier
-that never generates text, gated by confidence, and run only when the call is safe enough to run. One tool does three
-jobs: a CLI you talk to, a package manager that installs reflexes from git, and a TypeScript SDK that puts the same
-decisions inside your app. [Jev](https://typesafe.ai) is the first classifier; the design is bound to none.
+**Software, by reflex.** Say what you want, and `evoke` runs the small program that does it. The program and its
+arguments are chosen by [Jev](https://typesafe.ai), TypeSafe AI's System One classifier, which answers closed
+questions with calibrated probabilities and never generates a word; a confidence gate decides whether the call runs,
+confirms or asks; and what runs is always a *reflex* — a small program someone wrote and you installed from git. One
+tool does three jobs: a CLI you talk to, a package manager that installs reflexes from git, and a TypeScript SDK that
+puts the same decisions inside your app. Jev is the first adapter; the design is bound to no engine.
 
 ```text
 $ evoke "kill the lights in the den"

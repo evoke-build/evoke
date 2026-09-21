@@ -3,7 +3,8 @@
 # The evoke manual
 
 **Software, by reflex.** `evoke` turns a sentence into a call of a small program — a *reflex* — chosen by a
-classifier that never generates text, gated by confidence, and run only when the call is safe enough to run.
+classifier that never generates text, gated by confidence, and run only when the call is safe enough to run. The
+classifier is [Jev](https://typesafe.ai), TypeSafe AI's System One model, the first adapter of a design bound to none.
 
 ```text
 $ evoke "kill the lights in the den"

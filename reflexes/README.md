@@ -1,7 +1,7 @@
 # evoke-build/reflexes
 
-The first-party reflexes for [evoke](https://github.com/evoke-build/evoke): what a Mac does at a word. One
-directory per reflex — `reflex.toml`, and the file it runs where it runs one — nothing to build, nothing to install
+The first-party reflexes for [evoke](https://github.com/evoke-build/evoke): what a Mac does at a word, the word
+decided by [Jev](https://typesafe.ai), TypeSafe AI's classifier. One directory per reflex — `reflex.toml`, and the file it runs where it runs one — nothing to build, nothing to install
 but `evoke` itself.
 
 ```bash

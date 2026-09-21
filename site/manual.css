@@ -285,7 +285,7 @@ html {
   height: 22px;
   margin-right: 8px;
   vertical-align: -5px;
-  background: url("/assets/logo.png") center / contain no-repeat;
+  background: url("/logo.png") center / contain no-repeat;
 }
 
 .icon-button {

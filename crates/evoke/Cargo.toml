@@ -1,6 +1,6 @@
 [package]
 name                 = "evoke"
-description          = "You invoke a function; you evoke a reflex. The CLI, package manager and reference implementation."
+description          = "You invoke a function; you evoke a reflex. The CLI, package manager and reference implementation; Jev decides."
 version.workspace    = true
 edition.workspace    = true
 license.workspace    = true
