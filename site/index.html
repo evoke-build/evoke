@@ -313,7 +313,9 @@
     .showcase { position: relative; margin-top: 5.5rem; }
     .showcase::before {
       content: ""; position: absolute; inset: -4rem 0 -3rem; z-index: -1; pointer-events: none;
-      background: radial-gradient(42% 55% at 30% 18%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
+      background: radial-gradient(42% 50% at 30% 32%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
+      mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
     }
     .showcase .grid { display: grid; grid-template-columns: 1.12fr 1fr; gap: 1.1rem; align-items: start; }
     .showcase .panel pre { font-size: .8rem; padding: 1rem 1.1rem; }
