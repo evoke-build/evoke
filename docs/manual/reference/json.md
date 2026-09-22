@@ -26,7 +26,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because`, `choices`        |
 | `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call: `{ adapter, questions, ms }`. Empty when the answers came from the cache |
 | `result`     | ○   |         |     |         | `{ text, data? }` when the body ran                             |
-| `error`      | ○   |         |     |         | The failure's message when it did not                           |
+| `error`      | ○   |         |     |         | The failure's message when it did not. The line is all that prints; the exit is 1 |
 
 A sentence read as several steps ([Weaving](../use/weaving.md)) prints one line per step, as each runs, the
 line of its decision with four fields more: `step` and `steps` first, the step's number and the count; `bound`

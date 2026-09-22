@@ -701,7 +701,8 @@ impl Using<'_> {
         }
     }
 
-    /// The line into the log — and, under `--json`, to stdout — then the exit, reported.
+    /// The line into the log — and, under `--json`, to stdout — then the exit, reported. A body's failure is the
+    /// line's own `error`: under `--json` the exit prints nothing more, so a line stays one object.
     fn logged(&self, input: &str, line: &Line, exit: Exit) -> Exit {
         if self.arguments.json {
             terminal::result(&line.json());
@@ -710,6 +711,9 @@ impl Using<'_> {
             Err(failure) if exit == Exit::Ran => Exit::Failed(failure),
             _ => exit,
         };
+        if self.arguments.json && line.error.is_some() && matches!(exit, Exit::Failed(_)) {
+            return exit;
+        }
         self.session.reporter.exit(input, exit)
     }
 

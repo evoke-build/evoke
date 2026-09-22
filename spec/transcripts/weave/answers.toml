@@ -154,3 +154,18 @@ route           = { lights = 0.9, timer = 0.01, volume = 0.01, none = 0.08 }
 "lights.room"   = { den = 0.5, office = 0.4, unstated = 0.1 }
 "lights.state"  = { off = 0.85, on = 0.05, dim = 0.05, unstated = 0.05 }
 "contact.name"  = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+
+[answers."start a 0 minute timer and kill the lights in the den"]
+"weave.split_0" = { yes = 0.95 }
+
+[answers."start a 0 minute timer"]
+route            = { timer = 0.9, lights = 0.02, volume = 0.02, none = 0.06 }
+"fits.lights"    = { yes = 0.05 }
+"fits.timer"     = { yes = 0.8 }
+"fits.volume"    = { yes = 0.05 }
+"fits.contact"   = { yes = 0.02 }
+"fits.mail"      = { yes = 0.02 }
+"lights.room"    = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state"   = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"contact.name"   = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"timer.duration" = { "8-16" = 0.9, unstated = 0.1 }

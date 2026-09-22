@@ -12,6 +12,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   questions asked first, and the exit code is the worst step's. `try` shows the plan and each step's judgments;
   `--json` prints one line per step. The SDK's `steps` returns the plan and `weave` runs it under `handle`'s
   handlers, each told which step asks. [Weaving](docs/manual/use/weaving.md).
+- Under `--json`, a body's failure is the line's own `error` and nothing more prints: one object per input, as
+  the format says. It used to be followed by the diagnostic as a second object.
 - The answer cache is keyed by the questions asked as well as the sentence, so a decision narrowed with `--tag`
   keeps its entry beside the full one instead of overwriting it.
 - `evoke run --json <call>` prints the call and its result as one JSON line, with nothing judged; with no
