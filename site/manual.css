@@ -9,7 +9,7 @@ html:root {
   --page-padding: 24px;
   --mono-font: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --code-font-size: 0.875em;
-  --accent: #ef7f2b;
+  --accent: #e5761d;
   --radius: 10px;
   --term-bg: #141416;
   --term-line: #232326;
@@ -27,12 +27,12 @@ html:root {
   --sidebar-bg: #141414;
   --sidebar-fg: #bdbdbd;
   --sidebar-non-existant: #555555;
-  --sidebar-active: #f4934a;
+  --sidebar-active: #ea8a40;
   --sidebar-spacer: #262626;
   --scrollbar: #3a3a3a;
   --icons: #7a7a7a;
   --icons-hover: #e6e6e6;
-  --links: #f4934a;
+  --links: #ea8a40;
   --inline-code-color: #e6e6e6;
   --tk-key: #f0a15c;
   --tk-table: #a3a6ff;
@@ -43,8 +43,8 @@ html:root {
   --tk-kw: #a3a6ff;
   --theme-hover: #232323;
   --quote-bg: #1c1815;
-  --quote-border: #ef7f2b;
-  --warning-border: #ef7f2b;
+  --quote-border: #e5761d;
+  --warning-border: #e5761d;
   --table-border-color: #262626;
   --table-header-bg: transparent;
   --table-alternate-bg: transparent;

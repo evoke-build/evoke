@@ -121,8 +121,8 @@ def described(page):
 
 AT_WORK = """                    <aside class="at-work" aria-label="The use cases">
                         <div class="words">
-                            <p class="label">At work</p>
-                            <h2>Six sentences, at work.</h2>
+                            <p class="label">Use cases</p>
+                            <h2>Where people use it.</h2>
                             <p>Real sessions from an ops channel, an inbox, a payments desk, a plant floor, a runbook and
                                 a lesson. Each one as files anyone can install, and as code your app keeps.</p>
                             <a class="go" href="{root}use-cases.html">See them run &rarr;</a>

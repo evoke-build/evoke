@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>evoke — Six sentences, at work</title>
+  <title>evoke — Where people use it</title>
   <meta name="description" content="Six use cases, each a live scene: an ops channel, an inbox, a payments desk, a plant floor, a runbook, and a lesson. Every recipe as a file anyone can install, and as code your app keeps.">
   <link rel="canonical" href="https://evoke.build/use-cases.html">
   <meta name="robots" content="max-image-preview:large">
@@ -11,7 +11,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="evoke">
   <meta property="og:locale" content="en_US">
-  <meta property="og:title" content="evoke — Six sentences, at work">
+  <meta property="og:title" content="evoke — Where people use it">
   <meta property="og:description" content="An ops channel, an inbox, a payments desk, a plant floor, a runbook, and a lesson. Each sentence becomes a call of a small program, checked before it runs.">
   <meta property="og:url" content="https://evoke.build/use-cases.html">
   <meta property="og:image" content="https://evoke.build/og.png">
@@ -19,7 +19,7 @@
   <meta property="og:image:height" content="1260">
   <meta property="og:image:alt" content="evoke — Software, by reflex.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="evoke — Six sentences, at work">
+  <meta name="twitter:title" content="evoke — Where people use it">
   <meta name="twitter:description" content="Each sentence becomes a call of a small program, checked before it runs. The same recipe as a file anyone can install, or as code your app keeps.">
   <meta name="twitter:image" content="https://evoke.build/og.png">
   <meta name="twitter:image:alt" content="evoke — Software, by reflex.">
@@ -36,7 +36,7 @@
         "@type": "WebPage",
         "@id": "https://evoke.build/use-cases.html",
         "url": "https://evoke.build/use-cases.html",
-        "name": "Six sentences, at work",
+        "name": "Where people use it",
         "description": "Six use cases, each a live scene: an ops channel, an inbox, a payments desk, a plant floor, a runbook, and a lesson. Every recipe as a file anyone can install, and as code your app keeps.",
         "inLanguage": "en",
         "isPartOf": { "@id": "https://evoke.build/#website" },
@@ -52,6 +52,15 @@
     ]
   }
   </script>
+  <script>
+    // A page reached with a hash lands on it at once; scrolling glides from the reader's first touch of the page.
+    if (location.hash) {
+      const html = document.documentElement, glide = () => html.style.removeProperty("scroll-behavior")
+      html.style.scrollBehavior = "auto"
+      addEventListener("pointerdown", glide, { once: true })
+      addEventListener("keydown", glide, { once: true })
+    }
+  </script>
   <style>
     /* Palette: the site is dark, whatever the system prefers */
     :root {
@@ -64,9 +73,9 @@
       --line-strong: #303035;
       --panel: #151517;
       --panel-head: #1b1b1e;
-      --accent: #ef7f2b;
-      --accent-ink: #f4934a;
-      --accent-soft: rgba(244, 147, 74, .12);
+      --accent: #e5761d;
+      --accent-ink: #ea8a40;
+      --accent-soft: rgba(234, 138, 64, .12);
       --radius: 14px;
       --radius-s: 9px;
       --term-bg: #141416;
@@ -256,7 +265,7 @@
     .ops .pod:nth-child(6) { transition-delay: .3s; }
     .ops[data-checkout="2"] .checkout .pod:nth-child(-n+2), .ops[data-checkout="6"] .checkout .pod:nth-child(-n+6),
     .ops[data-payments="3"] .payments .pod:nth-child(-n+3), .ops[data-payments="1"] .payments .pod:nth-child(-n+1) {
-      fill: var(--accent); stroke: var(--accent); filter: drop-shadow(0 0 5px rgba(239, 127, 43, .5));
+      fill: var(--accent); stroke: var(--accent); filter: drop-shadow(0 0 5px rgba(229, 118, 29, .5));
     }
     .ops .chip { fill: #1c1c21; stroke: #36363d; transition: fill .5s, stroke .5s; }
     .ops .chip + text { fill: #5f5f66; transition: fill .5s; }
@@ -420,9 +429,9 @@
   <main class="wrap">
     <div class="hero">
       <div class="copy">
-      <h1>Six sentences, <em>at work.</em></h1>
-      <p class="lede"><strong>Each one becomes a call of a small program, checked before it runs.</strong> The same
-        recipe as a file anyone can install, or as code your app keeps. Every scene is a real session.</p>
+      <h1>Where people <em>use it.</em></h1>
+      <p class="lede"><strong>Six sentences. Each one becomes a call of a small program, checked before it runs.</strong>
+        The same recipe as a file anyone can install, or as code your app keeps. Every scene is a real session.</p>
       </div>
       <ul class="index" aria-label="The six use cases">
         <li><a href="#ops"><code>01</code>An ops channel</a></li>
