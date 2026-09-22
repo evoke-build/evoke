@@ -1,6 +1,8 @@
 /* The manual's theme over mdBook's: the landing page's palette, dark whatever the system prefers, quiet chrome.
    Every value mdBook's themes define is set here once, on the root at the rank of mdBook's own no-script rule,
-   so whichever theme its script lands on, or none, reads the same, and its theme menu is hidden. */
+   so whichever theme its script lands on, or none, reads the same, and its theme menu is hidden. Text has two tones:
+   the ink, `--fg`, for headings, emphasis and the chrome, and `--text` a step below it for the running prose, so a
+   long read never glares. */
 
 html:root {
   --sidebar-target-width: 280px;
@@ -21,6 +23,7 @@ html:root {
   --term-no: #ff7b73;
   --bg: #101010;
   --fg: #e6e6e6;
+  --text: #cccccc;
   --muted: #9a9a9a;
   --line: #262626;
   --panel: #191919;
@@ -33,7 +36,7 @@ html:root {
   --icons: #7a7a7a;
   --icons-hover: #e6e6e6;
   --links: #ea8a40;
-  --inline-code-color: #e6e6e6;
+  --inline-code-color: var(--text);
   --tk-key: #f0a15c;
   --tk-table: #a3a6ff;
   --tk-string: #9ad18f;
@@ -72,8 +75,14 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
+/* The page reads in the text tone. Headings keep the ink through mdBook's own rule; emphasis takes it back. */
 .content main {
   padding: 12px 0 64px;
+  color: var(--text);
+}
+
+.content strong {
+  color: var(--fg);
 }
 
 .content p,
@@ -128,13 +137,14 @@ html {
 
 /* Code */
 
-:not(pre) > code {
+/* Inline code wears the colour of its sentence: ink in a heading or a lead, text in the prose, the link's in a link */
+.content :not(pre) > code {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 5px;
   padding: 0.1em 0.38em;
   font-size: 0.86em;
-  color: var(--inline-code-color);
+  color: inherit;
 }
 
 .content pre {
@@ -206,6 +216,7 @@ html {
   border: 0;
   border-left: 3px solid var(--quote-border);
   border-radius: 0 8px 8px 0;
+  color: inherit;
 }
 
 .content kbd {
@@ -435,6 +446,7 @@ pre.term .buttons button:hover { color: var(--term-fg); }
 
 .at-work h2 {
   margin: 0 0 1rem;
+  color: var(--fg);
   font-size: 2.5rem;
   font-weight: 560;
   letter-spacing: -0.02em;
