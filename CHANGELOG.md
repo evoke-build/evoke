@@ -6,6 +6,18 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- evoke.build explains the idea. A page of its own, *The idea*: why reflexes, in ten minutes — the problem trust
+  poses, the move, the number, real sessions where nothing ran on a guess, the recipe, your words, a weave, the
+  road ahead and the execution it rests on — and it leads every bar. The landing page says one core, three ways
+  in, and what a calibrated number buys; its title and lede carry the gate; its security section shows a
+  destructive sentence confirmed at 0.97 and still asked; the classifier's section reads *Jev answers. The gate
+  decides.* The README follows the same arc. The manual reads in the landing page's palette, its prose a step
+  below the ink.
+- evoke.build has the reflex format as a specification page, *The reflex format*: `reflex = 1`, frozen since
+  0.1.0, section by section, with the four schemas served at the `$id` each declares.
+- evoke.build shows in its own faces from the first load. The fonts were declared `optional`, which drew a first
+  visit in the fallback face and left it there; they now wait the moment a preloaded font takes, on every page
+  and in the manual.
 - evoke.build shows a weave. The landing page reads «look up dana's address and email them» into its two
   steps, plans and runs it on a loop, the address threaded from the lookup into the mail, beside a confirm
   declined at its turn and a part that matches nothing; the use-cases page carries the same session as files
