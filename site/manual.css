@@ -81,6 +81,15 @@ html {
   line-height: 1.65;
 }
 
+/* Lines break so that no last line is a lone word, and headings balance their lines */
+.content :is(p, li, dd) {
+  text-wrap: pretty;
+}
+
+.content :is(h1, h2, h3, h4) {
+  text-wrap: balance;
+}
+
 .content li + li {
   margin-top: 0.3em;
 }

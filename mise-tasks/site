@@ -155,6 +155,66 @@ def furnished(page):
     page.write_text(text)
 
 
+BLOCKS = {"p", "li", "dd", "dt", "h1", "h2", "h3", "h4", "figcaption"}
+VERBATIM = {"pre", "code", "script", "style", "textarea"}
+
+
+def widowless(page):
+    """A page whose paragraphs, list items and headings never end in a lone word: the last two words of each are
+    joined by a no-break space, whatever the width and whatever the browser. Text inside code is never touched."""
+    parts = re.split(r"(<[^>]*>)", page.read_text())
+    verbatim, opened = 0, []
+    for i, part in enumerate(parts):
+        if i % 2 == 0:
+            continue
+        tag = re.match(r"</?\s*([a-zA-Z][a-zA-Z0-9]*)", part)
+        if tag is None:
+            continue
+        name, closing = tag[1].lower(), part.startswith("</")
+        if name in VERBATIM:
+            verbatim += -1 if closing else 1
+        elif name in BLOCKS and not closing:
+            opened.append((name, i))
+        elif name in BLOCKS and opened and opened[-1][0] == name:
+            _, start = opened.pop()
+            if verbatim == 0:
+                glue(parts, start, i)
+    page.write_text("".join(parts))
+
+
+def glue(parts, start, end):
+    """The last two words between two indices of a split page joined by a no-break space, unless the break before the
+    last word sits inside code, or the words are joined already."""
+    chars, code = [], 0
+    for i in range(start + 1, end):
+        if i % 2:
+            tag = re.match(r"</?\s*([a-zA-Z][a-zA-Z0-9]*)", parts[i])
+            if tag and tag[1].lower() in VERBATIM:
+                code += -1 if parts[i].startswith("</") else 1
+        else:
+            chars.extend((i, j, c, code > 0) for j, c in enumerate(parts[i]))
+    space = lambda c: c in " \t\n\r"
+    last = next((k for k in range(len(chars) - 1, -1, -1) if not space(chars[k][2])), None)
+    if last is None:
+        return
+    j = last
+    while j >= 0 and not (space(chars[j][2]) and not chars[j][3]):
+        j -= 1
+    if j < 0 or not any(not space(c) for _, _, c, _ in chars[:j]) or any(c == "\u00a0" for _, _, c, _ in chars[j:last]):
+        return
+    k = j
+    while k > 0 and space(chars[k - 1][2]) and not chars[k - 1][3]:
+        k -= 1
+    edits = {}
+    for n, (i, off, _, _) in enumerate(chars[k : j + 1]):
+        edits.setdefault(i, []).append((off, "\u00a0" if n == 0 else ""))
+    for i, changes in edits.items():
+        text = list(parts[i])
+        for off, new in changes:
+            text[off] = new
+        parts[i] = "".join(text)
+
+
 def versioned(landing):
     """The landing page's structured data names the version Cargo.toml names."""
     version = re.search(r'^version\s*=\s*"([^"]+)"', (ROOT / "Cargo.toml").read_text(), re.M)[1]
@@ -188,10 +248,13 @@ shutil.copy(SITE / "theme/favicon.png", OUT / "favicon.png")
 shutil.copytree(ROOT / "assets", OUT / "assets")
 shutil.copytree(SITE / "fonts", OUT / "fonts")
 versioned(OUT / "index.html")
+for name in ["index.html", "use-cases.html"]:
+    widowless(OUT / name)
 manual_pages = sorted(OUT.glob("manual/**/*.html"))
 for page in manual_pages:
     furnished(page)
     described(page)
+    widowless(page)
 shutil.copy(OUT / "manual/404.html", OUT / "404.html")
 listed = [OUT / "index.html", OUT / "use-cases.html", OUT / "manual/index.html"] + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
 dated = sitemap(listed)
