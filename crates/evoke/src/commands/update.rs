@@ -2,7 +2,7 @@
 //! each move read as the contract diff and what it means for your files, the consented effect kept until accepted;
 //! a reflex new to a repository you use reported; the lock written, your files never. What a move leaves inactive
 //! prints at the next run, with its fix. In: a name or none, a name whose looser effect to accept or none, the
-//! environment. Out: `Exit`, a block per reflex moved.
+//! environment. Out: `Exit`, a block per reflex moved, or `up to date`.
 
 use std::collections::BTreeMap;
 
@@ -17,7 +17,7 @@ use evoke_core::{
 };
 
 use super::session::{self, Opening, Session};
-use super::{Exit, about, default_name};
+use super::{Exit, about, default_name, nothing_installed};
 use crate::args::Command;
 use crate::hosts::store::Entry;
 use crate::hosts::{Environment, git, terminal};
@@ -33,7 +33,7 @@ pub fn run(
         Ok(session) => session,
         Err(exit) => return exit,
     };
-    let input = command.placeholder();
+    let input = command.stand_in();
     let exit = updated(&mut session, &input, reflex, accept);
     session.reporter.exit(&input, exit)
 }
@@ -50,6 +50,9 @@ fn updated(
     reflex: Option<&LocalName>,
     accept: Option<&LocalName>,
 ) -> Exit {
+    if session.project.reflexes.is_empty() {
+        return nothing_installed();
+    }
     let scope: Vec<LocalName> = match reflex {
         Some(name) => vec![name.clone()],
         None => session
@@ -87,6 +90,9 @@ fn updated(
         if let Err(exit) = session.reload(input).and_then(|()| session.write_types()) {
             return exit;
         }
+    }
+    if moved.is_empty() {
+        terminal::note(&render::up_to_date());
     }
     for one in &moved {
         terminal::note(&render::updated(&one.block));

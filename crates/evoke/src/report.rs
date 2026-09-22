@@ -31,14 +31,35 @@ use crate::hosts::processes::Returned;
 use crate::hosts::terminal::{Role, Text};
 
 /// The owned files as a person reads them: the root, `~/…` under `$HOME`, and each local reflex's directory as
-/// `evoke.toml` writes it.
+/// `evoke.toml` writes it; the home itself, so a path a host names in full shows the same way.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Paths {
     pub root: String,
     pub reflexes: BTreeMap<LocalName, String>,
+    pub home: Option<String>,
 }
 
 impl Paths {
+    /// Before a project is located: no root, no reflexes, the home from the environment.
+    #[must_use]
+    pub fn of(environment: &crate::hosts::Environment) -> Self {
+        Self {
+            root: String::new(),
+            reflexes: BTreeMap::new(),
+            home: environment.get("HOME").map(str::to_owned),
+        }
+    }
+
+    /// Text with every path under the home shortened to `~/…`, as the owned paths are shown.
+    fn tilde(&self, text: &str) -> String {
+        match self.home.as_deref() {
+            Some(home) if !home.is_empty() && home != "/" => {
+                text.replace(&format!("{home}/"), "~/")
+            }
+            _ => text.to_owned(),
+        }
+    }
+
     /// `<root>/<file>:<line>:<column>`; a manifest under its reflex's directory — a remote one's in the store,
     /// shown where it is.
     fn at(&self, at: &At) -> String {
@@ -74,6 +95,14 @@ pub fn exit_json(exit: &Exit) -> Option<String> {
     problem(exit).map(|problem| serde_json::to_string(&problem).expect("a diagnostic serializes"))
 }
 
+/// What an exit says, as one message without its fix: what a line about it quotes.
+#[must_use]
+pub fn said(exit: &Exit) -> String {
+    problem(exit)
+        .map(|problem| head(&problem))
+        .unwrap_or_default()
+}
+
 /// Every exit that needs a line, in the one shape a problem takes: the reflex, the location, the message, the fix.
 fn problem(exit: &Exit) -> Option<Diagnostic> {
     let (message, fix) = match exit {
@@ -99,11 +128,14 @@ pub fn failure(failure: &Failure) -> String {
     }
 }
 
-/// `  <reflex>: <message>  →  <fix>`, the reflex when there is one; a line to edit shows its path under the root.
+/// `  <reflex>: <message>  →  <fix>`, the reflex when there is one; a line to edit shows its path under the root,
+/// and a path under the home shows as `~/…`.
 #[must_use]
 pub fn diagnostic(problem: &Diagnostic, invoked: &str, paths: Option<&Paths>) -> Text {
+    let head = head(problem);
+    let head = paths.map_or(head.clone(), |paths| paths.tilde(&head));
     let mut text = Text::from("  ");
-    text.push(&plain(&head(problem)));
+    text.push(&plain(&head));
     fixed(&mut text, &fixing(problem, invoked, paths));
     text
 }
@@ -111,7 +143,10 @@ pub fn diagnostic(problem: &Diagnostic, invoked: &str, paths: Option<&Paths>) ->
 /// The inactive lines of `show`: every problem with its fix, the arrows aligned.
 #[must_use]
 pub fn inactive(problems: &[Diagnostic], invoked: &str, paths: &Paths) -> Text {
-    let heads: Vec<String> = problems.iter().map(head).collect();
+    let heads: Vec<String> = problems
+        .iter()
+        .map(|problem| paths.tilde(&head(problem)))
+        .collect();
     let width = heads.iter().map(|head| chars(head)).max().unwrap_or(0);
     Text::lines(problems.iter().zip(&heads).map(|(problem, head)| {
         let mut line = Text::from("  ");
@@ -516,29 +551,42 @@ pub fn meaning_prompt(retry: Option<&str>) -> String {
     }
 }
 
-/// `evoke --help`: the version with the thesis, then every command by group — its line, then what it does, the
-/// descriptions aligned — and the exit codes. Plain: it goes to stdout.
+/// `evoke --help`: the version with the thesis, then every command by group — its line, then what it does, in
+/// a second column where the terminal is wide enough for one and under the line where it is not — then the exit
+/// codes and the manual. Plain: it goes to stdout. `columns` is the terminal's width, when stdout is one.
 #[must_use]
-pub fn help(version: &str) -> String {
-    let width = COMMANDS
-        .iter()
-        .flat_map(|(_, lines)| lines.iter())
-        .filter(|(_, about)| !about.is_empty())
-        .map(|(line, _)| chars(line))
+pub fn help(version: &str, columns: Option<usize>) -> String {
+    let described = || {
+        COMMANDS
+            .iter()
+            .flat_map(|(_, lines)| lines.iter())
+            .filter(|(_, about)| !about.is_empty())
+    };
+    let width = described().map(|(line, _)| chars(line)).max().unwrap_or(0);
+    let widest = described()
+        .map(|(_, about)| 2 + width + 2 + chars(about))
         .max()
         .unwrap_or(0);
+    let stacked = columns.is_some_and(|columns| columns < widest);
     let mut text = format!("evoke {version} · you invoke a function; you evoke a reflex\n");
     for (group, lines) in COMMANDS {
         let _ = write!(text, "\n{group}\n");
         for (line, about) in lines {
             if about.is_empty() {
                 let _ = writeln!(text, "  {line}");
+            } else if stacked {
+                let _ = writeln!(text, "  {line}\n      {about}");
             } else {
                 let _ = writeln!(text, "  {line:<width$}  {about}");
             }
         }
     }
-    text.push_str("\nexit  0 ran · 1 failed · 2 declined · 3 needs a human · 4 adapter failed");
+    text.push_str(if stacked {
+        "\nexit    0 ran · 1 failed · 2 declined\n        3 needs a human · 4 adapter failed"
+    } else {
+        "\nexit    0 ran · 1 failed · 2 declined · 3 needs a human · 4 adapter failed"
+    });
+    text.push_str("\nmanual  https://evoke.build/manual/");
     text
 }
 
@@ -559,6 +607,7 @@ const COMMANDS: [(&str, &[(&str, &str)]); 4] = [
             ("  --", "the rest is input, even a command word"),
             ("evoke why", "the last decision, explained"),
             ("evoke run <call>", "by name, without the classifier"),
+            ("  <call> is <name> [<arg>=<value> | <flag>]…", ""),
         ],
     ),
     (
@@ -683,6 +732,12 @@ pub fn rows(rows: &[Row], gutter: Gutter) -> Text {
             .push(&row.runs);
         line.trim_end()
     }))
+}
+
+/// `evoke update` with nothing to move: every remote reflex is at its target tag.
+#[must_use]
+pub fn up_to_date() -> Text {
+    Text::from("  up to date")
 }
 
 /// `evoke trust`: the root blessed.
@@ -1091,15 +1146,17 @@ fn block(
             .join(" · ");
         lines.push(format!("{arg:<width$}{keys}"));
     }
-    let fits: Vec<String> = contenders
+    // Most fitting first; ties keep the ranking's order.
+    let mut fits: Vec<(&Contender, f64)> = contenders
         .iter()
-        .filter_map(|contender| {
-            contender
-                .fits
-                .map(|fits| format!("{} {:.2}", contender.reflex, fits.get()))
-        })
+        .filter_map(|contender| contender.fits.map(|fits| (contender, fits.get())))
         .collect();
+    fits.sort_by(|a, b| b.1.total_cmp(&a.1));
     if !fits.is_empty() {
+        let fits: Vec<String> = fits
+            .iter()
+            .map(|(contender, fits)| format!("{} {fits:.2}", contender.reflex))
+            .collect();
         lines.push(format!("{:<width$}{}", "fits", fits.join(" · ")));
     }
     lines
@@ -1212,6 +1269,7 @@ mod tests {
         Paths {
             root: "~/.config/evoke".to_owned(),
             reflexes: BTreeMap::from([(LocalName::new("lights").unwrap(), "./lamps".to_owned())]),
+            home: Some("/Users/me".to_owned()),
         }
     }
 
@@ -1305,6 +1363,39 @@ mod tests {
             diagnostic(&at(File::Overlay { name: lights }), "", Some(&paths())).to_string(),
             "  lights: duplicate key  →  ~/.config/evoke/overlays/lights.toml:7:1"
         );
+    }
+
+    #[test]
+    fn a_path_under_the_home_shows_as_tilde_and_what_an_exit_said_has_no_fix() {
+        let failed = Exit::Failed(Failure {
+            what: "reading /Users/me/.config/evoke/overlays/lights.toml".to_owned(),
+            cause: Some("permission denied".to_owned()),
+            fix: Fix::Rerun,
+        });
+        assert_eq!(
+            exit(&failed, "evoke show", Some(&paths()))
+                .unwrap()
+                .to_string(),
+            "  reading ~/.config/evoke/overlays/lights.toml: permission denied  →  evoke show"
+        );
+        assert_eq!(
+            exit(&failed, "evoke show", None).unwrap().to_string(),
+            "  reading /Users/me/.config/evoke/overlays/lights.toml: permission denied  →  evoke show"
+        );
+        assert_eq!(
+            said(&failed),
+            "reading /Users/me/.config/evoke/overlays/lights.toml: permission denied"
+        );
+        assert_eq!(
+            said(&Exit::Adapter(Fault::Status { status: 429 })),
+            "the adapter answered 429"
+        );
+        assert_eq!(said(&Exit::Ran), "");
+        let home = Paths {
+            home: Some("/".to_owned()),
+            ..paths()
+        };
+        assert_eq!(home.tilde("/etc/x"), "/etc/x");
     }
 
     #[test]
@@ -1460,20 +1551,36 @@ mod tests {
 
     #[test]
     fn the_help_fits_eighty_columns_and_names_every_group() {
-        let help = help("0.1.0");
+        let help = help("0.1.0", None);
         assert!(help.starts_with("evoke 0.1.0 · "));
         for group in [
             "\nuse\n",
             "\ninstall\n",
             "\ntune\n",
             "\nauthor\n",
-            "\nexit  0 ran",
+            "\nexit    0 ran",
+            "\nmanual  https://evoke.build/manual/",
         ] {
             assert!(help.contains(group), "{group:?} is missing");
         }
         let widest = help.lines().map(chars).max().unwrap_or(0);
         assert!(widest <= 80, "a help line is {widest} columns wide");
         assert!(!help.ends_with('\n'));
+    }
+
+    #[test]
+    fn a_narrow_terminal_gets_the_descriptions_under_their_lines() {
+        let wide = help("0.1.0", None);
+        assert_eq!(help("0.1.0", Some(80)), wide);
+        assert_eq!(help("0.1.0", Some(200)), wide);
+        let narrow = help("0.1.0", Some(60));
+        assert_ne!(narrow, wide);
+        assert!(narrow.contains("\n  evoke \"<input>\"\n      decide, gate, run\n"));
+        assert!(narrow.contains("\n    --json\n      one JSON line per input, for a filter\n"));
+        // One more line per described command or flag, and the exit codes on two.
+        assert_eq!(narrow.lines().count(), wide.lines().count() + 22);
+        let widest = narrow.lines().map(chars).max().unwrap_or(0);
+        assert!(widest <= 60, "a line is {widest} columns wide");
     }
 
     #[test]

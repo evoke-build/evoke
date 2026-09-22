@@ -16,7 +16,7 @@ pub fn run(command: &Command, name: &LocalName, environment: &Environment) -> Ex
         Ok(session) => session,
         Err(exit) => return exit,
     };
-    let input = command.placeholder();
+    let input = command.stand_in();
     let exit = removed(&mut session, &input, name);
     session.reporter.exit(&input, exit)
 }

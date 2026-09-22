@@ -318,7 +318,7 @@ fn named<N>(
 fn failed(what: &str, error: &io::Error) -> Failure {
     Failure {
         what: what.to_owned(),
-        cause: Some(error.to_string()),
+        cause: Some(super::cause(error)),
         fix: Fix::Rerun,
     }
 }

@@ -124,7 +124,7 @@ pub fn warm(runtime: &Path, environment: &Environment) -> Result<Warm, Failure> 
     let mut child = command.spawn().map_err(|error| {
         failed(
             &format!("starting {}", runtime.display()),
-            &error.to_string(),
+            &super::cause(&error),
         )
     })?;
     let stdin = child.stdin.take().expect("stdin is piped");
@@ -229,7 +229,7 @@ pub fn probe(
         .stderr(Stdio::inherit());
     let mut child = command
         .spawn()
-        .map_err(|error| failed(&what, &error.to_string()))?;
+        .map_err(|error| failed(&what, &super::cause(&error)))?;
     let stdout = child.stdout.take().expect("stdout is piped");
     let (output, status) =
         collect(stdout, &mut child, deadline).map_err(|why| failed(&what, &why))?;
@@ -269,7 +269,7 @@ pub fn program(
         .stderr(Stdio::inherit());
     let mut child = command
         .spawn()
-        .map_err(|error| failed(what, &error.to_string()))?;
+        .map_err(|error| failed(what, &format!("{program}: {}", super::cause(&error))))?;
     let stdout = child.stdout.take().expect("stdout is piped");
     let (output, status) =
         collect(stdout, &mut child, deadline).map_err(|why| failed(what, &why))?;

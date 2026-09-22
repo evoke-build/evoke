@@ -17,7 +17,7 @@ pub fn run(command: &Command, written: &Written, environment: &Environment) -> E
         Err(exit) => return exit,
     };
     let exit = called(&mut session, written);
-    session.reporter.exit(&command.placeholder(), exit)
+    session.reporter.exit(&command.stand_in(), exit)
 }
 
 fn called(session: &mut Session<'_>, written: &Written) -> Exit {

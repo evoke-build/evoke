@@ -8,8 +8,8 @@ use evoke_core::name::LocalName;
 use evoke_core::text::NonEmpty;
 use evoke_core::{Case, Fix, Verdict, baseline, cases, judge, regressions};
 
-use super::Exit;
 use super::session::{self, Opening, Session};
+use super::{Exit, nothing_installed};
 use crate::adapter::Adapter;
 use crate::args::Command;
 use crate::hosts::{Environment, Failure, terminal, threads};
@@ -20,7 +20,7 @@ pub fn run(command: &Command, name: Option<&LocalName>, environment: &Environmen
         Ok(session) => session,
         Err(exit) => return exit,
     };
-    let input = command.placeholder();
+    let input = command.stand_in();
     let adapter = match session.adapter(&input) {
         Ok(adapter) => adapter,
         Err(exit) => return session.reporter.exit(&input, exit),
@@ -35,6 +35,9 @@ fn tested(
     adapter: &dyn Adapter,
     name: Option<&LocalName>,
 ) -> Result<Exit, Exit> {
+    if session.project.reflexes.is_empty() {
+        return Err(nothing_installed());
+    }
     if let Some(name) = name {
         session.plan.running(name).map_err(Exit::Human)?;
     }

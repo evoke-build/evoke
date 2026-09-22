@@ -25,7 +25,7 @@ pub fn run(
         Some(text) => text.to_owned(),
         None => match last_input(&session) {
             Ok(text) => text,
-            Err(exit) => return session.reporter.exit(&command.placeholder(), exit),
+            Err(exit) => return session.reporter.exit(&command.stand_in(), exit),
         },
     };
     let exit = taught(&session, &text, lesson);

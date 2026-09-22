@@ -41,8 +41,8 @@ $ evoke add radhi/home/lights radhi/timer
    table, an utterance over 200 characters, or text that addresses a model instead of describing an action.
 3. **Tests for theft.** The examples already installed are routed over the new set, a few at a time. A phrase a
    newcomer wins prints as `<thief>: steals "<phrase>" from <owner>  →  evoke teach "<phrase>" not <thief>`. The
-   add still proceeds. The fix is one line in your overlay. When the classifier cannot answer, the line says the
-   test did not finish, and `evoke test` runs it again.
+   add still proceeds. The fix is one line in your overlay. When the classifier cannot answer, or has no key yet,
+   the line says the test did not finish, and `evoke test` runs it again.
 4. **Writes** the `[reflexes]` lines to `evoke.toml`, the lock, and `evoke.d.ts`. It records the JavaScript runtime
    when a newcomer runs a file. Then it prints one row per newcomer behind `+`, then the lint lines, the theft
    lines, and each newcomer's inactive lines.
@@ -66,8 +66,8 @@ $ evoke update
 ```
 
 `evoke update [<name>]` moves every unpinned remote reflex, or just one, to its newest tag. A pinned reflex moves
-to its pin. It **never prompts, never blocks, and never rewrites your files**. For each move, it prints the level
-of the change and one line per detail:
+to its pin. It **never prompts, never blocks, and never rewrites your files**. When nothing moves, it prints
+`up to date`. For each move, it prints the level of the change and one line per detail:
 
 | Line                                  | Means                                                                          |
 | :------------------------------------ | :----------------------------------------------------------------------------- |
@@ -127,7 +127,8 @@ code you did not write.
 
 A reflex that runs a `.mts` or `.mjs` file needs Node 24 or newer. `add` and `sync` find `node` on your `PATH`
 and record its path in `~/.local/state/evoke/runtime`. Nothing is searched at run time, so a cron job's `PATH`
-cannot break a decision. If none is found and none is recorded, the command ends with `evoke sync` and exit 3,
-after its rows. An argv reflex needs no runtime.
+cannot break a decision. If none is found and none is recorded, the command ends with
+`node is not on PATH; a .mts reflex needs Node 24 or newer  →  evoke sync` and exit 3, after its rows. Install
+Node, and `evoke sync` records it. An argv reflex needs no runtime.
 
 **Next:** [Tuning](tuning.md).

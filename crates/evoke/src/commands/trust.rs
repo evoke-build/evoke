@@ -6,7 +6,7 @@ use super::Exit;
 use crate::hosts::files;
 use crate::hosts::state::State;
 use crate::hosts::{Environment, terminal};
-use crate::report;
+use crate::report::{self, Paths};
 
 pub fn run(environment: &Environment) -> Exit {
     match blessed(environment) {
@@ -15,7 +15,7 @@ pub fn run(environment: &Environment) -> Exit {
             Exit::Ran
         }
         Err(exit) => {
-            if let Some(line) = report::exit(&exit, "evoke trust", None) {
+            if let Some(line) = report::exit(&exit, "evoke trust", Some(&Paths::of(environment))) {
                 terminal::note(&line);
             }
             exit

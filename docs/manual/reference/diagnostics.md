@@ -55,6 +55,7 @@ is not inactive either. The reflex runs under the effect you consented to, until
 
 ## Failures and faults
 
-A body that throws, exits non-zero, or overruns the deadline is a **failure**. Its message prints, exit 1. An
-adapter that cannot be reached, returns an error status, or answers something the core cannot validate is a
-**fault**, exit 4. The core fails closed rather than guess. Both name what to do next.
+A body that throws, exits non-zero, or overruns the deadline is a **failure**. Its message prints, exit 1. A
+thrown error's frames print above it, for its author. An adapter that cannot be reached, returns an error status,
+or answers something the core cannot validate is a **fault**, exit 4. The core fails closed rather than guess.
+Both name what to do next. A path under your home prints as `~/…`.

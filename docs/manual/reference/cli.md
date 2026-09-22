@@ -12,6 +12,7 @@ use
     --                                    the rest is input, even a command word
   evoke why                               the last decision, explained
   evoke run <call>                        by name, without the classifier
+    <call> is <name> [<arg>=<value> | <flag>]…
 
 install
   evoke add <ref>… [--as <name>]          fetch, lint, lock, install
@@ -36,14 +37,17 @@ author
   evoke new <name>                        a working reflex from the template
   evoke check                             lint, types, contract against its tag
 
-exit  0 ran · 1 failed · 2 declined · 3 needs a human · 4 adapter failed
+exit    0 ran · 1 failed · 2 declined · 3 needs a human · 4 adapter failed
+manual  https://evoke.build/manual/
 ```
 
 ## Grammar
 
 - The first argument selects a command only when it is exactly a command word. Otherwise every argument is the
   input, bare words joined by one space. `--` forces input. Lines from stdin are always input.
-- `--help`, `-h` and `--version` are flags in the first place. They print to stdout and exit 0.
+- `--help`, `-h` or `help`, and `--version` or `-V`, are flags in the first place. They print to stdout and exit
+  0. `--help` or `-h` right after a command word prints the help too.
+- A command word after a flag, `evoke --json try "…"`, is refused with the way to write it. It is never decided.
 - Commands validate every argument before acting. Arguments that spell no command end in `evoke --help`. The
   reserved words `edit`, `search`, `publish`, `adapter` and `calibrate` are refused by name until they exist.
 - A **call** is `name arg=value…`. A value is bare or a JSON string, like `duration="10 minutes"`. A flag is its
@@ -71,7 +75,7 @@ exit  0 ran · 1 failed · 2 declined · 3 needs a human · 4 adapter failed
 | :------------------------------------- | :------------------------------------------------------------------------------------ |
 | `evoke add <ref>… [--as <name>]`       | Fetches each ref at its pin or newest tag, once per repository; reads a local ref, `./dir`, where it is. Lints, tests for stolen phrases, writes `evoke.toml`, the lock and `evoke.d.ts`, and records the runtime. `--as` names a single ref |
 | `evoke remove <name>`                  | Drops the reflex from `evoke.toml` and the lock. Keeps your overlay, vocabularies, settings and the store's copy |
-| `evoke update [<name>]`                | Moves each unpinned remote reflex, or one, to its newest tag. A pinned one moves to its pin. Reports. Never prompts or rewrites your files |
+| `evoke update [<name>]`                | Moves each unpinned remote reflex, or one, to its newest tag. A pinned one moves to its pin. Reports, or prints `up to date`. Never prompts or rewrites your files |
 | `evoke update --accept <name>`         | Takes on an effect upstream loosened, at the current tag                              |
 | `evoke sync`                           | Places every locked reflex in the store at its locked tag, and records the runtime. Never changes the lock |
 | `evoke trust`                          | Trusts the project here, at the content of its four owned paths                       |

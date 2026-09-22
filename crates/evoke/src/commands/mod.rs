@@ -100,6 +100,11 @@ pub(crate) fn human(message: impl Into<String>, fix: Fix) -> Exit {
     })
 }
 
+/// Nothing is installed, where a command has nothing to act on: the add line.
+pub(crate) fn nothing_installed() -> Exit {
+    human("no reflexes are installed", Fix::Add)
+}
+
 /// The same, about one reflex.
 pub(crate) fn about(reflex: &LocalName, message: impl Into<String>, fix: Fix) -> Exit {
     Exit::Human(Diagnostic {

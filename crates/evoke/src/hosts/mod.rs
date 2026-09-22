@@ -35,6 +35,15 @@ pub(crate) fn failed(what: &str, cause: &str) -> Failure {
     }
 }
 
+/// An io error as a cause: what it says, without the `(os error N)` its display adds.
+pub(crate) fn cause(error: &std::io::Error) -> String {
+    let text = error.to_string();
+    match text.rfind(" (os error ") {
+        Some(at) if text.ends_with(')') => text[..at].to_owned(),
+        _ => text,
+    }
+}
+
 /// The process environment, read once; a variable that is not UTF-8 is as good as unset.
 pub struct Environment(pub(crate) BTreeMap<String, String>);
 
@@ -133,6 +142,16 @@ mod tests {
         let body = Deadline::after(Millis(30_000)).less(spent);
         let left = body.left().0;
         assert!((28_700..=28_800).contains(&left), "left {left} ms");
+    }
+
+    #[test]
+    fn an_io_error_is_a_cause_without_its_number() {
+        let denied = std::io::Error::from(std::io::ErrorKind::PermissionDenied);
+        assert_eq!(cause(&denied), "permission denied");
+        let raw = std::io::Error::from_raw_os_error(13);
+        assert!(!cause(&raw).contains("os error"));
+        let plain = std::io::Error::other("the pipe closed");
+        assert_eq!(cause(&plain), "the pipe closed");
     }
 
     #[test]

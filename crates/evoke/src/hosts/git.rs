@@ -18,7 +18,7 @@ use evoke_core::Version;
 use evoke_core::name::RelPath;
 use evoke_core::project::{Commit, Reference, Repo};
 
-use super::{Failure, failed};
+use super::{Failure, failed, terminal};
 
 /// What every git call is told: only https and ssh are spoken — a local mirror reached through
 /// `url.<path>.insteadOf` needs `protocol.file.allow` in the person's own configuration — and no hook runs from
@@ -91,7 +91,7 @@ pub fn repository(dir: &Path) -> Result<Option<Repository>, Failure> {
         if stderr.contains("not a git repository") {
             return Ok(None);
         }
-        return Err(failed(&what, &format!("git: {}", last_line(&stderr))));
+        return Err(failed(&what, &format!("git: {}", said(&stderr))));
     }
     let stdout = String::from_utf8_lossy(&output.stdout);
     let mut lines = stdout.lines();
@@ -179,11 +179,14 @@ impl Remotes {
             return Ok(tags.clone());
         }
         let what = format!("listing the tags of {reference}");
-        let listing = text(
-            None,
-            &["ls-remote", "--tags", "--refs", "--end-of-options", &url],
-            &what,
-        )?;
+        let listing = {
+            let _busy = terminal::busy(what.clone());
+            text(
+                None,
+                &["ls-remote", "--tags", "--refs", "--end-of-options", &url],
+                &what,
+            )?
+        };
         let tags = versions(&listing);
         self.tags.insert(url, tags.clone());
         Ok(tags)
@@ -194,6 +197,7 @@ impl Remotes {
         let what = format!("fetching {reference} {}", tag.version);
         let key = (url(reference), tag.version);
         if !self.fetched.contains_key(&key) {
+            let _busy = terminal::busy(what.clone());
             let fetched = Fetch::of(&key.0, tag, &what)?;
             self.fetched.insert(key.clone(), fetched);
         }
@@ -399,23 +403,34 @@ fn bytes(dir: Option<&Path>, args: &[&str], what: &str) -> Result<Vec<u8>, Failu
         .args(args)
         .env("GIT_TERMINAL_PROMPT", "0")
         .stdin(Stdio::null());
-    let output = command
-        .output()
-        .map_err(|error| failed(what, &format!("git: {error}")))?;
+    let output = command.output().map_err(|error| {
+        let cause = if error.kind() == io::ErrorKind::NotFound {
+            "git is not on PATH, and fetching needs it".to_owned()
+        } else {
+            format!("git: {}", super::cause(&error))
+        };
+        failed(what, &cause)
+    })?;
     if output.status.success() {
         return Ok(output.stdout);
     }
     let stderr = String::from_utf8_lossy(&output.stderr);
-    Err(failed(what, &format!("git: {}", last_line(&stderr))))
+    Err(failed(what, &format!("git: {}", said(&stderr))))
 }
 
-/// What git said last, or that it failed.
-fn last_line(stderr: &str) -> &str {
-    stderr
+/// What git said last, in the person's terms where git's are not: a repository GitHub hides behind a credential
+/// prompt is one that is not there, or private; else the last line, or that it failed.
+fn said(stderr: &str) -> &str {
+    let last = stderr
         .lines()
         .rev()
         .find(|line| !line.trim().is_empty())
-        .map_or("git failed", str::trim)
+        .map_or("git failed", str::trim);
+    if last.contains("could not read Username") || last.contains("terminal prompts disabled") {
+        "no such repository, or one that needs credentials git could not ask for"
+    } else {
+        last
+    }
 }
 
 /// A scratch repository under the temporary directory, removed when the fetch is over. Made exclusively, mode
@@ -475,6 +490,18 @@ mod tests {
         let submodule = b"160000 commit abc\tvendor\x00";
         let refused = blobs(submodule, "fetching").unwrap_err();
         assert!(refused.cause.unwrap().contains("submodule"));
+    }
+
+    #[test]
+    fn what_git_said_is_its_last_line_in_the_persons_terms() {
+        assert_eq!(said("warning: x\nfatal: bad ref\n"), "fatal: bad ref");
+        assert_eq!(said("\n  \n"), "git failed");
+        assert_eq!(
+            said(
+                "fatal: could not read Username for 'https://github.com': terminal prompts disabled\n"
+            ),
+            "no such repository, or one that needs credentials git could not ask for"
+        );
     }
 
     #[test]

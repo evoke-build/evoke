@@ -6,6 +6,18 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- `evoke help`, `evoke add --help` and `-V` are what they say. A command word written after a flag, like
+  `evoke --json try …`, is refused with the way to write it, never decided. The help names the manual, explains a
+  call, and lays its columns by the terminal's width.
+- A spinner turns while a repository is listed or fetched.
+- A second reflex can be added before the key is set: the theft test reports that it did not finish, and the add
+  stands.
+- `evoke update` says `up to date` when nothing moved; `update`, `sync` and `test` with nothing installed say so.
+- A failure names a path under your home as `~/…`, without the OS error number; a missing `git` or `node` is
+  named as such; a repository GitHub hides behind a credential prompt is reported as not found or private; the
+  line to run again never wraps a line already made, and never repeats an input over the cap.
+- A thrown error's frames print without repeating its message; the `fits` line lists the best fit first; an
+  answer a prompt refuses is quoted.
 - `evoke kill the lights` needs no quotes: the words after `evoke` are one input, as the manual said. Every
   argument error now ends in `evoke --help`.
 - A decision no longer lists the inactive reflexes first. An abstain names them once, with `evoke show`.

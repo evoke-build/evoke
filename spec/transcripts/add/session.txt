@@ -13,3 +13,6 @@ $ evoke show
   lights  radhi/home/lights 1.2.0  write  runs lights.mts
   timer   radhi/timer 1.0.1        write  runs timer.mts
   inactive  lights: HUE_TOKEN is not set  →  export HUE_TOKEN=<value>
+$ evoke add radhi/timer --as eggs
++ eggs  radhi/timer 1.0.1  write  runs timer.mts
+  the theft test did not finish: replay needs EVOKE_ANSWERS  →  evoke test

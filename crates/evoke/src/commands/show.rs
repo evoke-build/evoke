@@ -6,8 +6,8 @@ use evoke_core::name::LocalName;
 use evoke_core::text::NonEmpty;
 use evoke_core::{Diagnostic, Fix};
 
-use super::Exit;
 use super::session::{self, Opening, Session};
+use super::{Exit, nothing_installed};
 use crate::args::Command;
 use crate::hosts::{Environment, terminal};
 use crate::report::{self, Gutter};
@@ -18,7 +18,7 @@ pub fn run(command: &Command, name: Option<&LocalName>, environment: &Environmen
         Err(exit) => return exit,
     };
     let exit = shown(&session, name);
-    session.reporter.exit(&command.placeholder(), exit)
+    session.reporter.exit(&command.stand_in(), exit)
 }
 
 fn shown(session: &Session<'_>, name: Option<&LocalName>) -> Exit {
@@ -34,12 +34,7 @@ fn shown(session: &Session<'_>, name: Option<&LocalName>) -> Exit {
     };
     let Some(name) = name else {
         if session.project.reflexes.is_empty() {
-            return Exit::Human(Diagnostic {
-                reflex: None,
-                at: None,
-                message: "no reflexes are installed".to_owned(),
-                fix: Fix::Add,
-            });
+            return nothing_installed();
         }
         terminal::note(&report::rows(
             &session.rows(session.project.reflexes.keys()),
@@ -71,6 +66,8 @@ fn shown(session: &Session<'_>, name: Option<&LocalName>) -> Exit {
             }
             Exit::Ran
         }
-        Err(problems) => session.reporter.human(&invoked, problems.clone()),
+        Err(problems) => session
+            .reporter
+            .human(&session.reporter.command.stand_in(), problems.clone()),
     }
 }

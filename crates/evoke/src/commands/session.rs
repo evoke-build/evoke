@@ -7,7 +7,6 @@
 //! body's `Returned`, an `Edited` file. `open` prints every problem with its fix; every other method leaves its
 //! `Exit` to the command to report, once.
 
-use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use evoke_core::document::Text;
@@ -119,14 +118,11 @@ pub fn open<'a>(
     environment: &'a Environment,
     opening: Opening,
 ) -> Result<Session<'a>, Exit> {
-    let input = command.placeholder();
+    let input = command.stand_in();
     let mut reporter = Reporter {
         command,
         json,
-        paths: Paths {
-            root: String::new(),
-            reflexes: BTreeMap::new(),
-        },
+        paths: Paths::of(environment),
     };
     let root = files::locate(environment)
         .map_err(|failure| reporter.exit(&input, Exit::Failed(failure)))?;
@@ -614,7 +610,7 @@ impl Session<'_> {
         Ok(Some(Diagnostic {
             reflex: None,
             at: None,
-            message: "no JavaScript runtime (node) is on PATH".to_owned(),
+            message: "node is not on PATH; a .mts reflex needs Node 24 or newer".to_owned(),
             fix: Fix::Sync,
         }))
     }

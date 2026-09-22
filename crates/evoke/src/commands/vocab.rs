@@ -22,7 +22,7 @@ pub fn run(
         Ok(session) => session,
         Err(exit) => return exit,
     };
-    let input = command.placeholder();
+    let input = command.stand_in();
     let exit = changed(&session, &input, name, change);
     session.reporter.exit(&input, exit)
 }

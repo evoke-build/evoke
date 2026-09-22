@@ -47,6 +47,7 @@ pub fn run(command: &Command, environment: &Environment) -> Exit {
     let paths = Paths {
         root: files::shown(&cwd, environment),
         reflexes: BTreeMap::from([(name.clone(), ".".to_owned())]),
+        home: environment.get("HOME").map(str::to_owned),
     };
     let checking = Checking {
         cwd: &cwd,

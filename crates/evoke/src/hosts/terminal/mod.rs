@@ -1,10 +1,12 @@
 //! What reaches the terminal: results on stdout, everything else on stderr — coloured and weighted where stderr
 //! is a terminal that shows it, plain everywhere else; whether stdin is a pipe, and its lines; prompts on
-//! `/dev/tty`, never stdin; the REPL's lines, edited and remembered; a spinner while a request is in flight. In:
-//! `Text` and prompts. Out: nothing, the lines a pipe holds, or what was typed at a prompt.
+//! `/dev/tty`, never stdin; the REPL's lines, edited and remembered; a spinner while a request or a fetch is in
+//! flight; the width of the terminal stdout is, for a layout that must fit. In: `Text` and prompts. Out: nothing,
+//! the lines a pipe holds, or what was typed at a prompt.
 
 mod busy;
 mod repl;
+mod size;
 mod text;
 
 use std::fs::{File, OpenOptions};
@@ -14,6 +16,7 @@ use std::sync::OnceLock;
 
 pub use busy::Busy;
 pub use repl::Repl;
+pub use size::columns;
 pub use text::{Role, Text};
 
 use super::{Environment, Failure, failed};
@@ -75,8 +78,8 @@ pub fn note(text: &Text) {
 
 /// A spinner on stderr while the returned value is held: `what` is happening.
 #[must_use]
-pub fn busy(what: &'static str) -> Busy {
-    Busy::start(what, look())
+pub fn busy(what: impl Into<String>) -> Busy {
+    Busy::start(what.into(), look())
 }
 
 /// The REPL's reader over the terminal, its history in the file; none when there is no terminal.
@@ -120,7 +123,7 @@ impl Tty {
             .write_all(line.as_bytes())
             .and_then(|()| self.writer.write_all(b"\n"))
             .and_then(|()| self.writer.flush())
-            .map_err(|error| failed("showing the prompt", &error.to_string()))
+            .map_err(|error| failed("showing the prompt", &super::cause(&error)))
     }
 
     /// Shows the text and reads what was typed, without its line end; none at the end of input.
@@ -129,7 +132,7 @@ impl Tty {
             .writer
             .write_all(text.as_bytes())
             .and_then(|()| self.writer.flush());
-        asked.map_err(|error| failed("showing the prompt", &error.to_string()))?;
+        asked.map_err(|error| failed("showing the prompt", &super::cause(&error)))?;
         let mut typed = String::new();
         match self.reader.read_line(&mut typed) {
             Ok(0) => {
@@ -137,7 +140,7 @@ impl Tty {
                 Ok(None)
             }
             Ok(_) => Ok(Some(typed.trim_end_matches(['\n', '\r']).to_owned())),
-            Err(error) => Err(failed("reading the answer", &error.to_string())),
+            Err(error) => Err(failed("reading the answer", &super::cause(&error))),
         }
     }
 }

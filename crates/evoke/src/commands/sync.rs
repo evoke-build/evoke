@@ -8,7 +8,7 @@ use evoke_core::name::LocalName;
 use evoke_core::project::Location;
 
 use super::session::{self, Opening, Session};
-use super::{Exit, about};
+use super::{Exit, about, nothing_installed};
 use crate::args::Command;
 use crate::hosts::{Environment, terminal};
 use crate::hosts::{git, store};
@@ -19,12 +19,15 @@ pub fn run(command: &Command, environment: &Environment) -> Exit {
         Ok(session) => session,
         Err(exit) => return exit,
     };
-    let input = command.placeholder();
+    let input = command.stand_in();
     let exit = synced(&mut session, &input);
     session.reporter.exit(&input, exit)
 }
 
 fn synced(session: &mut Session<'_>, input: &str) -> Exit {
+    if session.project.reflexes.is_empty() {
+        return nothing_installed();
+    }
     let mut realised = Vec::new();
     let mut remotes = git::Remotes::default();
     let locked: Vec<(LocalName, Location)> = session

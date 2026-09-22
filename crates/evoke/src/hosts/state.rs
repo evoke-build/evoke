@@ -202,7 +202,7 @@ fn dir_of(path: &Path) -> Result<(), Failure> {
 fn failed(what: &str, error: &io::Error) -> Failure {
     Failure {
         what: what.to_owned(),
-        cause: Some(error.to_string()),
+        cause: Some(super::cause(error)),
         fix: Fix::Rerun,
     }
 }

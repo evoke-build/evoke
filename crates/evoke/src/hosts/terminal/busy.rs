@@ -1,6 +1,6 @@
-//! A spinner while something is in flight — the request to the adapter. It shows on stderr only where the terminal
-//! moves, and only once the wait has lasted a moment, so a cached or replayed answer never flickers; it is cleared
-//! the instant the wait ends. In: what is happening. Out: nothing that outlives the wait.
+//! A spinner while something is in flight — the request to the adapter, a fetch from a remote. It shows on stderr
+//! only where the terminal moves, and only once the wait has lasted a moment, so a cached or replayed answer never
+//! flickers; it is cleared the instant the wait ends. In: what is happening. Out: nothing that outlives the wait.
 
 use std::io::{self, Write};
 use std::sync::mpsc::{self, Receiver, RecvTimeoutError, Sender};
@@ -25,12 +25,12 @@ struct Spinning {
 }
 
 impl Busy {
-    pub(super) fn start(what: &'static str, look: Look) -> Self {
+    pub(super) fn start(what: String, look: Look) -> Self {
         if !look.animated {
             return Self(None);
         }
         let (stop, stopped) = mpsc::channel();
-        let thread = thread::spawn(move || spin(what, look.styled, &stopped));
+        let thread = thread::spawn(move || spin(&what, look.styled, &stopped));
         Self(Some(Spinning { stop, thread }))
     }
 }
@@ -75,7 +75,7 @@ mod tests {
 
     #[test]
     fn a_terminal_that_cannot_move_gets_no_spinner() {
-        let busy = Busy::start("deciding", Look::default());
+        let busy = Busy::start("deciding".to_owned(), Look::default());
         assert!(busy.0.is_none());
         drop(busy);
     }
@@ -88,7 +88,7 @@ mod tests {
             editing: true,
         };
         let started = std::time::Instant::now();
-        let busy = Busy::start("deciding", look);
+        let busy = Busy::start("deciding".to_owned(), look);
         assert!(busy.0.is_some());
         drop(busy);
         assert!(started.elapsed() < PATIENCE);

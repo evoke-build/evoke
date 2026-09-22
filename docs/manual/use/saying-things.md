@@ -62,15 +62,19 @@ den lights off                                 ← stdout: what the reflex retur
 | `--tag <tag>` | Offers only the reflexes carrying the tag. Repeat it to widen: `--tag home --tag sound`. |
 | `--`          | The rest is input, even when it begins with a command word: `evoke -- test the alarm`.  |
 
-`--help` or `-h`, and `--version`, only count in the first place. They print to stdout. `help` on its own is a
-sentence like any other.
+`--help`, `-h` or `help`, and `--version` or `-V`, only count in the first place. They print to stdout.
+`evoke add --help` prints the help too, as does `-h` right after any command word. To say the word `help` as a
+sentence, put `--` before it.
+
+A command word written after a flag, like `evoke --json try "lock it"`, is refused rather than decided. The line
+names the command and how to write it. Nothing runs by accident.
 
 ## Command words
 
 The first argument selects a command only when it is *exactly* one of these words:
 
 ```text
-try  why  run  add  remove  update  sync  trust  show  teach  vocab  config  test  new  check
+help  try  why  run  add  remove  update  sync  trust  show  teach  vocab  config  test  new  check
 ```
 
 Five more words are reserved for later: `edit`, `search`, `publish`, `adapter`, `calibrate`. Reserving them now
@@ -87,6 +91,9 @@ with.
 | 3    | Needs a human: a missing key, an untrusted project, a prompt with no terminal, a line to fix |
 | 4    | The adapter failed                                                         |
 
+`Ctrl-C` ends `evoke` at once, wherever it is. A program it started ends with it. The shell reports the interrupt
+as exit 130.
+
 ## Limits and time
 
 An input over 2 000 characters is refused. One decision has 30 seconds. The classifier's answer and the program's
@@ -97,7 +104,7 @@ never guesses.
 
 On a terminal, `evoke` colours what matters. The reflex's name in a call. The effect: green for `read`, yellow
 for `write`, red for `destructive`. The weakest judgment, dimmed. The `→` of a fix. The `+` and `-` of a write. A
-spinner turns while a request is in flight. Piped, logged, under `NO_COLOR`, or with `TERM=dumb`, the same words
-print plain.
+spinner turns while a request or a fetch is in flight. Piped, logged, under `NO_COLOR`, or with `TERM=dumb`, the
+same words print plain. On a terminal narrower than the help, `--help` puts each description under its command.
 
 **Next:** [Outcomes](outcomes.md).

@@ -6,11 +6,11 @@ use evoke_core::{Diagnostic, Fix};
 use super::Exit;
 use crate::hosts::state::State;
 use crate::hosts::{Environment, terminal};
-use crate::report::{self, Line};
+use crate::report::{self, Line, Paths};
 
 pub fn run(environment: &Environment) -> Exit {
     let exit = explained(environment);
-    if let Some(line) = report::exit(&exit, "evoke \"<input>\"", None) {
+    if let Some(line) = report::exit(&exit, "evoke \"<input>\"", Some(&Paths::of(environment))) {
         terminal::note(&line);
     }
     exit

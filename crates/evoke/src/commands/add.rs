@@ -3,8 +3,8 @@
 //! manifest read and linted; the installed examples routed over the new set, a few at a time, to name each phrase
 //! a newcomer steals; then the project, the lock and `evoke.d.ts` written, the runtime recorded, and for each
 //! newcomer its row, then the lint, theft and inactive lines. Nothing is written until every newcomer is in hand;
-//! a theft test the adapter could not finish is reported with `evoke test`, never a refusal. In: the refs, one name
-//! or none, the environment. Out: `Exit`.
+//! a theft test that could not finish — the adapter faulted, or has no key yet — is reported with `evoke test`,
+//! never a refusal. In: the refs, one name or none, the environment. Out: `Exit`.
 
 use std::path::PathBuf;
 
@@ -12,8 +12,8 @@ use evoke_core::document::Text;
 use evoke_core::name::LocalName;
 use evoke_core::project::{Location, Locked, Reference};
 use evoke_core::{
-    Case, Diagnostic, Document, Fault, File, Finding, Fix, Item, Manifest, Scope, Table, Theft,
-    Version, add_entry, cases, compile, effective, lint, manifest, read, request, thieves,
+    Case, Diagnostic, Document, File, Finding, Fix, Item, Manifest, Scope, Table, Theft, Version,
+    add_entry, cases, compile, effective, lint, manifest, read, request, thieves,
 };
 
 use super::session::{self, Opening, Session};
@@ -33,7 +33,7 @@ pub fn run(
         Ok(session) => session,
         Err(exit) => return exit,
     };
-    let input = command.placeholder();
+    let input = command.stand_in();
     let exit = added(&mut session, &input, refs, name);
     session.reporter.exit(&input, exit)
 }
@@ -69,8 +69,7 @@ fn added(session: &mut Session<'_>, input: &str, refs: &[Ref], name: Option<&Loc
     }
     let (thefts, unfinished) = match stolen(session, input, &newcomers) {
         Ok(thefts) => (thefts, None),
-        Err(Exit::Adapter(fault)) => (Vec::new(), Some(fault)),
-        Err(exit) => return exit,
+        Err(exit) => (Vec::new(), Some(exit)),
     };
     for newcomer in &newcomers {
         if let Err(exit) = session.land(input, &add_entry(&newcomer.name, &newcomer.location)) {
@@ -111,8 +110,8 @@ fn added(session: &mut Session<'_>, input: &str, refs: &[Ref], name: Option<&Loc
     for theft in &thefts {
         session.reporter.note(input, &stolen_line(theft));
     }
-    if let Some(fault) = unfinished {
-        session.reporter.note(input, &unfinished_line(&fault));
+    if let Some(exit) = unfinished {
+        session.reporter.note(input, &unfinished_line(&exit));
     }
     let problems = session.inactive_of(names.iter().copied());
     if !problems.is_empty() {
@@ -393,12 +392,13 @@ fn stolen_line(theft: &Theft) -> Diagnostic {
     }
 }
 
-/// The theft test ended in a fault: the install stands, and `evoke test` routes every example again.
-fn unfinished_line(fault: &Fault) -> Diagnostic {
+/// The theft test did not finish — a fault, a missing key, a plan it could not compile: the install stands, and
+/// `evoke test` routes every example again.
+fn unfinished_line(exit: &Exit) -> Diagnostic {
     Diagnostic {
         reflex: None,
         at: None,
-        message: format!("the theft test did not finish: {fault}"),
+        message: format!("the theft test did not finish: {}", report::said(exit)),
         fix: Fix::Test,
     }
 }

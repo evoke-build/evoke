@@ -16,9 +16,9 @@ pub fn run(command: &Command, arguments: &Arguments, environment: &Environment) 
         Ok(session) => session,
         Err(exit) => return exit,
     };
-    let adapter = match session.adapter(&command.placeholder()) {
+    let adapter = match session.adapter(&command.stand_in()) {
         Ok(adapter) => adapter,
-        Err(exit) => return session.reporter.exit(&command.placeholder(), exit),
+        Err(exit) => return session.reporter.exit(&command.stand_in(), exit),
     };
     match &arguments.input {
         Inputs::One(input) => tried(&session, &*adapter, arguments, input),

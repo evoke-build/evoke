@@ -1,9 +1,9 @@
 // The loader: one envelope line on stdin — { run, args, input, config, deadline } — the body `run` names imported
 // and its default export called with (args, { input, config, signal }), then one result line on stdout:
 // { text, data? } or { error }. It exits when stdin closes, before or during a body, so its life is bounded by its
-// parent's. The body's console and stdout go to stderr, as does the frame of an error it throws, without the frames
-// inside Node itself. SIGTERM and the deadline abort `signal`; a body that has not settled a second later is
-// abandoned. The SDK ships this same file.
+// parent's. The body's console and stdout go to stderr, as do the frames of an error it throws — the frames alone,
+// without the message the host reports, and without the frames inside Node itself. SIGTERM and the deadline abort
+// `signal`; a body that has not settled a second later is abandoned. The SDK ships this same file.
 import { writeSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
@@ -59,13 +59,18 @@ async function run(line) {
     out(result.data === undefined ? { text: result.text } : { text: result.text, data: result.data });
     process.exit(0);
   } catch (error) {
-    if (error instanceof Error && error.stack) process.stderr.write(`${where(error.stack)}\n`);
+    const frames = error instanceof Error && error.stack ? where(error.stack) : "";
+    if (frames) process.stderr.write(`${frames}\n`);
     fail(error instanceof Error ? error.message : String(error));
   }
 }
 
 function where(stack) {
-  return stack.split("\n").filter((line) => !line.includes("node:internal") && !line.includes("[eval")).join("\n");
+  return stack
+    .split("\n")
+    .slice(1)
+    .filter((line) => !line.includes("node:internal") && !line.includes("[eval"))
+    .join("\n");
 }
 
 function describe(value) {

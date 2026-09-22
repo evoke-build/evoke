@@ -7,3 +7,5 @@ $ evoke update
 $ HUE_TOKEN=hue-example evoke "kill the lights in the den"
   lights room="den" power="off"  0.93
 den lights off
+$ evoke update
+  up to date

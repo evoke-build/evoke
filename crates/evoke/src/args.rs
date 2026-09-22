@@ -1,8 +1,8 @@
 //! The grammar of decision 0015, pure: a first argument exactly a command word selects the command, else the
-//! arguments are the input, bare words joined by one space; `--help`, `-h` and `--version` in the first place are
-//! what they say; `--` forces input; stdin lines are input. In: the arguments after the program, and whether stdin
-//! is a pipe. Out: a `Command` with validated arguments — a blank input is none — or a `Diagnostic` whose fix is
-//! `evoke --help`.
+//! arguments are the input, bare words joined by one space; `--help`, `-h`, `help` and `--version`, `-V` in the
+//! first place are what they say, and `--help` or `-h` right after a command word is the help too; `--` forces
+//! input; stdin lines are input. In: the arguments after the program, and whether stdin is a pipe. Out: a
+//! `Command` with validated arguments — a blank input is none — or a `Diagnostic` whose fix is `evoke --help`.
 
 use std::ffi::OsString;
 use std::fmt::{self, Write as _};
@@ -10,10 +10,11 @@ use std::fmt::{self, Write as _};
 use evoke_core::name::{ConfigKey, LocalName, Tag, VarName, VocabName, Word};
 use evoke_core::project::{Location, Setting};
 use evoke_core::vocabulary::Meaning;
-use evoke_core::{Clean, Diagnostic, Fix, VocabChange, Written, call, reference};
+use evoke_core::{Clean, Diagnostic, Fix, Input, VocabChange, Written, call, reference};
 
 /// Every command word, so a new one never reads as input; the ones not built yet are refused by name.
-const WORDS: [&str; 20] = [
+const WORDS: [&str; 21] = [
+    "help",
     "try",
     "why",
     "run",
@@ -87,9 +88,9 @@ pub enum Command {
     Check,
     /// `evoke test [name]`: every example and test of every active reflex, or of one, judged over the whole set.
     Test(Option<LocalName>),
-    /// `evoke --help`, or `-h`: every command, and what it does.
+    /// `evoke --help`, `-h` or `help`, or `--help` after a command word: every command, and what it does.
     Help,
-    /// `evoke --version`: `evoke <version>`.
+    /// `evoke --version` or `-V`: `evoke <version>`.
     Version,
 }
 
@@ -220,13 +221,20 @@ impl Command {
             let _ = write!(line, " --tag {tag}");
         }
         line.push(' ');
-        line.push_str(&quoted(input));
+        // An input over the cap is refused whole: the line to run is one with a shorter input.
+        let shown = if input.chars().count() > Input::CAP {
+            "<input>"
+        } else {
+            input
+        };
+        line.push_str(&quoted(shown));
         line
     }
 
-    /// The input as the setup lines name it before one is read.
+    /// The input as the setup lines name it before one is read: the one given, else `<input>` — for `teach`,
+    /// `<utterance>`. What a command reports its problems against until it has read an input.
     #[must_use]
-    pub fn placeholder(&self) -> String {
+    pub fn stand_in(&self) -> String {
         match self {
             Self::Use(Arguments {
                 input: Inputs::One(input),
@@ -235,16 +243,22 @@ impl Command {
             | Self::Try(Arguments {
                 input: Inputs::One(input),
                 ..
-            }) => self.invoked(input),
+            }) => input.clone(),
             Self::Teach {
                 utterance: Some(utterance),
                 ..
-            } => self.invoked(utterance),
+            } => utterance.clone(),
             Self::Teach {
                 utterance: None, ..
-            } => self.invoked("<utterance>"),
-            _ => self.invoked("<input>"),
+            } => "<utterance>".to_owned(),
+            _ => "<input>".to_owned(),
         }
+    }
+
+    /// The literal command as the setup lines name it: `invoked` at the stand-in input.
+    #[must_use]
+    pub fn placeholder(&self) -> String {
+        self.invoked(&self.stand_in())
     }
 }
 
@@ -278,9 +292,15 @@ pub fn parse(
     let Some((word, rest)) = arguments.split_first() else {
         return deciding("evoke", &arguments, stdin_is_pipe).map(Command::Use);
     };
+    // `evoke add --help` is the help, as `evoke --help` is; after `--`, or as an input, `--help` is a word.
+    if WORDS.contains(&word.as_str())
+        && matches!(rest.first().map(String::as_str), Some("--help" | "-h"))
+    {
+        return Ok(Command::Help);
+    }
     match word.as_str() {
-        "--help" | "-h" => Ok(Command::Help),
-        "--version" => Ok(Command::Version),
+        "--help" | "-h" | "help" => Ok(Command::Help),
+        "--version" | "-V" => Ok(Command::Version),
         "try" => {
             let arguments = deciding("try", rest, stdin_is_pipe)?;
             if arguments.input == Inputs::Terminal {
@@ -344,7 +364,8 @@ pub fn parse(
 }
 
 /// `[--json] [--tag <tag>]… [--] [<input>…]`: the bare words are one input, joined by a space, so a sentence
-/// needs no quotes; after `--` even a flag is a word.
+/// needs no quotes; after `--` even a flag is a word. A command word behind a flag — `evoke --json try …` — is
+/// refused rather than decided, since it was meant as the command.
 fn deciding(
     word: &str,
     arguments: &[String],
@@ -365,6 +386,11 @@ fn deciding(
             flag if flag.starts_with('-') && flag.len() > 1 => {
                 return Err(usage(format!(
                     "{flag} is not a flag of {word}; the flags are --json and --tag <tag>, and -- ends them"
+                )));
+            }
+            input if word == "evoke" && words.is_empty() && WORDS.contains(&input) => {
+                return Err(usage(format!(
+                    "{input} is a command word; write it first, or -- before it to say it"
                 )));
             }
             input => words.push(input),
@@ -433,7 +459,7 @@ fn line(elements: &[String]) -> String {
 fn vocab(arguments: &[String]) -> Result<Command, Diagnostic> {
     let Some((name, rest)) = arguments.split_first() else {
         return Err(usage(
-            "vocab needs a name: evoke vocab <name> [add <word> \"<meaning>\" [--value v] | remove <word>]",
+            "vocab needs a name: evoke vocab <name> [add <word> \"<meaning>\" [--value <v>] | remove <word>]",
         ));
     };
     let name = VocabName::new(name).map_err(usage)?;
@@ -462,7 +488,7 @@ fn vocab(arguments: &[String]) -> Result<Command, Diagnostic> {
             }
             let [word, meaning] = words.as_slice() else {
                 return Err(usage(format!(
-                    "vocab {name} add takes a word and its meaning: evoke vocab {name} add <word> \"<meaning>\" [--value v]"
+                    "vocab {name} add takes a word and its meaning: evoke vocab {name} add <word> \"<meaning>\" [--value <v>]"
                 )));
             };
             let word = Word::new(word).map_err(|why| usage(format!("word {why}")))?;
@@ -651,20 +677,81 @@ mod tests {
     fn help_and_version_are_flags_in_the_first_place_and_words_nowhere() {
         assert_eq!(parsed(&["--help"], false), Ok(Command::Help));
         assert_eq!(parsed(&["-h"], true), Ok(Command::Help));
+        assert_eq!(parsed(&["help"], false), Ok(Command::Help));
+        assert_eq!(parsed(&["help", "add"], false), Ok(Command::Help));
         assert_eq!(parsed(&["--help", "show"], false), Ok(Command::Help));
         assert_eq!(parsed(&["--version"], false), Ok(Command::Version));
+        assert_eq!(parsed(&["-V"], false), Ok(Command::Version));
         assert_eq!(Command::Help.invoked(""), "evoke --help");
         assert_eq!(Command::Version.invoked(""), "evoke --version");
-        // `help` stays an utterance, and after `--` even `--help` is one.
-        assert_eq!(
-            arguments_of(&["help"], false).input,
-            Inputs::One("help".to_owned())
-        );
+        // Right after a command word, `--help` is the help; anywhere else it is a word or a flag refused.
+        assert_eq!(parsed(&["show", "--help"], false), Ok(Command::Help));
+        assert_eq!(parsed(&["add", "-h"], false), Ok(Command::Help));
+        assert_eq!(parsed(&["try", "--help"], false), Ok(Command::Help));
+        assert!(parsed(&["try", "x", "--help"], false).is_err());
+        assert!(parsed(&["show", "lights", "--help"], false).is_err());
         assert_eq!(
             arguments_of(&["--", "--help"], false).input,
             Inputs::One("--help".to_owned())
         );
-        assert!(parsed(&["show", "--help"], false).is_err());
+        assert_eq!(
+            arguments_of(&["--", "help"], false).input,
+            Inputs::One("help".to_owned())
+        );
+        assert_eq!(
+            arguments_of(&["try", "help"], false).input,
+            Inputs::One("help".to_owned())
+        );
+    }
+
+    #[test]
+    fn a_command_word_behind_a_flag_is_refused_not_decided() {
+        let refused = parsed(&["--json", "try", "lock it"], false).unwrap_err();
+        assert_eq!(
+            refused.message,
+            "try is a command word; write it first, or -- before it to say it"
+        );
+        assert_eq!(refused.fix, Fix::Help);
+        assert!(parsed(&["--tag", "home", "show"], false).is_err());
+        assert_eq!(
+            arguments_of(&["--json", "--", "try", "it"], false).input,
+            Inputs::One("try it".to_owned())
+        );
+        assert_eq!(
+            arguments_of(&["--json", "lock", "it"], false).input,
+            Inputs::One("lock it".to_owned())
+        );
+    }
+
+    #[test]
+    fn the_stand_in_is_the_input_or_its_placeholder() {
+        let given = parsed(&["try", "--json", "kill the lights"], false).unwrap();
+        assert_eq!(given.stand_in(), "kill the lights");
+        assert_eq!(given.placeholder(), "evoke try --json \"kill the lights\"");
+        assert_eq!(parsed(&[], true).unwrap().stand_in(), "<input>");
+        assert_eq!(
+            parsed(&["teach", "lights", "state=off"], false)
+                .unwrap()
+                .stand_in(),
+            "<utterance>"
+        );
+        assert_eq!(parsed(&["show"], false).unwrap().stand_in(), "<input>");
+        // The line to rerun never wraps a line already made.
+        let command = parsed(&[], true).unwrap();
+        assert_eq!(command.invoked(&command.stand_in()), "evoke \"<input>\"");
+        // An input over the cap is not repeated in the line to rerun.
+        let long = "a".repeat(Input::CAP + 1);
+        assert_eq!(
+            parsed(&[long.as_str()], false).unwrap().invoked(&long),
+            "evoke \"<input>\""
+        );
+        let exact = "a".repeat(Input::CAP);
+        assert!(
+            parsed(&[exact.as_str()], false)
+                .unwrap()
+                .invoked(&exact)
+                .contains(&exact)
+        );
     }
 
     #[test]
