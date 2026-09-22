@@ -400,11 +400,12 @@ pre.term .buttons button:hover { color: var(--term-fg); }
   .right-buttons a.use-cases { display: none; }
 }
 
-/* The six sentences, closing every page */
+/* The six sentences, closing every page. The tracks may go narrower than a sentence, which then ends in an
+   ellipsis instead of widening the card past the column. */
 
 .at-work {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 2.4rem 3.2rem;
   align-items: center;
   margin: 6rem 0 1rem;
@@ -477,5 +478,5 @@ pre.term .buttons button:hover { color: var(--term-fg); }
 .at-work .said i { font-style: normal; color: var(--accent); }
 
 @media (max-width: 720px) {
-  .at-work { grid-template-columns: 1fr; padding: 2rem 2.2rem; }
+  .at-work { grid-template-columns: minmax(0, 1fr); padding: 2rem 2.2rem; }
 }
