@@ -42,7 +42,9 @@ the tool guarantees around them, and what it does not.
 ## What the files guarantee
 
 - **Trust binds to content.** A project outside home decides only after `evoke trust`. The digest of its four
-  owned paths is checked at every run. A `git pull` that changed an overlay is a stop, not a surprise.
+  owned paths is checked at every run. A `git pull` that changed an overlay is a stop, not a surprise. A local
+  reflex, `./dir`, is outside those paths. Its directory is yours, so a pull that changes it runs what it now
+  holds, under the effect its manifest now claims.
 - **The lock binds to content.** Every remote reflex is pinned by tag, commit and `h1`. The store's copy is
   hashed again every time `evoke` starts. A tag that moved is refused.
 - **Fetching is narrow.** `git` is called with a strict ref grammar, `--end-of-options`, and an allow-list of
@@ -53,11 +55,23 @@ the tool guarantees around them, and what it does not.
   state directory. The log and the REPL's history hold what you typed and what a body returned. Only you can read
   them.
 - **Adapter names resolve on your machine only**, against the tool's built-ins, never from a project directory.
-  So a cloned repository cannot point your decisions at a classifier of its choosing.
+  So a cloned repository cannot point your decisions at a classifier of its choosing. The endpoint is built into
+  the adapter, whose id keys the cache and the lock, so no file and no variable moves it. A proxy named in your
+  environment carries the connection there and sees ciphertext: the CLI trusts Mozilla's roots, never your
+  platform's, and the SDK trusts what your Node trusts.
 - **The SDK never searches.** `load` takes an explicit root, never fetches, and never writes. It hands each
   tenant their own vocabulary. So a server cannot be hijacked by whatever project a working directory holds.
 
+## Check it yourself
+
+Nothing on this page needs a key to test. `evoke run <call>` runs a reflex by name and calls no classifier. The
+`replay` adapter answers every decision from a file you write: set `adapter = "replay"` in `evoke.toml` and name
+the file in `EVOKE_ANSWERS`. [Testing](sdk/testing.md#the-cli-on-a-recording) shows the file. An answer that
+tries to mint a value, a key no argument offers or a number that is not a probability, ends the decision with a
+fault, and nothing runs. The repository's `spec/` holds the transcripts and vectors behind the claims above, and
+`mise run test` runs them without a key.
+
 ## Reporting
 
-Report a vulnerability privately to the maintainers at [evoke-build/evoke](https://github.com/evoke-build/evoke)
-rather than in a public issue.
+Report a vulnerability privately, through
+[GitHub's report form](https://github.com/evoke-build/evoke/security/advisories/new), never in a public issue.

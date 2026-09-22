@@ -10,6 +10,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   hosts. The manual's environment page lists both.
 - A connection that fails is said plainly: `could not connect to api.typesafe.ai: connection refused`, the proxy
   named when it carries the connection, in place of the library's line with an OS error number.
+- `SECURITY.md` says where a vulnerability is reported: GitHub's private form, never a public issue. The manual's
+  security page says how each claim is tried without a key, why the endpoint is built in, and that a local
+  reflex is outside trust.
 
 ## [0.2.0] - 2026-09-22
 

@@ -43,7 +43,8 @@ Start with the [manual](https://evoke.build/manual/) at [evoke.build](https://ev
 Tools and tasks are pinned by [mise](https://mise.jdx.dev). Run `mise install`, then `mise run lint` and
 `mise run test`. Those two are what CI runs; `mise tasks` lists the rest. `bin/dx <command>` runs a command with
 the same toolchain inside an OrbStack machine named `devbox`, for those who develop in one. The tests need no key.
-To decide against Jev, export `TYPESAFE_API_KEY`.
+To decide against Jev, export `TYPESAFE_API_KEY`. To decide without one, the `replay` adapter answers from a file
+you write: [Testing](https://evoke.build/manual/sdk/testing.html#the-cli-on-a-recording).
 
 ## Licence
 
