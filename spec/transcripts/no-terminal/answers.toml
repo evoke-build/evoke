@@ -46,3 +46,17 @@ route          = { power = 0.97, timer = 0.01, none = 0.02 }
 "lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
 "lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "power.action" = { restart = 0.97, sleep = 0.01, shutdown = 0.01, unstated = 0.01 }
+
+[answers."start a 25 minute timer and kill the lights in the den"]
+"weave.split_0" = { yes = 0.95 }
+
+[answers."start a 25 minute timer"]
+route            = { timer = 0.9, lights = 0.02, volume = 0.02, none = 0.06 }
+"fits.lights"    = { yes = 0.05 }
+"fits.timer"     = { yes = 0.8 }
+"fits.volume"    = { yes = 0.05 }
+"fits.power"     = { yes = 0.02 }
+"lights.room"    = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state"   = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"power.action"   = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+"timer.duration" = { "8-17" = 0.7, unstated = 0.3 }

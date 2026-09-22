@@ -12,10 +12,11 @@ use evoke_core::text::NonEmpty;
 use evoke_core::{
     Active, Baseline, Case, Chosen, Decision, Digest, Document, Fault, Fix, Gate, Input, Installed,
     Lesson, Limits, Lock, Manifest, Overlay, Plan, Raw, Request, Scope, Utterance, Value, Verdict,
-    Written, add_entry, argv, baseline, by_name, call as call_grammar, cases, compile, compose,
-    consent, diff, effective, envelope, fill, gate, identity, judge, lint, lock, manifest, overlay,
-    picked, project, project_dts, propose, read, reference, reflex_dts, regressions, remove_entry,
-    render_lock, report, request, set_config, teach, thieves, vocab_edit, vocabulary,
+    Weave, Written, add_entry, argv, baseline, by_name, call as call_grammar, cases, compile,
+    compose, consent, diff, effective, envelope, fill, gate, identity, judge, lint, lock, manifest,
+    overlay, picked, project, project_dts, propose, read, reference, reflex_dts, regressions,
+    remove_entry, render_lock, report, request, set_config, teach, thieves, vocab_edit, vocabulary,
+    weave,
 };
 use indexmap::IndexMap;
 use serde::Serialize;
@@ -86,7 +87,20 @@ fn decide(op: &str, input: &Json) -> Answer {
             &arg::<Plan>(input, "plan")?,
             text(input, "input")?,
             &arg::<Vec<Tag>>(input, "tags")?,
+            opt::<LocalName>(input, "only")?.as_ref(),
             arg::<Scope>(input, "scope")?,
+        )),
+        "weave.plan" => result(weave::planning::plan(
+            &arg::<Plan>(input, "plan")?,
+            text(input, "input")?,
+            &arg::<Vec<Tag>>(input, "tags")?,
+            &arg::<weave::Answers>(input, "answers")?,
+        )),
+        "weave.execute" => ok(weave::running::execute(
+            &arg::<Plan>(input, "plan")?,
+            opt::<Gate>(input, "gate")?.as_ref(),
+            &arg::<Weave>(input, "weave")?,
+            &arg::<weave::Progress>(input, "progress")?,
         )),
         "read" => result(read(
             &arg::<Plan>(input, "plan")?,

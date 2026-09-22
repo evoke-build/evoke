@@ -1,0 +1,196 @@
+{
+  "input": "start a 25 minute timer and kill the lights in the den",
+  "splits": [
+    {
+      "start": 23,
+      "end": 28,
+      "word": "and",
+      "order": "and",
+      "p": 0.95
+    }
+  ],
+  "steps": [
+    {
+      "n": 1,
+      "text": "start a 25 minute timer",
+      "end": 23,
+      "decision": {
+        "outcome": "confirm",
+        "reflex": "timer",
+        "args": {
+          "duration": {
+            "type": "pick",
+            "span": {
+              "start": 8,
+              "end": 17,
+              "text": "25 minute"
+            },
+            "value": {
+              "type": "duration",
+              "value": 1500
+            }
+          }
+        },
+        "call": "timer duration=\"25 minute\"",
+        "effect": "write",
+        "confidence": 0.7,
+        "weakest": {
+          "question": "timer.duration",
+          "top": "8-17",
+          "p": 0.7
+        },
+        "judgments": [
+          {
+            "question": "route",
+            "top": "timer",
+            "p": 0.9
+          },
+          {
+            "question": "timer.duration",
+            "top": "8-17",
+            "p": 0.7
+          }
+        ],
+        "runner_up": {
+          "reflex": "lights",
+          "route": 0.02,
+          "fits": 0.05
+        },
+        "contenders": [
+          {
+            "reflex": "timer",
+            "route": 0.9,
+            "fits": 0.8
+          },
+          {
+            "reflex": "lights",
+            "route": 0.02,
+            "fits": 0.05
+          },
+          {
+            "reflex": "volume",
+            "route": 0.02,
+            "fits": 0.05
+          },
+          {
+            "reflex": "contact",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "mail",
+            "route": 0,
+            "fits": 0.02
+          }
+        ],
+        "prompt": {
+          "own": "timer duration=\"25 minute\" · write · weakest: duration 0.70",
+          "template": "Start a 25 minute timer?"
+        },
+        "because": [
+          {
+            "type": "under_floor",
+            "judgment": {
+              "question": "timer.duration",
+              "top": "8-17",
+              "p": 0.7
+            },
+            "floor": 0.8
+          }
+        ]
+      },
+      "reflex": "timer",
+      "effect": "write"
+    },
+    {
+      "n": 2,
+      "text": "kill the lights in the den",
+      "end": 54,
+      "decision": {
+        "outcome": "run",
+        "reflex": "lights",
+        "args": {
+          "room": {
+            "type": "word",
+            "word": "den"
+          },
+          "state": {
+            "type": "option",
+            "key": "off"
+          }
+        },
+        "call": "lights room=\"den\" state=\"off\"",
+        "effect": "write",
+        "confidence": 0.85,
+        "weakest": {
+          "question": "lights.room",
+          "top": "den",
+          "p": 0.85
+        },
+        "judgments": [
+          {
+            "question": "route",
+            "top": "lights",
+            "p": 0.91
+          },
+          {
+            "question": "lights.room",
+            "top": "den",
+            "p": 0.85
+          },
+          {
+            "question": "lights.state",
+            "top": "off",
+            "p": 0.88
+          }
+        ],
+        "runner_up": {
+          "reflex": "timer",
+          "route": 0.02,
+          "fits": 0.05
+        },
+        "contenders": [
+          {
+            "reflex": "lights",
+            "route": 0.91,
+            "fits": 0.7
+          },
+          {
+            "reflex": "timer",
+            "route": 0.02,
+            "fits": 0.05
+          },
+          {
+            "reflex": "volume",
+            "route": 0.01,
+            "fits": 0.05
+          },
+          {
+            "reflex": "contact",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "mail",
+            "route": 0,
+            "fits": 0.02
+          }
+        ]
+      },
+      "reflex": "lights",
+      "effect": "write"
+    }
+  ],
+  "exclusive": true,
+  "stages": [
+    [
+      1
+    ],
+    [
+      2
+    ]
+  ],
+  "verdict": {
+    "outcome": "run"
+  }
+}

@@ -1,0 +1,11 @@
+adapter = "replay"
+
+[reflexes]
+lights  = "./lights"
+timer   = "./timer"
+volume  = "./volume"
+contact = "./contact"
+mail    = "./mail"
+
+[config.lights]
+bridge = "10.0.0.2"

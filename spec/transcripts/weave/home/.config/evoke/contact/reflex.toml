@@ -1,0 +1,27 @@
+reflex = 1
+
+description = """
+Look up a person's email address in the team directory.
+One person at a time; prints the address."""
+
+not_for = ["writing to anyone", "phone numbers", "adding a person to the directory"]
+tags    = ["people"]
+effect  = "read"
+confirm = "Look up {name}'s address?"
+run     = "contact.mts"
+
+[args.name]
+ask   = "Whose address?"
+vocab = "people"
+
+[yields]
+email = "email"
+
+[examples]
+"look up dana's address"    = {}
+"what is sam's email"       = {}
+"find the address for dana" = {}
+
+[tests]
+"dana's email please" = {}
+"email dana"          = false

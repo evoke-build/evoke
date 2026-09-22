@@ -1,0 +1,57 @@
+# One sentence, several reflexes: each part decided as it always was, in the order the words give; a result of
+# one step threaded into a later one; the plan shown before anything runs.
+$ evoke "kill the lights in the den and start a 10 minute timer"
+  1  lights room="den" state="off"  0.85
+  2  timer duration="10 minute"  0.90
+den lights off
+10 minute timer started
+$ evoke try "start a 10 minute timer, then kill the lights in the den"
+  1  timer duration="10 minute"  0.90
+  2  lights room="den" state="off"  0.85 · after 1
+  1  "start a 10 minute timer"
+  timer 0.90 · none 0.06 · lights 0.02 · volume 0.02
+  duration  "10 minute" 0.90 · unstated 0.10
+  fits      timer 0.80 · lights 0.05 · volume 0.05 · contact 0.02 · mail 0.02
+  run · weakest: route 0.90
+  2  "kill the lights in the den"
+  lights 0.91 · none 0.06 · timer 0.02 · volume 0.01
+  room   den 0.85 · unstated 0.10 · office 0.05
+  state  off 0.88 · on 0.05 · dim 0.05 · unstated 0.02
+  fits   lights 0.70 · timer 0.05 · volume 0.05 · contact 0.02 · mail 0.02
+  run · weakest: room 0.85
+$ evoke "look up dana's address and email them"
+  1  contact name="dana"  0.90
+  2  mail · takes email from 1
+dana <dana@example.com>
+  2  mail to="dana@example.com"  0.88
+drafted to dana@example.com
+$ evoke "kill the lights and start a 10 minute timer"
+  1  lights state="off" · asks room
+  Which room?  [1] den  [2] office  [+] add one  > 1
+  1  lights room="den" state="off" · write · weakest: state 0.58
+  2  timer duration="10 minute"  0.90
+  1  lights room="den" state="off" · write · weakest: state 0.58
+  Set the den lights off?  [y]es [n]o [t]each > y
+den lights off
+10 minute timer started
+$ evoke "look up dana's address and start a 10 minute timer for them"
+  1  contact name="dana"  0.90
+  2  timer duration="10 minute"  0.88 · after 1
+  step 2 refers to step 1, but takes nothing from it
+  Run the plan as it stands?  [y]es [n]o > y
+dana <dana@example.com>
+10 minute timer started
+$ evoke "kill the lights in the den and feed the cat"
+  1  lights room="den" state="off"  0.85
+  2  "feed the cat" · no reflex
+[2]
+$ evoke "start a 25 minute timer and kill the lights in the den"
+  1  timer duration="25 minute" · write · weakest: duration 0.70
+  2  lights room="den" state="off"  0.85
+  1  timer duration="25 minute" · write · weakest: duration 0.70
+  Start a 25 minute timer?  [y]es [n]o [t]each > n
+  2  lights room="den" state="off"  0.85 · skipped
+[2]
+$ evoke --json "kill the lights in the den and start a 10 minute timer"
+{"step":1,"steps":2,"input":"kill the lights in the den","outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","confidence":0.85,"weakest":{"question":"lights.room","top":"den","p":0.85},"judgments":[{"question":"route","top":"lights","p":0.91},{"question":"lights.room","top":"den","p":0.85},{"question":"lights.state","top":"off","p":0.88}],"runner_up":{"reflex":"timer","route":0.02,"fits":0.05},"contenders":[{"reflex":"lights","route":0.91,"fits":0.7},{"reflex":"timer","route":0.02,"fits":0.05},{"reflex":"volume","route":0.01,"fits":0.05},{"reflex":"contact","route":0.0,"fits":0.02},{"reflex":"mail","route":0.0,"fits":0.02}],"trace":[],"result":{"text":"den lights off"},"status":"ran"}
+{"step":2,"steps":2,"input":"start a 10 minute timer","outcome":"run","reflex":"timer","args":{"duration":{"type":"pick","span":{"start":8,"end":17,"text":"10 minute"},"value":{"type":"duration","value":600}}},"call":"timer duration=\"10 minute\"","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"timer","p":0.9},"judgments":[{"question":"route","top":"timer","p":0.9},{"question":"timer.duration","top":"8-17","p":0.9}],"runner_up":{"reflex":"lights","route":0.02,"fits":0.05},"contenders":[{"reflex":"timer","route":0.9,"fits":0.8},{"reflex":"lights","route":0.02,"fits":0.05},{"reflex":"volume","route":0.02,"fits":0.05},{"reflex":"contact","route":0.0,"fits":0.02},{"reflex":"mail","route":0.0,"fits":0.02}],"trace":[],"result":{"text":"10 minute timer started"},"status":"ran"}

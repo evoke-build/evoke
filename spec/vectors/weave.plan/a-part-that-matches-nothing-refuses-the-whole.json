@@ -1,0 +1,339 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "input": "kill the lights in the den and feed the cat",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "kill the lights in the den"
+          },
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.85,
+            "weakest": {
+              "question": "lights.room",
+              "top": "den",
+              "p": 0.85
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.91
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.85
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.88
+              }
+            ],
+            "runner_up": {
+              "reflex": "timer",
+              "route": 0.02,
+              "fits": 0.05
+            },
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.91,
+                "fits": 0.7
+              },
+              {
+                "reflex": "timer",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "volume",
+                "route": 0.01,
+                "fits": 0.05
+              },
+              {
+                "reflex": "contact",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "mail",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "feed the cat"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.05,
+                "fits": 0.05
+              },
+              {
+                "reflex": "timer",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "volume",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "contact",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "mail",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "feed the cat",
+            "only": "lights"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.05,
+                "fits": 0.05
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "kill the lights in the feed the cat",
+            "only": "lights"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.1,
+                "fits": 0.1
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.9
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.95
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "kill the lights in the den and feed the cat",
+        "splits": [
+          {
+            "start": 26,
+            "end": 31,
+            "word": "and",
+            "order": "and",
+            "p": 0.95
+          }
+        ],
+        "steps": [
+          {
+            "n": 1,
+            "text": "kill the lights in the den",
+            "end": 26,
+            "decision": {
+              "outcome": "run",
+              "reflex": "lights",
+              "args": {
+                "room": {
+                  "type": "word",
+                  "word": "den"
+                },
+                "state": {
+                  "type": "option",
+                  "key": "off"
+                }
+              },
+              "call": "lights room=\"den\" state=\"off\"",
+              "effect": "write",
+              "confidence": 0.85,
+              "weakest": {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.85
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "lights",
+                  "p": 0.91
+                },
+                {
+                  "question": "lights.room",
+                  "top": "den",
+                  "p": 0.85
+                },
+                {
+                  "question": "lights.state",
+                  "top": "off",
+                  "p": 0.88
+                }
+              ],
+              "runner_up": {
+                "reflex": "timer",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              "contenders": [
+                {
+                  "reflex": "lights",
+                  "route": 0.91,
+                  "fits": 0.7
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0.02,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0.01,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "lights",
+            "effect": "write"
+          },
+          {
+            "n": 2,
+            "text": "feed the cat",
+            "end": 43,
+            "decision": {
+              "outcome": "abstain",
+              "contenders": [
+                {
+                  "reflex": "lights",
+                  "route": 0.05,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "none",
+                  "p": 0.95
+                }
+              ]
+            }
+          }
+        ],
+        "exclusive": true,
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "refuse",
+          "because": [
+            {
+              "type": "no_reflex",
+              "step": 2
+            }
+          ]
+        }
+      }
+    }
+  }
+}

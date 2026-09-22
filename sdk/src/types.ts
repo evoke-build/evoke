@@ -668,6 +668,200 @@ export interface Envelope {
   deadline: Millis
 }
 
+// ---- weave ----
+
+/** A text for the foundation to decide: over the reflexes the tags allow, or one reflex alone. */
+export interface Asked {
+  text: string
+  tags?: Tag[]
+  only?: LocalName
+}
+
+/** What the plan needs a host to do next: judge the split points, name each reference's step, or decide texts. */
+export type Need =
+  | { type: "judge"; request: Request }
+  | { type: "refer"; request: Request }
+  | { type: "decide"; asked: Asked[] }
+
+/** What a host gathered for the plan so far. */
+export interface Answers {
+  judged?: Raw
+  referred?: Raw
+  decided?: [Asked, Decision][]
+}
+
+/** The plan, or what it needs first. */
+export type Planning = { type: "done"; weave: Weave } | { type: "need"; need: Need }
+
+/** What a connective does: `then` orders what follows after what precedes; the rest coordinate. */
+export type Order = "then" | "and"
+
+/** A place the request may split: the connective's span in characters, its word, whether it orders, and the engine's probability that the two sides are two things. */
+export interface Split {
+  start: number
+  end: number
+  word: string
+  order: Order
+  p?: Prob
+}
+
+/** The reference word in a step's text, in characters of that text. */
+export interface Where {
+  start: number
+  end: number
+  text: string
+}
+
+/** A reference in one step to earlier ones: the words, the steps it may name (zero-based), how it was found. */
+export interface Ref {
+  span: Where
+  from: number[]
+  how: "pronoun" | "phrase" | "engine"
+  /** `the <noun>`: a reference only when something takes it. */
+  weak?: boolean
+  /** A phrase's noun, singular, which may name a field of the source's result. */
+  noun?: string
+  /** Plural: over a result of several records, every one. */
+  many?: boolean
+  p?: Prob
+}
+
+/** How a segment that matched nothing on its own was settled. */
+export type Repair = "narrowed" | "spliced" | "merged"
+
+/** One step of the plan: a segment's text and the foundation's decision on it, in the order it is to happen. */
+export interface Step {
+  /** From 1, as the plan prints it. */
+  n: number
+  text: string
+  /** Where the step's words end in the request, in characters. */
+  end: number
+  decision: Decision
+  reflex?: LocalName
+  effect?: Effect
+  refs?: Ref[]
+  repair?: Repair
+  /** The steps this one must follow: an explicit `then`, or a binding. */
+  after?: number[]
+}
+
+/** How a bound value reaches its step: answering its own ask, or the step decided again with the value in its words. */
+export type Via = "fill" | "rewrite"
+
+/** A value of one step's result taken by a later step: which field, into which argument, how. */
+export interface Binding {
+  from: number
+  to: number
+  arg: ArgName
+  field: FieldName
+  kind: Recognizer
+  via: Via
+  /** The list field of the source's result whose records carry `field`: the step runs once per record. */
+  each?: FieldName
+}
+
+/** Why the plan does not simply run; each names its steps. */
+export type Because =
+  | { type: "nothing_to_do" }
+  | { type: "no_reflex"; step: number }
+  | { type: "needs"; step: number; arg: ArgName }
+  | { type: "several"; step: number; source: number; fields: FieldName[] }
+  | { type: "one_of_many"; step: number; source: number; field: FieldName }
+  | { type: "takes_nothing"; step: number; sources: number[] }
+
+/** The verdict before anything runs, with every reason. */
+export interface Verdict {
+  outcome: "run" | "ask" | "confirm" | "refuse"
+  because?: Because[]
+}
+
+/** The plan: the request in the words' own order, its split points as judged, the steps, what was left out, the bindings, the schedule and the verdict. */
+export interface Weave {
+  input: string
+  splits?: Split[]
+  steps: Step[]
+  /** Fragments left out because they begin with a negation. */
+  excluded?: string[]
+  binds?: Binding[]
+  /** Whether a write is among the steps, so none may run beside another. */
+  exclusive: boolean
+  /** A stage's steps run together; stages run in order. */
+  stages: number[][]
+  verdict: Verdict
+}
+
+/** A value bound into a step at its turn. */
+export interface Bound {
+  arg: ArgName
+  from: number
+  field: FieldName
+  value: string
+}
+
+/** What a body returned: its text, and data when it gave some. */
+export interface Returned {
+  text: string
+  data?: Json
+}
+
+/** One round of a step for a host to take through the foundation's loop, the bound values in place. */
+export interface Handling {
+  step: number
+  /** From 0; a step bound to a list runs one round per record. */
+  round: number
+  decision: Decision
+  input: string
+  bound?: Bound[]
+}
+
+/** What became of a step, or of one of its rounds. */
+export type Status = "ran" | "failed" | "declined" | "refused" | "skipped" | "unanswered"
+
+/** Why a step did not run, or did not finish. */
+export type WeaveWhy =
+  | { type: "earlier_step" }
+  | { type: "nothing_to_take" }
+  | { type: "found_nothing" }
+  | { type: "no_reflex" }
+  | { type: "read_as"; reflex: LocalName }
+  | { type: "said"; message: string }
+
+/** What a host made of one round. */
+export interface Handled {
+  step: number
+  round: number
+  status: Status
+  why?: WeaveWhy
+  result?: Returned
+}
+
+/** What a host gathered for the run so far. */
+export interface Progress {
+  decided?: [Asked, Decision][]
+  handled?: Handled[]
+}
+
+/** What the run needs a host to do next. */
+export type Todo = { type: "decide"; asked: Asked } | { type: "handle"; handling: Handling[] }
+
+/** The run, or what it needs first. */
+export type Running = { type: "done"; executed: Executed } | { type: "todo"; todo: Todo }
+
+/** What became of one step. */
+export interface StepOutcome {
+  step: number
+  status: Status
+  why?: WeaveWhy
+  bound?: Bound[]
+  rounds?: Handled[]
+}
+
+/** The run: per step, what became of it, in plan order; and the whole's status, the worst step's as the exit codes rank them. */
+export interface Executed {
+  steps: StepOutcome[]
+  worst: Status
+}
+
 // ---- contract, edit, test; the adapters' jev and replay ----
 
 // contract
@@ -770,7 +964,7 @@ export type Expected = false | Record<ArgName, Claim>
 export type Claim = boolean | Clean
 
 /** What a decision made of a case: it passed, or where it first missed. */
-export type Verdict =
+export type CaseVerdict =
   | { type: "pass" }
   | { type: "fail"; mismatch: Mismatch }
 
@@ -780,7 +974,7 @@ export type Mismatch =
   | { type: "arg"; arg: ArgName; read: Claim }
 
 /** The last run's verdict per case, by reflex and utterance identity; the host keeps one per plan digest. */
-export type Baseline = Record<LocalName, Record<Identity, Verdict>>
+export type Baseline = Record<LocalName, Record<Identity, CaseVerdict>>
 
 /** A case that passed at the last run and fails now, two of three uncached repeats. */
 export interface Regression {

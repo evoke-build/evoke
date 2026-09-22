@@ -1,0 +1,101 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "weave": {
+      "$ref": "fixtures/weave-lights-timer.json"
+    },
+    "progress": {}
+  },
+  "expect": {
+    "type": "todo",
+    "todo": {
+      "type": "handle",
+      "handling": [
+        {
+          "step": 1,
+          "round": 0,
+          "decision": {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.85,
+            "weakest": {
+              "question": "lights.room",
+              "top": "den",
+              "p": 0.85
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.91
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.85
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.88
+              }
+            ],
+            "runner_up": {
+              "reflex": "timer",
+              "route": 0.02,
+              "fits": 0.05
+            },
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.91,
+                "fits": 0.7
+              },
+              {
+                "reflex": "timer",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "volume",
+                "route": 0.01,
+                "fits": 0.05
+              },
+              {
+                "reflex": "contact",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "mail",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          },
+          "input": "kill the lights in the den"
+        }
+      ]
+    }
+  }
+}

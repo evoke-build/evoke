@@ -1,0 +1,384 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "input": "kill the lights and start a 10 minute timer",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "kill the lights"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "lights",
+            "args": {
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "unconsumed": [],
+            "confidence": 0.58,
+            "weakest": {
+              "question": "lights.state",
+              "top": "off",
+              "p": 0.58
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.9
+              },
+              {
+                "question": "lights.room",
+                "top": "unstated",
+                "p": 0.75
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.58
+              }
+            ],
+            "runner_up": {
+              "reflex": "timer",
+              "route": 0.02,
+              "fits": 0.05
+            },
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.9,
+                "fits": 0.7
+              },
+              {
+                "reflex": "timer",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "volume",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "contact",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "mail",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "room",
+                "ask": "Which room?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "den": "The TV room downstairs; also 'the snug'.",
+                    "office": "The upstairs study."
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "start a 10 minute timer"
+          },
+          {
+            "outcome": "run",
+            "reflex": "timer",
+            "args": {
+              "duration": {
+                "type": "pick",
+                "span": {
+                  "start": 8,
+                  "end": 17,
+                  "text": "10 minute"
+                },
+                "value": {
+                  "type": "duration",
+                  "value": 600
+                }
+              }
+            },
+            "call": "timer duration=\"10 minute\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "timer",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "timer",
+                "p": 0.9
+              },
+              {
+                "question": "timer.duration",
+                "top": "8-17",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "lights",
+              "route": 0.02,
+              "fits": 0.05
+            },
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "lights",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "volume",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "contact",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "mail",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.95
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "kill the lights and start a 10 minute timer",
+        "splits": [
+          {
+            "start": 15,
+            "end": 20,
+            "word": "and",
+            "order": "and",
+            "p": 0.95
+          }
+        ],
+        "steps": [
+          {
+            "n": 1,
+            "text": "kill the lights",
+            "end": 15,
+            "decision": {
+              "outcome": "ask",
+              "reflex": "lights",
+              "args": {
+                "state": {
+                  "type": "option",
+                  "key": "off"
+                }
+              },
+              "unconsumed": [],
+              "confidence": 0.58,
+              "weakest": {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.58
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "lights",
+                  "p": 0.9
+                },
+                {
+                  "question": "lights.room",
+                  "top": "unstated",
+                  "p": 0.75
+                },
+                {
+                  "question": "lights.state",
+                  "top": "off",
+                  "p": 0.58
+                }
+              ],
+              "runner_up": {
+                "reflex": "timer",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              "contenders": [
+                {
+                  "reflex": "lights",
+                  "route": 0.9,
+                  "fits": 0.7
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0.02,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0.02,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "missing": [
+                {
+                  "arg": "room",
+                  "ask": "Which room?",
+                  "because": {
+                    "type": "unstated"
+                  },
+                  "choices": {
+                    "type": "vocab",
+                    "words": {
+                      "den": "The TV room downstairs; also 'the snug'.",
+                      "office": "The upstairs study."
+                    }
+                  }
+                }
+              ]
+            },
+            "reflex": "lights",
+            "effect": "write"
+          },
+          {
+            "n": 2,
+            "text": "start a 10 minute timer",
+            "end": 43,
+            "decision": {
+              "outcome": "run",
+              "reflex": "timer",
+              "args": {
+                "duration": {
+                  "type": "pick",
+                  "span": {
+                    "start": 8,
+                    "end": 17,
+                    "text": "10 minute"
+                  },
+                  "value": {
+                    "type": "duration",
+                    "value": 600
+                  }
+                }
+              },
+              "call": "timer duration=\"10 minute\"",
+              "effect": "write",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "timer",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "timer",
+                  "p": 0.9
+                },
+                {
+                  "question": "timer.duration",
+                  "top": "8-17",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "lights",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              "contenders": [
+                {
+                  "reflex": "timer",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "lights",
+                  "route": 0.02,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0.02,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "timer",
+            "effect": "write"
+          }
+        ],
+        "exclusive": true,
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "ask",
+          "because": [
+            {
+              "type": "needs",
+              "step": 1,
+              "arg": "room"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

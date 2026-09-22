@@ -15,11 +15,12 @@ use evoke_core::name::{AdapterId, ConfigKey, LocalName, Tag};
 use evoke_core::plan::{Held, Millis};
 use evoke_core::project::{Location, Locked, LockedAdapter, Setting};
 use evoke_core::text::NonEmpty;
+use evoke_core::weave::{self, Asked, Need, Step};
 use evoke_core::{
     Chosen, Decision, Declared, Diagnostic, Document, Edit, Effective, File, Fix, Input, Installed,
-    Item, Lock, Manifest, Owned, Plan, Project, Prompt, Raw, Reading, Request, Scope, Version,
-    argv, compile, effective, envelope, gate, lock, manifest, overlay, project, project_dts, read,
-    render_lock, request, vocabulary,
+    Item, Lock, Manifest, Owned, Plan, Planning, Project, Prompt, Raw, Reading, Request, Scope,
+    Version, Weave, argv, compile, effective, envelope, gate, lock, manifest, overlay, project,
+    project_dts, read, render_lock, request, vocabulary,
 };
 use indexmap::IndexMap;
 
@@ -69,6 +70,7 @@ pub enum Confirmed {
 }
 
 /// One input decided: what was asked, what was answered, how it read, and the outcome.
+#[derive(Clone)]
 pub struct Decided {
     pub request: Request,
     pub answers: Raw,
@@ -86,6 +88,37 @@ impl Decided {
                 .iter()
                 .fold(0, |spent, trace| spent.saturating_add(trace.ms)),
         )
+    }
+}
+
+/// One request read into its steps: the plan, and what each text decided — the request, the answers, the
+/// reading — for the lines a host prints and logs.
+pub struct Woven {
+    pub weave: Weave,
+    pub decided: Vec<(Asked, Decided)>,
+}
+
+impl Woven {
+    /// What a step's words decided, as the planner asked for them.
+    #[must_use]
+    pub fn decided_for(&self, step: &Step, tags: &[Tag]) -> Option<&Decided> {
+        let asked = weave::asked_for(step, tags);
+        self.decided
+            .iter()
+            .find(|(a, _)| *a == asked)
+            .map(|(_, decided)| decided)
+    }
+
+    /// The one decision a request read as: one step, nothing bound, nothing left out — what the foundation alone
+    /// would have made of it.
+    #[must_use]
+    pub fn single(&self, tags: &[Tag]) -> Option<&Decided> {
+        match self.weave.steps.as_slice() {
+            [step] if self.weave.binds.is_empty() && self.weave.excluded.is_empty() => {
+                self.decided_for(step, tags)
+            }
+            _ => None,
+        }
     }
 }
 
@@ -659,9 +692,80 @@ impl Session<'_> {
         adapter: &dyn Adapter,
         input: &str,
         tags: &[Tag],
+        only: Option<&LocalName>,
     ) -> Result<Decided, Exit> {
         let _busy = terminal::busy("deciding");
-        self.decided(adapter, input, tags, true)
+        self.decided(adapter, input, tags, only, true)
+    }
+
+    /// One request read into its steps: the engine asked whether each connective separates two things, each
+    /// part decided as `decide` decides one, all through the cache. `seeded` decisions stand in for the
+    /// planner's own — a step's ask answered before anything runs — and are read first.
+    pub fn weave(
+        &self,
+        adapter: &dyn Adapter,
+        input: &str,
+        tags: &[Tag],
+        seeded: Vec<(Asked, Decided)>,
+    ) -> Result<Woven, Exit> {
+        let _busy = terminal::busy("deciding");
+        let mut answers = weave::Answers {
+            decided: seeded
+                .iter()
+                .map(|(asked, decided)| (asked.clone(), decided.decision.clone()))
+                .collect(),
+            ..weave::Answers::default()
+        };
+        let mut decided = seeded;
+        loop {
+            let planning =
+                weave::planning::plan(&self.plan, input, tags, &answers).map_err(Exit::Adapter)?;
+            let need = match planning {
+                Planning::Done { weave } => return Ok(Woven { weave, decided }),
+                Planning::Need { need } => need,
+            };
+            match need {
+                Need::Judge { request } => answers.judged = Some(self.own(adapter, &request)?),
+                Need::Refer { request } => answers.referred = Some(self.own(adapter, &request)?),
+                Need::Decide { asked } => {
+                    for asked in asked {
+                        let one = self.decided(
+                            adapter,
+                            &asked.text,
+                            &asked.tags,
+                            asked.only.as_ref(),
+                            true,
+                        )?;
+                        answers.decided.push((asked.clone(), one.decision.clone()));
+                        decided.push((asked, one));
+                    }
+                }
+            }
+        }
+    }
+
+    /// One of the weave's own requests answered — the split points, the references: the cache when it holds
+    /// every question asked, else the adapter, and kept.
+    fn own(&self, adapter: &dyn Adapter, request: &Request) -> Result<Raw, Exit> {
+        let cached = self
+            .state
+            .answers(&self.plan.digest(), request)
+            .map_err(Exit::Failed)?
+            .filter(|answers| {
+                request
+                    .questions
+                    .keys()
+                    .all(|id| answers.0.contains_key(&id.to_string()))
+            });
+        if let Some(answers) = cached {
+            return Ok(answers);
+        }
+        let deadline = Deadline::after(self.plan.deadline());
+        let answers = adapter.answer(request, deadline).map_err(Exit::Adapter)?;
+        self.state
+            .keep(&self.plan.digest(), request, &answers)
+            .map_err(Exit::Failed)?;
+        Ok(answers)
     }
 
     /// The same, never through the cache — neither read nor kept — and without a spinner: what `test` asks, in
@@ -672,7 +776,7 @@ impl Session<'_> {
         input: &str,
         tags: &[Tag],
     ) -> Result<Decided, Exit> {
-        self.decided(adapter, input, tags, false)
+        self.decided(adapter, input, tags, None, false)
     }
 
     fn decided(
@@ -680,9 +784,10 @@ impl Session<'_> {
         adapter: &dyn Adapter,
         input: &str,
         tags: &[Tag],
+        only: Option<&LocalName>,
         cached: bool,
     ) -> Result<Decided, Exit> {
-        let request = request(&self.plan, input, tags, Scope::Full).map_err(Exit::Human)?;
+        let request = request(&self.plan, input, tags, only, Scope::Full).map_err(Exit::Human)?;
         let deadline = Deadline::after(self.plan.deadline());
         let hit = if cached {
             self.state

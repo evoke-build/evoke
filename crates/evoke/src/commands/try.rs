@@ -8,6 +8,7 @@ use super::Exit;
 use super::session::{self, Opening, Session};
 use crate::adapter::Adapter;
 use crate::args::{Arguments, Command, Inputs};
+use crate::hosts::terminal::Text;
 use crate::hosts::{Environment, Failure, terminal};
 use crate::report;
 
@@ -48,22 +49,43 @@ pub fn run(command: &Command, arguments: &Arguments, environment: &Environment) 
     }
 }
 
-/// One input: decided and shown; any decision exits 0.
+/// One input: read into its steps and shown; any decision exits 0. One step is shown as it always was; more are
+/// the plan, then each step's judgments under its number — or, under `--json`, the plan whole on one line.
 fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, input: &str) -> Exit {
-    let decided = match session.decide(adapter, input, &arguments.tags) {
-        Ok(decided) => decided,
+    let woven = match session.weave(adapter, input, &arguments.tags, Vec::new()) {
+        Ok(woven) => woven,
         Err(exit) => return session.reporter.exit(input, exit),
     };
-    if arguments.json {
-        terminal::result(&report::Line::of(&decided).json());
-    } else {
-        let floor = adapter.declared().gate.as_ref().map(Gate::route);
-        terminal::answer(&report::tried(&decided, floor));
-        if matches!(decided.decision, Decision::Abstain { .. })
-            && let Some(hint) = report::left_out(session.plan.inactive().keys())
-        {
-            terminal::note(&hint);
+    let floor = adapter.declared().gate.as_ref().map(Gate::route);
+    if let Some(decided) = woven.single(&arguments.tags) {
+        if arguments.json {
+            terminal::result(&report::Line::of(decided).json());
+        } else {
+            terminal::answer(&report::tried(decided, floor));
+            if matches!(decided.decision, Decision::Abstain { .. })
+                && let Some(hint) = report::left_out(session.plan.inactive().keys())
+            {
+                terminal::note(&hint);
+            }
         }
+        return Exit::Ran;
+    }
+    if arguments.json {
+        terminal::result(&serde_json::to_string(&woven.weave).expect("a plan serializes"));
+        return Exit::Ran;
+    }
+    terminal::answer(&report::planned(&woven.weave));
+    let of = woven.weave.steps.len();
+    for step in &woven.weave.steps {
+        let Some(decided) = woven.decided_for(step, &arguments.tags) else {
+            continue;
+        };
+        terminal::answer(&report::step(
+            step.n,
+            of,
+            Text::from(report::quoted(&step.text)),
+        ));
+        terminal::answer(&report::tried(decided, floor));
     }
     Exit::Ran
 }

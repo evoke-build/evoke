@@ -63,13 +63,13 @@ manual  https://evoke.build/manual/
 | :--------------------- | :-------------------------------------------------------------------------------------------- | :--- |
 | `evoke "<input>"`      | Decides, gates, runs. Prints the call and confidence on stderr, and the result on stdout. Logged | 0 · 2 · 3 · 1 · 4 |
 | `evoke`                | On a terminal, the REPL: `> `, line editing, history. Piped, a filter: one input per line, and the first non-zero exit is kept | as each line |
-| `evoke try "<input>"`  | Decides only: the ranking, each argument's distribution, each `fits`, the outcome and the weakest judgment. Never logged | 0 · 4 |
+| `evoke try "<input>"`  | Decides only: the ranking, each argument's distribution, each `fits`, the outcome and the weakest judgment; a sentence of several steps shows the plan first, then each step's judgments under its number. Never logged | 0 · 4 |
 | `evoke why`            | The last logged decision, shown as `try` would show it, and what became of it                  | 0 · 3 |
 | `evoke run <call>`     | Runs the call by name. No classifier. The effect policy is kept, so a destructive call confirms with `[y]es [n]o`. `--json` prints the call and its result as one line. Not logged | 0 · 2 · 3 · 1 |
 
 | Flag          | With            | Does                                                                     |
 | :------------ | :-------------- | :----------------------------------------------------------------------- |
-| `--json`      | input, `try`, `run` | One JSON line per input, or per call: [The JSON line](json.md)       |
+| `--json`      | input, `try`, `run` | One JSON line per input, per step of a weave, or per call; `try` prints a weave's plan whole: [The JSON line](json.md) |
 | `--tag <tag>` | input, `try`    | Only reflexes carrying the tag; repeatable                                |
 | `--`          | input           | The rest is input                                                        |
 

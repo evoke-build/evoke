@@ -48,4 +48,7 @@ Every term `evoke` uses, one line each.
 | **Utterance**    | A sentence a record is keyed by                                                                           |
 | **Vocabulary**   | `vocab/<name>.toml`: your closed list of words, shared by every argument that names it                    |
 | **Wording**      | What a user may override: descriptions, questions, option meanings, records                               |
+| **Weave**        | A sentence read as several steps: each decided on its own, ordered by the words, a result threaded into a later step, the plan shown before anything runs |
+| **Step**         | One part of a weave, decided as one input is; numbered as the plan prints it, run at its turn              |
+| **Binding**      | A value of one step's result taken by a later step, by kind: filled into a required argument, or written into the words for an optional one |
 | **Yield**        | A field of a result's `data` a later step may take, declared under `[yields]` with the kind that reads it |

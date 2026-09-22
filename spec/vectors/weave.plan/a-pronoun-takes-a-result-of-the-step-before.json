@@ -1,0 +1,352 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "input": "look up dana's address and email them",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "look up dana's address"
+          },
+          {
+            "outcome": "run",
+            "reflex": "contact",
+            "args": {
+              "name": {
+                "type": "word",
+                "word": "dana"
+              }
+            },
+            "call": "contact name=\"dana\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "contact",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "contact",
+                "p": 0.9
+              },
+              {
+                "question": "contact.name",
+                "top": "dana",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "mail",
+              "route": 0.03,
+              "fits": 0.1
+            },
+            "contenders": [
+              {
+                "reflex": "contact",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "mail",
+                "route": 0.03,
+                "fits": 0.1
+              },
+              {
+                "reflex": "lights",
+                "route": 0.01,
+                "fits": 0.02
+              },
+              {
+                "reflex": "timer",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "volume",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "email them"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "mail",
+            "args": {},
+            "unconsumed": [],
+            "confidence": 0.88,
+            "weakest": {
+              "question": "route",
+              "top": "mail",
+              "p": 0.88
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "mail",
+                "p": 0.88
+              }
+            ],
+            "runner_up": {
+              "reflex": "contact",
+              "route": 0.04,
+              "fits": 0.1
+            },
+            "contenders": [
+              {
+                "reflex": "mail",
+                "route": 0.88,
+                "fits": 0.8
+              },
+              {
+                "reflex": "contact",
+                "route": 0.04,
+                "fits": 0.1
+              },
+              {
+                "reflex": "lights",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "timer",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "volume",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "to",
+                "ask": "To which address?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "pick",
+                  "pick": "email"
+                }
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "look up dana's address and email them",
+        "splits": [
+          {
+            "start": 22,
+            "end": 27,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          }
+        ],
+        "steps": [
+          {
+            "n": 1,
+            "text": "look up dana's address",
+            "end": 22,
+            "decision": {
+              "outcome": "run",
+              "reflex": "contact",
+              "args": {
+                "name": {
+                  "type": "word",
+                  "word": "dana"
+                }
+              },
+              "call": "contact name=\"dana\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "contact",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "contact",
+                  "p": 0.9
+                },
+                {
+                  "question": "contact.name",
+                  "top": "dana",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "mail",
+                "route": 0.03,
+                "fits": 0.1
+              },
+              "contenders": [
+                {
+                  "reflex": "contact",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0.03,
+                  "fits": 0.1
+                },
+                {
+                  "reflex": "lights",
+                  "route": 0.01,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "contact",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "email them",
+            "end": 37,
+            "decision": {
+              "outcome": "ask",
+              "reflex": "mail",
+              "args": {},
+              "unconsumed": [],
+              "confidence": 0.88,
+              "weakest": {
+                "question": "route",
+                "top": "mail",
+                "p": 0.88
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "mail",
+                  "p": 0.88
+                }
+              ],
+              "runner_up": {
+                "reflex": "contact",
+                "route": 0.04,
+                "fits": 0.1
+              },
+              "contenders": [
+                {
+                  "reflex": "mail",
+                  "route": 0.88,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0.04,
+                  "fits": 0.1
+                },
+                {
+                  "reflex": "lights",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "missing": [
+                {
+                  "arg": "to",
+                  "ask": "To which address?",
+                  "because": {
+                    "type": "unstated"
+                  },
+                  "choices": {
+                    "type": "pick",
+                    "pick": "email"
+                  }
+                }
+              ]
+            },
+            "reflex": "mail",
+            "effect": "write",
+            "refs": [
+              {
+                "span": {
+                  "start": 6,
+                  "end": 10,
+                  "text": "them"
+                },
+                "from": [
+                  0
+                ],
+                "how": "pronoun",
+                "many": true
+              }
+            ],
+            "after": [
+              1
+            ]
+          }
+        ],
+        "binds": [
+          {
+            "from": 1,
+            "to": 2,
+            "arg": "to",
+            "field": "email",
+            "kind": "email",
+            "via": "fill"
+          }
+        ],
+        "exclusive": true,
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        }
+      }
+    }
+  }
+}

@@ -23,6 +23,7 @@ pub mod run;
 pub mod test;
 pub mod text;
 pub mod vocabulary;
+pub mod weave;
 
 pub use adapter::{Declared, Fault, Gate, Key, Limits, Prob, Question, QuestionId, Raw, Request};
 pub use call::{Call, Value, Written, call, render};
@@ -52,3 +53,4 @@ pub use test::{
 };
 pub use text::{Clean, Identity, Input, Span, Utterance, identity};
 pub use vocabulary::{Vocabulary, vocabulary};
+pub use weave::{Executed, Planning, Running, Weave};

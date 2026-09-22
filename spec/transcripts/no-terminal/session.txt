@@ -22,3 +22,9 @@ $ evoke run power action=restart
 $ evoke run --json power action=restart
 {"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","template":"Really restart now?"},"because":[{"type":"destructive"}],"trace":[]}
 [3]
+$ echo "start a 25 minute timer and kill the lights in the den" | evoke
+  1  timer duration="25 minute" · write · weakest: duration 0.70
+  2  lights room="den" state="off"  0.85
+  a confirm needs a terminal  →  evoke "start a 25 minute timer and kill the lights in the den"
+  2  lights room="den" state="off"  0.85 · skipped
+[3]

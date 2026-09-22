@@ -1,0 +1,335 @@
+{
+  "reflexes": {
+    "lights": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
+            "not_for": [
+              "colour scenes and schedules",
+              "asking whether a light is on"
+            ],
+            "tags": [
+              "home",
+              "lighting"
+            ],
+            "effect": "write",
+            "confirm": "Set the {room} lights {state}?",
+            "run": "lights.mts",
+            "config": {
+              "bridge": {
+                "about": "Hue bridge address",
+                "secret": false
+              }
+            },
+            "args": {
+              "room": {
+                "ask": "Which room?",
+                "vocab": "rooms",
+                "optional": false,
+                "was": []
+              },
+              "state": {
+                "ask": "What should the lights do?",
+                "options": {
+                  "on": "Switch on.",
+                  "off": "Switch off.",
+                  "dim": "Lower the brightness without switching off."
+                },
+                "optional": false,
+                "was": []
+              },
+              "brightness": {
+                "ask": "How bright, in percent?",
+                "pick": "number",
+                "range": [
+                  1,
+                  100
+                ],
+                "optional": true,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "turn on the kitchen lights": {
+                "state": "on"
+              },
+              "dim the office to 30 percent": {
+                "state": "dim",
+                "brightness": "30 percent"
+              }
+            },
+            "tests": {
+              "make it darker in here": {
+                "state": "dim"
+              },
+              "light a candle": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {
+        "bridge": {
+          "type": "plain",
+          "value": "10.0.0.2"
+        }
+      }
+    },
+    "timer": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+            "not_for": [
+              "keeping the laptop awake",
+              "alarms at a time of day",
+              "asking the time"
+            ],
+            "tags": [
+              "time"
+            ],
+            "effect": "write",
+            "confirm": "Start a {duration} timer?",
+            "run": "timer.mts",
+            "config": {},
+            "args": {
+              "duration": {
+                "ask": "How long?",
+                "pick": "duration",
+                "optional": false,
+                "was": []
+              },
+              "label": {
+                "ask": "What is the timer for?",
+                "pick": "quoted",
+                "optional": true,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "set a timer for 10 minutes": {
+                "duration": "10 minutes"
+              },
+              "25 minute timer": {
+                "duration": "25 minute"
+              },
+              "timer for 3 minutes called \"eggs\"": {
+                "duration": "3 minutes",
+                "label": "eggs"
+              },
+              "count down 90 seconds": {
+                "duration": "90 seconds"
+              }
+            },
+            "tests": {
+              "ping me in 2 hours": {
+                "duration": "2 hours"
+              },
+              "start a \"laundry\" timer, 45 minutes": {
+                "duration": "45 minutes",
+                "label": "laundry"
+              },
+              "start a timer": {
+                "duration": false
+              },
+              "what time is it": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    },
+    "volume": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Set the output volume.\nA percentage of the maximum; 0 is silent.",
+            "not_for": [
+              "muting and unmuting",
+              "screen brightness",
+              "one app's volume"
+            ],
+            "tags": [
+              "sound"
+            ],
+            "effect": "write",
+            "confirm": "Set the volume to {level}?",
+            "run": "volume.mts",
+            "config": {},
+            "args": {
+              "level": {
+                "ask": "How loud, in percent?",
+                "pick": "number",
+                "range": [
+                  0,
+                  100
+                ],
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "set the volume to 40 percent": {
+                "level": "40 percent"
+              },
+              "volume 15": {
+                "level": "15"
+              },
+              "turn the sound up to 80": {
+                "level": "80"
+              }
+            },
+            "tests": {
+              "make it 100 percent loud": {
+                "level": "100 percent"
+              },
+              "turn the volume down a bit": {
+                "level": false
+              },
+              "mute the sound": false,
+              "set the brightness to 50": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    },
+    "contact": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Look up a person's email address in the team directory.\nOne person at a time; prints the address.",
+            "not_for": [
+              "writing to anyone",
+              "phone numbers",
+              "adding a person to the directory"
+            ],
+            "tags": [
+              "people"
+            ],
+            "effect": "read",
+            "confirm": "Look up {name}'s address?",
+            "run": "contact.mts",
+            "config": {},
+            "args": {
+              "name": {
+                "ask": "Whose address?",
+                "vocab": "people",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {
+              "email": "email"
+            },
+            "examples": {
+              "look up dana's address": {},
+              "what is sam's email": {},
+              "find the address for dana": {}
+            },
+            "tests": {
+              "dana's email please": {},
+              "email dana": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "mail": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Start an email in your mail app.\nTo one address, with an optional subject; nothing goes out until you press send.",
+            "not_for": [
+              "reading or searching mail",
+              "chat and text messages",
+              "looking up an address"
+            ],
+            "tags": [
+              "mail"
+            ],
+            "effect": "write",
+            "confirm": "Write to {to}?",
+            "run": "mail.mts",
+            "config": {},
+            "args": {
+              "to": {
+                "ask": "To which address?",
+                "pick": "email",
+                "optional": false,
+                "was": []
+              },
+              "subject": {
+                "ask": "What is the subject?",
+                "pick": "quoted",
+                "optional": true,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "email ana@example.com": {
+                "to": "ana@example.com"
+              },
+              "write to sam@example.com about \"friday\"": {
+                "to": "sam@example.com",
+                "subject": "friday"
+              },
+              "send a note to team@example.com": {
+                "to": "team@example.com"
+              }
+            },
+            "tests": {
+              "mail dana@example.com \"the minutes\"": {
+                "to": "dana@example.com",
+                "subject": "the minutes"
+              },
+              "read my mail": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    }
+  },
+  "vocab": {
+    "people": {
+      "dana": {
+        "what": "Dana Ortiz, operations."
+      },
+      "sam": {
+        "what": "Sam Lee, sales."
+      }
+    },
+    "rooms": {
+      "den": {
+        "what": "The TV room downstairs; also 'the snug'."
+      },
+      "office": {
+        "what": "The upstairs study.",
+        "value": "group-7"
+      }
+    }
+  },
+  "adapter": "replay",
+  "evoke": "0.2.0"
+}

@@ -1,0 +1,117 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "weave": {
+      "$ref": "fixtures/weave-address-mail.json"
+    },
+    "progress": {
+      "handled": [
+        {
+          "step": 1,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "dana <dana@example.com>",
+            "data": {
+              "email": "dana@example.com"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "expect": {
+    "type": "todo",
+    "todo": {
+      "type": "handle",
+      "handling": [
+        {
+          "step": 2,
+          "round": 0,
+          "decision": {
+            "outcome": "run",
+            "reflex": "mail",
+            "args": {
+              "to": {
+                "type": "pick",
+                "span": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "dana@example.com"
+                },
+                "value": {
+                  "type": "email",
+                  "value": "dana@example.com"
+                }
+              }
+            },
+            "call": "mail to=\"dana@example.com\"",
+            "effect": "write",
+            "confidence": 0.88,
+            "weakest": {
+              "question": "route",
+              "top": "mail",
+              "p": 0.88
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "mail",
+                "p": 0.88
+              }
+            ],
+            "runner_up": {
+              "reflex": "contact",
+              "route": 0.04,
+              "fits": 0.1
+            },
+            "contenders": [
+              {
+                "reflex": "mail",
+                "route": 0.88,
+                "fits": 0.8
+              },
+              {
+                "reflex": "contact",
+                "route": 0.04,
+                "fits": 0.1
+              },
+              {
+                "reflex": "lights",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "timer",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "volume",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          },
+          "input": "email them",
+          "bound": [
+            {
+              "arg": "to",
+              "from": 1,
+              "field": "email",
+              "value": "dana@example.com"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

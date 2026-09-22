@@ -42,6 +42,7 @@ One tool does three jobs. A **CLI** you talk to. A **package manager** that inst
 | :------------------------------------------- | :--------------------------------------------------------------- |
 | [Saying things](use/saying-things.md)        | Bare input, the REPL, a pipe, `--json`, `--tag`, exit codes       |
 | [Outcomes](use/outcomes.md)                  | Run, confirm, ask and abstain; `try`, `why`, `run`                |
+| [Weaving](use/weaving.md)                    | Several things in one sentence: the plan, what a step takes from another |
 | [Installing reflexes](use/installing.md)     | `add`, `remove`, `update`, `sync`, `trust`; refs, the lock, the store |
 | [Tuning](use/tuning.md)                      | `teach`, overlays, vocabularies, `config`, `show`, `test`          |
 | [Projects](use/projects.md)                  | Your home project, an app's project, `evoke.toml`, trust           |
@@ -64,7 +65,7 @@ One tool does three jobs. A **CLI** you talk to. A **package manager** that inst
 | :------------------------------------------ | :----------------------------------------------------------------- |
 | [Getting started](sdk/getting-started.md)   | The first hour: one file, one reflex, one decision                 |
 | [Projects in code](sdk/projects.md)         | `load()`, roots, reflexes as code, `with()`, generated types        |
-| [Decisions](sdk/decisions.md)               | The `Decision` union, `fill`, `run`, `handle`                       |
+| [Decisions](sdk/decisions.md)               | The `Decision` union, `fill`, `run`, `handle`; `steps` and `weave`   |
 | [Adapters](sdk/adapters.md)                 | `jev()`, thresholds, and writing an adapter of your own             |
 | [Testing](sdk/testing.md)                   | `replay()`: offline, deterministic tests over a recording           |
 | [Errors](sdk/errors.md)                     | The three errors, and what each asks of you                         |

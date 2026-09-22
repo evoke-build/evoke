@@ -1,0 +1,72 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "weave": {
+      "$ref": "fixtures/weave-lights-timer.json"
+    },
+    "progress": {
+      "handled": [
+        {
+          "step": 1,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "den lights off"
+          }
+        },
+        {
+          "step": 2,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "10 minute timer started"
+          }
+        }
+      ]
+    }
+  },
+  "expect": {
+    "type": "done",
+    "executed": {
+      "steps": [
+        {
+          "step": 1,
+          "status": "ran",
+          "rounds": [
+            {
+              "step": 1,
+              "round": 0,
+              "status": "ran",
+              "result": {
+                "text": "den lights off"
+              }
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "status": "ran",
+          "rounds": [
+            {
+              "step": 2,
+              "round": 0,
+              "status": "ran",
+              "result": {
+                "text": "10 minute timer started"
+              }
+            }
+          ]
+        }
+      ],
+      "worst": "ran"
+    }
+  }
+}

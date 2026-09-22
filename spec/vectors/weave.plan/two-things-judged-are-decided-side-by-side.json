@@ -1,0 +1,33 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "input": "kill the lights in the den and start a 10 minute timer",
+    "tags": [],
+    "answers": {
+      "decided": [],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.95
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "need",
+      "need": {
+        "type": "decide",
+        "asked": [
+          {
+            "text": "kill the lights in the den"
+          },
+          {
+            "text": "start a 10 minute timer"
+          }
+        ]
+      }
+    }
+  }
+}

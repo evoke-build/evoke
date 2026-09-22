@@ -16,10 +16,11 @@ use evoke_core::manifest::{Effect, Manifest, Run};
 use evoke_core::name::LocalName;
 use evoke_core::test::{Claim, Expected, Mismatch};
 use evoke_core::vocabulary::Vocabulary;
+use evoke_core::weave::{Because, Bound, Status, Step};
 use evoke_core::{
     At, Call, Case, Chosen, Clean, Contender, ContractDiff, Decision, Diagnostic, Effective, File,
     Finding, Fix, Gate, Input, Json, KeyPath, Level, Prompt, Proposed, Raw, Regression, Verdict,
-    Version, render,
+    Version, Weave, render,
 };
 
 use crate::adapter::Trace;
@@ -207,6 +208,18 @@ pub struct Line {
     pub proposed: Vec<Proposed>,
     pub result: Option<Returned>,
     pub error: Option<String>,
+    /// A weave's step: which of how many, what became of it, the values bound into it. None for one decision.
+    pub step: Option<StepLine>,
+}
+
+/// A step of a weave as its line says it.
+#[derive(Clone, Debug, PartialEq)]
+pub struct StepLine {
+    pub n: usize,
+    pub of: usize,
+    pub status: Status,
+    pub why: Option<evoke_core::weave::Why>,
+    pub bound: Vec<Bound>,
 }
 
 impl Line {
@@ -220,6 +233,7 @@ impl Line {
             proposed: decided.request.proposed.clone(),
             result: None,
             error: None,
+            step: None,
         }
     }
 
@@ -234,6 +248,7 @@ impl Line {
             proposed: Vec::new(),
             result: None,
             error: None,
+            step: None,
         }
     }
 
@@ -252,6 +267,10 @@ impl Line {
             unreachable!("a decision serializes as an object")
         };
         let mut line = serde_json::Map::new();
+        if let Some(step) = &self.step {
+            line.insert("step".to_owned(), Json::from(step.n));
+            line.insert("steps".to_owned(), Json::from(step.of));
+        }
         line.insert(
             "input".to_owned(),
             Json::String(self.input.as_str().to_owned()),
@@ -261,6 +280,14 @@ impl Line {
             "trace".to_owned(),
             serde_json::to_value(&self.trace).expect("a trace serializes"),
         );
+        if let Some(step) = &self.step
+            && !step.bound.is_empty()
+        {
+            line.insert(
+                "bound".to_owned(),
+                serde_json::to_value(&step.bound).expect("bound values serialize"),
+            );
+        }
         if let Some(result) = &self.result {
             line.insert(
                 "result".to_owned(),
@@ -269,6 +296,18 @@ impl Line {
         }
         if let Some(error) = &self.error {
             line.insert("error".to_owned(), Json::String(error.clone()));
+        }
+        if let Some(step) = &self.step {
+            line.insert(
+                "status".to_owned(),
+                serde_json::to_value(step.status).expect("a status serializes"),
+            );
+            if let Some(why) = &step.why {
+                line.insert(
+                    "why".to_owned(),
+                    serde_json::to_value(why).expect("a reason serializes"),
+                );
+            }
         }
         if whole {
             line.insert(
@@ -297,6 +336,16 @@ impl Line {
         let proposed = field("proposed", take("proposed"))?;
         let result = field("result", take("result"))?;
         let error = field("error", take("error"))?;
+        let step = match (take("step"), take("steps")) {
+            (Json::Null, _) => None,
+            (n, of) => Some(StepLine {
+                n: field("step", n)?,
+                of: field("steps", of)?,
+                status: field("status", take("status"))?,
+                why: field("why", take("why"))?,
+                bound: field("bound", take("bound")).unwrap_or_default(),
+            }),
+        };
         let decision = field("decision", Json::Object(fields))?;
         Ok(Self {
             input,
@@ -306,6 +355,7 @@ impl Line {
             proposed,
             result,
             error,
+            step,
         })
     }
 
@@ -437,12 +487,153 @@ pub fn left_out<'n>(inactive: impl IntoIterator<Item = &'n LocalName>) -> Option
 #[must_use]
 pub fn running(chosen: &Chosen) -> Text {
     let mut text = Text::from("  ");
-    text.append(call(&chosen.call));
+    text.append(run_line(chosen));
+    text
+}
+
+/// The call, then its confidence.
+fn run_line(chosen: &Chosen) -> Text {
+    let mut text = call(&chosen.call);
     if let Some(judged) = &chosen.judged {
         text.push("  ")
             .roled(Role::Weak, &format!("{:.2}", judged.confidence().get()));
     }
     text
+}
+
+/// The plan, one line per step, numbered as the run refers to them: a call with its confidence; the own line of
+/// a step that will confirm; `asks <arg>` for what a step still needs; `takes <field> from <n>` where a result
+/// threads in; `after <n>` where the words order it; `no reflex` where nothing matched.
+#[must_use]
+pub fn planned(weave: &Weave) -> Text {
+    indented(
+        weave
+            .steps
+            .iter()
+            .map(|step| numbered(step.n, weave.steps.len(), step_body(step, weave)))
+            .collect(),
+    )
+}
+
+/// One line of a weave at its turn, numbered as the plan numbers it, with what the plan could not show: a
+/// bound value in its place, a prompt's own line, a step skipped.
+#[must_use]
+pub fn step(n: usize, of: usize, body: Text) -> Text {
+    let mut text = Text::from("  ");
+    text.append(numbered(n, of, body));
+    text
+}
+
+/// A step's call at its turn, with its confidence.
+#[must_use]
+pub fn step_running(chosen: &Chosen) -> Text {
+    run_line(chosen)
+}
+
+/// A step's own line ahead of its confirm prompt.
+#[must_use]
+pub fn step_confirming(chosen: &Chosen, prompt: &Prompt) -> Text {
+    own(chosen, &prompt.own)
+}
+
+/// A step as the plan shows it, before it runs.
+#[must_use]
+pub fn step_body(step: &Step, weave: &Weave) -> Text {
+    let taken: Vec<usize> = weave
+        .binds
+        .iter()
+        .filter(|b| b.to == step.n)
+        .map(|b| b.from)
+        .collect();
+    let mut text = match &step.decision {
+        Decision::Run { chosen } => run_line(chosen),
+        Decision::Confirm { chosen, prompt, .. } => own(chosen, &prompt.own),
+        Decision::Ask { asking, missing } => {
+            let bound: Vec<&str> = weave
+                .binds
+                .iter()
+                .filter(|b| b.to == step.n)
+                .map(|b| b.arg.as_str())
+                .collect();
+            let asks: Vec<&str> = missing
+                .iter()
+                .map(|m| m.arg.as_str())
+                .filter(|arg| !bound.contains(arg))
+                .collect();
+            let mut text = call(&Call {
+                reflex: asking.reflex.clone(),
+                args: asking.args.clone(),
+            });
+            if !asks.is_empty() {
+                text.push(&format!(" · asks {}", asks.join(", ")));
+            }
+            text
+        }
+        Decision::Abstain { .. } => {
+            let mut text = Text::from(quoted(&step.text));
+            text.push(" · no reflex");
+            text
+        }
+    };
+    for b in weave.binds.iter().filter(|b| b.to == step.n) {
+        text.push(&format!(" · takes {} from {}", b.field, b.from));
+    }
+    let after: Vec<String> = step
+        .after
+        .iter()
+        .filter(|n| !taken.contains(n))
+        .map(ToString::to_string)
+        .collect();
+    if !after.is_empty() {
+        text.push(&format!(" · after {}", after.join(", ")));
+    }
+    text
+}
+
+/// `<n>  <body>`, the number right-aligned to the count.
+fn numbered(n: usize, of: usize, body: Text) -> Text {
+    let width = of.to_string().len();
+    let mut text = Text::from(format!("{n:>width$}  "));
+    text.append(body);
+    text
+}
+
+/// Why a plan does not simply run, in one line a person reads.
+#[must_use]
+pub fn verdict(because: &Because) -> String {
+    match because {
+        Because::NothingToDo => "nothing to do: every part of the request was left out".to_owned(),
+        Because::NoReflex { step } => format!("step {step} matches no reflex"),
+        Because::Needs { step, arg } => format!("step {step} needs {arg}"),
+        Because::Several {
+            step,
+            source,
+            fields,
+        } => {
+            let fields: Vec<&str> = fields
+                .iter()
+                .map(evoke_core::name::FieldName::as_str)
+                .collect();
+            format!(
+                "step {step} takes one of several things step {source} yields — {} — which one?",
+                fields.join(", ")
+            )
+        }
+        Because::OneOfMany {
+            step,
+            source,
+            field,
+        } => format!(
+            "step {step} takes one {field} from step {source}, which finds several — which one?"
+        ),
+        Because::TakesNothing { step, sources } => {
+            let sources: Vec<String> = sources.iter().map(ToString::to_string).collect();
+            format!(
+                "step {step} refers to step {}, but takes nothing from it",
+                sources.join(" and ")
+            )
+        }
+    }
 }
 
 /// `evoke`'s own line before a confirm.
@@ -1307,7 +1498,9 @@ fn chars(text: &str) -> usize {
     text.chars().count()
 }
 
-fn quoted(text: &str) -> String {
+/// A text in double quotes, escaped as JSON writes it.
+#[must_use]
+pub fn quoted(text: &str) -> String {
     Json::String(text.to_owned()).to_string()
 }
 

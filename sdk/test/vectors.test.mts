@@ -23,6 +23,7 @@ const RESULTS = new Set([
   "set_config",
   "reference",
   "lock",
+  "weave.plan",
 ])
 
 /** A JSON file under spec/, its { "$ref": … } objects replaced by what they name. */

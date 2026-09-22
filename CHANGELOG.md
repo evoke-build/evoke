@@ -6,6 +6,12 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A sentence that asks for several things is read as steps — «kill the lights in the den and start a 10 minute
+  timer» — each decided as one input is, run in the order the words give, a result of one step threaded into a
+  later one where its manifest declares `[yields]`; the plan is shown before anything runs, a step's own
+  questions asked first, and the exit code is the worst step's. `try` shows the plan and each step's judgments;
+  `--json` prints one line per step. The SDK's `steps` returns the plan and `weave` runs it under `handle`'s
+  handlers, each told which step asks. [Weaving](docs/manual/use/weaving.md).
 - The answer cache is keyed by the questions asked as well as the sentence, so a decision narrowed with `--tag`
   keeps its entry beside the full one instead of overwriting it.
 - `evoke run --json <call>` prints the call and its result as one JSON line, with nothing judged; with no

@@ -28,6 +28,16 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `result`     | ○   |         |     |         | `{ text, data? }` when the body ran                             |
 | `error`      | ○   |         |     |         | The failure's message when it did not                           |
 
+A sentence read as several steps ([Weaving](../use/weaving.md)) prints one line per step, as each runs, the
+line of its decision with four fields more: `step` and `steps` first, the step's number and the count; `bound`
+after `trace`, where a value came from another step, `[{ arg, from, field, value }]`; and `status` last, with
+`why` when the step stopped. `evoke try --json` prints the plan whole instead, on one line.
+
+| Field    | Holds                                                                                                   |
+| :------- | :------------------------------------------------------------------------------------------------------ |
+| `status` | `"ran"`, `"failed"`, `"declined"`, `"refused"`, `"skipped"`, `"unanswered"`                              |
+| `why`    | `{ "type": "earlier_step" }`, `nothing_to_take`, `found_nothing`, `no_reflex`, `{ "type": "read_as", "reflex" }`, or `{ "type": "said", "message" }`: a prompt's own line, a failure, a question no one answered |
+
 A call by name, `evoke run --json`, prints the same line with nothing judged: `input` is empty, there is no
 `confidence`, `weakest`, `judgments` or `contenders`, `trace` is empty, and `result` or `error` says what the body
 did. A destructive call carries `prompt` and `because` like any confirm. Nothing was decided.

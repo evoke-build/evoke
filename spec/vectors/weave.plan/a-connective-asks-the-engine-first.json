@@ -1,0 +1,34 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "input": "kill the lights in the den and start a 10 minute timer",
+    "tags": [],
+    "answers": {
+      "decided": []
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "need",
+      "need": {
+        "type": "judge",
+        "request": {
+          "state": {
+            "request": "kill the lights in the den and start a 10 minute timer"
+          },
+          "questions": {
+            "weave.split_0": {
+              "type": "yesno",
+              "ask": "At «and», does the request ask for two things to be done — «kill the lights in the den», and separately «start a 10 minute timer»?",
+              "yes": "Two things to do: what follows the connective is another task, or the same task again for another item.",
+              "no": "One thing to do: what follows the connective is part of the same task — a second value it takes, a detail, a name, or a time."
+            }
+          },
+          "proposed": []
+        }
+      }
+    }
+  }
+}

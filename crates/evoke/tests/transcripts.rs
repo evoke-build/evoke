@@ -122,6 +122,11 @@ fn help() {
 }
 
 #[test]
+fn weave() {
+    flow("weave");
+}
+
+#[test]
 fn cache() {
     flow("cache");
 }

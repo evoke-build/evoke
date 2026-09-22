@@ -26,7 +26,7 @@ export interface Ops {
   // decide
   compile: { input: { set: T.Installed; limits?: T.Limits }; output: T.Result<T.Plan, T.Diagnostic> }
   propose: { input: { input: T.Input }; output: T.Proposed[] }
-  request: { input: { plan: T.Plan; input: string; tags: T.Tag[]; scope: T.Scope }; output: T.Result<T.Request, T.Diagnostic> }
+  request: { input: { plan: T.Plan; input: string; tags: T.Tag[]; only?: T.LocalName; scope: T.Scope }; output: T.Result<T.Request, T.Diagnostic> }
   read: { input: { plan: T.Plan; request: T.Request; raw: T.Raw }; output: T.Result<T.Reading, T.Fault> }
   gate: { input: { plan: T.Plan; reading: T.Reading; gate?: T.Gate }; output: T.Decision }
   fill: { input: { plan: T.Plan; asking: T.Asking; given: Record<T.ArgName, T.Value>; gate?: T.Gate }; output: T.Decision }
@@ -52,10 +52,13 @@ export interface Ops {
   reflex_dts: { input: { manifest: T.Manifest }; output: string }
   project_dts: { input: { set: T.Installed }; output: string }
   cases: { input: { set: T.Installed }; output: T.Case[] }
-  judge: { input: { case: T.Case; decision: T.Decision }; output: T.Verdict }
-  regressions: { input: { before: T.Baseline; judged: [T.Case, T.NonEmpty<T.Verdict>][] }; output: T.Regression[] }
-  baseline: { input: { before: T.Baseline; judged: [T.Case, T.NonEmpty<T.Verdict>][] }; output: T.Baseline }
+  judge: { input: { case: T.Case; decision: T.Decision }; output: T.CaseVerdict }
+  regressions: { input: { before: T.Baseline; judged: [T.Case, T.NonEmpty<T.CaseVerdict>][] }; output: T.Regression[] }
+  baseline: { input: { before: T.Baseline; judged: [T.Case, T.NonEmpty<T.CaseVerdict>][] }; output: T.Baseline }
   thieves: { input: { newcomers: T.LocalName[]; routed: [T.Case, T.LocalName | null][] }; output: T.Theft[] }
+  // weave
+  "weave.plan": { input: { plan: T.Plan; input: string; tags: T.Tag[]; answers: T.Answers }; output: T.Result<T.Planning, T.Fault> }
+  "weave.execute": { input: { plan: T.Plan; gate?: T.Gate; weave: T.Weave; progress: T.Progress }; output: T.Running }
   // the adapters
   "jev.settings": { input: { table?: T.Json }; output: T.Result<T.Settings, T.Diagnostic[]> }
   "jev.request": { input: { request: T.Request }; output: T.Json }

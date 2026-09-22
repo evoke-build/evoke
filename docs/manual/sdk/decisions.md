@@ -98,4 +98,34 @@ const handled = await project.handle(input, {
 An answer that does not read is asked again once, as at the terminal. Twice is a decline. Only a diagnostic, a
 fault or a failure throws.
 
+## `steps(input, { tags?, signal? })` and `weave(input, { confirm?, ask?, proceed?, tags?, signal? })`
+
+A sentence that asks for several things is a weave ([Weaving](../use/weaving.md)). `steps` reads one into its
+plan and runs nothing:
+
+```ts
+const plan = await project.steps("look up dana's address and email them")
+plan.steps       // [{ n: 1, text, decision, reflex: "contact", effect: "read", ... }, { n: 2, ... }]
+plan.binds       // [{ from: 1, to: 2, arg: "to", field: "email", kind: "email", via: "fill" }]
+plan.stages      // [[1], [2]]: a stage's steps run together; stages run in order
+plan.verdict     // { outcome: "run" | "ask" | "confirm" | "refuse", because?: [...] }
+```
+
+Each step carries its `decision`, the `Decision` `decide` would have made of its words alone. `weave` settles
+what the plan asks first, then runs every step under `handle`'s handlers, each told which step asks:
+
+```ts
+const woven = await project.weave(input, {
+  ask: (d, at) => ui.pick(d.missing, at.step),      // before anything runs, for a required argument no step provides
+  confirm: (d, at) => ui.confirm(d.prompt.template), // at the step's turn
+  proceed: plan => ui.confirm("Run the plan as it stands?"),  // a step refers to another it takes nothing from
+})
+woven.status     // the worst step's: "ran", "failed", "declined", "refused", "unanswered"; or why nothing ran
+woven.steps      // per step: { step, status, why?, bound, rounds: [{ round, input, decision, status, result? }] }
+```
+
+A body's failure is the step's, with `status: "failed"`, never a throw. A step after one that stopped is
+`skipped`, with `why: { type: "earlier_step" }`. A step bound to a list of records runs once per record, one
+round each.
+
 **Next:** [Adapters](adapters.md).

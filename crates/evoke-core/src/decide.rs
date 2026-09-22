@@ -343,12 +343,14 @@ impl Prompt {
     }
 }
 
-/// The one call of `answer`: an input over the cap is refused; `--tag` narrows the set; a pick is asked over its
-/// candidates, or not at all.
+/// The one call of `answer`: an input over the cap is refused; `--tag` narrows the set, or `only` narrows it to
+/// one reflex — what a weave decides a fragment or a rewritten step by; a pick is asked over its candidates, or
+/// not at all.
 pub fn request(
     plan: &Plan,
     input: &str,
     tags: &[Tag],
+    only: Option<&LocalName>,
     scope: Scope,
 ) -> Result<Request, Diagnostic> {
     let input = Input::new(input).map_err(|why| Diagnostic {
@@ -357,10 +359,16 @@ pub fn request(
         message: why.to_string(),
         fix: Fix::Rerun,
     })?;
+    if let Some(only) = only {
+        plan.running(only)?;
+    }
     let narrowed: Vec<&LocalName> = plan
         .active()
         .iter()
-        .filter(|(_, active)| tags.is_empty() || active.tags.iter().any(|tag| tags.contains(tag)))
+        .filter(|(name, active)| match only {
+            Some(only) => *name == only,
+            None => tags.is_empty() || active.tags.iter().any(|tag| tags.contains(tag)),
+        })
         .map(|(name, _)| name)
         .collect();
     if narrowed.is_empty() {
@@ -455,7 +463,7 @@ fn proposes(recognizer: Recognizer, value: &PickValue) -> bool {
 }
 
 /// Every answer validated against its question and resolved to the keys offered.
-type Answers<'a> = IndexMap<&'a QuestionId, IndexMap<Key, Prob>>;
+pub(crate) type Answers<'a> = IndexMap<&'a QuestionId, IndexMap<Key, Prob>>;
 
 /// The answers read against their request: every asked question answered, keys among those offered,
 /// probabilities in `[0, 1]`, a choice summing to 1 — then the ranking, the judgments and the winner's values.
@@ -505,7 +513,7 @@ fn malformed(question: QuestionId, message: impl Into<String>) -> Fault {
 }
 
 /// The answers taken apart: every asked question's answer, and nothing that was not asked.
-fn validated(request: &Request, raw: Raw) -> Result<Answers<'_>, Fault> {
+pub(crate) fn validated(request: &Request, raw: Raw) -> Result<Answers<'_>, Fault> {
     let mut raw = raw.0;
     let mut answers = IndexMap::new();
     for (id, question) in &request.questions {

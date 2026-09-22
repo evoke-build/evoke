@@ -1,15 +1,16 @@
 // A project: the owned files under a root, reflexes handed as code, and who answers — read, verified and compiled
 // once; never fetched, never written. On it: `with`, the same project over a vocabulary of the call's own — a
 // tenant's words, their own plan in milliseconds; `decide`, one input asked, answered, read and gated; `fill`, an
-// ask answered and gated again; `run`, the chosen call's body; `handle`, the whole loop. In: LoadOptions; inputs;
-// decisions. Out: a Project, decisions, results.
+// ask answered and gated again; `run`, the chosen call's body; `handle`, the whole loop; `steps`, one request
+// read into steps, and `weave`, the steps run stage by stage under the same handlers. In: LoadOptions; inputs;
+// decisions. Out: a Project, decisions, results, plans.
 
 import { statSync } from "node:fs"
 
-import { type Adapter, answered } from "./adapter.ts"
+import { type Adapter, type Trace, answered } from "./adapter.ts"
 import { bug, call, command, fromCode, problem, reply } from "./core.ts"
 import type { Abstain, AnyReflexes, Ask, Confirm, Decision, Given, Handled, Line, Run } from "./decision.ts"
-import { DiagnosticError, type Problem } from "./errors.ts"
+import { DiagnosticError, FailureError, type Problem } from "./errors.ts"
 import { entry, snapshot, text } from "./files.ts"
 import type { Inline } from "./reflex.ts"
 import { type Reflex, type Result, child, inline, program } from "./runtime.ts"
@@ -28,6 +29,8 @@ export interface LoadOptions<R = AnyReflexes> {
 export interface DecideOptions {
   /** Only reflexes carrying one of these tags are offered. */
   tags?: string[] | undefined
+  /** This reflex alone is offered: how a weave decides a fragment, or a step with a value written into its words. */
+  only?: string | undefined
   /** Aborts the adapter call; `decide` rejects with the signal's reason. */
   signal?: AbortSignal | undefined
 }
@@ -43,6 +46,56 @@ export interface Handlers<R = AnyReflexes> {
   /** Asked at an ask: answers by argument name, or `undefined` to decline; asked again when an answer does not
    *  read or leaves something missing, and declined when it changes nothing. Absent and reached: `unanswered`. */
   ask?: ((decision: Ask<R>) => Given<Ask<R>> | undefined | Promise<Given<Ask<R>> | undefined>) | undefined
+}
+
+/** Which step of a weave, and which of its rounds, a handler is asked for. */
+export interface At {
+  /** From 1, as the plan numbers them. */
+  step: number
+  /** From 0; a step bound to a list runs one round per record. */
+  round: number
+}
+
+/** What `weave` takes beside the decision's options: `handle`'s handlers, each told which step asks, and one
+ *  more for the plan itself. */
+export interface WeaveOptions<R = AnyReflexes> extends DecideOptions {
+  /** Asked at a step's confirm: `true` runs, `false` declines the step, which ends the weave after its stage.
+   *  Absent and reached: the step is `unanswered`. */
+  confirm?: ((decision: Confirm<R>, at: At) => boolean | Promise<boolean>) | undefined
+  /** Asked at a step's ask — before anything runs for a required argument no binding covers, else at the step's
+   *  turn — as `handle` asks one. Absent and reached: `unanswered`. */
+  ask?: ((decision: Ask<R>, at: At) => Given<Ask<R>> | undefined | Promise<Given<Ask<R>> | undefined>) | undefined
+  /** Asked when the plan holds at confirm — a step refers to another whose result it takes nothing from: `true`
+   *  runs the plan as it stands. Absent and reached: nothing runs. */
+  proceed?: ((plan: W.Weave) => boolean | Promise<boolean>) | undefined
+}
+
+/** One round of a step as it ran: the decision the loop settled, the input its body saw, what became of it. */
+export interface WovenRound<R = AnyReflexes> {
+  round: number
+  input: string
+  decision: Decision<R>
+  status: W.Status
+  why?: W.WeaveWhy | undefined
+  result?: Result | undefined
+}
+
+/** What became of one step of a weave. */
+export interface WovenStep<R = AnyReflexes> {
+  step: number
+  status: W.Status
+  why?: W.WeaveWhy | undefined
+  bound: W.Bound[]
+  rounds: WovenRound<R>[]
+}
+
+/** A request planned and run: the plan; the whole's status — the worst step's, as the exit codes rank them, or
+ *  why nothing ran: refused by the verdict, declined or unanswered at what the plan asked first; per step what
+ *  became of it, none when nothing ran. */
+export interface Woven<R = AnyReflexes> {
+  plan: W.Weave
+  status: W.Status
+  steps: WovenStep<R>[]
 }
 
 /** Vocabularies in the file's form: per name, word → what it means, or `{ what, value? }`. */
@@ -70,6 +123,11 @@ export interface Project<R = AnyReflexes> {
   run(decision: Confirm<R>, options: RunOptions & { confirmed: true }): Promise<Result>
   /** The whole loop: decide; ask and fill until nothing is missing; confirm; run. */
   handle(input: string, options?: DecideOptions & Handlers<R>): Promise<Handled<R>>
+  /** One request read into its steps, each decided as `decide` decides one, ordered by the words, a result of
+   *  one threaded into a later one: the plan alone, its verdict before anything runs. Runs nothing. */
+  steps(input: string, options?: DecideOptions): Promise<W.Weave>
+  /** The steps, what the plan asks first answered, then every step run stage by stage under the same handlers. */
+  weave(input: string, options?: WeaveOptions<R>): Promise<Woven<R>>
 }
 
 /** The home project as the CLI writes it on first use: what a root without evoke.toml means. */
@@ -214,9 +272,41 @@ function refused(reflex: string | undefined, message: string, fix: W.Fix, invoke
 
 /** The SDK call as a fix line names it, the input elided past sixty characters. */
 function invocation(input: string): string {
-  const shown = input.length > 60 ? `${input.slice(0, 59)}…` : input
-  return `decide(${JSON.stringify(shown)})`
+  return `decide(${JSON.stringify(shown(input))})`
 }
+
+/** An input as a fix line shows it: elided past sixty characters. */
+function shown(input: string): string {
+  return input.length > 60 ? `${input.slice(0, 59)}…` : input
+}
+
+/** What was asked, as one key: the text, the tags, the one reflex. */
+function key(asked: W.Asked): string {
+  return JSON.stringify([asked.text, asked.tags ?? [], asked.only ?? null])
+}
+
+/** What the planner asked to decide a step, as its repair tells: a fragment narrowed to its neighbour's reflex, or
+ *  spliced into its words, was decided under that reflex alone; any other step over the tags. */
+function askedFor(step: W.Step, tags: string[]): W.Asked {
+  const own = step.repair === "narrowed" || step.repair === "spliced" ? step.reflex : undefined
+  return own === undefined ? { text: step.text, tags } : { text: step.text, only: own }
+}
+
+/** The answers a plan gathers: what it decided is always there to push to. */
+type Gathered = W.Answers & { decided: [W.Asked, W.Decision][] }
+
+/** What became of one round: its status, why it stopped, what its body returned. */
+interface Became {
+  status: W.Status
+  why?: W.WeaveWhy | undefined
+  result?: Result | undefined
+}
+
+/** A decision taken to the point of running, or where it stopped. */
+type Readied =
+  | { ready: true; decision: Run<AnyReflexes> | Confirm<AnyReflexes> }
+  | { ready: false; status: "refused"; decision: Abstain; why: W.WeaveWhy }
+  | { ready: false; status: "declined" | "unanswered"; decision: Ask<AnyReflexes> | Confirm<AnyReflexes>; why: W.WeaveWhy }
 
 /** The project over its ground: the set compiled, every reflex's status read off the plan. The implementation
  *  speaks the wire's shapes; the app's R lives on the interface alone. */
@@ -254,7 +344,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
 
     async decide(input, options = {}) {
       const invoked = invocation(input)
-      const request = call("request", { plan, input, tags: options.tags ?? [], scope: "full" }, invoked)
+      const request = call("request", { plan, input, tags: options.tags ?? [], ...(options.only === undefined ? {} : { only: options.only }), scope: "full" }, invoked)
       const { raw, trace } = await answered(adapter, request, plan.deadline, options.signal, invoked)
       const reading = call("read", { plan, request, raw }, invoked)
       const decision = call("gate", { plan, reading, ...gate })
@@ -303,42 +393,218 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     },
 
     async handle(input, options = {}) {
-      let decision = await project.decide(input, options)
+      const readied = await ready(await project.decide(input, options), options)
+      if (readied.ready) return { outcome: "ran", decision: readied.decision, result: await bodied(readied.decision, options.signal) }
+      if (readied.status === "refused") return { outcome: "abstained", decision: readied.decision }
+      return { outcome: readied.status, decision: readied.decision }
+    },
+
+    async steps(input, options = {}) {
+      return planned(input, options, { decided: [] }, new Map())
+    },
+
+    async weave(input, options = {}) {
+      const traces = new Map<string, Trace[]>()
+      const answers: Gathered = { decided: [] }
+      let woven = await planned(input, options, answers, traces)
+      // What the plan asks before anything runs: a step's own question, answered, and the plan made again.
+      while (woven.verdict.outcome === "ask") {
+        const filled = await askedUpFront(woven, answers, options, traces)
+        if (filled !== "filled") return { plan: woven, status: filled, steps: [] }
+        const again = await planned(input, options, answers, traces)
+        // A plan that asks the same again could not take the answer: unanswered, never a loop.
+        if (JSON.stringify(again.verdict) === JSON.stringify(woven.verdict)) return { plan: again, status: "unanswered", steps: [] }
+        woven = again
+      }
+      if (woven.verdict.outcome === "refuse") return { plan: woven, status: "refused", steps: [] }
+      if (woven.verdict.outcome === "confirm") {
+        if (options.proceed === undefined) return { plan: woven, status: "unanswered", steps: [] }
+        if (!(await options.proceed(woven))) return { plan: woven, status: "declined", steps: [] }
+      }
+      return executed(woven, options, traces)
+    },
+  }
+
+  /** The plan over the answers gathered so far: the adapter asked and texts decided until it stands. */
+  async function planned(input: string, options: DecideOptions, answers: Gathered, traces: Map<string, Trace[]>): Promise<W.Weave> {
+    const invoked = `steps(${JSON.stringify(shown(input))})`
+    for (;;) {
+      const planning = call("weave.plan", { plan, input, tags: options.tags ?? [], answers }, invoked)
+      if (planning.type === "done") return planning.weave
+      const { need } = planning
+      if (need.type === "decide") {
+        // Side by side: each text is its own adapter call.
+        answers.decided.push(...(await Promise.all(need.asked.map(async (asked): Promise<[W.Asked, W.Decision]> => [asked, await decided(asked, options, traces)]))))
+        continue
+      }
+      const { raw } = await answered(adapter, need.request, plan.deadline, options.signal, invoked)
+      if (need.type === "judge") answers.judged = raw
+      else answers.referred = raw
+    }
+  }
+
+  /** One text decided as the plan asks — over the tags, or one reflex alone — its trace kept by what was asked. */
+  async function decided(asked: W.Asked, options: DecideOptions, traces: Map<string, Trace[]>): Promise<W.Decision> {
+    const decision = await project.decide(asked.text, {
+      ...(asked.only === undefined ? { tags: asked.tags ?? [] } : { only: asked.only }),
+      ...(options.signal === undefined ? {} : { signal: options.signal }),
+    })
+    traces.set(key(asked), decision.trace)
+    // The whole decision crosses: the core reads its own fields and ignores the SDK's.
+    return decision as unknown as W.Decision
+  }
+
+  /** The plan's own questions before anything runs. A step's required argument no binding covers is asked as
+   *  `handle` asks one — the ask narrowed to what nothing binds — and the step's decision replaced for the plan
+   *  to stand again. Several fields, or one record of several, no handler can answer: unanswered. */
+  async function askedUpFront(woven: W.Weave, answers: Gathered, options: WeaveOptions<AnyReflexes>, traces: Map<string, Trace[]>): Promise<"filled" | "declined" | "unanswered"> {
+    const because = woven.verdict.because ?? []
+    if (options.ask === undefined || because.some(b => b.type === "several" || b.type === "one_of_many")) return "unanswered"
+    for (const n of new Set(because.flatMap(b => (b.type === "needs" ? [b.step] : [])))) {
+      const step = woven.steps[n - 1]
+      if (step === undefined || step.decision.outcome !== "ask") continue
+      const bound = new Set((woven.binds ?? []).filter(b => b.to === n).map(b => b.arg))
+      const asked = askedFor(step, options.tags ?? [])
+      let decision = lined(step.decision, { input: step.text, plan: plan.digest, trace: traces.get(key(asked)) ?? [] })
       let refusals = 0
-      for (;;) {
-        switch (decision.outcome) {
-          case "abstain":
-            return { outcome: "abstained", decision }
-          case "ask": {
-            if (options.ask === undefined) return { outcome: "unanswered", decision }
-            const given = await options.ask(decision)
-            if (given === undefined) return { outcome: "declined", decision }
-            let filled: Decision<AnyReflexes>
-            try {
-              filled = project.fill(decision, given)
-            } catch (error) {
-              // An answer that does not read is asked again once, as at the terminal; twice is a decline.
-              if (!(error instanceof DiagnosticError) || refusals++ > 0) throw error
-              continue
-            }
-            // An answer that leaves the ask exactly as it was is a decline, so a handler that never answers ends.
-            if (filled.outcome === "ask" && same(filled.missing, decision.missing)) return { outcome: "declined", decision: filled }
-            decision = filled
-            continue
-          }
-          case "confirm": {
-            if (options.confirm === undefined) return { outcome: "unanswered", decision }
-            if (!(await options.confirm(decision))) return { outcome: "declined", decision }
-            const result = await project.run(decision, { confirmed: true, ...(options.signal === undefined ? {} : { signal: options.signal }) })
-            return { outcome: "ran", decision, result }
-          }
-          case "run": {
-            const result = await project.run(decision, options.signal === undefined ? {} : { signal: options.signal })
-            return { outcome: "ran", decision, result }
-          }
+      while (decision.outcome === "ask") {
+        const unbound = decision.missing.filter(m => !bound.has(m.arg))
+        if (unbound.length === 0) break
+        const narrowed = { ...decision, missing: unbound as W.NonEmpty<W.Missing> }
+        const given = await options.ask(narrowed, { step: n, round: 0 })
+        if (given === undefined) return "declined"
+        let filled: Decision<AnyReflexes>
+        try {
+          filled = project.fill(narrowed, given)
+        } catch (error) {
+          if (!(error instanceof DiagnosticError) || refusals++ > 0) throw error
+          continue
+        }
+        if (filled.outcome === "ask" && same(filled.missing, decision.missing)) return "declined"
+        decision = filled
+      }
+      for (const entry of answers.decided) if (key(entry[0]) === key(asked)) entry[1] = decision as unknown as W.Decision
+    }
+    return "filled"
+  }
+
+  /** The plan run: stage by stage, a stage's rounds each taken to the point of running in the words' order, then
+   *  their bodies together; a step decided again with its bound values in its words when the run asks for it. */
+  async function executed(woven: W.Weave, options: WeaveOptions<AnyReflexes>, traces: Map<string, Trace[]>): Promise<Woven<AnyReflexes>> {
+    const invoked = `weave(${JSON.stringify(shown(woven.input))})`
+    const progress: Required<W.Progress> = { decided: [], handled: [] }
+    const rounds = new Map<number, WovenRound<AnyReflexes>[]>()
+    const record = (handling: W.Handling, decision: Decision<AnyReflexes>, became: Became) => {
+      const { status, why, result } = became
+      const said = { ...(why === undefined ? {} : { why }), ...(result === undefined ? {} : { result: result as W.Returned }) }
+      progress.handled.push({ step: handling.step, round: handling.round, status, ...said })
+      const list = rounds.get(handling.step) ?? []
+      list.push({ round: handling.round, input: handling.input, decision, status, ...said })
+      rounds.set(handling.step, list)
+    }
+    for (;;) {
+      const running = call("weave.execute", { plan, ...gate, weave: woven, progress }, invoked)
+      if (running.type === "done") {
+        const { executed } = running
+        return {
+          plan: woven,
+          status: executed.worst,
+          steps: executed.steps.map(step => ({
+            step: step.step,
+            status: step.status,
+            ...(step.why === undefined ? {} : { why: step.why }),
+            bound: step.bound ?? [],
+            rounds: rounds.get(step.step) ?? [],
+          })),
         }
       }
-    },
+      const { todo } = running
+      if (todo.type === "decide") {
+        progress.decided.push([todo.asked, await decided(todo.asked, options, traces)])
+        continue
+      }
+      const bodies: Promise<void>[] = []
+      for (const handling of todo.handling) {
+        const step = woven.steps[handling.step - 1]
+        // A round decided again with its values in its words has its own trace; any other round has its step's.
+        const own = step?.reflex === undefined || !handling.bound?.length ? undefined : traces.get(key({ text: handling.input, only: step.reflex }))
+        const trace = own ?? (step === undefined ? undefined : traces.get(key(askedFor(step, options.tags ?? [])))) ?? []
+        const decision = lined(handling.decision, { input: handling.input, plan: plan.digest, trace })
+        const readied = await ready(decision, told(options, { step: handling.step, round: handling.round }))
+        if (!readied.ready) {
+          record(handling, readied.decision, { status: readied.status, why: readied.why })
+          continue
+        }
+        bodies.push(ran(readied.decision, options.signal).then(became => record(handling, readied.decision, became)))
+      }
+      await Promise.all(bodies)
+    }
+  }
+
+  /** The foundation's loop up to the run, as `handle` takes a decision: ask and fill until nothing is missing,
+   *  then confirm. What stands ready to run, or where it stopped and why. */
+  async function ready(start: Decision<AnyReflexes>, options: Handlers<AnyReflexes>): Promise<Readied> {
+    let decision = start
+    let refusals = 0
+    for (;;) {
+      switch (decision.outcome) {
+        case "abstain":
+          return { ready: false, status: "refused", decision, why: { type: "no_reflex" } }
+        case "ask": {
+          const why = { type: "said", message: decision.missing.map(m => m.arg).join(", ") } as const
+          if (options.ask === undefined) return { ready: false, status: "unanswered", decision, why }
+          const given = await options.ask(decision)
+          if (given === undefined) return { ready: false, status: "declined", decision, why }
+          let filled: Decision<AnyReflexes>
+          try {
+            filled = project.fill(decision, given)
+          } catch (error) {
+            // An answer that does not read is asked again once, as at the terminal; twice is a decline.
+            if (!(error instanceof DiagnosticError) || refusals++ > 0) throw error
+            continue
+          }
+          // An answer that leaves the ask exactly as it was is a decline, so a handler that never answers ends.
+          if (filled.outcome === "ask" && same(filled.missing, decision.missing)) return { ready: false, status: "declined", decision: filled, why }
+          decision = filled
+          continue
+        }
+        case "confirm": {
+          const why = { type: "said", message: decision.prompt.own } as const
+          if (options.confirm === undefined) return { ready: false, status: "unanswered", decision, why }
+          if (!(await options.confirm(decision))) return { ready: false, status: "declined", decision, why }
+          return { ready: true, decision }
+        }
+        case "run":
+          return { ready: true, decision }
+      }
+    }
+  }
+
+  /** `weave`'s handlers as `ready` takes them: each told which step and round asks. */
+  function told(options: WeaveOptions<AnyReflexes>, at: At): Handlers<AnyReflexes> {
+    const { confirm, ask } = options
+    return {
+      ...(confirm === undefined ? {} : { confirm: (decision: Confirm<AnyReflexes>) => confirm(decision, at) }),
+      ...(ask === undefined ? {} : { ask: (decision: Ask<AnyReflexes>) => ask(decision, at) }),
+    }
+  }
+
+  /** A decision ready to run, run: a confirm once confirmed. */
+  function bodied(decision: Run<AnyReflexes> | Confirm<AnyReflexes>, signal: AbortSignal | undefined): Promise<Result> {
+    const options = signal === undefined ? {} : { signal }
+    return decision.outcome === "confirm" ? project.run(decision, { ...options, confirmed: true }) : project.run(decision, options)
+  }
+
+  /** One body run for a weave: what it returned, or its failure as the step's own outcome, never the weave's. */
+  async function ran(decision: Run<AnyReflexes> | Confirm<AnyReflexes>, signal: AbortSignal | undefined): Promise<Became> {
+    try {
+      return { status: "ran", result: await bodied(decision, signal) }
+    } catch (error) {
+      if (error instanceof FailureError) {
+        return { status: "failed", why: { type: "said", message: error.why === undefined ? error.what : `${error.what}: ${error.why}` } }
+      }
+      throw error
+    }
   }
 
   /** A decision made under this plan; another plan's is misuse — the wrong tenant's project, or words that changed. */

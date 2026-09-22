@@ -62,7 +62,7 @@ level = "number"
 | `run`         | yes      | The body: a path ending in `.mts` or `.mjs` inside the directory, or an argv. [The body](body.md) |
 | `[config]`    | no       | Settings the user provides with `evoke config`: `key = "about"` or `key = { about, secret = true }`. A secret is only ever set from an environment variable |
 | `[args.<name>]` | no     | The arguments: `ask` and exactly one source. [Arguments](arguments.md) |
-| `[yields]`    | no       | What the body's `data` holds, for a later step to take: per field, the kind that reads it, `number`, `duration`, `email`, `url` or `quoted`; or `{ each = { … } }` for a list of records |
+| `[yields]`    | no       | What the body's `data` holds, for a later step to take ([Weaving](../use/weaving.md)): per field, the kind that reads it, `number`, `duration`, `email`, `url` or `quoted`; or `{ each = { … } }` for a list of records |
 | `[examples]`  | no       | Utterances with what they assert, sent to the classifier. [Examples and tests](records.md) |
 | `[tests]`     | no       | The same shape, held out: never sent, run by `evoke test` |
 

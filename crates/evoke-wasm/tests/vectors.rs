@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 use serde_json::{Value, json};
 
 /// The families whose function returns a `Result`, so their `expect` is already `{ ok } | { err }`.
-const RESULTS: [&str; 12] = [
+const RESULTS: [&str; 13] = [
     "manifest",
     "overlay",
     "compile",
@@ -21,6 +21,7 @@ const RESULTS: [&str; 12] = [
     "set_config",
     "reference",
     "lock",
+    "weave.plan",
 ];
 
 fn spec() -> PathBuf {
@@ -252,6 +253,16 @@ fn judge_vectors() {
 #[test]
 fn regressions_vectors() {
     family("regressions");
+}
+
+#[test]
+fn weave_plan_vectors() {
+    family("weave.plan");
+}
+
+#[test]
+fn weave_execute_vectors() {
+    family("weave.execute");
 }
 
 #[test]

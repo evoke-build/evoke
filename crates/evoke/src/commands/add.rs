@@ -366,8 +366,14 @@ fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<
     let winners = {
         let busy = terminal::busy_over("checking for thefts", examples.len());
         threads::try_each(&examples, |case| {
-            let request = request(&plan, case.utterance.text().as_str(), &[], Scope::Route)
-                .map_err(Exit::Human)?;
+            let request = request(
+                &plan,
+                case.utterance.text().as_str(),
+                &[],
+                None,
+                Scope::Route,
+            )
+            .map_err(Exit::Human)?;
             let raw = adapter
                 .answer(&request, Deadline::after(plan.deadline()))
                 .map_err(Exit::Adapter)?;

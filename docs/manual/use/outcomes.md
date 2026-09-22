@@ -176,4 +176,4 @@ decision. Repeat an input and it costs nothing. A decision narrowed with `--tag`
 an entry of its own. Change a threshold, and the same answers gate differently. `try` and `why` explain a
 cached decision exactly like a fresh one. `evoke test` never uses the cache.
 
-**Next:** [Installing reflexes](installing.md).
+**Next:** [Weaving](weaving.md).
