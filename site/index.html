@@ -216,6 +216,7 @@
     .cta .cmd { flex: 1 1 100%; max-width: fit-content; margin-top: .25rem; }
     .cta .cmd code { font-size: .86rem; }
     .jobs { list-style: none; margin: 1.9rem 0 0; padding: 1.1rem 0 0; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: .65rem 2.25rem; max-width: 34rem; }
+    .jobs .lead { flex-basis: 100%; color: var(--faint); font-size: .95rem; font-weight: 450; }
     .jobs a { display: inline-flex; align-items: baseline; gap: .6rem; color: var(--muted); font-size: .95rem; font-weight: 450; transition: color .15s; }
     .jobs a:hover { color: var(--fg); text-decoration: none; }
     .jobs code { font-size: .8rem; color: var(--accent-ink); background: none; border: 0; padding: 0; white-space: nowrap; }
@@ -523,6 +524,8 @@
     .promises li::before { content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: var(--accent); margin-top: .55em; }
     .promises li b { font-weight: 560; }
     .promises li span { grid-column: 2; color: var(--muted); line-height: 1.5; }
+    .stops { margin-top: 1.5rem; }
+    .stops pre { font-size: .84rem; }
 
     /* Install */
     .install { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
@@ -588,6 +591,7 @@
           <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy>Copy</button></div>
         </div>
         <ul class="jobs" aria-label="What evoke is">
+          <li class="lead">One core, three ways in.</li>
           <li><a href="manual/use/saying-things.html"><code>$</code>a CLI</a></li>
           <li><a href="manual/use/installing.html"><code>+</code>a package manager</a></li>
           <li><a href="manual/sdk/getting-started.html"><code>{ }</code>a TypeScript SDK</a></li>
@@ -801,10 +805,10 @@ Ceiling and lamp lights only."""</span>
     </div>
 
     <section id="weave" class="weave">
-      <div class="rule"><p class="label">A weave</p><span class="num">03</span></div>
+      <div class="rule"><p class="label">Two things at once</p><span class="num">03</span></div>
       <h2>One sentence, several recipes.</h2>
-      <p class="sub">Each part is decided on its own, in the order you said it. What one step finds, the next one
-        takes. <strong>The plan shows before anything runs.</strong></p>
+      <p class="sub">A weave. Each part is decided on its own, in the order you said it. What one step finds, the
+        next one takes. <strong>The plan shows before anything runs.</strong></p>
       <div class="grid">
         <div class="panel term loom" aria-label="A sentence read into two steps, planned and run">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>read</b><b>plan</b><b class="on">run</b></span></div>
@@ -983,7 +987,8 @@ Ceiling and lamp lights only."""</span>
         </dl>
         <aside class="claim">
           <p>Every decision <em>can be checked.</em></p>
-          <small>The question was closed. The options were yours. The number says how sure it was.</small>
+          <small>The question was closed. The options were yours. The number is the probability this is right, so a
+            bar of 0.8 is a policy, not a guess.</small>
         </aside>
       </div>
     </section>
@@ -1001,6 +1006,19 @@ Ceiling and lamp lights only."""</span>
         <li><b>A destructive reflex always confirms.</b><span>There is no <code>--yes</code>.</span></li>
         <li><b>Trust binds to content.</b><span>Tag, commit and hash in the lock. A tag that moved is refused.</span></li>
       </ul>
+      <div class="panel term stops">
+        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre><span class="p">$</span> <span class="in">evoke "restart the computer"</span>
+<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: action <span class="hi">0.97</span>
+  Really restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
+[2]</span>
+<span class="p">$</span> <span class="in">evoke "set the volume to 150 percent"</span>
+<span class="own">  How loud, in percent?  <span class="mid">150 percent is outside 0–100</span>  &gt; <span class="in">40</span>
+  <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span>
+<span class="out">volume set to 40%</span></pre>
+      </div>
+      <p class="caption">Sure at <b>0.97</b>, and it still asked: a destructive reflex always does. A value outside its
+        range never reached a program. The range was on the line.</p>
       <p class="after"><a href="manual/security.html">Everything guaranteed, and what is not →</a></p>
     </section>
 

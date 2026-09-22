@@ -183,6 +183,11 @@
     .hero h1 em { font-style: normal; color: var(--accent); }
     .hero .lede { font-size: 1.22rem; line-height: 1.5; color: var(--muted); max-width: 38rem; margin: 0; }
     .hero .lede strong { color: var(--fg); font-weight: 560; }
+    .minute { max-width: 46rem; margin: 2.2rem 0 0; padding: 1.4rem 1.6rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+    .minute p.label { margin: 0 0 .6rem; color: var(--accent-ink); font-size: .76rem; line-height: 1.6; }
+    .minute p { margin: 0; color: var(--text); font-size: 1.04rem; line-height: 1.6; }
+    .minute p + p { margin-top: .8rem; }
+    .minute strong { color: var(--fg); font-weight: 560; }
     .index { list-style: none; margin: 1.9rem 0 0; padding: 1.1rem 0 0; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: .65rem 2rem; }
     .index a { display: inline-flex; align-items: baseline; gap: .6rem; color: var(--muted); font-size: .95rem; font-weight: 450; transition: color .15s; }
     .index a:hover { color: var(--fg); text-decoration: none; }
@@ -318,16 +323,28 @@
         <p class="lede"><strong>Say it, and the right small program runs, only when it is sure enough.</strong>
           The idea in ten minutes: what is new, why it holds, and where it goes.</p>
       </div>
+      <div class="minute">
+        <p class="label">In one minute</p>
+        <p><strong>You say what you want. <code>evoke</code> picks the small program that does it</strong>, from the
+          ones you installed, and fills in its arguments from your sentence. It never writes a program and never
+          makes up a value: an argument is a choice the author listed, a word you taught it, or a piece of what you
+          typed. Beside every call it shows a number, and that number is a probability. Reading runs at a lower bar
+          than changing something. Anything that cannot be undone asks first.</p>
+        <p>When it is not sure, it asks you, and you can teach it in one line that no update will touch. The programs
+          are recipes anyone can write, publish with a git tag, and improve. The same decisions run inside an
+          application, through the SDK.</p>
+      </div>
       <ul class="index" aria-label="The sections">
         <li><a href="#problem"><code>01</code>The problem</a></li>
         <li><a href="#move"><code>02</code>The move</a></li>
         <li><a href="#number"><code>03</code>The number</a></li>
-        <li><a href="#recipe"><code>04</code>The recipe</a></li>
-        <li><a href="#words"><code>05</code>Your words</a></li>
-        <li><a href="#weave"><code>06</code>A weave</a></li>
-        <li><a href="#road"><code>07</code>Where it goes</a></li>
-        <li><a href="#execution"><code>08</code>Execution</a></li>
-        <li><a href="#start"><code>09</code>Start</a></li>
+        <li><a href="#stops"><code>04</code>It stops</a></li>
+        <li><a href="#recipe"><code>05</code>The recipe</a></li>
+        <li><a href="#words"><code>06</code>Your words</a></li>
+        <li><a href="#weave"><code>07</code>A weave</a></li>
+        <li><a href="#road"><code>08</code>Where it goes</a></li>
+        <li><a href="#execution"><code>09</code>Execution</a></li>
+        <li><a href="#start"><code>10</code>Start</a></li>
       </ul>
     </div>
 
@@ -342,15 +359,16 @@
         <li><strong>The confidence is real.</strong> A number that means what it says, so you can set a bar on it.</li>
         <li><strong>What cannot be undone asks first.</strong> Every time, whatever the number.</li>
       </ul>
-      <p class="after">Reflexes are built for exactly these three. The rest of this page shows how, with real sessions.</p>
+      <p class="after">Reflexes are built for exactly these three. If you answer for what an automation did, you already
+        know why. The rest of this page shows how, with real sessions.</p>
     </section>
 
     <section id="move">
       <div class="rule"><p class="label">The move</p><span class="num">02</span></div>
       <h2>Your words pick a program. They never write one.</h2>
-      <p class="sub">A reflex is a small program with a manifest: what it does, in plain words, and the arguments it
-        takes. Jev, the classifier, reads your sentence and answers closed questions about it. Three kinds of
-        question, every answer a probability.</p>
+      <p class="sub">A reflex is a small program that says what it does, in plain words, and which arguments it takes.
+        Jev, the classifier, reads your sentence and answers closed questions about it. Three kinds of question,
+        every answer a probability.</p>
       <ol class="steps">
         <li><i>01</i><b>Which reflex?</b><span>One of the installed reflexes, or none of them.</span></li>
         <li><i>02</i><b>Which values?</b><span>An option the author listed, one of your own words, or a piece of the sentence, checked.</span></li>
@@ -385,12 +403,36 @@
         can read every judgment, and you can move the bar in a file you own.</p>
     </section>
 
+    <section id="stops">
+      <div class="rule"><p class="label">It stops</p><span class="num">04</span></div>
+      <h2>When it is not sure, nothing runs.</h2>
+      <p class="sub">The value of all this is what it refuses to do, and a refusal only shows when something would have
+        gone wrong. So here is what refusing looks like: three real sessions where nothing ran on a guess.</p>
+      <div class="panel term">
+        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre><span class="p">$</span> <span class="in">evoke "restart the computer"</span>
+<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: action <span class="hi">0.97</span>
+  Really restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
+[2]</span>
+<span class="p">$</span> <span class="in">evoke "set the volume to 150 percent"</span>
+<span class="own">  How loud, in percent?  <span class="mid">150 percent is outside 0–100</span>  &gt; <span class="in">40</span>
+  <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span>
+<span class="out">volume set to 40%</span>
+<span class="p">$</span> <span class="in">evoke "make it cosy"</span>
+<span class="own">  <span class="name">lights</span> <span class="mid">0.45</span> · none 0.40 · timer 0.10 · volume 0.05 · route floor 0.50
+[2]</span></pre>
+      </div>
+      <p class="caption">Sure at <b>0.97</b>, and it still asked: a destructive reflex always does. A value outside its
+        range never reached a program, and the range was on the line. A sentence that fits nothing ran nothing, and
+        showed the ranking that says why.</p>
+    </section>
+
     <section id="recipe">
-      <div class="rule"><p class="label">The recipe</p><span class="num">04</span></div>
+      <div class="rule"><p class="label">The recipe</p><span class="num">05</span></div>
       <h2>Written once. Shared. Improved by everyone.</h2>
-      <p class="sub">The manifest is the readable definition of a decision. It is a file, so it travels:
-        <code>evoke add</code> fetches it from git, checks it, and locks it by content. A collection grows the way
-        packages did, one recipe at a time.</p>
+      <p class="sub">What a reflex says about itself is a file, its manifest: the readable definition of a decision.
+        So it travels. <code>evoke add</code> fetches it from git, checks it, and locks it by content. A collection
+        grows the way packages did, one recipe at a time.</p>
       <div class="split">
         <div class="panel">
           <div class="head"><i></i>lights/reflex.toml</div>
@@ -439,7 +481,10 @@ Ceiling and lamp lights only."""</span>
               version changes them.</span></li>
             <li><b>2</b><span><strong>Tests are held out.</strong> The classifier never sees them, so they say how it
               does on sentences it was not shown.</span></li>
-            <li><b>3</b><span><strong>A recipe can be code.</strong> The SDK takes the same manifest as an object with a
+            <li><b>3</b><span><strong>A second recipe is checked against the first.</strong> At <code>add</code>, every
+              installed example is routed over the new set, and a phrase the newcomer would steal is named, with its
+              one-line fix.</span></li>
+            <li><b>4</b><span><strong>A recipe can be code.</strong> The SDK takes the same manifest as an object with a
               function, inside your own app.</span></li>
           </ul>
           <p class="after"><a href="manual/author/manifest.html">The manifest, key by key →</a></p>
@@ -448,7 +493,7 @@ Ceiling and lamp lights only."""</span>
     </section>
 
     <section id="words">
-      <div class="rule"><p class="label">Your words</p><span class="num">05</span></div>
+      <div class="rule"><p class="label">Your words</p><span class="num">06</span></div>
       <h2>It learns your way of saying it.</h2>
       <p class="sub">Type <code>t</code> at a confirm and your sentence becomes an example in your overlay. Your
         vocabulary is a file you own. The recipe underneath is untouched, so an update never loses your words.</p>
@@ -466,7 +511,7 @@ Ceiling and lamp lights only."""</span>
     </section>
 
     <section id="weave">
-      <div class="rule"><p class="label">A weave</p><span class="num">06</span></div>
+      <div class="rule"><p class="label">A weave</p><span class="num">07</span></div>
       <h2>Two things in one sentence, planned before either runs.</h2>
       <p class="sub">Each part is decided as one sentence would be. The plan is shown first, numbered. A result of
         one step can feed the next. A part that matches nothing refuses the whole request.</p>
@@ -488,7 +533,7 @@ Ceiling and lamp lights only."""</span>
     </section>
 
     <section id="road">
-      <div class="rule"><p class="label">Where it goes</p><span class="num">07</span></div>
+      <div class="rule"><p class="label">Where it goes</p><span class="num">08</span></div>
       <h2>What software looks like when words select programs.</h2>
       <p class="sub">If the idea holds, the pieces are already in place. Here is the road, one stage at a time. The
         first three exist today. The rest could follow from them.</p>
@@ -503,7 +548,7 @@ Ceiling and lamp lights only."""</span>
     </section>
 
     <section id="execution">
-      <div class="rule"><p class="label">Execution</p><span class="num">08</span></div>
+      <div class="rule"><p class="label">Execution</p><span class="num">09</span></div>
       <h2>Ideas like this live or die in the first year.</h2>
       <p class="sub">A shared recipe is used by everyone who installs it, so a small flaw compounds, and so does care.
         Four things are held to from the start.</p>
@@ -511,14 +556,15 @@ Ceiling and lamp lights only."""</span>
         <li><strong>The format is frozen.</strong> A manifest key is never removed or given a new meaning, so every recipe ever tagged stays readable.</li>
         <li><strong>The manual is executable.</strong> Every promise on its pages is a transcript that runs in CI. What the page says is what the binary does.</li>
         <li><strong>The gate is measured.</strong> Bars are set on calibrated numbers, so a threshold is a decision you can defend.</li>
-        <li><strong>One core.</strong> The CLI and the SDK share it, so a decision is the same wherever it is made.</li>
+        <li><strong>One core, three ways in.</strong> The CLI, the package manager and the SDK share it, so a decision
+          is the same wherever it is made.</li>
       </ul>
       <p class="after"><strong>Quality is the strategy, not a finish.</strong> A reflex written well once is right for
         everyone who installs it, for as long as the format lasts.</p>
     </section>
 
     <section id="start">
-      <div class="rule"><p class="label">Start</p><span class="num">09</span></div>
+      <div class="rule"><p class="label">Start</p><span class="num">10</span></div>
       <h2>Try it in ten minutes.</h2>
       <p class="sub">One small binary on macOS and Linux. Node next to it, for reflexes written in JavaScript.</p>
       <div class="install">

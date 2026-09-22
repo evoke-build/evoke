@@ -4,8 +4,8 @@
 
 **Software, by reflex.** `evoke` turns a sentence into a call of a small program. That program is a *reflex*: a
 recipe anyone can write, share and improve. A classifier chooses it. A confidence gate decides whether it runs.
-The classifier is [Jev](https://typesafe.ai), TypeSafe AI's System One model, the first adapter of a design bound
-to none.
+A sentence can choose a program. It can never invent a value. The classifier is [Jev](https://typesafe.ai),
+TypeSafe AI's System One model, the first adapter of a design bound to none.
 
 ```text
 $ evoke "kill the lights in the den"
