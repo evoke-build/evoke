@@ -6,6 +6,11 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- The SDK's transport connects through the proxy `HTTPS_PROXY` names, as the CLI's does; `NO_PROXY` excludes
+  hosts. The manual's environment page lists both.
+- A connection that fails is said plainly: `could not connect to api.typesafe.ai: connection refused`, the proxy
+  named when it carries the connection, in place of the library's line with an OS error number.
+
 ## [0.2.0] - 2026-09-22
 
 - `evoke kill the lights` needs no quotes: the words after `evoke` are one input, as the manual said. Every

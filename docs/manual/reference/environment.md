@@ -12,6 +12,7 @@
 | `HOME`, `XDG_CONFIG_HOME`, `XDG_STATE_HOME`, `XDG_CACHE_HOME` | Paths | Where the project and the machine-local state live |
 | `PATH`              | `add`, `sync`, argv bodies     | Where `node` and an argv's program are found; `git` too                  |
 | `GIT_*`             | Fetching                       | Your git configuration and credentials apply; `GIT_TERMINAL_PROMPT=0` is set |
+| `HTTPS_PROXY`, `NO_PROXY` | The classifier's connection | A proxy the connection goes through, in the CLI and the SDK, and the hosts that bypass it; upper or lower case. The endpoint itself never moves |
 
 ## Paths
 

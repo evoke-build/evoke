@@ -3,14 +3,14 @@
 
 import { deepStrictEqual, equal, ok, rejects, throws } from "node:assert/strict"
 import { mkdtempSync, readFileSync } from "node:fs"
-import { tmpdir } from "node:os"
+import { constants, tmpdir } from "node:os"
 import { join } from "node:path"
 import { test } from "node:test"
 
 import type { Adapter } from "../src/adapter.ts"
 import { answered } from "../src/adapter.ts"
 import { DiagnosticError, FaultError } from "../src/errors.ts"
-import { type Response, Transport } from "../src/https.ts"
+import { type Response, Transport, describe } from "../src/https.ts"
 import { type Post, over } from "../src/jev.ts"
 import { replay } from "../src/testing.ts"
 import type { Request } from "../src/types.ts"
@@ -161,4 +161,24 @@ test("a recording that answered fewer questions than are asked is repaired when 
   deepStrictEqual(Object.keys(more), Object.keys(request.questions))
   equal(asked, 2)
   deepStrictEqual(Object.keys(await replay(file).answer(request.state, request.questions, AbortSignal.timeout(1000))), Object.keys(request.questions))
+})
+
+test("a transport failure is said in plain words, the host named, the system's own cause", () => {
+  const refused = Object.assign(new Error("connect ECONNREFUSED 127.0.0.1:443"), {
+    code: "ECONNREFUSED",
+    errno: -constants.errno.ECONNREFUSED,
+    syscall: "connect",
+  })
+  equal(describe(refused, "api.typesafe.ai", false), "could not connect to api.typesafe.ai: connection refused")
+  const several = Object.assign(new AggregateError([refused], ""), { code: "ECONNREFUSED" })
+  equal(describe(several, "api.typesafe.ai", false), "could not connect to api.typesafe.ai: connection refused")
+  const unknown = Object.assign(new Error("getaddrinfo ENOTFOUND proxy.example"), {
+    code: "ENOTFOUND",
+    errno: -3008,
+    syscall: "getaddrinfo",
+    hostname: "proxy.example",
+  })
+  equal(describe(unknown, "api.typesafe.ai", false), "could not resolve proxy.example")
+  equal(describe(new Error("no answer within 1.5 s"), "api.typesafe.ai", true), "api.typesafe.ai: no answer within 1.5 s")
+  equal(describe(Object.assign(new Error("boom"), { code: "EPIPE" }), "api.typesafe.ai", true), "api.typesafe.ai: EPIPE")
 })

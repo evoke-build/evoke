@@ -18,8 +18,9 @@ const project = await load({ reflexes, adapter: jev({ key, gate: { write: 0.85 }
 | `gate` | Floors over the defaults of `route` 0.5, `fits` 0.3, `read` 0.6 and `write` 0.8. The same as `[adapters.jev] gate` in `evoke.toml` |
 
 When `load` resolves `jev` by name from `evoke.toml`, it is built under the file's `[adapters.jev]` table. An
-adapter passed in replaces both. The transport keeps one connection alive for the process. It retries once after
-a connect error or a server error, and never after a client error. No key is a `DiagnosticError` ending in
+adapter passed in replaces both. The transport keeps one connection alive for the process, through the proxy
+`HTTPS_PROXY` names when one is set. It retries once after a connect error or a server error, and never after a
+client error. No key is a `DiagnosticError` ending in
 `export TYPESAFE_API_KEY=<value>`.
 
 ## The contract

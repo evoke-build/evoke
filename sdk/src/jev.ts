@@ -1,7 +1,7 @@
 // @evoke-build/evoke/jev: the first adapter. The mapping is the core's — jev.settings, jev.request, jev.answers
-// through the module — and the SDK adds the transport: one kept-alive agent for the process, the bearer key, and
-// the policy loop the settings declare: once more after a connect error or a retried status, never after a
-// client error. In: options. Out: an Adapter.
+// through the module — and the SDK adds the transport: one kept-alive agent for the process, through the proxy
+// the environment names, the bearer key, and the policy loop the settings declare: once more after a connect
+// error or a retried status, never after a client error. In: options. Out: an Adapter.
 
 import { Agent } from "node:https"
 
@@ -27,7 +27,8 @@ let shared: Agent | undefined
 
 /** Jev, ready to answer; throws at once when no key is set or an override is not a probability. */
 export function jev(options: JevOptions = {}): Adapter {
-  shared ??= new Agent({ keepAlive: true })
+  // The environment's proxy, `HTTPS_PROXY` and `NO_PROXY`, as the CLI's transport reads it.
+  shared ??= new Agent({ keepAlive: true, proxyEnv: process.env })
   const agent = shared
   return over(options, (url, bearer, body, signal, timeout) => post(url, bearer, body, agent, signal, timeout))
 }
