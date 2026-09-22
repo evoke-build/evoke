@@ -177,6 +177,9 @@
     nav.links a { color: var(--muted); font-size: .95rem; font-weight: 450; }
     nav.links a:hover { color: var(--fg); text-decoration: none; }
     nav.links a.button { color: var(--fg); }
+    /* The idea leads the bar: the one warm word in the row, underlined softly, and it stays on a phone */
+    nav.links a.idea { color: var(--accent-ink); font-weight: 500; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .32em; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+    nav.links a.idea:hover { color: var(--fg); text-decoration-color: var(--accent); }
 
     /* Buttons and commands */
     .button {
@@ -561,9 +564,9 @@
     <div class="wrap">
       <a class="brand" href="/"><img src="logo.png" alt="" width="26" height="26">evoke</a>
       <nav class="links">
+        <a class="idea" href="idea.html">The idea</a>
         <a href="manual/">Manual</a>
-        <a class="wide" href="idea.html">The idea</a>
-        <a href="use-cases.html">Use cases</a>
+        <a class="wide" href="use-cases.html">Use cases</a>
         <a class="wide" href="manual/sdk/getting-started.html">SDK</a>
         <a class="wide" href="#jev">Jev</a>
         <a class="wide" href="https://github.com/evoke-build/evoke">GitHub</a>

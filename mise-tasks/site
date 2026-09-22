@@ -166,7 +166,7 @@ def furnished(page):
     if page.name not in UNLISTED:
         root = "../" * (len(page.relative_to(OUT / "manual").parts) - 1) + "../"
         brand = f'<a href="{root}">evoke</a>'
-        text = text.replace('<div class="right-buttons">\n', f'<div class="right-buttons">\n                        <a class="use-cases" href="{root}idea.html">The idea</a>\n                        <a class="use-cases" href="{root}use-cases.html">Use cases</a>\n', 1)
+        text = text.replace('<div class="right-buttons">\n', f'<div class="right-buttons">\n                        <a class="use-cases idea" href="{root}idea.html">The idea</a>\n                        <a class="use-cases" href="{root}use-cases.html">Use cases</a>\n', 1)
         text = text.replace("                    </main>", AT_WORK.replace("{root}", root) + "                    </main>", 1)
     text = text.replace('<h1 class="menu-title">Evoke</h1>', f'<h1 class="menu-title">{brand}</h1>', 1)
     page.write_text(text)

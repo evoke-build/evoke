@@ -424,6 +424,10 @@ pre.term .buttons button:hover { color: var(--term-fg); }
 
 .right-buttons a.use-cases:hover { color: var(--links); }
 
+/* The idea, the one warm word in the bar, underlined softly */
+.right-buttons a.idea { color: var(--links); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .32em; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.right-buttons a.idea:hover { color: var(--fg); text-decoration-color: var(--accent); }
+
 /* Below tablet width the bar is full; the six sentences at the end of the page lead the way instead. */
 @media (max-width: 720px) {
   .right-buttons a.use-cases { display: none; }
