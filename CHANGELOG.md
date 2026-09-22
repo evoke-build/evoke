@@ -6,6 +6,10 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- evoke.build shows a weave. The landing page reads «look up dana's address and email them» into its two
+  steps, plans and runs it on a loop, the address threaded from the lookup into the mail, beside a confirm
+  declined at its turn and a part that matches nothing; the use-cases page carries the same session as files
+  and in the SDK's tests, and the manual's closing card names it. Every line is the weave transcript's.
 - A sentence that asks for several things is read as steps — «kill the lights in the den and start a 10 minute
   timer» — each decided as one input is, run in the order the words give, a result of one step threaded into a
   later one where its manifest declares `[yields]`; the plan is shown before anything runs, a step's own

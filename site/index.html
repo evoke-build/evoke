@@ -159,7 +159,7 @@
     :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
     .wrap { max-width: 76rem; margin: 0 auto; padding: 0 1.5rem; }
     /* A grid or flex item never widens its track: what is wider than the track scrolls inside its own box. */
-    .hero > *, .showcase .grid > *, .showcase .side > *, .work .grid > *, .split > *, .stack > *, .sheet > *, .install > *, .cta > .cmd { min-width: 0; }
+    .hero > *, .showcase .grid > *, .showcase .side > *, .weave .grid > *, .weave .side > *, .work .grid > *, .split > *, .stack > *, .sheet > *, .install > *, .cta > .cmd { min-width: 0; }
     [id] { scroll-margin-top: 4.5rem; }
 
     /* The bar */
@@ -278,9 +278,9 @@
     .demo[data-state="on"] .bulb { fill: var(--lamp); filter: drop-shadow(0 0 9px rgba(255, 213, 142, .95)); }
     .demo[data-state="dim"] .bulb { fill: #c69c5c; filter: drop-shadow(0 0 4px rgba(255, 213, 142, .55)); }
     .demo .floor { stroke: #1c1c21; stroke-width: 1; }
-    .demo .head .trail { margin-left: auto; display: flex; gap: .95rem; font-size: .66rem; letter-spacing: .07em; text-transform: uppercase; }
-    .demo .head .trail b { font-weight: 500; color: var(--term-dim); opacity: .55; transition: color .35s ease, opacity .35s ease; }
-    .demo .head .trail b.on { color: var(--accent); opacity: 1; }
+    .demo .head .trail, .loom .head .trail { margin-left: auto; display: flex; gap: .95rem; font-size: .66rem; letter-spacing: .07em; text-transform: uppercase; }
+    .demo .head .trail b, .loom .head .trail b { font-weight: 500; color: var(--term-dim); opacity: .55; transition: color .35s ease, opacity .35s ease; }
+    .demo .head .trail b.on, .loom .head .trail b.on { color: var(--accent); opacity: 1; }
     .demo .strip { height: calc(5 * 1.9em + 1.9rem); padding: .9rem 1.15rem 1rem; font: .8rem/1.9 var(--mono); border-top: 1px solid rgba(255, 255, 255, .07); overflow: hidden; }
     .demo .line { display: block; min-height: 1.9em; white-space: pre-wrap; overflow-wrap: anywhere; opacity: 0; transition: opacity .3s ease; }
     .demo .line.show { opacity: 1; }
@@ -414,6 +414,75 @@
     .card:is(.on, :hover, :focus-visible) .bar .val.after { opacity: 1; }
     @media (prefers-reduced-motion: reduce) { .floor .flow, .chain .pulse, .chain .ring { animation: none; } }
 
+    /* A weave: a sentence read into two steps, the plan shown, then the run. The stage's final frame is its markup;
+       motion lifts opacity and moves transforms, nothing else, so the page never lays out twice. */
+    .weave .grid { display: grid; grid-template-columns: 1.12fr 1fr; gap: 1.1rem; align-items: start; }
+    @media (min-width: 1360px) { .weave .grid { margin-left: -2.5rem; margin-right: -2.5rem; } }
+    .weave .side { display: grid; gap: 1.1rem; }
+    .weave .strip { padding: .9rem 1rem 1rem; font: .78rem/1.9 var(--mono); border-top: 1px solid rgba(255, 255, 255, .07); }
+    .weave .line { display: block; min-height: 1.9em; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--term-dim); }
+    .weave .line.out { color: var(--term-fg); }
+    .weave .line b { color: var(--term-in); font-weight: 500; }
+    .weave .line i { font-style: normal; color: var(--term-ok); }
+    .weave .line i.mid { color: var(--term-mid); }
+    .weave .p { color: var(--accent); }
+    .weave .in { color: var(--term-in); }
+    .weave .typed { position: relative; }
+    .weave .c { position: relative; }
+    .weave .typed.at::before, .weave .c.at::after { content: ""; position: absolute; top: .2em; width: .55em; height: 1.05em; background: var(--term-fg); animation: blink 1.1s steps(2, start) infinite; }
+    .weave .typed.at::before { left: 0; }
+    .weave .c.at::after { left: 100%; margin-left: 1px; }
+    .loom .room { position: relative; padding: 1rem; background: #101013; font: .8rem/1.5rem var(--mono); color: var(--term-fg); }
+    .loom .room p { margin: 0; }
+    .loom .said { display: flex; justify-content: space-between; gap: 1rem; }
+    .loom .and, .loom .them { position: relative; display: inline-block; color: transparent; }
+    .loom .base, .loom .lit { position: absolute; inset: 0; color: var(--term-fg); user-select: none; }
+    .loom .lit { color: var(--accent-ink); }
+    .loom .ask { margin-top: .75rem; max-width: calc(100% - 2rem); color: var(--term-dim); }
+    .loom .ask i { font-style: normal; color: var(--term-ok); }
+    .loom .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+    .loom .step { padding: .5rem .75rem; background: #1a1a1e; border: 1px solid #36363d; border-radius: var(--radius-s); }
+    .loom .step > span { display: block; }
+    .loom .call i { font-style: normal; color: var(--term-dim); margin-right: .5rem; }
+    .loom .call b { color: var(--term-in); font-weight: 500; }
+    .loom .call em { font-style: normal; color: var(--term-ok); }
+    .loom .key { color: var(--term-dim); margin-right: .5rem; }
+    .loom .cell { position: relative; display: inline-grid; vertical-align: top; }
+    .loom .cell > span { grid-area: 1 / 1; }
+    .loom .need { color: var(--term-mid); }
+    .loom .val { position: relative; z-index: 1; padding: 0 .25rem; margin: 0 -.25rem; background: #1a1a1e; border-radius: 5px; }
+    .loom .s2 .cell::before { content: ""; position: absolute; inset: -.25rem -.4rem; border-radius: 5px; box-shadow: 0 0 10px 2px rgba(240, 192, 96, .45); opacity: 0; }
+    .loom .s2.wait .cell::before { animation: glow 1.1s ease-in-out infinite; }
+    @keyframes glow { 50% { opacity: 1; } }
+    .loom .fly { position: absolute; z-index: 2; padding: 0 .25rem; margin: 0 -.25rem; background: #1a1a1e; border-radius: 5px; color: var(--term-fg); transition: opacity .3s ease, transform .6s cubic-bezier(.2, .7, .2, 1); }
+    .loom .fly.go { transform: translate(var(--dx), var(--dy)); }
+    /* The threads: legs measured from the letters they join, each a box that grows from its start; dashed for the
+       plan, and the binding filled green behind the value as it travels. */
+    .loom .threads { position: absolute; inset: 0; pointer-events: none; }
+    .loom .leg { position: absolute; transition: transform .25s ease; }
+    .loom .leg::before, .loom .leg::after { content: ""; position: absolute; inset: 0; }
+    .loom .leg::before { background: repeating-linear-gradient(90deg, var(--accent) 0 4px, transparent 4px 8px); }
+    .loom .leg.north::before, .loom .leg.south::before { background: repeating-linear-gradient(180deg, var(--accent) 0 4px, transparent 4px 8px); }
+    .loom .leg.east { transform-origin: left center; transform: scaleX(0); }
+    .loom .leg.west { transform-origin: right center; transform: scaleX(0); }
+    .loom .leg.south { transform-origin: center top; transform: scaleY(0); }
+    .loom .leg.north { transform-origin: center bottom; transform: scaleY(0); }
+    .loom .leg.on { transform: none; }
+    .loom .leg.bind::after { background: var(--term-ok); transform: scaleX(0); transform-origin: inherit; transition: transform var(--t, .6s) linear; }
+    .loom .leg.bind.north::after, .loom .leg.bind.south::after { transform: scaleY(0); }
+    .loom .leg.fill::after { transform: none; }
+    /* What fades in: a line, a letter, the parts, the lit words, the question and its answer, a card, a value */
+    .weave .line, .weave .c, .loom .said, .loom .base, .loom .lit, .loom .q, .loom .yes, .loom .step, .loom .val, .loom .need, .loom .fly { opacity: 0; transition: opacity .3s ease; }
+    .weave .on { opacity: 1; }
+    .weave .clear .on { opacity: 0; transition-duration: .24s; }
+    .sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+    @media (max-width: 560px) {
+      .loom .said { display: grid; grid-template-columns: minmax(0, 1fr); justify-content: normal; gap: 0; }
+      .loom .said .part:last-child { text-align: right; }
+      .loom .ask { max-width: calc(100% - 1.5rem); }
+      .loom .pair { grid-template-columns: 1fr; margin: 1rem 1.5rem 0; }
+    }
+
     /* Steps on a rail, or in a column */
     .steps { list-style: none; margin: 0 0 1.25rem; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
     .steps li { border-top: 1px solid var(--line-strong); padding-top: .9rem; }
@@ -467,7 +536,7 @@
     footer a:hover { color: var(--fg); }
 
     @media (max-width: 960px) {
-      .hero, .showcase .grid, .split, .split.code-left, .sheet, .install, .promises { grid-template-columns: 1fr; }
+      .hero, .showcase .grid, .weave .grid, .split, .split.code-left, .sheet, .install, .promises { grid-template-columns: 1fr; }
       .hero { gap: 2.5rem; padding-top: 3.5rem; }
       .steps, .notes { grid-template-columns: 1fr; }
       .work .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -650,7 +719,7 @@
           <div class="text"><i>06</i><b>A lesson</b><span>A miss becomes a lesson, kept only if nothing regresses.</span></div>
         </a>
       </div>
-      <p class="after"><a class="more" href="use-cases.html">All six, with every file and every line →</a></p>
+      <p class="after"><a class="more" href="use-cases.html">All of them, with every file and every line →</a></p>
     </section>
 
     <div class="showcase" id="reflex">
@@ -727,8 +796,70 @@ Ceiling and lamp lights only."""</span>
       </ol>
     </div>
 
+    <section id="weave" class="weave">
+      <div class="rule"><p class="label">A weave</p><span class="num">03</span></div>
+      <h2>One sentence, several recipes.</h2>
+      <p class="sub">Each part is decided on its own, in the order you said it. What one step finds, the next one
+        takes. <strong>The plan shows before anything runs.</strong></p>
+      <div class="grid">
+        <div class="panel term loom" aria-label="A sentence read into two steps, planned and run">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>read</b><b>plan</b><b class="on">run</b></span></div>
+          <div class="room">
+            <p class="said on"><span class="part">look up dana's address</span> <span class="part"><span class="and">and<span class="base" aria-hidden="true">and</span><span class="lit on" aria-hidden="true">and</span></span> email <span class="them">them<span class="base" aria-hidden="true">them</span><span class="lit on" aria-hidden="true">them</span></span></span></p>
+            <p class="ask"><span class="q on">At «and», does the request ask for two things to be done — «look up dana's address», and separately «email them»?</span> <i class="yes on">yes 0.90</i></p>
+            <div class="pair">
+              <div class="step s1 on"><span class="call"><i>1</i><b>contact</b> name="dana"  <em>0.90</em></span><span class="slot"><span class="key">email</span><span class="cell"><span class="val on">dana@example.com</span></span></span></div>
+              <div class="step s2 on"><span class="call"><i>2</i><b>mail</b>  <em>0.88</em></span><span class="slot"><span class="key">to</span><span class="cell"><span class="need" aria-hidden="true">To which address?</span><span class="val on">dana@example.com</span></span></span></div>
+            </div>
+            <span class="fly" aria-hidden="true">dana@example.com</span>
+            <div class="threads" aria-hidden="true"></div>
+          </div>
+          <div class="strip" aria-live="off">
+            <span class="line say on"><span class="p">$</span> <span class="in typed" aria-hidden="true"><span class="c on">e</span><span class="c on">v</span><span class="c on">o</span><span class="c on">k</span><span class="c on">e</span><span class="c on"> </span><span class="c on">"</span><span class="c on">l</span><span class="c on">o</span><span class="c on">o</span><span class="c on">k</span><span class="c on"> </span><span class="c on">u</span><span class="c on">p</span><span class="c on"> </span><span class="c on">d</span><span class="c on">a</span><span class="c on">n</span><span class="c on">a</span><span class="c on">'</span><span class="c on">s</span><span class="c on"> </span><span class="c on">a</span><span class="c on">d</span><span class="c on">d</span><span class="c on">r</span><span class="c on">e</span><span class="c on">s</span><span class="c on">s</span><span class="c on"> </span><span class="c on">a</span><span class="c on">n</span><span class="c on">d</span><span class="c on"> </span><span class="c on">e</span><span class="c on">m</span><span class="c on">a</span><span class="c on">i</span><span class="c on">l</span><span class="c on"> </span><span class="c on">t</span><span class="c on">h</span><span class="c on">e</span><span class="c on">m</span><span class="c on">"</span></span><span class="sr">evoke "look up dana's address and email them"</span></span>
+            <span class="line own on">  1  <b>contact</b> name="dana"  <i>0.90</i></span>
+            <span class="line own on">  2  <b>mail</b> · takes email from 1</span>
+            <span class="line out on">dana &lt;dana@example.com&gt;</span>
+            <span class="line own on">  2  <b>mail</b> to="dana@example.com"  <i>0.88</i></span>
+            <span class="line out on">drafted to dana@example.com</span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="panel term gate" aria-label="A confirm declined at its turn">
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+            <div class="strip" aria-live="off">
+              <span class="line say on"><span class="p">$</span> <span class="in">evoke "start a 25 minute timer and kill the lights in the den"</span></span>
+              <span class="line own on">  1  <b>timer</b> duration="25 minute" · write · weakest: duration <i class="mid">0.70</i></span>
+              <span class="line own on">  2  <b>lights</b> room="den" state="off"  <i>0.85</i></span>
+              <span class="line own on">  1  <b>timer</b> duration="25 minute" · write · weakest: duration <i class="mid">0.70</i></span>
+              <span class="line own on">  Start a 25 minute timer?  [y]es [n]o [t]each &gt; <span class="in typed" aria-hidden="true"><span class="c on">n</span></span><span class="sr">n</span></span>
+              <span class="line own on">  2  <b>lights</b> room="den" state="off"  <i>0.85</i> · skipped</span>
+              <span class="line own on">[2]</span>
+            </div>
+          </div>
+          <div class="panel term refusal" aria-label="A part that matches no reflex">
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+            <div class="strip" aria-live="off">
+              <span class="line say on"><span class="p">$</span> <span class="in">evoke "kill the lights in the den and feed the cat"</span></span>
+              <span class="line own on">  1  <b>lights</b> room="den" state="off"  <i>0.85</i></span>
+              <span class="line own on">  2  "feed the cat" · no reflex</span>
+              <span class="line own on">[2]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ol class="notes">
+        <li><b>1</b><span><strong>«them» names step 1.</strong> mail needed an address, contact yields one, and the plan says so:
+          <code>takes email from 1</code>.</span></li>
+        <li><b>2</b><span><strong>A confirm asks at its turn.</strong> Say no, and the steps after it are skipped. The exit code is the
+          worst step's.</span></li>
+        <li><b>3</b><span><strong>A part that matches nothing</strong> refuses the whole sentence, before anything runs.</span></li>
+      </ol>
+      <p class="after">The manual says <a href="manual/use/weaving.html">how a sentence is read</a>. The use cases show this
+        session <a href="use-cases.html#weave">as files and as code</a>.</p>
+    </section>
+
     <section id="shared">
-      <div class="rule"><p class="label">Shared</p><span class="num">03</span></div>
+      <div class="rule"><p class="label">Shared</p><span class="num">04</span></div>
       <h2>One recipe. Improved by everyone.</h2>
       <p class="sub">A lesson is one line. Keep it in your overlay, or send it upstream, and every install decides
         better. <strong>Nobody repeats themselves.</strong></p>
@@ -763,7 +894,7 @@ Ceiling and lamp lights only."""</span>
     </section>
 
     <section id="sdk">
-      <div class="rule"><p class="label">In code</p><span class="num">04</span></div>
+      <div class="rule"><p class="label">In code</p><span class="num">05</span></div>
       <div class="split code-left">
         <div class="panel">
           <div class="head"><i></i>app.ts</div>
@@ -805,7 +936,7 @@ Ceiling and lamp lights only."""</span>
     </section>
 
     <section id="how">
-      <div class="rule"><p class="label">One decision</p><span class="num">05</span></div>
+      <div class="rule"><p class="label">One decision</p><span class="num">06</span></div>
       <h2>Every judgment on the table.</h2>
       <p class="sub">One request asks every question. The weakest answer decides. <code>evoke try</code> shows all
         of it.</p>
@@ -833,7 +964,7 @@ Ceiling and lamp lights only."""</span>
     </section>
 
     <section id="jev">
-      <div class="rule"><p class="label">The classifier</p><span class="num">06</span></div>
+      <div class="rule"><p class="label">The classifier</p><span class="num">07</span></div>
       <h2>Jev decides.</h2>
       <p class="sub"><a href="https://typesafe.ai">TypeSafe AI</a>'s System One model. A classifier that answers closed
         questions with calibrated probabilities.</p>
@@ -854,7 +985,7 @@ Ceiling and lamp lights only."""</span>
     </section>
 
     <section id="trust">
-      <div class="rule"><p class="label">Security</p><span class="num">07</span></div>
+      <div class="rule"><p class="label">Security</p><span class="num">08</span></div>
       <h2>What a sentence can and cannot do.</h2>
       <p class="sub">A fetched reflex runs as you. <code>add</code> and <code>update</code> are where you decide to trust
         it. Around that, four promises hold.</p>
@@ -870,7 +1001,7 @@ Ceiling and lamp lights only."""</span>
     </section>
 
     <section id="install">
-      <div class="rule"><p class="label">Start</p><span class="num">08</span></div>
+      <div class="rule"><p class="label">Start</p><span class="num">09</span></div>
       <h2>Install</h2>
       <p class="sub">One small binary on macOS and Linux. Node next to it, for reflexes written in JavaScript.</p>
       <div class="install">
@@ -1006,6 +1137,102 @@ Ceiling and lamp lights only."""</span>
         }
         run()
       }
+    }
+
+    // A weave: one sentence read into two steps, the plan shown, then the run, on a loop; beside it a confirm
+    // declined and a part that matches nothing. The final frame is the markup; motion lifts opacity and moves
+    // transforms, and the threads are measured from the letters they join.
+    {
+      const weave = document.getElementById("weave"), loom = weave.querySelector(".loom")
+      const gate = weave.querySelector(".gate"), refusal = weave.querySelector(".refusal")
+      const $ = (sel, el = loom) => el.querySelector(sel), $$ = (sel, el = loom) => [...el.querySelectorAll(sel)]
+      const room = $(".room"), threads = $(".threads"), fly = $(".fly"), trail = $$(".trail b")
+      const on = (el, yes = true) => el.classList.toggle("on", yes)
+      const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+      // The threads: polylines of horizontal and vertical legs, measured in the room and redrawn in their state.
+      const state = { drawn: false, filled: false }
+      const legs = { pron: [], bind: [] }
+      const box = el => {
+        const r = el.getBoundingClientRect(), o = room.getBoundingClientRect()
+        return { l: r.left - o.left, r: r.right - o.left, t: r.top - o.top, b: r.bottom - o.top, x: (r.left + r.right) / 2 - o.left, y: (r.top + r.bottom) / 2 - o.top }
+      }
+      const thread = (name, points) => points.slice(1).map(([x1, y1], i) => {
+        const [x0, y0] = points[i], leg = document.createElement("i"), s = leg.style, flat = y0 === y1
+        leg.className = `leg ${name} ${flat ? (x1 >= x0 ? "east" : "west") : (y1 >= y0 ? "south" : "north")}`
+        s.left = `${Math.min(x0, x1) - 1}px`; s.top = `${Math.min(y0, y1) - 1}px`
+        s.width = `${flat ? Math.abs(x1 - x0) + 2 : 2}px`; s.height = `${flat ? 2 : Math.abs(y1 - y0) + 2}px`
+        threads.append(leg)
+        return leg
+      })
+      const layout = () => {
+        threads.replaceChildren()
+        const them = box($(".them")), one = box($(".s1")), two = box($(".s2")), stacked = two.t >= one.b
+        const give = box($(".s1 .cell")), key1 = box($(".s1 .key")), key2 = box($(".s2 .key")), take = box($(".s2 .cell"))
+        legs.pron = thread("pron", [[them.x, them.b + 2], [them.x, take.y], [take.r + 8, take.y]])
+        legs.bind = thread("bind", stacked
+          ? [[key1.l - 8, give.y], [one.l - 12, give.y], [one.l - 12, take.y], [key2.l - 8, take.y]]
+          : [[key1.r + 8, take.y], [key2.l - 8, take.y]])
+        for (const leg of legs.bind) leg.style.setProperty("--t", `${600 / legs.bind.length}ms`)
+        const from = box($(".s1 .val")), to = box($(".s2 .val"))
+        fly.style.left = `${from.l}px`; fly.style.top = `${from.t}px`
+        fly.style.setProperty("--dx", `${to.l - from.l}px`); fly.style.setProperty("--dy", `${to.t - from.t}px`)
+        for (const leg of [...legs.pron, ...legs.bind]) on(leg, state.drawn)
+        for (const leg of legs.bind) leg.classList.toggle("fill", state.filled)
+      }
+      const draw = async legs => { for (const leg of legs) { on(leg); await wait(250) } }
+      const fill = async () => { for (const leg of legs.bind) { leg.classList.add("fill"); await wait(600 / legs.bind.length) } }
+
+      const typed = $(".typed"), chars = $$(".c"), said = $(".said"), base = $$(".base"), lit = $$(".lit"), ask = $$(".ask > *")
+      const s1 = $(".s1"), s2 = $(".s2"), need = $(".need"), val = [$(".s1 .val"), $(".s2 .val")]
+      const lines = $$(".strip .line"), gated = $$(".line", gate), refused = $$(".line", refusal)
+      const step = i => trail.forEach((b, j) => on(b, j === i))
+      const clear = async panel => {
+        panel.classList.add("clear"); await wait(240)
+        for (const el of $$(".on, .at", panel)) el.classList.remove("on", "at")
+        panel.classList.remove("clear")
+      }
+      const type = async (typed, chars, lead = 0) => {
+        let last = typed
+        typed.classList.add("at"); await wait(lead)
+        for (const c of chars) { await wait(25 + Math.random() * 30); last.classList.remove("at"); on(c); c.classList.add("at"); last = c }
+        await wait(220); last.classList.remove("at")
+      }
+      // Each cue: the pause before it, then what it does.
+      const cues = [
+        [0, async () => { await clear(loom); step(0); for (const b of base) on(b); state.drawn = state.filled = false; s2.classList.remove("wait"); fly.classList.remove("go"); layout() }],
+        [360, async () => { on(lines[0]); await type(typed, chars) }],
+        [0, () => on(said)], [300, () => { on(base[0], false); on(lit[0]) }], [300, () => on(ask[0])], [500, () => on(ask[1])],
+        [500, () => { step(1); on(s1) }], [150, () => { on(s2); on(need) }],
+        [550, () => on(lines[1])],
+        [200, async () => { on(lines[2]); on(base[1], false); on(lit[1]); state.drawn = true; await draw(legs.pron) }],
+        [50, async () => { await draw(legs.bind); s2.classList.add("wait") }],
+        [700, () => { step(2); on(lines[3]); on(val[0]); on(fly) }],
+        [600, async () => { fly.classList.add("go"); state.filled = true; await fill() }],
+        [0, () => { on(val[1]); on(need, false); on(fly, false); s2.classList.remove("wait") }],
+        [500, () => on(lines[4])], [500, () => on(lines[5])],
+        [200, async () => { await clear(gate) }],
+        [200, () => on(gated[0])], [250, () => on(gated[1])], [200, () => on(gated[2])], [250, () => on(gated[3])],
+        [250, async () => { on(gated[4]); await type($(".typed", gate), $$(".c", gate), 450) }],
+        [250, () => on(gated[5])], [200, () => on(gated[6])],
+        [200, async () => { await clear(refusal) }],
+        [200, () => on(refused[0])], [250, () => on(refused[1])], [200, () => on(refused[2])], [250, () => on(refused[3])],
+      ]
+
+      let seen = false, waiting = []
+      const wake = () => { if (seen && !document.hidden) { for (const w of waiting) w(); waiting = [] } }
+      new IntersectionObserver(([entry]) => { seen = entry.isIntersecting; wake() }, { threshold: .25 }).observe(loom)
+      document.addEventListener("visibilitychange", wake)
+      const onScreen = () => seen && !document.hidden ? Promise.resolve() : new Promise(resolve => waiting.push(resolve))
+      state.drawn = state.filled = true
+      layout(); document.fonts.ready.then(layout); addEventListener("resize", layout)
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) (async () => {
+        for (;;) {
+          await onScreen()
+          for (const [pause, run] of cues) { await wait(pause); await run() }
+          await wait(500)
+        }
+      })()
     }
   </script>
 </body>

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#MISE description="Build evoke.build into target/site: the landing page and the use-cases page, the install script, the manual rendered by mdBook with the site's bar and the six sentences on every page, a canonical link, a description, a card and a breadcrumb trail on every page, the sitemap dated by git, and robots.txt — checking first that every link in the manual resolves"
+#MISE description="Build evoke.build into target/site: the landing page and the use-cases page, the install script, the manual rendered by mdBook with the site's bar and the use cases' sentences on every page, a canonical link, a description, a card and a breadcrumb trail on every page, the sitemap dated by git, and robots.txt — checking first that every link in the manual resolves"
 """The manual's README is its index: its tables become mdBook's SUMMARY.md, so the site's structure has one source.
 What a search engine or a shared link needs is written here, once, from the pages themselves and from git."""
 import html as html_text, json, re, shutil, subprocess, sys
@@ -139,8 +139,8 @@ AT_WORK = """                    <aside class="at-work" aria-label="The use case
                         <div class="words">
                             <p class="label">Use cases</p>
                             <h2>Where people use it.</h2>
-                            <p>Real sessions from an ops channel, an inbox, a payments desk, a plant floor, a runbook and
-                                a lesson. Each one as files anyone can install, and as code your app keeps.</p>
+                            <p>Real sessions from an ops channel, an inbox, a payments desk, a plant floor, a runbook, a
+                                lesson and a weave. Each one as files anyone can install, and as code your app keeps.</p>
                             <a class="go" href="{root}use-cases.html">See them run &rarr;</a>
                         </div>
                         <ul class="said">
@@ -150,6 +150,7 @@ AT_WORK = """                    <aside class="at-work" aria-label="The use case
                             <li><a href="{root}use-cases.html#plant"><i>$</i> evoke "the filler is jammed, stop it"</a></li>
                             <li><a href="{root}use-cases.html#runbook"><i>$</i> node runbook.ts "drain the primary"</a></li>
                             <li><a href="{root}use-cases.html#teach"><i>$</i> evoke "make db-3 shut up for 90 minutes"</a></li>
+                            <li><a href="{root}use-cases.html#weave"><i>$</i> evoke "look up dana's address and email them"</a></li>
                         </ul>
                     </aside>
 """
@@ -157,7 +158,7 @@ AT_WORK = """                    <aside class="at-work" aria-label="The use case
 
 def furnished(page):
     """A manual page furnished: the browser's chrome takes the page's colour, the bar carries the wordmark and it leads
-    home, a Use cases link joins the bar, and the six sentences close the page. The pages nobody lands on, print and
+    home, a Use cases link joins the bar, and the use cases' sentences close the page. The pages nobody lands on, print and
     404, take only the colour and the wordmark."""
     text = page.read_text()
     text = text.replace('<meta name="theme-color" content="#ffffff">', f'<meta name="theme-color" content="{palette["bg"]}">', 1)
