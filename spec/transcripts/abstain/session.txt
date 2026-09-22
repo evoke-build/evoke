@@ -1,6 +1,8 @@
 $ evoke "what time is it"
   none 0.70 · timer 0.20 · lights 0.05 · volume 0.05
+  open is inactive  →  evoke show
 [2]
 $ evoke "make it cosy"
   lights 0.45 · none 0.40 · timer 0.10 · volume 0.05 · route floor 0.50
+  open is inactive  →  evoke show
 [2]

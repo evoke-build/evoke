@@ -31,7 +31,7 @@ fn run() -> Exit {
     match args::parse(std::env::args_os().skip(1), terminal::stdin_is_pipe()) {
         Ok(command) => commands::dispatch(&command, &environment),
         Err(problem) => {
-            terminal::note(&report::diagnostic(&problem, args::USAGE, None));
+            terminal::note(&report::diagnostic(&problem, "", None));
             Exit::Human(problem)
         }
     }

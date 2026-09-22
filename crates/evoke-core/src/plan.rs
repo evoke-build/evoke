@@ -51,8 +51,8 @@ pub enum Held {
 #[serde(transparent)]
 pub struct Millis(pub u64);
 
-/// The core's one deadline, shared by the adapter call and the body, never by a prompt.
-/// The core's one deadline: what a decision and the body it runs share, and what a host gives a body it loads.
+/// The core's one deadline: shared by the adapter call and the body it runs, never by a prompt; what a host
+/// gives a body it loads.
 pub const DEADLINE: Millis = Millis(30_000);
 
 /// The sentinel every argument's choice carries, and its text.

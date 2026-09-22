@@ -79,6 +79,16 @@ $ evoke "make it cosy"
 [2]
 ```
 
+An inactive reflex is never in the ranking. When one is left out, an abstain names it on the next line, and
+`evoke show` says why:
+
+```text
+$ evoke "open my desktop"
+  none 0.80 · lights 0.10 · timer 0.05 · volume 0.05
+  open is inactive  →  evoke show
+[2]
+```
+
 ## What confidence is
 
 For each decision, the adapter answers one question per reflex and one per argument. **Confidence is the lowest

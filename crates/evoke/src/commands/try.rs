@@ -2,7 +2,7 @@
 //! `Exit`, 0 for any decision. Each input is decided on the session; nothing runs and no log is written. A stdin
 //! filter skips a blank line, stops at a read error, and exits with the first non-zero code.
 
-use evoke_core::{Fix, Gate};
+use evoke_core::{Decision, Fix, Gate};
 
 use super::Exit;
 use super::session::{self, Opening, Session};
@@ -59,6 +59,11 @@ fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, in
     } else {
         let floor = adapter.declared().gate.as_ref().map(Gate::route);
         terminal::note(&report::tried(&decided, floor));
+        if matches!(decided.decision, Decision::Abstain { .. })
+            && let Some(hint) = report::left_out(session.plan.inactive().keys())
+        {
+            terminal::note(&hint);
+        }
     }
     Exit::Ran
 }

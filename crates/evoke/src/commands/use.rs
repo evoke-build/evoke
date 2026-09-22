@@ -133,6 +133,9 @@ impl Using<'_> {
                     dismiss(warm);
                     if !json {
                         terminal::note(&report::abstained(&decided, self.floors()));
+                        if let Some(hint) = report::left_out(self.session.plan.inactive().keys()) {
+                            terminal::note(&hint);
+                        }
                     }
                     return self.logged(input, &line, Exit::Declined(Decline::Abstained));
                 }

@@ -1,0 +1,17 @@
+{
+  "input": {
+    "text": "ssh://git@github.com/radhi/home#lights@1.2.0"
+  },
+  "expect": {
+    "ok": [
+      {
+        "repo": {
+          "type": "url",
+          "url": "ssh://git@github.com/radhi/home"
+        },
+        "dir": "lights"
+      },
+      "1.2.0"
+    ]
+  }
+}

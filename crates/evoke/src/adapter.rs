@@ -18,7 +18,8 @@ use crate::hosts::{Deadline, Environment, files};
 /// The variable naming the recording `replay` answers from.
 const ANSWERS: &str = "EVOKE_ANSWERS";
 
-pub trait Adapter {
+/// Shared by the threads of a batch — `test`, the thief test — so every built-in is `Sync`.
+pub trait Adapter: Sync {
     /// Id, limits and gate.
     fn declared(&self) -> &Declared;
 

@@ -147,7 +147,7 @@ $ evoke test
 ```
 
 `evoke test [<name>]` decides every example and every test of every active reflex, or of one. It decides against
-the whole installed set, never through the cache. It judges each case on its route and its asserted arguments. It
+the whole installed set, a few cases at a time, never through the cache. It judges each case on its route and its asserted arguments. It
 exits 1 when a case failed, so a script can act on it. It never blocks an install.
 
 A case that passed last time and fails now is decided twice more. Failing two of three marks it `· regression`.

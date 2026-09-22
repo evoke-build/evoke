@@ -4,6 +4,7 @@ adapter = "replay"
 lights = "./lights"
 timer  = "./timer"
 volume = "./volume"
+open   = "./open"
 
 [config.lights]
 bridge = "10.0.0.2"

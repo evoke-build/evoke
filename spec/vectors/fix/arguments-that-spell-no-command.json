@@ -1,0 +1,8 @@
+{
+  "input": {
+    "fix": {
+      "type": "help"
+    }
+  },
+  "expect": "evoke --help"
+}

@@ -1,11 +1,13 @@
 //! A reflex directory from a git repository without a checkout: the version tags a remote has, and a tag's tree
-//! read with `ls-tree` and `cat-file` from a shallow bare fetch into a scratch repository, removed after; and, for
+//! read with `ls-tree` and `cat-file` from a shallow bare fetch into a scratch repository, removed after — each
+//! repository listed and each tag fetched once for a command, however many reflexes it takes from them; and, for
 //! `check`, the repository a directory sits in, its own tags, and a tag's tree at that directory, read the same
 //! way. In: a `Reference`, a `Tag`; a directory. Out: the tags; `Fetched` — the commit, every reflex tree the
 //! reference reaches, every reflex directory the repository holds; a `Repository` and a `Tree`; `Failure`. A
 //! symlink or a submodule is refused; the project's own five names inside a reflex directory are skipped, so an
 //! author's development project beside a root reflex never ships.
 
+use std::collections::BTreeMap;
 use std::io;
 use std::os::unix::fs::DirBuilderExt as _;
 use std::path::{Path, PathBuf};
@@ -154,21 +156,49 @@ pub fn tree_at(repository: &Repository, tag: &Tag) -> Result<Option<Tree>, Failu
         }))
 }
 
-/// The version tags a repository has, oldest first; two spellings of one version are one tag.
-pub fn tags(reference: &Reference) -> Result<Vec<Tag>, Failure> {
-    let what = format!("listing the tags of {reference}");
-    let listing = text(
-        None,
-        &[
-            "ls-remote",
-            "--tags",
-            "--refs",
-            "--end-of-options",
-            &url(reference),
-        ],
-        &what,
-    )?;
-    Ok(versions(&listing))
+/// What one command learned from the remotes: each repository's tags, listed once; each tag's tree, fetched once
+/// and read for every reflex the command takes from it. Dropped, its scratch repositories go.
+#[derive(Default)]
+pub struct Remotes {
+    tags: BTreeMap<String, Vec<Tag>>,
+    fetched: BTreeMap<(String, Version), Fetch>,
+}
+
+/// One tag of one repository as fetched: its commit and every file it lists, still in the scratch repository.
+struct Fetch {
+    scratch: Scratch,
+    commit: Commit,
+    blobs: Vec<Blob>,
+}
+
+impl Remotes {
+    /// The version tags a repository has, oldest first; two spellings of one version are one tag.
+    pub fn tags(&mut self, reference: &Reference) -> Result<Vec<Tag>, Failure> {
+        let url = url(reference);
+        if let Some(tags) = self.tags.get(&url) {
+            return Ok(tags.clone());
+        }
+        let what = format!("listing the tags of {reference}");
+        let listing = text(
+            None,
+            &["ls-remote", "--tags", "--refs", "--end-of-options", &url],
+            &what,
+        )?;
+        let tags = versions(&listing);
+        self.tags.insert(url, tags.clone());
+        Ok(tags)
+    }
+
+    /// The tag's tree under the reference.
+    pub fn fetch(&mut self, reference: &Reference, tag: &Tag) -> Result<Fetched, Failure> {
+        let what = format!("fetching {reference} {}", tag.version);
+        let key = (url(reference), tag.version);
+        if !self.fetched.contains_key(&key) {
+            let fetched = Fetch::of(&key.0, tag, &what)?;
+            self.fetched.insert(key.clone(), fetched);
+        }
+        self.fetched[&key].under(reference, &what)
+    }
 }
 
 /// The version tags among an `ls-remote --tags` listing, oldest first; two spellings of one version are one tag.
@@ -189,72 +219,85 @@ fn versions(listing: &str) -> Vec<Tag> {
     tags
 }
 
-/// The tag's tree under the reference.
-pub fn fetch(reference: &Reference, tag: &Tag) -> Result<Fetched, Failure> {
-    let what = format!("fetching {reference} {}", tag.version);
-    let scratch = Scratch::new(&what)?;
-    let dir = Some(scratch.path.as_path());
-    text(dir, &["init", "--quiet", "--bare"], &what)?;
-    let refspec = format!("refs/tags/{0}:refs/tags/{0}", tag.name);
-    text(
-        dir,
-        &[
-            "fetch",
-            "--quiet",
-            "--depth",
-            "1",
-            "--no-tags",
-            "--end-of-options",
-            &url(reference),
-            &refspec,
-        ],
-        &what,
-    )?;
-    let peeled = format!("refs/tags/{}^{{commit}}", tag.name);
-    let commit = text(
-        dir,
-        &["rev-parse", "--verify", "--end-of-options", &peeled],
-        &what,
-    )?;
-    let commit = Commit::new(commit.trim()).map_err(|why| failed(&what, &why))?;
-    let listing = bytes(dir, &["ls-tree", "-r", "-z", commit.as_str()], &what)?;
-    let blobs = blobs(&listing, &what)?;
-    let all: Vec<Option<RelPath>> = blobs
-        .iter()
-        .filter_map(|blob| {
-            let dir = blob.path.strip_suffix("reflex.toml")?;
-            if dir.is_empty() {
-                Some(None)
-            } else {
-                RelPath::new(dir.strip_suffix('/')?).ok().map(Some)
-            }
+impl Fetch {
+    /// A shallow bare fetch of one tag into a fresh scratch repository, and its listing.
+    fn of(url: &str, tag: &Tag, what: &str) -> Result<Self, Failure> {
+        let scratch = Scratch::new(what)?;
+        let dir = Some(scratch.path.as_path());
+        text(dir, &["init", "--quiet", "--bare"], what)?;
+        let refspec = format!("refs/tags/{0}:refs/tags/{0}", tag.name);
+        text(
+            dir,
+            &[
+                "fetch",
+                "--quiet",
+                "--depth",
+                "1",
+                "--no-tags",
+                "--end-of-options",
+                url,
+                &refspec,
+            ],
+            what,
+        )?;
+        let peeled = format!("refs/tags/{}^{{commit}}", tag.name);
+        let commit = text(
+            dir,
+            &["rev-parse", "--verify", "--end-of-options", &peeled],
+            what,
+        )?;
+        let commit = Commit::new(commit.trim()).map_err(|why| failed(what, &why))?;
+        let listing = bytes(dir, &["ls-tree", "-r", "-z", commit.as_str()], what)?;
+        let blobs = blobs(&listing, what)?;
+        Ok(Self {
+            scratch,
+            commit,
+            blobs,
         })
-        .collect();
-    let under = reference.dir.as_ref().map(RelPath::as_str);
-    let dirs: Vec<Option<RelPath>> = if all
-        .iter()
-        .any(|dir| dir.as_ref().map(RelPath::as_str) == under)
-    {
-        vec![reference.dir.clone()]
-    } else {
-        all.iter()
-            .filter(|dir| {
-                dir.as_ref()
-                    .is_some_and(|dir| parent_of(dir.as_str()) == under)
-            })
-            .cloned()
-            .collect()
-    };
-    let mut reflexes = Vec::new();
-    for reflex in dirs {
-        let files = files_of(dir, &blobs, reflex.as_ref(), &what)?;
-        reflexes.push(Tree { dir: reflex, files });
     }
-    Ok(Fetched {
-        commit,
-        reflexes,
-        all,
-    })
+
+    /// The reflex directories the reference reaches — the one it names, else every child that is one — read
+    /// from the scratch repository, with every reflex directory the repository holds.
+    fn under(&self, reference: &Reference, what: &str) -> Result<Fetched, Failure> {
+        let dir = Some(self.scratch.path.as_path());
+        let all: Vec<Option<RelPath>> = self
+            .blobs
+            .iter()
+            .filter_map(|blob| {
+                let dir = blob.path.strip_suffix("reflex.toml")?;
+                if dir.is_empty() {
+                    Some(None)
+                } else {
+                    RelPath::new(dir.strip_suffix('/')?).ok().map(Some)
+                }
+            })
+            .collect();
+        let under = reference.dir.as_ref().map(RelPath::as_str);
+        let dirs: Vec<Option<RelPath>> = if all
+            .iter()
+            .any(|dir| dir.as_ref().map(RelPath::as_str) == under)
+        {
+            vec![reference.dir.clone()]
+        } else {
+            all.iter()
+                .filter(|dir| {
+                    dir.as_ref()
+                        .is_some_and(|dir| parent_of(dir.as_str()) == under)
+                })
+                .cloned()
+                .collect()
+        };
+        let mut reflexes = Vec::new();
+        for reflex in dirs {
+            let files = files_of(dir, &self.blobs, reflex.as_ref(), what)?;
+            reflexes.push(Tree { dir: reflex, files });
+        }
+        Ok(Fetched {
+            commit: self.commit.clone(),
+            reflexes,
+            all,
+        })
+    }
 }
 
 /// The files under one reflex directory, read from the repository, the project's own names skipped.

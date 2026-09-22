@@ -42,10 +42,10 @@ exit  0 ran · 1 failed · 2 declined · 3 needs a human · 4 adapter failed
 ## Grammar
 
 - The first argument selects a command only when it is exactly a command word. Otherwise every argument is the
-  input. `--` forces input. Lines from stdin are always input.
+  input, bare words joined by one space. `--` forces input. Lines from stdin are always input.
 - `--help`, `-h` and `--version` are flags in the first place. They print to stdout and exit 0.
-- Commands validate every argument before acting. The reserved words `edit`, `search`, `publish`, `adapter` and
-  `calibrate` are refused by name until they exist.
+- Commands validate every argument before acting. Arguments that spell no command end in `evoke --help`. The
+  reserved words `edit`, `search`, `publish`, `adapter` and `calibrate` are refused by name until they exist.
 - A **call** is `name arg=value…`. A value is bare or a JSON string, like `duration="10 minutes"`. A flag is its
   bare name. `run` and `teach` take a call as one argument or as separate words.
 
@@ -69,7 +69,7 @@ exit  0 ran · 1 failed · 2 declined · 3 needs a human · 4 adapter failed
 
 | Command                                | Does                                                                                  |
 | :------------------------------------- | :------------------------------------------------------------------------------------ |
-| `evoke add <ref>… [--as <name>]`       | Fetches each ref at its pin or newest tag. Lints, tests for stolen phrases, writes `evoke.toml`, the lock and `evoke.d.ts`, and records the runtime. `--as` names a single ref |
+| `evoke add <ref>… [--as <name>]`       | Fetches each ref at its pin or newest tag, once per repository; reads a local ref, `./dir`, where it is. Lints, tests for stolen phrases, writes `evoke.toml`, the lock and `evoke.d.ts`, and records the runtime. `--as` names a single ref |
 | `evoke remove <name>`                  | Drops the reflex from `evoke.toml` and the lock. Keeps your overlay, vocabularies, settings and the store's copy |
 | `evoke update [<name>]`                | Moves each unpinned remote reflex, or one, to its newest tag. A pinned one moves to its pin. Reports. Never prompts or rewrites your files |
 | `evoke update --accept <name>`         | Takes on an effect upstream loosened, at the current tag                              |

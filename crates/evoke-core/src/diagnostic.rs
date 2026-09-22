@@ -89,6 +89,10 @@ pub enum Fix {
     },
     /// `evoke new <name>`: a reflex directory still to make, under a name still to choose.
     New,
+    /// `evoke test`: every record judged, where the theft test at `add` could not finish.
+    Test,
+    /// `evoke --help`: the arguments did not spell a command.
+    Help,
 }
 
 impl Fix {
@@ -129,6 +133,8 @@ impl Fix {
                 serde_json::Value::String(utterance.clone())
             ),
             Self::New => "evoke new <name>".to_owned(),
+            Self::Test => "evoke test".to_owned(),
+            Self::Help => "evoke --help".to_owned(),
         }
     }
 }
@@ -264,6 +270,12 @@ mod tests {
         for (fix, command) in fixes {
             assert_eq!(fix.command("evoke \"kill the lights\""), command);
         }
+    }
+
+    #[test]
+    fn the_tests_and_the_help_are_commands_too() {
+        assert_eq!(Fix::Test.command(""), "evoke test");
+        assert_eq!(Fix::Help.command("evoke x"), "evoke --help");
     }
 
     #[test]

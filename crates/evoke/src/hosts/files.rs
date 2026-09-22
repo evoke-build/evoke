@@ -230,6 +230,44 @@ fn toml_value(value: &Json) -> toml_edit::Value {
     }
 }
 
+/// A directory as `evoke.toml` names a local reflex: relative to the root, `.`, `./dir` or `../dir`, whatever way it
+/// was typed from the working directory; none when there is no such directory.
+pub fn relative(root: &Path, typed: &str) -> Result<Option<String>, Failure> {
+    let dir = match fs::canonicalize(typed) {
+        Ok(dir) => dir,
+        Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(failed(&format!("finding {typed}"), &error)),
+    };
+    if !dir.is_dir() {
+        return Ok(None);
+    }
+    let root = fs::canonicalize(root)
+        .map_err(|error| failed(&format!("finding {}", root.display()), &error))?;
+    let mut base = root.components().peekable();
+    let mut target = dir.components().peekable();
+    while base.peek().is_some() && base.peek() == target.peek() {
+        base.next();
+        target.next();
+    }
+    let up = base.count();
+    let rest: Vec<String> = target
+        .map(|component| component.as_os_str().to_string_lossy().into_owned())
+        .collect();
+    let mut path = if up == 0 {
+        ".".to_owned()
+    } else {
+        "..".to_owned()
+    };
+    for _ in 1..up {
+        path.push_str("/..");
+    }
+    for segment in rest {
+        path.push('/');
+        path.push_str(&segment);
+    }
+    Ok(Some(path))
+}
+
 /// The path as a person reads it: `~/…` when it is under `$HOME`, however `$HOME` is spelled.
 #[must_use]
 pub fn shown(path: &Path, environment: &Environment) -> String {
@@ -323,6 +361,39 @@ mod tests {
         let physical = Path::new(env!("CARGO_MANIFEST_DIR"));
         assert!(is_home(physical, Path::new(&crooked_home())));
         assert!(!is_home(physical, Path::new("/Users/me/.config/evoke")));
+    }
+
+    #[test]
+    fn a_local_reflex_is_named_relative_to_the_root() {
+        let crate_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+        let src = crate_dir.join("src").display().to_string();
+        assert_eq!(relative(crate_dir, &src).unwrap(), Some("./src".to_owned()));
+        let hosts = crate_dir.join("src/hosts").display().to_string();
+        assert_eq!(
+            relative(&crate_dir.join("src/commands"), &hosts).unwrap(),
+            Some("../hosts".to_owned())
+        );
+        assert_eq!(
+            relative(
+                &crate_dir.join("src/commands"),
+                &crate_dir.display().to_string()
+            )
+            .unwrap(),
+            Some("../..".to_owned())
+        );
+        assert_eq!(
+            relative(crate_dir, &crate_dir.display().to_string()).unwrap(),
+            Some(".".to_owned())
+        );
+        assert_eq!(relative(crate_dir, "./no-such-directory").unwrap(), None);
+        assert_eq!(
+            relative(
+                crate_dir,
+                &crate_dir.join("Cargo.toml").display().to_string()
+            )
+            .unwrap(),
+            None
+        );
     }
 
     #[test]

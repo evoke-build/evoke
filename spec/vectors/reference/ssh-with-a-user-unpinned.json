@@ -1,0 +1,16 @@
+{
+  "input": {
+    "text": "ssh://git@github.com/radhi/home"
+  },
+  "expect": {
+    "ok": [
+      {
+        "repo": {
+          "type": "url",
+          "url": "ssh://git@github.com/radhi/home"
+        }
+      },
+      null
+    ]
+  }
+}

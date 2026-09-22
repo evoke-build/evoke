@@ -371,6 +371,26 @@ pub fn abstained(decided: &Decided, floors: Option<&Gate>) -> Text {
     indented(vec![Text::from(ranking(&decided.answers, under))])
 }
 
+/// After an abstain, the reflexes that were never offered: `open and visit are inactive  →  evoke show`; nothing
+/// when every reflex was.
+#[must_use]
+pub fn left_out<'n>(inactive: impl IntoIterator<Item = &'n LocalName>) -> Option<Text> {
+    let names: Vec<String> = inactive.into_iter().map(ToString::to_string).collect();
+    let (last, rest) = names.split_last()?;
+    let listed = if rest.is_empty() {
+        format!("{last} is inactive")
+    } else {
+        format!("{} and {last} are inactive", rest.join(", "))
+    };
+    let problem = Diagnostic {
+        reflex: None,
+        at: None,
+        message: listed,
+        fix: Fix::Show { reflex: None },
+    };
+    Some(diagnostic(&problem, "", None))
+}
+
 /// The run line: the call, then its confidence.
 #[must_use]
 pub fn running(chosen: &Chosen) -> Text {

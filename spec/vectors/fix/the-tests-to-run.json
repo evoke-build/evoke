@@ -1,0 +1,8 @@
+{
+  "input": {
+    "fix": {
+      "type": "test"
+    }
+  },
+  "expect": "evoke test"
+}

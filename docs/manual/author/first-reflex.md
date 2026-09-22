@@ -69,7 +69,8 @@ $ evoke check
 
 ## 3. Try it
 
-A reflex is decided on inside a project. Keep one next to your reflexes while you work:
+A reflex is decided on inside a project. Keep one next to your reflexes while you work: a file naming the
+adapter, and `evoke add ./hello` writes the rest.
 
 ```text
 ~/dev/
@@ -80,9 +81,6 @@ A reflex is decided on inside a project. Keep one next to your reflexes while yo
 ```toml
 # ~/dev/evoke.toml
 adapter = "jev"
-
-[reflexes]
-hello = "./hello"
 ```
 
 A project outside home must be trusted once. Edits to the reflex itself never need it again. Trust binds to the
@@ -91,6 +89,8 @@ project's own files, not to the reflexes.
 ```text
 $ cd ~/dev && evoke trust
 + trusted ~/dev
+$ evoke add ./hello
++ hello  ./hello  read  runs hello.mts
 $ evoke try 'say hi to "Ada"'
   hello 0.94 · none 0.06
   who    "Ada" 0.97 · unstated 0.03

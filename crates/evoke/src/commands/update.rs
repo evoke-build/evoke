@@ -63,6 +63,7 @@ fn updated(
     let mut lock = session.lock.clone().unwrap_or_else(|| session.new_lock());
     let mut moved = Vec::new();
     let mut new = BTreeMap::new();
+    let mut remotes = git::Remotes::default();
     for name in &scope {
         match one(
             session,
@@ -71,6 +72,7 @@ fn updated(
             accept == Some(name),
             &mut lock,
             &mut new,
+            &mut remotes,
         ) {
             Ok(Some(one)) => moved.push(one),
             Ok(None) => {}
@@ -107,6 +109,7 @@ fn one(
     accept: bool,
     lock: &mut Lock,
     new: &mut BTreeMap<String, Diagnostic>,
+    remotes: &mut git::Remotes,
 ) -> Result<Option<Moved>, Exit> {
     let Some(location) = session.project.reflexes.get(name) else {
         return Err(about(
@@ -137,7 +140,7 @@ fn one(
     let by_looking = Fix::Show {
         reflex: Some(name.clone()),
     };
-    let tags = git::tags(reference).map_err(Exit::Failed)?;
+    let tags = remotes.tags(reference).map_err(Exit::Failed)?;
     let target = match pin {
         Some(pin) => tags
             .iter()
@@ -176,7 +179,7 @@ fn one(
         previous: &previous,
         previous_manifest: &previous_manifest,
     };
-    moved(session, input, &r#move, accept, lock, new).map(Some)
+    moved(session, input, &r#move, accept, lock, new, remotes).map(Some)
 }
 
 /// A move in hand: what the reflex is locked at and what it goes to.
@@ -197,6 +200,7 @@ fn moved(
     accept: bool,
     lock: &mut Lock,
     new: &mut BTreeMap<String, Diagnostic>,
+    remotes: &mut git::Remotes,
 ) -> Result<Moved, Exit> {
     let Move {
         name,
@@ -206,7 +210,7 @@ fn moved(
         previous,
         previous_manifest,
     } = *r#move;
-    let fetched = git::fetch(reference, target).map_err(Exit::Failed)?;
+    let fetched = remotes.fetch(reference, target).map_err(Exit::Failed)?;
     for dir in &fetched.all {
         siblings(session, reference, dir.as_ref(), new);
     }

@@ -32,6 +32,8 @@ The set of fixing commands is closed. Each line ends in one of these:
 | `evoke remove <reflex>`                    | A local reflex's directory or manifest is missing                           |
 | `evoke check`                              | A body does not exist, does not load, or exports no function                |
 | `evoke new <name>`                         | No `reflex.toml` here, or the directory already exists                      |
+| `evoke test`                               | The theft test at `add` did not finish; the install stands                  |
+| `evoke --help`                             | The arguments spell no command                                              |
 | `<file>:<line>:<column>`                   | A line of an owned file to edit: the schema, a contract key in an overlay, a loosening effect |
 | the command you ran                        | Try again once the reason on the line is addressed: a prompt with no terminal, a value out of range |
 

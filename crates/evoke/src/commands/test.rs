@@ -1,8 +1,8 @@
 //! `evoke test [name]`: every example and test of every active reflex — or of one — decided uncached over the
-//! whole set and judged on its route and asserted arguments; a case that passed at the last run under this plan
-//! and fails now is decided twice more and is a regression when two of three fail; the baseline kept per plan in
-//! the cache. In: a name or none, the environment. Out: `Exit`, a line per reflex and one per failure; exit 1
-//! when any case failed, with the count. Nothing runs and nothing is logged.
+//! whole set, a few at a time, and judged on its route and asserted arguments; a case that passed at the last run
+//! under this plan and fails now is decided twice more and is a regression when two of three fail; the baseline
+//! kept per plan in the cache. In: a name or none, the environment. Out: `Exit`, a line per reflex and one per
+//! failure; exit 1 when any case failed, with the count. Nothing runs and nothing is logged.
 
 use evoke_core::name::LocalName;
 use evoke_core::text::NonEmpty;
@@ -12,7 +12,7 @@ use super::Exit;
 use super::session::{self, Opening, Session};
 use crate::adapter::Adapter;
 use crate::args::Command;
-use crate::hosts::{Environment, Failure, terminal};
+use crate::hosts::{Environment, Failure, terminal, threads};
 use crate::report;
 
 pub fn run(command: &Command, name: Option<&LocalName>, environment: &Environment) -> Exit {
@@ -50,18 +50,43 @@ fn tested(
         .baseline(&digest)
         .map_err(Exit::Failed)?
         .unwrap_or_default();
-    let mut judged = Vec::new();
-    for case in cases {
-        let mut verdicts = vec![judged_once(session, adapter, &case)?];
-        let passed_before = matches!(before.get(&case), Some(Verdict::Pass));
-        if passed_before && matches!(verdicts[0], Verdict::Fail { .. }) {
-            for _ in 0..2 {
-                verdicts.push(judged_once(session, adapter, &case)?);
+    let judged = {
+        let _busy = terminal::busy("testing");
+        let first = threads::try_each(&cases, |case| judged_once(session, adapter, case))?;
+        // A case that passed at the last run and failed now is decided twice more, all of them at once.
+        let doubted: Vec<bool> = cases
+            .iter()
+            .zip(&first)
+            .map(|(case, verdict)| {
+                matches!(before.get(case), Some(Verdict::Pass))
+                    && matches!(verdict, Verdict::Fail { .. })
+            })
+            .collect();
+        let doubtful: Vec<&Case> = cases
+            .iter()
+            .zip(&doubted)
+            .filter(|(_, doubted)| **doubted)
+            .map(|(case, _)| case)
+            .collect();
+        let mut again = threads::try_each(&doubtful, |case| {
+            Ok([
+                judged_once(session, adapter, case)?,
+                judged_once(session, adapter, case)?,
+            ])
+        })?
+        .into_iter();
+        drop(doubtful);
+        let mut judged = Vec::with_capacity(cases.len());
+        for ((case, verdict), doubted) in cases.into_iter().zip(first).zip(doubted) {
+            let mut verdicts = vec![verdict];
+            if doubted {
+                verdicts.extend(again.next().expect("every doubtful case was decided again"));
             }
+            let verdicts = NonEmpty::try_from(verdicts).expect("a case is judged at least once");
+            judged.push((case, verdicts));
         }
-        let verdicts = NonEmpty::try_from(verdicts).expect("a case is judged at least once");
-        judged.push((case, verdicts));
-    }
+        judged
+    };
     let regressed = regressions(&before, &judged);
     let next = baseline(&before, &judged);
     session

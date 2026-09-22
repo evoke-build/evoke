@@ -126,6 +126,8 @@ export type Fix =
   | { type: "add_ref"; reference: string; name?: LocalName } // evoke add <reference> --as <name>
   | { type: "teach_not"; utterance: string; reflex: LocalName } // evoke teach "<utterance>" not <reflex>
   | { type: "new" } // evoke new <name>
+  | { type: "test" } // evoke test
+  | { type: "help" } // evoke --help
 
 // document.rs
 
@@ -300,7 +302,8 @@ export type Repo =
   | { type: "github"; owner: Owner; name: Segment }
   | { type: "url"; url: GitUrl }
 
-/** A git URL over an allow-listed scheme: `https` or `ssh`, no `#`, `@` or whitespace. */
+/** A git URL over an allow-listed scheme: `https` or `ssh`; a user may stand before the host; no `#` or
+ *  whitespace, and no `@` past the host. */
 export type GitUrl = string
 
 /** A tag `[v]X.Y.Z`, printed without the `v`: `"1.2.0"`. */

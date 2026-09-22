@@ -1,0 +1,5 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md): nothing, so the theft test at
+# add cannot finish and says so.
+id = "replay"
+
+[answers]

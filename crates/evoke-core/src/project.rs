@@ -59,7 +59,8 @@ pub enum Repo {
     },
 }
 
-/// A git URL over an allow-listed scheme: `https` or `ssh`, no `#`, `@` or whitespace.
+/// A git URL over an allow-listed scheme: `https` or `ssh`; a user may stand before the host, as `git@` does; no
+/// `#` or whitespace anywhere, and no `@` past the host.
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(try_from = "String")]
 pub struct GitUrl(String);
@@ -74,9 +75,18 @@ impl GitUrl {
                 "\"{text}\" uses scheme \"{scheme}\"; https and ssh are allowed"
             ));
         }
-        if rest.is_empty() || rest.contains(|c: char| c.is_whitespace() || matches!(c, '#' | '@')) {
+        let (authority, path) = rest.split_once('/').unwrap_or((rest, ""));
+        let clean = |part: &str| !part.contains(|c: char| c.is_whitespace() || c == '#');
+        let shaped = !authority.is_empty()
+            && clean(authority)
+            && authority.matches('@').count() <= 1
+            && !authority.starts_with('@')
+            && !authority.ends_with('@')
+            && clean(path)
+            && !path.contains('@');
+        if !shaped {
             return Err(format!(
-                "\"{text}\" is not a git URL: <scheme>://<host>/<path>"
+                "\"{text}\" is not a git URL: <scheme>://[<user>@]<host>/<path>"
             ));
         }
         Ok(Self(text.to_owned()))
@@ -273,14 +283,10 @@ fn parse_reference(text: &str) -> Result<(Reference, Option<Version>), String> {
     if is_local(text) {
         return Err(format!("\"{text}\" is local; a ref names a repository"));
     }
-    let (head, pin) = match text.rsplit_once('@') {
-        Some((head, tag)) => {
-            let pin = Version::parse(tag)
-                .map_err(|_| format!("\"{text}\": what follows @ must be a version, [v]X.Y.Z"))?;
-            (head, Some(pin))
-        }
-        None => (text, None),
-    };
+    if !text.contains("://") && text.contains(':') {
+        return Err(format!("\"{text}\" is scp-like; write ssh://<host>/<path>"));
+    }
+    let (head, pin) = split_pin(text)?;
     if head.contains("://") {
         let (url, dir) = head
             .split_once('#')
@@ -294,9 +300,6 @@ fn parse_reference(text: &str) -> Result<(Reference, Option<Version>), String> {
             },
             pin,
         ));
-    }
-    if head.contains(':') {
-        return Err(format!("\"{text}\" is scp-like; write ssh://<host>/<path>"));
     }
     let mut segments = head.split('/');
     let (Some(owner), Some(name)) = (segments.next(), segments.next()) else {
@@ -323,6 +326,33 @@ fn parse_reference(text: &str) -> Result<(Reference, Option<Version>), String> {
         },
         pin,
     ))
+}
+
+/// The pin after the last `@`, when there is one; in a URL an `@` before the first `/` of the path names a user,
+/// and is left to the URL.
+fn split_pin(text: &str) -> Result<(&str, Option<Version>), String> {
+    let Some((head, tail)) = text.rsplit_once('@') else {
+        return Ok((text, None));
+    };
+    match Version::parse(tail) {
+        Ok(pin) => Ok((head, Some(pin))),
+        Err(_) if before_the_path(text, head.len()) => Ok((text, None)),
+        Err(_) => Err(format!(
+            "\"{text}\": what follows @ must be a version, [v]X.Y.Z"
+        )),
+    }
+}
+
+/// Whether the byte at `at` sits in a URL's authority: after `://` and before the path's first `/`.
+fn before_the_path(text: &str, at: usize) -> bool {
+    let Some(scheme) = text.find("://") else {
+        return false;
+    };
+    let authority = scheme + 3;
+    let path = text[authority..]
+        .find('/')
+        .map_or(text.len(), |slash| authority + slash);
+    at >= authority && at < path
 }
 
 fn is_local(text: &str) -> bool {
@@ -753,6 +783,14 @@ mod tests {
             github("ssh://example.com/r"),
             "ssh://example.com/r @ unpinned"
         );
+        assert_eq!(
+            github("ssh://git@github.com/radhi/home#lights@1.2.0"),
+            "ssh://git@github.com/radhi/home#lights @ 1.2.0"
+        );
+        assert_eq!(
+            github("ssh://git@github.com/radhi/home"),
+            "ssh://git@github.com/radhi/home @ unpinned"
+        );
         let (reference, _) = reference("radhi/home/lights").unwrap();
         assert_eq!(reference.dir.as_ref().map(RelPath::as_str), Some("lights"));
     }
@@ -771,7 +809,16 @@ mod tests {
         );
         assert_eq!(
             refused("git@github.com:radhi/home").message,
-            "\"git@github.com:radhi/home\": what follows @ must be a version, [v]X.Y.Z"
+            "\"git@github.com:radhi/home\" is scp-like; write ssh://<host>/<path>"
+        );
+        assert_eq!(
+            refused("https://example.com/a@b/r").message,
+            "\"https://example.com/a@b/r\": what follows @ must be a version, [v]X.Y.Z"
+        );
+        assert!(
+            refused("ssh://git@@github.com/r")
+                .message
+                .contains("is not a git URL")
         );
         assert_eq!(
             refused("example.com:radhi/home").message,

@@ -11,8 +11,9 @@ evoke                                  the REPL, on a terminal
 echo "kill the lights" | evoke         a filter: one input per line of stdin
 ```
 
-**As the argument.** Everything after `evoke` is the input, unless the first word is exactly a command name. Quote it
-so your shell hands it over whole.
+**As the argument.** Everything after `evoke` is the input, unless the first word is exactly a command name. Bare
+words are joined by one space, so `evoke kill the lights` and `evoke "kill the lights"` are the same call. Quote a
+sentence that holds a character the shell would take, such as `?` or `*`.
 
 **The REPL.** Run `evoke` alone on a terminal. It prompts `> ` and decides each line as if you had typed it as the
 argument. It skips blank lines. It keeps one warm connection to the adapter. You can edit the line, and the arrow

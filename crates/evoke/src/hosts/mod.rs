@@ -8,6 +8,7 @@ pub mod processes;
 pub mod state;
 pub mod store;
 pub mod terminal;
+pub mod threads;
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};

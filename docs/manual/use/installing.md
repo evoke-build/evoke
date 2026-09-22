@@ -12,6 +12,7 @@ installed that a person did not name. No install-time code ever runs.
 | `owner/repo/dir`                  | One reflex, the directory `dir` of the repository; `dir` may nest                  |
 | `owner/repo/dir@1.2.0`            | Pinned: `update` keeps it there. Tags are `X.Y.Z` or `vX.Y.Z`. The newest is the highest |
 | `https://host/repo.git#dir@1.2.0` | Any git host over `https` or `ssh`. `#dir` and `@tag` are optional                  |
+| `ssh://git@github.com/owner/repo` | The same over ssh, the user before the host                                        |
 | `./dir`, `../dir`                 | A local directory, relative to `evoke.toml`. Never fetched, never locked            |
 
 An unpinned ref means its newest tag at `add`, and `update` moves it forward. A repository with no version tag
@@ -30,15 +31,18 @@ $ evoke add radhi/home/lights radhi/timer
 
 `evoke add <ref>… [--as <name>]` does, in order:
 
-1. **Fetches** each ref at its pin or its newest tag. This is a bare, shallow fetch, read without a checkout.
-   Symlinks and submodules are refused. The tree is kept in the store.
+1. **Fetches** each ref at its pin or its newest tag. This is a bare, shallow fetch, read without a checkout,
+   once per repository and tag. Symlinks and submodules are refused. The tree is kept in the store. A local ref,
+   `./dir`, is read where it is and written to `evoke.toml` as a path relative to that file. It is never fetched
+   and never locked.
 2. **Reads and lints** every manifest. A manifest that does not parse refuses the whole add. Nothing is written
    until every newcomer is in hand. Lint only reports; it never refuses. It flags a summary over 100 characters, a
    description over 1 000, more than eight `not_for` entries, more than 24 options, more than 40 records per
    table, an utterance over 200 characters, or text that addresses a model instead of describing an action.
-3. **Tests for theft.** The examples already installed are routed over the new set. A phrase a newcomer wins prints
-   as `<thief>: steals "<phrase>" from <owner>  →  evoke teach "<phrase>" not <thief>`. The add still proceeds.
-   The fix is one line in your overlay.
+3. **Tests for theft.** The examples already installed are routed over the new set, a few at a time. A phrase a
+   newcomer wins prints as `<thief>: steals "<phrase>" from <owner>  →  evoke teach "<phrase>" not <thief>`. The
+   add still proceeds. The fix is one line in your overlay. When the classifier cannot answer, the line says the
+   test did not finish, and `evoke test` runs it again.
 4. **Writes** the `[reflexes]` lines to `evoke.toml`, the lock, and `evoke.d.ts`. It records the JavaScript runtime
    when a newcomer runs a file. Then it prints one row per newcomer behind `+`, then the lint lines, the theft
    lines, and each newcomer's inactive lines.
@@ -82,9 +86,10 @@ repository you already use is reported once, with its add line. `update` never a
 
 ## `sync`
 
-On a new device, or in CI, you have the lock and the store is empty. `evoke sync` fetches each locked reflex at
-its locked tag, checks that its tree hashes to the lock, and records the runtime. It prints a `+` row per reflex
-placed. It never changes the lock. A tag that moved or vanished is refused, with `evoke update <name>`.
+On a new device, or in CI, you have the lock and the store is empty. `evoke sync` fetches each repository once,
+at every locked tag it needs, checks that each tree hashes to the lock, and records the runtime. It prints a `+`
+row per reflex placed. It never changes the lock. A tag that moved or vanished is refused, with
+`evoke update <name>`.
 
 ```text
 $ evoke sync

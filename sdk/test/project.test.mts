@@ -23,6 +23,17 @@ test("the spec's home decides and runs as the CLI does", async () => {
     lights: { active: true, effect: "write", runs: "file" },
     timer: { active: true, effect: "write", runs: "file" },
     volume: { active: true, effect: "write", runs: "file" },
+    open: {
+      active: false,
+      problems: [
+        {
+          reflex: "open",
+          message: 'vocabulary "places" is empty',
+          fix: { type: "vocab_add", vocab: "places" },
+          command: 'evoke vocab places add <word> "<meaning>"',
+        },
+      ],
+    },
   })
   ok(project.plan.startsWith("h1:"))
   const d = await project.decide("kill the lights in the den")

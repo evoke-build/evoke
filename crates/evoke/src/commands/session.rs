@@ -52,9 +52,9 @@ pub struct Session<'a> {
     tty: Option<Tty>,
 }
 
-/// What a command needs of the session: to decide — every inactive reflex reported, none active refused; to tune,
-/// where the inactive ones are the command's own business; or to install, where a remote reflex the store cannot
-/// place is inactive rather than refused, since the command is about to place it.
+/// What a command needs of the session: to decide, where an inactive reflex is left out and nothing active at all
+/// is the stop; to tune, where the inactive ones are the command's own business; or to install, where a remote
+/// reflex the store cannot place is inactive rather than refused, since the command is about to place it.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Opening {
     Deciding,
@@ -110,8 +110,9 @@ struct Ground<'a> {
 }
 
 /// The straight sequence up to the plan: locate, first use, the state and the store, the snapshot, trust, then
-/// `prepare`; when deciding, every inactive reflex has printed its problems and none active is refused. The home
-/// project is written on first use and trusted by construction; any other root must be blessed at its content.
+/// `prepare`; when deciding, nothing active is a stop that names every problem, and an inactive reflex beside
+/// active ones is left out — `show` lists why, and an abstain names it. The home project is written on first use
+/// and trusted by construction; any other root must be blessed at its content.
 pub fn open<'a>(
     command: &'a Command,
     json: bool,
@@ -148,7 +149,7 @@ pub fn open<'a>(
     };
     let prepared =
         prepare(&ground, &mut reporter, &input).map_err(|exit| reporter.exit(&input, exit))?;
-    if opening == Opening::Deciding {
+    if opening == Opening::Deciding && prepared.plan.active().is_empty() {
         let problems: Vec<Diagnostic> = prepared
             .plan
             .inactive()
@@ -156,11 +157,8 @@ pub fn open<'a>(
             .flat_map(NonEmpty::iter)
             .cloned()
             .collect();
-        if prepared.plan.active().is_empty() && !problems.is_empty() {
+        if !problems.is_empty() {
             return Err(reporter.problems(&input, problems));
-        }
-        for problem in &problems {
-            reporter.note(&input, problem);
         }
     }
     Ok(Session {
@@ -261,7 +259,8 @@ fn installed(
                 remote(ground, name, location, locked, configured)?
             }
             Location::Local { path } => {
-                let dir = ground.root.path.join(path);
+                // Joined as written, then normalized: `~/dev/./hello` is `~/dev/hello` wherever it prints.
+                let dir: PathBuf = ground.root.path.join(path).components().collect();
                 let (item, manifest) =
                     local(&dir, name, path, snapshot, configured).map_err(Exit::Failed)?;
                 (item, manifest.map(|manifest| (manifest, dir)))
@@ -542,12 +541,15 @@ impl Session<'_> {
             .into_iter()
             .filter_map(|name| {
                 let location = self.project.reflexes.get(name)?;
+                // A pinned ref already names its tag; an unpinned one shows the tag the lock holds.
                 let from = match location {
                     Location::Local { path } => path.clone(),
-                    Location::Remote { .. } => {
+                    Location::Remote { pin, .. } => {
                         match self.lock.as_ref().and_then(|lock| lock.reflexes.get(name)) {
-                            Some(locked) => format!("{location} {}", locked.tag),
-                            None => location.to_string(),
+                            Some(locked) if *pin != Some(locked.tag) => {
+                                format!("{location} {}", locked.tag)
+                            }
+                            _ => location.to_string(),
                         }
                     }
                 };
@@ -653,19 +655,20 @@ impl Session<'_> {
             .map_err(Exit::Failed)
     }
 
-    /// One input: request → the cache, else the adapter → read → gate. A cached entry that no longer reads
-    /// against the request is a miss.
+    /// One input: request → the cache, else the adapter → read → gate, a spinner turning while the adapter
+    /// answers. A cached entry that no longer reads against the request is a miss.
     pub fn decide(
         &self,
         adapter: &dyn Adapter,
         input: &str,
         tags: &[Tag],
     ) -> Result<Decided, Exit> {
+        let _busy = terminal::busy("deciding");
         self.decided(adapter, input, tags, true)
     }
 
-    /// The same, never through the cache — neither read nor kept: what `test` asks, so every repeat is a fresh
-    /// answer.
+    /// The same, never through the cache — neither read nor kept — and without a spinner: what `test` asks, in
+    /// a batch that spins once for all of it, so every repeat is a fresh answer.
     pub fn decide_uncached(
         &self,
         adapter: &dyn Adapter,
@@ -700,11 +703,7 @@ impl Session<'_> {
         let (answers, reading, trace) = if let Some((answers, reading)) = hit {
             (answers, reading, Vec::new())
         } else {
-            let answers = {
-                let _busy = terminal::busy("deciding");
-                adapter.answer(&request, deadline)
-            }
-            .map_err(Exit::Adapter)?;
+            let answers = adapter.answer(&request, deadline).map_err(Exit::Adapter)?;
             let trace = Trace {
                 adapter: adapter.declared().id.clone(),
                 questions: request.questions.len(),

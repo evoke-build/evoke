@@ -1,0 +1,13 @@
+{
+  "input": {
+    "text": "git@github.com:radhi/home"
+  },
+  "expect": {
+    "err": {
+      "message": "\"git@github.com:radhi/home\" is scp-like; write ssh://<host>/<path>",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

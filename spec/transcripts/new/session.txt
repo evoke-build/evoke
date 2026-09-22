@@ -7,3 +7,9 @@ $ cd hello && evoke check
 $ evoke new hello
   hello already exists  →  evoke new <name>
 [3]
+$ evoke add ./hello
++ hello  ../../hello  read  runs hello.mts
+  the theft test did not finish: "turn on the kitchen lights" is not recorded  →  evoke test
+$ evoke run hello who=Ada
+  hello who="Ada"
+Hello, Ada!

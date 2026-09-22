@@ -65,7 +65,7 @@ async function run(line) {
 }
 
 function where(stack) {
-  return stack.split("\n").filter((line) => !line.includes("node:internal")).join("\n");
+  return stack.split("\n").filter((line) => !line.includes("node:internal") && !line.includes("[eval")).join("\n");
 }
 
 function describe(value) {

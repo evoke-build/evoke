@@ -4,4 +4,5 @@ $ evoke
 den lights off
 > what time is it
   none 0.70 · timer 0.20 · lights 0.05 · volume 0.05
+  open is inactive  →  evoke show
 >

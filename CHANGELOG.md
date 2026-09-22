@@ -6,6 +6,16 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- `evoke kill the lights` needs no quotes: the words after `evoke` are one input, as the manual said. Every
+  argument error now ends in `evoke --help`.
+- A decision no longer lists the inactive reflexes first. An abstain names them once, with `evoke show`.
+- `evoke add ./dir` installs a local reflex, written to `evoke.toml` relative to that file.
+- `ssh://git@github.com/owner/repo` is a ref: a git URL may name its user.
+- `sync`, `update` and `add` list a repository's tags and fetch a tag once, however many reflexes come from it.
+- `test` and the theft test at `add` decide a few cases at a time. A theft test the classifier cannot finish is
+  reported with `evoke test`, and the add stands.
+- `show` prints a pinned ref once, not with its tag beside it.
+
 ## [0.1.0] - 2026-09-21
 
 The first release: the CLI, the package manager and the SDK.

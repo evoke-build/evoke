@@ -1,6 +1,7 @@
 //! `evoke sync`: the lock realised on this machine — every remote reflex the store lacks fetched at its locked tag,
-//! refused unless the tag still names the locked commit and the tree still hashes to the lock — and the runtime
-//! recorded. Nothing in the project changes. In: the environment. Out: `Exit`, a `+` line per reflex realised.
+//! each repository's tag fetched once for all of them, refused unless the tag still names the locked commit and the
+//! tree still hashes to the lock — and the runtime recorded. Nothing in the project changes. In: the environment.
+//! Out: `Exit`, a `+` line per reflex realised.
 
 use evoke_core::Fix;
 use evoke_core::name::LocalName;
@@ -25,15 +26,16 @@ pub fn run(command: &Command, environment: &Environment) -> Exit {
 
 fn synced(session: &mut Session<'_>, input: &str) -> Exit {
     let mut realised = Vec::new();
-    let remotes: Vec<(LocalName, Location)> = session
+    let mut remotes = git::Remotes::default();
+    let locked: Vec<(LocalName, Location)> = session
         .project
         .reflexes
         .iter()
         .filter(|(_, location)| matches!(location, Location::Remote { .. }))
         .map(|(name, location)| (name.clone(), location.clone()))
         .collect();
-    for (name, location) in remotes {
-        match realise(session, &name, &location) {
+    for (name, location) in locked {
+        match realise(session, &mut remotes, &name, &location) {
             Ok(true) => realised.push(name),
             Ok(false) => {}
             Err(exit) => return exit,
@@ -53,7 +55,12 @@ fn synced(session: &mut Session<'_>, input: &str) -> Exit {
 }
 
 /// One remote reflex placed in the store from its locked tag; `false` when it was there already.
-fn realise(session: &Session<'_>, name: &LocalName, location: &Location) -> Result<bool, Exit> {
+fn realise(
+    session: &Session<'_>,
+    remotes: &mut git::Remotes,
+    name: &LocalName,
+    location: &Location,
+) -> Result<bool, Exit> {
     let Location::Remote { reference, .. } = location else {
         return Ok(false);
     };
@@ -88,11 +95,11 @@ fn realise(session: &Session<'_>, name: &LocalName, location: &Location) -> Resu
             },
         )
     };
-    let tags = git::tags(reference).map_err(Exit::Failed)?;
+    let tags = remotes.tags(reference).map_err(Exit::Failed)?;
     let Some(tag) = tags.iter().find(|tag| tag.version == locked.tag) else {
         return Err(moved("is gone"));
     };
-    let fetched = git::fetch(reference, tag).map_err(Exit::Failed)?;
+    let fetched = remotes.fetch(reference, tag).map_err(Exit::Failed)?;
     if fetched.commit != locked.commit {
         return Err(moved("no longer names the locked commit"));
     }
