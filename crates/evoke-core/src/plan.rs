@@ -12,9 +12,11 @@ use crate::digest::Digest;
 use crate::document::{self, Diagnostics, Form, Json};
 use crate::manifest::{
     self, Argument, Assertion, Effect, Kind, Lookup, Manifest, Recognizer, Record, Run, Source,
-    Template,
+    Template, Yield,
 };
-use crate::name::{AdapterId, ArgName, ConfigKey, LocalName, Tag, VarName, VocabName, Word};
+use crate::name::{
+    AdapterId, ArgName, ConfigKey, FieldName, LocalName, Tag, VarName, VocabName, Word,
+};
 use crate::overlay::Effective;
 use crate::project::{Setting, Version};
 use crate::text::{Clean, NonEmpty};
@@ -206,6 +208,8 @@ pub struct Active {
     pub run: Run,
     pub confirm: Template,
     pub args: IndexMap<ArgName, Argument>,
+    /// What the body's `data` yields for a later step to take, per field.
+    pub yields: IndexMap<FieldName, Yield>,
     pub config: IndexMap<ConfigKey, Setting>,
     pub tags: Vec<Tag>,
 }
@@ -259,6 +263,9 @@ fn read_active(d: &mut Diagnostics, json: &Json) -> Option<Active> {
     let known = top
         .take("args")
         .map_or_else(IndexMap::new, |node| manifest::args(d, node, &mut unknown));
+    let yields = top.take("yields").map_or_else(IndexMap::new, |node| {
+        manifest::yields(d, node, &mut unknown)
+    });
     let mut lookup = |name: &ArgName| match known.get_key_value(name) {
         None => Lookup::Unknown,
         Some((_, None)) => Lookup::Broken,
@@ -296,6 +303,7 @@ fn read_active(d: &mut Diagnostics, json: &Json) -> Option<Active> {
         run: run?,
         confirm: confirm?,
         args: args?,
+        yields,
         config: config?,
         tags,
     })
@@ -533,6 +541,7 @@ fn judge<'a>(
                 run: manifest.run.clone(),
                 confirm: manifest.confirm.clone(),
                 args: manifest.args.clone(),
+                yields: manifest.yields.clone(),
                 config,
                 tags: manifest.tags.clone(),
             },

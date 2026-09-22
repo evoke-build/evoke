@@ -27,6 +27,7 @@
       ],
       "config": {},
       "args": {},
+      "yields": {},
       "examples": {
         "empty the trash": {},
         "empty the bin": {}

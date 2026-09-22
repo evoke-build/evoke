@@ -24,6 +24,7 @@
       "was": []
     }
   },
+  "yields": {},
   "examples": {
     "put the laptop to sleep": {
       "action": "sleep"

@@ -31,7 +31,7 @@ const timer = reflex({
 }, async ({ duration }, { input, signal }) => startTimer(duration))
 ```
 
-The manifest is the file's shape without `run` and `config`. A body closes over what it needs. Its types are
+The manifest is the file's shape without `run` and `config`, `yields` included. A body closes over what it needs. Its types are
 inferred from the literal: an option key union, a word or a quoted pick as `string`, a number or a duration as
 `number`, a flag as `true`, and an optional argument as optional. So the body's `args` are typed with nothing
 generated. A manifest that does not read throws at `load`, since it is your own code. Its problems end in

@@ -54,7 +54,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:9beff5114dc5ffb26dc985abb6b6904c08145f20881f1ee28a0c083021a88c62",
+      "digest": "h1:0890337c165cc8ca55f00933cdd2684733302a598b455e07db1f63d14a9a3489",
       "active": {
         "lights": {
           "effect": "destructive",
@@ -88,6 +88,7 @@
               "was": []
             }
           },
+          "yields": {},
           "config": {
             "bridge": {
               "type": "plain",
@@ -119,6 +120,7 @@
               "was": []
             }
           },
+          "yields": {},
           "config": {},
           "tags": [
             "power"

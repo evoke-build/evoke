@@ -5,7 +5,7 @@
 
 import type { Flag, Option, Pick, Value, Values, Word } from "./decision.ts"
 import type { Reflex } from "./runtime.ts"
-import type { Effect } from "./types.ts"
+import type { Effect, Recognizer } from "./types.ts"
 
 /** `reflex.toml` as an object: no `run`, no `config` — a body closes over what it needs — no `reflex` key. */
 export interface InlineManifest {
@@ -17,6 +17,9 @@ export interface InlineManifest {
   /** The one-line template a person confirms, naming required arguments only. */
   confirm: string
   args?: Record<string, InlineArg>
+  /** What the body's `data` yields for a later step to take: per field, the recognizer that reads it, or a list of
+   *  records with such fields. */
+  yields?: Record<string, Recognizer | { each: Record<string, Recognizer> }>
   examples?: InlineRecords
   tests?: InlineRecords
 }

@@ -76,6 +76,7 @@
           "was": []
         }
       },
+      "yields": {},
       "examples": {
         "dim the office to 30 percent": {
           "state": "dim",

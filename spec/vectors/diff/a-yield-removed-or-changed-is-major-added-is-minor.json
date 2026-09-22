@@ -1,18 +1,17 @@
 {
   "input": {
     "previous": {
-      "description": "Control the lights of one room: on, off or dimmed.\nCeiling and lamp lights; scenes live elsewhere.",
+      "description": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
       "not_for": [
         "colour scenes and schedules",
-        "asking whether a light is on",
-        "the TV backlight"
+        "asking whether a light is on"
       ],
       "tags": [
         "home",
         "lighting"
       ],
       "effect": "write",
-      "confirm": "Set the {room} lights {power}?",
+      "confirm": "Set the {room} lights {state}?",
       "run": "lights.mts",
       "config": {
         "bridge": {
@@ -31,17 +30,15 @@
           "optional": false,
           "was": []
         },
-        "power": {
+        "state": {
           "ask": "What should the lights do?",
           "options": {
             "on": "Switch on.",
             "off": "Switch off.",
-            "dim": "Lower the brightness; the lights stay on."
+            "dim": "Lower the brightness without switching off."
           },
           "optional": false,
-          "was": [
-            "state"
-          ]
+          "was": []
         },
         "brightness": {
           "ask": "How bright, in percent?",
@@ -54,37 +51,39 @@
           "was": []
         }
       },
-      "yields": {},
+      "yields": {
+        "level": "number",
+        "room": "quoted"
+      },
       "examples": {
         "turn on the kitchen lights": {
-          "power": "on"
+          "state": "on"
         },
         "dim the office to 30 percent": {
-          "power": "dim",
+          "state": "dim",
           "brightness": "30 percent"
         }
       },
       "tests": {
         "make it darker in here": {
-          "power": "dim"
+          "state": "dim"
         },
         "light a candle": false
       },
       "unknown": []
     },
     "next": {
-      "description": "Control the lights of one room: on, off or dimmed.\nCeiling and lamp lights; scenes live elsewhere.",
+      "description": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
       "not_for": [
         "colour scenes and schedules",
-        "asking whether a light is on",
-        "the TV backlight"
+        "asking whether a light is on"
       ],
       "tags": [
         "home",
         "lighting"
       ],
       "effect": "write",
-      "confirm": "Set the {room} lights {power}?",
+      "confirm": "Set the {room} lights {state}?",
       "run": "lights.mts",
       "config": {
         "bridge": {
@@ -103,20 +102,12 @@
           "optional": false,
           "was": []
         },
-        "power": {
+        "state": {
           "ask": "What should the lights do?",
           "options": {
             "on": "Switch on.",
             "off": "Switch off.",
-            "dim": "Lower the brightness; the lights stay on."
-          },
-          "optional": false,
-          "was": []
-        },
-        "state": {
-          "ask": "Old name back",
-          "options": {
-            "on": "On."
+            "dim": "Lower the brightness without switching off."
           },
           "optional": false,
           "was": []
@@ -132,19 +123,22 @@
           "was": []
         }
       },
-      "yields": {},
+      "yields": {
+        "level": "quoted",
+        "kelvin": "number"
+      },
       "examples": {
         "turn on the kitchen lights": {
-          "power": "on"
+          "state": "on"
         },
         "dim the office to 30 percent": {
-          "power": "dim",
+          "state": "dim",
           "brightness": "30 percent"
         }
       },
       "tests": {
         "make it darker in here": {
-          "power": "dim"
+          "state": "dim"
         },
         "light a candle": false
       },
@@ -152,22 +146,21 @@
     }
   },
   "expect": {
-    "level": "minor",
+    "level": "major",
     "changes": [
       {
-        "type": "arg_added",
-        "arg": "state"
-      }
-    ],
-    "violations": [
-      {
-        "type": "returned",
-        "arg": "state"
+        "type": "yield_changed",
+        "field": "level"
       },
       {
-        "type": "dropped",
-        "arg": "state"
+        "type": "yield_removed",
+        "field": "room"
+      },
+      {
+        "type": "yield_added",
+        "field": "kelvin"
       }
-    ]
+    ],
+    "violations": []
   }
 }

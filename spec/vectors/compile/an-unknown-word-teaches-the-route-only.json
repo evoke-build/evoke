@@ -56,6 +56,7 @@
                     "was": []
                   }
                 },
+                "yields": {},
                 "examples": {
                   "turn on the kitchen lights": {
                     "state": "on"
@@ -116,7 +117,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:f60f608baedb798bbe8697a15e2cb6a54bc249d8ec9402485186ffe74a17a618",
+      "digest": "h1:89f18bee92bbce53333f58ad93a0e28a02b653929985de607a6779127c0f023a",
       "active": {
         "lights": {
           "effect": "write",
@@ -150,6 +151,7 @@
               "was": []
             }
           },
+          "yields": {},
           "config": {
             "bridge": {
               "type": "plain",

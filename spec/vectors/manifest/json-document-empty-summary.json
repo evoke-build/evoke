@@ -9,7 +9,8 @@
         "reflex": 1,
         "description": "\nTurn the lights on.",
         "confirm": "Lights on?",
-        "args": {}
+        "args": {},
+        "yields": {}
       }
     }
   },

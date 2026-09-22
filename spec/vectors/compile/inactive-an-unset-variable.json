@@ -42,7 +42,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:6cb52b7b2cd7b30216e1c9a17f530aee3225c57d34800f206821baf4223da5fa",
+      "digest": "h1:bcddce2d1a7425cd63243f3fe4d81656163c3a07eb47eaf3dbfc1b88750803b4",
       "active": {},
       "inactive": {
         "lights": [

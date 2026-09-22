@@ -1,0 +1,43 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "job"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Look up a job by its number.\"\neffect  = \"read\"\nconfirm = \"Look up job {number}?\"\nrun     = \"job.mts\"\n\n[args.number]\nask  = \"Which job number?\"\npick = \"number\"\n\n[yields]\nnumber = \"number\"\nclient = \"email\"\njobs   = { each = { number = \"number\", client = \"email\" } }\n"
+    }
+  },
+  "expect": {
+    "ok": {
+      "description": "Look up a job by its number.",
+      "not_for": [],
+      "tags": [],
+      "effect": "read",
+      "confirm": "Look up job {number}?",
+      "run": "job.mts",
+      "config": {},
+      "args": {
+        "number": {
+          "ask": "Which job number?",
+          "pick": "number",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {
+        "number": "number",
+        "client": "email",
+        "jobs": {
+          "each": {
+            "number": "number",
+            "client": "email"
+          }
+        }
+      },
+      "examples": {},
+      "tests": {},
+      "unknown": []
+    }
+  }
+}

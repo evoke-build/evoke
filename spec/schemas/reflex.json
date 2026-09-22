@@ -5,7 +5,12 @@
   "description": "A reflex's manifest: what the classifier reads and what the body receives. Wording may be overridden by an overlay; the contract (run, argument names, option keys, sources, range) may not. Reference: docs/manual/author/manifest.md.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["reflex", "description", "confirm", "run"],
+  "required": [
+    "reflex",
+    "description",
+    "confirm",
+    "run"
+  ],
   "properties": {
     "reflex": {
       "const": 1,
@@ -17,17 +22,25 @@
     },
     "not_for": {
       "type": "array",
-      "items": { "$ref": "#/definitions/line" },
+      "items": {
+        "$ref": "#/definitions/line"
+      },
       "description": "What it does not do: its near neighbours. Replaced whole by an overlay."
     },
     "tags": {
       "type": "array",
-      "items": { "$ref": "#/definitions/name" },
+      "items": {
+        "$ref": "#/definitions/name"
+      },
       "uniqueItems": true,
       "description": "Scopes for --tag. No other meaning."
     },
     "effect": {
-      "enum": ["read", "write", "destructive"],
+      "enum": [
+        "read",
+        "write",
+        "destructive"
+      ],
       "description": "What running it does to the world. Absent means destructive. A user may tighten it, never loosen it."
     },
     "confirm": {
@@ -36,22 +49,39 @@
     },
     "run": {
       "description": "The body: an entrypoint (.mts or .mjs) run in a child process, or an argv that never touches a shell.",
-      "oneOf": [{ "$ref": "#/definitions/entrypoint" }, { "$ref": "#/definitions/argv" }]
+      "oneOf": [
+        {
+          "$ref": "#/definitions/entrypoint"
+        },
+        {
+          "$ref": "#/definitions/argv"
+        }
+      ]
     },
     "config": {
       "type": "object",
       "description": "Settings the user provides with evoke config. A secret is set only from an environment variable.",
-      "propertyNames": { "$ref": "#/definitions/name" },
+      "propertyNames": {
+        "$ref": "#/definitions/name"
+      },
       "additionalProperties": {
         "oneOf": [
-          { "$ref": "#/definitions/line" },
+          {
+            "$ref": "#/definitions/line"
+          },
           {
             "type": "object",
-            "required": ["about"],
+            "required": [
+              "about"
+            ],
             "additionalProperties": false,
             "properties": {
-              "about": { "$ref": "#/definitions/line" },
-              "secret": { "type": "boolean" }
+              "about": {
+                "$ref": "#/definitions/line"
+              },
+              "secret": {
+                "type": "boolean"
+              }
             }
           }
         ]
@@ -60,8 +90,44 @@
     "args": {
       "type": "object",
       "description": "The arguments. Each has ask and exactly one source: options, vocab, pick or flag.",
-      "propertyNames": { "$ref": "#/definitions/arg_name" },
-      "additionalProperties": { "$ref": "#/definitions/argument" }
+      "propertyNames": {
+        "$ref": "#/definitions/arg_name"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/argument"
+      }
+    },
+    "yields": {
+      "type": "object",
+      "description": "What the body's data yields for a later step to take: per field, the recognizer that reads it, or { each = { field = recognizer } } for a list of records. Contract.",
+      "propertyNames": {
+        "$ref": "#/definitions/name"
+      },
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "$ref": "#/definitions/recognizer"
+          },
+          {
+            "type": "object",
+            "required": [
+              "each"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "each": {
+                "type": "object",
+                "propertyNames": {
+                  "$ref": "#/definitions/name"
+                },
+                "additionalProperties": {
+                  "$ref": "#/definitions/recognizer"
+                }
+              }
+            }
+          }
+        ]
+      }
     },
     "examples": {
       "$ref": "#/definitions/records",
@@ -92,15 +158,60 @@
     },
     "arg_name": {
       "allOf": [
-        { "$ref": "#/definitions/name" },
+        {
+          "$ref": "#/definitions/name"
+        },
         {
           "not": {
             "enum": [
-              "arguments", "await", "break", "case", "catch", "class", "const", "continue", "debugger", "default",
-              "delete", "do", "else", "enum", "eval", "export", "extends", "false", "finally", "for", "function", "if",
-              "implements", "import", "in", "instanceof", "interface", "let", "new", "null", "package", "private",
-              "protected", "public", "return", "static", "super", "switch", "this", "throw", "true", "try", "typeof",
-              "var", "void", "while", "with", "yield"
+              "arguments",
+              "await",
+              "break",
+              "case",
+              "catch",
+              "class",
+              "const",
+              "continue",
+              "debugger",
+              "default",
+              "delete",
+              "do",
+              "else",
+              "enum",
+              "eval",
+              "export",
+              "extends",
+              "false",
+              "finally",
+              "for",
+              "function",
+              "if",
+              "implements",
+              "import",
+              "in",
+              "instanceof",
+              "interface",
+              "let",
+              "new",
+              "null",
+              "package",
+              "private",
+              "protected",
+              "public",
+              "return",
+              "static",
+              "super",
+              "switch",
+              "this",
+              "throw",
+              "true",
+              "try",
+              "typeof",
+              "var",
+              "void",
+              "while",
+              "with",
+              "yield"
             ]
           }
         }
@@ -111,7 +222,12 @@
       "type": "string",
       "minLength": 1,
       "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f\\u061c\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]+$",
-      "not": { "enum": ["none", "unstated"] },
+      "not": {
+        "enum": [
+          "none",
+          "unstated"
+        ]
+      },
       "description": "An option's key, which the body receives. none and unstated are reserved."
     },
     "placeholder": {
@@ -120,29 +236,62 @@
       "description": "A whole argv element naming an options, vocab or pick argument."
     },
     "literal": {
-      "allOf": [{ "$ref": "#/definitions/line" }, { "not": { "pattern": "[{}]" } }],
+      "allOf": [
+        {
+          "$ref": "#/definitions/line"
+        },
+        {
+          "not": {
+            "pattern": "[{}]"
+          }
+        }
+      ],
       "description": "An argv element passed as written. Braces need a file body."
     },
     "entrypoint": {
       "allOf": [
-        { "type": "string", "pattern": "\\.m[tj]s$" },
-        { "not": { "pattern": "^/" } },
-        { "not": { "pattern": "(^|/)\\.\\.(/|$)" } }
+        {
+          "type": "string",
+          "pattern": "\\.m[tj]s$"
+        },
+        {
+          "not": {
+            "pattern": "^/"
+          }
+        },
+        {
+          "not": {
+            "pattern": "(^|/)\\.\\.(/|$)"
+          }
+        }
       ],
       "description": "A path inside the reflex directory, ending in .mts or .mjs, default-exporting the body."
     },
     "argv": {
       "type": "array",
       "minItems": 1,
-      "items": [{ "$ref": "#/definitions/literal" }],
+      "items": [
+        {
+          "$ref": "#/definitions/literal"
+        }
+      ],
       "additionalItems": {
-        "oneOf": [{ "$ref": "#/definitions/literal" }, { "$ref": "#/definitions/placeholder" }]
+        "oneOf": [
+          {
+            "$ref": "#/definitions/literal"
+          },
+          {
+            "$ref": "#/definitions/placeholder"
+          }
+        ]
       },
       "description": "A program and its arguments. The first element is a literal; a placeholder is a whole element."
     },
     "argument": {
       "type": "object",
-      "required": ["ask"],
+      "required": [
+        "ask"
+      ],
       "additionalProperties": false,
       "properties": {
         "ask": {
@@ -155,15 +304,21 @@
         },
         "was": {
           "type": "array",
-          "items": { "$ref": "#/definitions/arg_name" },
+          "items": {
+            "$ref": "#/definitions/arg_name"
+          },
           "uniqueItems": true,
           "description": "Former names of this argument. Flat and cumulative; a retired name never returns."
         },
         "options": {
           "type": "object",
           "minProperties": 1,
-          "propertyNames": { "$ref": "#/definitions/option_key" },
-          "additionalProperties": { "$ref": "#/definitions/line" },
+          "propertyNames": {
+            "$ref": "#/definitions/option_key"
+          },
+          "additionalProperties": {
+            "$ref": "#/definitions/line"
+          },
           "description": "The author's closed set: key = what the body receives, value = what it means."
         },
         "vocab": {
@@ -171,12 +326,20 @@
           "description": "The user's closed set, by vocabulary name: vocab/<name>.toml in the project."
         },
         "pick": {
-          "enum": ["number", "duration", "email", "url", "quoted"],
+          "enum": [
+            "number",
+            "duration",
+            "email",
+            "url",
+            "quoted"
+          ],
           "description": "A span of the input, found by a built-in recognizer. The body receives the value: the number, seconds, the string."
         },
         "range": {
           "type": "array",
-          "items": { "type": "number" },
+          "items": {
+            "type": "number"
+          },
           "minItems": 2,
           "maxItems": 2,
           "description": "[min, max] on the value, for number and duration (seconds) only. Outside it, evoke asks."
@@ -188,31 +351,136 @@
       },
       "oneOf": [
         {
-          "required": ["options"],
-          "not": {
-            "anyOf": [{ "required": ["vocab"] }, { "required": ["pick"] }, { "required": ["flag"] }, { "required": ["range"] }]
-          }
-        },
-        {
-          "required": ["vocab"],
-          "not": {
-            "anyOf": [{ "required": ["options"] }, { "required": ["pick"] }, { "required": ["flag"] }, { "required": ["range"] }]
-          }
-        },
-        {
-          "required": ["pick"],
-          "not": {
-            "anyOf": [{ "required": ["options"] }, { "required": ["vocab"] }, { "required": ["flag"] }]
-          },
-          "if": { "properties": { "pick": { "enum": ["email", "url", "quoted"] } } },
-          "then": { "not": { "required": ["range"] } }
-        },
-        {
-          "required": ["flag"],
+          "required": [
+            "options"
+          ],
           "not": {
             "anyOf": [
-              { "required": ["options"] }, { "required": ["vocab"] }, { "required": ["pick"] },
-              { "required": ["range"] }, { "required": ["optional"] }
+              {
+                "required": [
+                  "vocab"
+                ]
+              },
+              {
+                "required": [
+                  "pick"
+                ]
+              },
+              {
+                "required": [
+                  "flag"
+                ]
+              },
+              {
+                "required": [
+                  "range"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "required": [
+            "vocab"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "options"
+                ]
+              },
+              {
+                "required": [
+                  "pick"
+                ]
+              },
+              {
+                "required": [
+                  "flag"
+                ]
+              },
+              {
+                "required": [
+                  "range"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "required": [
+            "pick"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "options"
+                ]
+              },
+              {
+                "required": [
+                  "vocab"
+                ]
+              },
+              {
+                "required": [
+                  "flag"
+                ]
+              }
+            ]
+          },
+          "if": {
+            "properties": {
+              "pick": {
+                "enum": [
+                  "email",
+                  "url",
+                  "quoted"
+                ]
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "range"
+              ]
+            }
+          }
+        },
+        {
+          "required": [
+            "flag"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "options"
+                ]
+              },
+              {
+                "required": [
+                  "vocab"
+                ]
+              },
+              {
+                "required": [
+                  "pick"
+                ]
+              },
+              {
+                "required": [
+                  "range"
+                ]
+              },
+              {
+                "required": [
+                  "optional"
+                ]
+              }
             ]
           }
         }
@@ -220,20 +488,43 @@
     },
     "records": {
       "type": "object",
-      "propertyNames": { "$ref": "#/definitions/line" },
+      "propertyNames": {
+        "$ref": "#/definitions/line"
+      },
       "additionalProperties": {
         "oneOf": [
-          { "const": false },
+          {
+            "const": false
+          },
           {
             "type": "object",
-            "propertyNames": { "$ref": "#/definitions/arg_name" },
+            "propertyNames": {
+              "$ref": "#/definitions/arg_name"
+            },
             "additionalProperties": {
-              "oneOf": [{ "$ref": "#/definitions/line" }, { "type": "boolean" }]
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/line"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
             }
           }
         ]
       },
       "description": "Utterances keyed by their original spelling. {} asserts the route alone; false means never this reflex; { arg = false } asserts unstated; { flag = true } asserts a flag; a pick's value is the verbatim span."
+    },
+    "recognizer": {
+      "description": "One of the five recognizers, by the name a pick writes.",
+      "enum": [
+        "number",
+        "duration",
+        "email",
+        "url",
+        "quoted"
+      ]
     }
   }
 }

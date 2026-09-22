@@ -30,6 +30,7 @@
       "was": []
     }
   },
+  "yields": {},
   "config": {
     "bridge": {
       "type": "plain",

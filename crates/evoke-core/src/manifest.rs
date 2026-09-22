@@ -10,7 +10,7 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::diagnostic::{At, Diagnostic};
 use crate::document::{self, Diagnostics, Document, Form, Json, KeyPath, Node, Value};
-use crate::name::{ArgName, ConfigKey, OptionKey, RelPath, Tag, VocabName, Word};
+use crate::name::{ArgName, ConfigKey, FieldName, OptionKey, RelPath, Tag, VocabName, Word};
 use crate::text::{Clean, Identity, identity};
 
 /// A reflex's manifest, normalized: `effect` explicit, every table present, records typed. Read, never built.
@@ -26,6 +26,8 @@ pub struct Manifest {
     pub run: Run,
     pub config: IndexMap<ConfigKey, ConfigSpec>,
     pub args: IndexMap<ArgName, Argument>,
+    /// What the body's `data` yields for a later step to take, per field.
+    pub yields: IndexMap<FieldName, Yield>,
     pub examples: Records,
     pub tests: Records,
     /// Keys the format does not know: reported, never fatal.
@@ -389,6 +391,27 @@ impl Recognizer {
     }
 }
 
+/// What a field of a body's `data` holds, for a later step to take: a value the recognizer reads, or a list of
+/// records with such fields. Contract: the author's promise about the result, which an overlay cannot change.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Yield {
+    Kind(Recognizer),
+    Each(IndexMap<FieldName, Recognizer>),
+}
+
+impl Serialize for Yield {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        match self {
+            Self::Kind(recognizer) => recognizer.serialize(serializer),
+            Self::Each(fields) => {
+                let mut map = serializer.serialize_map(Some(1))?;
+                map.serialize_entry("each", fields)?;
+                map.end()
+            }
+        }
+    }
+}
+
 /// `[min, max]` on a value, `min ≤ max`.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Range<T> {
@@ -631,6 +654,9 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
     let known = top
         .take("args")
         .map_or_else(IndexMap::new, |node| args(d, node, &mut unknown));
+    let yields = top
+        .take("yields")
+        .map_or_else(IndexMap::new, |node| yields(d, node, &mut unknown));
     let mut lookup = |name: &ArgName| match known.get_key_value(name) {
         None => Lookup::Unknown,
         Some((_, None)) => Lookup::Broken,
@@ -681,6 +707,7 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
         run: run?,
         config,
         args: args?,
+        yields,
         examples,
         tests,
         unknown,
@@ -794,6 +821,97 @@ fn config_spec(d: &mut Diagnostics, node: Node, unknown: &mut Vec<KeyPath>) -> O
             d.fail(
                 node.at.as_ref(),
                 format!("{} must be a string or {{ about, secret }}", node.name()),
+            );
+            None
+        }
+    }
+}
+
+/// `[yields]`: per field, a recognizer's name, or `{ each = { <field> = "<recognizer>" } }` for a list of records.
+pub(crate) fn yields(
+    d: &mut Diagnostics,
+    node: Node,
+    unknown: &mut Vec<KeyPath>,
+) -> IndexMap<FieldName, Yield> {
+    let mut yields = IndexMap::new();
+    let Some(table) = d.table(node) else {
+        return yields;
+    };
+    for (key, node) in table.entries() {
+        let name = match FieldName::new(&key) {
+            Ok(name) => name,
+            Err(why) => {
+                d.fail(node.at.as_ref(), format!("yields.{key}: {why}"));
+                continue;
+            }
+        };
+        let value = match node.value {
+            Value::Str(_) => recognizer(d, &node).map(Yield::Kind),
+            Value::Table(_) => each(d, node, unknown).map(Yield::Each),
+            _ => {
+                d.fail(
+                    node.at.as_ref(),
+                    format!(
+                        "{} must be a recognizer's name or {{ each = {{ … }} }}",
+                        node.name()
+                    ),
+                );
+                None
+            }
+        };
+        if let Some(value) = value {
+            yields.insert(name, value);
+        }
+    }
+    yields
+}
+
+/// `{ each = { <field> = "<recognizer>" } }`: the fields of a list's records.
+fn each(
+    d: &mut Diagnostics,
+    node: Node,
+    unknown: &mut Vec<KeyPath>,
+) -> Option<IndexMap<FieldName, Recognizer>> {
+    let mut table = d.table(node)?;
+    let Some(inner) = table.take("each") else {
+        d.fail(
+            table.at.as_ref(),
+            format!("{}.each is required", table.path),
+        );
+        return None;
+    };
+    unknown.extend(table.unknown());
+    let mut fields = IndexMap::new();
+    for (key, node) in d.table(inner)?.entries() {
+        let name = match FieldName::new(&key) {
+            Ok(name) => name,
+            Err(why) => {
+                d.fail(node.at.as_ref(), format!("{}: {why}", node.path));
+                continue;
+            }
+        };
+        if let Some(recognizer) = recognizer(d, &node) {
+            fields.insert(name, recognizer);
+        }
+    }
+    Some(fields)
+}
+
+/// A recognizer by the name a manifest writes.
+fn recognizer(d: &mut Diagnostics, node: &Node) -> Option<Recognizer> {
+    match d.str(node)? {
+        "number" => Some(Recognizer::Number),
+        "duration" => Some(Recognizer::Duration),
+        "email" => Some(Recognizer::Email),
+        "url" => Some(Recognizer::Url),
+        "quoted" => Some(Recognizer::Quoted),
+        _ => {
+            d.fail(
+                node.at.as_ref(),
+                format!(
+                    "{} must be number, duration, email, url or quoted",
+                    node.name()
+                ),
             );
             None
         }
@@ -1489,6 +1607,7 @@ mod tests {
             "run": "lights.mts",
             "config": {},
             "args": { "room": { "ask": "Which room?", "vocab": "rooms", "optional": false, "was": [] } },
+            "yields": { "level": "number", "jobs": { "each": { "client": "email" } } },
             "examples": { "lights off in the den": { "room": "den" } },
             "tests": {},
             "unknown": []

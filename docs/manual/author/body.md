@@ -41,8 +41,9 @@ export default (async ({ room, state, brightness = 30 }, { config, signal }) => 
 ### What it returns
 
 A string: the one line a person reads. Or `{ text, data? }`, where `data` is anything an app might use: a pid, a
-time, a path. Throwing is failure: the message prints, and the exit code is 1. Anything else returned is a
-failure too.
+time, a path. A field of `data` that a later step of one request may take is declared under `[yields]` in the
+manifest: [The manifest](manifest.md#key-by-key). Throwing is failure: the message prints, and the exit code is
+1. Anything else returned is a failure too.
 
 Say what happened, in one lowercase line: `volume 40%`, `locked`, `saved report.pdf to ~/Downloads (1.2 MB)`.
 

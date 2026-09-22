@@ -48,3 +48,4 @@ Every term `evoke` uses, one line each.
 | **Utterance**    | A sentence a record is keyed by                                                                           |
 | **Vocabulary**   | `vocab/<name>.toml`: your closed list of words, shared by every argument that names it                    |
 | **Wording**      | What a user may override: descriptions, questions, option meanings, records                               |
+| **Yield**        | A field of a result's `data` a later step may take, declared under `[yields]` with the kind that reads it |

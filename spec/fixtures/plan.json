@@ -1,5 +1,5 @@
 {
-  "digest": "h1:c27c4aa4a82526cac66ddf8763ea1b2c5fc8e4e74870e9c72ebdfc113e59979b",
+  "digest": "h1:70c02098af4f82c3aa634ee4f1d07da5e613c0a1ab10e912242331962043ed0c",
   "active": {
     "lights": {
       "effect": "write",
@@ -33,6 +33,7 @@
           "was": []
         }
       },
+      "yields": {},
       "config": {
         "bridge": {
           "type": "plain",
@@ -66,6 +67,7 @@
           "was": []
         }
       },
+      "yields": {},
       "config": {},
       "tags": [
         "time"

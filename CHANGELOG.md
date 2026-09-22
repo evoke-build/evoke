@@ -12,6 +12,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   terminal, the line stands for a destructive call's confirm, as it does for a decision.
 - A question id may be `weave.<name>`: a question `evoke` asks on its own account, which an adapter answers
   like any other and a recording holds. `weave` joins the reserved local names.
+- A manifest may declare `[yields]`: per field of the body's `data`, the kind that reads it, or a list of records
+  with such fields. It is contract: `evoke check` reports a yield added as minor, removed or changed as major,
+  and an overlay cannot set it. `show` prints it.
 - The SDK's transport connects through the proxy `HTTPS_PROXY` names, as the CLI's does; `NO_PROXY` excludes
   hosts. The manual's environment page lists both.
 - A connection that fails is said plainly: `could not connect to api.typesafe.ai: connection refused`, the proxy

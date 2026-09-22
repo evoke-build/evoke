@@ -34,7 +34,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:a62e686f35c674c9b0064e2abdd8fe4985a8050f96524bb55134ce9942e4f108",
+      "digest": "h1:049a52cb745bdba2f8be175238fe70299807bc2d3de12c0f08e199d95d76ec02",
       "active": {
         "timer": {
           "effect": "write",
@@ -54,6 +54,7 @@
               "was": []
             }
           },
+          "yields": {},
           "config": {},
           "tags": [
             "time"

@@ -26,6 +26,7 @@
       "was": []
     }
   },
+  "yields": {},
   "examples": {
     "set a timer for 10 minutes": {
       "duration": "10 minutes"

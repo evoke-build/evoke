@@ -22,7 +22,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:f31cd556ad0f7d0ca4f41e7059808a2768938ec0b66f98239cadc454d0a638c8",
+      "digest": "h1:94cba3ccda07d05d96d3122e2df35cf4d489b0a06e9289b4801381c246e0a844",
       "active": {
         "screenshot": {
           "effect": "write",
@@ -44,6 +44,7 @@
               "was": []
             }
           },
+          "yields": {},
           "config": {},
           "tags": [
             "screen"

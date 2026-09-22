@@ -59,6 +59,9 @@ export type VocabName = string
 /** A key under `[config]`: `[a-z][a-z0-9_]*`. */
 export type ConfigKey = string
 
+/** A field of a result's `data`, as `[yields]` names it: `[a-z][a-z0-9_]*`. */
+export type FieldName = string
+
 /** A scope for `--tag`: `[a-z][a-z0-9_]*`. */
 export type Tag = string
 
@@ -153,6 +156,8 @@ export interface Manifest {
   run?: Run
   config: Record<ConfigKey, ConfigSpec>
   args: Record<ArgName, Argument>
+  /** What the body's `data` yields for a later step to take, per field. */
+  yields: Record<FieldName, Yield>
   examples: Records
   tests: Records
   /** Keys the format does not know: reported, never fatal. */
@@ -209,6 +214,9 @@ export type Pick =
 
 /** One of the five recognizers, by the name a manifest's `pick` writes. */
 export type Recognizer = "number" | "duration" | "email" | "url" | "quoted"
+
+/** What a field of a body's `data` holds, for a later step to take: a value the recognizer reads, or a list of records with such fields. Contract. */
+export type Yield = Recognizer | { each: Record<FieldName, Recognizer> }
 
 /** `[min, max]` on a value, min ≤ max. */
 export type Range = [min: number, max: number]
@@ -482,6 +490,8 @@ export interface Active {
   run?: Run
   confirm: Template
   args: Record<ArgName, Argument>
+  /** What the body's `data` yields for a later step to take, per field. */
+  yields: Record<FieldName, Yield>
   config: Record<ConfigKey, Setting>
   tags: Tag[]
 }
@@ -672,7 +682,7 @@ export interface ContractDiff {
 /** `same`: nothing but wording. `minor`: additions, and a config key gone. `major`: something a person's files or calls may not survive. */
 export type Level = "same" | "minor" | "major"
 
-/** One change to the contract, in the order the diff walks: the previous arguments, the added ones, the body, config. */
+/** One change to the contract, in the order the diff walks: the previous arguments, the added ones, the body, config, then what the result yields. */
 export type Change =
   | { type: "arg_removed"; arg: ArgName }
   | { type: "option_removed"; arg: ArgName; key: OptionKey }
@@ -684,6 +694,9 @@ export type Change =
   | { type: "option_added"; arg: ArgName; key: OptionKey }
   | { type: "config_added"; key: ConfigKey }
   | { type: "config_removed"; key: ConfigKey }
+  | { type: "yield_added"; field: FieldName }
+  | { type: "yield_removed"; field: FieldName }
+  | { type: "yield_changed"; field: FieldName }
 
 /** `was` is flat and cumulative: a retired name never returns as a live argument, and never leaves the lists. */
 export type WasViolation =

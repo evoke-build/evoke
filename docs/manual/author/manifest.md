@@ -37,6 +37,9 @@ pick     = "number"                          # options come from the input
 range    = [1, 100]
 optional = true
 
+[yields]                                     # what the returned data holds, for a later step
+level = "number"
+
 [examples]                                   # sent to the classifier
 "turn on the kitchen lights"   = { state = "on" }
 "dim the office to 30 percent" = { state = "dim", brightness = "30 percent" }
@@ -59,6 +62,7 @@ optional = true
 | `run`         | yes      | The body: a path ending in `.mts` or `.mjs` inside the directory, or an argv. [The body](body.md) |
 | `[config]`    | no       | Settings the user provides with `evoke config`: `key = "about"` or `key = { about, secret = true }`. A secret is only ever set from an environment variable |
 | `[args.<name>]` | no     | The arguments: `ask` and exactly one source. [Arguments](arguments.md) |
+| `[yields]`    | no       | What the body's `data` holds, for a later step to take: per field, the kind that reads it, `number`, `duration`, `email`, `url` or `quoted`; or `{ each = { … } }` for a list of records |
 | `[examples]`  | no       | Utterances with what they assert, sent to the classifier. [Examples and tests](records.md) |
 | `[tests]`     | no       | The same shape, held out: never sent, run by `evoke test` |
 
@@ -75,7 +79,7 @@ optional = true
 
 | Contract: a user cannot override it, and changing it is a version bump | Wording: a user may override it, and you may improve it at any tag |
 | :---------------------------------------------------------------- | :--------------------------------------------------------- |
-| `run`; argument names and their sources; option keys; `range`; `config` keys | `description`, `not_for`, `tags`, `confirm`; every `ask`; the meaning of each option; examples and tests |
+| `run`; argument names and their sources; option keys; `range`; `config` keys; `yields` | `description`, `not_for`, `tags`, `confirm`; every `ask`; the meaning of each option; examples and tests |
 
 An argument may be renamed by declaring its former names, like `was = ["state"]`. Every user's overlay and call
 then follows. [Publishing](publishing.md) says how `evoke check` diffs one tag against the next.

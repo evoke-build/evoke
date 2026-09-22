@@ -52,6 +52,7 @@
       "was": []
     }
   },
+  "yields": {},
   "examples": {
     "turn on the kitchen lights": {
       "power": "on"

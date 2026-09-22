@@ -10,7 +10,7 @@ use serde::Serialize;
 
 use crate::document::KeyPath;
 use crate::manifest::{Effect, Element, Kind, Manifest, Run, Source, renames};
-use crate::name::{ArgName, ConfigKey, OptionKey};
+use crate::name::{ArgName, ConfigKey, FieldName, OptionKey};
 
 /// What changed in the contract from one version to the next, and how much it matters.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -30,7 +30,8 @@ pub enum Level {
     Major,
 }
 
-/// One change to the contract, in the order the diff walks: the previous arguments, the added ones, the body, config.
+/// One change to the contract, in the order the diff walks: the previous arguments, the added ones, the body,
+/// config, then what the result yields.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Change {
@@ -44,11 +45,14 @@ pub enum Change {
     OptionAdded { arg: ArgName, key: OptionKey },
     ConfigAdded { key: ConfigKey },
     ConfigRemoved { key: ConfigKey },
+    YieldAdded { field: FieldName },
+    YieldRemoved { field: FieldName },
+    YieldChanged { field: FieldName },
 }
 
 impl Change {
-    /// Whether the change can break what a person wrote: an overlay, a call, an example. Additions cannot; neither can
-    /// a config key gone.
+    /// Whether the change can break what a person wrote: an overlay, a call, an example, a request that takes a
+    /// yield into a later step. Additions cannot; neither can a config key gone.
     fn breaks(&self) -> bool {
         match self {
             Self::ArgRemoved { .. }
@@ -56,11 +60,14 @@ impl Change {
             | Self::ArgRenamed { .. }
             | Self::SourceChanged { .. }
             | Self::RangeChanged { .. }
-            | Self::RunChanged => true,
+            | Self::RunChanged
+            | Self::YieldRemoved { .. }
+            | Self::YieldChanged { .. } => true,
             Self::ArgAdded { .. }
             | Self::OptionAdded { .. }
             | Self::ConfigAdded { .. }
-            | Self::ConfigRemoved { .. } => false,
+            | Self::ConfigRemoved { .. }
+            | Self::YieldAdded { .. } => false,
         }
     }
 }
@@ -119,6 +126,24 @@ pub fn diff(previous: &Manifest, next: &Manifest) -> ContractDiff {
     for key in next.config.keys() {
         if !previous.config.contains_key(key) {
             changes.push(Change::ConfigAdded { key: key.clone() });
+        }
+    }
+    for (field, before) in &previous.yields {
+        match next.yields.get(field) {
+            None => changes.push(Change::YieldRemoved {
+                field: field.clone(),
+            }),
+            Some(after) if after != before => changes.push(Change::YieldChanged {
+                field: field.clone(),
+            }),
+            Some(_) => {}
+        }
+    }
+    for field in next.yields.keys() {
+        if !previous.yields.contains_key(field) {
+            changes.push(Change::YieldAdded {
+                field: field.clone(),
+            });
         }
     }
     let level = if changes.is_empty() {

@@ -154,6 +154,11 @@ name!(
     name
 );
 name!(
+    /// A field of a result's `data`, as `[yields]` names it.
+    FieldName,
+    name
+);
+name!(
     /// A scope for `--tag`.
     Tag,
     name

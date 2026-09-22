@@ -1,5 +1,5 @@
 {
-  "digest": "h1:4c41dc4c9bc9cf5c6a5ee20d3baab92572b00178d95c9d232991e5842b0237bb",
+  "digest": "h1:27af8e6fef70cb4e16862a208a50ccd0bf69f500293dd88a36a20f801988d1e9",
   "active": {
     "power": {
       "effect": "destructive",
@@ -17,6 +17,7 @@
           "was": []
         }
       },
+      "yields": {},
       "config": {},
       "tags": [
         "power"

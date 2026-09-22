@@ -80,6 +80,7 @@
           "was": []
         }
       },
+      "yields": {},
       "examples": {
         "example number 0": {
           "state": "o1"

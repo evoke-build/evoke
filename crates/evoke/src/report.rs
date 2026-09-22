@@ -822,6 +822,9 @@ pub fn change(change: &Change) -> (String, String) {
             format!("config.{key}"),
             "removed; your setting is skipped".to_owned(),
         ),
+        Change::YieldAdded { field } => (format!("yields.{field}"), "added".to_owned()),
+        Change::YieldRemoved { field } => (format!("yields.{field}"), "removed".to_owned()),
+        Change::YieldChanged { field } => (format!("yields.{field}"), "changed".to_owned()),
     }
 }
 
@@ -1042,6 +1045,15 @@ pub fn manifest(effective: &Effective) -> Text {
                     _ => lines.push((false, pair(key, value))),
                 }
             }
+        }
+    }
+    if let Some(Json::Object(yields)) = manifest.get("yields")
+        && !yields.is_empty()
+    {
+        lines.push((false, String::new()));
+        lines.push((false, "[yields]".to_owned()));
+        for (field, value) in yields {
+            lines.push((false, pair(field, value)));
         }
     }
     for table in ["examples", "tests"] {

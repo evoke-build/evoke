@@ -1,0 +1,84 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "job"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Look up a job by its number.\"\neffect  = \"read\"\nconfirm = \"Look up a job?\"\nrun     = \"job.mts\"\n\n[yields]\npath   = \"file\"\nClient = \"email\"\njobs   = { every = { number = \"number\" } }\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "job",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "job"
+          },
+          "line": 9,
+          "column": 1
+        },
+        "message": "yields.path must be number, duration, email, url or quoted",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "job"
+            },
+            "line": 9,
+            "column": 1
+          }
+        }
+      },
+      {
+        "reflex": "job",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "job"
+          },
+          "line": 10,
+          "column": 1
+        },
+        "message": "yields.Client: \"Client\" is not a name: [a-z][a-z0-9_]*",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "job"
+            },
+            "line": 10,
+            "column": 1
+          }
+        }
+      },
+      {
+        "reflex": "job",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "job"
+          },
+          "line": 11,
+          "column": 1
+        },
+        "message": "yields.jobs.each is required",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "job"
+            },
+            "line": 11,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}
