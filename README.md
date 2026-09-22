@@ -2,13 +2,10 @@
 
 # evoke
 
-**Software, by reflex.** Say what you want, and `evoke` runs the small program that does it. The program and its
-arguments are chosen by [Jev](https://typesafe.ai), TypeSafe AI's System One classifier. Jev answers closed
-questions with calibrated probabilities. A confidence gate decides whether the call runs, confirms or asks. What
-runs is always a *reflex*: a recipe someone wrote, and you installed from git. Anyone can write one, share it,
-and improve it. One tool does three jobs. A CLI you talk to. A package manager that installs reflexes from git.
-A TypeScript SDK that puts the same decisions inside your app. Jev is the first adapter; the design is bound to
-no engine.
+**Software, by reflex.** Say it, and the right small program runs when it is sure. A reflex is a recipe: written
+once, shared, improved by everyone. The program and its arguments are chosen by [Jev](https://typesafe.ai),
+TypeSafe AI's System One classifier, which answers closed questions with calibrated probabilities. The questions,
+and the gate that decides whether the call runs, confirms or asks, are `evoke`'s.
 
 ```text
 $ evoke "kill the lights in the den"
@@ -21,26 +18,51 @@ curl -fsSL https://evoke.build/install.sh | sh    # the CLI, on macOS and Linux
 npm install @evoke-build/evoke                    # the SDK
 ```
 
-Start with the [manual](https://evoke.build/manual/) at [evoke.build](https://evoke.build).
-[Install](https://evoke.build/manual/start/install.html), then
-[the first ten minutes](https://evoke.build/manual/start/first-run.html). Then
-[write a reflex](https://evoke.build/manual/author/first-reflex.html), or
-[put decisions in your app](https://evoke.build/manual/sdk/getting-started.html).
+One core, three ways in: a CLI you talk to, a package manager that installs reflexes from git, and a TypeScript
+SDK that puts the same decisions inside your app.
 
 ## The idea
 
 Saying what you want is easy. Trusting what runs is the hard part. An action taken on a guess costs more than one
-that never ran. So trust needs three things. Every value comes from you: from what you said, or from a list you
+that never ran, so trust needs three things. Every value comes from you: from what you said, or from a list you
 own. The confidence is a number that means what it says, so you can set a bar on it. And what cannot be undone
 asks first, every time.
 
-That is the idea behind a reflex. Your words pick a program. They never write one. The classifier answers closed
-questions, every answer a calibrated probability, and the weakest one decides. A reflex is a recipe: written
-once, shared, and improved by everyone who installs it.
-
-`evoke` is the first implementation of this idea: one core, a CLI, a package manager and a TypeScript SDK, with
-Jev as its first engine and the design bound to none. The whole idea in ten minutes, with real sessions:
+That is the idea behind a reflex. Your words pick a program. They never write one. Jev answers closed questions
+about your sentence, every answer a calibrated probability, and the weakest one decides. `evoke` is the first
+implementation of this idea: one core, a CLI, a package manager and a TypeScript SDK, with Jev as its first
+engine and the design bound to none. The whole idea in ten minutes, with real sessions:
 [evoke.build/idea.html](https://evoke.build/idea.html).
+
+## It stops
+
+The value of all this is what it refuses to do. Three real sessions where nothing ran on a guess:
+
+```text
+$ evoke "restart the computer"
+  power action="restart" · destructive · weakest: action 0.97
+  Really restart now?  [y]es [n]o [t]each > n
+[2]
+$ evoke "set the volume to 150 percent"
+  How loud, in percent?  150 percent is outside 0–100  > 40
+  volume level="40"  0.93
+volume set to 40%
+$ evoke "make it cosy"
+  lights 0.45 · none 0.40 · timer 0.10 · volume 0.05 · route floor 0.50
+[2]
+```
+
+Sure at 0.97, and it still asked: a destructive reflex always does. A value outside its range never reached a
+program, and the range was on the line. A sentence that fits nothing ran nothing, and showed the ranking that
+says why. `evoke try` puts every judgment on the table, and a bar is a line in a file you own.
+
+## Start
+
+[Install](https://evoke.build/manual/start/install.html), then
+[the first ten minutes](https://evoke.build/manual/start/first-run.html). Then
+[write a reflex](https://evoke.build/manual/author/first-reflex.html), or
+[put decisions in your app](https://evoke.build/manual/sdk/getting-started.html). The whole
+[manual](https://evoke.build/manual/) is at [evoke.build](https://evoke.build).
 
 ## Repository
 
