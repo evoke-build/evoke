@@ -210,7 +210,7 @@
     .cta { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; }
     .cta .quiet { color: var(--muted); font-size: .95rem; font-weight: 500; padding: .7rem 0; transition: color .15s; }
     .cta .quiet:hover { color: var(--fg); text-decoration: none; }
-    .cta .cmd { flex: 1 1 100%; max-width: 30rem; margin-top: .25rem; }
+    .cta .cmd { flex: 1 1 100%; max-width: fit-content; margin-top: .25rem; }
     .cta .cmd code { font-size: .86rem; }
     .jobs { list-style: none; margin: 1.9rem 0 0; padding: 1.1rem 0 0; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: .65rem 2.25rem; max-width: 34rem; }
     .jobs a { display: inline-flex; align-items: baseline; gap: .6rem; color: var(--muted); font-size: .95rem; font-weight: 450; transition: color .15s; }
@@ -480,7 +480,6 @@
     }
     @media (max-width: 560px) {
       .sheet dl > div { grid-template-columns: 1fr; gap: .15rem; }
-      .cta .cmd { max-width: none; }
       .cta .cmd code { white-space: normal; overflow-wrap: anywhere; line-height: 1.45; }
       .demo .room { height: 12.5rem; }
       .demo .strip { height: calc(6 * 1.9em + 1.9rem); }

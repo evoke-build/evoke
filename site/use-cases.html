@@ -321,6 +321,8 @@
     .bank[data-stamp="no"] .card rect { stroke: var(--term-no); }
 
     /* 04 · the floor */
+    /* The belts are drawn in the room's own pixels, no canvas to crop, so they span it at every width */
+    .plant .room svg { left: 12%; width: 76%; overflow: visible; }
     .plant .rail { stroke: #222226; stroke-width: 10; stroke-linecap: round; }
     .plant .flow { stroke: var(--lamp); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 5 19; opacity: .9; animation: belt 1.5s linear infinite; transition: opacity 1.2s ease; }
     .plant[data-line3="stop"] .b3 .flow, .plant[data-line2="stop"] .b2 .flow { animation-play-state: paused; opacity: .16; }
@@ -887,10 +889,10 @@ console<span class="o">.</span>log<span class="o">((</span><span class="w">await
         <div class="panel term demo plant" data-scene="plant" aria-label="Three production lines, two of them stopped at a word">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/plant<span class="trail" aria-hidden="true"><b>say it</b><b>confirm</b><b>stopped</b></span></div>
           <div class="room">
-            <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-              <g class="belt b2" transform="translate(0 52)"><text x="74" y="6">line 2 · the labeller</text><line class="rail" x1="74" y1="26" x2="486" y2="26"/><line class="flow" x1="74" y1="26" x2="486" y2="26"/><text class="stopped" x="486" y="6" text-anchor="end">stopped</text></g>
-              <g class="belt b3" transform="translate(0 112)"><text x="74" y="6">line 3 · the filler</text><line class="rail" x1="74" y1="26" x2="486" y2="26"/><line class="flow" x1="74" y1="26" x2="486" y2="26"/><text class="stopped" x="486" y="6" text-anchor="end">stopped</text></g>
-              <g class="belt b5" transform="translate(0 172)"><text x="74" y="6">packaging</text><line class="rail" x1="74" y1="26" x2="486" y2="26"/><line class="flow" x1="74" y1="26" x2="486" y2="26"/><text class="stopped" x="486" y="6" text-anchor="end">stopped</text></g>
+            <svg aria-hidden="true">
+              <g class="belt b2"><text x="0" y="32%" dy="-20">line 2 · the labeller</text><line class="rail" x1="0" y1="32%" x2="100%" y2="32%"/><line class="flow" x1="0" y1="32%" x2="100%" y2="32%"/><text class="stopped" x="100%" y="32%" dy="-20" text-anchor="end">stopped</text></g>
+              <g class="belt b3"><text x="0" y="57%" dy="-20">line 3 · the filler</text><line class="rail" x1="0" y1="57%" x2="100%" y2="57%"/><line class="flow" x1="0" y1="57%" x2="100%" y2="57%"/><text class="stopped" x="100%" y="57%" dy="-20" text-anchor="end">stopped</text></g>
+              <g class="belt b5"><text x="0" y="82%" dy="-20">packaging</text><line class="rail" x1="0" y1="82%" x2="100%" y2="82%"/><line class="flow" x1="0" y1="82%" x2="100%" y2="82%"/><text class="stopped" x="100%" y="82%" dy="-20" text-anchor="end">stopped</text></g>
             </svg>
           </div>
           <div class="strip" aria-live="off">
