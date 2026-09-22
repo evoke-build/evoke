@@ -27,6 +27,21 @@ Start with the [manual](https://evoke.build/manual/) at [evoke.build](https://ev
 [write a reflex](https://evoke.build/manual/author/first-reflex.html), or
 [put decisions in your app](https://evoke.build/manual/sdk/getting-started.html).
 
+## The idea
+
+Saying what you want is easy. Trusting what runs is the hard part. An action taken on a guess costs more than one
+that never ran. So trust needs three things. Every value comes from you: from what you said, or from a list you
+own. The confidence is a number that means what it says, so you can set a bar on it. And what cannot be undone
+asks first, every time.
+
+That is the idea behind a reflex. Your words pick a program. They never write one. The classifier answers closed
+questions, every answer a calibrated probability, and the weakest one decides. A reflex is a recipe: written
+once, shared, and improved by everyone who installs it.
+
+`evoke` is the first implementation of this idea: one core, a CLI, a package manager and a TypeScript SDK, with
+Jev as its first engine and the design bound to none. The whole idea in ten minutes, with real sessions:
+[evoke.build/idea.html](https://evoke.build/idea.html).
+
 ## Repository
 
 | Directory                             | Holds                                                                                              |
