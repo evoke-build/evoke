@@ -41,7 +41,8 @@ drafted to dana@example.com
 
 `mail` needed an address the words did not give. `contact` yields one, and `them` names it. A required argument
 is filled with the value. An optional one is decided again with the value written into the words, so the
-classifier assigns it. Nothing is guessed: a reference that several fields could satisfy, or one record of a
+classifier assigns it, under the same gate as any words: a quoted value no argument takes is an unconsumed span,
+and the step confirms. Nothing is guessed: a reference that several fields could satisfy, or one record of a
 list, stops with a line naming them. A step that refers to another whose result it takes nothing from asks
 before anything runs:
 
