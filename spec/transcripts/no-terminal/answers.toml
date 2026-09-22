@@ -12,21 +12,37 @@ route          = { lights = 0.9, timer = 0.02, volume = 0.02, none = 0.06 }
 "fits.lights"  = { yes = 0.7 }
 "fits.timer"   = { yes = 0.05 }
 "fits.volume"  = { yes = 0.05 }
+"fits.power"   = { yes = 0.02 }
 "lights.room"  = { den = 0.2, office = 0.05, unstated = 0.75 }
 "lights.state" = { off = 0.58, on = 0.3, dim = 0.1, unstated = 0.02 }
+"power.action" = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
 
 [answers."start a timer"]
 route          = { timer = 0.92, lights = 0.02, volume = 0.01, none = 0.05 }
 "fits.lights"  = { yes = 0.05 }
 "fits.timer"   = { yes = 0.8 }
 "fits.volume"  = { yes = 0.05 }
+"fits.power"   = { yes = 0.02 }
 "lights.room"  = { unstated = 0.8, den = 0.1, office = 0.1 }
 "lights.state" = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
+"power.action" = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
 
 [answers."kill the lights in the den"]
 route          = { lights = 0.91, timer = 0.02, volume = 0.01, none = 0.06 }
 "fits.lights"  = { yes = 0.7 }
 "fits.timer"   = { yes = 0.05 }
 "fits.volume"  = { yes = 0.05 }
+"fits.power"   = { yes = 0.02 }
 "lights.room"  = { den = 0.85, office = 0.05, unstated = 0.1 }
 "lights.state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
+"power.action" = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+
+[answers."restart the computer"]
+route          = { power = 0.97, timer = 0.01, none = 0.02 }
+"fits.lights"  = { yes = 0.02 }
+"fits.timer"   = { yes = 0.03 }
+"fits.volume"  = { yes = 0.02 }
+"fits.power"   = { yes = 0.9 }
+"lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"power.action" = { restart = 0.97, sleep = 0.01, shutdown = 0.01, unstated = 0.01 }
