@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-23
+
 - evoke.build explains the idea. A page of its own, *The idea*: why reflexes, in ten minutes — the problem trust
   poses, the move, the number, real sessions where nothing ran on a guess, the recipe, your words, a weave, the
   road ahead and the execution it rests on — and it leads every bar. The landing page says one core, three ways

@@ -1,7 +1,7 @@
 # Commands
 
 ```text
-evoke 0.2.0 · you invoke a function; you evoke a reflex
+evoke 0.3.0 · you invoke a function; you evoke a reflex
 
 use
   evoke "<input>"                         decide, gate, run
