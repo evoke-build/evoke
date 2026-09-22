@@ -94,7 +94,7 @@ local reflex: [Installing reflexes](../use/installing.md#refs).
 | `evoke show <name>`                                       | The effective manifest as TOML, with `+` in the gutter of every line that is yours. Then its inactive lines |
 | `evoke teach "<utterance>" <call>`                        | Writes the example to `overlays/<name>.toml`, with only what the call asserts |
 | `evoke teach "<utterance>" not <name>`                    | Writes `"<utterance>" = false` to the reflex's overlay                       |
-| `evoke teach <call>` · `evoke teach not <name>`           | The same, for the last input the log holds                                  |
+| `evoke teach <call>` · `evoke teach not <name>`           | The same, for the last input the log holds. A first word is the utterance when a call follows it, unless it names an installed reflex |
 | `evoke vocab <name>`                                      | Lists the words. Empty exits 3, with the add line                            |
 | `evoke vocab <name> add <word> "<meaning>" [--value <v>]` | Adds or replaces a word                                                     |
 | `evoke vocab <name> remove <word>`                        | Removes one. A word that is not there is refused                            |

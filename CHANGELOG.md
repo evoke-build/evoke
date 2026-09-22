@@ -19,6 +19,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - `evoke update` and `evoke sync` say `up to date` when nothing moved; `update`, `sync` and `test` with nothing
   installed say so.
 - The first line without a key says where one comes from: `jev needs TYPESAFE_API_KEY, a key from typesafe.ai`.
+- `evoke teach dim lights state=dim` teaches the one word `dim`: a first word followed by a call is the utterance,
+  unless it names an installed reflex.
 - A failure names a path under your home as `~/…`, without the OS error number; a missing `git` or `node` is
   named as such; a repository GitHub hides behind a credential prompt is reported as not found or private; the
   line to run again never wraps a line already made, and never repeats an input over the cap.

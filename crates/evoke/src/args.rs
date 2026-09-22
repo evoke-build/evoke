@@ -48,10 +48,7 @@ pub enum Command {
     /// `evoke run <call>`: no classifier; the effect policy holds.
     Run(Written),
     /// `evoke teach ["<utterance>"] <call> | not <name>`: the utterance omitted means the last input.
-    Teach {
-        utterance: Option<String>,
-        lesson: Taught,
-    },
+    Teach { spoken: Spoken, lesson: Taught },
     /// `evoke show [name]`: what is installed, or one effective manifest.
     Show(Option<LocalName>),
     /// `evoke vocab <name> [add <word> "<meaning>" [--value v] | remove <word>]`: the words, or one changed.
@@ -118,6 +115,16 @@ pub enum Inputs {
     Terminal,
 }
 
+/// The utterance as `teach` was given it: said, left out for the last input decided, or a first word that could
+/// be either the utterance or the reflex the call names — `kill lights state=off` — which the command settles by
+/// what is installed, `whole` being the call read with the word.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Spoken {
+    Given(String),
+    Last,
+    Either { word: LocalName, whole: Written },
+}
+
 /// What `teach` says about the utterance: the call it makes, or that it is not this reflex's.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Taught {
@@ -144,6 +151,10 @@ impl Command {
             Self::Try(arguments) => (Some("try"), arguments),
             Self::Why => return "evoke why".to_owned(),
             Self::Run(written) => return format!("evoke run {written}"),
+            Self::Teach {
+                spoken: Spoken::Either { word, .. },
+                lesson,
+            } => return format!("evoke teach {word} {lesson}"),
             Self::Teach { lesson, .. } => return format!("evoke teach {} {lesson}", quoted(input)),
             Self::Show(None) => return "evoke show".to_owned(),
             Self::Show(Some(name)) => return format!("evoke show {name}"),
@@ -245,12 +256,10 @@ impl Command {
                 ..
             }) => input.clone(),
             Self::Teach {
-                utterance: Some(utterance),
+                spoken: Spoken::Given(utterance),
                 ..
             } => utterance.clone(),
-            Self::Teach {
-                utterance: None, ..
-            } => "<utterance>".to_owned(),
+            Self::Teach { .. } => "<utterance>".to_owned(),
             _ => "<input>".to_owned(),
         }
     }
@@ -412,25 +421,60 @@ fn deciding(
     Ok(Arguments { json, tags, input })
 }
 
-/// `["<utterance>"] (<call> | not <name>)`: the first argument is the utterance unless it is a local name or
-/// `not`, in which case the utterance is the last input.
+/// `["<utterance>"] (<call> | not <name>)`: the first argument is the utterance when it could not name a reflex,
+/// or when `not` follows it; `not` itself, a lone word, or a word followed by what is no call of its own begins
+/// the lesson, and the utterance is the last input. A word followed by a call could be either — `kill lights
+/// state=off` — and is left to the command, with both readings.
 fn teach(arguments: &[String]) -> Result<Command, Diagnostic> {
-    const NEEDS: &str = "teach needs a call or not <name>: evoke teach [\"<utterance>\"] <name> [<arg>=<value> | <flag>]… | not <name>";
     let Some((first, rest)) = arguments.split_first() else {
         return Err(usage(NEEDS));
     };
-    let (utterance, lesson) = if first == "not" || LocalName::new(first).is_ok() {
-        (None, arguments)
+    if first == "not" {
+        return Ok(Command::Teach {
+            spoken: Spoken::Last,
+            lesson: lesson(arguments)?,
+        });
+    }
+    let Ok(word) = LocalName::new(first) else {
+        return Ok(Command::Teach {
+            spoken: Spoken::Given(first.clone()),
+            lesson: lesson(rest)?,
+        });
+    };
+    if matches!(rest.first(), Some(not) if not == "not") {
+        return Ok(Command::Teach {
+            spoken: Spoken::Given(first.clone()),
+            lesson: lesson(rest)?,
+        });
+    }
+    let whole = call(&line(arguments)).map_err(help)?;
+    let following = if rest.is_empty() {
+        None
     } else {
-        (Some(first.clone()), rest)
+        call(&line(rest)).ok()
     };
-    let lesson = match lesson {
-        [] => return Err(usage(NEEDS)),
-        [not, name] if not == "not" => Taught::Not(LocalName::new(name).map_err(usage)?),
-        [not, ..] if not == "not" => return Err(usage("not takes one name")),
-        tokens => Taught::Call(call(&line(tokens)).map_err(help)?),
-    };
-    Ok(Command::Teach { utterance, lesson })
+    Ok(match following {
+        Some(following) => Command::Teach {
+            spoken: Spoken::Either { word, whole },
+            lesson: Taught::Call(following),
+        },
+        None => Command::Teach {
+            spoken: Spoken::Last,
+            lesson: Taught::Call(whole),
+        },
+    })
+}
+
+const NEEDS: &str = "teach needs a call or not <name>: evoke teach [\"<utterance>\"] <name> [<arg>=<value> | <flag>]… | not <name>";
+
+/// `<call> | not <name>`.
+fn lesson(tokens: &[String]) -> Result<Taught, Diagnostic> {
+    match tokens {
+        [] => Err(usage(NEEDS)),
+        [not, name] if not == "not" => Ok(Taught::Not(LocalName::new(name).map_err(usage)?)),
+        [not, ..] if not == "not" => Err(usage("not takes one name")),
+        tokens => Ok(Taught::Call(call(&line(tokens)).map_err(help)?)),
+    }
 }
 
 /// The call line from its argv elements: one element is the line as `evoke` printed it; several are its tokens,
@@ -832,6 +876,15 @@ mod tests {
                 &["teach", "not", "timer"],
                 "evoke teach \"<utterance>\" not timer",
             ),
+            (
+                &["teach", "kill", "lights", "state=off"],
+                "evoke teach kill lights state=off",
+            ),
+            (
+                &["teach", "kill", "not", "timer"],
+                "evoke teach \"kill\" not timer",
+            ),
+            (&["teach", "lights"], "evoke teach \"<utterance>\" lights"),
             (&["show"], "evoke show"),
             (&["show", "lights"], "evoke show lights"),
             (&["vocab", "rooms"], "evoke vocab rooms"),
@@ -866,14 +919,14 @@ mod tests {
         assert!(matches!(
             parsed(&["teach", "kill the lights", "lights", "state=off"], false),
             Ok(Command::Teach {
-                utterance: Some(_),
+                spoken: Spoken::Given(_),
                 lesson: Taught::Call(_)
             })
         ));
         assert!(matches!(
             parsed(&["teach", "lights", "state=off"], false),
             Ok(Command::Teach {
-                utterance: None,
+                spoken: Spoken::Last,
                 ..
             })
         ));
@@ -888,6 +941,54 @@ mod tests {
             panic!("an add");
         };
         assert_eq!(meaning.value.as_deref(), Some("g"));
+    }
+
+    #[test]
+    fn a_first_word_that_could_be_either_is_left_to_the_command_with_both_readings() {
+        let Ok(Command::Teach {
+            spoken: Spoken::Either { word, whole },
+            lesson: Taught::Call(following),
+        }) = parsed(&["teach", "kill", "lights", "state=off"], false)
+        else {
+            panic!("either");
+        };
+        assert_eq!(word.as_str(), "kill");
+        assert_eq!(whole.to_string(), "kill lights state=off");
+        assert_eq!(following.to_string(), "lights state=off");
+        // A word followed by what is no call of its own begins the call; a lone word is one.
+        assert!(matches!(
+            parsed(&["teach", "lihgts", "state=off"], false),
+            Ok(Command::Teach {
+                spoken: Spoken::Last,
+                ..
+            })
+        ));
+        assert!(matches!(
+            parsed(&["teach", "lights"], false),
+            Ok(Command::Teach {
+                spoken: Spoken::Last,
+                lesson: Taught::Call(_)
+            })
+        ));
+        // `not` after the word makes it the utterance; a word that is no name always is.
+        assert!(matches!(
+            parsed(&["teach", "kill", "not", "timer"], false),
+            Ok(Command::Teach {
+                spoken: Spoken::Given(_),
+                lesson: Taught::Not(_)
+            })
+        ));
+        assert!(matches!(
+            parsed(&["teach", "Kill", "lights", "state=off"], false),
+            Ok(Command::Teach {
+                spoken: Spoken::Given(_),
+                ..
+            })
+        ));
+        assert_eq!(
+            parsed(&["teach", "kill", "room="], false).unwrap_err().fix,
+            Fix::Help
+        );
     }
 
     #[test]

@@ -11,6 +11,8 @@ $ evoke "dim the office"
 group-7 lights dim
 $ evoke teach lights state=dim
 + overlays/lights.toml  [examples] "dim the office" = { state = "dim" }
+$ evoke teach dim lights state=dim
++ overlays/lights.toml  [examples] dim = { state = "dim" }
 $ evoke teach lights colour=blue
   lights: lights has no argument colour  →  evoke show lights
 [3]

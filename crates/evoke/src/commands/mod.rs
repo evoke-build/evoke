@@ -65,9 +65,7 @@ pub fn dispatch(command: &Command, environment: &Environment) -> Exit {
         Command::Try(arguments) => r#try::run(command, arguments, environment),
         Command::Why => why::run(environment),
         Command::Run(written) => run::run(command, written, environment),
-        Command::Teach { utterance, lesson } => {
-            teach::run(command, utterance.as_deref(), lesson, environment)
-        }
+        Command::Teach { spoken, lesson } => teach::run(command, spoken, lesson, environment),
         Command::Show(name) => show::run(command, name.as_ref(), environment),
         Command::Vocab { name, change } => vocab::run(command, name, change.as_ref(), environment),
         Command::Config {

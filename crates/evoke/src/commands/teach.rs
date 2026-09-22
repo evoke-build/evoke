@@ -1,34 +1,45 @@
-//! `evoke teach ["<utterance>"] <call> | not <name>`: the overlay line for an utterance. In: the utterance, or none
-//! for the last input decided; what it teaches; the environment. Out: `Exit`. The lesson is typed against the plan
-//! and held to the utterance by the core, then lands in `overlays/<name>.toml` when the file still reads.
+//! `evoke teach ["<utterance>"] <call> | not <name>`: the overlay line for an utterance. In: the utterance as
+//! given — said, left out for the last input decided, or a first word that is the utterance unless it names an
+//! installed reflex; what it teaches; the environment. Out: `Exit`. The lesson is typed against the plan and held
+//! to the utterance by the core, then lands in `overlays/<name>.toml` when the file still reads.
 
 use evoke_core::manifest::Record;
 use evoke_core::{Diagnostic, Fix, Lesson, Utterance, teach};
 
 use super::Exit;
 use super::session::{self, Opening, Session};
-use crate::args::{Command, Taught};
+use crate::args::{Command, Spoken, Taught};
 use crate::hosts::Environment;
 use crate::report::Line;
 
-pub fn run(
-    command: &Command,
-    utterance: Option<&str>,
-    lesson: &Taught,
-    environment: &Environment,
-) -> Exit {
-    let session = match session::open(command, false, environment, Opening::Tuning) {
+pub fn run(command: &Command, spoken: &Spoken, lesson: &Taught, environment: &Environment) -> Exit {
+    // The command as settled, for the lines that repeat it: declared here to outlive the session.
+    let settled: Command;
+    let mut session = match session::open(command, false, environment, Opening::Tuning) {
         Ok(session) => session,
         Err(exit) => return exit,
     };
-    let text = match utterance {
-        Some(text) => text.to_owned(),
-        None => match last_input(&session) {
-            Ok(text) => text,
+    let (text, lesson) = match spoken {
+        Spoken::Given(text) => (text.clone(), lesson.clone()),
+        // The word names an installed reflex: the call begins with it, and the utterance is the last input.
+        Spoken::Either { word, whole } if session.installed.reflexes.contains_key(word) => {
+            match last_input(&session) {
+                Ok(text) => (text, Taught::Call(whole.clone())),
+                Err(exit) => return session.reporter.exit(&command.stand_in(), exit),
+            }
+        }
+        Spoken::Either { word, .. } => (word.to_string(), lesson.clone()),
+        Spoken::Last => match last_input(&session) {
+            Ok(text) => (text, lesson.clone()),
             Err(exit) => return session.reporter.exit(&command.stand_in(), exit),
         },
     };
-    let exit = taught(&session, &text, lesson);
+    settled = Command::Teach {
+        spoken: Spoken::Given(text.clone()),
+        lesson: lesson.clone(),
+    };
+    session.reporter.command = &settled;
+    let exit = taught(&session, &text, &lesson);
     session.reporter.exit(&text, exit)
 }
 
