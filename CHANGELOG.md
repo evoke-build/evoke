@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-22
+
 - `evoke kill the lights` needs no quotes: the words after `evoke` are one input, as the manual said. Every
   argument error ends in `evoke --help`.
 - `evoke help`, `evoke add --help` and `-V` are what they say. A command word written after a flag, like
