@@ -3,7 +3,8 @@
 # publishing step is skipped when its result already exists, so a run can be repeated after a failure.
 #
 # Needs, once, from the owner: the repository evoke-build/homebrew-tap and the secret HOMEBREW_TAP_TOKEN, a token
-# that may write its contents; on npm, @evoke-build/evoke with this file as its trusted publisher.
+# that may write its contents; on npm, the first publish of @evoke-build/evoke by hand, since a trusted publisher
+# is configured on a package that exists. Until that package does, the npm job says so and passes.
 name: Release
 
 on:
@@ -113,12 +114,14 @@ jobs:
         with:
           cache: true
       - run: mise run sdk
-      - name: The package, unless this version is on npm
+      - name: The package, once npm has one and unless it has this version
         working-directory: sdk
         run: |
           version=${GITHUB_REF_NAME#v}
           test "$(node --print 'require("./package.json").version')" = "$version"
-          if [ -n "$(npm view "@evoke-build/evoke@$version" version 2>/dev/null)" ]; then
+          if [ -z "$(npm view @evoke-build/evoke version 2>/dev/null)" ]; then
+            echo "@evoke-build/evoke is not on npm; its first publish is the owner's, by hand, and is what a trusted publisher is configured on"
+          elif [ -n "$(npm view "@evoke-build/evoke@$version" version 2>/dev/null)" ]; then
             echo "@evoke-build/evoke@$version is already on npm"
           else
             npm publish
