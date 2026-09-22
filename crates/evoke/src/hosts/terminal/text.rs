@@ -12,6 +12,8 @@ use evoke_core::manifest::Effect;
 pub enum Role {
     /// A reflex's name where a call is shown.
     Call,
+    /// The most probable answer of a question, where every answer is shown.
+    Top,
     /// The effect a call runs under.
     Effect(Effect),
     /// The weakest judgment, or a confidence.
@@ -33,7 +35,7 @@ impl Role {
     /// is secondary, the accent on the arrow, green and red on the signs.
     fn sgr(self) -> &'static str {
         match self {
-            Self::Call => "1",
+            Self::Call | Self::Top => "1",
             Self::Weak => "2",
             Self::Effect(Effect::Read) | Self::Added => "32",
             Self::Effect(Effect::Write) | Self::Warning => "33",

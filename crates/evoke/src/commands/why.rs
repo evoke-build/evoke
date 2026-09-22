@@ -1,5 +1,5 @@
 //! `evoke why`: the last decision, explained from the log. In: the environment. Out: `Exit`; the log's last line
-//! rendered as `try` would show it, with what came of it.
+//! rendered as `try` would show it, with what came of it, on stdout.
 
 use evoke_core::{Diagnostic, Fix};
 
@@ -35,7 +35,7 @@ fn explained(environment: &Environment) -> Exit {
     };
     match Line::parse(&last) {
         Ok(line) => {
-            terminal::note(&report::why(&line));
+            terminal::answer(&report::why(&line));
             Exit::Ran
         }
         Err(why) => Exit::Human(Diagnostic {

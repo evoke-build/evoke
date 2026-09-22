@@ -115,7 +115,8 @@ gate = { write = 0.85 }
 ## `try` — decide, and show the work
 
 `evoke try "<input>"` decides without running, and prints every judgment: the ranking, each argument's
-distribution, each reflex's `fits`, then the outcome and the weakest judgment. It shares the cache with a real
+distribution, each reflex's `fits`, then the outcome and the weakest judgment. Answers that would print as `0.00`
+fold into a count, `8 more under 0.01`; `none` and `unstated` always show. It shares the cache with a real
 decision. It is never logged.
 
 ```text

@@ -2,7 +2,8 @@
 //! whole set, a few at a time, and judged on its route and asserted arguments; a case that passed at the last run
 //! under this plan and fails now is decided twice more and is a regression when two of three fail; the baseline
 //! kept per plan in the cache. In: a name or none, the environment. Out: `Exit`, a line per reflex and one per
-//! failure; exit 1 when any case failed, with the count. Nothing runs and nothing is logged.
+//! failure on stdout, the spinner counting the cases; exit 1 when any case failed, with the count. Nothing runs
+//! and nothing is logged.
 
 use evoke_core::name::LocalName;
 use evoke_core::text::NonEmpty;
@@ -54,8 +55,12 @@ fn tested(
         .map_err(Exit::Failed)?
         .unwrap_or_default();
     let judged = {
-        let _busy = terminal::busy("testing");
-        let first = threads::try_each(&cases, |case| judged_once(session, adapter, case))?;
+        let busy = terminal::busy_over("testing", cases.len());
+        let first = threads::try_each(&cases, |case| {
+            let verdict = judged_once(session, adapter, case);
+            busy.tick();
+            verdict
+        })?;
         // A case that passed at the last run and failed now is decided twice more, all of them at once.
         let doubted: Vec<bool> = cases
             .iter()
@@ -107,7 +112,7 @@ fn tested(
         })
         .collect();
     if !verdicts.is_empty() {
-        terminal::note(&report::tested(&verdicts, &regressed));
+        terminal::answer(&report::tested(&verdicts, &regressed));
     }
     let failed = verdicts
         .iter()

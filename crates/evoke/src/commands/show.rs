@@ -1,6 +1,7 @@
 //! `evoke show [name]`: what is installed, or one reflex as it is used. In: a name or none, the environment. Out:
-//! `Exit`. Without a name, every reflex on a line and each inactive one's problems with their fixes; with one,
-//! the effective manifest, each line marked shipped or yours, then that reflex's problems.
+//! `Exit`. Without a name, every reflex on a line — the answer, on stdout — and each inactive one's problems
+//! with their fixes, on stderr; with one, the effective manifest, each line marked shipped or yours, then that
+//! reflex's problems.
 
 use evoke_core::name::LocalName;
 use evoke_core::text::NonEmpty;
@@ -36,7 +37,7 @@ fn shown(session: &Session<'_>, name: Option<&LocalName>) -> Exit {
         if session.project.reflexes.is_empty() {
             return nothing_installed();
         }
-        terminal::note(&report::rows(
+        terminal::answer(&report::rows(
             &session.rows(session.project.reflexes.keys()),
             Gutter::Listed,
         ));
@@ -60,7 +61,7 @@ fn shown(session: &Session<'_>, name: Option<&LocalName>) -> Exit {
     };
     match &item.wording {
         Ok(effective) => {
-            terminal::note(&report::manifest(effective));
+            terminal::answer(&report::manifest(effective));
             if let Some(problems) = session.plan.inactive().get(name) {
                 inactive(&problems.iter().cloned().collect::<Vec<_>>());
             }

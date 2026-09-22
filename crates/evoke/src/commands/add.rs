@@ -364,7 +364,7 @@ fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<
     .map_err(|problems| session.reporter.human(input, problems))?;
     adapter.accepts(&plan.digest()).map_err(Exit::Human)?;
     let winners = {
-        let _busy = terminal::busy("checking for thefts");
+        let busy = terminal::busy_over("checking for thefts", examples.len());
         threads::try_each(&examples, |case| {
             let request = request(&plan, case.utterance.text().as_str(), &[], Scope::Route)
                 .map_err(Exit::Human)?;
@@ -372,6 +372,7 @@ fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<
                 .answer(&request, Deadline::after(plan.deadline()))
                 .map_err(Exit::Adapter)?;
             let reading = read(&plan, &request, raw).map_err(Exit::Adapter)?;
+            busy.tick();
             Ok(reading.winner.map(|winner| winner.reflex))
         })?
     };

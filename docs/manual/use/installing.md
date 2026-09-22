@@ -88,7 +88,7 @@ repository you already use is reported once, with its add line. `update` never a
 
 On a new device, or in CI, you have the lock and the store is empty. `evoke sync` fetches each repository once,
 at every locked tag it needs, checks that each tree hashes to the lock, and records the runtime. It prints a `+`
-row per reflex placed. It never changes the lock. A tag that moved or vanished is refused, with
+row per reflex placed, or `up to date`. It never changes the lock. A tag that moved or vanished is refused, with
 `evoke update <name>`.
 
 ```text

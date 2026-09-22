@@ -109,7 +109,11 @@ impl Jev {
         let settings = jev::settings(table)?;
         let key = environment
             .get(settings.credential.as_str())
-            .ok_or_else(|| vec![unset("jev", settings.credential.clone())])?
+            .ok_or_else(|| {
+                let mut needs = unset("jev", settings.credential.clone());
+                needs.message.push_str(", a key from typesafe.ai");
+                vec![needs]
+            })?
             .to_owned();
         Ok(Self {
             settings,
@@ -240,6 +244,24 @@ mod tests {
         assert_eq!(problems.len(), 1);
         assert_eq!(problems[0].fix, Fix::Check);
         assert_eq!(declared(&name, None, &environment).unwrap_err(), problems);
+    }
+
+    #[test]
+    fn jev_without_its_key_says_where_one_comes_from() {
+        let environment = Environment(std::collections::BTreeMap::new());
+        let problems = resolve(&AdapterName::new("jev").unwrap(), None, &environment)
+            .err()
+            .unwrap();
+        assert_eq!(
+            problems[0].message,
+            "jev needs TYPESAFE_API_KEY, a key from typesafe.ai"
+        );
+        assert_eq!(
+            problems[0].fix,
+            Fix::ExportKey {
+                var: VarName::new("TYPESAFE_API_KEY").unwrap()
+            }
+        );
     }
 
     #[test]

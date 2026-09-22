@@ -1,6 +1,6 @@
-//! `evoke try "<input>"`: decide only, and show every judgment. In: the parsed command and the environment. Out:
-//! `Exit`, 0 for any decision. Each input is decided on the session; nothing runs and no log is written. A stdin
-//! filter skips a blank line, stops at a read error, and exits with the first non-zero code.
+//! `evoke try "<input>"`: decide only, and show every judgment, on stdout. In: the parsed command and the
+//! environment. Out: `Exit`, 0 for any decision. Each input is decided on the session; nothing runs and no log is
+//! written. A stdin filter skips a blank line, stops at a read error, and exits with the first non-zero code.
 
 use evoke_core::{Decision, Fix, Gate};
 
@@ -58,7 +58,7 @@ fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, in
         terminal::result(&report::Line::of(&decided).json());
     } else {
         let floor = adapter.declared().gate.as_ref().map(Gate::route);
-        terminal::note(&report::tried(&decided, floor));
+        terminal::answer(&report::tried(&decided, floor));
         if matches!(decided.decision, Decision::Abstain { .. })
             && let Some(hint) = report::left_out(session.plan.inactive().keys())
         {

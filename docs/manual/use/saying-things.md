@@ -44,9 +44,11 @@ den lights off
 
 ## What comes out
 
-Only the reflex's result goes to **stdout**. Everything `evoke` itself says goes to **stderr**, indented two
-spaces. That includes the call and its confidence, a prompt, a ranking, and a diagnostic. So `evoke "…" > out.txt`
-captures the result alone. A script reads the rest from the exit code.
+What you asked to see goes to **stdout**: a reflex's result, and the answer of `show`, `vocab`, `why`, `try`,
+`test` and `check`. What `evoke` says about a run goes to **stderr**, indented two spaces: the call and its
+confidence, a prompt, the line of a write, the ranking after an abstain, and every diagnostic. So
+`evoke "…" > out.txt` captures the result alone, and `evoke show | grep timer` finds the row. A script reads the
+rest from the exit code.
 
 ```text
 $ evoke "kill the lights in the den"
@@ -102,9 +104,10 @@ never guesses.
 
 ## Colour
 
-On a terminal, `evoke` colours what matters. The reflex's name in a call. The effect: green for `read`, yellow
-for `write`, red for `destructive`. The weakest judgment, dimmed. The `→` of a fix. The `+` and `-` of a write. A
-spinner turns while a request or a fetch is in flight. Piped, logged, under `NO_COLOR`, or with `TERM=dumb`, the
-same words print plain. On a terminal narrower than the help, `--help` puts each description under its command.
+On a terminal, `evoke` colours what matters. The reflex's name in a call. The top answer of every judgment `try`
+shows. The effect: green for `read`, yellow for `write`, red for `destructive`. The weakest judgment, dimmed. The
+`→` of a fix. The `+` and `-` of a write. A spinner turns while a request or a fetch is in flight, and counts the
+cases of a `test`. Piped, logged, under `NO_COLOR`, or with `TERM=dumb`, the same words print plain. On a
+terminal narrower than the help, `--help` puts each description under its command.
 
 **Next:** [Outcomes](outcomes.md).

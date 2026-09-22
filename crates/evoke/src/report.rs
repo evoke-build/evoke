@@ -1,10 +1,10 @@
 //! Render decisions, `try`, `why`, `show`, `vocab`, `update`, `check`, `test`, the installed rows, the prompts,
 //! every failure with its fix, and the one line a decision leaves — printed by `--json`, kept by the log; pure.
 //! In: core values, an `Exit`, the invoked line and the owned files' paths as shown. Out: `Text` for the terminal
-//! — the plain words, with the roles it may weight: the call, the effect, the weakest judgment, the arrow of a
-//! fix, the sign of a write — and the prompts and the JSON line as plain strings. The blocks of `try`, `why`,
-//! `use`, `show`, `add`, `update`, `check`, `test` and the JSON line are pinned by the transcripts; the failure
-//! line, its JSON object and the roles by the tests here.
+//! — the plain words, with the roles it may weight: the call, the effect, the top of a distribution, the weakest
+//! judgment, the arrow of a fix, the sign of a write — and the prompts and the JSON line as plain strings. The
+//! blocks of `try`, `why`, `use`, `show`, `add`, `update`, `check`, `test` and the JSON line are pinned by the
+//! transcripts; the failure line, its JSON object and the roles by the tests here.
 
 use std::collections::BTreeMap;
 use std::fmt::Write as _;
@@ -333,16 +333,13 @@ pub fn tried(decided: &Decided, route_floor: Option<evoke_core::Prob>) -> Text {
         (Decision::Abstain { .. }, Some(_), Some(floor)) => Some(floor),
         _ => None,
     };
-    let mut lines: Vec<Text> = block(
+    let mut lines = block(
         winner,
         &decided.answers,
         &decided.request.proposed,
         &decided.reading.ranking,
         under,
-    )
-    .into_iter()
-    .map(Text::from)
-    .collect();
+    );
     lines.push(outcome(&decided.decision));
     indented(lines)
 }
@@ -351,17 +348,13 @@ pub fn tried(decided: &Decided, route_floor: Option<evoke_core::Prob>) -> Text {
 #[must_use]
 pub fn why(line: &Line) -> Text {
     let mut lines = vec![Text::from(plain(&quoted(line.input.as_str())))];
-    lines.extend(
-        block(
-            line.reflex(),
-            &line.answers,
-            &line.proposed,
-            line.contenders(),
-            None,
-        )
-        .into_iter()
-        .map(Text::from),
-    );
+    lines.extend(block(
+        line.reflex(),
+        &line.answers,
+        &line.proposed,
+        line.contenders(),
+        None,
+    ));
     let mut what = match (&line.decision, &line.result) {
         (Decision::Run { chosen } | Decision::Confirm { chosen, .. }, Some(_)) => {
             let mut what = Text::from("ran ");
@@ -403,7 +396,7 @@ pub fn why(line: &Line) -> Text {
 #[must_use]
 pub fn abstained(decided: &Decided, floors: Option<&Gate>) -> Text {
     let under = decided.reading.winner.as_ref().and(floors.map(Gate::route));
-    indented(vec![Text::from(ranking(&decided.answers, under))])
+    indented(vec![ranking(&decided.answers, under)])
 }
 
 /// After an abstain, the reflexes that were never offered: `open and visit are inactive  →  evoke show`; nothing
@@ -734,7 +727,8 @@ pub fn rows(rows: &[Row], gutter: Gutter) -> Text {
     }))
 }
 
-/// `evoke update` with nothing to move: every remote reflex is at its target tag.
+/// `evoke update` with nothing to move, `evoke sync` with nothing to place: every remote reflex is where the lock
+/// says.
 #[must_use]
 pub fn up_to_date() -> Text {
     Text::from("  up to date")
@@ -1110,14 +1104,15 @@ fn toml(value: &Json) -> String {
     }
 }
 
-/// The ranking, the winner's argument lines and the fits line, unindented.
+/// The ranking, the winner's argument lines and the fits line, unindented; on each distribution the top answer
+/// carries the weight.
 fn block(
     winner: Option<&LocalName>,
     answers: &Raw,
     proposed: &[Proposed],
     contenders: &[Contender],
     under_floor: Option<evoke_core::Prob>,
-) -> Vec<String> {
+) -> Vec<Text> {
     let mut lines = vec![ranking(answers, under_floor)];
     let arguments: Vec<(&str, &String)> = winner
         .map(|winner| {
@@ -1139,12 +1134,11 @@ fn block(
         .fold("fits".len(), usize::max)
         + 2;
     for (arg, question) in arguments {
-        let keys = sorted(answers, question)
-            .into_iter()
-            .map(|(key, p)| format!("{} {p:.2}", candidate(&key, proposed)))
-            .collect::<Vec<_>>()
-            .join(" · ");
-        lines.push(format!("{arg:<width$}{keys}"));
+        let mut line = Text::from(format!("{arg:<width$}"));
+        line.append(distribution(&sorted(answers, question), |key| {
+            candidate(key, proposed)
+        }));
+        lines.push(line);
     }
     // Most fitting first; ties keep the ranking's order.
     let mut fits: Vec<(&Contender, f64)> = contenders
@@ -1157,22 +1151,54 @@ fn block(
             .iter()
             .map(|(contender, fits)| format!("{} {fits:.2}", contender.reflex))
             .collect();
-        lines.push(format!("{:<width$}{}", "fits", fits.join(" · ")));
+        lines.push(Text::from(format!(
+            "{:<width$}{}",
+            "fits",
+            fits.join(" · ")
+        )));
     }
     lines
 }
 
 /// The route's answers, most probable first, and the floor when the winner was under it.
-fn ranking(answers: &Raw, under_floor: Option<evoke_core::Prob>) -> String {
-    let mut line = sorted(answers, "route")
-        .iter()
-        .map(|(key, p)| format!("{key} {p:.2}"))
-        .collect::<Vec<_>>()
-        .join(" · ");
+fn ranking(answers: &Raw, under_floor: Option<evoke_core::Prob>) -> Text {
+    let mut line = distribution(&sorted(answers, "route"), str::to_owned);
     if let Some(floor) = under_floor {
-        let _ = write!(line, " · route floor {:.2}", floor.get());
+        line.push(&format!(" · route floor {:.2}", floor.get()));
     }
     line
+}
+
+/// Under this, a probability prints as `0.00`.
+const SHOWN: f64 = 0.005;
+
+/// A question's answers as sorted, `key p` each: the top one weighted; the ones that would print as `0.00`
+/// folded into a count — but the sentinels `none` and `unstated`, which always show, since they are what the
+/// answer was weighed against. `shown` writes a key as the person reads it.
+fn distribution(sorted: &[(String, f64)], shown: impl Fn(&str) -> String) -> Text {
+    let mut text = Text::new();
+    let mut folded = 0;
+    for (i, (key, p)) in sorted.iter().enumerate() {
+        let sentinel = matches!(key.as_str(), "none" | "unstated");
+        if i > 0 && *p < SHOWN && !sentinel {
+            folded += 1;
+            continue;
+        }
+        if i > 0 {
+            text.push(" · ");
+        }
+        let key = shown(key);
+        if i == 0 {
+            text.roled(Role::Top, &key);
+        } else {
+            text.push(&key);
+        }
+        text.push(&format!(" {p:.2}"));
+    }
+    if folded > 0 {
+        text.push(&format!(" · {folded} more under 0.01"));
+    }
+    text
 }
 
 /// A question's answers, most probable first; ties keep the adapter's order.
@@ -1449,8 +1475,40 @@ mod tests {
         );
         assert_eq!(
             explained.roles(),
-            vec![(Role::Call, "lights"), (Role::Weak, "weakest: room 0.85")]
+            vec![
+                (Role::Top, "lights"),
+                (Role::Call, "lights"),
+                (Role::Weak, "weakest: room 0.85")
+            ]
         );
+    }
+
+    #[test]
+    fn a_distribution_weights_its_top_and_folds_what_prints_as_zero() {
+        let answers: Raw = serde_json::from_value(serde_json::json!({
+            "route": { "volume": 0.99, "wifi": 0.004, "mail": 0.0, "none": 0.0, "lock": 0.006 },
+            "volume.level": { "0-10": 0.98, "unstated": 0.02 }
+        }))
+        .unwrap();
+        let route = ranking(&answers, None);
+        assert_eq!(
+            route.to_string(),
+            "volume 0.99 · lock 0.01 · none 0.00 · 2 more under 0.01"
+        );
+        assert_eq!(route.roles(), vec![(Role::Top, "volume")]);
+        let proposed: Vec<Proposed> = serde_json::from_value(serde_json::json!([
+            { "span": { "start": 0, "end": 10, "text": "40 percent" }, "value": { "type": "number", "value": 40 } }
+        ]))
+        .unwrap();
+        let level = distribution(&sorted(&answers, "volume.level"), |key| {
+            candidate(key, &proposed)
+        });
+        assert_eq!(level.to_string(), "\"40 percent\" 0.98 · unstated 0.02");
+        assert_eq!(level.roles(), vec![(Role::Top, "\"40 percent\"")]);
+        // One answer, however small, is never folded.
+        let one: Raw =
+            serde_json::from_value(serde_json::json!({ "route": { "lights": 0.001 } })).unwrap();
+        assert_eq!(ranking(&one, None).to_string(), "lights 0.00");
     }
 
     /// The run decision of the log line above, as a `Chosen`.

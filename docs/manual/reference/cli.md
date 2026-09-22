@@ -48,6 +48,9 @@ manual  https://evoke.build/manual/
 - `--help`, `-h` or `help`, and `--version` or `-V`, are flags in the first place. They print to stdout and exit
   0. `--help` or `-h` right after a command word prints the help too.
 - A command word after a flag, `evoke --json try "…"`, is refused with the way to write it. It is never decided.
+- What you asked to see goes to stdout: a reflex's result, the `--json` line, and the answer of `show`, `vocab`,
+  `why`, `try`, `test` and `check`. What `evoke` says about a run goes to stderr: the call and its confidence,
+  prompts, the line of a write, the ranking after an abstain, and every diagnostic.
 - Commands validate every argument before acting. Arguments that spell no command end in `evoke --help`. The
   reserved words `edit`, `search`, `publish`, `adapter` and `calibrate` are refused by name until they exist.
 - A **call** is `name arg=value…`. A value is bare or a JSON string, like `duration="10 minutes"`. A flag is its
@@ -77,7 +80,7 @@ manual  https://evoke.build/manual/
 | `evoke remove <name>`                  | Drops the reflex from `evoke.toml` and the lock. Keeps your overlay, vocabularies, settings and the store's copy |
 | `evoke update [<name>]`                | Moves each unpinned remote reflex, or one, to its newest tag. A pinned one moves to its pin. Reports, or prints `up to date`. Never prompts or rewrites your files |
 | `evoke update --accept <name>`         | Takes on an effect upstream loosened, at the current tag                              |
-| `evoke sync`                           | Places every locked reflex in the store at its locked tag, and records the runtime. Never changes the lock |
+| `evoke sync`                           | Places every locked reflex in the store at its locked tag, and records the runtime, or prints `up to date`. Never changes the lock |
 | `evoke trust`                          | Trusts the project here, at the content of its four owned paths                       |
 
 A ref is `owner/repo[/dir][@tag]` on GitHub, `<git url>[#dir][@tag]` over `https` or `ssh`, or `./dir` for a

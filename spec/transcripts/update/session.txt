@@ -9,3 +9,5 @@ $ HUE_TOKEN=hue-example evoke "kill the lights in the den"
 den lights off
 $ evoke update
   up to date
+$ evoke sync
+  up to date

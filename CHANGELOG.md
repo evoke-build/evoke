@@ -12,7 +12,13 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - A spinner turns while a repository is listed or fetched.
 - A second reflex can be added before the key is set: the theft test reports that it did not finish, and the add
   stands.
-- `evoke update` says `up to date` when nothing moved; `update`, `sync` and `test` with nothing installed say so.
+- `show`, `vocab`, `why`, `try`, `test` and `check` print their answer on stdout, so `evoke show | grep timer`
+  finds the row; what `evoke` says about a run stays on stderr. An answer is coloured where stdout is a terminal.
+- `try` and `why` set the top answer of every judgment in bold, and fold the answers that would print as `0.00`
+  into a count. The spinner counts the cases of a `test` and of the theft test at `add`.
+- `evoke update` and `evoke sync` say `up to date` when nothing moved; `update`, `sync` and `test` with nothing
+  installed say so.
+- The first line without a key says where one comes from: `jev needs TYPESAFE_API_KEY, a key from typesafe.ai`.
 - A failure names a path under your home as `~/…`, without the OS error number; a missing `git` or `node` is
   named as such; a repository GitHub hides behind a credential prompt is reported as not found or private; the
   line to run again never wraps a line already made, and never repeats an input over the cap.

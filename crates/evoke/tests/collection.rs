@@ -1,6 +1,7 @@
 //! Every reflex directory under `reflexes/` passes `evoke check` as it is committed: the manifest reads and lints
 //! clean, the body loads under the runtime, and `reflex.d.ts` is what the core renders today. Each directory is
-//! copied under `target/` first, so the check writes nothing into the tree and finds no version tag to diff against.
+//! copied under `target/` first, so the check writes nothing into the tree and finds no version tag to diff
+//! against: its report is the row alone, and nothing is written.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -52,10 +53,15 @@ fn every_reflex_checks_clean() {
             .stdin(Stdio::null())
             .output()
             .expect("evoke runs");
+        let stdout = String::from_utf8_lossy(&output.stdout);
         let stderr = String::from_utf8_lossy(&output.stderr);
         assert!(output.status.success(), "{name}: {stderr}");
-        let first = stderr.lines().next().unwrap_or_default();
-        assert!(first.starts_with(&format!("  {name}  ")), "{name}: {first}");
+        // The report is the row alone: no lint finding, and no tag to diff against.
+        assert_eq!(stdout.lines().count(), 1, "{name}: {stdout}");
+        assert!(
+            stdout.starts_with(&format!("  {name}  ")),
+            "{name}: {stdout}"
+        );
         assert!(
             !stderr.lines().any(|line| line.starts_with("+ ")),
             "{name}: reflex.d.ts is stale; run evoke check in reflexes/{name}\n{stderr}"

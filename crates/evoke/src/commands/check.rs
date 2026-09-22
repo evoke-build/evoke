@@ -1,8 +1,9 @@
 //! `evoke check`: the reflex in the working directory read with its lines to fix, its body's file present and
-//! loaded by the runtime, lint reported, `reflex.d.ts` written for a file body when it changed, and — when the directory sits in a
-//! git repository whose newest version tag holds this reflex — the contract diffed against that tag, with the
-//! version the next tag must carry; a `was` violation is refused. In: the working directory, the environment.
-//! Out: `Exit`.
+//! loaded by the runtime, lint reported, `reflex.d.ts` written for a file body when it changed, and — when the
+//! directory sits in a git repository whose newest version tag holds this reflex — the contract diffed against
+//! that tag, with the version the next tag must carry; a `was` violation is refused. In: the working directory,
+//! the environment. Out: `Exit`; the row, the findings and the contract on stdout, the write and the refusals on
+//! stderr.
 
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -83,9 +84,9 @@ impl Checking<'_> {
         if let Run::File(entrypoint) = &checked.run {
             self.loaded(entrypoint.path().as_str())?;
         }
-        terminal::note(&report::checked_row(self.name, &checked));
+        terminal::answer(&report::checked_row(self.name, &checked));
         for finding in lint(&checked) {
-            terminal::note(&report::finding(self.name, &finding));
+            terminal::answer(&report::finding(self.name, &finding));
         }
         // An argv has no body to type.
         if matches!(checked.run, Run::File(_)) {
@@ -98,7 +99,7 @@ impl Checking<'_> {
         }
         if let Some((tag, previous)) = self.previous()? {
             let contract = diff(&previous, &checked);
-            terminal::note(&report::checked(tag, &contract));
+            terminal::answer(&report::checked(tag, &contract));
             let violations: Vec<Diagnostic> = contract
                 .violations
                 .iter()

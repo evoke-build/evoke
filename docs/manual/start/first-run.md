@@ -7,7 +7,7 @@ terminal shows.
 
 ```text
 $ evoke "lock the screen"
-  jev needs TYPESAFE_API_KEY  →  export TYPESAFE_API_KEY=<value>
+  jev needs TYPESAFE_API_KEY, a key from typesafe.ai  →  export TYPESAFE_API_KEY=<value>
 [3]
 ```
 

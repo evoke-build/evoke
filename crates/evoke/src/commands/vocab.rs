@@ -1,6 +1,6 @@
 //! `evoke vocab <name> [add <word> "<meaning>" [--value v] | remove <word>]`: your words. In: the vocabulary's
-//! name, what changes or nothing, the environment. Out: `Exit`. Nothing to change lists the words; a change lands
-//! in `vocab/<name>.toml` when the file still reads. Adding a word that is there replaces its meaning; removing
+//! name, what changes or nothing, the environment. Out: `Exit`. Nothing to change lists the words, on stdout; a
+//! change lands in `vocab/<name>.toml` when the file still reads. Adding a word that is there replaces its meaning; removing
 //! one that is not is refused.
 
 use evoke_core::name::VocabName;
@@ -37,7 +37,7 @@ fn changed(
     match change {
         None => match words.filter(|words| !words.is_empty()) {
             Some(words) => {
-                terminal::note(&report::vocabulary(words));
+                terminal::answer(&report::vocabulary(words));
                 Exit::Ran
             }
             None => Exit::Human(Diagnostic {

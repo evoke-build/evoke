@@ -90,7 +90,8 @@ One tool does three jobs. A **CLI** you talk to. A **package manager** that inst
 ## Conventions
 
 - A line beginning `$ ` is a command you type. The lines under it are what the terminal shows.
-- `evoke` writes its own lines to stderr, indented two spaces. Only a reflex's result goes to stdout.
+- What you asked to see goes to stdout: a reflex's result, or the answer of `show`, `try`, `why` and `test`.
+  What `evoke` says about a run goes to stderr, indented two spaces.
 - Every line that needs something from you ends with the command that does it: `  →  evoke trust`.
 - macOS and Linux; Windows through WSL. The [collection](collection.md)'s programs are for macOS.
 

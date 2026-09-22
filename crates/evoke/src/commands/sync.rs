@@ -1,7 +1,7 @@
 //! `evoke sync`: the lock realised on this machine — every remote reflex the store lacks fetched at its locked tag,
 //! each repository's tag fetched once for all of them, refused unless the tag still names the locked commit and the
 //! tree still hashes to the lock — and the runtime recorded. Nothing in the project changes. In: the environment.
-//! Out: `Exit`, a `+` line per reflex realised.
+//! Out: `Exit`, a `+` line per reflex realised, or `up to date`.
 
 use evoke_core::Fix;
 use evoke_core::name::LocalName;
@@ -51,7 +51,9 @@ fn synced(session: &mut Session<'_>, input: &str) -> Exit {
         Ok(runtime) => runtime,
         Err(exit) => return exit,
     };
-    if !realised.is_empty() {
+    if realised.is_empty() {
+        terminal::note(&report::up_to_date());
+    } else {
         terminal::note(&report::rows(&session.rows(realised.iter()), Gutter::Added));
     }
     runtime.map_or(Exit::Ran, Exit::Human)
