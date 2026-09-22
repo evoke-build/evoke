@@ -522,7 +522,7 @@
         </ul>
       </div>
       <div class="panel term demo" data-state="off" aria-label="A lamp answering three sentences">
-        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>install</b><b>your words</b><b>say it</b></span></div>
+        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>say it</b><b>install</b><b>your words</b></span></div>
         <div class="room">
           <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
             <defs>
@@ -941,7 +941,7 @@ Ceiling and lamp lights only."""</span>
       }
     }
 
-    // The lamp: install the reflex, give it your words, then say it; three sentences decided and run, on a loop.
+    // The lamp: say it, then install the reflex and give it your words; three sentences decided and run, on a loop.
     {
       const demo = document.querySelector(".demo")
       const strip = demo.querySelector(".strip")
@@ -963,25 +963,25 @@ Ceiling and lamp lights only."""</span>
       }
       const show = s => { strip.append(s); strip.scrollTop = strip.scrollHeight; requestAnimationFrame(() => s.classList.add("show")); return s }
       const scenes = [
-        { step: 0, say: "evoke add radhi/home/lights", busy: "fetching radhi/home/lights", hold: 3400, lines: [
+        { step: 0, say: 'evoke "lights on in the den"', busy: "", hold: 2700, state: "on", lines: [
+          () => decided('room="den" state="on"', "0.91"), () => line("out", "den lights on"),
+        ] },
+        { step: 0, say: 'evoke "dim the den to 30 percent"', busy: "", hold: 2700, state: "dim", lines: [
+          () => decided('room="den" state="dim" brightness="30 percent"', "0.88"), () => line("out", "den lights dim 30%"),
+        ] },
+        { step: 0, say: 'evoke "kill the lights in the den"', busy: "", hold: 3200, state: "off", lines: [
+          () => decided('room="den" state="off"', "0.85"), () => line("out", "den lights off"),
+        ] },
+        { step: 1, say: "evoke add radhi/home/lights", busy: "fetching radhi/home/lights", hold: 3400, lines: [
           () => line("add", "+ lights  radhi/home/lights 1.2.0  write  runs lights.mts"),
           () => line("own", '  inactive  lights: vocabulary "rooms" is empty  →  evoke vocab rooms add <word> "<meaning>"'),
         ] },
-        { step: 1, say: 'evoke vocab rooms add den "The TV room downstairs."', busy: null, hold: 2600, lines: [
+        { step: 2, say: 'evoke vocab rooms add den "The TV room downstairs."', busy: null, hold: 2600, lines: [
           () => line("add", '+ vocab/rooms.toml  den = "The TV room downstairs."'),
-        ] },
-        { step: 2, say: 'evoke "lights on in the den"', busy: "", hold: 2700, state: "on", lines: [
-          () => decided('room="den" state="on"', "0.91"), () => line("out", "den lights on"),
-        ] },
-        { step: 2, say: 'evoke "dim the den to 30 percent"', busy: "", hold: 2700, state: "dim", lines: [
-          () => decided('room="den" state="dim" brightness="30 percent"', "0.88"), () => line("out", "den lights dim 30%"),
-        ] },
-        { step: 2, say: 'evoke "kill the lights in the den"', busy: "", hold: 3200, state: "off", lines: [
-          () => decided('room="den" state="off"', "0.85"), () => line("out", "den lights off"),
         ] },
       ]
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        trail[2].classList.add("on")
+        trail[0].classList.add("on")
         demo.dataset.state = "on"
       } else {
         const spinner = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
