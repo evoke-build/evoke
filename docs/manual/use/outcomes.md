@@ -166,6 +166,8 @@ $ evoke run lights state=off
 The call grammar is `name arg=value…`. A value with spaces is quoted: `duration="10 minutes"`. A flag is its bare
 name. A word the vocabulary lacks, an option not offered, a number out of range, or an argument the reflex does
 not have: each is refused, with the command that shows what is allowed. A call by name is not logged.
+`evoke run --json <call>` prints the call and its result as one line, for a script: [The JSON
+line](../reference/json.md).
 
 ## The cache
 

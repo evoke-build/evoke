@@ -45,8 +45,8 @@ pub enum Command {
     Try(Arguments),
     /// `evoke why`: the last decision, explained from the log.
     Why,
-    /// `evoke run <call>`: no classifier; the effect policy holds.
-    Run(Written),
+    /// `evoke run [--json] <call>`: no classifier; the effect policy holds.
+    Run { written: Written, json: bool },
     /// `evoke teach ["<utterance>"] <call> | not <name>`: the utterance omitted means the last input.
     Teach { spoken: Spoken, lesson: Taught },
     /// `evoke show [name]`: what is installed, or one effective manifest.
@@ -150,7 +150,10 @@ impl Command {
             Self::Use(arguments) => (None, arguments),
             Self::Try(arguments) => (Some("try"), arguments),
             Self::Why => return "evoke why".to_owned(),
-            Self::Run(written) => return format!("evoke run {written}"),
+            Self::Run { written, json } => {
+                let flag = if *json { " --json" } else { "" };
+                return format!("evoke run{flag} {written}");
+            }
             Self::Teach {
                 spoken: Spoken::Either { word, .. },
                 lesson,
@@ -324,14 +327,7 @@ pub fn parse(
                 Err(usage("why takes no arguments"))
             }
         }
-        "run" => {
-            if rest.is_empty() {
-                return Err(usage(
-                    "run needs a call: evoke run <name> [<arg>=<value> | <flag>]…",
-                ));
-            }
-            call(&line(rest)).map(Command::Run).map_err(help)
-        }
+        "run" => run(rest),
         "teach" => teach(rest),
         "show" => match rest {
             [] => Ok(Command::Show(None)),
@@ -419,6 +415,31 @@ fn deciding(
         Inputs::One(joined)
     };
     Ok(Arguments { json, tags, input })
+}
+
+/// `[--json] <call>`: the flag first, then the call as one argument or as its words.
+fn run(arguments: &[String]) -> Result<Command, Diagnostic> {
+    let mut json = false;
+    let mut rest = arguments;
+    while let Some((flag, after)) = rest.split_first() {
+        match flag.as_str() {
+            "--json" => json = true,
+            flag if flag.starts_with('-') && flag.len() > 1 => {
+                return Err(usage(format!(
+                    "{flag} is not a flag of run; the flag is --json"
+                )));
+            }
+            _ => break,
+        }
+        rest = after;
+    }
+    if rest.is_empty() {
+        return Err(usage(
+            "run needs a call: evoke run [--json] <name> [<arg>=<value> | <flag>]…",
+        ));
+    }
+    let written = call(&line(rest)).map_err(help)?;
+    Ok(Command::Run { written, json })
 }
 
 /// `["<utterance>"] (<call> | not <name>)`: the first argument is the utterance when it could not name a reflex,
@@ -944,6 +965,29 @@ mod tests {
     }
 
     #[test]
+    fn run_takes_its_flag_first_and_the_call_after() {
+        let Ok(Command::Run { written, json }) =
+            parsed(&["run", "--json", "lights", "room=den"], false)
+        else {
+            panic!("a run");
+        };
+        assert!(json);
+        assert_eq!(written.to_string(), "lights room=den");
+        let command = parsed(&["run", "--json", "lights", "room=den"], false).unwrap();
+        assert_eq!(command.placeholder(), "evoke run --json lights room=den");
+        assert!(matches!(
+            parsed(&["run", "lights", "room=den"], false),
+            Ok(Command::Run { json: false, .. })
+        ));
+        assert_eq!(
+            parsed(&["run", "--loud", "lights"], false)
+                .unwrap_err()
+                .message,
+            "--loud is not a flag of run; the flag is --json"
+        );
+    }
+
+    #[test]
     fn a_first_word_that_could_be_either_is_left_to_the_command_with_both_readings() {
         let Ok(Command::Teach {
             spoken: Spoken::Either { word, whole },
@@ -1104,6 +1148,9 @@ mod tests {
             &["--tag"],
             &["run"],
             &["run", "Lights"],
+            &["run", "--json"],
+            &["run", "--loud", "lights"],
+            &["run", "lights", "--json"],
             &["teach"],
             &["teach", "kill the lights"],
             &["teach", "kill the lights", "not"],

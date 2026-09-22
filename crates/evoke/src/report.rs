@@ -223,6 +223,20 @@ impl Line {
         }
     }
 
+    /// The line of a call by name: no input, nothing judged, no adapter called.
+    #[must_use]
+    pub fn unjudged(decision: &Decision) -> Self {
+        Self {
+            input: Input::new("").expect("an empty input is under the cap"),
+            decision: decision.clone(),
+            trace: Vec::new(),
+            answers: Raw::default(),
+            proposed: Vec::new(),
+            result: None,
+            error: None,
+        }
+    }
+
     #[must_use]
     pub fn json(&self) -> String {
         self.fields(false).to_string()
@@ -600,6 +614,7 @@ const COMMANDS: [(&str, &[(&str, &str)]); 4] = [
             ("  --", "the rest is input, even a command word"),
             ("evoke why", "the last decision, explained"),
             ("evoke run <call>", "by name, without the classifier"),
+            ("  --json", "one JSON line: the call and its result"),
             ("  <call> is <name> [<arg>=<value> | <flag>]…", ""),
         ],
     ),
@@ -1636,7 +1651,7 @@ mod tests {
         assert!(narrow.contains("\n  evoke \"<input>\"\n      decide, gate, run\n"));
         assert!(narrow.contains("\n    --json\n      one JSON line per input, for a filter\n"));
         // One more line per described command or flag, and the exit codes on two.
-        assert_eq!(narrow.lines().count(), wide.lines().count() + 22);
+        assert_eq!(narrow.lines().count(), wide.lines().count() + 23);
         let widest = narrow.lines().map(chars).max().unwrap_or(0);
         assert!(widest <= 60, "a line is {widest} columns wide");
     }

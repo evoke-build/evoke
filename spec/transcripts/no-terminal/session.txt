@@ -19,3 +19,6 @@ $ echo "restart the computer" | evoke
 $ evoke run power action=restart
   a confirm needs a terminal  →  evoke run power action=restart
 [3]
+$ evoke run --json power action=restart
+{"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","template":"Really restart now?"},"because":[{"type":"destructive"}],"trace":[]}
+[3]

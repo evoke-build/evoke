@@ -10,6 +10,7 @@ use
     --                                    the rest is input, even a command word
   evoke why                               the last decision, explained
   evoke run <call>                        by name, without the classifier
+    --json                                one JSON line: the call and its result
     <call> is <name> [<arg>=<value> | <flag>]…
 
 install

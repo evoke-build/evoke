@@ -28,7 +28,9 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `result`     | ○   |         |     |         | `{ text, data? }` when the body ran                             |
 | `error`      | ○   |         |     |         | The failure's message when it did not                           |
 
-A call by name, `evoke run`, prints no line. Nothing was decided.
+A call by name, `evoke run --json`, prints the same line with nothing judged: `input` is empty, there is no
+`confidence`, `weakest`, `judgments` or `contenders`, `trace` is empty, and `result` or `error` says what the body
+did. A destructive call carries `prompt` and `because` like any confirm. Nothing was decided.
 
 ## Values
 

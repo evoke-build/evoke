@@ -12,6 +12,7 @@ use
     --                                    the rest is input, even a command word
   evoke why                               the last decision, explained
   evoke run <call>                        by name, without the classifier
+    --json                                one JSON line: the call and its result
     <call> is <name> [<arg>=<value> | <flag>]…
 
 install
@@ -64,11 +65,11 @@ manual  https://evoke.build/manual/
 | `evoke`                | On a terminal, the REPL: `> `, line editing, history. Piped, a filter: one input per line, and the first non-zero exit is kept | as each line |
 | `evoke try "<input>"`  | Decides only: the ranking, each argument's distribution, each `fits`, the outcome and the weakest judgment. Never logged | 0 · 4 |
 | `evoke why`            | The last logged decision, shown as `try` would show it, and what became of it                  | 0 · 3 |
-| `evoke run <call>`     | Runs the call by name. No classifier. The effect policy is kept, so a destructive call confirms with `[y]es [n]o`. Not logged | 0 · 2 · 3 · 1 |
+| `evoke run <call>`     | Runs the call by name. No classifier. The effect policy is kept, so a destructive call confirms with `[y]es [n]o`. `--json` prints the call and its result as one line. Not logged | 0 · 2 · 3 · 1 |
 
 | Flag          | With            | Does                                                                     |
 | :------------ | :-------------- | :----------------------------------------------------------------------- |
-| `--json`      | input, `try`    | One JSON line per input: [The JSON line](json.md)                        |
+| `--json`      | input, `try`, `run` | One JSON line per input, or per call: [The JSON line](json.md)       |
 | `--tag <tag>` | input, `try`    | Only reflexes carrying the tag; repeatable                                |
 | `--`          | input           | The rest is input                                                        |
 

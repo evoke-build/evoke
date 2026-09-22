@@ -24,3 +24,12 @@ $ evoke run lights state=off
 $ evoke run volume level=150
   volume: 150 is outside 0–100  →  evoke run volume level=150
 [3]
+$ evoke run --json lights room=den state=off
+{"input":"","outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","trace":[],"result":{"text":"den lights off"}}
+$ evoke run --json power action=restart
+  power action="restart" · destructive
+  Really restart now?  [y]es [n]o > y
+{"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","template":"Really restart now?"},"because":[{"type":"destructive"}],"trace":[],"result":{"text":"restart in 5 seconds"}}
+$ evoke run --json lights room=attic state=off
+{"reflex":"lights","message":"\"attic\" is not in vocabulary \"rooms\"","fix":{"type":"vocab_add","vocab":"rooms"}}
+[3]
