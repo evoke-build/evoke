@@ -6,35 +6,31 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- `evoke kill the lights` needs no quotes: the words after `evoke` are one input, as the manual said. Every
+  argument error ends in `evoke --help`.
 - `evoke help`, `evoke add --help` and `-V` are what they say. A command word written after a flag, like
-  `evoke --json try …`, is refused with the way to write it, never decided. The help names the manual, explains a
-  call, and lays its columns by the terminal's width.
-- A spinner turns while a repository is listed or fetched.
-- A second reflex can be added before the key is set: the theft test reports that it did not finish, and the add
-  stands.
+  `evoke --json try …`, is refused with the way to write it, never decided. The help names the manual, explains
+  a call, and lays its columns by the terminal's width.
 - `show`, `vocab`, `why`, `try`, `test` and `check` print their answer on stdout, so `evoke show | grep timer`
   finds the row; what `evoke` says about a run stays on stderr. An answer is coloured where stdout is a terminal.
-- `try` and `why` set the top answer of every judgment in bold, and fold the answers that would print as `0.00`
-  into a count. The spinner counts the cases of a `test` and of the theft test at `add`.
+- `evoke add ./dir` installs a local reflex, written to `evoke.toml` relative to that file. A git URL may name
+  its user: `ssh://git@github.com/owner/repo` is a ref. `sync`, `update` and `add` list a repository's tags and
+  fetch a tag once, however many reflexes come from it, with a spinner while they do.
+- The theft test at `add` decides a few cases at a time, counts them in the spinner, and reports what stopped
+  it — the classifier, or a key not yet set — with `evoke test`; the add stands either way. `test` decides and
+  counts the same way.
+- `evoke teach dim lights state=dim` teaches the one word `dim`: a first word followed by a call is the
+  utterance, unless it names an installed reflex.
 - `evoke update` and `evoke sync` say `up to date` when nothing moved; `update`, `sync` and `test` with nothing
   installed say so.
-- The first line without a key says where one comes from: `jev needs TYPESAFE_API_KEY, a key from typesafe.ai`.
-- `evoke teach dim lights state=dim` teaches the one word `dim`: a first word followed by a call is the utterance,
-  unless it names an installed reflex.
-- A failure names a path under your home as `~/…`, without the OS error number; a missing `git` or `node` is
-  named as such; a repository GitHub hides behind a credential prompt is reported as not found or private; the
-  line to run again never wraps a line already made, and never repeats an input over the cap.
-- A thrown error's frames print without repeating its message; the `fits` line lists the best fit first; an
-  answer a prompt refuses is quoted.
-- `evoke kill the lights` needs no quotes: the words after `evoke` are one input, as the manual said. Every
-  argument error now ends in `evoke --help`.
 - A decision no longer lists the inactive reflexes first. An abstain names them once, with `evoke show`.
-- `evoke add ./dir` installs a local reflex, written to `evoke.toml` relative to that file.
-- `ssh://git@github.com/owner/repo` is a ref: a git URL may name its user.
-- `sync`, `update` and `add` list a repository's tags and fetch a tag once, however many reflexes come from it.
-- `test` and the theft test at `add` decide a few cases at a time. A theft test the classifier cannot finish is
-  reported with `evoke test`, and the add stands.
-- `show` prints a pinned ref once, not with its tag beside it.
+- `try` and `why` set the top answer of every judgment in bold, list the best `fits` first, and fold the
+  answers that would print as `0.00` into a count. `show` prints a pinned ref once, not with its tag beside it.
+- The first line without a key says where one comes from: `jev needs TYPESAFE_API_KEY, a key from typesafe.ai`.
+- A failure names a path under your home as `~/…`, without the OS error number; a missing `git` or `node` is
+  named as such; a repository GitHub hides behind a credential prompt is reported as not found or private; a
+  thrown error's frames print without repeating its message; an answer a prompt refuses is quoted; the line to
+  run again never wraps a line already made, and never repeats an input over the cap.
 
 ## [0.1.0] - 2026-09-21
 

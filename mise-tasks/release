@@ -1,5 +1,5 @@
 #!/bin/sh
-#MISE description="Cut a release: the version into Cargo.toml and sdk/package.json, the changelog dated, one commit, one tag; the push builds it"
+#MISE description="Cut a release: the version into Cargo.toml, sdk/package.json, the help transcript and the manual, the changelog dated, one commit, one tag; the push builds it"
 # Usage: mise run release <X.Y.Z>    on a clean main, with what changed written under CHANGELOG.md's Unreleased
 set -eu
 cd "$(dirname "$0")/.."
@@ -10,10 +10,19 @@ fail() { echo "release: $1" >&2; exit 1; }
 [ "$(git branch --show-current)" = main ] || fail "a release is cut on main"
 git rev-parse -q --verify "refs/tags/v$version" >/dev/null && fail "v$version is already tagged"
 
+previous=$(sed -n 's/^version *= *"\([^"]*\)".*/\1/p' Cargo.toml | head -1)
+[ -n "$previous" ] || fail "Cargo.toml names no version"
+
 mise run changelog --cut "$version"
 sed -i.bak "s/^\(version *= *\)\"[^\"]*\"/\1\"$version\"/" Cargo.toml && rm Cargo.toml.bak
 cargo update --workspace --offline --quiet
 (cd sdk && npm version "$version" --allow-same-version --no-git-tag-version >/dev/null)
+# What prints the version follows it: the help transcript, and the manual where it shows the help and --version.
+was=$(printf '%s' "$previous" | sed 's/\./\\./g')
+follows() { sed -i.bak "s/evoke $was/evoke $version/g" "$1" && rm "$1.bak" && git add "$1"; }
+follows spec/transcripts/help/session.txt
+follows docs/manual/reference/cli.md
+follows docs/manual/start/install.md
 
 git add CHANGELOG.md Cargo.toml Cargo.lock sdk/package.json sdk/package-lock.json
 git commit --quiet --message "chore: release $version"
