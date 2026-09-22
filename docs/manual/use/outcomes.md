@@ -169,8 +169,9 @@ not have: each is refused, with the command that shows what is allowed. A call b
 
 ## The cache
 
-The adapter's answers are cached by the installed set and the sentence, not by the decision. Repeat an input and
-it costs nothing. Change a threshold, and the same answers gate differently. `try` and `why` explain a cached
-decision exactly like a fresh one. `evoke test` never uses the cache.
+The adapter's answers are cached by the installed set, the sentence and the questions asked, not by the
+decision. Repeat an input and it costs nothing. A decision narrowed with `--tag` asks fewer questions, so it has
+an entry of its own. Change a threshold, and the same answers gate differently. `try` and `why` explain a
+cached decision exactly like a fresh one. `evoke test` never uses the cache.
 
 **Next:** [Installing reflexes](installing.md).

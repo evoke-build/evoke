@@ -1,8 +1,8 @@
 //! Machine-local state under XDG, never in the project. Cache, `$XDG_CACHE_HOME/evoke/`: the adapter's answers per
-//! plan digest and utterance identity, and `test`'s baseline per plan digest. State, `$XDG_STATE_HOME/evoke/`: the
-//! log, one JSON line per decision; the JavaScript runtime's path, as `add` and `sync` record it; trust,
-//! `trust.toml`, a digest per blessed root; the REPL's history, one line each. In: keys and values. Out: hits or
-//! misses; `Failure`.
+//! plan digest, utterance identity and question set, and `test`'s baseline per plan digest. State,
+//! `$XDG_STATE_HOME/evoke/`: the log, one JSON line per decision; the JavaScript runtime's path, as `add` and
+//! `sync` record it; trust, `trust.toml`, a digest per blessed root; the REPL's history, one line each. In: keys
+//! and values. Out: hits or misses; `Failure`.
 
 use std::fmt::Write as _;
 use std::fs;
@@ -10,7 +10,7 @@ use std::io::{self, Write};
 use std::os::unix::fs::OpenOptionsExt as _;
 use std::path::{Path, PathBuf};
 
-use evoke_core::{Baseline, Digest, Fix, Identity, Raw};
+use evoke_core::{Baseline, Digest, Fix, Raw, Request, identity};
 use sha2::{Digest as _, Sha256};
 use toml_edit::{DocumentMut, Item, value};
 
@@ -88,14 +88,14 @@ impl State {
         }
     }
 
-    /// The answers cached for an input under a plan; an entry that does not read is a miss.
-    pub fn answers(&self, plan: &Digest, id: &Identity) -> Result<Option<Raw>, Failure> {
-        Ok(read(&self.entry(plan, id))?.and_then(|text| serde_json::from_str(&text).ok()))
+    /// The answers cached for a request under a plan; an entry that does not read is a miss.
+    pub fn answers(&self, plan: &Digest, request: &Request) -> Result<Option<Raw>, Failure> {
+        Ok(read(&self.entry(plan, request))?.and_then(|text| serde_json::from_str(&text).ok()))
     }
 
-    /// Keeps the answers for the input under the plan; written whole, then moved into place.
-    pub fn keep(&self, plan: &Digest, id: &Identity, answers: &Raw) -> Result<(), Failure> {
-        let path = self.entry(plan, id);
+    /// Keeps the answers for the request under the plan; written whole, then moved into place.
+    pub fn keep(&self, plan: &Digest, request: &Request, answers: &Raw) -> Result<(), Failure> {
+        let path = self.entry(plan, request);
         let text = serde_json::to_string(answers).expect("answers serialize");
         let staged = path.with_extension(format!("{}.tmp", std::process::id()));
         write(&staged, &text).and_then(|()| {
@@ -140,11 +140,19 @@ impl State {
         }))
     }
 
-    /// `answers/<plan>/<sha256 of the identity>.json`.
-    fn entry(&self, plan: &Digest, id: &Identity) -> PathBuf {
-        let hashed = Sha256::digest(id.as_str().as_bytes());
+    /// `answers/<plan>/<sha256 of the utterance identity and the question ids asked>.json`: one entry per plan,
+    /// utterance and question set, so a decision narrowed with `--tag` keeps its own beside the full one.
+    fn entry(&self, plan: &Digest, request: &Request) -> PathBuf {
+        let mut key = Sha256::new();
+        key.update(identity(request.state.request.as_str()).as_str().as_bytes());
+        let mut asked: Vec<String> = request.questions.keys().map(ToString::to_string).collect();
+        asked.sort();
+        for question in asked {
+            key.update(b"\n");
+            key.update(question.as_bytes());
+        }
         let mut name = String::with_capacity(69);
-        for byte in hashed {
+        for byte in key.finalize() {
             let _ = write!(name, "{byte:02x}");
         }
         name.push_str(".json");
@@ -204,5 +212,51 @@ fn failed(what: &str, error: &io::Error) -> Failure {
         what: what.to_owned(),
         cause: Some(super::cause(error)),
         fix: Fix::Rerun,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::BTreeMap;
+
+    use evoke_core::adapter::QuestionId;
+
+    use super::*;
+
+    /// `spec/fixtures/request-kill-the-lights.json`, with `--tag` narrowing it to the questions kept.
+    fn request(kept: &[&str]) -> Request {
+        let mut request: Request = serde_json::from_str(include_str!(
+            "../../../../spec/fixtures/request-kill-the-lights.json"
+        ))
+        .unwrap();
+        request.questions.retain(|id: &QuestionId, _| {
+            kept.is_empty() || kept.contains(&id.to_string().as_str())
+        });
+        request
+    }
+
+    #[test]
+    fn an_entry_is_keyed_by_the_utterance_and_the_questions_asked() {
+        let dir = std::env::temp_dir().join(format!("evoke-state-{}", std::process::id()));
+        let state = State::of(&Environment(BTreeMap::from([
+            ("XDG_CACHE_HOME".to_owned(), dir.display().to_string()),
+            ("XDG_STATE_HOME".to_owned(), dir.display().to_string()),
+        ])))
+        .unwrap();
+        let plan: Digest =
+            serde_json::from_value(serde_json::Value::String(format!("h1:{}", "a".repeat(64))))
+                .unwrap();
+        let full = request(&[]);
+        let narrowed = request(&["route", "fits.lights", "lights.room", "lights.state"]);
+        let mut spelled = request(&[]);
+        spelled.state.request = evoke_core::Input::new("Kill the lights!").unwrap();
+        assert_ne!(state.entry(&plan, &full), state.entry(&plan, &narrowed));
+        assert_eq!(state.entry(&plan, &full), state.entry(&plan, &spelled));
+        let answers: Raw =
+            serde_json::from_value(serde_json::json!({ "route": { "lights": 1.0 } })).unwrap();
+        state.keep(&plan, &narrowed, &answers).unwrap();
+        assert_eq!(state.answers(&plan, &narrowed).unwrap(), Some(answers));
+        assert_eq!(state.answers(&plan, &full).unwrap(), None);
+        let _ = fs::remove_dir_all(dir);
     }
 }

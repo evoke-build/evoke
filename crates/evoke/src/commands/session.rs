@@ -18,8 +18,8 @@ use evoke_core::text::NonEmpty;
 use evoke_core::{
     Chosen, Decision, Declared, Diagnostic, Document, Edit, Effective, File, Fix, Input, Installed,
     Item, Lock, Manifest, Owned, Plan, Project, Prompt, Raw, Reading, Request, Scope, Version,
-    argv, compile, effective, envelope, gate, identity, lock, manifest, overlay, project,
-    project_dts, read, render_lock, request, vocabulary,
+    argv, compile, effective, envelope, gate, lock, manifest, overlay, project, project_dts, read,
+    render_lock, request, vocabulary,
 };
 use indexmap::IndexMap;
 
@@ -652,7 +652,8 @@ impl Session<'_> {
     }
 
     /// One input: request → the cache, else the adapter → read → gate, a spinner turning while the adapter
-    /// answers. A cached entry that no longer reads against the request is a miss.
+    /// answers. The cache is keyed by the plan, the utterance and the questions asked, so a decision narrowed
+    /// with `--tag` has an entry of its own; an entry that no longer reads against the request is a miss.
     pub fn decide(
         &self,
         adapter: &dyn Adapter,
@@ -683,10 +684,9 @@ impl Session<'_> {
     ) -> Result<Decided, Exit> {
         let request = request(&self.plan, input, tags, Scope::Full).map_err(Exit::Human)?;
         let deadline = Deadline::after(self.plan.deadline());
-        let id = identity(request.state.request.as_str());
         let hit = if cached {
             self.state
-                .answers(&self.plan.digest(), &id)
+                .answers(&self.plan.digest(), &request)
                 .map_err(Exit::Failed)?
                 .and_then(|answers| {
                     read(&self.plan, &request, answers.clone())
@@ -708,7 +708,7 @@ impl Session<'_> {
             let reading = read(&self.plan, &request, answers.clone()).map_err(Exit::Adapter)?;
             if cached {
                 self.state
-                    .keep(&self.plan.digest(), &id, &answers)
+                    .keep(&self.plan.digest(), &request, &answers)
                     .map_err(Exit::Failed)?;
             }
             (answers, reading, vec![trace])

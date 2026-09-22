@@ -20,7 +20,7 @@
 | :----------------------------------------------- | :----------------------------------------------------------- | :-------------------- |
 | `$XDG_CONFIG_HOME/evoke/` · `~/.config/evoke/`    | The home project                                             | you, `add`, `teach`, … |
 | `$XDG_CACHE_HOME/evoke/store/<h1>/`              | Fetched reflex directories, by content hash                   | `add`, `sync`         |
-| `$XDG_CACHE_HOME/evoke/answers/<plan>/`          | The adapter's answers, per installed set and utterance        | every decision, `try` |
+| `$XDG_CACHE_HOME/evoke/answers/<plan>/`          | The adapter's answers, per installed set, utterance and questions asked | every decision, `try` |
 | `$XDG_CACHE_HOME/evoke/baselines/<plan>.json`    | `evoke test`'s last verdicts per installed set                | `test`                |
 | `$XDG_STATE_HOME/evoke/log.jsonl`                | One JSON line per decision; `why` reads the last              | every decision        |
 | `$XDG_STATE_HOME/evoke/trust.toml`               | Trusted project roots and their content digests                | `trust`, every write  |

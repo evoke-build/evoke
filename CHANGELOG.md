@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- The answer cache is keyed by the questions asked as well as the sentence, so a decision narrowed with `--tag`
+  keeps its entry beside the full one instead of overwriting it.
 - The SDK's transport connects through the proxy `HTTPS_PROXY` names, as the CLI's does; `NO_PROXY` excludes
   hosts. The manual's environment page lists both.
 - A connection that fails is said plainly: `could not connect to api.typesafe.ai: connection refused`, the proxy

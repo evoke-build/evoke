@@ -1,0 +1,17 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md). The route names only the reflex
+# the flow asks about, so one recording serves a decision narrowed with --tag and a full one alike.
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.6
+write = 0.8
+
+[answers."kill the lights in the den"]
+route          = { lights = 0.91, none = 0.09 }
+"fits.lights"  = { yes = 0.7 }
+"fits.timer"   = { yes = 0.05 }
+"fits.volume"  = { yes = 0.05 }
+"lights.room"  = { den = 0.85, office = 0.05, unstated = 0.1 }
+"lights.state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }

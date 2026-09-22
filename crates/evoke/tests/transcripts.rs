@@ -121,6 +121,11 @@ fn help() {
     flow("help");
 }
 
+#[test]
+fn cache() {
+    flow("cache");
+}
+
 /// The recipe yields the commit `spec/transcripts/update/home/.config/evoke/evoke.lock` records.
 #[test]
 fn the_recipe_reproduces_the_locked_commit() {
