@@ -25,7 +25,7 @@ use evoke_core::{
 
 use crate::adapter::Trace;
 use crate::commands::Exit;
-use crate::commands::session::Decided;
+use crate::commands::session::{Decided, Woven};
 use crate::hosts::Failure;
 use crate::hosts::files::{Edited, Landed};
 use crate::hosts::processes::Returned;
@@ -588,6 +588,19 @@ pub fn step_body(step: &Step, weave: &Weave) -> Text {
         text.push(&format!(" · after {}", after.join(", ")));
     }
     text
+}
+
+/// The plan as one JSON line: the weave's fields, then `trace`, every adapter call the plan took.
+#[must_use]
+pub fn plan_json(woven: &Woven) -> String {
+    let Ok(Json::Object(mut plan)) = serde_json::to_value(&woven.weave) else {
+        unreachable!("a plan serializes as an object")
+    };
+    plan.insert(
+        "trace".to_owned(),
+        serde_json::to_value(&woven.trace).expect("a trace serializes"),
+    );
+    Json::Object(plan).to_string()
 }
 
 /// `<n>  <body>`, the number right-aligned to the count.

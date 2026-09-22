@@ -50,7 +50,8 @@ pub fn run(command: &Command, arguments: &Arguments, environment: &Environment) 
 }
 
 /// One input: read into its steps and shown; any decision exits 0. One step is shown as it always was; more are
-/// the plan, then each step's judgments under its number — or, under `--json`, the plan whole on one line.
+/// the plan, then each step's judgments under its number — or, under `--json`, the plan whole on one line, with
+/// every adapter call it took.
 fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, input: &str) -> Exit {
     let woven = match session.weave(adapter, input, &arguments.tags, Vec::new()) {
         Ok(woven) => woven,
@@ -71,7 +72,7 @@ fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, in
         return Exit::Ran;
     }
     if arguments.json {
-        terminal::result(&serde_json::to_string(&woven.weave).expect("a plan serializes"));
+        terminal::result(&report::plan_json(&woven));
         return Exit::Ran;
     }
     terminal::answer(&report::planned(&woven.weave));

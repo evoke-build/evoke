@@ -96,6 +96,8 @@ impl Decided {
 pub struct Woven {
     pub weave: Weave,
     pub decided: Vec<(Asked, Decided)>,
+    /// Every adapter call the plan took: the weave's own questions, then each text decided, in order.
+    pub trace: Vec<Trace>,
 }
 
 impl Woven {
@@ -717,16 +719,27 @@ impl Session<'_> {
             ..weave::Answers::default()
         };
         let mut decided = seeded;
+        let mut trace = Vec::new();
         loop {
             let planning =
                 weave::planning::plan(&self.plan, input, tags, &answers).map_err(Exit::Adapter)?;
             let need = match planning {
-                Planning::Done { weave } => return Ok(Woven { weave, decided }),
+                Planning::Done { weave } => {
+                    return Ok(Woven {
+                        weave,
+                        decided,
+                        trace,
+                    });
+                }
                 Planning::Need { need } => need,
             };
             match need {
-                Need::Judge { request } => answers.judged = Some(self.own(adapter, &request)?),
-                Need::Refer { request } => answers.referred = Some(self.own(adapter, &request)?),
+                Need::Judge { request } => {
+                    answers.judged = Some(self.own(adapter, &request, &mut trace)?);
+                }
+                Need::Refer { request } => {
+                    answers.referred = Some(self.own(adapter, &request, &mut trace)?);
+                }
                 Need::Decide { asked } => {
                     for asked in asked {
                         let one = self.decided(
@@ -736,6 +749,7 @@ impl Session<'_> {
                             asked.only.as_ref(),
                             true,
                         )?;
+                        trace.extend(one.trace.iter().cloned());
                         answers.decided.push((asked.clone(), one.decision.clone()));
                         decided.push((asked, one));
                     }
@@ -745,8 +759,13 @@ impl Session<'_> {
     }
 
     /// One of the weave's own requests answered — the split points, the references: the cache when it holds
-    /// every question asked, else the adapter, and kept.
-    fn own(&self, adapter: &dyn Adapter, request: &Request) -> Result<Raw, Exit> {
+    /// every question asked, else the adapter, timed and kept.
+    fn own(
+        &self,
+        adapter: &dyn Adapter,
+        request: &Request,
+        trace: &mut Vec<Trace>,
+    ) -> Result<Raw, Exit> {
         let cached = self
             .state
             .answers(&self.plan.digest(), request)
@@ -762,6 +781,11 @@ impl Session<'_> {
         }
         let deadline = Deadline::after(self.plan.deadline());
         let answers = adapter.answer(request, deadline).map_err(Exit::Adapter)?;
+        trace.push(Trace {
+            adapter: adapter.declared().id.clone(),
+            questions: request.questions.len(),
+            ms: deadline.elapsed(),
+        });
         self.state
             .keep(&self.plan.digest(), request, &answers)
             .map_err(Exit::Failed)?;

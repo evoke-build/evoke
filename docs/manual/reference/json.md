@@ -31,7 +31,8 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 A sentence read as several steps ([Weaving](../use/weaving.md)) prints one line per step, as each runs, the
 line of its decision with four fields more: `step` and `steps` first, the step's number and the count; `bound`
 after `trace`, where a value came from another step, `[{ arg, from, field, value }]`; and `status` last, with
-`why` when the step stopped. `evoke try --json` prints the plan whole instead, on one line.
+`why` when the step stopped. `evoke try --json` prints the plan whole instead, on one line — `input`, `splits`,
+`steps` with each step's decision, `binds`, `stages`, `verdict` — with `trace`, every adapter call the plan took.
 
 | Field    | Holds                                                                                                   |
 | :------- | :------------------------------------------------------------------------------------------------------ |

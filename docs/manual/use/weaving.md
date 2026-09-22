@@ -108,7 +108,7 @@ you can answer.
 ## `try` and `--json`
 
 `evoke try` shows the plan, then every step's judgments under its number. `evoke try --json` prints the plan
-whole, on one line. `evoke --json` prints one line per step as it runs: the line of one decision, with `step`
+whole, on one line, with every adapter call it took. `evoke --json` prints one line per step as it runs: the line of one decision, with `step`
 and `steps` first, `bound` where a value came from another step, and `status` at the end, with `why` when the
 step stopped ([The JSON line](../reference/json.md)).
 
