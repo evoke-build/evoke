@@ -1,8 +1,9 @@
 /* The manual's theme over mdBook's: the landing page's palette, dark whatever the system prefers, quiet chrome.
-   Every value mdBook's themes define is set here once, on the root at the rank of mdBook's own no-script rule,
-   so whichever theme its script lands on, or none, reads the same, and its theme menu is hidden. Text has two tones:
-   the ink, `--fg`, for headings, emphasis and the chrome, and `--text` a step below it for the running prose, so a
-   long read never glares. */
+   The palette is declared under the landing page's own names, the site build checks the values agree, and mdBook's
+   names are mapped onto it, all on the root at the rank of mdBook's no-script rule, so whichever theme its script
+   lands on, or none, reads the same, and its theme menu is hidden. Text has two tones: the ink, `--fg`, for
+   headings, emphasis and the chrome, and `--text` a step below it for the running prose, so a long read never
+   glares. */
 
 html:root {
   --sidebar-target-width: 280px;
@@ -11,32 +12,25 @@ html:root {
   --page-padding: 24px;
   --mono-font: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --code-font-size: 0.875em;
+
+  /* The landing page's palette, under its names */
+  --bg: #0f0f10;
+  --fg: #ececec;
+  --muted: #9c9ca3;
+  --faint: #6c6c73;
+  --line: #232326;
+  --line-strong: #303035;
+  --panel: #151517;
   --accent: #e5761d;
-  --radius: 10px;
+  --accent-ink: #ea8a40;
+  --accent-soft: rgba(234, 138, 64, .12);
   --term-bg: #141416;
-  --term-line: #232326;
   --term-fg: #ebe8e3;
   --term-dim: #8f8c86;
   --term-in: #ffffff;
   --term-ok: #8fd48a;
   --term-mid: #f0c060;
   --term-no: #ff7b73;
-  --bg: #101010;
-  --fg: #e6e6e6;
-  --text: #cccccc;
-  --muted: #9a9a9a;
-  --line: #262626;
-  --panel: #191919;
-  --sidebar-bg: #141414;
-  --sidebar-fg: #bdbdbd;
-  --sidebar-non-existant: #555555;
-  --sidebar-active: #ea8a40;
-  --sidebar-spacer: #262626;
-  --scrollbar: #3a3a3a;
-  --icons: #7a7a7a;
-  --icons-hover: #e6e6e6;
-  --links: #ea8a40;
-  --inline-code-color: var(--text);
   --tk-key: #f0a15c;
   --tk-table: #a3a6ff;
   --tk-string: #9ad18f;
@@ -44,27 +38,42 @@ html:root {
   --tk-comment: #7d7d7d;
   --tk-punct: #7d7d7d;
   --tk-kw: #a3a6ff;
-  --theme-hover: #232323;
-  --quote-bg: #1c1815;
-  --quote-border: #e5761d;
-  --warning-border: #e5761d;
-  --table-border-color: #262626;
+
+  /* The manual's own two: the running prose, and the sidebar's links */
+  --text: #cccccc;
+  --sidebar-fg: #bdbdbd;
+
+  /* mdBook's names, onto the palette */
+  --sidebar-bg: var(--panel);
+  --sidebar-non-existant: var(--faint);
+  --sidebar-active: var(--accent-ink);
+  --sidebar-spacer: var(--line);
+  --sidebar-header-border-color: var(--line);
+  --scrollbar: var(--line-strong);
+  --icons: var(--faint);
+  --icons-hover: var(--fg);
+  --links: var(--accent-ink);
+  --inline-code-color: var(--text);
+  --theme-hover: var(--line);
+  --quote-bg: color-mix(in srgb, var(--accent) 5%, var(--panel));
+  --quote-border: var(--accent);
+  --warning-border: var(--accent);
+  --table-border-color: var(--line);
   --table-header-bg: transparent;
   --table-alternate-bg: transparent;
-  --searchbar-border-color: #2c2c2c;
-  --searchbar-bg: #191919;
-  --searchbar-fg: #e6e6e6;
+  --searchbar-border-color: var(--line-strong);
+  --searchbar-bg: var(--panel);
+  --searchbar-fg: var(--fg);
   --searchbar-shadow-color: transparent;
-  --searchresults-header-fg: #9a9a9a;
-  --searchresults-border-color: #2c2c2c;
-  --searchresults-li-bg: #191919;
-  --search-mark-bg: #4a2d14;
+  --searchresults-header-fg: var(--muted);
+  --searchresults-border-color: var(--line);
+  --searchresults-li-bg: var(--panel);
+  --search-mark-bg: color-mix(in srgb, var(--accent) 25%, var(--bg));
+  --footnote-highlight: var(--search-mark-bg);
   --color-scheme: dark;
   --copy-button-filter: invert(55%);
   --copy-button-filter-hover: invert(95%);
-  --footnote-highlight: #4a2d14;
   --overlay-bg: rgba(0, 0, 0, 0.5);
-  --sidebar-header-border-color: #2c2c2c;
 }
 
 /* Type */
@@ -150,7 +159,7 @@ html {
 .content pre {
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: 10px;
   padding: 14px 18px;
   line-height: 1.85;
   overflow: auto;
@@ -338,7 +347,7 @@ html {
 
 .chapter li a.active {
   color: var(--sidebar-active);
-  background: color-mix(in srgb, var(--accent) 11%, transparent);
+  background: var(--accent-soft);
 }
 
 .sidebar .sidebar-resize-handle {
@@ -383,7 +392,7 @@ html {
 
 .content pre.term {
   background: var(--term-bg);
-  border-color: var(--term-line);
+  border-color: var(--line);
   color: var(--term-fg);
 }
 
@@ -481,7 +490,7 @@ pre.term .buttons button:hover { color: var(--term-fg); }
   list-style: none;
   border-radius: 12px;
   background: var(--term-bg);
-  border: 1px solid var(--term-line);
+  border: 1px solid var(--line);
   font: 1.3rem/1.9 var(--mono-font);
 }
 

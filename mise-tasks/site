@@ -11,6 +11,7 @@ URL = "https://evoke.build/"
 CARD = URL + "og.png"
 CARD_ALT = "evoke — Software, by reflex."
 LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)\)")
+TOKEN = re.compile(r"--([a-z-]+):\s*([^;]+);")
 UNLISTED = {"404.html", "print.html", "toc.html"}
 
 
@@ -27,6 +28,21 @@ def links_resolve():
                 problems.append(f"{page.relative_to(ROOT)}: {target} is not a page of the manual")
     if problems:
         sys.exit("\n".join(problems))
+
+
+def landing_palette():
+    """The landing page's palette, and a check that the use-cases page and the manual keep to it: a colour either one
+    declares under the landing page's name carries the landing page's value, so the three never drift apart."""
+    def tokens(file):
+        block = re.search(r":root\s*\{(.*?)\}", file.read_text(), re.S)[1]
+        return {name: value.strip() for name, value in TOKEN.findall(block) if value.lstrip().startswith(("#", "rgb"))}
+    landing = tokens(SITE / "index.html")
+    problems = [f"{file.relative_to(ROOT)}: --{name} is {value}, the landing page's is {landing[name]}"
+                for file in (SITE / "use-cases.html", SITE / "manual.css")
+                for name, value in tokens(file).items() if name in landing and value != landing[name]]
+    if problems:
+        sys.exit("\n".join(problems))
+    return landing
 
 
 def summary():
@@ -144,7 +160,7 @@ def furnished(page):
     home, a Use cases link joins the bar, and the six sentences close the page. The pages nobody lands on, print and
     404, take only the colour and the wordmark."""
     text = page.read_text()
-    text = text.replace('<meta name="theme-color" content="#ffffff">', '<meta name="theme-color" content="#101010">', 1)
+    text = text.replace('<meta name="theme-color" content="#ffffff">', f'<meta name="theme-color" content="{palette["bg"]}">', 1)
     brand = "evoke"
     if page.name not in UNLISTED:
         root = "../" * (len(page.relative_to(OUT / "manual").parts) - 1) + "../"
@@ -237,6 +253,7 @@ def sitemap(pages):
 
 
 links_resolve()
+palette = landing_palette()
 shutil.rmtree(OUT, ignore_errors=True)
 shutil.rmtree(SRC, ignore_errors=True)
 shutil.copytree(MANUAL, SRC)
