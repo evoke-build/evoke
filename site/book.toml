@@ -1,7 +1,7 @@
 # The manual as a site, rendered by mdBook: `mise run site` copies docs/manual beside a SUMMARY.md made from its
 # README, builds it here, and lays the result under target/site/manual with the landing page and install script.
 [book]
-title       = "evoke"
+title       = "Evoke"
 description = "The evoke manual: a sentence becomes a call of a small program, chosen by Jev, TypeSafe AI's classifier, and run only when it is sure enough. The CLI, the package manager and the TypeScript SDK, in the user's words."
 language    = "en"
 src         = "../target/site-src"

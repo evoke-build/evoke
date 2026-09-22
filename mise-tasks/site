@@ -90,7 +90,7 @@ def described(page):
         page.write_text(text.replace("</head>", '<meta name="robots" content="noindex">\n</head>', 1))
         return
     title = html_text.unescape(titled[1])
-    name = title.removesuffix(" - evoke")
+    name = title.removesuffix(" - Evoke")
     summary_line = description(text) or re.search(r'<meta name="description" content="([^"]*)">', text)[1]
     quoted = html_text.escape(summary_line, quote=True)
     heading = html_text.escape(title, quote=True)
@@ -140,16 +140,18 @@ AT_WORK = """                    <aside class="at-work" aria-label="The use case
 
 
 def furnished(page):
-    """A manual page furnished: the browser's chrome takes the page's colour, the brand in the bar leads home, a Use
-    cases link joins the bar, and the six sentences close the page. The pages nobody lands on, print and 404, take
-    only the colour."""
+    """A manual page furnished: the browser's chrome takes the page's colour, the bar carries the wordmark and it leads
+    home, a Use cases link joins the bar, and the six sentences close the page. The pages nobody lands on, print and
+    404, take only the colour and the wordmark."""
     text = page.read_text()
     text = text.replace('<meta name="theme-color" content="#ffffff">', '<meta name="theme-color" content="#101010">', 1)
+    brand = "evoke"
     if page.name not in UNLISTED:
         root = "../" * (len(page.relative_to(OUT / "manual").parts) - 1) + "../"
-        text = text.replace('<h1 class="menu-title">evoke</h1>', f'<h1 class="menu-title"><a href="{root}">evoke</a></h1>', 1)
+        brand = f'<a href="{root}">evoke</a>'
         text = text.replace('<div class="right-buttons">\n', f'<div class="right-buttons">\n                        <a class="use-cases" href="{root}use-cases.html">Use cases</a>\n', 1)
         text = text.replace("                    </main>", AT_WORK.replace("{root}", root) + "                    </main>", 1)
+    text = text.replace('<h1 class="menu-title">Evoke</h1>', f'<h1 class="menu-title">{brand}</h1>', 1)
     page.write_text(text)
 
 
