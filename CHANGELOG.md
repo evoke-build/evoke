@@ -10,6 +10,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   keeps its entry beside the full one instead of overwriting it.
 - `evoke run --json <call>` prints the call and its result as one JSON line, with nothing judged; with no
   terminal, the line stands for a destructive call's confirm, as it does for a decision.
+- A question id may be `weave.<name>`: a question `evoke` asks on its own account, which an adapter answers
+  like any other and a recording holds. `weave` joins the reserved local names.
 - The SDK's transport connects through the proxy `HTTPS_PROXY` names, as the CLI's does; `NO_PROXY` excludes
   hosts. The manual's environment page lists both.
 - A connection that fails is said plainly: `could not connect to api.typesafe.ai: connection refused`, the proxy

@@ -38,7 +38,7 @@ token  = { env = "HUE_TOKEN" }     # from a variable; the only form a secret may
 gate = { route = 0.5, fits = 0.3, read = 0.6, write = 0.8 }   # each a probability; read ≤ write
 ```
 
-Local names match `[a-z][a-z0-9_]*`. The names `none`, `unstated` and `fits` are reserved. A missing `evoke.toml`
+Local names match `[a-z][a-z0-9_]*`. The names `none`, `unstated`, `fits` and `weave` are reserved. A missing `evoke.toml`
 at a root means the default project: `adapter = "jev"`, nothing installed.
 
 ## `evoke.lock`

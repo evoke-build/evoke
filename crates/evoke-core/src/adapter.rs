@@ -8,7 +8,7 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
 use crate::diagnostic::Fix;
-use crate::name::{AdapterId, ArgName, LocalName, OptionKey, Word};
+use crate::name::{AdapterId, ArgName, LocalName, OptionKey, WeaveName, Word};
 use crate::propose::Proposed;
 use crate::text::{Clean, Identity, Input};
 
@@ -71,13 +71,16 @@ impl fmt::Display for Key {
     }
 }
 
-/// Which question: `route`, `fits.<reflex>` or `<reflex>.<argument>`; on the wire, that string.
+/// Which question: `route`, `fits.<reflex>`, `<reflex>.<argument>`, or `weave.<name>` — a question `evoke` asks
+/// on its own account beside the plan's, which travels through an adapter like any other; on the wire, that
+/// string. No reflex is named `fits` or `weave`, so the head settles the kind.
 #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub enum QuestionId {
     Route,
     Fits(LocalName),
     Arg(LocalName, ArgName),
+    Weave(WeaveName),
 }
 
 impl QuestionId {
@@ -86,11 +89,16 @@ impl QuestionId {
             return Ok(Self::Route);
         }
         let invalid = || {
-            format!("\"{text}\" is not a question id: route, fits.<reflex> or <reflex>.<argument>")
+            format!(
+                "\"{text}\" is not a question id: route, fits.<reflex>, <reflex>.<argument> or weave.<name>"
+            )
         };
         let (head, tail) = text.split_once('.').ok_or_else(invalid)?;
         if head == "fits" {
             return LocalName::new(tail).map(Self::Fits).map_err(|_| invalid());
+        }
+        if head == "weave" {
+            return WeaveName::new(tail).map(Self::Weave).map_err(|_| invalid());
         }
         match (LocalName::new(head), ArgName::new(tail)) {
             (Ok(reflex), Ok(arg)) => Ok(Self::Arg(reflex, arg)),
@@ -102,7 +110,7 @@ impl QuestionId {
     #[must_use]
     pub fn reflex(&self) -> Option<&LocalName> {
         match self {
-            Self::Route => None,
+            Self::Route | Self::Weave(_) => None,
             Self::Fits(reflex) | Self::Arg(reflex, _) => Some(reflex),
         }
     }
@@ -128,6 +136,7 @@ impl fmt::Display for QuestionId {
             Self::Route => f.write_str("route"),
             Self::Fits(reflex) => write!(f, "fits.{reflex}"),
             Self::Arg(reflex, arg) => write!(f, "{reflex}.{arg}"),
+            Self::Weave(name) => write!(f, "weave.{name}"),
         }
     }
 }
@@ -462,14 +471,21 @@ mod tests {
 
     #[test]
     fn question_ids_are_their_strings() {
-        for text in ["route", "fits.timer", "timer.duration"] {
+        for text in ["route", "fits.timer", "timer.duration", "weave.split_0"] {
             let id = QuestionId::parse(text).unwrap();
             assert_eq!(id.to_string(), text);
             assert_eq!(serde_json::to_string(&id).unwrap(), format!("\"{text}\""));
         }
         assert!(QuestionId::parse("fits").is_err());
+        assert!(QuestionId::parse("weave").is_err());
+        assert!(QuestionId::parse("weave.Split").is_err());
         assert!(QuestionId::parse("Lights.room").is_err());
         assert!(QuestionId::parse("a.b.c").is_err());
+        assert!(matches!(
+            QuestionId::parse("weave.split_0").unwrap(),
+            QuestionId::Weave(_)
+        ));
+        assert_eq!(QuestionId::parse("weave.split_0").unwrap().reflex(), None);
         assert_eq!(
             QuestionId::parse("fits.timer")
                 .unwrap()

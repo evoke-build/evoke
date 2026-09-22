@@ -38,7 +38,7 @@ token  = { env = "HUE_TOKEN" }     # a secret: the variable, never the value
 gate = { write = 0.85 }
 ```
 
-- A **local name** matches `[a-z][a-z0-9_]*`. `none`, `unstated` and `fits` are reserved. The local name is what
+- A **local name** matches `[a-z][a-z0-9_]*`. `none`, `unstated`, `fits` and `weave` are reserved. The local name is what
   the classifier reads, and the overlay file is named after it.
 - An adapter name resolves only against `evoke`'s built-ins, never from the project directory. An adapter sees
   every input, so that matters. A table for an adapter you did not select is inert. So one file serves devices on

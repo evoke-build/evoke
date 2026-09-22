@@ -44,6 +44,27 @@ test("jev declares its id, limits and the gate with overrides, and needs its key
   }
 })
 
+test("a question of evoke's own, weave.<name>, travels through jev and replay like any other", async () => {
+  const own: Request = {
+    state: { request: "check stock and look up order 4821" },
+    questions: { "weave.split_0": { type: "yesno", ask: "At «and», two things?", yes: "Two things.", no: "One thing." } },
+    proposed: [],
+  }
+  const bodies: string[] = []
+  const jev = over({ key: "k" }, async (_url, _bearer, body) => {
+    bodies.push(body)
+    return { status: 200, body: JSON.stringify({ answers: { "weave.split_0": { type: "noul", noul: 0.73 } } }) }
+  })
+  deepStrictEqual((await answered(jev, own, 30_000, undefined, "decide()")).raw, { "weave.split_0": { yes: 0.73 } })
+  equal((JSON.parse(bodies[0] ?? "{}") as { questions: Record<string, { type: string }> }).questions["weave.split_0"]?.type, "noul")
+  const dir = mkdtempSync(join(tmpdir(), "evoke-weave-"))
+  const file = join(dir, "answers.toml")
+  const recorded = replay(file, { record: jev })
+  deepStrictEqual((await answered(recorded, own, 30_000, undefined, "decide()")).raw, { "weave.split_0": { yes: 0.73 } })
+  ok(readFileSync(file, "utf8").includes('"weave.split_0" = { yes = 0.73 }'))
+  deepStrictEqual((await answered(replay(file), own, 30_000, undefined, "decide()")).raw, { "weave.split_0": { yes: 0.73 } })
+})
+
 test("the policy loop: once more after a connect error or a 5xx, never after a 4xx", async () => {
   const calls: string[] = []
   const sequence = (...replies: (Response | Transport)[]): Post => async (_url, bearer, body, _signal, timeout) => {

@@ -157,6 +157,8 @@ impl TryFrom<RawPlan> for Plan {
         for id in raw.slots.keys() {
             let owner = match id {
                 QuestionId::Route => continue,
+                // A question of evoke's own rides beside the plan's, never in it.
+                QuestionId::Weave(_) => None,
                 QuestionId::Fits(reflex) => raw.active.get(reflex).map(|_| true),
                 QuestionId::Arg(reflex, arg) => raw
                     .active
@@ -401,7 +403,9 @@ pub fn compile(set: &Installed, limits: Option<&Limits>) -> Result<Plan, Diagnos
             if count > max as usize {
                 let remove = match id {
                     QuestionId::Arg(reflex, _) => Some(reflex),
-                    QuestionId::Route | QuestionId::Fits(_) => active.keys().last(),
+                    QuestionId::Route | QuestionId::Fits(_) | QuestionId::Weave(_) => {
+                        active.keys().last()
+                    }
                 };
                 return Err(Diagnostic {
                     reflex: id.reflex().cloned(),

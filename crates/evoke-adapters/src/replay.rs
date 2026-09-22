@@ -228,6 +228,28 @@ mod tests {
     }
 
     #[test]
+    fn a_question_of_evokes_own_is_answered_from_the_recording() {
+        let read = recording(
+            "id = \"replay\"\n\n[answers.\"kill the lights\"]\n\"weave.split_0\" = { yes = 0.8 }\n",
+        )
+        .unwrap();
+        let mut request = request("kill the lights");
+        request.questions.clear();
+        let clean = |text: &str| evoke_core::Clean::new(text).unwrap();
+        request.questions.insert(
+            evoke_core::QuestionId::parse("weave.split_0").unwrap(),
+            evoke_core::Question::YesNo {
+                ask: clean("Two things?"),
+                yes: evoke_core::adapter::Text::Plain(clean("Two.")),
+                no: evoke_core::adapter::Text::Plain(clean("One.")),
+            },
+        );
+        let raw = answer(&read, &request).unwrap();
+        assert_eq!(raw.0["weave.split_0"]["yes"], 0.8);
+        assert_eq!(recording(&render(&read)).unwrap(), read);
+    }
+
+    #[test]
     fn an_unrecorded_utterance_is_a_fault() {
         let recording: Recording = serde_json::from_str(TRY).unwrap();
         assert_eq!(

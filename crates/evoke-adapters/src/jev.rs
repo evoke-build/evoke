@@ -407,6 +407,35 @@ mod tests {
         );
     }
 
+    #[test]
+    fn a_question_of_evokes_own_travels_like_any_other() {
+        let mut request: Request = serde_json::from_str(include_str!(
+            "../../../spec/fixtures/request-kill-the-lights.json"
+        ))
+        .unwrap();
+        let clean = |text: &str| evoke_core::Clean::new(text).unwrap();
+        request.questions.insert(
+            QuestionId::parse("weave.split_0").unwrap(),
+            Question::YesNo {
+                ask: clean("At «and», does the request ask for two things?"),
+                yes: evoke_core::adapter::Text::Plain(clean("Two things.")),
+                no: evoke_core::adapter::Text::Plain(clean("One thing.")),
+            },
+        );
+        let body = super::request(&request);
+        assert_eq!(body["questions"]["weave.split_0"]["type"], "noul");
+        assert_eq!(
+            body["questions"]["weave.split_0"]["criteria"]["true"],
+            "Two things."
+        );
+        let raw = answers(
+            200,
+            r#"{"answers": {"weave.split_0": {"type": "noul", "noul": 0.73}}}"#,
+        )
+        .unwrap();
+        assert_eq!(raw.0["weave.split_0"]["yes"], 0.73);
+    }
+
     /// The shape Jev answered with during the spike: a choice with its probabilities, a noul with one number.
     const RESPONSE: &str = r#"{"model": "jev-1.13.0", "answers": {"fits.awake": {"type": "noul", "noul": 0.96}, "power.action": {"type": "choice", "choice": "unstated", "confidence": 0.94, "probabilities": {"sleep": 0.04, "shutdown": 0.0, "unstated": 0.96, "restart": 0.0}}, "route": {"type": "choice", "choice": "awake", "confidence": 0.99, "probabilities": {"awake": 0.99, "none": 0.01, "power": 0.0}}}, "usage": {"input_tokens": 5371}}"#;
 

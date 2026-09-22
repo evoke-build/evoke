@@ -60,7 +60,8 @@ An ask, from a filter with no terminal. The line stands for the prompt that coul
 
 ## Questions
 
-A question id is `route`, `fits.<reflex>` or `<reflex>.<argument>`. A choice's keys are option keys, vocabulary
+A question id is `route`, `fits.<reflex>`, `<reflex>.<argument>`, or `weave.<name>`: a question `evoke` asks on
+its own account, beside a reflex's, and no reflex is named `weave`. A choice's keys are option keys, vocabulary
 words, `<start>-<end>` for a pick's candidates, `yes` and `no` for a flag, local names for the route, and the
 sentinels `none` and `unstated`.
 

@@ -41,7 +41,7 @@ export type NonEmpty<T> = [T, ...T[]]
 
 // name.rs
 
-/** The `[reflexes]` key, the overlay's file name, a route option: `[a-z][a-z0-9_]*`, never `none`, `unstated` or `fits`. */
+/** The `[reflexes]` key, the overlay's file name, a route option: `[a-z][a-z0-9_]*`, never `none`, `unstated`, `fits` or `weave`. */
 export type LocalName = string
 
 /** An argument: `[a-z][a-z0-9_]*`, never a JavaScript reserved word, so a body can destructure it. */
@@ -351,7 +351,7 @@ export type Digest = string
 /** A choice's key exactly as offered: an option key, a word, a candidate `<start>-<end>`, a flag's `yes` or `no`, a local name, `none` or `unstated`. The plan's slot gives it meaning at read. */
 export type Key = string
 
-/** Which question: `route`, `fits.<reflex>` or `<reflex>.<argument>`. */
+/** Which question: `route`, `fits.<reflex>`, `<reflex>.<argument>`, or `weave.<name>` — a question evoke asks on its own account beside the plan's. */
 export type QuestionId = string
 
 /** One question for the adapter: a choice over keys, or a yes/no with both sides described. */

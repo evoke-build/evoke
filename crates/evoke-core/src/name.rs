@@ -103,12 +103,18 @@ macro_rules! name {
 }
 
 name!(
-    /// The `[reflexes]` key, the overlay's file name, a route option: a name, never reserved, never `fits`.
+    /// The `[reflexes]` key, the overlay's file name, a route option: a name, never reserved, never `fits` or
+    /// `weave` — the heads of the question ids that are no reflex's.
     LocalName,
     |s: &str| {
         name(s)?;
-        if RESERVED.contains(&s) || s == "fits" { Err(format!("\"{s}\" is reserved")) } else { Ok(()) }
+        if RESERVED.contains(&s) || s == "fits" || s == "weave" { Err(format!("\"{s}\" is reserved")) } else { Ok(()) }
     }
+);
+name!(
+    /// A question `evoke` asks on its own account, beside the plan's: `weave.<name>`.
+    WeaveName,
+    name
 );
 name!(
     /// An argument: a name a JavaScript body can destructure.
@@ -255,6 +261,12 @@ mod tests {
             "\"Lights\" is not a name: [a-z][a-z0-9_]*"
         );
         assert_eq!(LocalName::new("fits").unwrap_err(), "\"fits\" is reserved");
+        assert_eq!(
+            LocalName::new("weave").unwrap_err(),
+            "\"weave\" is reserved"
+        );
+        assert!(WeaveName::new("split_0").is_ok());
+        assert!(WeaveName::new("split.0").is_err());
         assert_eq!(
             ArgName::new("for").unwrap_err(),
             "\"for\" is a JavaScript reserved word"
