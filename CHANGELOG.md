@@ -26,6 +26,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   that adds the rest; a ref with a tag it has not, a collection with `--as`, a word to remove that is not there
   and a directory that is not there each end in the command that helps. `update <name> --accept <other>` is
   refused instead of dropping the accept. A failed keep leaves no `.tmp` directory in the store.
+- A file body starts sooner: the loader warms Node's type stripper while the decision is made, some twenty
+  milliseconds a body paid after it, and in a sentence of several steps the next step's loader is started while
+  the current one runs.
 - After a sentence of several steps, `evoke why` shows every step under its number with what became of it, and
   `evoke teach <call>` with no utterance takes the step the lesson's reflex decided, or names the steps. A step
   decided again with a bound value in its words and refused then says so, `"…" · no reflex`, where before it ended

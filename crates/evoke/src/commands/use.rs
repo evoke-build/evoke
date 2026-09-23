@@ -10,7 +10,7 @@
 
 use evoke_core::call::Value;
 use evoke_core::decide::{Choices, Missing, Why};
-use evoke_core::manifest::{Kind, Source};
+use evoke_core::manifest::{Kind, Run, Source};
 use evoke_core::name::{ArgName, LocalName, OptionKey, VocabName, Word};
 use evoke_core::text::NonEmpty;
 use evoke_core::vocabulary::Meaning;
@@ -628,6 +628,13 @@ impl Using<'_> {
                                 Err(exit) => return self.session.reporter.exit(input, exit),
                             },
                         };
+                        // The next file step's loader, started now, is warm at its turn.
+                        if self.file_step_after(&woven.weave, handling.step) {
+                            warm = match self.session.warm() {
+                                Ok(next) => next,
+                                Err(exit) => return self.session.reporter.exit(input, exit),
+                            };
+                        }
                         let rounded = self.round(
                             input,
                             Some((handling.step, of)),
@@ -947,6 +954,16 @@ impl Using<'_> {
             .apply(input, &vocab_edit(vocabulary.clone(), change))?;
         self.session.reload(input)?;
         Ok(Some(word))
+    }
+
+    /// Whether a step after `n` runs a file: what a loader started ahead of its turn is for.
+    fn file_step_after(&self, weave: &Weave, n: usize) -> bool {
+        weave.steps.iter().filter(|step| step.n > n).any(|step| {
+            step.reflex
+                .as_ref()
+                .and_then(|reflex| self.session.plan.active().get(reflex))
+                .is_some_and(|active| matches!(active.run, Run::File(_)))
+        })
     }
 
     /// The vocabulary an argument draws from, when it draws from one.

@@ -5,9 +5,18 @@
 // without the message the host reports, and without the frames inside Node itself. SIGTERM and the deadline abort
 // `signal`; a body that has not settled a second later is abandoned. The SDK ships this same file.
 import { writeSync } from "node:fs";
+import module from "node:module";
 import { pathToFileURL } from "node:url";
 
 const GRACE = 1000;
+// Node's type stripper loads on the first `.mts` import, some twenty milliseconds a body would pay after its
+// envelope arrived: loaded now instead, while the envelope is on its way. The host turns the API's experimental
+// warning off; a runtime without the API skips this, and a body's own import says if types cannot be stripped.
+try {
+  module.stripTypeScriptTypes?.("let warm: true = true");
+} catch {
+  // Nothing to warm.
+}
 const controller = new AbortController();
 // The whole line, however long: `process.stdout` below puts the pipe in non-blocking mode, so one write may take
 // part of it, and the next may be told to wait a moment.

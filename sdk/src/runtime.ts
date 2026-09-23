@@ -88,7 +88,9 @@ export async function child(
     config: resolved(what, envelope.config),
     deadline: envelope.deadline,
   }
-  const started = spawn(process.execPath, [LOADER], {
+  // The loader warms Node's type stripper through an API still marked experimental: its warning is off, so a
+  // body's stderr is the body's.
+  const started = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", LOADER], {
     detached: true,
     env: scrubbed(),
     stdio: ["pipe", "pipe", "inherit"],
