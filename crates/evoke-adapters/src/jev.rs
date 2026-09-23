@@ -240,12 +240,13 @@ pub fn answers(status: u16, body: &str, credential: &VarName) -> Result<Raw, Fau
                     .map(|(key, p)| p.as_f64().map(|p| (key.clone(), p)))
                     .collect::<Option<_>>()
                     .ok_or_else(|| malformed("a probability is not a number".to_owned()))?;
-                // Jev prints two decimals, so a sum drifts by at most half a unit in the last place per
-                // option, and by less than 0.05 over any question; a wider gap is the engine's, never hidden.
+                // Jev prints two decimals, so a sum drifts by half a unit in the last place per option at most;
+                // that much is normalized, bounded at 0.05, and a wider gap is the engine's, never hidden. The
+                // comparison allows for the doubles' own error, so 0.51 + 0.50 is within 0.01.
                 let sum: f64 = probabilities.values().sum();
                 let rounding = u32::try_from(probabilities.len())
                     .map_or(0.05, |n| (0.005 * f64::from(n)).min(0.05));
-                if sum.is_finite() && sum > 0.0 && (sum - 1.0).abs() <= rounding {
+                if sum.is_finite() && sum > 0.0 && (sum - 1.0).abs() <= rounding + 1e-9 {
                     for p in probabilities.values_mut() {
                         *p /= sum;
                     }
@@ -464,6 +465,18 @@ mod tests {
         let third = rounded.0["route"]["a"];
         assert!((third - 1.0 / 3.0).abs() < 1e-12);
         assert!((rounded.0["route"].values().sum::<f64>() - 1.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn a_sum_at_the_rounding_boundary_is_normalized() {
+        // 0.51 + 0.50 is 1.01 in print and a hair over in doubles: within half a unit per option either way.
+        let answers = answers(
+            200,
+            r#"{"answers": {"route": {"type": "choice", "probabilities": {"a": 0.51, "b": 0.50}}}}"#,
+        )
+        .unwrap();
+        let sum = answers.0["route"]["a"] + answers.0["route"]["b"];
+        assert!((sum - 1.0).abs() < 1e-12, "{sum}");
     }
 
     #[test]
