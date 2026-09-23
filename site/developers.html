@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>For developers - Evoke</title>
+  <meta name="description" content="Turn a function, a script or a command into a reflex. Put typed decisions inside your app, connect operations, test both halves, and share with a git tag.">
+  <!-- head -->
+  <style>
+    .legend dt { font: 500 .8rem/1.6 var(--mono); color: var(--accent-ink); margin: 0; }
+    .legend dd { margin: .1rem 0 .95rem; color: var(--muted); font-size: .95rem; line-height: 1.5; }
+    .legend dd strong { color: var(--fg); font-weight: 560; }
+    .legend dl { margin: 0; }
+    .shapes dd code { background: var(--bg); }
+  </style>
+</head>
+<body>
+  <!-- bar -->
+
+  <main class="wrap">
+    <div class="hero solo">
+      <div class="copy">
+        <h1>Give your software <em>a way to be asked.</em></h1>
+        <p class="lede"><strong>A function, a script or a command becomes a reflex with one file beside it.</strong>
+          Decisions run inside your app, typed, before anything happens. Eight parts, from the operation you already
+          have to where evoke fits beside an LLM.</p>
+      </div>
+      <ul class="index" aria-label="The sections">
+        <li><a href="#operation"><code>01</code>An operation you have</a></li>
+        <li><a href="#boundary"><code>02</code>Describe the boundary</a></li>
+        <li><a href="#decisions"><code>03</code>Decisions inside your app</a></li>
+        <li><a href="#chaining"><code>04</code>Connect operations</a></li>
+        <li><a href="#vocabulary"><code>05</code>Team names, separate</a></li>
+        <li><a href="#testing"><code>06</code>Test both halves</a></li>
+        <li><a href="#share"><code>07</code>Share what you built</a></li>
+        <li><a href="#llm"><code>08</code>Beside an LLM</a></li>
+      </ul>
+    </div>
+
+    <section id="operation">
+      <div class="rule"><p class="label">Your operation</p><span class="num">01</span></div>
+      <h2>Start with an operation you already have.</h2>
+      <p class="sub"><code>evoke new</code> writes a reflex that already works. <strong>The body is your code.</strong>
+        It receives typed arguments, returns one line, and can call anything you already have.</p>
+      <div class="split code-left">
+        <div class="panel">
+          <div class="file">hello/hello.mts<span class="who you">your code</span></div>
+<pre><span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"./reflex.d.ts"</span>
+
+<span class="w">export</span> <span class="w">default</span> <span class="o">(</span><span class="w">async</span> <span class="o">({</span> who <span class="o">})</span> <span class="o">=&gt;</span> <span class="s">`Hello, ${who}!`</span><span class="o">)</span> <span class="w">satisfies</span> Reflex</pre>
+          <div class="file">a terminal</div>
+<pre><span class="p">$</span> <span class="in">evoke new hello</span>
+<span class="add">+ hello/reflex.toml
++ hello/hello.mts
++ hello/reflex.d.ts</span>
+<span class="p">$</span> <span class="in">cd hello &amp;&amp; evoke check</span>
+<span class="own">  <span class="name">hello</span>  read  runs hello.mts</span>
+<span class="p">$</span> <span class="in">evoke run hello who=Ada</span>
+<span class="own">  <span class="name">hello</span> who="Ada"</span>
+<span class="out">Hello, Ada!</span></pre>
+        </div>
+        <div class="text">
+          <h3>What stays your responsibility</h3>
+          <ul class="ticks">
+            <li><strong>The body.</strong> A JavaScript file with a default export, or a program with its arguments.
+              Everything it needs is bundled into its directory.</li>
+            <li><strong>Its result.</strong> One lowercase line a person reads, or <code>{ text, data }</code> when an app
+              needs more. Throwing is failure.</li>
+            <li><strong>Its deadline.</strong> Thirty seconds per decision, for the classifier's answer and the body together. The body gets a
+              <code>signal</code> and stops when it fires.</li>
+            <li><strong>Its platform.</strong> A body that runs on one system only checks that first, and throws a plain error elsewhere.</li>
+          </ul>
+          <p><code>evoke run</code> calls the body by name and asks no classifier, so you can develop offline.
+            <code>reflex.d.ts</code> is generated from the manifest and types the arguments.</p>
+          <a class="more" href="/manual/author/first-reflex.html">Build your first reflex →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="boundary">
+      <div class="rule"><p class="label">The manifest</p><span class="num">02</span></div>
+      <h2>Describe the boundary.</h2>
+      <p class="sub">The manifest is what the classifier reads and what the body receives. <strong>Its wording decides
+        accuracy.</strong> Every input has exactly one source, so a sentence can never invent a value.</p>
+      <div class="split code-left">
+        <div class="panel wrap">
+          <div class="head"><i></i>lights/reflex.toml<span class="who">the whole shape</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""
+Turn the lights in one room on, off, or dim them.
+Ceiling and lamp lights only."""</span>
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span><span class="s">"colour scenes and schedules"</span><span class="o">,</span> <span class="s">"asking whether a light is on"</span><span class="o">]</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Set the <span class="ph">{room}</span> lights <span class="ph">{state}</span>?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="s">"lights.mts"</span>
+
+<span class="t">[config]</span>
+<span class="k">bridge</span> <span class="o">=</span> <span class="s">"Hue bridge address"</span>
+
+<span class="t">[args.room]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which room?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"rooms"</span>
+
+<span class="t">[args.state]</span>
+<span class="k">ask</span>         <span class="o">=</span> <span class="s">"What should the lights do?"</span>
+<span class="k">options.on</span>  <span class="o">=</span> <span class="s">"Switch on."</span>
+<span class="k">options.off</span> <span class="o">=</span> <span class="s">"Switch off."</span>
+<span class="k">options.dim</span> <span class="o">=</span> <span class="s">"Lower the brightness without switching off."</span>
+
+<span class="t">[args.brightness]</span>
+<span class="k">ask</span>      <span class="o">=</span> <span class="s">"How bright, in percent?"</span>
+<span class="k">pick</span>     <span class="o">=</span> <span class="s">"number"</span>
+<span class="k">range</span>    <span class="o">=</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">100</span><span class="o">]</span>
+<span class="k">optional</span> <span class="o">=</span> <span class="n">true</span>
+
+<span class="t">[examples]</span>
+<span class="s">"turn on the kitchen lights"</span>   <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"on"</span> <span class="o">}</span>
+<span class="s">"dim the office to 30 percent"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"dim"</span><span class="o">,</span> <span class="k">brightness</span> <span class="o">=</span> <span class="s">"30 percent"</span> <span class="o">}</span>
+
+<span class="t">[tests]</span>
+<span class="s">"make it darker in here"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"dim"</span> <span class="o">}</span>
+<span class="s">"light a candle"</span>         <span class="o">=</span> <span class="n">false</span></pre>
+        </div>
+        <div class="text legend">
+          <dl>
+            <dt>options · vocab · pick · flag</dt>
+            <dd><strong>The four sources of an input.</strong> The author's closed set, the user's word list, a piece
+              of the sentence read by code and checked against a range, or a yes/no switch.</dd>
+            <dt>ask · the meanings</dt>
+            <dd><strong>Questions a person could answer.</strong> The same line serves the classifier and the prompt.
+              One meaning per option, distinct and short.</dd>
+            <dt>not_for · false tests</dt>
+            <dd><strong>The near misses.</strong> Name what sounds like this reflex and is not. Then hold the boundary
+              with a test that must never route here.</dd>
+            <dt>effect</dt>
+            <dd><strong>Your honest claim.</strong> A read observes. A write can be undone. Destructive cannot, and
+              always asks. Absent means destructive.</dd>
+            <dt>[yields]</dt>
+            <dd><strong>Optional outputs.</strong> A field of the result, by kind, so a later step can take it.</dd>
+          </dl>
+          <a class="more" href="/format.html">Read the format →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="decisions">
+      <div class="rule"><p class="label">In your app</p><span class="num">03</span></div>
+      <h2>Put decisions inside your app.</h2>
+      <p class="sub">A decision is a typed value your code holds before anything runs. <strong>Inspect it, show it,
+        fill what is missing, ask for approval, then run it.</strong> Or let <code>handle()</code> do the whole loop.</p>
+      <div class="grid wide">
+        <div class="panel">
+          <div class="head"><i></i>app.ts</div>
+<pre><span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Reflexes <span class="o">}</span> <span class="w">from</span> <span class="s">"./evoke.d.ts"</span>
+
+<span class="w">const</span> project <span class="o">=</span> <span class="w">await</span> load<span class="o">&lt;</span>Reflexes<span class="o">&gt;({</span> <span class="k">root</span><span class="o">:</span> <span class="w">import</span><span class="o">.</span>meta<span class="o">.</span>dirname <span class="o">})</span>
+<span class="w">const</span> d <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>decide<span class="o">(</span><span class="s">"kill the lights in the den"</span><span class="o">)</span>
+
+<span class="w">switch</span> <span class="o">(</span>d<span class="o">.</span>outcome<span class="o">)</span> <span class="o">{</span>
+  <span class="w">case</span> <span class="s">"run"</span><span class="o">:</span>     <span class="w">await</span> project<span class="o">.</span>run<span class="o">(</span>d<span class="o">);</span> <span class="w">break</span>
+  <span class="w">case</span> <span class="s">"confirm"</span><span class="o">:</span> <span class="w">if</span> <span class="o">(</span><span class="w">await</span> ui<span class="o">.</span>confirm<span class="o">(</span>d<span class="o">.</span>prompt<span class="o">.</span>template<span class="o">))</span> <span class="w">await</span> project<span class="o">.</span>run<span class="o">(</span>d<span class="o">,</span> <span class="o">{</span> <span class="k">confirmed</span><span class="o">:</span> <span class="n">true</span> <span class="o">});</span> <span class="w">break</span>
+  <span class="w">case</span> <span class="s">"ask"</span><span class="o">:</span>     project<span class="o">.</span>fill<span class="o">(</span>d<span class="o">,</span> <span class="w">await</span> ui<span class="o">.</span>pick<span class="o">(</span>d<span class="o">.</span>missing<span class="o">));</span> <span class="w">break</span>
+  <span class="w">case</span> <span class="s">"abstain"</span><span class="o">:</span> ui<span class="o">.</span>say<span class="o">(</span>d<span class="o">.</span>contenders<span class="o">);</span> <span class="w">break</span>
+<span class="o">}</span>
+
+<span class="c">// typed by evoke.d.ts once the reflex is known</span>
+<span class="w">if</span> <span class="o">(</span>d<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"run"</span> <span class="o">&amp;&amp;</span> d<span class="o">.</span>reflex <span class="o">===</span> <span class="s">"lights"</span><span class="o">)</span> <span class="o">{</span>
+  d<span class="o">.</span>values<span class="o">.</span>room    <span class="c">// string</span>
+  d<span class="o">.</span>values<span class="o">.</span>state   <span class="c">// "on" | "off" | "dim"</span>
+<span class="o">}</span></pre>
+        </div>
+        <div class="sheet solo shapes">
+          <dl>
+            <div><dt>run</dt><dd><b>Ready.</b> <span>The call, the typed values, the confidence and every judgment.</span></dd></div>
+            <div><dt>confirm</dt><dd><b>Needs a yes.</b> <span>All of the above, the reflex's own question, and every reason it stopped.</span></dd></div>
+            <div><dt>ask</dt><dd><b>Needs a value.</b> <span>What is missing, why, and what it may be. <code>fill()</code> types the answer and gates again.</span></dd></div>
+            <div><dt>abstain</dt><dd><b>Nothing fits.</b> <span>The ranking, so your app can show it or queue the request.</span></dd></div>
+            <div><dt>data</dt><dd><b>Plain JSON.</b> <span>A decision survives a queue and a database. A second process can run it later, with <code>confirmed: true</code>.</span></dd></div>
+          </dl>
+        </div>
+      </div>
+      <p class="after"><a class="more" href="/start.html?mode=sdk">Use the SDK →</a> <span style="margin-left: 1.25rem">The types, key by key: <a href="/manual/sdk/decisions.html">Decisions</a>.</span></p>
+    </section>
+
+    <section id="chaining">
+      <div class="rule"><p class="label">Chaining</p><span class="num">04</span></div>
+      <h2>Connect compatible operations.</h2>
+      <p class="sub">Two ways to run several things, with two owners. <strong>A weave is planned by evoke from declared
+        outputs. A continuation is chosen by your program and driven by your loop.</strong></p>
+      <div class="compare">
+        <div>
+          <h3>A weave: explicit result bindings</h3>
+          <p>A reflex declares what its result holds under <code>[yields]</code>. A later step that lacks a value of
+            that kind takes it. <code>steps()</code> reads a sentence into its plan and runs nothing. <code>weave()</code>
+            runs it under your handlers.</p>
+        </div>
+        <div>
+          <h3>A continuation: your loop decides</h3>
+          <p>A body returns <code>{ text, data: { next } }</code>. Your application submits <code>next</code> as the
+            following request. Each hop is a decision like any other, gated on its own.</p>
+        </div>
+      </div>
+      <div class="panel" style="margin-top: 1.1rem">
+        <div class="head"><i></i>steps and weave</div>
+<pre><span class="w">const</span> plan <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>steps<span class="o">(</span><span class="s">"look up dana's address and email them"</span><span class="o">)</span>
+plan<span class="o">.</span>steps       <span class="c">// [{ n: 1, text, decision, reflex: "contact", effect: "read", ... }, { n: 2, ... }]</span>
+plan<span class="o">.</span>binds       <span class="c">// [{ from: 1, to: 2, arg: "to", field: "email", kind: "email", via: "fill" }]</span>
+plan<span class="o">.</span>verdict     <span class="c">// { outcome: "run" | "ask" | "confirm" | "refuse", because?: [...] }</span>
+
+<span class="w">const</span> woven <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>weave<span class="o">(</span>input<span class="o">,</span> <span class="o">{</span>
+  <span class="k">ask</span><span class="o">:</span> <span class="o">(</span>d<span class="o">,</span> turn<span class="o">)</span> <span class="o">=&gt;</span> ui<span class="o">.</span>pick<span class="o">(</span>d<span class="o">.</span>missing<span class="o">,</span> turn<span class="o">.</span>step<span class="o">),</span>     <span class="c">// before anything runs</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="o">(</span>d<span class="o">,</span> turn<span class="o">)</span> <span class="o">=&gt;</span> ui<span class="o">.</span>confirm<span class="o">(</span>d<span class="o">.</span>prompt<span class="o">.</span>template<span class="o">),</span>   <span class="c">// at the step's turn</span>
+<span class="o">})</span>
+woven<span class="o">.</span>status     <span class="c">// the worst step's: "ran", "failed", "declined", "refused", "unanswered"</span></pre>
+      </div>
+      <p class="after"><a class="more" href="/examples/contact-to-draft.html">View the chaining example →</a> <span style="margin-left: 1.25rem">The loop, in the <a href="/examples/runbook.html">runbook example</a>.</span></p>
+    </section>
+
+    <section id="vocabulary">
+      <div class="rule"><p class="label">Team names</p><span class="num">05</span></div>
+      <h2>Keep team-specific names separate.</h2>
+      <p class="sub">Your data supplies the vocabulary. <strong>The operation underneath never changes.</strong> A
+        multi-tenant server compiles the same reflexes over each tenant's own words, in milliseconds.</p>
+      <div class="split code-left">
+        <div class="panel wrap">
+          <div class="head"><i></i>server.ts</div>
+<pre><span class="w">const</span> tenant <span class="o">=</span> project<span class="o">.</span>with<span class="o">({</span> <span class="k">vocab</span><span class="o">:</span> <span class="o">{</span> <span class="k">rooms</span><span class="o">:</span> <span class="w">await</span> db<span class="o">.</span>rooms<span class="o">(</span>user<span class="o">)</span> <span class="o">}</span> <span class="o">})</span>
+<span class="w">const</span> d <span class="o">=</span> <span class="w">await</span> tenant<span class="o">.</span>decide<span class="o">(</span>input<span class="o">)</span>
+<span class="w">if</span> <span class="o">(</span>d<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"run"</span><span class="o">)</span> <span class="w">await</span> tenant<span class="o">.</span>run<span class="o">(</span>d<span class="o">)</span></pre>
+          <div class="file">vocab/rooms.toml<span class="who you">the same words, as a file</span></div>
+<pre><span class="k">den</span>    <span class="o">=</span> <span class="s">"The TV room downstairs; also 'the snug'."</span>
+<span class="k">office</span> <span class="o">=</span> <span class="o">{</span> <span class="k">what</span> <span class="o">=</span> <span class="s">"The upstairs study."</span><span class="o">,</span> <span class="k">value</span> <span class="o">=</span> <span class="s">"group-7"</span> <span class="o">}</span></pre>
+        </div>
+        <div class="text">
+          <ul class="ticks">
+            <li><strong>A word has a meaning and a value.</strong> The classifier reads the meaning. The program receives
+              the value, or the word itself.</li>
+            <li><strong>A decision is bound to its words.</strong> One made on a tenant's project is refused by
+              another's, so a server cannot mix them up.</li>
+            <li><strong>Files or data, the same shape.</strong> On a laptop the words are a file. In an app they come
+              from wherever you keep them.</li>
+          </ul>
+          <a class="more" href="/manual/sdk/projects.html#with-vocab--a-tenants-words">View the vocabulary guide →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="testing">
+      <div class="rule"><p class="label">Testing</p><span class="num">06</span></div>
+      <h2>Test the interpretation and the program.</h2>
+      <p class="sub">Three tests, each for a different thing. <strong>The wording over the installed set, the control flow
+        offline, and the body as a plain function.</strong></p>
+      <div class="grid three wide">
+        <div class="stack">
+          <div class="panel term quiet" role="figure" aria-label="evoke test">
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>the wording</div>
+<pre><span class="p">$</span> <span class="in">evoke test</span>
+<span class="own">  <span class="name">lights</span>  3 passed · <span class="mid">1 failed</span>
+    "make it darker in here"  state: expected "dim", read "off"
+  <span class="name">timer</span>   8 passed
+  1 of 12 cases failed  →  evoke test</span>
+<span class="own">[1]</span></pre>
+          </div>
+          <p class="caption">Every example and every held-out test, decided over everything installed. A neighbour
+            installed beside yours is part of the test.</p>
+        </div>
+        <div class="stack">
+          <div class="panel">
+            <div class="head"><i></i>the control flow, offline</div>
+<pre><span class="w">const</span> record <span class="o">=</span> process<span class="o">.</span>env<span class="o">.</span>RECORD <span class="o">?</span> jev<span class="o">()</span> <span class="o">:</span> <span class="n">undefined</span>
+<span class="w">const</span> project <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span>
+  <span class="k">reflexes</span><span class="o">:</span> <span class="o">{</span> timer <span class="o">},</span>
+  <span class="k">adapter</span><span class="o">:</span> replay<span class="o">(</span><span class="s">"answers.toml"</span><span class="o">,</span> <span class="o">{</span> record <span class="o">}),</span>
+<span class="o">})</span>
+<span class="w">const</span> d <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>decide<span class="o">(</span><span class="s">"timer for 10 minutes"</span><span class="o">)</span>
+assert<span class="o">.</span>equal<span class="o">(</span>d<span class="o">.</span>outcome<span class="o">,</span> <span class="s">"run"</span><span class="o">)</span></pre>
+          </div>
+          <p class="caption">One run records the answers. Every run after is offline and gives the same result. The
+            gate in tests is the gate in production.</p>
+        </div>
+        <div class="stack">
+          <div class="panel">
+            <div class="head"><i></i>the program, as a function</div>
+<pre><span class="w">import</span> note <span class="w">from</span> <span class="s">"../note/note.mts"</span>
+
+<span class="w">const</span> context <span class="o">=</span> <span class="o">{</span>
+  <span class="k">input</span><span class="o">:</span> <span class="s">""</span><span class="o">,</span>
+  <span class="k">config</span><span class="o">:</span> <span class="o">{</span> <span class="k">file</span><span class="o">:</span> <span class="s">"notes/today.txt"</span> <span class="o">},</span>
+  <span class="k">signal</span><span class="o">:</span> <span class="w">new</span> AbortController<span class="o">().</span>signal<span class="o">,</span>
+<span class="o">}</span>
+assert<span class="o">.</span>equal<span class="o">(</span><span class="w">await</span> note<span class="o">({</span> <span class="k">text</span><span class="o">:</span> <span class="s">"buy milk"</span> <span class="o">},</span> context<span class="o">),</span>
+  <span class="s">'noted "buy milk" in ~/notes/today.txt'</span><span class="o">)</span></pre>
+          </div>
+          <p class="caption">A body is a function. Import it and call it with a context of your own. Nothing of evoke
+            is involved.</p>
+        </div>
+      </div>
+      <p class="after"><a class="more" href="/manual/author/records.html">Examples and tests →</a> <span style="margin-left: 1.25rem"><a href="/manual/sdk/testing.html">Testing in the SDK →</a></span></p>
+    </section>
+
+    <section id="share">
+      <div class="rule"><p class="label">Sharing</p><span class="num">07</span></div>
+      <h2>Share what you built.</h2>
+      <p class="sub">Publishing is a git tag. <strong>No account, no registry, no build step.</strong> Others install
+        from the repository, pinned by tag, commit and content. Their wording stays in their own files.</p>
+      <div class="grid wide">
+        <div class="panel term quiet" role="figure" aria-label="A tag published and installed">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>publish · install</div>
+<pre><span class="p">$</span> <span class="in">git tag v1.2.0 &amp;&amp; git push --tags</span>
+<span class="p">$</span> <span class="in">evoke add radhi/home/lights</span>
+<span class="add">+ lights  radhi/home/lights 1.2.0  write  runs lights.mts</span>
+<span class="own">  inactive  lights: vocabulary "rooms" is empty  →  evoke vocab rooms add &lt;word&gt; "&lt;meaning&gt;"</span></pre>
+        </div>
+        <div class="side">
+          <div class="panel term quiet" role="figure" aria-label="evoke check names the next version">
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>the next version</div>
+<pre><span class="p">$</span> <span class="in">evoke check</span>
+<span class="own">  <span class="name">lights</span>  write  runs lights.mts
+  1.2.0 → 2.0.0  <span class="mid">major</span>
+    args.state  renamed power</span></pre>
+          </div>
+          <ol class="notes column">
+            <li><b>1</b><span><strong>Wording changes at any tag.</strong> A contract change, an input or the program,
+              is a version bump. <code>evoke check</code> diffs against your last tag and says which.</span></li>
+            <li><b>2</b><span><strong>A user's lessons survive.</strong> Rename an input with <code>was</code>, and
+              every overlay follows. An update reports and never rewrites their files.</span></li>
+          </ol>
+        </div>
+      </div>
+      <p class="after"><a class="more" href="/manual/author/publishing.html">Publish a reflex →</a></p>
+    </section>
+
+    <section id="llm">
+      <div class="rule"><p class="label">Beside an LLM</p><span class="num">08</span></div>
+      <h2>Where evoke fits in what you already have.</h2>
+      <div class="prose">
+        <p>Tools built on a large language model can also make constrained tool calls. The pattern overlaps: a model
+          picks an operation and fills its arguments. <strong>Judge evoke on what it packages around that step.</strong>
+          A reflex you install from git and share. A vocabulary of your own names, kept apart from the operation. A
+          decision your code inspects before anything runs. And a plan that runs several steps in order, each gated
+          on its own.</p>
+        <p>This site claims no advantage in speed or cost. Such a claim needs a named comparison and measurements.
+          The classifier answers closed questions with calibrated probabilities, and evoke's core names no
+          engine, so another one can be plugged in behind the same manifests.</p>
+      </div>
+    </section>
+
+    <div class="closing">
+      <div>
+        <h2>Use evoke in your app.</h2>
+        <p>One file, one reflex as code, one call that decides, asks, confirms and runs. Node 24.5 or newer.</p>
+      </div>
+      <div class="actions">
+        <a class="button primary" href="/start.html?mode=sdk">Use in my app</a>
+        <a class="quiet" href="/manual/sdk/getting-started.html">The SDK manual →</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- footer -->
+</body>
+</html>

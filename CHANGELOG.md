@@ -6,6 +6,14 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- evoke.build was rebuilt around five pages. The home page opens with a walkthrough of the weave example in six
+  stages a reader steps through, then a reflex, your words, the decisions, three examples, a capability of your
+  own, and the two ways to start. *How it works* follows one sentence to the program that runs. *Examples* lists
+  six, each on a page of its own with its request, its result, one boundary and what it needs before the run.
+  *For developers* goes from an operation you have to the tag that shares it. *Get started* keeps the example
+  you came from and switches every step between the terminal and the SDK. The FAQ answers ten questions. The
+  use-cases page sends its readers to the example that took its place. Every page shares one stylesheet, one bar
+  and one footer, and the build checks that every link and anchor on every page lands.
 - A second adapter, `openjev`, reaches Jev through [OpenJEV](https://openjev.sh), an independent service that
   forwards requests to Jev: `adapter = "openjev"` in `evoke.toml`, the key in `OPENJEV_API_KEY`, the same `gate`
   table under `[adapters.openjev]`, and `openjev()` from `@evoke-build/evoke/openjev` in the SDK. Both adapters

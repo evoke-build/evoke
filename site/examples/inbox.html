@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Process an inbox of requests - Evoke</title>
+  <meta name="description" content="A file of requests, one per line. What is sure runs. What needs a person is queued with its ranking. A pattern for your app, in eleven lines of code.">
+  <!-- head -->
+</head>
+<body>
+  <!-- bar -->
+
+  <main class="wrap example">
+    <div class="hero solo">
+      <div class="copy">
+        <p class="crumb"><a href="/examples.html">Examples</a> · 04 of 06</p>
+        <h1>Act on the clear requests. <em>Hold the rest for a person.</em></h1>
+        <p class="lede"><strong>A file of requests, one per line.</strong> What is sure runs. What needs a person is
+          queued with its ranking, and what is nobody's stays untouched. A pattern for your app, in eleven lines.</p>
+      </div>
+      <ul class="index" aria-label="The sections">
+        <li><a href="#request"><code>01</code>The request and the result</a></li>
+        <li><a href="#files"><code>02</code>The operations</a></li>
+        <li><a href="#boundary"><code>03</code>One boundary</a></li>
+        <li><a href="#needs"><code>04</code>Before you run it</a></li>
+      </ul>
+    </div>
+
+    <section id="request">
+      <div class="rule"><p class="label">The request and the result</p><span class="num">01</span></div>
+      <h2>Lines in, decisions out.</h2>
+      <p class="sub">The same three ops reflexes, fed a file. <strong>One line ran. One waits for a person. One fits
+        nothing.</strong> Every line is what the terminal printed.</p>
+      <div class="grid wide">
+        <div class="panel term demo stream" role="figure" data-scene="stream" aria-label="Three lines sorted into three lanes">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/ops<span class="trail" aria-hidden="true"><b>ran</b><b>queued</b><b>nobody's</b></span></div>
+          <div class="room">
+            <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <text class="dim" x="70" y="38">inbox.txt</text>
+              <line class="belt" x1="232" y1="67" x2="380" y2="67"/>
+              <line class="belt" x1="232" y1="117" x2="380" y2="117"/>
+              <line class="belt" x1="232" y1="167" x2="380" y2="167"/>
+              <g class="item i1"><rect width="150" height="26" rx="7"/><text x="11" y="17">scale checkout to 6</text></g>
+              <g class="item i2"><rect width="150" height="26" rx="7"/><text x="11" y="17">silence db-3</text></g>
+              <g class="item i3"><rect width="150" height="26" rx="7"/><text x="11" y="17">what is the weather</text></g>
+              <g class="lane ran" transform="translate(392 54)"><circle class="mark" cx="13" cy="13" r="12"/><path d="M8 13.5 l3.5 3.5 l7 -8"/><text x="34" y="17">ran</text></g>
+              <g class="lane person" transform="translate(392 104)"><circle class="mark" cx="13" cy="13" r="12"/><circle class="face" cx="13" cy="9.5" r="3.2"/><path d="M7.5 19.5 a5.5 5.5 0 0 1 11 0"/><text x="34" y="17">a person</text></g>
+              <g class="lane none" transform="translate(392 154)"><circle class="mark" cx="13" cy="13" r="12"/><path d="M8.5 13 h9"/><text x="34" y="17">nobody's</text></g>
+            </svg>
+          </div>
+          <div class="strip" style="--lines: 6" aria-live="off">
+            <span class="line say show"><span class="p">$</span> <span class="in">node queue.ts &lt; inbox.txt</span></span>
+            <span class="line out show">deployment.apps/checkout-api scaled</span>
+            <span class="line out show">queued · ask · "silence db-3"</span>
+            <span class="line out show">queued · abstain · "what is the weather like"</span>
+          </div>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>A settled decision runs.</strong> The first line named everything and cleared the
+              bar, so <code>run()</code> ran it.</span></li>
+            <li><b>2</b><span><strong>An ask waits for a person.</strong> «silence db-3» named no duration. The decision
+              carries what is missing and why, so a person can answer later.</span></li>
+            <li><b>3</b><span><strong>Nothing was invented.</strong> A question about the weather fits no reflex. It is
+              queued as an abstain, with its ranking.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="files">
+      <div class="rule"><p class="label">The operations</p><span class="num">02</span></div>
+      <h2>Eleven lines around the same reflexes.</h2>
+      <p class="sub">The app reads a line, decides, and runs what is settled. <strong>The reflexes are the ones from the
+        <a href="/examples/ops.html">ops example</a></strong>, installed beside the app as files.</p>
+      <div class="grid wide">
+        <div class="panel tabbed">
+          <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The inbox as a file, and the app">
+            <button role="tab" id="t1" aria-controls="p1" aria-selected="true">the inbox</button>
+            <button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1">the app</button>
+          </div></div>
+          <div role="tabpanel" id="p1" aria-labelledby="t1">
+            <div class="file">inbox.txt<span class="who you">yours</span></div>
+<pre>scale checkout to 6 in staging
+silence db-3
+what is the weather like</pre>
+          </div>
+          <div role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+            <div class="file">queue.ts<span class="who you">yours</span></div>
+<pre><span class="c">// The inbox as a stream. What is sure runs; the rest is queued for a person,</span>
+<span class="c">// with the ranking or the missing pieces.</span>
+<span class="w">import</span> <span class="o">{</span> createInterface <span class="o">}</span> <span class="w">from</span> <span class="s">"node:readline"</span>
+<span class="w">import</span> <span class="o">{</span> load <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+
+<span class="w">const</span> ops <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> root<span class="o">:</span> <span class="w">import</span><span class="o">.</span>meta<span class="o">.</span>dirname <span class="o">})</span>
+<span class="w">for</span> <span class="w">await</span> <span class="o">(</span><span class="w">const</span> line <span class="w">of</span> createInterface<span class="o">({</span> input<span class="o">:</span> process<span class="o">.</span>stdin <span class="o">}))</span> <span class="o">{</span>
+  <span class="w">const</span> d <span class="o">=</span> <span class="w">await</span> ops<span class="o">.</span>decide<span class="o">(</span>line<span class="o">)</span>
+  <span class="w">if</span> <span class="o">(</span>d<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"run"</span><span class="o">)</span> console<span class="o">.</span>log<span class="o">((</span><span class="w">await</span> ops<span class="o">.</span>run<span class="o">(</span>d<span class="o">)).</span>text<span class="o">)</span>
+  <span class="w">else</span> console<span class="o">.</span>log<span class="o">(</span><span class="s">`queued · ${d.outcome} · "${line}"`</span><span class="o">)</span>
+<span class="o">}</span></pre>
+          </div>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong><code>decide()</code> runs nothing.</strong> It returns a typed decision: run,
+              confirm, ask or abstain. The app branches on it.</span></li>
+            <li><b>2</b><span><strong>Only <code>run</code> is acted on here.</strong> A confirm would also wait for a
+              person in this app, since nothing answers it. Your queue decides who.</span></li>
+            <li><b>3</b><span><strong>The decision is plain data.</strong> Keep it in any queue or table. A second process
+              can fill or confirm it later.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="boundary">
+      <div class="rule"><p class="label">One boundary</p><span class="num">03</span></div>
+      <h2>With no terminal, a question is an exit code.</h2>
+      <p class="sub">The CLI can take the same file. <strong>A line that needs an answer cannot get one from a pipe</strong>,
+        so it exits 3 and names the command to run yourself.</p>
+      <div class="grid wide">
+        <div class="panel term" role="figure" aria-label="The CLI as a filter over the same file">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre><span class="p">$</span> <span class="in">evoke &lt; inbox.txt</span>
+<span class="own">  <span class="name">scale</span> service="checkout" env="staging" replicas="6"  <span class="hi">0.90</span></span>
+<span class="out">deployment.apps/checkout-api scaled</span>
+<span class="own">  an ask needs a terminal  →  evoke "silence db-3"
+  <span class="name">none</span> <span class="hi">1.00</span> · 3 more under 0.01
+[3]</span></pre>
+        </div>
+        <p class="caption">Every other line is still answered. The filter exits with the first non-zero code. There is no
+          flag that answers a question for you. <a href="/manual/use/saying-things.html#three-ways-in">Three ways in →</a></p>
+      </div>
+    </section>
+
+    <section id="needs">
+      <div class="rule"><p class="label">Before you run it</p><span class="num">04</span></div>
+      <h2>What this pattern needs.</h2>
+      <ul class="needs">
+        <li class="ok"><b>Node 24.5 or newer</b>And the SDK, <code>@evoke-build/evoke</code>, next to the file.</li>
+        <li class="ok"><b>Reflexes beside the app</b>The three from the ops example, installed with
+          <code>evoke add</code> in the app's directory, and their vocabulary.</li>
+        <li class="ok"><b>A classifier key</b>One request per line. The provider bills the use.</li>
+        <li class="no"><b>Your queue</b>The app prints what it queued. Yours would store the decision and show it to
+          someone.</li>
+      </ul>
+      <p class="after">The files above are the whole example. Copy them from this page.</p>
+      <div class="actions">
+        <a class="button primary" href="/start.html?example=inbox">Adapt this pattern</a>
+        <a class="quiet" href="/manual/sdk/decisions.html">Read the docs →</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- footer -->
+  <script src="/scenes.js"></script>
+</body>
+</html>

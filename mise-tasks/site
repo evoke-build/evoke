@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-# MISE description="Build evoke.build into target/site: the pages, the manual by mdBook, the schemas, llms.txt and the sitemap; the manual's links checked first, the served addresses last"
-"""Build evoke.build into target/site: the landing page, the idea page, the format page with its schemas, the
-use-cases page, the FAQ with its questions as structured data, the privacy policy dated by git, the install script,
-the manual rendered by mdBook with the site's bar, the use cases' sentences and the FAQ and privacy links on every
-page, a canonical link, a description, a card and a breadcrumb trail on every page, the manual's markdown beside
-each page, llms.txt and llms-full.txt for a language model, the sitemap dated by git, and robots.txt. It checks
-first that every link in the manual resolves, and last that every address the two files name is served.
+# MISE description="Build evoke.build into target/site: the pages with their shared bar and footer, the manual by mdBook, the schemas, llms.txt and the sitemap; the manual's links checked first, every link and address last"
+"""Build evoke.build into target/site: the site's pages, each given the shared head, bar and footer from site/parts,
+the example pages beside them, the FAQ with its questions as structured data, the privacy policy dated by git, the
+install script, the manual rendered by mdBook with the site's links, the examples' sentences and the FAQ and privacy
+links on every page, a canonical link, a description, a card and a breadcrumb trail on every page, the manual's
+markdown beside each page, llms.txt and llms-full.txt for a language model, the sitemap dated by git, and
+robots.txt. It checks first that every link in the manual resolves, and last that every link on every built page
+lands on a file and an anchor it has, and that every address the two files name is served.
 
 The manual's README is its index: its tables become mdBook's SUMMARY.md, so the site's structure has one source.
 What a search engine or a shared link needs is written here, once, from the pages themselves and from git."""
@@ -27,6 +28,10 @@ CARD_ALT = "evoke — Software, by reflex."
 LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)\)")
 TOKEN = re.compile(r"--([a-z-]+):\s*([^;]+);")
 UNLISTED = {"404.html", "print.html", "toc.html"}
+UNINDEXED = {"use-cases.html"}  # kept for the links that reach it; it sends the reader on
+PARTS = SITE / "parts"
+ID = re.compile(r'\sid="([^"]+)"')
+HREF = re.compile(r'\s(?:href|src)="([^"]+)"')
 SITE_URL = re.compile(r"https://evoke\.build/[^\s)\]<>\"'`]*")
 VERSION = re.search(r'^version\s*=\s*"([^"]+)"', (ROOT / "Cargo.toml").read_text(), re.MULTILINE)[1]
 
@@ -46,31 +51,53 @@ def links_resolve():
         sys.exit("\n".join(problems))
 
 
-def landing_palette():
-    """The landing page's palette, and a check that the use-cases page and the manual keep to it: a colour either one
-    declares under the landing page's name carries the landing page's value, so the three never drift apart."""
+def site_palette():
+    """The site's palette, from its stylesheet, and a check that the manual and any page declaring a colour keep to
+    it: a colour declared under the stylesheet's name carries the stylesheet's value, so nothing drifts apart."""
 
     def tokens(file):
-        block = re.search(r":root\s*\{(.*?)\}", file.read_text(), re.DOTALL)[1]
-        return {name: value.strip() for name, value in TOKEN.findall(block) if value.lstrip().startswith(("#", "rgb"))}
+        block = re.search(r":root\s*\{(.*?)\}", file.read_text(), re.DOTALL)
+        if block is None:
+            return {}
+        return {
+            name: value.strip() for name, value in TOKEN.findall(block[1]) if value.lstrip().startswith(("#", "rgb"))
+        }
 
-    landing = tokens(SITE / "index.html")
+    shared = tokens(SITE / "site.css")
     problems = [
-        f"{file.relative_to(ROOT)}: --{name} is {value}, the landing page's is {landing[name]}"
-        for file in (
-            SITE / "use-cases.html",
-            SITE / "idea.html",
-            SITE / "format.html",
-            SITE / "faq.html",
-            SITE / "privacy.html",
-            SITE / "manual.css",
-        )
+        f"{file.relative_to(ROOT)}: --{name} is {value}, the stylesheet's is {shared[name]}"
+        for file in [SITE / "manual.css", *pages()]
         for name, value in tokens(file).items()
-        if name in landing and value != landing[name]
+        if name in shared and value != shared[name]
     ]
     if problems:
         sys.exit("\n".join(problems))
-    return landing
+    return shared
+
+
+def pages():
+    """The site's own pages: every page under site/ and site/examples/, but the social card's source."""
+    return [p for p in sorted(SITE.glob("*.html")) + sorted(SITE.glob("examples/*.html")) if p.name != "og.html"]
+
+
+def assembled(page):
+    """A site page made whole: the shared head, bar and footer from site/parts in place of their markers, the bar
+    marking the page it is on. A page missing a marker is a page that would ship without its furniture."""
+    text = page.read_text()
+    here = "/" + page.relative_to(OUT).as_posix().removesuffix("index.html")
+    bar = (PARTS / "bar.html").read_text()
+    bar = bar.replace(f'href="{here}"', f'href="{here}" aria-current="page"', 1)
+    if here.startswith("/examples/"):
+        bar = bar.replace('href="/examples.html"', 'href="/examples.html" aria-current="true"', 1)
+    for marker, part in (
+        ("<!-- head -->", (PARTS / "head.html").read_text().rstrip("\n")),
+        ("<!-- bar -->", bar.rstrip("\n")),
+        ("<!-- footer -->", (PARTS / "footer.html").read_text().rstrip("\n")),
+    ):
+        if marker not in text:
+            sys.exit(f"{page.relative_to(OUT)}: no {marker} marker")
+        text = text.replace(marker, part.strip("\n"), 1)
+    page.write_text(text)
 
 
 def contents():
@@ -118,7 +145,7 @@ def markdown(page):
 def source(page):
     """The file in the repository a built page comes from."""
     rel = page.relative_to(OUT).as_posix()
-    if "/" not in rel:
+    if not rel.startswith("manual/"):
         return SITE / rel
     if rel == "manual/index.html":
         return MANUAL / "README.md"
@@ -150,10 +177,14 @@ def description(page_html):
 
 
 def trail(page, name):
-    """The page's place, for a search engine: evoke, the manual, the page. The last step needs no address."""
+    """The page's place, for a search engine: evoke, then the manual or the examples where the page is one of
+    them, then the page. The last step needs no address."""
     steps = [{"@type": "ListItem", "position": 1, "name": "evoke", "item": URL}]
-    if page != OUT / "manual/index.html":
+    rel = page.relative_to(OUT).as_posix()
+    if rel.startswith("manual/") and page != OUT / "manual/index.html":
         steps.append({"@type": "ListItem", "position": 2, "name": "Manual", "item": URL + "manual/"})
+    elif rel.startswith("examples/"):
+        steps.append({"@type": "ListItem", "position": 2, "name": "Examples", "item": URL + "examples.html"})
     steps.append({"@type": "ListItem", "position": len(steps) + 1, "name": name})
     return json.dumps(
         {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": steps}, ensure_ascii=False
@@ -161,25 +192,30 @@ def trail(page, name):
 
 
 def described(page):
-    """A manual page with what a search engine and a shared link read: canonical, description, the card, the trail."""
+    """A page with what a search engine and a shared link read: canonical, description, the card, the trail. A
+    manual page is described by its first paragraph; a site page by the description it carries. The pages nobody
+    should land on from a search are marked so."""
     text = page.read_text()
     titled = re.search(r"<title>(.*?)</title>", text)
-    if page.name in UNLISTED or titled is None:
+    manual = page.relative_to(OUT).parts[0] == "manual"
+    if page.name in (UNLISTED if manual else UNINDEXED) or titled is None:
         page.write_text(text.replace("</head>", '<meta name="robots" content="noindex">\n</head>', 1))
         return
     title = html_text.unescape(titled[1])
-    name = title.removesuffix(" - evoke")
-    summary_line = description(text)
+    name = title.removesuffix(" - evoke").removeprefix("Evoke - ")
+    own = re.search(r'<meta name="description" content="([^"]*)">', text)
+    summary_line = description(text) if manual else (html_text.unescape(own[1]) if own else None)
     if summary_line is None:
-        sys.exit(f"{page.relative_to(OUT)}: no paragraph to describe the page by")
+        sys.exit(f"{page.relative_to(OUT)}: nothing to describe the page by")
     quoted = html_text.escape(summary_line, quote=True)
     heading = html_text.escape(title, quote=True)
+    home = page == OUT / "index.html"
     head = "\n".join(
         [
             f'<link rel="canonical" href="{address(page)}">',
-            f'<link rel="alternate" type="text/markdown" href="{markdown(page)}">',
+            *([f'<link rel="alternate" type="text/markdown" href="{markdown(page)}">'] if manual else []),
             '<meta name="robots" content="max-image-preview:large">',
-            '<meta property="og:type" content="article">',
+            f'<meta property="og:type" content="{"website" if home else "article"}">',
             '<meta property="og:site_name" content="evoke">',
             '<meta property="og:locale" content="en_US">',
             f'<meta property="og:title" content="{heading}">',
@@ -194,43 +230,43 @@ def described(page):
             f'<meta name="twitter:description" content="{quoted}">',
             f'<meta name="twitter:image" content="{CARD}">',
             f'<meta name="twitter:image:alt" content="{CARD_ALT}">',
-            f'<script type="application/ld+json">{trail(page, name)}</script>',
+            *([] if home else [f'<script type="application/ld+json">{trail(page, name)}</script>']),
             "</head>",
         ]
     )
-    text = re.sub(
-        r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{quoted}">', text, count=1
-    )
+    if manual:
+        text = re.sub(
+            r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{quoted}">', text, count=1
+        )
     page.write_text(text.replace("</head>", head, 1))
 
 
-AT_WORK = """                    <aside class="at-work" aria-label="The use cases">
+AT_WORK = """                    <aside class="at-work" aria-label="The examples">
                         <div class="words">
-                            <p class="label">Use cases</p>
-                            <h2>Where people use it.</h2>
-                            <p>Real sessions from an ops channel, an inbox, a payments desk, a plant floor, a runbook, a
-                                lesson and a weave. Each one as files anyone can install, and as code your app keeps.</p>
-                            <a class="go" href="{root}use-cases.html">See them run &rarr;</a>
+                            <p class="label">Examples</p>
+                            <h2>Find the first thing you want it to do.</h2>
+                            <p>Six examples, from what a Mac does at a word to a runbook that names its own next step.
+                                Each one shows its request, its result, and what it needs before you run it.</p>
+                            <a class="go" href="/examples.html">Explore examples &rarr;</a>
                         </div>
                         <ul class="said">
-                            <li><a href="{root}use-cases.html#ops"><i>$</i> evoke "scale checkout to 6 in staging"</a></li>
-                            <li><a href="{root}use-cases.html#stream"><i>$</i> evoke &lt; inbox.txt</a></li>
-                            <li><a href="{root}use-cases.html#bank"><i>$</i> evoke "pay Acme 12400 from ops"</a></li>
-                            <li><a href="{root}use-cases.html#plant"><i>$</i> evoke "the filler is jammed, stop it"</a></li>
-                            <li><a href="{root}use-cases.html#runbook"><i>$</i> node runbook.ts "drain the primary"</a></li>
-                            <li><a href="{root}use-cases.html#teach"><i>$</i> evoke "make db-3 shut up for 90 minutes"</a></li>
-                            <li><a href="{root}use-cases.html#weave"><i>$</i> evoke "look up dana's address and email them"</a></li>
+                            <li><a href="/examples/desktop.html"><i>$</i> evoke "set the volume to 40 percent"</a></li>
+                            <li><a href="/examples/contact-to-draft.html"><i>$</i> evoke "look up dana's address and email them"</a></li>
+                            <li><a href="/examples/ops.html"><i>$</i> evoke "scale checkout to 6 in staging"</a></li>
+                            <li><a href="/examples/inbox.html"><i>$</i> node queue.ts &lt; inbox.txt</a></li>
+                            <li><a href="/examples/runbook.html"><i>$</i> node runbook.ts "drain the primary"</a></li>
+                            <li><a href="/examples/approval.html"><i>$</i> node checker.ts</a></li>
                         </ul>
                     </aside>
 """
 
-COLOPHON = """                    <p class="colophon"><a href="{root}faq.html">FAQ</a><a rel="privacy-policy" href="{root}privacy.html">Privacy</a><a href="https://github.com/evoke-build/evoke">GitHub</a></p>
+COLOPHON = """                    <p class="colophon"><a href="/faq.html">FAQ</a><a rel="privacy-policy" href="/privacy.html">Privacy</a><a href="https://github.com/evoke-build/evoke">GitHub</a></p>
 """
 
 
 def furnished(page):
     """A manual page furnished: the browser's chrome takes the page's colour; the bar carries the wordmark as plain text,
-    so the title stays the page's one heading, and it leads home; a Use cases link joins the bar; the use cases' sentences
+    so the title stays the page's one heading, and it leads home; the site's pages join the bar; the examples' sentences
     close the page, with the FAQ, the privacy policy and the repository in a line under them. The pages nobody lands on,
     print and 404, take only the colour and the wordmark."""
     text = page.read_text()
@@ -239,18 +275,13 @@ def furnished(page):
     )
     brand = "evoke"
     if page.name not in UNLISTED:
-        root = "../" * (len(page.relative_to(OUT / "manual").parts) - 1) + "../"
-        brand = f'<a href="{root}">evoke</a>'
+        brand = '<a href="/">evoke</a>'
         text = text.replace(
             '<div class="right-buttons">\n',
-            f'<div class="right-buttons">\n                        <a class="use-cases idea" href="{root}idea.html">The idea</a>\n                        <a class="use-cases" href="{root}use-cases.html">Use cases</a>\n',
+            '<div class="right-buttons">\n                        <a class="site" href="/how-it-works.html">How it works</a>\n                        <a class="site" href="/examples.html">Examples</a>\n                        <a class="site start" href="/start.html">Get started</a>\n',
             1,
         )
-        text = text.replace(
-            "                    </main>",
-            AT_WORK.replace("{root}", root) + COLOPHON.replace("{root}", root) + "                    </main>",
-            1,
-        )
+        text = text.replace("                    </main>", AT_WORK + COLOPHON + "                    </main>", 1)
     text = text.replace(
         '<h1 class="menu-title">evoke</h1>', f'<p class="menu-title">{brand}</p>', 1
     )  # the title is the page's one heading
@@ -419,6 +450,32 @@ def whole():
     (OUT / "llms-full.txt").write_text("\n".join(parts))
 
 
+def linked(pages_built):
+    """Every link and source on every built page lands on a file the build wrote, and a fragment on an id that file
+    has, whether the link is written from the root or from the page. External addresses are not followed."""
+    ids = {}
+    problems = []
+    for page in pages_built:
+        for target in HREF.findall(page.read_text()):
+            if target.startswith(("http://", "https://", "mailto:", "data:")):
+                continue
+            path, _, fragment = target.partition("#")
+            path = path.split("?")[0]  # a query string is the page's to read
+            file = page if not path else (OUT / path.lstrip("/")) if path.startswith("/") else (page.parent / path)
+            file = file.resolve()
+            if file.is_dir():
+                file = file / "index.html"
+            if not (file.is_file() and file.is_relative_to(OUT)):
+                problems.append(f"{page.relative_to(OUT)}: {target} is not served")
+            elif fragment and file.suffix == ".html":
+                if file not in ids:
+                    ids[file] = set(ID.findall(file.read_text()))
+                if fragment not in ids[file]:
+                    problems.append(f"{page.relative_to(OUT)}: {target} names no anchor")
+    if problems:
+        sys.exit("\n".join(problems))
+
+
 def served(*files):
     """Every address into evoke.build the given files name is a file the build wrote: what a model is told to fetch,
     it can fetch."""
@@ -477,7 +534,7 @@ def sitemap(pages, dated):
 
 
 links_resolve()
-palette = landing_palette()
+palette = site_palette()
 shutil.rmtree(OUT, ignore_errors=True)
 shutil.rmtree(SRC, ignore_errors=True)
 shutil.copytree(MANUAL, SRC)
@@ -486,19 +543,13 @@ shutil.copytree(MANUAL, SRC)
 front = SRC / "README.md"
 front.write_text(front.read_text().replace('src="../../assets/logo.png"', 'src="/logo-512.png"', 1))
 subprocess.run(["mdbook", "build", str(SITE)], check=True)
-for name in [
-    "index.html",
-    "idea.html",
-    "format.html",
-    "use-cases.html",
-    "faq.html",
-    "privacy.html",
-    "install.sh",
-    "og.png",
-    "logo.png",
-    "logo-512.png",
-    "apple-touch-icon.png",
-]:
+(OUT / "examples").mkdir()
+site_pages = []
+for source_page in pages():
+    target = OUT / source_page.relative_to(SITE)
+    shutil.copy(source_page, target)
+    site_pages.append(target)
+for name in ["site.css", "scenes.js", "install.sh", "og.png", "logo.png", "logo-512.png", "apple-touch-icon.png"]:
     shutil.copy(SITE / name, OUT / name)
 shutil.copy(SITE / "theme/favicon.png", OUT / "favicon.png")
 shutil.copytree(SITE / "fonts", OUT / "fonts")
@@ -510,25 +561,25 @@ llms()
 whole()
 answered(OUT / "faq.html")
 changed(OUT / "privacy.html", dated)
-for name in ["index.html", "idea.html", "format.html", "use-cases.html", "faq.html", "privacy.html"]:
-    widowless(OUT / name)
+for page in site_pages:
+    assembled(page)
+    described(page)
+    widowless(page)
 manual_pages = sorted(OUT.glob("manual/**/*.html"))
 for page in manual_pages:
     furnished(page)
     described(page)
     widowless(page)
 shutil.copy(OUT / "manual/404.html", OUT / "404.html")
-listed = [
-    OUT / "index.html",
-    OUT / "idea.html",
-    OUT / "format.html",
-    OUT / "use-cases.html",
-    OUT / "faq.html",
-    OUT / "privacy.html",
-    OUT / "manual/index.html",
-] + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
+listed = (
+    [OUT / "index.html"]
+    + [p for p in site_pages if p.name not in UNINDEXED and p != OUT / "index.html"]
+    + [OUT / "manual/index.html"]
+    + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
+)
 sitemap(listed, dated)
 checked(listed)
+linked([*site_pages, *manual_pages])
 served(OUT / "llms.txt", OUT / "llms-full.txt", *sorted(OUT.rglob("*.html")))
 print(
     f"site: {OUT.relative_to(ROOT)} — {len(listed)} pages in the sitemap{'' if dated else ', undated: the clone has no history'}, "

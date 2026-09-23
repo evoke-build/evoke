@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Everyday Mac tasks - Evoke</title>
+  <meta name="description" content="Thirteen reflexes for what a Mac does at a word: volume, Wi-Fi, a timer, a draft, the screen locked. One line installs them, and every file is there to read.">
+  <!-- head -->
+</head>
+<body>
+  <!-- bar -->
+
+  <main class="wrap example">
+    <div class="hero solo">
+      <div class="copy">
+        <p class="crumb"><a href="/examples.html">Examples</a> · 01 of 06</p>
+        <h1>Your Mac does everyday things <em>at a word.</em></h1>
+        <p class="lede"><strong>Thirteen reflexes, installed with one line.</strong> Set the volume, turn Wi-Fi off, start a
+          timer, lock the screen, draft a mail. Each is a small program with its manifest, and you can read every file.
+          This example runs today, on a Mac.</p>
+      </div>
+      <ul class="index" aria-label="The sections">
+        <li><a href="#request"><code>01</code>The request and the result</a></li>
+        <li><a href="#files"><code>02</code>The operations</a></li>
+        <li><a href="#boundary"><code>03</code>One boundary</a></li>
+        <li><a href="#needs"><code>04</code>Before you run it</a></li>
+      </ul>
+    </div>
+
+    <section id="request">
+      <div class="rule"><p class="label">The request and the result</p><span class="num">01</span></div>
+      <h2>Three sentences, three outcomes.</h2>
+      <p class="sub">A volume change runs at once. A less certain one asks, and learns from your answer. <strong>A restart
+        asks every time.</strong> Every line is what the terminal printed.</p>
+      <div class="grid wide">
+        <div class="panel term demo mac-room" role="figure" data-scene="mac" data-volume="15" data-wifi="on" data-power="on" aria-label="A laptop answering three sentences: the volume set, Wi-Fi turned off after a lesson, a restart declined">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>~<span class="trail" aria-hidden="true"><b>ran</b><b>taught</b><b>declined</b></span></div>
+          <div class="room">
+            <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect class="lid" x="150" y="28" width="260" height="160" rx="12"/>
+              <rect class="screen" x="162" y="40" width="236" height="136" rx="6"/>
+              <rect class="base" x="110" y="192" width="340" height="10" rx="5"/>
+              <g transform="translate(180 60)">
+                <path class="icon" d="M2 6 h5 l6 -5 v18 l-6 -5 h-5 z"/><path class="icon" d="M18 5 q4 5 0 10"/>
+              </g>
+              <rect class="level" x="212" y="66" width="100" height="6" rx="3"/>
+              <rect class="fill" x="212" y="66" height="6" rx="3"/>
+              <text class="pct before" x="380" y="72" text-anchor="end">volume 15%</text>
+              <text class="pct after" x="380" y="72" text-anchor="end">volume 40%</text>
+              <g transform="translate(180 96)">
+                <path class="wave" d="M10 16 q3 -3 6 0"/><path class="wave" d="M6 11 q7 -7 14 0"/><path class="wave" d="M2 6 q11 -11 22 0"/>
+              </g>
+              <text class="wifi-state on" x="212" y="112">wi-fi on</text>
+              <text class="wifi-state off" x="212" y="112">wi-fi off</text>
+              <g transform="translate(180 132)">
+                <path class="icon" d="M13 2 v9"/><path class="icon" d="M8 5 a7 7 0 1 0 10 0"/>
+              </g>
+              <text class="power-state on" x="212" y="148">on</text>
+              <text class="power-state asked" x="212" y="148">restart? asked · no</text>
+            </svg>
+          </div>
+          <div class="strip" style="--lines: 6" aria-live="off">
+            <span class="line say show"><span class="p">$</span> <span class="in">evoke "restart the computer"</span></span>
+            <span class="line own show">  <b>power</b> action="restart" · destructive · weakest: action <i>0.97</i></span>
+            <span class="line own show">  Really restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span></span>
+            <span class="line own show">[2]</span>
+          </div>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>Sure enough, so it ran.</strong> «40 percent» is a number read from the sentence and
+              checked against the range 0 to 100. At 0.93, over the write bar of 0.8, nothing asked.</span></li>
+            <li><b>2</b><span><strong>«kill» meant off at only 0.72.</strong> Under the bar, so evoke asked. Typing
+              <code>t</code> recorded the phrase in your overlay, then ran. The next time, it is sure.</span></li>
+            <li><b>3</b><span><strong>Sure at 0.97, and it still asked.</strong> A restart is destructive. No number and no
+              flag skips that question. <code>[2]</code> means you said no.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="files">
+      <div class="rule"><p class="label">The operations</p><span class="num">02</span></div>
+      <h2>A manifest and a body, per reflex.</h2>
+      <p class="sub">This is <code>volume</code>, one of the thirteen. The manifest says what it does and what it asks.
+        The body is thirty lines that run one AppleScript line. <strong>The other twelve look the same.</strong></p>
+      <div class="grid wide">
+        <div class="panel tabbed">
+          <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The volume reflex, and what is yours to set">
+            <button role="tab" id="t1" aria-controls="p1" aria-selected="true">the manifest</button>
+            <button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1">the body</button>
+            <button role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1">yours to set</button>
+          </div></div>
+          <div role="tabpanel" id="p1" aria-labelledby="t1">
+            <div class="file">volume/reflex.toml<span class="who">the collection's</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
+<span class="s">Set the output volume.</span>
+<span class="s">A percentage of the maximum; 0 is silent."""</span>
+
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span><span class="s">"muting and unmuting"</span><span class="o">,</span> <span class="s">"screen brightness"</span><span class="o">,</span> <span class="s">"one app's volume"</span><span class="o">]</span>
+<span class="k">tags</span>    <span class="o">=</span> <span class="o">[</span><span class="s">"sound"</span><span class="o">]</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Set the volume to <span class="ph">{level}</span>?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="s">"volume.mts"</span>
+
+<span class="t">[args.level]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"How loud, in percent?"</span>
+<span class="k">pick</span>  <span class="o">=</span> <span class="s">"number"</span>
+<span class="k">range</span> <span class="o">=</span> <span class="o">[</span><span class="n">0</span><span class="o">,</span> <span class="n">100</span><span class="o">]</span>
+
+<span class="t">[examples]</span>
+<span class="s">"set the volume to 40 percent"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"40 percent"</span> <span class="o">}</span>
+<span class="s">"volume 15"</span>                    <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"15"</span> <span class="o">}</span>
+<span class="s">"turn the sound up to 80"</span>      <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"80"</span> <span class="o">}</span>
+
+<span class="t">[tests]</span>
+<span class="s">"make it 100 percent loud"</span>   <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"100 percent"</span> <span class="o">}</span>
+<span class="s">"turn the volume down a bit"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="n">false</span> <span class="o">}</span>
+<span class="s">"mute the sound"</span>             <span class="o">=</span> <span class="n">false</span>
+<span class="s">"set the brightness to 50"</span>   <span class="o">=</span> <span class="n">false</span></pre>
+          </div>
+          <div role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+            <div class="file">volume/volume.mts<span class="who">the collection's</span></div>
+<pre><span class="c">// Set the output volume through AppleScript: `set volume output volume &lt;0–100&gt;`.</span>
+<span class="w">import</span> <span class="o">{</span> execFile <span class="o">}</span> <span class="w">from</span> <span class="s">"node:child_process"</span>
+<span class="w">import</span> <span class="o">{</span> promisify <span class="o">}</span> <span class="w">from</span> <span class="s">"node:util"</span>
+<span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"./reflex.d.ts"</span>
+
+<span class="w">const</span> exec <span class="o">=</span> promisify<span class="o">(</span>execFile<span class="o">)</span>
+
+<span class="w">export</span> <span class="w">default</span> <span class="o">(</span><span class="w">async</span> <span class="o">({</span> level <span class="o">},</span> <span class="o">{</span> signal <span class="o">})</span> <span class="o">=&gt;</span> <span class="o">{</span>
+  <span class="w">const</span> percent <span class="o">=</span> Math<span class="o">.</span>round<span class="o">(</span>level<span class="o">)</span>
+  <span class="c">// The one value written into AppleScript source: an integer, so it can only ever be digits.</span>
+  <span class="w">if</span> <span class="o">(!</span>Number<span class="o">.</span>isInteger<span class="o">(</span>percent<span class="o">))</span> <span class="w">throw</span> <span class="w">new</span> Error<span class="o">(</span><span class="s">`level ${level} is not a number`</span><span class="o">)</span>
+  <span class="w">if</span> <span class="o">(</span>process<span class="o">.</span>platform <span class="o">!==</span> <span class="s">"darwin"</span><span class="o">)</span> <span class="w">throw</span> <span class="w">new</span> Error<span class="o">(</span><span class="s">"runs on macOS only"</span><span class="o">)</span>
+  try <span class="o">{</span>
+    <span class="w">await</span> exec<span class="o">(</span><span class="s">"osascript"</span><span class="o">,</span> <span class="o">[</span><span class="s">"-e"</span><span class="o">,</span> <span class="s">`set volume output volume ${percent}`</span><span class="o">],</span> <span class="o">{</span> signal <span class="o">})</span>
+  <span class="o">}</span> catch <span class="o">(</span>error<span class="o">)</span> <span class="o">{</span>
+    <span class="w">if</span> <span class="o">(</span>signal<span class="o">.</span>aborted<span class="o">)</span> <span class="w">throw</span> signal<span class="o">.</span>reason
+    <span class="w">throw</span> <span class="w">new</span> Error<span class="o">(</span>said<span class="o">(</span>error<span class="o">)</span> <span class="o">??</span> <span class="s">"the volume did not change"</span><span class="o">)</span>
+  <span class="o">}</span>
+  <span class="w">return</span> <span class="s">`volume ${percent}%`</span>
+<span class="o">})</span> <span class="w">satisfies</span> Reflex
+
+<span class="o">/**</span> What a failed command said on stderr<span class="o">,</span> when it said anything<span class="o">;</span> <span class="w">else</span> nothing<span class="o">,</span> and the caller's own words stand<span class="o">.</span> <span class="o">*/</span>
+<span class="w">function</span> said<span class="o">(</span>error<span class="o">:</span> unknown<span class="o">):</span> string <span class="o">|</span> <span class="n">undefined</span> <span class="o">{</span>
+  <span class="w">const</span> text <span class="o">=</span> <span class="w">typeof</span> error <span class="o">===</span> <span class="s">"object"</span> <span class="o">&amp;&amp;</span> error <span class="o">!==</span> <span class="n">null</span> <span class="o">&amp;&amp;</span> <span class="s">"stderr"</span> <span class="w">in</span> error <span class="o">?</span> error<span class="o">.</span>stderr <span class="o">:</span> <span class="n">undefined</span>
+  <span class="w">return</span> <span class="w">typeof</span> text <span class="o">===</span> <span class="s">"string"</span> <span class="o">&amp;&amp;</span> text<span class="o">.</span>trim<span class="o">()</span> <span class="o">!==</span> <span class="s">""</span> <span class="o">?</span> text<span class="o">.</span>trim<span class="o">()</span> <span class="o">:</span> <span class="n">undefined</span>
+<span class="o">}</span></pre>
+          </div>
+          <div role="tabpanel" id="p3" aria-labelledby="t3" hidden>
+            <div class="file">two words and one setting<span class="who you">yours</span></div>
+<pre><span class="c"># a word per folder; the value is its path</span>
+<span class="p">$</span> <span class="in">evoke vocab places add desktop "The desktop." --value ~/Desktop</span>
+<span class="c"># a word per site; the value is its URL</span>
+<span class="p">$</span> <span class="in">evoke vocab sites add github "GitHub." --value https://github.com</span>
+<span class="c"># where the note reflex appends its lines</span>
+<span class="p">$</span> <span class="in">evoke config note file ~/notes.txt</span></pre>
+          </div>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>The manifest is the whole interface.</strong> A description, the near misses, one
+              input read as a number with a range, and the sentences that teach.</span></li>
+            <li><b>2</b><span><strong>The body says no to another platform first.</strong> Then it runs
+              <code>osascript</code> and returns one line. A body that fails prints why, and exits 1.</span></li>
+            <li><b>3</b><span><strong>Three reflexes wait for your words.</strong> <code>open</code>, <code>visit</code> and
+              <code>note</code> stay inactive until a folder, a site or a file is named. The other ten work at once.</span></li>
+          </ol>
+          <p class="after">The thirteen, in one table: <a href="/manual/collection.html">The collection →</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="boundary">
+      <div class="rule"><p class="label">One boundary</p><span class="num">03</span></div>
+      <h2>A value outside its range never reaches the program.</h2>
+      <p class="sub">The manifest gives <code>level</code> a range of 0 to 100. <strong>A sentence can choose a value. It
+        cannot make one up, and it cannot push one past its range.</strong></p>
+      <div class="grid wide">
+        <div class="panel term" role="figure" aria-label="A value out of range is asked for again">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre><span class="p">$</span> <span class="in">evoke "set the volume to 150 percent"</span>
+<span class="own">  How loud, in percent?  <span class="mid">150 percent is outside 0–100</span>  &gt; <span class="in">40</span>
+  <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span>
+<span class="out">volume 40%</span></pre>
+        </div>
+        <p class="caption">evoke asked the input's own question, with the reason on the line. The answer was checked the
+          same way. <a href="/manual/use/outcomes.html#ask">Ask, in the manual →</a></p>
+      </div>
+    </section>
+
+    <section id="needs">
+      <div class="rule"><p class="label">Before you run it</p><span class="num">04</span></div>
+      <h2>What this example needs.</h2>
+      <ul class="needs">
+        <li class="ok"><b>macOS</b>The collection's programs are for a Mac. The binary itself also runs on Linux.</li>
+        <li class="ok"><b>Node 24 or newer</b>Eleven of the thirteen run a JavaScript file. <code>open</code> and
+          <code>trash</code> run a program the Mac has.</li>
+        <li class="ok"><b>git</b><code>evoke add</code> fetches the collection from GitHub at its newest tag.</li>
+        <li class="ok"><b>A classifier key</b>In <code>TYPESAFE_API_KEY</code>, or <code>OPENJEV_API_KEY</code> with
+          <code>adapter = "openjev"</code>. Its provider bills the use.</li>
+        <li class="no"><b>Your words, for three of them</b>A folder, a site, a notes file. Optional, and one line each.</li>
+      </ul>
+      <div class="actions">
+        <a class="button primary" href="/start.html?example=desktop">Run this example</a>
+        <a class="button" href="https://github.com/evoke-build/reflexes">View source</a>
+        <a class="quiet" href="/manual/collection.html">Read the docs →</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- footer -->
+  <script src="/scenes.js"></script>
+</body>
+</html>

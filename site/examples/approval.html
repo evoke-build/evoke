@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prepare an action for approval - Evoke</title>
+  <meta name="description" content="One person types a payment. The decision waits as plain data until a second person confirms it. A pattern for your app; authorization stays yours.">
+  <!-- head -->
+</head>
+<body>
+  <!-- bar -->
+
+  <main class="wrap example">
+    <div class="hero solo">
+      <div class="copy">
+        <p class="crumb"><a href="/examples.html">Examples</a> · 06 of 06</p>
+        <h1>One person asks. <em>Another approves.</em></h1>
+        <p class="lede"><strong>A payment is decided, then waits as plain data until a second person confirms it.</strong>
+          A payee is one of your words, never invented, and paying is destructive, so it can never run on its own. A
+          pattern for your app: who may approve is your check.</p>
+      </div>
+      <ul class="index" aria-label="The sections">
+        <li><a href="#request"><code>01</code>The request and the result</a></li>
+        <li><a href="#files"><code>02</code>The operations</a></li>
+        <li><a href="#boundary"><code>03</code>One boundary</a></li>
+        <li><a href="#needs"><code>04</code>Before you run it</a></li>
+      </ul>
+    </div>
+
+    <section id="request">
+      <div class="rule"><p class="label">The request and the result</p><span class="num">01</span></div>
+      <h2>The maker types. The checker says yes.</h2>
+      <p class="sub">A decision travels from one person to another through a queue. <strong>Interpretation and execution
+        are two moments, in two processes.</strong> Every line is what Node printed.</p>
+      <div class="grid wide">
+        <div class="panel term demo bank" role="figure" data-scene="bank" aria-label="A payment moving from the maker to the checker">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/desk<span class="trail" aria-hidden="true"><b>maker</b><b>queue</b><b>checker</b></span></div>
+          <div class="room">
+            <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <g class="seat maker" transform="translate(150 54)"><circle class="head" r="11"/><path class="body" d="M-17 36 a17 17 0 0 1 34 0"/><text y="62" text-anchor="middle">maker</text></g>
+              <g class="seat checker" transform="translate(410 54)">
+                <circle class="head" r="11"/><path class="body" d="M-17 36 a17 17 0 0 1 34 0"/><text y="62" text-anchor="middle">checker</text>
+                <g class="stamp yes" transform="translate(22 -14)"><circle r="10"/><path d="M-5 0.5 l3.5 3.5 l7 -8"/></g>
+                <g class="stamp no" transform="translate(22 -14)"><circle r="10"/><path d="M-4.5 -4.5 l9 9 M4.5 -4.5 l-9 9"/></g>
+              </g>
+              <g class="slot" transform="translate(210 140)"><rect class="queue" width="140" height="46" rx="10"/><text class="dim" x="70" y="68" text-anchor="middle">a queue · plain data</text></g>
+              <g class="card">
+                <rect width="140" height="46" rx="10"/>
+                <text x="14" y="20">pay acme 12400</text>
+                <text class="dim" x="14" y="36">ops · destructive</text>
+              </g>
+            </svg>
+          </div>
+          <div class="strip" style="--lines: 6" aria-live="off">
+            <span class="line say show"><span class="p">$</span> <span class="in">node checker.ts</span></span>
+            <span class="line out show">pay payee="acme" account="ops" amount="12400" ref="invoice 8812"</span>
+            <span class="line out show">pay payee="acme" account="ops" amount="12400" ref="invoice 8812" · destructive · weakest: route 1.00</span>
+            <span class="line out show">paid 12400 from acc_ops, transfer tr_0f3a</span>
+          </div>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>The maker's sentence becomes a call.</strong> The payee and the account are words of
+              the desk. The amount is a number read from the sentence, within its range.</span></li>
+            <li><b>2</b><span><strong>The decision waits as plain data.</strong> It carries the call, the effect, the
+              weakest judgment and why it stopped. Any queue can hold it.</span></li>
+            <li><b>3</b><span><strong>Only <code>confirmed: true</code> runs it.</strong> The checker reads the call and
+              the reason, then runs the same decision in another process.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="files">
+      <div class="rule"><p class="label">The operations</p><span class="num">02</span></div>
+      <h2>One reflex, two processes.</h2>
+      <p class="sub">The payment reflex as a file and as code, the desk's payees, and the checker that runs a queued
+        decision. <strong>Each desk compiles its own words with <code>with</code>, in milliseconds.</strong></p>
+      <div class="grid wide">
+        <div class="panel tabbed">
+          <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The payments desk as files, as code, and the app">
+            <button role="tab" id="t1" aria-controls="p1" aria-selected="true">files</button>
+            <button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1">code</button>
+            <button role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1">the app</button>
+          </div></div>
+          <div role="tabpanel" id="p1" aria-labelledby="t1">
+            <div class="file">pay/reflex.toml<span class="who">the author's</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
+<span class="s">Pay an approved payee from one of our accounts.</span>
+<span class="s">One transfer, released after a second person confirms it."""</span>
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span>
+  "adding or changing a payee",
+  "moving money between our own accounts",
+  "asking a balance",
+]
+<span class="k">tags</span>    <span class="o">=</span> <span class="o">[</span><span class="s">"treasury"</span><span class="o">]</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"destructive"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Pay <span class="ph">{payee}</span> <span class="ph">{amount}</span> from <span class="ph">{account}</span>?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="s">"pay.mts"</span>
+
+<span class="t">[config]</span>
+<span class="k">api</span>   <span class="o">=</span> <span class="s">"The payments API address"</span>
+<span class="k">token</span> <span class="o">=</span> <span class="o">{</span> <span class="k">about</span> <span class="o">=</span> <span class="s">"The payments API token"</span><span class="o">,</span> <span class="k">secret</span> <span class="o">=</span> <span class="n">true</span> <span class="o">}</span>
+
+<span class="t">[args.payee]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which payee?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"payees"</span>
+
+<span class="t">[args.account]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"From which account?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"accounts"</span>
+
+<span class="t">[args.amount]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"How much?"</span>
+<span class="k">pick</span>  <span class="o">=</span> <span class="s">"number"</span>
+<span class="k">range</span> <span class="o">=</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">250000</span><span class="o">]</span>
+
+<span class="t">[args.ref]</span>
+<span class="k">ask</span>      <span class="o">=</span> <span class="s">"What reference?"</span>
+<span class="k">pick</span>     <span class="o">=</span> <span class="s">"quoted"</span>
+<span class="k">optional</span> <span class="o">=</span> <span class="n">true</span>
+
+<span class="t">[examples]</span>
+<span class="s">'pay Acme 12400 from ops, ref "8812"'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">amount</span> <span class="o">=</span> <span class="s">"12400"</span><span class="o">,</span> <span class="k">ref</span> <span class="o">=</span> <span class="s">"8812"</span> <span class="o">}</span>
+<span class="s">"send 950 to the cleaners from the office account"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">amount</span> <span class="o">=</span> <span class="s">"950"</span> <span class="o">}</span>
+<span class="s">"wire 3200 to Acme from treasury"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">amount</span> <span class="o">=</span> <span class="s">"3200"</span> <span class="o">}</span>
+
+<span class="t">[tests]</span>
+<span class="s">'settle 18000 with Acme, ref "Q3"'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">amount</span> <span class="o">=</span> <span class="s">"18000"</span><span class="o">,</span> <span class="k">ref</span> <span class="o">=</span> <span class="s">"Q3"</span> <span class="o">}</span>
+<span class="s">"pay Acme from ops"</span>                <span class="o">=</span> <span class="o">{</span> <span class="k">amount</span> <span class="o">=</span> <span class="n">false</span> <span class="o">}</span>
+<span class="s">"add Acme as a new payee"</span>          <span class="o">=</span> <span class="n">false</span></pre>
+            <div class="file">vocab/payees.toml<span class="who you">yours</span></div>
+<pre><span class="k">acme</span>     <span class="o">=</span> <span class="o">{</span> <span class="k">what</span> <span class="o">=</span> <span class="s">"Acme, the packaging supplier."</span><span class="o">,</span> <span class="k">value</span> <span class="o">=</span> <span class="s">"py_acme"</span> <span class="o">}</span>
+<span class="k">cleaners</span> <span class="o">=</span> <span class="o">{</span> <span class="k">what</span> <span class="o">=</span> <span class="s">"Blitz, the office cleaners."</span><span class="o">,</span> <span class="k">value</span> <span class="o">=</span> <span class="s">"py_blitz"</span> <span class="o">}</span></pre>
+          </div>
+          <div role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+            <div class="file">code.ts<span class="who you">yours</span></div>
+<pre><span class="w">import</span> <span class="o">{</span> load<span class="o">,</span> reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+<span class="w">import</span> <span class="o">{</span> jev <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke/jev"</span>
+
+<span class="w">const</span> pay <span class="o">=</span> reflex<span class="o">({</span>
+  <span class="k">description</span><span class="o">:</span> <span class="s">"Pay an approved payee from one of our accounts.\n"</span> <span class="o">+</span>
+    <span class="s">"One transfer, released after a second person confirms it."</span><span class="o">,</span>
+  <span class="k">not_for</span><span class="o">:</span> <span class="o">[</span>
+    <span class="s">"adding or changing a payee"</span><span class="o">,</span>
+    <span class="s">"moving money between our own accounts"</span><span class="o">,</span>
+    <span class="s">"asking a balance"</span><span class="o">,</span>
+  <span class="o">],</span>
+  <span class="k">effect</span><span class="o">:</span> <span class="s">"destructive"</span><span class="o">,</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="s">"Pay <span class="ph">{payee}</span> <span class="ph">{amount}</span> from <span class="ph">{account}</span>?"</span><span class="o">,</span>
+  <span class="k">args</span><span class="o">:</span> <span class="o">{</span>
+    <span class="k">payee</span><span class="o">:</span>   <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"Which payee?"</span><span class="o">,</span> <span class="k">vocab</span><span class="o">:</span> <span class="s">"payees"</span> <span class="o">},</span>
+    <span class="k">account</span><span class="o">:</span> <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"From which account?"</span><span class="o">,</span> <span class="k">vocab</span><span class="o">:</span> <span class="s">"accounts"</span> <span class="o">},</span>
+    <span class="k">amount</span><span class="o">:</span>  <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"How much?"</span><span class="o">,</span> <span class="k">pick</span><span class="o">:</span> <span class="s">"number"</span><span class="o">,</span> <span class="k">range</span><span class="o">:</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">250000</span><span class="o">]</span> <span class="o">},</span>
+    <span class="k">ref</span><span class="o">:</span>     <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"What reference?"</span><span class="o">,</span> <span class="k">pick</span><span class="o">:</span> <span class="s">"quoted"</span><span class="o">,</span> <span class="k">optional</span><span class="o">:</span> <span class="n">true</span> <span class="o">},</span>
+  <span class="o">},</span>
+  <span class="k">examples</span><span class="o">:</span> <span class="o">{</span>
+    <span class="s">'pay Acme 12400 from ops, ref "8812"'</span><span class="o">:</span> <span class="o">{</span> <span class="k">amount</span><span class="o">:</span> <span class="s">"12400"</span><span class="o">,</span> <span class="k">ref</span><span class="o">:</span> <span class="s">"8812"</span> <span class="o">},</span>
+    <span class="s">"send 950 to the cleaners from the office account"</span><span class="o">:</span> <span class="o">{</span> <span class="k">amount</span><span class="o">:</span> <span class="s">"950"</span> <span class="o">},</span>
+  <span class="o">},</span>
+<span class="o">},</span> <span class="w">async</span> <span class="o">({</span> payee<span class="o">,</span> account<span class="o">,</span> amount<span class="o">,</span> ref <span class="o">},</span> <span class="o">{</span> signal <span class="o">})</span> <span class="o">=&gt;</span> <span class="o">{</span>
+  <span class="w">const</span> response <span class="o">=</span> <span class="w">await</span> fetch<span class="o">(</span><span class="s">`${process.env.PAYMENTS_API}/transfers`</span><span class="o">,</span> <span class="o">{</span>
+    <span class="k">method</span><span class="o">:</span> <span class="s">"POST"</span><span class="o">,</span>
+    <span class="k">headers</span><span class="o">:</span> <span class="o">{</span>
+      <span class="k">authorization</span><span class="o">:</span> <span class="s">`Bearer ${process.env.PAYMENTS_TOKEN}`</span><span class="o">,</span>
+      <span class="s">"content-type"</span><span class="o">:</span> <span class="s">"application/json"</span><span class="o">,</span>
+    <span class="o">},</span>
+    <span class="k">body</span><span class="o">:</span> JSON<span class="o">.</span>stringify<span class="o">({</span> <span class="w">from</span><span class="o">:</span> account<span class="o">,</span> <span class="k">to</span><span class="o">:</span> payee<span class="o">,</span> amount<span class="o">,</span> <span class="k">reference</span><span class="o">:</span> ref <span class="o">}),</span>
+    signal<span class="o">,</span>
+  <span class="o">})</span>
+  <span class="w">if</span> <span class="o">(!</span>response<span class="o">.</span>ok<span class="o">)</span> <span class="w">throw</span> <span class="w">new</span> Error<span class="o">(</span><span class="s">`payments answered ${response.status}`</span><span class="o">)</span>
+  <span class="w">const</span> <span class="o">{</span> id <span class="o">}</span> <span class="o">=</span> <span class="o">(</span><span class="w">await</span> response<span class="o">.</span>json<span class="o">())</span> <span class="w">as</span> <span class="o">{</span> <span class="k">id</span><span class="o">:</span> string <span class="o">}</span>
+  <span class="w">return</span> <span class="o">{</span> <span class="k">text</span><span class="o">:</span> <span class="s">`paid ${amount} from ${account}, transfer ${id}`</span><span class="o">,</span> <span class="k">data</span><span class="o">:</span> <span class="o">{</span> id <span class="o">}</span> <span class="o">}</span>
+<span class="o">})</span>
+
+<span class="c">// This desk's payees, from the database; nothing else is a word.</span>
+<span class="w">const</span> desk <span class="o">=</span> <span class="o">(</span><span class="w">await</span> load<span class="o">({</span> reflexes<span class="o">:</span> <span class="o">{</span> pay <span class="o">},</span> adapter<span class="o">:</span> jev<span class="o">()</span> <span class="o">})).</span>with<span class="o">({</span>
+  <span class="k">vocab</span><span class="o">:</span> <span class="o">{</span>
+    <span class="k">payees</span><span class="o">:</span> <span class="o">{</span>
+      <span class="k">acme</span><span class="o">:</span>     <span class="o">{</span> <span class="k">what</span><span class="o">:</span> <span class="s">"Acme, the packaging supplier."</span><span class="o">,</span> <span class="k">value</span><span class="o">:</span> <span class="s">"py_acme"</span> <span class="o">},</span>
+      <span class="k">cleaners</span><span class="o">:</span> <span class="o">{</span> <span class="k">what</span><span class="o">:</span> <span class="s">"Blitz, the office cleaners."</span><span class="o">,</span> <span class="k">value</span><span class="o">:</span> <span class="s">"py_blitz"</span> <span class="o">},</span>
+    <span class="o">},</span>
+    <span class="k">accounts</span><span class="o">:</span> <span class="o">{</span>
+      <span class="k">ops</span><span class="o">:</span>    <span class="o">{</span> <span class="k">what</span><span class="o">:</span> <span class="s">"The operations account."</span><span class="o">,</span> <span class="k">value</span><span class="o">:</span> <span class="s">"acc_ops"</span> <span class="o">},</span>
+      <span class="k">office</span><span class="o">:</span> <span class="o">{</span> <span class="k">what</span><span class="o">:</span> <span class="s">"The office account."</span><span class="o">,</span> <span class="k">value</span><span class="o">:</span> <span class="s">"acc_office"</span> <span class="o">},</span>
+    <span class="o">},</span>
+  <span class="o">},</span>
+<span class="o">})</span>
+
+<span class="c">// then the maker and the checker, line for line as in checker.ts</span></pre>
+          </div>
+          <div role="tabpanel" id="p3" aria-labelledby="t3" hidden>
+            <div class="file">checker.ts<span class="who">loads the files</span></div>
+<pre><span class="c">// The desk decides; the decision waits in a queue as plain data;</span>
+<span class="c">// a second person reads the call and runs it.</span>
+<span class="w">import</span> <span class="o">{</span> load <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+
+<span class="w">const</span> desk <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> root<span class="o">:</span> <span class="w">import</span><span class="o">.</span>meta<span class="o">.</span>dirname <span class="o">})</span>
+
+<span class="c">// maker</span>
+<span class="w">const</span> decided <span class="o">=</span> <span class="w">await</span> desk<span class="o">.</span>decide<span class="o">(</span><span class="s">'pay Acme 12400 from ops, ref "invoice 8812"'</span><span class="o">)</span>
+<span class="w">if</span> <span class="o">(</span>decided<span class="o">.</span>outcome <span class="o">!==</span> <span class="s">"confirm"</span><span class="o">)</span> <span class="w">throw</span> <span class="w">new</span> Error<span class="o">(</span>decided<span class="o">.</span>outcome<span class="o">)</span>
+<span class="c">// through the queue and back: a decision is plain data</span>
+<span class="w">const</span> queued<span class="o">:</span> <span class="w">typeof</span> decided <span class="o">=</span> JSON<span class="o">.</span>parse<span class="o">(</span>JSON<span class="o">.</span>stringify<span class="o">(</span>decided<span class="o">))</span>
+
+<span class="c">// checker: the call, then the effect, the weakest judgment and why it stopped</span>
+console<span class="o">.</span>log<span class="o">(</span>queued<span class="o">.</span>call<span class="o">)</span>
+console<span class="o">.</span>log<span class="o">(</span>queued<span class="o">.</span>prompt<span class="o">.</span>own<span class="o">)</span>
+console<span class="o">.</span>log<span class="o">((</span><span class="w">await</span> desk<span class="o">.</span>run<span class="o">(</span>queued<span class="o">,</span> <span class="o">{</span> <span class="k">confirmed</span><span class="o">:</span> <span class="n">true</span> <span class="o">})).</span>text<span class="o">)</span></pre>
+          </div>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>A payee is a word.</strong> Its value is an id in the payments system. The classifier
+              never sees the id, and no sentence can name a payee the desk did not list.</span></li>
+            <li><b>2</b><span><strong>The token is a secret.</strong> It is named in the settings and read from the
+              environment for one run. It is never stored.</span></li>
+            <li><b>3</b><span><strong>The decision survives a round trip through JSON.</strong> <code>run()</code> accepts
+              it back, and refuses one made under another set of reflexes.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="boundary">
+      <div class="rule"><p class="label">One boundary</p><span class="num">03</span></div>
+      <h2>Missing the amount, it asks. Destructive, it asks again.</h2>
+      <p class="sub">At a terminal the same reflex asks for what the sentence lacked, then confirms. <strong>A no is
+        exit 2, and nothing was paid.</strong></p>
+      <div class="grid wide">
+        <div class="panel term" role="figure" aria-label="A missing amount asked for, then the payment declined">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre><span class="p">$</span> <span class="in">evoke "pay Acme from ops"</span>
+<span class="own">  How much?  &gt; <span class="in">12400</span>
+  <span class="name">pay</span> payee="acme" account="ops" amount="12400" · destructive · weakest: route <span class="hi">1.00</span>
+  Pay acme 12400 from ops?  [y]es [n]o [t]each &gt; <span class="in">n</span>
+[2]</span></pre>
+        </div>
+        <p class="caption">Sure at 1.00, and it still asked. There is no flag that skips a destructive reflex's question, at
+          a terminal or in an app. <a href="/manual/security.html#what-the-classifier-cannot-do">What the classifier cannot do →</a></p>
+      </div>
+    </section>
+
+    <section id="needs">
+      <div class="rule"><p class="label">Before you run it</p><span class="num">04</span></div>
+      <h2>What this pattern needs.</h2>
+      <ul class="needs">
+        <li class="ok"><b>Node 24.5 or newer</b>And the SDK, <code>@evoke-build/evoke</code>.</li>
+        <li class="ok"><b>A payments API</b>Its address as a setting, its token as a secret from the environment. The body
+          shown posts one transfer.</li>
+        <li class="ok"><b>Your words</b>Payees and accounts, with the ids your system uses as values. From a file, or from
+          your database.</li>
+        <li class="no"><b>Authorization and approval</b>evoke holds the decision. Who may make one, who may confirm it,
+          and where it waits are your application's.</li>
+      </ul>
+      <p class="after">The files above are the whole example. Copy them from this page.</p>
+      <div class="actions">
+        <a class="button primary" href="/start.html?example=approval">Adapt this pattern</a>
+        <a class="quiet" href="/manual/sdk/decisions.html">Read the docs →</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- footer -->
+  <script src="/scenes.js"></script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Look up a contact and prepare a draft - Evoke</title>
+  <meta name="description" content="One sentence finds an address and starts a draft with it. What contact yields, mail takes. A recorded session from the product's own tests.">
+  <!-- head -->
+</head>
+<body>
+  <!-- bar -->
+
+  <main class="wrap example">
+    <div class="hero solo">
+      <div class="copy">
+        <p class="crumb"><a href="/examples.html">Examples</a> · 02 of 06</p>
+        <h1>One sentence finds an address <em>and starts a draft with it.</em></h1>
+        <p class="lede"><strong>Two reflexes connect.</strong> What <code>contact</code> finds, <code>mail</code> takes,
+          because one declares what its result holds and the other lacks a value of that kind. A recorded session from
+          the product's own tests, and a pattern for your app.</p>
+      </div>
+      <ul class="index" aria-label="The sections">
+        <li><a href="#request"><code>01</code>The request and the result</a></li>
+        <li><a href="#files"><code>02</code>The operations</a></li>
+        <li><a href="#boundary"><code>03</code>One boundary</a></li>
+        <li><a href="#needs"><code>04</code>Before you run it</a></li>
+      </ul>
+    </div>
+
+    <section id="request">
+      <div class="rule"><p class="label">The request and the result</p><span class="num">01</span></div>
+      <h2>Two steps, one sentence.</h2>
+      <p class="sub">Each part is decided on its own, in the order you typed it. <strong>The plan shows first.</strong>
+        The stage plays three sentences in turn: one that ran, one declined at its second step, one refused.</p>
+      <div class="grid wide">
+        <div class="panel term demo woven" role="figure" data-scene="woven" data-names="1" data-n1="ran" data-n2="ran" data-wire="on" style="--lines: 8" aria-label="Two steps in one sentence: run and bound, then declined, then refused">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/home<span class="trail" aria-hidden="true"><b class="on">ran</b><b>declined</b><b>refused</b></span></div>
+          <div class="room">
+            <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <g class="link"><line class="wire" x1="196" y1="104" x2="364" y2="104"/><line class="pulse" x1="196" y1="104" x2="364" y2="104"/><text class="bind" x="280" y="92" text-anchor="middle">email</text></g>
+              <g class="node n1" transform="translate(168 104)">
+                <circle class="ring" r="26"/><circle class="core" r="7"/>
+                <text class="w1" y="50" text-anchor="middle">contact</text><text class="w2" y="50" text-anchor="middle">timer</text><text class="w3" y="50" text-anchor="middle">lights</text>
+                <text class="dim w1" y="66" text-anchor="middle">read · 0.90</text><text class="dim w2" y="66" text-anchor="middle">write · 0.70</text><text class="dim w3" y="66" text-anchor="middle">write · 0.85</text>
+                <text class="state declined" y="82" text-anchor="middle">declined</text>
+              </g>
+              <g class="node n2" transform="translate(392 104)">
+                <circle class="ring" r="26"/><circle class="core" r="7"/>
+                <text class="w1" y="50" text-anchor="middle">mail</text><text class="w2" y="50" text-anchor="middle">lights</text><text class="w3" y="50" text-anchor="middle">"feed the cat"</text>
+                <text class="dim w1" y="66" text-anchor="middle">write · 0.88</text><text class="dim w2" y="66" text-anchor="middle">write · 0.85</text><text class="dim w3" y="66" text-anchor="middle">no reflex</text>
+                <text class="state skipped" y="82" text-anchor="middle">skipped</text>
+              </g>
+            </svg>
+          </div>
+          <div class="strip" aria-live="off">
+            <span class="line say show"><span class="p">$</span> <span class="in">evoke "look up dana's address and email them"</span></span>
+            <span class="line own show">  1  <b>contact</b> name="dana"  <i>0.90</i></span>
+            <span class="line own show">  2  <b>mail</b> · takes email from 1</span>
+            <span class="line out show">dana &lt;dana@example.com&gt;</span>
+            <span class="line own show">  2  <b>mail</b> to="dana@example.com"  <i>0.88</i></span>
+            <span class="line out show">drafted to dana@example.com</span>
+          </div>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>«them» names step 1.</strong> <code>mail</code> needed an address. <code>contact</code>
+              declares one under <code>[yields]</code>, and the plan takes it: <code>takes email from 1</code>.</span></li>
+            <li><b>2</b><span><strong>A no ends the sentence at that step.</strong> In the second sentence, a timer asked at its turn.
+              Declined, and the lights step after it was skipped. The exit code is the worst step's.</span></li>
+            <li><b>3</b><span><strong>A part that matches nothing refuses the whole sentence</strong>, before anything
+              runs. Nothing is left half done.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="files">
+      <div class="rule"><p class="label">The operations</p><span class="num">02</span></div>
+      <h2>Two manifests, and the test that pins them.</h2>
+      <p class="sub">These files come from the product's own test home. <strong>The <code>contact</code> body is a
+        stand-in that makes an address from the name.</strong> In yours, it would ask your directory.</p>
+      <div class="grid wide">
+        <div class="panel tabbed">
+          <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The two reflexes as files, and the SDK test">
+            <button role="tab" id="t1" aria-controls="p1" aria-selected="true">contact</button>
+            <button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1">mail</button>
+            <button role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1">the SDK test</button>
+          </div></div>
+          <div role="tabpanel" id="p1" aria-labelledby="t1">
+            <div class="file">contact/reflex.toml<span class="who">the author's</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
+<span class="s">Look up a person's email address in the team directory.</span>
+<span class="s">One person at a time; prints the address."""</span>
+
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span><span class="s">"writing to anyone"</span><span class="o">,</span> <span class="s">"phone numbers"</span><span class="o">,</span> <span class="s">"adding a person to the directory"</span><span class="o">]</span>
+<span class="k">tags</span>    <span class="o">=</span> <span class="o">[</span><span class="s">"people"</span><span class="o">]</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"read"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Look up <span class="ph">{name}</span>'s address?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="s">"contact.mts"</span>
+
+<span class="t">[args.name]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Whose address?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"people"</span>
+
+<span class="t">[yields]</span>
+<span class="k">email</span> <span class="o">=</span> <span class="s">"email"</span>
+
+<span class="t">[examples]</span>
+<span class="s">"look up dana's address"</span>    <span class="o">=</span> <span class="o">{</span><span class="o">}</span>
+<span class="s">"what is sam's email"</span>       <span class="o">=</span> <span class="o">{</span><span class="o">}</span>
+<span class="s">"find the address for dana"</span> <span class="o">=</span> <span class="o">{</span><span class="o">}</span>
+
+<span class="t">[tests]</span>
+<span class="s">"dana's email please"</span> <span class="o">=</span> <span class="o">{</span><span class="o">}</span>
+<span class="s">"email dana"</span>          <span class="o">=</span> <span class="n">false</span></pre>
+            <div class="file">contact/contact.mts<span class="who">a stand-in</span></div>
+<pre><span class="w">export</span> <span class="w">default</span> <span class="w">async</span> <span class="o">({</span> name <span class="o">}:</span> <span class="o">{</span> <span class="k">name</span><span class="o">:</span> string <span class="o">})</span> <span class="o">=&gt;</span> <span class="o">{</span>
+  <span class="w">const</span> email <span class="o">=</span> <span class="s">`${name}@example.com`</span>
+  <span class="w">return</span> <span class="o">{</span> <span class="k">text</span><span class="o">:</span> <span class="s">`${name} &lt;${email}&gt;`</span><span class="o">,</span> <span class="k">data</span><span class="o">:</span> <span class="o">{</span> email <span class="o">}</span> <span class="o">}</span>
+<span class="o">}</span></pre>
+            <div class="file">vocab/people.toml<span class="who you">yours</span></div>
+<pre><span class="k">dana</span> <span class="o">=</span> <span class="s">"Dana Ortiz, operations."</span>
+<span class="k">sam</span>  <span class="o">=</span> <span class="s">"Sam Lee, sales."</span></pre>
+          </div>
+          <div role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+            <div class="file">mail/reflex.toml<span class="who">the author's</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
+<span class="s">Start an email in your mail app.</span>
+<span class="s">To one address, a copy to another, with an optional subject; nothing goes out until you press send."""</span>
+
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span><span class="s">"reading or searching mail"</span><span class="o">,</span> <span class="s">"chat and text messages"</span><span class="o">,</span> <span class="s">"looking up an address"</span><span class="o">]</span>
+<span class="k">tags</span>    <span class="o">=</span> <span class="o">[</span><span class="s">"mail"</span><span class="o">]</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Write to <span class="ph">{to}</span>?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="s">"mail.mts"</span>
+
+<span class="t">[args.to]</span>
+<span class="k">ask</span>  <span class="o">=</span> <span class="s">"To which address?"</span>
+<span class="k">pick</span> <span class="o">=</span> <span class="s">"email"</span>
+
+<span class="t">[args.cc]</span>
+<span class="k">ask</span>      <span class="o">=</span> <span class="s">"Copy whom?"</span>
+<span class="k">pick</span>     <span class="o">=</span> <span class="s">"email"</span>
+<span class="k">optional</span> <span class="o">=</span> <span class="n">true</span>
+
+<span class="t">[args.subject]</span>
+<span class="k">ask</span>      <span class="o">=</span> <span class="s">"What is the subject?"</span>
+<span class="k">pick</span>     <span class="o">=</span> <span class="s">"quoted"</span>
+<span class="k">optional</span> <span class="o">=</span> <span class="n">true</span>
+
+<span class="t">[examples]</span>
+<span class="s">"email ana@example.com"</span>                   <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"ana@example.com"</span> <span class="o">}</span>
+<span class="s">'write to sam@example.com about "friday"'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"sam@example.com"</span><span class="o">,</span> <span class="k">subject</span> <span class="o">=</span> <span class="s">"friday"</span> <span class="o">}</span>
+<span class="s">"send a note to team@example.com"</span>         <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"team@example.com"</span> <span class="o">}</span>
+
+<span class="t">[tests]</span>
+<span class="s">'mail dana@example.com "the minutes"'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"dana@example.com"</span><span class="o">,</span> <span class="k">subject</span> <span class="o">=</span> <span class="s">"the minutes"</span> <span class="o">}</span>
+<span class="s">"read my mail"</span>                        <span class="o">=</span> <span class="n">false</span></pre>
+          </div>
+          <div role="tabpanel" id="p3" aria-labelledby="t3" hidden>
+            <div class="file">sdk/test/weave.test.mts<span class="who">runs in CI</span></div>
+<pre>test<span class="o">(</span><span class="s">"a pronoun takes the address the step before yielded, into the ask it fills"</span><span class="o">,</span> <span class="w">async</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="o">{</span>
+  <span class="w">const</span> project <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> root<span class="o">:</span> home<span class="o">,</span> <span class="k">adapter</span><span class="o">:</span> replay<span class="o">(</span>answers<span class="o">)</span> <span class="o">})</span>
+  <span class="w">const</span> woven <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>weave<span class="o">(</span><span class="s">"look up dana's address and email them"</span><span class="o">)</span>
+  deepStrictEqual<span class="o">(</span>woven<span class="o">.</span>plan<span class="o">.</span>binds<span class="o">,</span> <span class="o">[{</span> <span class="w">from</span><span class="o">:</span> <span class="n">1</span><span class="o">,</span> <span class="k">to</span><span class="o">:</span> <span class="n">2</span><span class="o">,</span> <span class="k">arg</span><span class="o">:</span> <span class="s">"to"</span><span class="o">,</span> <span class="k">field</span><span class="o">:</span> <span class="s">"email"</span><span class="o">,</span> <span class="k">kind</span><span class="o">:</span> <span class="s">"email"</span><span class="o">,</span> <span class="k">via</span><span class="o">:</span> <span class="s">"fill"</span> <span class="o">}])</span>
+  equal<span class="o">(</span>woven<span class="o">.</span>plan<span class="o">.</span>steps<span class="o">[</span><span class="n">1</span><span class="o">]?.</span>decision<span class="o">.</span>outcome<span class="o">,</span> <span class="s">"ask"</span><span class="o">)</span>
+  equal<span class="o">(</span>woven<span class="o">.</span>status<span class="o">,</span> <span class="s">"ran"</span><span class="o">)</span>
+  deepStrictEqual<span class="o">(</span>woven<span class="o">.</span>steps<span class="o">[</span><span class="n">1</span><span class="o">]?.</span>bound<span class="o">,</span> <span class="o">[{</span> arg<span class="o">:</span> <span class="s">"to"</span><span class="o">,</span> <span class="k">from</span><span class="o">:</span> <span class="n">1</span><span class="o">,</span> <span class="k">field</span><span class="o">:</span> <span class="s">"email"</span><span class="o">,</span> <span class="k">value</span><span class="o">:</span> <span class="s">"dana@example.com"</span> <span class="o">}])</span>
+  <span class="w">const</span> round <span class="o">=</span> woven<span class="o">.</span>steps<span class="o">[</span><span class="n">1</span><span class="o">]?.</span>rounds<span class="o">[</span><span class="n">0</span><span class="o">]</span>
+  equal<span class="o">(</span>round<span class="o">?.</span>decision<span class="o">.</span>outcome<span class="o">,</span> <span class="s">"run"</span><span class="o">)</span>
+  <span class="w">if</span> <span class="o">(</span>round<span class="o">?.</span>decision<span class="o">.</span>outcome <span class="o">!==</span> <span class="s">"run"</span><span class="o">)</span> <span class="w">return</span>
+  equal<span class="o">(</span>round<span class="o">.</span>decision<span class="o">.</span>call<span class="o">,</span> <span class="s">'mail to="dana@example.com"'</span><span class="o">)</span>
+  deepStrictEqual<span class="o">(</span>round<span class="o">.</span>result<span class="o">,</span> <span class="o">{</span> <span class="k">text</span><span class="o">:</span> <span class="s">"drafted to dana@example.com"</span> <span class="o">})</span>
+  deepStrictEqual<span class="o">(</span>woven<span class="o">.</span>steps<span class="o">[</span><span class="n">0</span><span class="o">]?.</span>rounds<span class="o">[</span><span class="n">0</span><span class="o">]?.</span>result<span class="o">,</span> <span class="o">{</span> <span class="k">text</span><span class="o">:</span> <span class="s">"dana &lt;dana@example.com&gt;"</span><span class="o">,</span> <span class="k">data</span><span class="o">:</span> <span class="o">{</span> <span class="k">email</span><span class="o">:</span> <span class="s">"dana@example.com"</span> <span class="o">}</span> <span class="o">})</span>
+<span class="o">})</span></pre>
+          </div>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>The handoff is in the manifests.</strong> <code>[yields] email = "email"</code> on one
+              side, <code>pick = "email"</code> for <code>to</code> on the other. Same kind, so it binds.</span></li>
+            <li><b>2</b><span><strong>The lookup data is a vocabulary.</strong> <code>dana</code> and <code>sam</code> are
+              words you filled. The body turns the word into an address. Yours would query a directory.</span></li>
+            <li><b>3</b><span><strong>The test replays a recording.</strong> No key, no network. It pins the bind, the ask
+              it fills, the call, and both results.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="boundary">
+      <div class="rule"><p class="label">One boundary</p><span class="num">03</span></div>
+      <h2>A reference that takes nothing asks before anything runs.</h2>
+      <p class="sub">«for them» points at step 1, but a timer needs no address. <strong>evoke says so, and asks whether
+        to run the plan as it stands.</strong> Nothing is guessed.</p>
+      <div class="grid wide">
+        <div class="panel term" role="figure" aria-label="A step refers to another it takes nothing from">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre><span class="p">$</span> <span class="in">evoke "look up dana's address and start a 10 minute timer for them"</span>
+<span class="own">  1  <span class="name">contact</span> name="dana"  <span class="hi">0.90</span>
+  2  <span class="name">timer</span> duration="10 minute"  <span class="hi">0.88</span> · after 1
+  step 2 refers to step 1, but takes nothing from it
+  Run the plan as it stands?  [y]es [n]o &gt; <span class="in">y</span></span>
+<span class="out">dana &lt;dana@example.com&gt;
+10 minute timer started</span></pre>
+        </div>
+        <p class="caption">The same holds for a reference two fields could satisfy: it stops with a line naming them.
+          <a href="/manual/use/weaving.html#what-a-step-takes-from-another">What a step takes, in the manual →</a></p>
+      </div>
+    </section>
+
+    <section id="needs">
+      <div class="rule"><p class="label">Before you run it</p><span class="num">04</span></div>
+      <h2>What this pattern needs.</h2>
+      <ul class="needs">
+        <li class="ok"><b>Node 24.5 or newer</b>And the SDK, <code>@evoke-build/evoke</code>. The weave runs in your
+          application.</li>
+        <li class="ok"><b>A classifier key</b>For a live sentence. The recorded test above needs none.</li>
+        <li class="no"><b>Your directory</b>The <code>contact</code> body shown makes an address from the name. Replace it
+          with a lookup in your own directory, and keep the yield.</li>
+        <li class="no"><b>Your mail</b>The collection's <code>mail</code> opens a draft in the Mac's mail app. The test's
+          stand-in only prints the line.</li>
+      </ul>
+      <div class="actions">
+        <a class="button primary" href="/start.html?example=contact-to-draft">Adapt this pattern</a>
+        <a class="button" href="https://github.com/evoke-build/evoke/tree/main/spec/transcripts/weave/home/.config/evoke">View source</a>
+        <a class="quiet" href="/manual/use/weaving.html">Read the docs →</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- footer -->
+  <script src="/scenes.js"></script>
+</body>
+</html>

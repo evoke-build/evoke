@@ -3,452 +3,167 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Frequently asked questions - evoke</title>
-  <meta name="description" content="What people ask about evoke, answered short: what a reflex is, what the number means, where reflexes come from, what leaves your machine, and who makes it.">
-  <link rel="canonical" href="https://evoke.build/faq.html">
-  <meta name="robots" content="max-image-preview:large">
-  <meta name="theme-color" content="#0f0f10">
-  <meta property="og:type" content="article">
-  <meta property="og:site_name" content="evoke">
-  <meta property="og:locale" content="en_US">
-  <meta property="og:title" content="Frequently asked questions - evoke">
-  <meta property="og:description" content="What a reflex is, what the number means, what it needs, where reflexes come from, what leaves your machine, and who makes it. Short answers, each with the page that holds the long one.">
-  <meta property="og:url" content="https://evoke.build/faq.html">
-  <meta property="og:image" content="https://evoke.build/og.png">
-  <meta property="og:image:width" content="2400">
-  <meta property="og:image:height" content="1260">
-  <meta property="og:image:alt" content="evoke — Software, by reflex.">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Frequently asked questions - evoke">
-  <meta name="twitter:description" content="What a reflex is, what the number means, what it needs, where reflexes come from, what leaves your machine, and who makes it.">
-  <meta name="twitter:image" content="https://evoke.build/og.png">
-  <meta name="twitter:image:alt" content="evoke — Software, by reflex.">
-  <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="icon" href="favicon.png">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <title>Frequently asked questions - Evoke</title>
+  <meta name="description" content="What you install, what can go wrong, what leaves your machine and what it costs. Ten short answers, each with the page that holds the long one.">
+  <!-- head -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "FAQPage",
-        "@id": "https://evoke.build/faq.html",
-        "url": "https://evoke.build/faq.html",
-        "name": "Frequently asked questions",
-        "headline": "Frequently asked questions",
-        "description": "What people ask about evoke, answered short: what a reflex is, what the number means, where reflexes come from, what leaves your machine, and who makes it.",
-        "inLanguage": "en",
-        "isPartOf": { "@id": "https://evoke.build/#website" },
-        "about": { "@id": "https://evoke.build/#software" },
-        "author": { "@id": "https://evoke.build/#organization" },
-        "publisher": { "@id": "https://evoke.build/#organization" },
-        "image": "https://evoke.build/og.png",
-        "mainEntity": []
-      },
-      {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "evoke", "item": "https://evoke.build/" },
-          { "@type": "ListItem", "position": 2, "name": "Frequently asked questions" }
-        ]
-      }
-    ]
+    "@type": "FAQPage",
+    "@id": "https://evoke.build/faq.html",
+    "url": "https://evoke.build/faq.html",
+    "name": "Frequently asked questions",
+    "headline": "Frequently asked questions",
+    "description": "What you install, what can go wrong, what leaves your machine and what it costs. Ten short answers, each with the page that holds the long one.",
+    "inLanguage": "en",
+    "isPartOf": { "@id": "https://evoke.build/#website" },
+    "about": { "@id": "https://evoke.build/#software" },
+    "author": { "@id": "https://evoke.build/#organization" },
+    "publisher": { "@id": "https://evoke.build/#organization" },
+    "image": "https://evoke.build/og.png",
+    "mainEntity": []
   }
   </script>
-  <script>
-    // A page reached with a hash lands on it at once; scrolling glides from the reader's first touch of the page.
-    if (location.hash) {
-      const html = document.documentElement, glide = () => html.style.removeProperty("scroll-behavior")
-      html.style.scrollBehavior = "auto"
-      addEventListener("pointerdown", glide, { once: true })
-      addEventListener("keydown", glide, { once: true })
-    }
-  </script>
-  <style>
-    /* Palette: the site is dark, whatever the system prefers; --text a step below the ink, for a page that is read */
-    :root {
-      color-scheme: dark;
-      --bg: #0f0f10;
-      --fg: #ececec;
-      --text: #cccccc;
-      --muted: #9c9ca3;
-      --line: #232326;
-      --line-strong: #303035;
-      --panel: #151517;
-      --accent: #e5761d;
-      --accent-ink: #ea8a40;
-      --mono: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    }
-
-    /* Type: Geist and JetBrains Mono, served here and shown from the first paint: the text waits the moment the font takes, and is never drawn in another face first */
-    @font-face { font-family: "Geist"; src: url("fonts/geist.woff2") format("woff2"); font-weight: 100 900; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: block; }
-    @font-face { font-family: "Geist Fallback"; src: local("Helvetica Neue"), local("Arial"); size-adjust: 104.5%; ascent-override: 96%; descent-override: 28%; line-gap-override: 0%; }
-    @font-face { font-family: "JetBrains Mono Fallback"; src: local("Menlo-Regular"), local("Menlo"), local("SF Mono"), local("Consolas"), local("DejaVu Sans Mono"); size-adjust: 106%; ascent-override: 96.5%; descent-override: 24%; line-gap-override: 0%; }
-
-    /* Base */
-    * { box-sizing: border-box; }
-    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font: 16px/1.6 "Geist", "Geist Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      letter-spacing: 0.002em;
-      background: var(--bg);
-      color: var(--fg);
-      -webkit-font-smoothing: antialiased;
-    }
-    a { color: var(--accent-ink); text-decoration: none; }
-    a:hover { text-decoration: underline; text-underline-offset: .15em; }
-    h1, h2, h3 { text-wrap: balance; }
-    p, li { text-wrap: pretty; }
-    code { font-family: var(--mono); }
-    p code, li code, h3 code { font-size: .86em; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: .05em .35em; color: inherit; white-space: nowrap; }
-    ::selection { background: color-mix(in srgb, var(--accent) 32%, transparent); }
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
-    .wrap { max-width: 76rem; margin: 0 auto; padding: 0 1.5rem; }
-    [id] { scroll-margin-top: 4.5rem; }
-
-    /* The bar */
-    header.top {
-      position: sticky; top: 0; z-index: 3;
-      background: color-mix(in srgb, var(--bg) 70%, transparent);
-      -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
-      border-bottom: 1px solid var(--line);
-    }
-    header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 3.5rem; }
-    .brand { display: flex; align-items: center; gap: .6rem; color: var(--fg); font-weight: 600; letter-spacing: -0.01em; font-size: 1.1rem; }
-    .brand:hover { text-decoration: none; }
-    .brand img { width: 26px; height: 26px; }
-    nav.links { display: flex; align-items: center; gap: 1.5rem; }
-    nav.links a { color: var(--muted); font-size: .95rem; font-weight: 450; }
-    nav.links a:hover, nav.links a.here { color: var(--fg); text-decoration: none; }
-    nav.links a.button { color: var(--fg); }
-    /* The idea leads the bar: the one warm word in the row, underlined softly, and it stays on a phone */
-    nav.links a.idea { color: var(--accent-ink); font-weight: 500; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .32em; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }
-    nav.links a.idea:hover { color: var(--fg); text-decoration-color: var(--accent); }
-    .button {
-      display: inline-flex; align-items: center; gap: .5rem;
-      padding: .7rem 1.3rem; border-radius: 999px;
-      border: 1px solid var(--line-strong); color: var(--fg);
-      font-weight: 500; font-size: .98rem; line-height: 1.2;
-      transition: border-color .15s, background-color .15s;
-    }
-    .button:hover { text-decoration: none; border-color: var(--muted); }
-    .button.small { padding: .42rem .95rem; font-size: .88rem; }
-
-    /* The opening */
-    .hero { padding: 4.5rem 0 0; }
-    .hero .copy { max-width: 46rem; }
-    .hero h1 { font-size: clamp(2.8rem, 5.6vw, 4.1rem); font-weight: 600; letter-spacing: -0.035em; line-height: .98; margin: 0 0 1.3rem; }
-    .hero h1 em { font-style: normal; color: var(--accent); }
-    .hero .lede { font-size: 1.22rem; line-height: 1.5; color: var(--muted); max-width: 40rem; margin: 0; }
-    .hero .lede strong { color: var(--fg); font-weight: 560; }
-    .index { list-style: none; margin: 1.9rem 0 0; padding: 1.1rem 0 0; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: .65rem 2rem; }
-    .index a { display: inline-flex; align-items: baseline; gap: .6rem; color: var(--muted); font-size: .95rem; font-weight: 450; transition: color .15s; }
-    .index a:hover { color: var(--fg); text-decoration: none; }
-    .index code { font-size: .78rem; color: var(--accent-ink); background: none; border: 0; padding: 0; letter-spacing: .06em; }
-
-    /* Section furniture */
-    section { padding: 5rem 0 0; }
-    .rule { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 1.1rem; margin: 0 0 1.25rem; }
-    .label { font-size: .76rem; font-weight: 560; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); margin: 0; }
-    .rule .num { font: 500 .74rem/1 var(--mono); color: var(--muted); letter-spacing: .08em; }
-    section h2 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); font-weight: 560; letter-spacing: -0.024em; line-height: 1.12; margin: 0 0 .7rem; max-width: 30ch; }
-    p.sub { color: var(--text); font-size: 1.08rem; line-height: 1.55; max-width: 46rem; margin: 0 0 1.4rem; }
-    p.after { color: var(--muted); font-size: .97rem; line-height: 1.55; max-width: 46rem; margin: 1.5rem 0 0; }
-
-    /* A question, then its answer: a hairline apart, one column a reader can follow */
-    .qa { max-width: 46rem; border-top: 1px solid var(--line); padding: 1.35rem 0 .45rem; }
-    .qa h3 { margin: 0 0 .5rem; font-size: 1.14rem; font-weight: 560; letter-spacing: -0.012em; line-height: 1.3; }
-    .qa p { margin: 0 0 .75rem; color: var(--text); font-size: 1.01rem; line-height: 1.6; }
-    .qa p strong { color: var(--fg); font-weight: 560; }
-
-    footer { margin-top: 5.5rem; border-top: 1px solid var(--line); padding: 2.25rem 0 3rem; color: var(--muted); font-size: .9rem; }
-    footer .tag { margin: 0 0 1.4rem; font: 500 .9rem/1.5 var(--mono); color: var(--muted); }
-    footer .row { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; }
-    footer nav { display: flex; flex-wrap: wrap; gap: 1.25rem; }
-    footer a { color: var(--muted); }
-    footer a:hover { color: var(--fg); }
-
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-    @media (max-width: 960px) {
-      section { padding-top: 4rem; }
-      .hero { padding-top: 3.5rem; }
-      nav.links { gap: 1rem; }
-      nav.links a.wide { display: none; }
-    }
-  </style>
 </head>
 <body>
-  <header class="top">
-    <div class="wrap">
-      <a class="brand" href="./"><img src="logo.png" alt="" width="26" height="26">evoke</a>
-      <nav class="links" aria-label="Site">
-        <a class="idea" href="idea.html">The idea</a>
-        <a href="manual/">Manual</a>
-        <a class="wide" href="use-cases.html">Use cases</a>
-        <a class="wide" href="format.html">Format</a>
-        <a class="wide" href="manual/sdk/getting-started.html">SDK</a>
-        <a class="wide" href="./#jev">Jev</a>
-        <a class="wide" href="https://github.com/evoke-build/evoke">GitHub</a>
-        <a class="button small" href="./#install">Install</a>
-      </nav>
-    </div>
-  </header>
+  <!-- bar -->
 
   <main class="wrap">
-    <div class="hero">
+    <div class="hero solo">
       <div class="copy">
         <h1>Questions, <em>answered.</em></h1>
-        <p class="lede"><strong>What people ask before they say a sentence to their computer.</strong> Short answers,
-          each with the page of the manual that holds the long one.</p>
+        <p class="lede"><strong>Ten questions to ask before you install.</strong> Each answer is short, and links to
+          the page of the manual that holds the long one.</p>
       </div>
-      <ul class="index" aria-label="The sections">
-        <li><a href="#idea"><code>01</code>The idea</a></li>
-        <li><a href="#using"><code>02</code>Using it</a></li>
-        <li><a href="#reflexes"><code>03</code>Reflexes and trust</a></li>
-        <li><a href="#jev"><code>04</code>Jev and your data</a></li>
-        <li><a href="#project"><code>05</code>The project</a></li>
+      <ul class="index" aria-label="The groups">
+        <li><a href="#install"><code>01</code>What you install</a></li>
+        <li><a href="#wrong"><code>02</code>What can go wrong</a></li>
+        <li><a href="#machine"><code>03</code>What leaves your machine</a></li>
       </ul>
     </div>
 
-    <section id="idea">
-      <div class="rule"><p class="label">The idea</p><span class="num">01</span></div>
-      <h2>What it is, in plain words.</h2>
-      <p class="sub">A sentence can choose a program. It can never invent a value. Everything on this page follows
-        from that line.</p>
-      <div class="qa" id="what-is-evoke">
-        <h3>What is evoke?</h3>
-        <p>One tool with three ways in: a CLI you talk to, a package manager that installs reflexes from git, and a
-          TypeScript SDK that puts the same decisions inside your app. You say what you want. It picks the right small
-          program from the ones you installed, fills in its arguments from your sentence, and runs it when it is sure.
-          <a href="idea.html">The idea, in ten minutes.</a></p>
+    <section id="install">
+      <div class="rule"><p class="label">What you install</p><span class="num">01</span></div>
+      <h2>A program, and the words to ask for it.</h2>
+      <div class="qa" id="what-am-i-installing">
+        <h3>What exactly am I installing?</h3>
+        <div>
+          <p>A <strong>reflex</strong>: a directory with a manifest, <code>reflex.toml</code>, and the program it names.
+            The manifest says what the program does, what it is not for, and what to ask. The CLI and the SDK read
+            that manifest to decide, and run the program.</p>
+          <p><code>evoke add owner/repo</code> fetches a reflex from git at a version tag and pins it by content. No code
+            runs at install time.</p>
+          <a class="go" href="/manual/use/installing.html">Installing reflexes →</a>
+        </div>
       </div>
-      <div class="qa" id="what-is-a-reflex">
-        <h3>What is a reflex?</h3>
-        <p>A small program with a manifest: a file that says in plain words what the program does and which arguments
-          it takes. The classifier reads the manifest, and the program receives what was decided. A reflex is a
-          recipe: written once, published with a git tag, shared and improved by everyone.
-          <a href="manual/author/manifest.html">The manifest, key by key.</a></p>
+      <div class="qa" id="software-i-have">
+        <h3>Can it use software I already have?</h3>
+        <div>
+          <p>Yes, through a reflex you write. Its body can be a function, a script, a command with arguments, or a
+            call to an API you use. <code>evoke new</code> writes a working one to start from.</p>
+          <p>An application you already have does not gain this on its own. Someone wraps one of its operations, and
+            describes it.</p>
+          <a class="go" href="/manual/author/first-reflex.html">Your first reflex →</a>
+        </div>
       </div>
-      <div class="qa" id="does-it-write-code">
-        <h3>Does it write code, or make values up?</h3>
-        <p>No. Your words pick a program. They never write one. Every argument is a choice the author listed, a word
-          you taught it, or a piece of what you typed, checked against its range. Nothing else can reach a program.
-          <a href="idea.html#move">The move.</a></p>
-      </div>
-      <div class="qa" id="is-it-an-agent">
-        <h3>Is it an AI agent?</h3>
-        <p>Call it what you like. What matters is the shape: closed questions, calibrated probabilities, and a person's
-          program at the end. Every value comes from you, the confidence is a number you can set a bar on, and what
-          cannot be undone asks first. If you answer for what an automation did, that shape is the point.
-          <a href="idea.html#problem">The problem it solves.</a></p>
-      </div>
-      <div class="qa" id="what-the-number-means">
-        <h3>What does the number mean?</h3>
-        <p>A probability, and a calibrated one: 0.85 means right about 85 times in 100. <code>evoke</code> asks several
-          questions about a sentence and takes the weakest answer as its confidence. A read runs at 0.6, a write at
-          0.8, and a destructive reflex always asks, however sure. The bars are lines in a file you own.
-          <a href="idea.html#number">The number.</a></p>
+      <div class="qa" id="my-own-words">
+        <h3>Can it understand my own names and phrasing?</h3>
+        <div>
+          <p>Yes. Your names go in a <strong>vocabulary</strong>: one word per room, service or person, with a meaning
+            the classifier reads and a value the program receives. Your phrases go in an <strong>overlay</strong>, one
+            line each. Both are files you own, and an update never touches them.</p>
+          <a class="go" href="/manual/use/tuning.html">Tuning →</a>
+        </div>
       </div>
     </section>
 
-    <section id="using">
-      <div class="rule"><p class="label">Using it</p><span class="num">02</span></div>
-      <h2>What it needs, and what it will not do.</h2>
-      <p class="sub">One small binary, a key, and reflexes from git. The rest is what it refuses to do on
-        a guess.</p>
-      <div class="qa" id="what-do-i-need">
-        <h3>What do I need?</h3>
-        <p>A Mac or a Linux machine. On Windows, WSL. <code>git</code> on your path, to install reflexes. Node 24 or
-          newer, for reflexes written in JavaScript. And a key for Jev: from TypeSafe AI as
-          <code>TYPESAFE_API_KEY</code>, or from OpenJEV as <code>OPENJEV_API_KEY</code>.
-          <a href="manual/start/install.html">Install.</a></p>
+    <section id="wrong">
+      <div class="rule"><p class="label">What can go wrong</p><span class="num">02</span></div>
+      <h2>A wrong reading is possible. A made-up value is not.</h2>
+      <div class="qa" id="wrong-choice">
+        <h3>Can it make a wrong choice?</h3>
+        <div>
+          <p>Yes. The classifier can misread a sentence and pick the wrong reflex, or the wrong option. What holds is
+            the shape of every value: an option the author listed, a word from your vocabulary, a piece of what you
+            typed checked against its range, or a yes/no switch.</p>
+          <p>What it chooses still passes the gate. A read runs at 0.6, a write at 0.8, and a destructive reflex always
+            asks. Raise the bars for what matters, in a file you own.</p>
+          <a class="go" href="/manual/use/outcomes.html">Outcomes →</a>
+        </div>
       </div>
-      <div class="qa" id="do-i-need-an-account">
-        <h3>Do I need an account?</h3>
-        <p>Not with <code>evoke</code>. There is nothing to sign up for, and no server of ours anywhere: this site is
-          static pages, the binary comes from GitHub releases, and a decision goes from your machine to the
-          classifier. The classifier's key is yours, from TypeSafe AI or from OpenJEV. Reflexes come from git with
-          your own credentials. <a href="privacy.html">Privacy.</a></p>
+      <div class="qa" id="later-step-fails">
+        <h3>What happens when a later step fails?</h3>
+        <div>
+          <p>The steps after it are skipped, and each says so. Steps already done are not undone. The exit code is
+            the worst step's. Before anything runs, the plan is shown, and a part that matches nothing refuses the
+            whole sentence.</p>
+          <a class="go" href="/manual/use/weaving.html">Weaving →</a>
+        </div>
       </div>
-      <div class="qa" id="what-does-it-cost">
+      <div class="qa" id="contained">
+        <h3>How are installed programs contained?</h3>
+        <div>
+          <p>They are not, yet. There is no sandbox. A reflex runs with your permissions, in an environment scrubbed to
+            five variables, and receives secrets only through its settings. Installing one is a trust decision.
+            <strong>Read what you install.</strong></p>
+          <a class="go" href="/manual/security.html">Security →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="machine">
+      <div class="rule"><p class="label">What leaves your machine</p><span class="num">03</span></div>
+      <h2>One request, to the classifier you chose, with your key.</h2>
+      <div class="qa" id="what-leaves">
+        <h3>What runs locally, and what leaves the machine?</h3>
+        <div>
+          <p>evoke runs on your machine. For each decision it sends one request to the classifier you chose, with your
+            own key: your sentence, and the questions built from the installed manifests. Nothing goes to evoke.build.</p>
+          <p>A reflex is a program. It may contact its own service, and its description says what it does. The privacy
+            policy names every party that sees something.</p>
+          <a class="go" href="/privacy.html">Privacy policy →</a>
+        </div>
+      </div>
+      <div class="qa" id="cost">
         <h3>What does it cost?</h3>
-        <p><code>evoke</code> is free and open source, under Apache-2.0. Jev is <a href="https://typesafe.ai">TypeSafe
-          AI</a>'s service, and a key from TypeSafe AI is billed on its own terms. A key from
-          <a href="https://openjev.sh">OpenJEV</a>, an independent service that forwards requests to Jev, is on
-          OpenJEV's terms, which it has not published. Nothing else is metered.</p>
+        <div>
+          <p>evoke is free and open source, under Apache-2.0. Live decisions are billed by the classifier's provider
+            under its own terms, with the key you bring. A sentence you repeat is answered from a cache and costs
+            nothing.</p>
+          <a class="go" href="/manual/start/install.html#the-key">The key →</a>
+        </div>
       </div>
-      <div class="qa" id="can-it-run-something-else">
-        <h3>Can it run something I did not ask for?</h3>
-        <p>Under the bar, nothing runs. A sentence that fits nothing runs nothing, and shows you the ranking that says
-          why. A destructive reflex asks every time, and there is no <code>--yes</code>. <code>evoke try</code> shows
-          every judgment before anything runs, and <code>evoke why</code> explains the last decision.
-          <a href="manual/use/outcomes.html">Outcomes.</a></p>
+      <div class="qa" id="without-setup">
+        <h3>What can I explore without setup?</h3>
+        <div>
+          <p>The walkthrough on the home page and every example page. They replay recorded sessions, so nothing runs
+            and no key is needed. Typing a sentence of your own needs the binary, a key, and reflexes installed.</p>
+          <a class="go" href="/start.html">Get started →</a>
+        </div>
       </div>
-      <div class="qa" id="wrong-program">
-        <h3>What if it picks the wrong program?</h3>
-        <p>Say so at the confirm, and teach it: <code>t</code> records your sentence as an example in a file of yours,
-          and the next decision reads it. Your vocabulary is a file too. An update never touches either.
-          <a href="manual/use/tuning.html">Tuning.</a></p>
-      </div>
-      <div class="qa" id="without-a-key">
-        <h3>Can I use it without a key, or offline?</h3>
-        <p>A decision needs the classifier. Everything else works without one. <code>evoke run &lt;call&gt;</code> runs
-          a reflex by name and asks no classifier, and the <code>replay</code> adapter answers every decision from a
-          recording you write, for tests and for checking the guarantees yourself.
-          <a href="manual/security.html#check-it-yourself">Check it yourself.</a></p>
-      </div>
-      <div class="qa" id="two-things">
-        <h3>Can it do two things in one sentence?</h3>
-        <p>Yes. «kill the lights in the den and start a 10 minute timer» is read as two steps, each decided on its
-          own, and the plan is shown before anything runs. A result of one step can feed the next. A part that matches
-          nothing refuses the whole request. <a href="manual/use/weaving.html">Weaving.</a></p>
+      <div class="qa" id="tool-calling">
+        <h3>How is this related to LLM tool calling?</h3>
+        <div>
+          <p>The pattern overlaps. A model picks an operation and fills its arguments. evoke packages what sits around
+            that: a reflex you install and share, a vocabulary of your own names, a decision your code can inspect
+            before it runs, and a plan that runs several steps in order.</p>
+          <a class="go" href="/developers.html#llm">Where evoke fits →</a>
+        </div>
       </div>
     </section>
 
-    <section id="reflexes">
-      <div class="rule"><p class="label">Reflexes and trust</p><span class="num">03</span></div>
-      <h2>Where the programs come from.</h2>
-      <p class="sub">Git is the registry. A tag is a release. A fetched reflex runs as you, so the trust decisions
-        are yours, and they are made where you can read what you are trusting.</p>
-      <div class="qa" id="where-reflexes-come-from">
-        <h3>Where do reflexes come from?</h3>
-        <p>From git. <code>evoke add owner/repo</code> fetches a repository at its newest version tag and pins each
-          reflex by tag, commit and content hash. A tag that moved is refused. The first-party
-          <a href="manual/collection.html">collection</a> holds thirteen reflexes for what a Mac does at a word.
-          <a href="manual/use/installing.html">Installing reflexes.</a></p>
+    <div class="closing">
+      <div>
+        <h2>Something else?</h2>
+        <p>Open an issue on GitHub. Report a vulnerability through the private form, never in a public issue.</p>
       </div>
-      <div class="qa" id="is-it-safe">
-        <h3>Is it safe to install a reflex from someone I do not know?</h3>
-        <p>A fetched reflex runs as you. <code>add</code> and <code>update</code> are where you decide to trust it, so
-          read what you install: a reflex is one directory, and its body is one file. No code runs at install time.
-          The manifest is linted, the effect you consented to is held in the lock, and an update can tighten it but
-          never loosen it without your <code>--accept</code>. There is no sandbox yet.
-          <a href="manual/security.html">Security.</a></p>
-      </div>
-      <div class="qa" id="who-is-responsible">
-        <h3>Who is responsible for what a reflex does?</h3>
-        <p>A reflex is a program you chose to install, and it runs under your account. <code>evoke</code> shows the
-          call and its confidence, asks before anything that cannot be undone, and gives every run a deadline. What
-          the program then does is the program's, and the licence gives the software as is, without a warranty. So
-          read what you install, and set bars you can defend.
-          <a href="https://github.com/evoke-build/evoke/blob/main/LICENSE">The licence.</a></p>
-      </div>
-      <div class="qa" id="write-my-own">
-        <h3>Can I write my own?</h3>
-        <p>Yes, in ten minutes. <code>evoke new</code> writes a working reflex, <code>evoke check</code> keeps it
-          right, and <code>evoke try</code> shows how it decides. The body is a JavaScript file, or any program with
-          its arguments, in any language. <a href="manual/author/first-reflex.html">Your first reflex.</a></p>
-      </div>
-      <div class="qa" id="share-one">
-        <h3>How do I share one?</h3>
-        <p>Push it to a git repository and tag a version. There is no account, no registry API, no build step and no
-          upload. Anyone with <code>evoke</code> installs it from the ref.
-          <a href="manual/author/publishing.html">Publishing.</a></p>
-      </div>
-      <div class="qa" id="inside-my-app">
-        <h3>Can I use it inside my app?</h3>
-        <p>Yes. The SDK, <code>@evoke-build/evoke</code>, loads reflexes as files or as code and decides with the same
-          core, compiled to WebAssembly. A decision is a plain typed value your app can queue, show, and run later. A
-          recorded adapter makes tests offline and deterministic.
-          <a href="manual/sdk/getting-started.html">Getting started with the SDK.</a></p>
-      </div>
-    </section>
-
-    <section id="jev">
-      <div class="rule"><p class="label">Jev and your data</p><span class="num">04</span></div>
-      <h2>One request, from your machine, with your key.</h2>
-      <p class="sub">The classifier sees your sentence and the questions built from the reflexes you installed.
-        Nothing else of yours, and nothing at all reaches us.</p>
-      <div class="qa" id="what-is-jev">
-        <h3>What is Jev?</h3>
-        <p><a href="https://typesafe.ai">TypeSafe AI</a>'s System One model: a classifier that answers closed questions
-          with calibrated probabilities. <code>evoke</code> asks the questions and applies the gate. Two built-in
-          adapters reach it: <code>jev</code>, through TypeSafe AI's own API, and <code>openjev</code>, through
-          OpenJEV, an independent service. The core names no engine, and any adapter that answers a closed choice
-          with probabilities fits. <a href="manual/sdk/adapters.html">Adapters.</a></p>
-      </div>
-      <div class="qa" id="what-is-openjev">
-        <h3>What is OpenJEV?</h3>
-        <p>An independent service, not TypeSafe AI's, that forwards requests to Jev and returns its answers.
-          <code>evoke</code> is affiliated with neither, and vouches for neither. A key from OpenJEV is on
-          OpenJEV's terms, and whether it may offer Jev is a matter between OpenJEV and TypeSafe AI. It publishes
-          no terms and no privacy policy, as of the date on the <a href="privacy.html">privacy page</a>. With
-          <code>adapter = "openjev"</code> in <code>evoke.toml</code>, your request goes to OpenJEV first, and on
-          to Jev. <a href="manual/start/install.html#the-key">The key.</a></p>
-      </div>
-      <div class="qa" id="what-leaves-my-machine">
-        <h3>What leaves my machine?</h3>
-        <p>When <code>evoke</code> decides, it sends one request from your machine to the classifier, with your key:
-          your sentence, and the questions built from the reflexes you installed, their descriptions, options and
-          examples, and your vocabulary's words with the meanings you wrote. Never a vocabulary's value, a setting, a
-          key or a file. Nothing goes to evoke.build. <a href="privacy.html">Privacy, in full.</a></p>
-      </div>
-      <div class="qa" id="made-by-typesafe">
-        <h3>Is evoke made by TypeSafe AI, or by OpenJEV?</h3>
-        <p>No. Jev is TypeSafe AI's model, and OpenJEV is an independent service. <code>evoke</code> is a project of
-          its own, under its own name and licence, affiliated with neither and vouching for neither. It reaches Jev
-          through TypeSafe AI's own API, or through OpenJEV, as any user of either does. Whether a service may offer
-          Jev is a matter between that service and TypeSafe AI.</p>
-      </div>
-    </section>
-
-    <section id="project">
-      <div class="rule"><p class="label">The project</p><span class="num">05</span></div>
-      <h2>Open source, under one name.</h2>
-      <p class="sub">The code, the spec and the manual are one public repository. The name and the logo stay with
-        the project.</p>
-      <div class="qa" id="open-source">
-        <h3>Is it open source?</h3>
-        <p>Yes. The CLI, the SDK, the spec and the manual are one public repository under Apache-2.0, and the
-          collection is MIT. The reflex format is frozen, and every promise in the manual is a transcript that runs in
-          CI. <a href="https://github.com/evoke-build/evoke">The repository.</a></p>
-      </div>
-      <div class="qa" id="fork-or-name">
-        <h3>Can I fork it, or use the name?</h3>
-        <p>Fork it, yes: the licence allows it. The name and the logo are trademarks. Except for displaying the licence
-          details and identifying us as the origin of the software, you have no right under the licence to use our
-          trademarks, trade names, service marks or product names. So a fork takes its own name and logo. You may
-          still say that something runs on, or is built for, <code>evoke</code>.
-          <a href="https://github.com/evoke-build/evoke/blob/main/TRADEMARK.md">Trademarks.</a></p>
-      </div>
-      <div class="qa" id="report-security">
-        <h3>How do I report a security problem?</h3>
-        <p>Privately, through <a href="https://github.com/evoke-build/evoke/security/advisories/new">GitHub's report
-          form</a>, never in a public issue. The latest release is the one that gets fixes.</p>
-      </div>
-      <div class="qa" id="ask-something-else">
-        <h3>Where do I ask something else?</h3>
-        <p>Open an <a href="https://github.com/evoke-build/evoke/issues">issue</a> on GitHub. The
-          <a href="manual/">manual</a> has a page for every question on this one, and its
-          <a href="manual/reference/glossary.html">glossary</a> holds the words.</p>
-      </div>
-      <p class="after"><a href="idea.html">The idea, in ten minutes →</a></p>
-    </section>
-  </main>
-
-  <footer>
-    <div class="wrap">
-      <p class="tag">You invoke a function; you evoke a reflex.</p>
-      <div class="row">
-        <div><a href="https://github.com/evoke-build/evoke/blob/main/LICENSE">Apache-2.0</a>; the collection is MIT.
-          Jev is <a href="https://typesafe.ai">TypeSafe AI</a>'s.</div>
-        <nav aria-label="Footer">
-          <a href="manual/">Manual</a>
-          <a href="idea.html">The idea</a>
-          <a href="use-cases.html">Use cases</a>
-          <a href="format.html">The format</a>
-          <a href="manual/reference/cli.html">Reference</a>
-          <a href="manual/security.html">Security</a>
-          <a href="faq.html">FAQ</a>
-          <a rel="privacy-policy" href="privacy.html">Privacy</a>
-          <a href="https://github.com/evoke-build/reflexes">Collection</a>
-          <a href="https://github.com/evoke-build/evoke">GitHub</a>
-        </nav>
+      <div class="actions">
+        <a class="button" href="https://github.com/evoke-build/evoke/issues">Ask on GitHub</a>
+        <a class="quiet" href="https://github.com/evoke-build/evoke/security/advisories/new">Report a vulnerability</a>
       </div>
     </div>
-  </footer>
+  </main>
+
+  <!-- footer -->
 </body>
 </html>

@@ -4,30 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Evoke - Install abilities. Connect them with a sentence.</title>
-  <meta name="description" content="evoke packages small programs with the descriptions and rules needed to call them in everyday language. A CLI, package manager and TypeScript SDK.">
-  <link rel="canonical" href="https://evoke.build/">
-  <meta name="robots" content="max-image-preview:large">
-  <meta name="theme-color" content="#0f0f10">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="evoke">
-  <meta property="og:locale" content="en_US">
-  <meta property="og:title" content="Evoke - Install abilities. Connect them with a sentence.">
-  <meta property="og:description" content="evoke packages small programs with the descriptions and rules needed to call them in everyday language. A CLI, package manager and TypeScript SDK.">
-  <meta property="og:url" content="https://evoke.build/">
-  <meta property="og:image" content="https://evoke.build/og.png">
-  <meta property="og:image:width" content="2400">
-  <meta property="og:image:height" content="1260">
-  <meta property="og:image:alt" content="evoke — Software, by reflex.">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Evoke - Install abilities. Connect them with a sentence.">
-  <meta name="twitter:description" content="evoke packages small programs with the descriptions and rules needed to call them in everyday language. A CLI, package manager and TypeScript SDK.">
-  <meta name="twitter:image" content="https://evoke.build/og.png">
-  <meta name="twitter:image:alt" content="evoke — Software, by reflex.">
-  <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/jetbrains-mono-italic.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="icon" href="favicon.png">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="description" content="evoke lets you call small programs in your own words and connect compatible ones into a workflow. A CLI, a package manager and a TypeScript SDK.">
+  <!-- head -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -45,7 +23,7 @@
         "image": "https://evoke.build/og.png",
         "license": "https://www.apache.org/licenses/LICENSE-2.0",
         "isAccessibleForFree": true,
-        "installUrl": "https://evoke.build/manual/start/install.html",
+        "installUrl": "https://evoke.build/start.html",
         "downloadUrl": "https://github.com/evoke-build/evoke/releases",
         "releaseNotes": "https://github.com/evoke-build/evoke/releases",
         "softwareHelp": { "@type": "CreativeWork", "url": "https://evoke.build/manual/" },
@@ -83,586 +61,264 @@
     ]
   }
   </script>
-  <script>
-    // A page reached with a hash lands on it at once; scrolling glides from the reader's first touch of the page.
-    if (location.hash) {
-      const html = document.documentElement, glide = () => html.style.removeProperty("scroll-behavior")
-      html.style.scrollBehavior = "auto"
-      addEventListener("pointerdown", glide, { once: true })
-      addEventListener("keydown", glide, { once: true })
-    }
-  </script>
   <style>
-    /* Palette: the site is dark, whatever the system prefers */
-    :root {
-      color-scheme: dark;
-      --bg: #0f0f10;
-      --fg: #ececec;
-      --muted: #9c9ca3;
-      --line: #232326;
-      --line-strong: #303035;
-      --panel: #151517;
-      --panel-head: #1b1b1e;
-      --accent: #e5761d;
-      --accent-ink: #ea8a40;
-      --accent-soft: rgba(234, 138, 64, .12);
-      --radius: 14px;
-      --radius-s: 9px;
-      --term-bg: #141416;
-      --term-head: #1a1a1d;
-      --term-fg: #ebe8e3;
-      --term-dim: #8f8c86;
-      --term-in: #ffffff;
-      --term-ok: #8fd48a;
-      --term-mid: #f0c060;
-      --tk-key: #f0a15c;
-      --tk-table: #a3a6ff;
-      --tk-string: #9ad18f;
-      --tk-num: #f0c060;
-      --tk-comment: #8b8b8b;
-      --tk-punct: #7d7d7d;
-      --tk-kw: #a3a6ff;
-      --tk-ph: #f0c060;
-      --plus-bg: rgba(143, 212, 138, .1);
-      --plus-fg: #9ad18f;
-      --shadow: 0 30px 60px -30px rgba(0, 0, 0, .6);
-      --mono: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-      --lamp: #ffd58e;
-    }
-
-    /* Type: Geist and JetBrains Mono, served here and shown from the first paint: the text waits the moment the font takes, and is never drawn in another face first */
-    @font-face { font-family: "Geist"; src: url("fonts/geist.woff2") format("woff2"); font-weight: 100 900; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; font-style: italic; src: url("fonts/jetbrains-mono-italic.woff2") format("woff2"); font-weight: 100 800; font-display: block; }
-    @font-face { font-family: "Geist Fallback"; src: local("Helvetica Neue"), local("Arial"); size-adjust: 104.5%; ascent-override: 96%; descent-override: 28%; line-gap-override: 0%; }
-    @font-face { font-family: "JetBrains Mono Fallback"; src: local("Menlo-Regular"), local("Menlo"), local("SF Mono"), local("Consolas"), local("DejaVu Sans Mono"); size-adjust: 106%; ascent-override: 96.5%; descent-override: 24%; line-gap-override: 0%; }
-
-    /* Base */
-    * { box-sizing: border-box; }
-    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font: 16px/1.6 "Geist", "Geist Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      letter-spacing: 0.002em;
-      background: var(--bg);
-      color: var(--fg);
-      -webkit-font-smoothing: antialiased;
-    }
-    a { color: var(--accent-ink); text-decoration: none; }
-    a:hover { text-decoration: underline; text-underline-offset: .15em; }
-    h1, h2, h3 { text-wrap: balance; }
-    p, li, dd { text-wrap: pretty; }
-    code, pre, kbd { font-family: var(--mono); }
-    p code, li code, dd code, h3 code { font-size: .86em; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: .05em .35em; color: var(--fg); white-space: nowrap; }
-    ::selection { background: color-mix(in srgb, var(--accent) 32%, transparent); }
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
-    .wrap { max-width: 76rem; margin: 0 auto; padding: 0 1.5rem; }
-    /* A grid or flex item never widens its track: what is wider than the track scrolls inside its own box. */
-    .hero > *, .showcase .grid > *, .showcase .side > *, .weave .grid > *, .weave .side > *, .work .grid > *, .split > *, .stack > *, .sheet > *, .install > *, .cta > .cmd { min-width: 0; }
-    [id] { scroll-margin-top: 4.5rem; }
-
-    /* The bar */
-    header.top {
-      position: sticky; top: 0; z-index: 3;
-      background: color-mix(in srgb, var(--bg) 70%, transparent);
-      -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
-      border-bottom: 1px solid var(--line);
-    }
-    header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 3.5rem; }
-    .brand { display: flex; align-items: center; gap: .6rem; color: var(--fg); font-weight: 600; letter-spacing: -0.01em; font-size: 1.1rem; }
-    .brand:hover { text-decoration: none; }
-    .brand img { width: 26px; height: 26px; }
-    nav.links { display: flex; align-items: center; gap: 1.5rem; }
-    nav.links a { color: var(--muted); font-size: .95rem; font-weight: 450; }
-    nav.links a:hover { color: var(--fg); text-decoration: none; }
-    nav.links a.button { color: var(--fg); }
-    /* The idea leads the bar: the one warm word in the row, underlined softly, and it stays on a phone */
-    nav.links a.idea { color: var(--accent-ink); font-weight: 500; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .32em; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }
-    nav.links a.idea:hover { color: var(--fg); text-decoration-color: var(--accent); }
-
-    /* Buttons and commands */
-    .button {
-      display: inline-flex; align-items: center; gap: .5rem;
-      padding: .7rem 1.3rem; border-radius: 999px;
-      border: 1px solid var(--line-strong); color: var(--fg);
-      font-weight: 500; font-size: .98rem; line-height: 1.2;
-      transition: border-color .15s, background-color .15s;
-    }
-    .button:hover { text-decoration: none; border-color: var(--muted); }
-    .button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 70%, transparent); }
-    .button.primary:hover { background: var(--accent-ink); border-color: var(--accent-ink); }
-    .button.small { padding: .42rem .95rem; font-size: .88rem; }
-    .cmd { display: flex; align-items: center; gap: .6rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-s); padding: .55rem .5rem .55rem .9rem; }
-    .cmd code { flex: 1; font-size: .9rem; white-space: nowrap; overflow-x: auto; color: var(--fg); }
-    .cmd code::before { content: "$ "; color: var(--accent); }
-    .cmd button {
-      flex: none; border: 1px solid var(--line); background: var(--bg); color: var(--muted);
-      border-radius: 999px; padding: .3rem .7rem; font: inherit; font-size: .78rem; cursor: pointer;
-      transition: color .15s, border-color .15s;
-    }
-    .cmd button:hover { color: var(--fg); border-color: var(--muted); }
-    .cmd button.done { color: var(--accent-ink); border-color: var(--accent-ink); }
-
-    /* The hero: the words, and a scene beside them */
-    .hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 3.5rem; align-items: center; padding: 4.5rem 0 0; }
-    .hero h1 { font-size: clamp(2.8rem, 5.6vw, 4.1rem); font-weight: 600; letter-spacing: -0.035em; line-height: .98; margin: 0 0 1.3rem; }
-    .hero h1 em { display: block; font-style: normal; color: var(--accent); }  /* the second sentence on a line of its own */
-    .hero .lede { font-size: 1.22rem; line-height: 1.5; color: var(--muted); max-width: 38rem; margin: 0 0 1.9rem; }
-    .hero .lede strong { color: var(--fg); font-weight: 560; }
-    .cta { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; }
-    .cta .quiet { color: var(--muted); font-size: .95rem; font-weight: 500; padding: .7rem 0; transition: color .15s; }
-    .cta .quiet:hover { color: var(--fg); text-decoration: none; }
-    .cta .cmd { flex: 1 1 100%; max-width: fit-content; margin-top: .25rem; }
-    .cta .cmd code { font-size: .86rem; }
-    .jobs { list-style: none; margin: 1.9rem 0 0; padding: 1.1rem 0 0; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: .65rem 2.25rem; max-width: 34rem; }
-    .jobs a { display: inline-flex; align-items: baseline; gap: .6rem; color: var(--muted); font-size: .95rem; font-weight: 450; transition: color .15s; }
-    .jobs a:hover { color: var(--fg); text-decoration: none; }
-    .jobs code { font-size: .8rem; color: var(--accent-ink); background: none; border: 0; padding: 0; white-space: nowrap; }
-
-    /* Panels: an editor, a terminal */
-    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
-    .panel .head {
-      display: flex; align-items: center; gap: .6rem;
-      padding: .6rem .95rem;
-      background: var(--panel-head);
-      border-bottom: 1px solid var(--line);
-      font: 500 .76rem/1.4 var(--mono);
-      color: var(--muted);
-    }
-    .panel .head i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
-    .panel .head .who {
-      margin-left: auto; white-space: nowrap; font-family: inherit; font-size: .64rem; letter-spacing: .07em; text-transform: uppercase;
-      padding: .16rem .55rem; border-radius: 99px; border: 1px solid var(--line-strong); color: var(--muted); line-height: 1.4;
-    }
-    .panel .head .who.you { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 45%, transparent); background: var(--accent-soft); }
-    .panel pre { margin: 0; padding: 1.1rem 1.2rem 1.2rem; font-size: .88rem; line-height: 1.9; overflow-x: auto; color: var(--fg); }
-    .panel pre .k { color: var(--tk-key); }
-    .panel pre .t { color: var(--tk-table); font-weight: 500; }
-    .panel pre .s { color: var(--tk-string); }
-    .panel pre .n { color: var(--tk-num); }
-    .panel pre .c { color: var(--tk-comment); font-style: italic; }
-    .panel pre .o { color: var(--tk-punct); }
-    .panel pre .w { color: var(--tk-kw); }
-    .panel pre .ph { color: var(--tk-ph); font-weight: 500; }
-    .panel pre .plus { display: inline-block; width: 100%; background: var(--plus-bg); color: var(--plus-fg); margin: 0 -1.2rem; padding: 0 1.2rem; }
-    .panel.term { background: var(--term-bg); border-color: color-mix(in srgb, var(--term-bg) 60%, #fff 10%); color: var(--term-fg); box-shadow: var(--shadow); }
-    .panel.term .head { background: var(--term-head); border-color: rgba(255, 255, 255, .06); color: var(--term-dim); }
-    .panel.term .head .dots { display: flex; gap: 6px; margin-right: .3rem; }
-    .panel.term .head .dots i { width: 10px; height: 10px; opacity: .85; }
-    .panel.term .head .dots i:nth-child(1) { background: #ff5f57; }
-    .panel.term .head .dots i:nth-child(2) { background: #febc2e; }
-    .panel.term .head .dots i:nth-child(3) { background: #28c840; }
-    .panel.term pre { color: var(--term-fg); white-space: pre-wrap; overflow-wrap: anywhere; }
-    .panel.term .p { color: var(--accent); }
-    .panel.term .in { color: var(--term-in); }
-    .panel.term .own { color: var(--term-dim); }
-    .panel.term .name { color: var(--term-in); font-weight: 500; }
-    .panel.term .hi { color: var(--term-ok); }
-    .panel.term .mid { color: var(--term-mid); }
-    .panel.term .add { color: var(--term-ok); }
-    .panel.term .out { color: var(--term-fg); }
-    .cursor { display: inline-block; width: .55em; height: 1.05em; background: var(--term-fg); vertical-align: -0.15em; margin-left: 1px; animation: blink 1.1s steps(2, start) infinite; }
-    @keyframes blink { to { visibility: hidden; } }
-    @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } html { scroll-behavior: auto; } }
-
-    /* The hero's scene: two installed reflexes, one sentence, and the address that travels between them. The final
-       frame is the markup; motion lifts opacity and moves transforms, so the page never lays out twice. The thread is
-       measured from the slots it joins, and the cards stack when the panel is narrow. */
-    .hero .demo { container: demo / inline-size; }
-    :is(.demo, .loom) .head .trail { margin-left: auto; display: flex; gap: .95rem; font-size: .66rem; letter-spacing: .07em; text-transform: uppercase; }
-    :is(.demo, .loom) .head .trail b { font-weight: 500; color: var(--term-dim); opacity: .55; transition: color .35s ease, opacity .35s ease; }
-    :is(.demo, .loom) .head .trail b.on { color: var(--accent); opacity: 1; }
-    .demo .room { position: relative; display: flex; flex-direction: column; gap: 1rem; min-height: 21.5rem; padding: 1.05rem 1.1rem 1rem; background: #101013; font: .75rem/1.5rem var(--mono); color: var(--term-fg); }
-    .demo .say { white-space: pre-wrap; overflow-wrap: anywhere; }
-    .demo .say .p { color: var(--accent); }
-    .demo .say .in { color: var(--term-in); }
-    .demo .c.seam { transition: opacity .3s ease, color .4s ease; }
-    .demo .c.ref { text-decoration: underline dotted transparent; text-underline-offset: .24em; transition: opacity .3s ease, color .4s ease, text-decoration-color .4s ease; }
-    .demo .say.cut .c.seam { color: var(--accent-ink); }
-    .demo .say.cut .c.ref { color: var(--term-mid); text-decoration-color: var(--term-mid); }
-    .demo .say.bound .c.ref { color: var(--term-in); text-decoration: underline solid var(--term-ok); }
-    .demo .pair { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 2.25rem; align-content: center; align-items: start; }
-    .demo .a2 { margin-top: 1.5rem; }  /* a step down: the address row of one card meets the to row of the other */
-    .demo .ability { padding: .55rem .8rem .7rem; background: #1a1a1e; border: 1px solid #36363d; border-radius: var(--radius-s); opacity: 0; transform: translateY(6px); transition: opacity .45s ease, transform .45s ease, border-color .5s ease, box-shadow .5s ease; }
-    .demo .ability.on { opacity: 1; transform: none; }
-    .demo .ability.live { border-color: color-mix(in srgb, var(--accent) 55%, #36363d); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 22px -6px color-mix(in srgb, var(--accent) 45%, transparent); }
-    .demo .top { display: flex; align-items: center; gap: .5rem; height: 1.5rem; }
-    .demo .num { flex: none; width: 1.05rem; height: 1.05rem; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); font: 600 .62rem/1.05rem var(--mono); font-style: normal; text-align: center; }
-    .demo .top svg { flex: none; width: 15px; height: 15px; fill: none; stroke: var(--term-dim); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: stroke .5s ease; }
-    .demo .ability.live .top svg { stroke: var(--accent-ink); }
-    .demo .top b { color: var(--term-in); font-weight: 500; }
-    .demo .tag { margin-left: auto; color: var(--term-ok); font-size: .66rem; letter-spacing: .04em; opacity: .8; white-space: nowrap; }
-    .demo .what { height: 1.5rem; color: var(--term-dim); white-space: nowrap; overflow: hidden; }
-    .demo .row { display: flex; align-items: baseline; gap: .6rem; height: 1.5rem; }
-    .demo .key { flex: none; width: 3.2rem; color: var(--term-dim); }
-    .demo .cell { position: relative; display: inline-grid; align-items: baseline; }
-    .demo .cell > span { grid-area: 1 / 1; }
-    .demo .blank { justify-self: stretch; align-self: baseline; height: 0; border-bottom: 1px dashed #45454d; transform: translateY(.28em); transition: opacity .35s ease; }  /* an empty slot, as wide as what will fill it */
-    .demo .cell:has(.on) .blank { opacity: 0; }
-    .demo .need { color: var(--term-mid); text-decoration: underline dotted var(--term-mid); text-underline-offset: .24em; }
-    .demo .val { position: relative; z-index: 1; padding: 0 .3rem; margin: 0 -.3rem; border-radius: 5px; background: #1a1a1e; }
-    .demo .val.give, .demo .val.take { color: var(--term-ok); }
-    .demo .val.name { min-width: 6ch; }
-    .demo .val.subj { min-width: 8ch; }
-    .demo .done { color: var(--term-fg); }
-    .demo .fly { position: absolute; z-index: 3; padding: 0 .3rem; border-radius: 5px; background: #1a1a1e; color: var(--term-ok); box-shadow: 0 0 0 1px rgba(143, 212, 138, .4), 0 10px 24px -8px rgba(0, 0, 0, .9); opacity: 0; transition: opacity .3s ease, transform 1s cubic-bezier(.3, .6, .2, 1); }
-    .demo .fly.go { transform: translate(var(--dx), var(--dy)); }
-    /* What fades in: a letter, a card's number, a value, the need and the last line; the flying address and the cards carry their own moves */
-    .demo .c, .demo .num, .demo .val, .demo .need, .demo .done { opacity: 0; transition: opacity .3s ease; }
-    .demo .on { opacity: 1; }
-    .demo .clear .on { opacity: 0; transition-duration: .24s; }
-    @container demo (max-width: 500px) {
-      .demo .room { min-height: 0; }
-      .demo .pair { grid-template-columns: minmax(0, 1fr); gap: 1.2rem; margin-right: 1.5rem; }
-      .demo .a2 { margin-top: 0; }
-    }
-    @container demo (max-width: 420px) { .demo .head .trail { gap: .5rem; font-size: .6rem; } }
-    @container demo (max-width: 300px) { .demo .head .trail { display: none; } }
-
-    /* Glows: a soft spotlight behind a section, masked at its own edges so it never shows a band. The hero's warms
-       as the scene beside it moves from two installed reflexes to a draft ready to send. */
-    .hero, .showcase, .work { position: relative; }
-    .hero::before, .showcase::before, .work::before {
-      content: ""; position: absolute; inset: -4rem 0 -3rem; z-index: -1; pointer-events: none;
-      background: radial-gradient(42% 52% at var(--glow-x, 30%) var(--glow-y, 32%), color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
-      -webkit-mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
-      mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
-    }
-    .hero::before { --glow-x: 72%; --glow-y: 48%; inset: -3rem 0 -4rem; opacity: .25; transition: opacity 1.2s ease; }
-    .hero:has(.demo[data-state="asked"])::before { opacity: .45; }
-    .hero:has(.demo[data-state="connected"])::before { opacity: .65; }
-    .hero:has(.demo[data-state="drafted"])::before { opacity: 1; }
-    .work::before { --glow-y: 28%; }
-
-    /* Section furniture */
-    section { padding: 5rem 0 0; }
-    .rule { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 1.1rem; margin: 0 0 1.25rem; }
-    .label { font-size: .76rem; font-weight: 560; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); margin: 0; }
-    .rule .num { font: 500 .74rem/1 var(--mono); color: var(--muted); letter-spacing: .08em; }
-    section h2 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); font-weight: 560; letter-spacing: -0.024em; line-height: 1.12; margin: 0 0 .7rem; max-width: 30ch; }
-    p.sub { color: var(--muted); font-size: 1.08rem; line-height: 1.55; max-width: 44rem; margin: 0 0 2rem; }
-    p.sub strong { color: var(--fg); font-weight: 560; }
-    .caption { color: var(--muted); font-size: .97rem; line-height: 1.55; margin: 1.1rem 0 0; max-width: 60rem; }
-    .caption b { color: var(--fg); font-weight: 560; font-family: var(--mono); font-size: .92em; }
-    p.after { color: var(--muted); font-size: .97rem; margin: 1.5rem 0 0; }
-    a.more { font-size: .95rem; font-weight: 560; }
-
-    /* The showcase: a manifest and a terminal */
-    .showcase { margin-top: 5.5rem; }
-    .showcase .grid { display: grid; grid-template-columns: 1.12fr 1fr; gap: 1.1rem; align-items: start; }
-    .showcase .panel pre { font-size: .8rem; padding: 1rem 1.1rem; }
-    .showcase .panel.term pre { font-size: .78rem; padding-left: 1rem; padding-right: 1rem; }
-    @media (min-width: 1360px) { .showcase .grid { margin-left: -2.5rem; margin-right: -2.5rem; } }
-    .showcase .side { display: grid; gap: 1.1rem; }
-    .notes { list-style: none; margin: 1.4rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem 1.75rem; }
-    .notes li { display: flex; gap: .7rem; align-items: flex-start; color: var(--muted); font-size: .96rem; line-height: 1.5; }
-    .notes li strong { color: var(--fg); font-weight: 560; }
-    .notes b { flex: none; width: 1.4rem; height: 1.4rem; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); font: 600 .7rem/1.4rem var(--mono); text-align: center; margin-top: .1rem; }
-
-    /* Use cases: six small stages, each a door into a use case; one plays in turn, or the one under the pointer */
-    .work .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
-    .card { display: block; color: inherit; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; transition: border-color .2s, transform .2s, box-shadow .2s; }
-    .card:hover { text-decoration: none; border-color: var(--line-strong); transform: translateY(-2px); box-shadow: var(--shadow); }
-    .card .room { position: relative; height: 9rem; background: #101013; overflow: hidden; }
-    .card .room svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .card .room text { font: 500 10px var(--mono); fill: #9a978f; }
-    .card .room text.dim { fill: #5f5f66; }
-    .card .say { position: absolute; left: 1rem; right: 1rem; bottom: .72rem; font: .74rem/1.35 var(--mono); color: var(--term-dim); overflow-wrap: anywhere; }
-    .card .say i { font-style: normal; color: var(--accent); }
-    .card .text { padding: .9rem 1.05rem 1.05rem; }
-    .card .text i { font: 600 .68rem/1 var(--mono); font-style: normal; color: var(--accent-ink); letter-spacing: .12em; }
-    .card .text b { display: block; font-size: 1.02rem; font-weight: 560; letter-spacing: -0.006em; margin: .4rem 0 .2rem; color: var(--fg); }
-    .card .text span { display: block; color: var(--muted); font-size: .93rem; font-weight: 450; line-height: 1.5; }
-    .work p.after { margin-top: 1.4rem; }
-    @keyframes belt { to { stroke-dashoffset: -20; } }
-    @keyframes pulse { 50% { filter: drop-shadow(0 0 8px rgba(240, 192, 96, .75)); } }
-    /* 01 pods and a bell */
-    .ops .pod { fill: #26262b; stroke: #36363d; transition: fill .45s ease, stroke .45s ease, filter .45s ease; }
-    .ops .pod:nth-child(2) { transition-delay: .06s; } .ops .pod:nth-child(3) { transition-delay: .12s; } .ops .pod:nth-child(4) { transition-delay: .18s; } .ops .pod:nth-child(5) { transition-delay: .24s; } .ops .pod:nth-child(6) { transition-delay: .3s; }
-    .ops .pod:nth-child(-n+2), .card:is(.on, :hover, :focus-visible) .ops .pod { fill: var(--accent); stroke: var(--accent); filter: drop-shadow(0 0 5px rgba(229, 118, 29, .5)); }
-    .ops .bell .body, .ops .bell .clapper { fill: var(--lamp); transition: fill .7s; }
-    .ops .wave { fill: none; stroke: var(--lamp); stroke-width: 2; stroke-linecap: round; opacity: .85; transition: opacity .7s; }
-    .card:is(.on, :hover, :focus-visible) .ops .bell .body, .card:is(.on, :hover, :focus-visible) .ops .bell .clapper { fill: #34343a; }
-    .card:is(.on, :hover, :focus-visible) .ops .wave { opacity: 0; }
-    /* 02 lines into lanes */
-    .inbox .item rect { fill: #1d1d22; stroke: #3a3a42; }
-    .inbox .item text { fill: #d6d3cc; }
-    .inbox .item { transition: transform .9s cubic-bezier(.2, .7, .2, 1), opacity .6s; }
-    .inbox .i1 { transform: translate(40px, 18px); } .inbox .i2 { transform: translate(40px, 50px); } .inbox .i3 { transform: translate(40px, 82px); }
-    .card:is(.on, :hover, :focus-visible) .inbox .i1 { transform: translate(186px, 18px); }
-    .card:is(.on, :hover, :focus-visible) .inbox .i2 { transform: translate(186px, 50px); }
-    .card:is(.on, :hover, :focus-visible) .inbox .i3 { transform: translate(186px, 82px); opacity: .45; }
-    .inbox .lane circle { fill: #1a1a1e; stroke: #36363d; stroke-width: 1.5; transition: stroke .5s; }
-    .inbox .lane path { fill: none; stroke: #5f5f66; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: stroke .5s; }
-    .inbox .lane .face { fill: #5f5f66; transition: fill .5s; }
-    .card:is(.on, :hover, :focus-visible) .inbox .ran circle, .card:is(.on, :hover, :focus-visible) .inbox .ran path { stroke: var(--term-ok); }
-    .card:is(.on, :hover, :focus-visible) .inbox .person circle, .card:is(.on, :hover, :focus-visible) .inbox .person path { stroke: var(--term-mid); }
-    .card:is(.on, :hover, :focus-visible) .inbox .person .face { fill: var(--term-mid); }
-    /* 03 a slip from the maker to the checker */
-    .desk .head { fill: #34343a; transition: fill .6s; }
-    .desk .body { fill: none; stroke: #34343a; stroke-width: 2.5; stroke-linecap: round; transition: stroke .6s; }
-    .desk .maker .head { fill: var(--lamp); } .desk .maker .body { stroke: var(--lamp); }
-    .card:is(.on, :hover, :focus-visible) .desk .maker .head { fill: #34343a; } .card:is(.on, :hover, :focus-visible) .desk .maker .body { stroke: #34343a; }
-    .card:is(.on, :hover, :focus-visible) .desk .checker .head { fill: var(--lamp); } .card:is(.on, :hover, :focus-visible) .desk .checker .body { stroke: var(--lamp); }
-    .desk .queue { fill: none; stroke: #36363d; stroke-dasharray: 4 5; }
-    .desk .slip { transform: translate(24px, 72px); transition: transform .9s cubic-bezier(.2, .7, .2, 1); }
-    .desk .slip rect { fill: #1d1d22; stroke: #4a4a52; transition: stroke .5s; }
-    .desk .slip text { fill: #ebe8e3; }
-    .card:is(.on, :hover, :focus-visible) .desk .slip { transform: translate(236px, 72px); }
-    .card:is(.on, :hover, :focus-visible) .desk .slip rect { stroke: var(--term-ok); }
-    .desk .stamp { opacity: 0; transition: opacity .4s .5s; }
-    .desk .stamp circle { fill: #101013; stroke: var(--term-ok); stroke-width: 2; }
-    .desk .stamp path { fill: none; stroke: var(--term-ok); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-    .card:is(.on, :hover, :focus-visible) .desk .stamp { opacity: 1; }
-    /* 04 three belts, one stopping */
-    .floor .rail { stroke: #222226; stroke-width: 8; stroke-linecap: round; }
-    .floor .flow { stroke: var(--lamp); stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 4 16; opacity: .9; animation: belt 1.5s linear infinite; transition: opacity 1s; }
-    .card:is(.on, :hover, :focus-visible) .floor .b3 .flow { animation-play-state: paused; opacity: .16; }
-    .floor .stopped { fill: var(--term-mid); opacity: 0; transition: opacity .5s .4s; }
-    .card:is(.on, :hover, :focus-visible) .floor .stopped { opacity: 1; }
-    /* 05 a chain, the middle one waiting */
-    .chain .wire { stroke: #26262b; stroke-width: 3; stroke-linecap: round; }
-    .chain .pulse { stroke: var(--term-ok); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 4 12; opacity: 0; transition: opacity .5s; animation: belt 1.2s linear infinite; }
-    .chain .l1 .pulse { opacity: 1; }
-    .chain .ring { fill: #1a1a1e; stroke: #36363d; stroke-width: 2; transition: stroke .5s; }
-    .chain .core { fill: #34343a; transition: fill .5s; }
-    .chain .n1 .ring { stroke: var(--term-ok); } .chain .n1 .core { fill: var(--term-ok); }
-    .chain .n2 .ring { stroke: var(--term-mid); animation: pulse 1.1s ease-in-out infinite; } .chain .n2 .core { fill: var(--term-mid); }
-    .card:is(.on, :hover, :focus-visible) .chain .n2 .ring, .card:is(.on, :hover, :focus-visible) .chain .n3 .ring { stroke: var(--term-ok); animation: none; }
-    .card:is(.on, :hover, :focus-visible) .chain .n2 .core, .card:is(.on, :hover, :focus-visible) .chain .n3 .core { fill: var(--term-ok); }
-    .card:is(.on, :hover, :focus-visible) .chain .l2 .pulse { opacity: 1; }
-    /* 06 a mark crossing the bar */
-    .bar .track { stroke: #26262b; stroke-width: 7; stroke-linecap: round; }
-    .bar .track.ok { stroke: rgba(143, 212, 138, .22); }
-    .bar .tick { stroke: #6a6a72; stroke-width: 2; }
-    .bar .mark { transform: translate(247px, 62px); transition: transform 1s cubic-bezier(.2, .7, .2, 1); }
-    .bar .dot { fill: var(--term-mid); filter: drop-shadow(0 0 6px rgba(240, 192, 96, .55)); transition: fill .7s, filter .7s; }
-    .bar .val { fill: var(--term-mid); transition: opacity .4s; }
-    .bar .val.after { opacity: 0; fill: var(--term-ok); }
-    .card:is(.on, :hover, :focus-visible) .bar .mark { transform: translate(300px, 62px); }
-    .card:is(.on, :hover, :focus-visible) .bar .dot { fill: var(--term-ok); filter: drop-shadow(0 0 6px rgba(143, 212, 138, .55)); }
-    .card:is(.on, :hover, :focus-visible) .bar .val.before { opacity: 0; }
-    .card:is(.on, :hover, :focus-visible) .bar .val.after { opacity: 1; }
-    @media (prefers-reduced-motion: reduce) { .floor .flow, .chain .pulse, .chain .ring { animation: none; } }
-
-    /* A weave: a sentence read into two steps, the plan shown, then the run. The stage's final frame is its markup;
-       motion lifts opacity and moves transforms, nothing else, so the page never lays out twice. */
-    .weave .grid { display: grid; grid-template-columns: 1.12fr 1fr; gap: 1.1rem; align-items: start; }
-    @media (min-width: 1360px) { .weave .grid { margin-left: -2.5rem; margin-right: -2.5rem; } }
-    .weave .side { display: grid; gap: 1.1rem; }
-    .weave .strip { padding: .9rem 1rem 1rem; font: .78rem/1.9 var(--mono); border-top: 1px solid rgba(255, 255, 255, .07); }
-    .weave .line { display: block; min-height: 1.9em; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--term-dim); }
-    .weave .line.out { color: var(--term-fg); }
-    .weave .line b { color: var(--term-in); font-weight: 500; }
-    .weave .line i { font-style: normal; color: var(--term-ok); }
-    .weave .line i.mid { color: var(--term-mid); }
-    .weave .p { color: var(--accent); }
-    .weave .in { color: var(--term-in); }
-    :is(.weave, .demo) .typed { position: relative; }
-    :is(.weave, .demo) .c { position: relative; }
-    :is(.weave, .demo) .typed.at::before, :is(.weave, .demo) .c.at::after { content: ""; position: absolute; top: .2em; width: .55em; height: 1.05em; background: var(--term-fg); animation: blink 1.1s steps(2, start) infinite; }
-    :is(.weave, .demo) .typed.at::before { left: 0; }
-    :is(.weave, .demo) .c.at::after { left: 100%; margin-left: 1px; }
-    .loom .room { position: relative; padding: 1rem; background: #101013; font: .8rem/1.5rem var(--mono); color: var(--term-fg); }
-    .loom .room p { margin: 0; }
-    .loom .said { display: flex; justify-content: space-between; gap: 1rem; }
-    .loom .and, .loom .them { position: relative; display: inline-block; color: transparent; }
-    .loom .base, .loom .lit { position: absolute; inset: 0; color: var(--term-fg); user-select: none; }
-    .loom .lit { color: var(--accent-ink); }
-    .loom .ask { margin-top: .75rem; max-width: calc(100% - 2rem); color: var(--term-dim); }
-    .loom .ask i { font-style: normal; color: var(--term-ok); }
-    .loom .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
-    .loom .step { padding: .5rem .75rem; background: #1a1a1e; border: 1px solid #36363d; border-radius: var(--radius-s); }
-    .loom .step > span { display: block; }
-    .loom .call i { font-style: normal; color: var(--term-dim); margin-right: .5rem; }
-    .loom .call b { color: var(--term-in); font-weight: 500; }
-    .loom .call em { font-style: normal; color: var(--term-ok); }
-    .loom .key { color: var(--term-dim); margin-right: .5rem; }
-    .loom .cell { position: relative; display: inline-grid; vertical-align: top; }
-    .loom .cell > span { grid-area: 1 / 1; }
-    .loom .need { color: var(--term-mid); }
-    .loom .val { position: relative; z-index: 1; padding: 0 .25rem; margin: 0 -.25rem; background: #1a1a1e; border-radius: 5px; }
-    .loom .s2 .cell::before { content: ""; position: absolute; inset: -.25rem -.4rem; border-radius: 5px; box-shadow: 0 0 10px 2px rgba(240, 192, 96, .45); opacity: 0; }
-    .loom .s2.wait .cell::before { animation: glow 1.1s ease-in-out infinite; }
-    @keyframes glow { 50% { opacity: 1; } }
-    .loom .fly { position: absolute; z-index: 2; padding: 0 .25rem; margin: 0 -.25rem; background: #1a1a1e; border-radius: 5px; color: var(--term-fg); transition: opacity .3s ease, transform .6s cubic-bezier(.2, .7, .2, 1); }
-    .loom .fly.go { transform: translate(var(--dx), var(--dy)); }
-    /* The threads: legs measured from the letters they join, each a box that grows from its start; dashed for the
-       plan, and the binding filled green behind the value as it travels. */
-    :is(.loom, .demo) .threads { position: absolute; inset: 0; pointer-events: none; }
-    :is(.loom, .demo) .leg { position: absolute; transition: transform .25s ease; }
-    :is(.loom, .demo) .leg::before, :is(.loom, .demo) .leg::after { content: ""; position: absolute; inset: 0; }
-    :is(.loom, .demo) .leg::before { background: repeating-linear-gradient(90deg, var(--accent) 0 4px, transparent 4px 8px); }
-    :is(.loom, .demo) .leg.north::before, :is(.loom, .demo) .leg.south::before { background: repeating-linear-gradient(180deg, var(--accent) 0 4px, transparent 4px 8px); }
-    :is(.loom, .demo) .leg.east { transform-origin: left center; transform: scaleX(0); }
-    :is(.loom, .demo) .leg.west { transform-origin: right center; transform: scaleX(0); }
-    :is(.loom, .demo) .leg.south { transform-origin: center top; transform: scaleY(0); }
-    :is(.loom, .demo) .leg.north { transform-origin: center bottom; transform: scaleY(0); }
-    :is(.loom, .demo) .leg.on { transform: none; }
-    :is(.loom, .demo) .leg.bind::after { background: var(--term-ok); transform: scaleX(0); transform-origin: inherit; transition: transform var(--t, .6s) linear; }
-    :is(.loom, .demo) .leg.bind.north::after, :is(.loom, .demo) .leg.bind.south::after { transform: scaleY(0); }
-    :is(.loom, .demo) .leg.bind.fill::after { transform: none; }
-    /* What fades in: a line, a letter, the parts, the lit words, the question and its answer, a card, a value */
-    .weave .line, .weave .c, .loom .said, .loom .base, .loom .lit, .loom .q, .loom .yes, .loom .step, .loom .val, .loom .need, .loom .fly { opacity: 0; transition: opacity .3s ease; }
-    .weave .on { opacity: 1; }
-    .weave .clear .on { opacity: 0; transition-duration: .24s; }
-    .sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-    @media (max-width: 560px) {
-      .loom .said { display: grid; grid-template-columns: minmax(0, 1fr); justify-content: normal; gap: 0; }
-      .loom .said .part:last-child { text-align: right; }
-      .loom .ask { max-width: calc(100% - 1.5rem); }
-      .loom .pair { grid-template-columns: 1fr; margin: 1rem 1.5rem 0; }
-    }
-
-    /* Steps on a rail, or in a column */
-    .steps { list-style: none; margin: 0 0 1.25rem; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-    .steps li { border-top: 1px solid var(--line-strong); padding-top: .9rem; }
-    .steps i { font: 600 .72rem/1 var(--mono); font-style: normal; color: var(--accent-ink); letter-spacing: .12em; }
-    .steps b { display: block; font-size: 1.08rem; font-weight: 560; letter-spacing: -0.01em; margin: .5rem 0 .3rem; }
-    .steps span { display: block; color: var(--muted); font-size: .96rem; line-height: 1.5; }
-    .steps.column { grid-template-columns: 1fr; gap: 1.1rem; margin: 0 0 1.5rem; }
-
-    /* Text beside code */
-    .split { display: grid; grid-template-columns: 1fr 1.2fr; gap: 3rem; align-items: start; }
-    .split.code-left { grid-template-columns: 1.2fr 1fr; }
-    .split .text { padding-top: .5rem; }
-    .split .text p { color: var(--muted); font-size: 1.08rem; line-height: 1.55; margin: 0 0 1.1rem; }
-    .split .text p strong { color: var(--fg); font-weight: 560; }
-    .ticks { list-style: none; margin: 0 0 1.4rem; padding: 0; display: grid; gap: .6rem; }
-    .ticks li { position: relative; padding-left: 1.4rem; color: var(--muted); font-size: 1rem; line-height: 1.5; }
-    .ticks li::before { content: ""; position: absolute; left: 0; top: .72em; width: .8rem; height: 2px; background: var(--accent); border-radius: 1px; }
-
-    /* The classifier: a sheet and a claim */
-    .sheet { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.25rem; align-items: start; }
-    .sheet dl { margin: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--bg); }
-    .sheet dl > div { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; padding: .8rem 1.3rem; border-top: 1px solid var(--line); }
-    .sheet dl > div:first-child { border-top: 0; }
-    .sheet dt { font: 500 .8rem/1.75 var(--mono); color: var(--accent-ink); }
-    .sheet dd { margin: 0; font-size: .98rem; line-height: 1.5; }
-    .sheet dd span { color: var(--muted); }
-    .claim { border-radius: var(--radius); padding: 1.6rem 1.7rem; background: var(--panel); border: 1px solid var(--line); }
-    .claim p { margin: 0 0 .9rem; font-size: 1.4rem; line-height: 1.28; font-weight: 560; letter-spacing: -0.02em; }
-    .claim p em { font-style: normal; color: var(--accent-ink); }
-    .claim small { display: block; color: var(--muted); font-size: .95rem; line-height: 1.5; }
-
-    /* Promises */
-    .promises { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2.5rem; margin: 0; padding: 0; list-style: none; }
-    .promises li { border-top: 1px solid var(--line); padding: .95rem 0; font-size: .98rem; display: grid; grid-template-columns: auto 1fr; gap: .2rem .8rem; align-items: start; }
-    .promises li::before { content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: var(--accent); margin-top: .55em; }
-    .promises li b { font-weight: 560; }
-    .promises li span { grid-column: 2; color: var(--muted); line-height: 1.5; }
-    .stops { margin-top: 1.5rem; }
-    .stops pre { font-size: .84rem; }
-
-    /* Install */
-    .install { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
-    .way { border: 1px solid var(--line); border-radius: var(--radius); padding: 1.2rem 1.3rem; background: var(--panel); }
-    .way h3 { margin: 0 0 .25rem; font-size: 1.02rem; font-weight: 560; }
-    .way p { margin: 0 0 .85rem; color: var(--muted); font-size: .95rem; }
-    .way .cmd { background: var(--bg); }
-
-    footer { margin-top: 5.5rem; border-top: 1px solid var(--line); padding: 2.25rem 0 3rem; color: var(--muted); font-size: .9rem; }
-    footer .tag { margin: 0 0 1.4rem; font: 500 .9rem/1.5 var(--mono); color: var(--muted); }
-    footer .row { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; }
-    footer nav { display: flex; flex-wrap: wrap; gap: 1.25rem; }
-    footer a { color: var(--muted); }
-    footer a:hover { color: var(--fg); }
-
-    @media (max-width: 960px) {
-      .hero, .showcase .grid, .weave .grid, .split, .split.code-left, .sheet, .install, .promises { grid-template-columns: 1fr; }
-      .hero { gap: 2.5rem; padding-top: 3.5rem; }
-      .steps, .notes { grid-template-columns: 1fr; }
-      .work .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .split { gap: 1.75rem; }
-      .split.code-left .panel { order: 2; }
-      section { padding-top: 4rem; }
-      nav.links { gap: 1rem; }
-      nav.links a.wide { display: none; }
-      .promises li { padding: .8rem 0; }
-    }
-    @media (max-width: 1200px) { .hero .lede { font-size: 1.12rem; } }
-    @media (max-width: 560px) {
-      .sheet dl > div { grid-template-columns: 1fr; gap: .15rem; }
-      .cmd code { white-space: normal; overflow-wrap: anywhere; line-height: 1.45; }
-      .work .grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 400px) {
-      .hero h1 { font-size: min(2.8rem, 11.6vw); }
-      .brand { font-size: 1rem; }
-      nav.links { gap: .75rem; }
-      nav.links a { font-size: .9rem; white-space: nowrap; }
-      .button.small { padding: .38rem .75rem; }
-    }
+    /* The hero's glow warms as the walkthrough moves from two installed reflexes to a draft ready to send */
+    .hero::before { transition: opacity 1.2s ease; }
+    .hero:has(.walk[data-stage="0"])::before, .hero:has(.walk[data-stage="1"])::before { opacity: .25; }
+    .hero:has(.walk[data-stage="2"])::before, .hero:has(.walk[data-stage="3"])::before { opacity: .5; }
+    .hero:has(.walk[data-stage="4"])::before { opacity: .7; }
+    .hero:has(.walk[data-stage="5"])::before { opacity: 1; }
+    /* Three sessions side by side */
+    .three .panel.term pre { font-size: .78rem; padding: .9rem 1rem 1rem; min-height: 9.4rem; }
+    .three p { margin: .7rem 0 0; color: var(--muted); font-size: .93rem; line-height: 1.5; }
+    .three p strong { color: var(--fg); font-weight: 560; }
+    /* The manifest beside its legend */
+    .legend dt { font: 500 .8rem/1.6 var(--mono); color: var(--accent-ink); margin: 0; }
+    .legend dd { margin: .1rem 0 .95rem; color: var(--muted); font-size: .95rem; line-height: 1.5; }
+    .legend dd strong { color: var(--fg); font-weight: 560; }
+    .legend dl { margin: 0; }
   </style>
 </head>
 <body>
-  <header class="top">
-    <div class="wrap">
-      <a class="brand" href="/"><img src="logo.png" alt="" width="26" height="26">evoke</a>
-      <nav class="links" aria-label="Site">
-        <a class="idea" href="idea.html">The idea</a>
-        <a href="manual/">Manual</a>
-        <a class="wide" href="use-cases.html">Use cases</a>
-        <a class="wide" href="format.html">Format</a>
-        <a class="wide" href="manual/sdk/getting-started.html">SDK</a>
-        <a class="wide" href="#jev">Jev</a>
-        <a class="wide" href="https://github.com/evoke-build/evoke">GitHub</a>
-        <a class="button small" href="#install">Install</a>
-      </nav>
-    </div>
-  </header>
+  <!-- bar -->
 
   <main class="wrap">
     <div class="hero">
       <div class="copy">
         <h1>Install abilities. <em>Connect them with a sentence.</em></h1>
-        <p class="lede"><strong>evoke packages small programs with the descriptions and rules needed to call them in
-          everyday language.</strong> Combine compatible actions into a plan, pass results between steps, and set when
-          execution needs confirmation.</p>
+        <p class="lede"><strong>evoke lets you call small programs in your own words.</strong> Compatible ones connect
+          into a workflow. Each ability comes with a description and its input rules. It can also declare outputs
+          that a later step can use.</p>
         <div class="cta">
-          <a class="button primary" href="#install">Install</a>
-          <a class="button" href="#weave">Watch a workflow take shape</a>
-          <a class="quiet" href="manual/author/first-reflex.html">Build your first capability</a>
-          <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
+          <button class="button primary" type="button" data-see>See it work</button>
+          <a class="button" href="/start.html">Get started</a>
         </div>
+        <p class="note">Free and open source. A live sentence needs a key for the classifier, an online service that reads your words. The classifier's provider bills that use.</p>
         <ul class="jobs" aria-label="What evoke is">
-          <li><a href="manual/use/saying-things.html"><code>$</code>a CLI</a></li>
-          <li><a href="manual/use/installing.html"><code>+</code>a package manager</a></li>
-          <li><a href="manual/sdk/getting-started.html"><code>{ }</code>a TypeScript SDK</a></li>
+          <li><a href="/manual/use/saying-things.html"><code>$</code>a CLI</a></li>
+          <li><a href="/manual/use/installing.html"><code>+</code>a package manager</a></li>
+          <li><a href="/manual/sdk/getting-started.html"><code>{ }</code>a TypeScript SDK</a></li>
         </ul>
       </div>
-      <div class="panel term demo" role="figure" data-state="drafted" aria-label="Two installed reflexes, contact and mail. The sentence «look up dana's address and email them» is typed. evoke reads it as two steps: contact finds dana's email address, and mail takes that address as its recipient. The lookup returns dana@example.com, the address travels into the draft's to field, and the draft opens with its subject waiting for you. Nothing is sent.">
-        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>installed</b><b>asked</b><b>connected</b><b class="on">drafted</b></span></div>
-        <div class="room" aria-hidden="true">
-          <div class="say cut bound"><span class="p">$</span> <span class="in typed"><span class="c on">e</span><span class="c on">v</span><span class="c on">o</span><span class="c on">k</span><span class="c on">e</span><span class="c on"> </span><span class="c on">&quot;</span><span class="c on">l</span><span class="c on">o</span><span class="c on">o</span><span class="c on">k</span><span class="c on"> </span><span class="c on">u</span><span class="c on">p</span><span class="c on"> </span><span class="c on">d</span><span class="c on">a</span><span class="c on">n</span><span class="c on">a</span><span class="c on">'</span><span class="c on">s</span><span class="c on"> </span><span class="c on">a</span><span class="c on">d</span><span class="c on">d</span><span class="c on">r</span><span class="c on">e</span><span class="c on">s</span><span class="c on">s</span><span class="c on"> </span><span class="c on seam">a</span><span class="c on seam">n</span><span class="c on seam">d</span><span class="c on"> </span><span class="c on">e</span><span class="c on">m</span><span class="c on">a</span><span class="c on">i</span><span class="c on">l</span><span class="c on"> </span><span class="c on ref">t</span><span class="c on ref">h</span><span class="c on ref">e</span><span class="c on ref">m</span><span class="c on">&quot;</span></span></div>
-          <div class="pair">
-            <div class="ability a1 on">
-              <div class="top"><i class="num on">1</i><svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="3"/><path d="M2.5 14.5c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5"/></svg><b>contact</b><span class="tag">+ installed</span></div>
-              <div class="what">Finds a person's email.</div>
-              <div class="row"><span class="key">name</span><span class="cell"><span class="blank"></span><span class="val name on">dana</span></span></div>
-              <div class="row"><span class="key">email</span><span class="cell"><span class="blank"></span><span class="val give on">dana@example.com</span></span></div>
+      <div class="scene-col">
+        <div class="panel term walk" role="figure" data-stage="5" aria-label="A walkthrough of a recorded session. Two reflexes are installed, contact and mail. The sentence «look up dana's address and email them» is typed. evoke reads it as two steps: contact finds dana's email address, and mail takes that address as its recipient. The lookup returns dana@example.com, the address travels into the draft's to field, and the draft opens with its subject waiting for you. Nothing is sent.">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>walkthrough<span class="stages" aria-label="The stages"><button type="button">installed</button><button type="button">asked</button><button type="button">planned</button><button type="button">found</button><button type="button">connected</button><button type="button" class="on">drafted</button></span></div>
+          <div class="room" aria-hidden="true">
+            <div class="say cut bound"><span class="p">$</span> <span class="in typed"><span class="c on">e</span><span class="c on">v</span><span class="c on">o</span><span class="c on">k</span><span class="c on">e</span><span class="c on"> </span><span class="c on">&quot;</span><span class="c on">l</span><span class="c on">o</span><span class="c on">o</span><span class="c on">k</span><span class="c on"> </span><span class="c on">u</span><span class="c on">p</span><span class="c on"> </span><span class="c on">d</span><span class="c on">a</span><span class="c on">n</span><span class="c on">a</span><span class="c on">'</span><span class="c on">s</span><span class="c on"> </span><span class="c on">a</span><span class="c on">d</span><span class="c on">d</span><span class="c on">r</span><span class="c on">e</span><span class="c on">s</span><span class="c on">s</span><span class="c on"> </span><span class="c on seam">a</span><span class="c on seam">n</span><span class="c on seam">d</span><span class="c on"> </span><span class="c on">e</span><span class="c on">m</span><span class="c on">a</span><span class="c on">i</span><span class="c on">l</span><span class="c on"> </span><span class="c on ref">t</span><span class="c on ref">h</span><span class="c on ref">e</span><span class="c on ref">m</span><span class="c on">&quot;</span></span></div>
+            <div class="pair">
+              <div class="ability a1 on">
+                <div class="top"><i class="num on">1</i><svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="3"/><path d="M2.5 14.5c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5"/></svg><b>contact</b><span class="tag">+ installed</span></div>
+                <div class="what">Finds a person's email.</div>
+                <div class="row"><span class="key">name</span><span class="cell"><span class="blank"></span><span class="val name on">dana</span></span></div>
+                <div class="row"><span class="key">email</span><span class="cell"><span class="blank"></span><span class="val give on">dana@example.com</span></span></div>
+              </div>
+              <div class="ability a2 on live">
+                <div class="top"><i class="num on">2</i><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9.5" rx="1.8"/><path d="M2 4.5l6 4.5 6-4.5"/></svg><b>mail</b><span class="tag">+ installed</span></div>
+                <div class="what">Opens an email draft.</div>
+                <div class="row"><span class="key">to</span><span class="cell"><span class="blank"></span><span class="need">them</span><span class="val take on">dana@example.com</span></span></div>
+                <div class="row"><span class="key">subject</span><span class="cell"><span class="blank"></span><span class="val subj on"><span class="cursor"></span></span></span></div>
+              </div>
             </div>
-            <div class="ability a2 on live">
-              <div class="top"><i class="num on">2</i><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9.5" rx="1.8"/><path d="M2 4.5l6 4.5 6-4.5"/></svg><b>mail</b><span class="tag">+ installed</span></div>
-              <div class="what">Opens an email draft.</div>
-              <div class="row"><span class="key">to</span><span class="cell"><span class="blank"></span><span class="need">them</span><span class="val take on">dana@example.com</span></span></div>
-              <div class="row"><span class="key">subject</span><span class="cell"><span class="blank"></span><span class="val subj on"><span class="cursor"></span></span></span></div>
-            </div>
+            <div class="done on">drafted to dana@example.com</div>
+            <span class="fly">dana@example.com</span>
+            <div class="threads"></div>
           </div>
-          <div class="done on">drafted to dana@example.com</div>
-          <span class="fly">dana@example.com</span>
-          <div class="threads"></div>
+          <div class="strip" aria-label="What the terminal printed">
+            <span class="line on">  1  <b>contact</b> name="dana"  <i>0.90</i></span>
+            <span class="line on">  2  <b>mail</b> · takes email from 1</span>
+            <span class="line out on">dana &lt;dana@example.com&gt;</span>
+            <span class="line on">  2  <b>mail</b> to="dana@example.com"  <i>0.88</i></span>
+            <span class="line out on">drafted to dana@example.com</span>
+          </div>
         </div>
+        <div class="walk-notes" aria-live="polite">
+          <p><strong>Two abilities are installed.</strong> Each came with a description and the inputs it needs.</p>
+          <p><strong>You type one sentence.</strong> It asks for two things.</p>
+          <p><strong>evoke reads two steps and shows the plan first.</strong> The word «them» points at what step 1 will find.</p>
+          <p><strong>Step 1 runs.</strong> It finds the address, and says so.</p>
+          <p><strong>The address becomes the recipient.</strong> Nothing was typed twice, and nothing was guessed.</p>
+          <p class="on"><strong>You installed two abilities. You asked for one workflow.</strong> With the collection's mail reflex, a draft opens in your mail app. You still press send.</p>
+        </div>
+        <div class="walk-controls">
+          <button class="button small" type="button" data-next>Next step</button>
+          <button class="button small" type="button" data-replay>Replay</button>
+          <a class="quiet" href="/examples/contact-to-draft.html">See this example →</a>
+        </div>
+        <p class="walk-legend"><b>A recorded session, replayed on this page.</b> Nothing runs here, and no key is needed.</p>
       </div>
     </div>
 
-    <section id="work" class="work">
-      <div class="rule"><p class="label">Use cases</p><span class="num">01</span></div>
-      <h2>Six examples, from ops to the plant floor.</h2>
-      <p class="sub">Typing a request in plain words is easy. The hard part is making sure only the right thing runs.
-        <strong>Each example shows what ran, and where evoke checked first.</strong></p>
+    <section id="reflex">
+      <div class="rule"><p class="label">A reflex</p><span class="num">01</span></div>
+      <h2>An ability comes with a way to ask for it.</h2>
+      <p class="sub">The <code>mail</code> ability from the walkthrough is a small program with a manifest. The manifest
+        says what it does, what it is not for, and what to ask you when something is missing. <strong>This package is called a reflex.</strong></p>
+      <div class="split code-left">
+        <div class="panel wrap">
+          <div class="head"><i></i>mail/reflex.toml<span class="who">by the author</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""
+Start an email in your mail app.
+To one address, with an optional subject; nothing goes out until you press send."""</span>
+
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span><span class="s">"reading or searching mail"</span><span class="o">,</span> <span class="s">"chat and text messages"</span><span class="o">]</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Write to <span class="ph">{to}</span>?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="s">"mail.mts"</span>
+
+<span class="t">[args.to]</span>
+<span class="k">ask</span>  <span class="o">=</span> <span class="s">"To which address?"</span>
+<span class="k">pick</span> <span class="o">=</span> <span class="s">"email"</span>
+
+<span class="t">[args.subject]</span>
+<span class="k">ask</span>      <span class="o">=</span> <span class="s">"What is the subject?"</span>
+<span class="k">pick</span>     <span class="o">=</span> <span class="s">"quoted"</span>
+<span class="k">optional</span> <span class="o">=</span> <span class="n">true</span>
+
+<span class="t">[examples]</span>
+<span class="s">"email ana@example.com"</span>                   <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"ana@example.com"</span> <span class="o">}</span>
+<span class="s">'write to sam@example.com about "friday"'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"sam@example.com"</span><span class="o">,</span> <span class="k">subject</span> <span class="o">=</span> <span class="s">"friday"</span> <span class="o">}</span></pre>
+        </div>
+        <div class="text legend">
+          <dl>
+            <dt>description</dt>
+            <dd><strong>What it does, in plain words.</strong> The classifier reads this to pick the reflex you mean.</dd>
+            <dt>not_for</dt>
+            <dd><strong>What it does not do.</strong> Naming the near misses keeps a similar request from landing here.</dd>
+            <dt>[args.to] · [args.subject]</dt>
+            <dd><strong>What it needs from you.</strong> An email address is taken from your sentence, word for word. The subject is optional.</dd>
+            <dt>effect</dt>
+            <dd><strong>How careful to be.</strong> A write changes something you can undo. It runs on its own only when evoke is sure enough.</dd>
+            <dt>[examples]</dt>
+            <dd><strong>Sentences that teach.</strong> You can add your own, and they stay in a file of yours.</dd>
+          </dl>
+          <p>The <code>contact</code> reflex adds one more table, <code>[yields] email = "email"</code>. It declares what its
+            result holds. That is what the walkthrough connected.</p>
+          <a class="more" href="/how-it-works.html">How it works →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="words">
+      <div class="rule"><p class="label">Your words</p><span class="num">02</span></div>
+      <h2>Your team's words belong here.</h2>
+      <p class="sub">A reflex ships its wording. You keep the last word. <strong>Your names and your phrases live in files
+        you own</strong>, and an update never touches them.</p>
       <div class="grid">
-        <a class="card" href="use-cases.html#ops">
+        <div class="stack">
+          <div class="panel">
+            <div class="head"><i></i>vocab/people.toml<span class="who you">your word list</span></div>
+<pre><span class="k">dana</span> <span class="o">=</span> <span class="s">"Dana Ortiz, operations."</span>
+<span class="k">sam</span>  <span class="o">=</span> <span class="s">"Sam Lee, sales."</span></pre>
+          </div>
+          <div class="panel term quiet">
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre><span class="p">$</span> <span class="in">evoke teach "dana's details" contact name=dana</span>
+<span class="add">+ overlays/contact.toml  [examples] "dana's details" = { name = "dana" }</span>
+<span class="p">$</span> <span class="in">evoke "dana's details"</span>
+<span class="own">  <span class="name">contact</span> name="dana"  <span class="hi">0.94</span></span>
+<span class="out">dana &lt;dana@example.com&gt;</span></pre>
+          </div>
+        </div>
+        <ol class="notes column">
+          <li><b>1</b><span><strong>A word is a name you chose.</strong> The classifier reads its meaning. The program
+            receives the word, or a value you set beside it.</span></li>
+          <li><b>2</b><span><strong>A taught phrase is one line in your overlay.</strong> The next decision reads it.
+            Type <code>t</code> at any question to teach the same way.</span></li>
+          <li><b>3</b><span><strong>The shipped reflex stays as the author wrote it.</strong> Your files lay over it.
+            An update brings new wording and keeps yours.</span></li>
+        </ol>
+      </div>
+      <p class="after"><a class="more" href="/how-it-works.html#vocabulary">Explore your team's words →</a></p>
+    </section>
+
+    <section id="decisions">
+      <div class="rule"><p class="label">Decisions</p><span class="num">03</span></div>
+      <h2>See when it runs, and when it asks.</h2>
+      <p class="sub">Every decision prints the call it chose and how sure it is. <strong>When something is missing or
+        uncertain, it asks.</strong> An action that cannot be undone always asks.</p>
+      <div class="grid three wide three">
+        <div>
+          <div class="panel term" role="figure" aria-label="A decision that ran">
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>ran</div>
+<pre><span class="p">$</span> <span class="in">evoke "set the volume to 40 percent"</span>
+<span class="own">  <span class="name">volume</span> level="40 percent"  <span class="hi">0.93</span></span>
+<span class="out">volume 40%</span></pre>
+          </div>
+          <p><strong>Sure enough, so it ran.</strong> The number is the confidence. It is the weakest of the answers to the questions evoke asked.</p>
+        </div>
+        <div>
+          <div class="panel term" role="figure" aria-label="A decision that asked for a value">
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>asked</div>
+<pre><span class="p">$</span> <span class="in">evoke "set the volume to 150 percent"</span>
+<span class="own">  How loud, in percent?  <span class="mid">150 percent is outside 0–100</span>  &gt; <span class="in">40</span>
+  <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span>
+<span class="out">volume 40%</span></pre>
+          </div>
+          <p><strong>The value was out of range, so it asked.</strong> A sentence can choose a value. It can never invent one.</p>
+        </div>
+        <div>
+          <div class="panel term" role="figure" aria-label="A decision that asked for confirmation">
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>confirmed</div>
+<pre><span class="p">$</span> <span class="in">evoke "restart the computer"</span>
+<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: action <span class="hi">0.97</span>
+  Really restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
+[2]</span></pre>
+          </div>
+          <p><strong>Destructive, so it asked.</strong> Even at 0.97. There is no flag that skips the question. <code>[2]</code> is the exit code for a no.</p>
+        </div>
+      </div>
+      <p class="caption">A reflex that only reads runs on its own from a confidence of <b>0.6</b>. One that writes needs <b>0.8</b>. You can move these
+        bars in a file you own. <a href="/how-it-works.html#decisions">Explore the decisions →</a></p>
+    </section>
+
+    <section id="examples">
+      <div class="rule"><p class="label">Examples</p><span class="num">04</span></div>
+      <h2>Start with something useful.</h2>
+      <p class="sub">Three places to begin. <strong>Each example shows what ran, and where evoke checked first.</strong></p>
+      <div class="cards">
+        <a class="card" href="/examples/desktop.html">
+          <div class="room mac">
+            <svg viewBox="0 0 360 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect class="lid" x="112" y="22" width="136" height="84" rx="8"/>
+              <rect class="screen" x="120" y="30" width="120" height="66" rx="4"/>
+              <rect class="base" x="96" y="106" width="168" height="6" rx="3"/>
+              <path class="wave" d="M140 63 q4 -8 8 0 t8 0"/>
+              <rect class="level" x="164" y="60" width="66" height="6" rx="3"/>
+              <rect class="fill" x="164" y="60" width="26" height="6" rx="3"/>
+              <text class="pct before" x="230" y="52" text-anchor="end">volume 15%</text>
+              <text class="pct after" x="230" y="52" text-anchor="end">volume 40%</text>
+              <text class="dim" x="180" y="88" text-anchor="middle">lock · timer · wifi · mail</text>
+            </svg>
+            <span class="say"><i>$</i> evoke "set the volume to 40 percent"</span>
+          </div>
+          <div class="text"><i>01</i><b>Everyday Mac tasks</b><span>Thirteen reflexes for what a Mac does at a word.
+            Lock, volume, a timer, a draft.</span><small><b>Runs today</b> on a Mac with the collection.</small></div>
+        </a>
+        <a class="card" href="/examples/contact-to-draft.html">
+          <div class="room duo">
+            <svg viewBox="0 0 360 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect class="box b1" x="34" y="34" width="128" height="72" rx="8"/>
+              <text x="48" y="54">1 contact</text>
+              <text class="dim" x="48" y="72">name  dana</text>
+              <text class="dim" x="48" y="90">email</text>
+              <text class="value" x="88" y="90">dana@example.com</text>
+              <rect class="box b2" x="198" y="34" width="128" height="72" rx="8"/>
+              <text x="212" y="54">2 mail</text>
+              <text class="dim" x="212" y="72">to</text>
+              <text class="pending" x="236" y="72">them</text>
+              <text class="value" x="236" y="72">dana@example.com</text>
+              <text class="dim" x="212" y="90">subject</text>
+              <path class="thread" d="M162 88 H180 V70 H198"/>
+              <path class="bind" d="M162 88 H180 V70 H198"/>
+            </svg>
+            <span class="say"><i>$</i> evoke "look up dana's address and email them"</span>
+          </div>
+          <div class="text"><i>02</i><b>Look up a contact, prepare a draft</b><span>Two reflexes connect. What one
+            finds, the next one takes.</span><small><b>A recorded session</b>, and a pattern for your app.</small></div>
+        </a>
+        <a class="card" href="/examples/ops.html">
           <div class="room ops">
             <svg viewBox="0 0 360 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
               <g class="pods" transform="translate(40 30)">
@@ -685,438 +341,83 @@
             </svg>
             <span class="say"><i>$</i> evoke "scale checkout to 6 in staging"</span>
           </div>
-          <div class="text"><i>01</i><b>An ops channel</b><span>Scale a service, mute alerts, roll back. A rollback
-            always asks first.</span></div>
-        </a>
-        <a class="card" href="use-cases.html#stream">
-          <div class="room inbox">
-            <svg viewBox="0 0 360 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-              <g class="item i1"><rect width="104" height="20" rx="6"/><text x="9" y="14">scale checkout</text></g>
-              <g class="item i2"><rect width="104" height="20" rx="6"/><text x="9" y="14">silence db-3</text></g>
-              <g class="item i3"><rect width="104" height="20" rx="6"/><text x="9" y="14">the weather?</text></g>
-              <g class="lane ran" transform="translate(300 28)"><circle r="9"/><path d="M-4 0.5 l2.8 2.8 l5.5 -6.5"/></g>
-              <g class="lane person" transform="translate(300 60)"><circle r="9"/><circle class="face" cy="-2.5" r="2.4"/><path d="M-4.2 5 a4.2 4.2 0 0 1 8.4 0"/></g>
-              <g class="lane none" transform="translate(300 92)"><circle r="9"/><path d="M-3.5 0 h7"/></g>
-            </svg>
-            <span class="say"><i>$</i> evoke &lt; inbox.txt</span>
-          </div>
-          <div class="text"><i>02</i><b>An inbox</b><span>Requests from a file. Clear ones run. Unclear ones wait for
-            a person.</span></div>
-        </a>
-        <a class="card" href="use-cases.html#bank">
-          <div class="room desk">
-            <svg viewBox="0 0 360 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-              <g class="seat maker" transform="translate(74 26)"><circle class="head" r="8"/><path class="body" d="M-12 26 a12 12 0 0 1 24 0"/><text class="dim" y="42" text-anchor="middle">maker</text></g>
-              <g class="seat checker" transform="translate(286 26)">
-                <circle class="head" r="8"/><path class="body" d="M-12 26 a12 12 0 0 1 24 0"/><text class="dim" y="42" text-anchor="middle">checker</text>
-                <g class="stamp" transform="translate(15 -10)"><circle r="7.5"/><path d="M-3.5 0.5 l2.5 2.5 l5 -6"/></g>
-              </g>
-              <rect class="queue" x="130" y="72" width="100" height="30" rx="7"/>
-              <g class="slip"><rect width="100" height="30" rx="7"/><text x="10" y="19">pay acme 12400</text></g>
-            </svg>
-            <span class="say"><i>$</i> evoke "pay Acme 12400 from ops"</span>
-          </div>
-          <div class="text"><i>03</i><b>A payments desk</b><span>One person types a payment. An app holds it until
-            someone else approves.</span></div>
-        </a>
-        <a class="card" href="use-cases.html#plant">
-          <div class="room floor">
-            <svg viewBox="0 0 360 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-              <g class="belt b2"><line class="rail" x1="40" y1="26" x2="320" y2="26"/><line class="flow" x1="40" y1="26" x2="320" y2="26"/></g>
-              <g class="belt b3"><text class="dim" x="40" y="52">line 3 · the filler</text><line class="rail" x1="40" y1="64" x2="320" y2="64"/><line class="flow" x1="40" y1="64" x2="320" y2="64"/><text class="stopped" x="320" y="52" text-anchor="end">stopped</text></g>
-              <g class="belt b5"><line class="rail" x1="40" y1="100" x2="320" y2="100"/><line class="flow" x1="40" y1="100" x2="320" y2="100"/></g>
-            </svg>
-            <span class="say"><i>$</i> evoke "the filler is jammed, stop it"</span>
-          </div>
-          <div class="text"><i>04</i><b>A plant floor</b><span>Stop a jammed bottling line, in the night shift's own
-            words.</span></div>
-        </a>
-        <a class="card" href="use-cases.html#runbook">
-          <div class="room chain">
-            <svg viewBox="0 0 360 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-              <g class="link l1"><line class="wire" x1="78" y1="56" x2="162" y2="56"/><line class="pulse" x1="78" y1="56" x2="162" y2="56"/></g>
-              <g class="link l2"><line class="wire" x1="198" y1="56" x2="282" y2="56"/><line class="pulse" x1="198" y1="56" x2="282" y2="56"/></g>
-              <g class="node n1" transform="translate(60 56)"><circle class="ring" r="16"/><circle class="core" r="4.5"/><text y="34" text-anchor="middle">drain</text></g>
-              <g class="node n2" transform="translate(180 56)"><circle class="ring" r="16"/><circle class="core" r="4.5"/><text y="34" text-anchor="middle">failover</text></g>
-              <g class="node n3" transform="translate(300 56)"><circle class="ring" r="16"/><circle class="core" r="4.5"/><text y="34" text-anchor="middle">verify</text></g>
-            </svg>
-            <span class="say"><i>$</i> node runbook.ts "drain the primary"</span>
-          </div>
-          <div class="text"><i>05</i><b>A runbook</b><span>Three chained steps switch a database to its standby. Only
-            the failover asks.</span></div>
-        </a>
-        <a class="card" href="use-cases.html#teach">
-          <div class="room bar">
-            <svg viewBox="0 0 360 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-              <text class="dim" x="40" y="30">the write bar</text>
-              <line class="track" x1="40" y1="62" x2="320" y2="62"/>
-              <line class="track ok" x1="264" y1="62" x2="320" y2="62"/>
-              <g transform="translate(264 62)"><line class="tick" y1="-11" y2="11"/><text class="dim" y="-17" text-anchor="middle">0.80</text></g>
-              <g class="mark"><circle class="dot" r="7"/><text class="val before" y="26" text-anchor="middle">host 0.74</text><text class="val after" y="26" text-anchor="middle">host 0.93</text></g>
-            </svg>
-            <span class="say"><i>$</i> evoke "make db-3 shut up for 90 minutes"</span>
-          </div>
-          <div class="text"><i>06</i><b>A lesson</b><span>A script teaches evoke a new phrase. It stays only if every
-            test passes.</span></div>
+          <div class="text"><i>03</i><b>Operate services in team language</b><span>Your service names map to the
+            arguments a command needs. A rollback always asks.</span><small><b>A pattern for your app.</b> Needs kubectl and its access.</small></div>
         </a>
       </div>
-      <p class="after"><a class="more" href="use-cases.html">Every example, with its files and code →</a></p>
+      <p class="after"><a class="more" href="/examples.html">Explore examples →</a></p>
     </section>
 
-    <div class="showcase" id="reflex">
-      <div class="rule"><p class="label">A reflex</p><span class="num">02</span></div>
-      <h2>A small program that says what it does.</h2>
-      <p class="sub">Its manifest, <code>reflex.toml</code>, says what it is for, what it is not for, and what to ask.
-        The classifier Jev, an online service, reads that wording to pick the reflex you mean.</p>
-      <div class="grid">
-        <div class="panel">
-          <div class="head"><i></i>lights/reflex.toml<span class="who">by the author</span></div>
+    <section id="build">
+      <div class="rule"><p class="label">Your own</p><span class="num">05</span></div>
+      <h2>Bring a capability of your own.</h2>
+      <p class="sub">A function, a script or a command you already have can become a reflex. <strong>You write the
+        program. The manifest describes it.</strong></p>
+      <div class="split code-left">
+        <div class="panel wrap">
+          <div class="file">hello/reflex.toml<span class="who">written by evoke new</span></div>
 <pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
 
 <span class="k">description</span> <span class="o">=</span> <span class="s">"""
-Turn the lights in one room on, off, or dim them.
-Ceiling and lamp lights only."""</span>
-<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span>
-  <span class="s">"colour scenes and schedules"</span><span class="o">,</span>
-  <span class="s">"asking whether a light is on"</span><span class="o">,</span>
-<span class="o">]</span>
-<span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
-<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Set the <span class="ph">{room}</span> lights <span class="ph">{state}</span>?"</span>
-<span class="k">run</span>     <span class="o">=</span> <span class="s">"lights.mts"</span>
+Say hello to someone.
+A greeting with the name given, printed back."""</span>
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span><span class="s">"saying goodbye"</span><span class="o">]</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"read"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Say hello to <span class="ph">{who}</span>?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="s">"hello.mts"</span>
 
-<span class="t">[args.room]</span>        <span class="c"># options come from your vocabulary</span>
-<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which room?"</span>
-<span class="k">vocab</span> <span class="o">=</span> <span class="s">"rooms"</span>
+<span class="t">[args.who]</span>
+<span class="k">ask</span>  <span class="o">=</span> <span class="s">"Who should be greeted?"</span>
+<span class="k">pick</span> <span class="o">=</span> <span class="s">"quoted"</span>
 
-<span class="t">[args.state]</span>       <span class="c"># options listed by the author</span>
-<span class="k">ask</span>         <span class="o">=</span> <span class="s">"What should the lights do?"</span>
-<span class="k">options.on</span>  <span class="o">=</span> <span class="s">"Switch on."</span>
-<span class="k">options.off</span> <span class="o">=</span> <span class="s">"Switch off."</span>
-<span class="k">options.dim</span> <span class="o">=</span> <span class="s">"Lower the brightness without switching off."</span>
+<span class="t">[examples]</span>
+<span class="s">'say hello to "Ada"'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">who</span> <span class="o">=</span> <span class="s">"Ada"</span> <span class="o">}</span>
+<span class="s">'greet "Grace"'</span>      <span class="o">=</span> <span class="o">{</span> <span class="k">who</span> <span class="o">=</span> <span class="s">"Grace"</span> <span class="o">}</span></pre>
+          <div class="file">hello/hello.mts<span class="who you">your code</span></div>
+<pre><span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"./reflex.d.ts"</span>
 
-<span class="t">[args.brightness]</span>  <span class="c"># a number from your sentence, checked</span>
-<span class="k">ask</span>      <span class="o">=</span> <span class="s">"How bright, in percent?"</span>
-<span class="k">pick</span>     <span class="o">=</span> <span class="s">"number"</span>
-<span class="k">range</span>    <span class="o">=</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">100</span><span class="o">]</span>
-<span class="k">optional</span> <span class="o">=</span> <span class="n">true</span>
-
-<span class="t">[examples]</span>         <span class="c"># example sentences for the classifier</span>
-<span class="s">"turn on the kitchen lights"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"on"</span> <span class="o">}</span>
-<span class="s">"dim the den to 30 percent"</span>  <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"dim"</span><span class="o">,</span> <span class="k">brightness</span> <span class="o">=</span> <span class="s">"30 percent"</span> <span class="o">}</span></pre>
-        </div>
-        <div class="side">
-          <div class="panel term" role="figure" aria-label="A terminal session">
-            <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre><span class="p">$</span> <span class="in">evoke "kill the lights"</span>
-<span class="own">  Which room?  [1] den  [2] office  [+] add one  &gt;</span> <span class="in">1</span>
-<span class="own">  <span class="name">lights</span> room="den" state="off" · write · weakest: state <span class="mid">0.58</span>
-  Set the den lights off?  [y]es [n]o [t]each &gt;</span> <span class="in">t</span>
-<span class="add">+ overlays/lights.toml  [examples] "kill the lights" = { state = "off" }</span>
-<span class="out">den lights off</span>
-<span class="p">$</span> <span class="in">evoke "kill the lights in the den"</span>
-<span class="own">  <span class="name">lights</span> room="den" state="off"  <span class="hi">0.85</span></span>
-<span class="out">den lights off</span>
-<span class="p">$</span> <span class="cursor"></span></pre>
-          </div>
-          <div class="panel">
-            <div class="head"><i></i>vocab/rooms.toml<span class="who you">your word list</span></div>
-<pre><span class="k">den</span>    <span class="o">=</span> <span class="s">"The TV room downstairs; also 'the snug'."</span>
-<span class="k">office</span> <span class="o">=</span> <span class="s">"The upstairs study."</span></pre>
-          </div>
-          <div class="panel">
-            <div class="head"><i></i>overlays/lights.toml<span class="who you">taught by you</span></div>
-<pre><span class="t">[examples]</span>
-<span class="s">"kill the lights"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"off"</span> <span class="o">}</span></pre>
-          </div>
-        </div>
-      </div>
-      <ol class="notes">
-        <li><b>1</b><span><strong>No room was named</strong>, so evoke asked. It offered the rooms in your vocabulary,
-          a word list you own.</span></li>
-        <li><b>2</b><span><strong>evoke was only 0.58 sure that «kill» meant off.</strong> A write reflex, one that
-          changes something, needs 0.8 to run without asking.</span></li>
-        <li><b>3</b><span><strong>Pressing <code>t</code> (teach) saved the sentence, then ran it.</strong> It is now
-          an example sentence in your overlay, your own file that no update touches.</span></li>
-      </ol>
-    </div>
-
-    <section id="weave" class="weave">
-      <div class="rule"><p class="label">Chains</p><span class="num">03</span></div>
-      <h2>One sentence can run a whole chain.</h2>
-      <p class="sub">evoke splits it into steps and runs them in order, or side by side when they only read. A step
-        can use what an earlier one found. <strong>You see the plan before anything runs.</strong></p>
-      <div class="grid">
-        <div class="panel term loom" role="figure" aria-label="One sentence split into two steps, planned, then run">
-          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>read</b><b>plan</b><b class="on">run</b></span></div>
-          <div class="room">
-            <p class="said on"><span class="part">look up dana's address</span> <span class="part"><span class="and">and<span class="base" aria-hidden="true">and</span><span class="lit on" aria-hidden="true">and</span></span> email <span class="them">them<span class="base" aria-hidden="true">them</span><span class="lit on" aria-hidden="true">them</span></span></span></p>
-            <p class="ask"><span class="q on">At «and», does the request ask for two things to be done — «look up dana's address», and separately «email them»?</span> <i class="yes on">yes 0.90</i></p>
-            <div class="pair">
-              <div class="step s1 on"><span class="call"><i>1</i><b>contact</b> name="dana"  <em>0.90</em></span><span class="slot"><span class="key">email</span><span class="cell"><span class="val on">dana@example.com</span></span></span></div>
-              <div class="step s2 on"><span class="call"><i>2</i><b>mail</b>  <em>0.88</em></span><span class="slot"><span class="key">to</span><span class="cell"><span class="need" aria-hidden="true">To which address?</span><span class="val on">dana@example.com</span></span></span></div>
-            </div>
-            <span class="fly" aria-hidden="true">dana@example.com</span>
-            <div class="threads" aria-hidden="true"></div>
-          </div>
-          <div class="strip" aria-live="off">
-            <span class="line say on"><span class="p">$</span> <span class="in typed" aria-hidden="true"><span class="c on">e</span><span class="c on">v</span><span class="c on">o</span><span class="c on">k</span><span class="c on">e</span><span class="c on"> </span><span class="c on">"</span><span class="c on">l</span><span class="c on">o</span><span class="c on">o</span><span class="c on">k</span><span class="c on"> </span><span class="c on">u</span><span class="c on">p</span><span class="c on"> </span><span class="c on">d</span><span class="c on">a</span><span class="c on">n</span><span class="c on">a</span><span class="c on">'</span><span class="c on">s</span><span class="c on"> </span><span class="c on">a</span><span class="c on">d</span><span class="c on">d</span><span class="c on">r</span><span class="c on">e</span><span class="c on">s</span><span class="c on">s</span><span class="c on"> </span><span class="c on">a</span><span class="c on">n</span><span class="c on">d</span><span class="c on"> </span><span class="c on">e</span><span class="c on">m</span><span class="c on">a</span><span class="c on">i</span><span class="c on">l</span><span class="c on"> </span><span class="c on">t</span><span class="c on">h</span><span class="c on">e</span><span class="c on">m</span><span class="c on">"</span></span><span class="sr">evoke "look up dana's address and email them"</span></span>
-            <span class="line own on">  1  <b>contact</b> name="dana"  <i>0.90</i></span>
-            <span class="line own on">  2  <b>mail</b> · takes email from 1</span>
-            <span class="line out on">dana &lt;dana@example.com&gt;</span>
-            <span class="line own on">  2  <b>mail</b> to="dana@example.com"  <i>0.88</i></span>
-            <span class="line out on">drafted to dana@example.com</span>
-          </div>
-        </div>
-        <div class="side">
-          <div class="panel term gate" role="figure" aria-label="The first step needs a yes and gets a no, so the second step is skipped">
-            <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-            <div class="strip" aria-live="off">
-              <span class="line say on"><span class="p">$</span> <span class="in">evoke "start a 25 minute timer and kill the lights in the den"</span></span>
-              <span class="line own on">  1  <b>timer</b> duration="25 minute" · write · weakest: duration <i class="mid">0.70</i></span>
-              <span class="line own on">  2  <b>lights</b> room="den" state="off"  <i>0.85</i></span>
-              <span class="line own on">  1  <b>timer</b> duration="25 minute" · write · weakest: duration <i class="mid">0.70</i></span>
-              <span class="line own on">  Start a 25 minute timer?  [y]es [n]o [t]each &gt; <span class="in typed" aria-hidden="true"><span class="c on">n</span></span><span class="sr">n</span></span>
-              <span class="line own on">  2  <b>lights</b> room="den" state="off"  <i>0.85</i> · skipped</span>
-              <span class="line own on">[2]</span>
-            </div>
-          </div>
-          <div class="panel term refusal" role="figure" aria-label="One part matches no reflex, so nothing runs">
-            <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-            <div class="strip" aria-live="off">
-              <span class="line say on"><span class="p">$</span> <span class="in">evoke "kill the lights in the den and feed the cat"</span></span>
-              <span class="line own on">  1  <b>lights</b> room="den" state="off"  <i>0.85</i></span>
-              <span class="line own on">  2  "feed the cat" · no reflex</span>
-              <span class="line own on">[2]</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <ol class="notes">
-        <li><b>1</b><span><strong>«them» points back to step 1.</strong> The <code>mail</code> step needed an email
-          address, and <code>contact</code> found one. The plan shows it: <code>takes email from 1</code>.</span></li>
-        <li><b>2</b><span><strong>A step that needs your yes asks when its turn comes.</strong> Answer no, and later
-          steps are skipped. <code>[2]</code> means you said no, or nothing fit.</span></li>
-        <li><b>3</b><span><strong>If any part matches no reflex</strong>, nothing runs at all, so nothing is left half
-          done.</span></li>
-      </ol>
-      <p class="after">The manual calls this a weave and shows <a href="manual/use/weaving.html">how a sentence is
-        split</a>. The use cases show this example <a href="use-cases.html#weave">in files and in code</a>.</p>
-    </section>
-
-    <section id="shared">
-      <div class="rule"><p class="label">Write and share</p><span class="num">04</span></div>
-      <h2>Nobody has to write the same reflex twice.</h2>
-      <p class="sub">Like a recipe, a reflex is written once, shared through git, and improved by the people who use
-        it.</p>
-      <div class="split">
-        <ol class="steps column">
-          <li><i>01</i><b>Write</b><span><code>evoke new</code> gives you three files that already work.
-            <code>evoke check</code> points out any line that needs fixing.</span></li>
-          <li><i>02</i><b>Share</b><span>Push it to git and tag a version, with no account, registry or build step.
-            Others install it with <code>evoke add owner/repo</code>.</span></li>
-          <li><i>03</i><b>Improve</b><span>A phrase you teach works for you at once. If the author adds it to a new
-            version, others get it when they update.</span></li>
-        </ol>
-        <div class="panel term">
-          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre><span class="p">$</span> <span class="in">evoke teach "lights out" lights state=off</span>
-<span class="add">+ overlays/lights.toml  [examples] "lights out" = { state = "off" }</span>
-<span class="p">$</span> <span class="in">evoke show lights</span>
-<span class="own">  …
-  [examples]
-  "turn on the kitchen lights" = { state = "on" }</span>
-<span class="plus">+ "lights out" = { state = "off" }</span>
-<span class="p">$</span> <span class="in">evoke new hello</span>
-<span class="add">+ hello/reflex.toml
-+ hello/hello.mts
-+ hello/reflex.d.ts</span>
-<span class="p">$</span> <span class="in">git tag v1.0.0 &amp;&amp; git push --tags</span></pre>
-        </div>
-      </div>
-      <p class="caption">In <code>evoke show</code>, a <b>+</b> marks a line of yours. The lights reflex is made up
-        for this page. The official collection, <code>evoke-build/reflexes</code>, holds
-        <a href="manual/collection.html">thirteen reflexes for everyday Mac tasks</a>.</p>
-    </section>
-
-    <section id="sdk">
-      <div class="rule"><p class="label">In code</p><span class="num">05</span></div>
-      <div class="split code-left">
-        <div class="panel">
-          <div class="head"><i></i>app.ts</div>
-<pre><span class="w">import</span> <span class="o">{</span> load<span class="o">,</span> reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
-<span class="w">import</span> <span class="o">{</span> jev <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke/jev"</span>
-
-<span class="w">const</span> timer <span class="o">=</span> reflex<span class="o">({</span>
-  <span class="k">description</span><span class="o">:</span> <span class="s">"Start a countdown timer."</span><span class="o">,</span>
-  <span class="k">effect</span><span class="o">:</span> <span class="s">"write"</span><span class="o">,</span>
-  <span class="k">confirm</span><span class="o">:</span> <span class="s">"Start a <span class="ph">{duration}</span> timer?"</span><span class="o">,</span>
-  <span class="k">args</span><span class="o">:</span> <span class="o">{</span>
-    <span class="k">duration</span><span class="o">:</span> <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"How long?"</span><span class="o">,</span> <span class="k">pick</span><span class="o">:</span> <span class="s">"duration"</span> <span class="o">},</span>
-  <span class="o">},</span>
-  <span class="k">examples</span><span class="o">:</span> <span class="o">{</span>
-    <span class="s">"timer for 10 minutes"</span><span class="o">:</span> <span class="o">{</span> <span class="k">duration</span><span class="o">:</span> <span class="s">"10 minutes"</span> <span class="o">},</span>
-  <span class="o">},</span>
-<span class="o">},</span> <span class="w">async</span> <span class="o">({</span> duration <span class="o">})</span> <span class="o">=&gt;</span> <span class="o">{</span>   <span class="c">// duration: number</span>
-  setTimeout<span class="o">(()</span> <span class="o">=&gt;</span> console<span class="o">.</span>log<span class="o">(</span><span class="s">"ring"</span><span class="o">),</span> duration <span class="o">*</span> <span class="n">1000</span><span class="o">)</span>
-  <span class="w">return</span> <span class="s">`ringing in ${duration} s`</span>
-<span class="o">})</span>
-
-<span class="w">const</span> project <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> <span class="k">reflexes</span><span class="o">:</span> <span class="o">{</span> timer <span class="o">},</span> <span class="k">adapter</span><span class="o">:</span> jev<span class="o">()</span> <span class="o">})</span>
-<span class="w">const</span> handled <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>handle<span class="o">(</span><span class="s">"timer for 10 minutes"</span><span class="o">,</span> <span class="o">{</span>
-  <span class="k">confirm</span><span class="o">:</span> <span class="w">async</span> d <span class="o">=&gt;</span> <span class="n">true</span><span class="o">,</span>
-  <span class="k">ask</span><span class="o">:</span> <span class="w">async</span> d <span class="o">=&gt;</span> <span class="o">({</span> <span class="k">duration</span><span class="o">:</span> <span class="s">"10 minutes"</span> <span class="o">}),</span>
-<span class="o">})</span></pre>
+<span class="w">export</span> <span class="w">default</span> <span class="o">(</span><span class="w">async</span> <span class="o">({</span> who <span class="o">})</span> <span class="o">=&gt;</span> <span class="s">`Hello, ${who}!`</span><span class="o">)</span> <span class="w">satisfies</span> Reflex</pre>
         </div>
         <div class="text">
-          <h2>Put evoke inside your app.</h2>
-          <p>Write a reflex as a TypeScript object, with the manifest's fields and the function it runs. <strong>One
-            call to <code>handle()</code> decides, asks for what is missing, confirms and runs.</strong></p>
+          <p><strong><code>evoke new hello</code> writes three files that already work.</strong> The manifest is the
+            description. The body is your code, and it can call anything you already have.</p>
           <ul class="ticks">
-            <li>TypeScript infers each argument's type. Here, <code>duration</code> is a number of seconds.</li>
-            <li><code>decide()</code> decides without running. It returns a typed <code>Decision</code>: run, confirm,
-              ask or do nothing.</li>
-            <li>Each customer of your app can have their own vocabulary.</li>
+            <li><strong>The body receives typed arguments.</strong> Here <code>who</code> is a string, taken from the quotes.</li>
+            <li><strong>The effect is your claim about it.</strong> A read, a write, or something that cannot be undone.</li>
+            <li><strong><code>evoke check</code> points at any line to fix</strong> and keeps the types beside the body current.</li>
           </ul>
-          <a class="more" href="manual/sdk/getting-started.html">Getting started with the SDK →</a>
+          <a class="more" href="/developers.html">Build an ability →</a>
         </div>
       </div>
     </section>
 
-    <section id="how">
-      <div class="rule"><p class="label">How it decides</p><span class="num">06</span></div>
-      <h2>It runs on its own only when sure enough.</h2>
-      <p class="sub">A wrong action costs more than a question. A reflex states its effect: read, write or
-        destructive. The effect sets the bar: how sure evoke must be to run without asking.</p>
-      <ol class="steps">
-        <li><i>01</i><b>Decide</b><span>evoke asks the classifier which reflex fits, if any, and the value of each
-          argument. Each answer is a probability.</span></li>
-        <li><i>02</i><b>Check</b><span>Confidence is the weakest of those answers. A read reflex needs 0.6, a write
-          0.8. A destructive one always asks.</span></li>
-        <li><i>03</i><b>Run</b><span>The program runs with the chosen values and a time limit. When no reflex fits,
-          nothing runs.</span></li>
-      </ol>
-      <div class="panel term">
-        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre><span class="p">$</span> <span class="in">evoke try "kill the lights"</span>
-<span class="own">  <span class="name">lights</span> <span class="hi">0.90</span> · none 0.06 · timer 0.02 · volume 0.02
-  room   <span class="name">unstated</span> <span class="mid">0.75</span> · den 0.20 · office 0.05
-  state  <span class="name">off</span> <span class="mid">0.58</span> · on 0.30 · dim 0.10 · unstated 0.02
-  fits   lights 0.70 · timer 0.05 · volume 0.05
-  <span class="name">ask room</span> · weakest: state <span class="mid">0.58</span></span>
-<span class="p">$</span> <span class="in">evoke try "kill the lights in the den"</span>
-<span class="own">  <span class="name">lights</span> <span class="hi">0.91</span> · none 0.06 · timer 0.02 · volume 0.01
-  room   <span class="name">den</span> <span class="hi">0.85</span> · unstated 0.10 · office 0.05
-  state  <span class="name">off</span> <span class="hi">0.88</span> · on 0.05 · dim 0.05 · unstated 0.02
-  fits   lights 0.70 · timer 0.05 · volume 0.05
-  <span class="name">run</span> · weakest: room <span class="hi">0.85</span></span></pre>
-      </div>
-      <p class="caption"><code>evoke try</code> shows every answer and runs nothing. Adding «in the den» named the
-        room and made «kill» clearly mean off. The weakest answer rose from <b>0.58</b> to <b>0.85</b>, over the 0.8
-        bar.</p>
-    </section>
-
-    <section id="jev">
-      <div class="rule"><p class="label">The classifier</p><span class="num">07</span></div>
-      <h2>Jev answers. evoke decides what runs.</h2>
-      <p class="sub">Jev is <a href="https://typesafe.ai">TypeSafe AI</a>'s classifier model, an online service you
-        use with your own key. evoke writes every question and applies every rule.</p>
-      <div class="sheet">
-        <dl>
-          <div><dt>Asks</dt><dd>Closed questions. <span>Which reflex? Which value? How well does it fit?</span></dd></div>
-          <div><dt>Answers</dt><dd>Calibrated probabilities. <span>0.85 means right about 85 times in 100.</span></dd></div>
-          <div><dt>Knows</dt><dd>Your reflexes' wording. <span>It comes with every request.</span></dd></div>
-          <div><dt>Improved by</dt><dd>A better description, a new example. <span>The next decision reads it.</span></dd></div>
-          <div><dt>Reached through</dt><dd>TypeSafe AI's API, or OpenJEV. <span>OpenJEV
-            is an independent service.</span></dd></div>
-          <div><dt>Replaceable</dt><dd>Another classifier could replace Jev. <span>No change to evoke's core.</span></dd></div>
-          <div><dt>In tests</dt><dd>Recorded answers are replayed offline. <span>Same result every time.</span></dd></div>
-        </dl>
-        <aside class="claim">
-          <p>You choose <em>how sure is sure enough.</em></p>
-          <small>The answers are calibrated, so a bar of 0.8 lets through only answers right at least 8 times in 10.
-            You can move the bars in <code>evoke.toml</code>, a file you own.</small>
-        </aside>
-      </div>
-    </section>
-
-    <section id="trust">
-      <div class="rule"><p class="label">Security</p><span class="num">08</span></div>
-      <h2>What a sentence can and cannot do.</h2>
-      <p class="sub">A reflex you install runs with your permissions. There is no sandbox yet, so read it before you
-        install or update it. <strong>evoke itself keeps four promises.</strong></p>
-      <ul class="promises">
-        <li><b>Only words go to the classifier.</b><span>Your sentence and the wording of your reflexes and vocabulary.
-          Never files, settings or secrets.</span></li>
-        <li><b>A sentence can never invent a value.</b><span>Each value is an author's option, a word from your
-          vocabulary, or a checked piece of what you typed.</span></li>
-        <li><b>A destructive reflex always asks.</b><span>Destructive means it cannot be undone or costs something,
-          like a payment. No <code>--yes</code> flag skips the question.</span></li>
-        <li><b>You run exactly what you installed.</b><span>A lock file records each reflex you add from git, with a
-          hash of its files. If they change later, evoke will not run it.</span></li>
-      </ul>
-      <div class="panel term stops">
-        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre><span class="p">$</span> <span class="in">evoke "restart the computer"</span>
-<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: action <span class="hi">0.97</span>
-  Really restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
-[2]</span>
-<span class="p">$</span> <span class="in">evoke "set the volume to 150 percent"</span>
-<span class="own">  How loud, in percent?  <span class="mid">150 percent is outside 0–100</span>  &gt; <span class="in">40</span>
-  <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span>
-<span class="out">volume set to 40%</span></pre>
-      </div>
-      <p class="caption">Sure at <b>0.97</b>, and it still asked, because a restart is destructive. <b>150</b> percent
-        was outside 0 to 100, so it never reached the program. evoke asked for another value.</p>
-      <p class="after"><a href="manual/security.html">What evoke guarantees, and what it does not →</a></p>
-    </section>
-
-    <section id="install">
-      <div class="rule"><p class="label">Start</p><span class="num">09</span></div>
-      <h2>Install</h2>
-      <p class="sub">evoke runs on macOS and Linux, and on Windows through WSL. You also need git, Node&nbsp;24 or newer
-        for most reflexes, and a key for Jev, from TypeSafe AI or OpenJEV.</p>
-      <div class="install">
+    <section id="start">
+      <div class="rule"><p class="label">Start</p><span class="num">06</span></div>
+      <h2>Run your first reflex.</h2>
+      <p class="sub">Ten minutes from an empty machine to a first result. <strong>Pick your terminal, or your app.</strong></p>
+      <div class="ways">
         <div class="way">
-          <h3>The CLI</h3>
-          <p>The script downloads the build for your machine, verifies its checksum, and puts <code>evoke</code> in
-            <code>~/.local/bin</code>.</p>
+          <h3>In your terminal</h3>
+          <p>One small binary for macOS and Linux. Then the Mac collection, and one sentence.</p>
           <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
+          <div class="cmd"><code>evoke add evoke-build/reflexes</code><button type="button" data-copy aria-label="Copy the add command">Copy</button></div>
+          <div class="cmd"><code>evoke "lock the screen"</code><button type="button" data-copy aria-label="Copy the first sentence">Copy</button></div>
+          <p class="after">The first result is one line: <code>locked</code>. You need a classifier key first, and the
+            <a href="/start.html">guide</a> says where it comes from.</p>
         </div>
         <div class="way">
-          <h3>The SDK</h3>
-          <p>It needs Node 24.5 or newer, is ES modules only, and has no dependencies. Inside is the CLI's own core,
-            compiled to WebAssembly.</p>
+          <h3>In your app</h3>
+          <p>The same decisions inside a Node application, over the same core.</p>
           <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
+          <p class="after">One file holds a reflex written as code and the whole loop in one call. The SDK manual's first
+            hour is <a href="/start.html?mode=sdk">six things to learn</a>, in order.</p>
         </div>
       </div>
-      <p class="after">Then follow the <a href="manual/start/first-run.html">ten-minute guide</a>: set your key, add
-        the Mac collection with <code>evoke add evoke-build/reflexes</code>, and type
-        <code>evoke "lock the screen"</code>. The <a href="manual/start/install.html">install page</a> lists other
-        ways, like mise.</p>
+      <p class="after"><a class="more" href="/start.html">Get started →</a></p>
     </section>
   </main>
 
-  <footer>
-    <div class="wrap">
-      <p class="tag">You invoke a function; you evoke a reflex.</p>
-      <div class="row">
-        <div><a href="https://github.com/evoke-build/evoke/blob/main/LICENSE">Apache-2.0</a>; the collection is MIT.
-          Jev is <a href="https://typesafe.ai">TypeSafe AI</a>'s.</div>
-        <nav aria-label="Footer">
-          <a href="manual/">Manual</a>
-          <a href="idea.html">The idea</a>
-          <a href="use-cases.html">Use cases</a>
-          <a href="format.html">The format</a>
-          <a href="manual/reference/cli.html">Reference</a>
-          <a href="manual/security.html">Security</a>
-          <a href="faq.html">FAQ</a>
-          <a rel="privacy-policy" href="privacy.html">Privacy</a>
-          <a href="https://github.com/evoke-build/reflexes">Collection</a>
-          <a href="https://github.com/evoke-build/evoke">GitHub</a>
-        </nav>
-      </div>
-    </div>
-  </footer>
+  <!-- footer -->
 
   <script>
     for (const button of document.querySelectorAll("[data-copy]")) {
@@ -1133,9 +434,9 @@ Ceiling and lamp lights only."""</span>
       })
     }
 
-    // Use cases: the six small stages play their answer one at a time, while the rail is on screen and motion is welcome.
+    // The example cards: their small stages play in turn while the row is on screen and motion is welcome.
     {
-      const cards = [...document.querySelectorAll(".work .card")]
+      const cards = [...document.querySelectorAll(".cards .card")]
       if (cards.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
         let on = false, i = -1
         new IntersectionObserver(([entry]) => { on = entry.isIntersecting }, { threshold: .3 }).observe(cards[0].parentElement)
@@ -1148,18 +449,23 @@ Ceiling and lamp lights only."""</span>
       }
     }
 
-    // The hero: two installed reflexes, one sentence, and the address that travels between them, on a loop. The
-    // final frame is the markup; motion lifts opacity and moves transforms, and the thread is measured from the
-    // slots it joins, so it holds at any width.
+    // The walkthrough: six stages a reader steps through, or watches once. The final frame is the markup; each
+    // stage's frame is a set of classes, and moving one stage forward plays the motion between them: opacity
+    // and transforms only, the thread measured from the slots it joins, so the page never lays out twice.
     {
-      const demo = document.querySelector(".demo"), room = demo.querySelector(".room")
-      const $ = (sel, el = room) => el.querySelector(sel), $$ = (sel, el = room) => [...el.querySelectorAll(sel)]
-      const threads = $(".threads"), fly = $(".fly"), trail = $$(".trail b", demo)
+      const walk = document.querySelector(".walk"), room = walk.querySelector(".room"), col = walk.parentElement
+      const $ = (sel, el = walk) => el.querySelector(sel), $$ = (sel, el = walk) => [...el.querySelectorAll(sel)]
+      const threads = $(".threads"), fly = $(".fly"), stages = $$(".stages button"), notes = $$(".walk-notes p", col)
+      const say = $(".say"), typed = $(".typed"), chars = $$(".c"), cards = [$(".a1"), $(".a2")], nums = $$(".num")
+      const name = $(".val.name"), give = $(".give"), need = $(".need"), take = $(".take"), subject = $(".val.subj"), done = $(".done")
+      const lines = $$(".strip .line"), next = $("[data-next]", col), replay = $("[data-replay]", col), see = document.querySelector("[data-see]")
       const on = (el, yes = true) => el.classList.toggle("on", yes)
       const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
+      const still = matchMedia("(prefers-reduced-motion: reduce)").matches
+      const LAST = 5
+      let stage = LAST, run = 0
 
       // The thread: legs from the found address to the card that takes it, beside the cards or down their side.
-      const state = { drawn: false, filled: false }
       let legs = []
       const box = el => {
         const r = el.getBoundingClientRect(), o = room.getBoundingClientRect()
@@ -1175,159 +481,89 @@ Ceiling and lamp lights only."""</span>
       })
       const layout = () => {
         threads.replaceChildren()
-        const give = box($(".give")), take = box($(".take")), one = box($(".a1")), two = box($(".a2")), stacked = two.t >= one.b
+        const g = box(give), t = box(take), one = box(cards[0]), two = box(cards[1]), stacked = two.t >= one.b
         legs = thread(stacked
-          ? [[give.r + 6, give.y], [one.r + 12, give.y], [one.r + 12, take.y], [two.r, take.y]]
-          : Math.abs(give.y - take.y) < 1 ? [[give.r + 6, give.y], [two.l, give.y]]
-          : [[give.r + 6, give.y], [(one.r + two.l) / 2, give.y], [(one.r + two.l) / 2, take.y], [two.l, take.y]])
-        for (const leg of legs) { leg.style.setProperty("--t", `${1000 / legs.length}ms`); on(leg, state.drawn); leg.classList.toggle("fill", state.filled) }
-        fly.style.left = `${give.l}px`; fly.style.top = `${give.t}px`
-        fly.style.setProperty("--dx", `${take.l - give.l}px`); fly.style.setProperty("--dy", `${take.t - give.t}px`)
+          ? [[g.r + 6, g.y], [one.r + 12, g.y], [one.r + 12, t.y], [two.r, t.y]]
+          : Math.abs(g.y - t.y) < 1 ? [[g.r + 6, g.y], [two.l, g.y]]
+          : [[g.r + 6, g.y], [(one.r + two.l) / 2, g.y], [(one.r + two.l) / 2, t.y], [two.l, t.y]])
+        for (const leg of legs) { leg.style.setProperty("--t", `${1000 / legs.length}ms`); on(leg, stage >= 2); leg.classList.toggle("fill", stage >= 4) }
+        fly.style.left = `${g.l}px`; fly.style.top = `${g.t}px`
+        fly.style.setProperty("--dx", `${t.l - g.l}px`); fly.style.setProperty("--dy", `${t.t - g.t}px`)
       }
-      const draw = async () => { for (const leg of legs) { on(leg); await wait(220) } }
-      const fill = async () => { for (const leg of legs) { leg.classList.add("fill"); await wait(1000 / legs.length) } }
 
-      const say = $(".say"), typed = $(".typed"), chars = $$(".c"), cards = [$(".a1"), $(".a2")], nums = $$(".num")
-      const name = $(".val.name"), give = $(".give"), need = $(".need"), take = $(".take"), subject = $(".val.subj"), done = $(".done")
-      const stage = (i, what) => { trail.forEach((b, j) => on(b, j === i)); demo.dataset.state = what }
-      const type = async () => {
+      // One stage's frame, whole: every class set from the stage number.
+      const show = n => {
+        stage = n
+        walk.dataset.stage = n
+        stages.forEach((b, i) => on(b, i === n))
+        notes.forEach((p, i) => on(p, i === n))
+        next.disabled = n === LAST
+        cards.forEach(c => on(c))
+        typed.classList.toggle("at", n === 0)
+        chars.forEach(c => { on(c, n >= 1); c.classList.remove("at") })
+        say.classList.toggle("cut", n >= 2); say.classList.toggle("bound", n >= 4)
+        nums.forEach(i => on(i, n >= 2)); on(name, n >= 2); on(need, n >= 2 && n < 4)
+        on(give, n >= 3); on(take, n >= 4); on(subject, n >= 5); on(done, n >= 5)
+        cards[0].classList.toggle("live", n === 3); cards[1].classList.toggle("live", n >= 4)
+        fly.classList.remove("on", "go")
+        lines.forEach((l, i) => on(l, n >= [2, 2, 3, 4, 5][i]))
+        for (const leg of legs) { on(leg, n >= 2); leg.classList.toggle("fill", n >= 4) }
+      }
+      // The motion from one stage to the next; anything else is the frame at once.
+      const type = async id => {
         let last = typed
-        for (const c of chars) { await wait(28 + Math.random() * 30); last.classList.remove("at"); on(c); c.classList.add("at"); last = c }
+        for (const c of chars) { await wait(28 + Math.random() * 30); if (id !== run) return; last.classList.remove("at"); on(c); c.classList.add("at"); last = c }
         await wait(260); last.classList.remove("at")
       }
-      const clear = async () => {
-        room.classList.add("clear"); await wait(280)
-        for (const el of $$(".on, .at, .live, .cut, .bound, .go, .fill")) el.classList.remove("on", "at", "live", "cut", "bound", "go", "fill")
-        state.drawn = state.filled = false
-        room.classList.remove("clear")
-      }
-      // Each cue: the pause before it, then what it does.
-      const cues = [
-        [0, async () => { await clear(); stage(0, "installed"); typed.classList.add("at") }],
-        [350, () => on(cards[0])], [260, () => on(cards[1])],
-        [1500, async () => { layout(); stage(1, "asked"); await type() }],  // measured once the cards have settled
-        [650, () => { stage(2, "connected"); say.classList.add("cut") }],
-        [500, () => { on(nums[0]); on(name) }],
-        [500, () => { on(nums[1]); on(need) }],
-        [550, async () => { state.drawn = true; await draw() }],
-        [1300, () => cards[0].classList.add("live")],
-        [800, () => { on(give); cards[0].classList.remove("live") }],
-        [1000, () => on(fly)],
-        [450, async () => { fly.classList.add("go"); state.filled = true; await fill() }],
-        [0, () => { on(take); on(need, false); on(fly, false); say.classList.add("bound"); cards[1].classList.add("live") }],
-        [800, () => { stage(3, "drafted"); on(subject); on(done) }],
-        [4200, () => {}],
-      ]
-
-      let seen = false, waiting = []
-      const wake = () => { if (seen && !document.hidden) { for (const w of waiting) w(); waiting = [] } }
-      new IntersectionObserver(([entry]) => { seen = entry.isIntersecting; wake() }, { threshold: .25 }).observe(demo)
-      document.addEventListener("visibilitychange", wake)
-      const onScreen = () => seen && !document.hidden ? Promise.resolve() : new Promise(resolve => waiting.push(resolve))
-      state.drawn = state.filled = true
-      layout(); document.fonts.ready.then(layout); addEventListener("resize", layout)
-      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) (async () => {
-        for (;;) {
-          await onScreen()
-          for (const [pause, run] of cues) { await wait(pause); await run() }
+      const step = async n => {
+        const id = run
+        if (still || n !== stage + 1) return show(n)
+        if (n === 1) { typed.classList.remove("at"); typed.classList.add("at"); await type(id); if (id !== run) return; return show(1) }
+        if (n === 2) {
+          say.classList.add("cut"); on(lines[0]); await wait(450); if (id !== run) return
+          on(nums[0]); on(name); await wait(450); if (id !== run) return
+          on(nums[1]); on(need); on(lines[1]); await wait(500); if (id !== run) return
+          for (const leg of legs) { on(leg); await wait(220); if (id !== run) return }
+          return show(2)
         }
-      })()
-    }
-
-    // A weave: one sentence read into two steps, the plan shown, then the run, on a loop; beside it a confirm
-    // declined and a part that matches nothing. The final frame is the markup; motion lifts opacity and moves
-    // transforms, and the threads are measured from the letters they join.
-    {
-      const weave = document.getElementById("weave"), loom = weave.querySelector(".loom")
-      const gate = weave.querySelector(".gate"), refusal = weave.querySelector(".refusal")
-      const $ = (sel, el = loom) => el.querySelector(sel), $$ = (sel, el = loom) => [...el.querySelectorAll(sel)]
-      const room = $(".room"), threads = $(".threads"), fly = $(".fly"), trail = $$(".trail b")
-      const on = (el, yes = true) => el.classList.toggle("on", yes)
-      const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
-
-      // The threads: polylines of horizontal and vertical legs, measured in the room and redrawn in their state.
-      const state = { drawn: false, filled: false }
-      const legs = { pron: [], bind: [] }
-      const box = el => {
-        const r = el.getBoundingClientRect(), o = room.getBoundingClientRect()
-        return { l: r.left - o.left, r: r.right - o.left, t: r.top - o.top, b: r.bottom - o.top, x: (r.left + r.right) / 2 - o.left, y: (r.top + r.bottom) / 2 - o.top }
+        if (n === 3) {
+          cards[0].classList.add("live"); await wait(900); if (id !== run) return
+          on(give); on(lines[2]); await wait(700); if (id !== run) return
+          return show(3)
+        }
+        if (n === 4) {
+          on(fly); await wait(450); if (id !== run) return
+          fly.classList.add("go")
+          for (const leg of legs) { leg.classList.add("fill"); await wait(1000 / legs.length); if (id !== run) return }
+          on(take); on(need, false); on(fly, false); say.classList.add("bound"); cards[0].classList.remove("live"); cards[1].classList.add("live"); on(lines[3])
+          await wait(400); if (id !== run) return
+          return show(4)
+        }
+        return show(n)
       }
-      const thread = (name, points) => points.slice(1).map(([x1, y1], i) => {
-        const [x0, y0] = points[i], leg = document.createElement("i"), s = leg.style, flat = y0 === y1
-        leg.className = `leg ${name} ${flat ? (x1 >= x0 ? "east" : "west") : (y1 >= y0 ? "south" : "north")}`
-        s.left = `${Math.min(x0, x1) - 1}px`; s.top = `${Math.min(y0, y1) - 1}px`
-        s.width = `${flat ? Math.abs(x1 - x0) + 2 : 2}px`; s.height = `${flat ? 2 : Math.abs(y1 - y0) + 2}px`
-        threads.append(leg)
-        return leg
+      // Watched once: the stages in turn, then it rests on the draft.
+      const play = async () => {
+        const id = ++run
+        room.classList.add("clear"); await wait(280); if (id !== run) return
+        room.classList.remove("clear"); show(0)
+        for (const [pause, n] of [[900, 1], [700, 2], [1600, 3], [1200, 4], [1400, 5]]) { await wait(pause); if (id !== run) return; await step(n) }
+      }
+      const hold = () => ++run  // a reader's touch ends the show
+
+      layout(); document.fonts.ready.then(layout); addEventListener("resize", layout)
+      if (still) walk.classList.add("still")
+      show(LAST)
+      next.addEventListener("click", () => { hold(); step(Math.min(stage + 1, LAST)) })
+      replay.addEventListener("click", () => still ? (hold(), show(0)) : play())
+      stages.forEach((b, i) => b.addEventListener("click", () => { hold(); show(i) }))
+      see?.addEventListener("click", () => {
+        walk.scrollIntoView({ block: "center", behavior: still ? "auto" : "smooth" })
+        still ? (hold(), show(0)) : play()
       })
-      const layout = () => {
-        threads.replaceChildren()
-        const them = box($(".them")), one = box($(".s1")), two = box($(".s2")), stacked = two.t >= one.b
-        const give = box($(".s1 .cell")), key1 = box($(".s1 .key")), key2 = box($(".s2 .key")), take = box($(".s2 .cell"))
-        legs.pron = thread("pron", [[them.x, them.b + 2], [them.x, take.y], [take.r + 8, take.y]])
-        legs.bind = thread("bind", stacked
-          ? [[key1.l - 8, give.y], [one.l - 12, give.y], [one.l - 12, take.y], [key2.l - 8, take.y]]
-          : [[key1.r + 8, take.y], [key2.l - 8, take.y]])
-        for (const leg of legs.bind) leg.style.setProperty("--t", `${600 / legs.bind.length}ms`)
-        const from = box($(".s1 .val")), to = box($(".s2 .val"))
-        fly.style.left = `${from.l}px`; fly.style.top = `${from.t}px`
-        fly.style.setProperty("--dx", `${to.l - from.l}px`); fly.style.setProperty("--dy", `${to.t - from.t}px`)
-        for (const leg of [...legs.pron, ...legs.bind]) on(leg, state.drawn)
-        for (const leg of legs.bind) leg.classList.toggle("fill", state.filled)
+      if (!still) {
+        let seen = false
+        new IntersectionObserver(([entry]) => { if (entry.isIntersecting && !seen) { seen = true; play() } }, { threshold: .35 }).observe(walk)
       }
-      const draw = async legs => { for (const leg of legs) { on(leg); await wait(250) } }
-      const fill = async () => { for (const leg of legs.bind) { leg.classList.add("fill"); await wait(600 / legs.bind.length) } }
-
-      const typed = $(".typed"), chars = $$(".c"), said = $(".said"), base = $$(".base"), lit = $$(".lit"), ask = $$(".ask > *")
-      const s1 = $(".s1"), s2 = $(".s2"), need = $(".need"), val = [$(".s1 .val"), $(".s2 .val")]
-      const lines = $$(".strip .line"), gated = $$(".line", gate), refused = $$(".line", refusal)
-      const step = i => trail.forEach((b, j) => on(b, j === i))
-      const clear = async panel => {
-        panel.classList.add("clear"); await wait(240)
-        for (const el of $$(".on, .at", panel)) el.classList.remove("on", "at")
-        panel.classList.remove("clear")
-      }
-      const type = async (typed, chars, lead = 0) => {
-        let last = typed
-        typed.classList.add("at"); await wait(lead)
-        for (const c of chars) { await wait(25 + Math.random() * 30); last.classList.remove("at"); on(c); c.classList.add("at"); last = c }
-        await wait(220); last.classList.remove("at")
-      }
-      // Each cue: the pause before it, then what it does.
-      const cues = [
-        [0, async () => { await clear(loom); step(0); for (const b of base) on(b); state.drawn = state.filled = false; s2.classList.remove("wait"); fly.classList.remove("go"); layout() }],
-        [360, async () => { on(lines[0]); await type(typed, chars) }],
-        [0, () => on(said)], [300, () => { on(base[0], false); on(lit[0]) }], [300, () => on(ask[0])], [500, () => on(ask[1])],
-        [500, () => { step(1); on(s1) }], [150, () => { on(s2); on(need) }],
-        [550, () => on(lines[1])],
-        [200, async () => { on(lines[2]); on(base[1], false); on(lit[1]); state.drawn = true; await draw(legs.pron) }],
-        [50, async () => { await draw(legs.bind); s2.classList.add("wait") }],
-        [700, () => { step(2); on(lines[3]); on(val[0]); on(fly) }],
-        [600, async () => { fly.classList.add("go"); state.filled = true; await fill() }],
-        [0, () => { on(val[1]); on(need, false); on(fly, false); s2.classList.remove("wait") }],
-        [500, () => on(lines[4])], [500, () => on(lines[5])],
-        [200, async () => { await clear(gate) }],
-        [200, () => on(gated[0])], [250, () => on(gated[1])], [200, () => on(gated[2])], [250, () => on(gated[3])],
-        [250, async () => { on(gated[4]); await type($(".typed", gate), $$(".c", gate), 450) }],
-        [250, () => on(gated[5])], [200, () => on(gated[6])],
-        [200, async () => { await clear(refusal) }],
-        [200, () => on(refused[0])], [250, () => on(refused[1])], [200, () => on(refused[2])], [250, () => on(refused[3])],
-      ]
-
-      let seen = false, waiting = []
-      const wake = () => { if (seen && !document.hidden) { for (const w of waiting) w(); waiting = [] } }
-      new IntersectionObserver(([entry]) => { seen = entry.isIntersecting; wake() }, { threshold: .25 }).observe(loom)
-      document.addEventListener("visibilitychange", wake)
-      const onScreen = () => seen && !document.hidden ? Promise.resolve() : new Promise(resolve => waiting.push(resolve))
-      state.drawn = state.filled = true
-      layout(); document.fonts.ready.then(layout); addEventListener("resize", layout)
-      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) (async () => {
-        for (;;) {
-          await onScreen()
-          for (const [pause, run] of cues) { await wait(pause); await run() }
-          await wait(500)
-        }
-      })()
     }
   </script>
 </body>

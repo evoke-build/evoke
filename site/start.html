@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Get started - Evoke</title>
+  <meta name="description" content="Run your first reflex in about ten minutes: pick your terminal or your app, get a key, install, inspect one request, perform one action, then make it yours.">
+  <!-- head -->
+  <style>
+    .plan .needs { margin: .2rem 0 .9rem; max-width: 52rem; }
+    .plan .caption { margin-top: .4rem; }
+    .plan .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; max-width: 60rem; }
+    .plan .three .way { padding: 1rem 1.1rem; }
+    .plan .three .way h3 { font-size: .98rem; }
+    .plan .three .way p { font-size: .92rem; }
+    @media (max-width: 960px) { .plan .three { grid-template-columns: minmax(0, 1fr); } }
+  </style>
+</head>
+<body>
+  <!-- bar -->
+
+  <main class="wrap">
+    <div class="hero solo">
+      <div class="copy">
+        <h1>Run your <em>first reflex.</em></h1>
+        <p class="lede"><strong>Two routes, each ending in one real result.</strong> Your terminal on a Mac or Linux
+          machine, or a Node application. About ten minutes either way.</p>
+      </div>
+    </div>
+
+    <div class="routes" role="group" aria-label="Choose the route">
+      <button class="route" type="button" data-route="terminal" aria-pressed="true"><b>Try in my terminal</b><span>One small binary. The collection of Mac reflexes, and one sentence typed at a prompt.</span></button>
+      <button class="route" type="button" data-route="sdk" aria-pressed="false"><b>Use in my app</b><span>The same decisions inside a Node application, over the same core. One file to start.</span></button>
+    </div>
+
+    <p class="kept" data-kept><b data-kept-title></b><span data-kept-note></span><a data-kept-link href="/examples.html">Change the example →</a></p>
+
+    <ol class="plan terminal" data-plan>
+      <li id="route">
+        <div>
+          <h3>Choose the route</h3>
+          <p class="only terminal">The binary runs on macOS and Linux, and on Windows through WSL. The first-party
+            collection, the thirteen reflexes this route installs, is for macOS. On Linux, write a reflex of your own
+            first, or take the app route.</p>
+          <p class="only sdk">The SDK needs Node 24.5 or newer and ES modules. It carries the core as WebAssembly, so
+            it has no build step and no dependencies.</p>
+          <p>The two buttons above switch every step below.</p>
+        </div>
+      </li>
+      <li id="needs">
+        <div>
+          <h3>Know what you need</h3>
+          <ul class="needs">
+            <li class="only terminal"><b>The binary</b>The install script fetches the release for your machine and
+              checks its digest.</li>
+            <li class="only sdk"><b>Node 24.5 or newer</b>And <code>"type": "module"</code> in your package, or
+              <code>.mts</code> files.</li>
+            <li><b>git</b><span class="only terminal inline">For <code>evoke add</code>, which fetches reflexes from a
+              repository. Your own git credentials apply.</span><span class="only sdk inline">Only when you install
+              reflexes from a repository beside your app.</span></li>
+            <li class="only terminal"><b>Node 24 or newer</b>For reflexes written in JavaScript, which most of the
+              collection is. A reflex that runs a program directly needs none.</li>
+            <li><b>A classifier key</b>From TypeSafe AI, in <code>TYPESAFE_API_KEY</code>. Or from OpenJEV, an
+              independent service, in <code>OPENJEV_API_KEY</code>.</li>
+          </ul>
+          <p><strong>The key's provider bills its use, under its own terms.</strong> evoke is free. A sentence you repeat
+            is answered from a cache and costs nothing. Nothing else is billed and there is no account to make.</p>
+          <div class="actions">
+            <a class="button small" href="https://typesafe.ai">Get a classifier key</a>
+            <a class="quiet" href="/manual/start/install.html">Read the requirements →</a>
+          </div>
+        </div>
+      </li>
+      <li id="install">
+        <div>
+          <h3>Install and configure</h3>
+          <p class="only terminal"><strong>Two lines install software.</strong> The script puts <code>evoke</code> in
+            <code>~/.local/bin</code>. The add line fetches the collection from git and pins it.</p>
+          <div class="only terminal">
+            <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
+            <div class="cmd"><code>evoke add evoke-build/reflexes</code><button type="button" data-copy aria-label="Copy the add command">Copy</button></div>
+          </div>
+          <p class="only terminal"><strong>Two lines configure.</strong> The key is read from your shell, only at the
+            moment of a decision, and never written to a file. The reflexes that open your folders wait for a word
+            from you, and the second line gives them one.</p>
+          <div class="only terminal">
+            <div class="cmd"><code>export TYPESAFE_API_KEY=&lt;value&gt;</code><button type="button" data-copy aria-label="Copy the export line">Copy</button></div>
+            <div class="cmd"><code>evoke vocab places add desktop "The desktop." --value ~/Desktop</code><button type="button" data-copy aria-label="Copy the vocabulary line">Copy</button></div>
+          </div>
+          <p class="only sdk"><strong>One line installs.</strong> The key is read from the environment at the moment
+            of a decision.</p>
+          <div class="only sdk">
+            <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
+            <div class="cmd"><code>export TYPESAFE_API_KEY=&lt;value&gt;</code><button type="button" data-copy aria-label="Copy the export line">Copy</button></div>
+          </div>
+          <p class="only sdk"><strong>One file holds the whole loop.</strong> A reflex handed as code, nothing on disk, and
+            one call that decides, asks, confirms and runs.</p>
+          <div class="panel wrap only sdk">
+            <div class="head"><i></i>app.ts</div>
+<pre><span class="w">import</span> <span class="o">{</span> load<span class="o">,</span> reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+<span class="w">import</span> <span class="o">{</span> jev <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke/jev"</span>
+
+<span class="w">const</span> timer <span class="o">=</span> reflex<span class="o">({</span>
+  <span class="k">description</span><span class="o">:</span> <span class="s">"Start a countdown timer."</span><span class="o">,</span>
+  <span class="k">effect</span><span class="o">:</span> <span class="s">"write"</span><span class="o">,</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="s">"Start a <span class="ph">{duration}</span> timer?"</span><span class="o">,</span>
+  <span class="k">args</span><span class="o">:</span> <span class="o">{</span> <span class="k">duration</span><span class="o">:</span> <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"How long?"</span><span class="o">,</span> <span class="k">pick</span><span class="o">:</span> <span class="s">"duration"</span> <span class="o">}</span> <span class="o">},</span>
+  <span class="k">examples</span><span class="o">:</span> <span class="o">{</span> <span class="s">"timer for 10 minutes"</span><span class="o">:</span> <span class="o">{</span> <span class="k">duration</span><span class="o">:</span> <span class="s">"10 minutes"</span> <span class="o">}</span> <span class="o">},</span>
+<span class="o">},</span> <span class="w">async</span> <span class="o">({</span> duration <span class="o">})</span> <span class="o">=&gt;</span> <span class="o">{</span>                       <span class="c">// duration: number, in seconds</span>
+  setTimeout<span class="o">(()</span> <span class="o">=&gt;</span> console<span class="o">.</span>log<span class="o">(</span><span class="s">"ring"</span><span class="o">),</span> duration <span class="o">*</span> <span class="n">1000</span><span class="o">)</span>
+  <span class="w">return</span> <span class="s">`ringing in ${duration} s`</span>
+<span class="o">})</span>
+
+<span class="w">const</span> project <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> <span class="k">reflexes</span><span class="o">:</span> <span class="o">{</span> timer <span class="o">},</span> <span class="k">adapter</span><span class="o">:</span> jev<span class="o">()</span> <span class="o">})</span>
+<span class="w">const</span> handled <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>handle<span class="o">(</span>process<span class="o">.</span>argv<span class="o">[</span><span class="n">2</span><span class="o">]</span> <span class="o">??</span> <span class="s">""</span><span class="o">,</span> <span class="o">{</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="w">async</span> d <span class="o">=&gt;</span> <span class="o">{</span> console<span class="o">.</span>log<span class="o">(</span>d<span class="o">.</span>prompt<span class="o">.</span>template<span class="o">);</span> <span class="w">return</span> <span class="n">true</span> <span class="o">},</span>
+  <span class="k">ask</span><span class="o">:</span> <span class="w">async</span> d <span class="o">=&gt;</span> <span class="o">({</span> <span class="k">duration</span><span class="o">:</span> <span class="s">"10 minutes"</span> <span class="o">}),</span>
+<span class="o">})</span>
+console<span class="o">.</span>log<span class="o">(</span>handled<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"ran"</span> <span class="o">?</span> handled<span class="o">.</span>result<span class="o">.</span>text <span class="o">:</span> handled<span class="o">.</span>outcome<span class="o">)</span></pre>
+          </div>
+        </div>
+      </li>
+      <li id="inspect">
+        <div>
+          <h3>Inspect the request</h3>
+          <p class="only terminal"><code>evoke try</code> decides and runs nothing. It prints every answer: the ranking,
+            each input, how well each reflex fits, and what would happen.</p>
+          <div class="only terminal">
+            <div class="cmd"><code data-preview>evoke try "kill the wifi"</code><button type="button" data-copy aria-label="Copy the preview command">Copy</button></div>
+            <div class="panel term quiet" role="figure" aria-label="What evoke try prints">
+              <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke try</div>
+<pre><span class="own">  <span class="name">wifi</span> <span class="hi">0.90</span> · none 0.06 · power 0.02 · lock 0.02
+  state  <span class="name">off</span> <span class="mid">0.72</span> · on 0.20 · unstated 0.08
+  fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · timer 0.02 · trash 0.02 · volume 0.02
+  <span class="name">confirm</span> · wifi state="off" · write · weakest: state <span class="mid">0.72</span></span></pre>
+            </div>
+            <p class="caption">The weakest answer, 0.72, sits under the write bar of 0.8. So this sentence would ask
+              before it runs.</p>
+          </div>
+          <p class="only sdk"><code>decide()</code> makes a decision and runs nothing. It is a typed union: narrow it by
+            outcome, then by reflex.</p>
+          <div class="panel wrap only sdk">
+            <div class="head"><i></i>decide only</div>
+<pre><span class="w">const</span> d <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>decide<span class="o">(</span><span class="s">"timer for 10 minutes"</span><span class="o">)</span>
+<span class="w">if</span> <span class="o">(</span>d<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"run"</span><span class="o">)</span> console<span class="o">.</span>log<span class="o">(</span>d<span class="o">.</span>call<span class="o">,</span> d<span class="o">.</span>confidence<span class="o">)</span>   <span class="c">// timer duration="10 minutes" 0.9…</span></pre>
+          </div>
+        </div>
+      </li>
+      <li id="run">
+        <div>
+          <h3>Perform the action</h3>
+          <p class="only terminal">Type the sentence. The call and its confidence print, then the reflex's one line.
+            A less certain decision asks first, with <code>[y]es [n]o [t]each</code>. Teach records your phrase and runs.</p>
+          <div class="only terminal">
+            <div class="cmd"><code data-run>evoke "set the volume to 40 percent"</code><button type="button" data-copy aria-label="Copy the run command">Copy</button></div>
+            <div class="panel term quiet" role="figure" aria-label="The first result">
+              <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre><span class="own">  <span class="name">volume</span> level="40 percent"  <span class="hi">0.93</span></span>
+<span class="out">volume 40%</span></pre>
+            </div>
+          </div>
+          <p class="only sdk">Run the file with a sentence. <code>handle()</code> decides, asks for what is missing,
+            confirms, and runs. Here it prints <code>ringing in 600 s</code>, and rings ten minutes later.</p>
+          <div class="only sdk">
+            <div class="cmd"><code>node app.ts "timer for 10 minutes"</code><button type="button" data-copy aria-label="Copy the run command">Copy</button></div>
+          </div>
+        </div>
+      </li>
+      <li id="next">
+        <div>
+          <h3>Make the next useful change</h3>
+          <p>One continuation, whichever fits what you want to do next.</p>
+          <div class="three">
+            <div class="way">
+              <h3>Teach a phrase</h3>
+              <p>One line in your overlay. The next decision reads it.</p>
+              <div class="cmd"><code>evoke teach "go dark" wifi state=off</code><button type="button" data-copy aria-label="Copy the teach command">Copy</button></div>
+              <p class="after"><a href="/manual/use/tuning.html">Tuning →</a></p>
+            </div>
+            <div class="way">
+              <h3>Add a capability</h3>
+              <p>Three files that already work, then your code in the body.</p>
+              <div class="cmd"><code>evoke new hello</code><button type="button" data-copy aria-label="Copy the new command">Copy</button></div>
+              <p class="after"><a href="/developers.html">For developers →</a></p>
+            </div>
+            <div class="way">
+              <h3>Connect a second step</h3>
+              <p>Two reflexes in one sentence. The plan shows before anything runs.</p>
+              <div class="cmd"><code>evoke "lock the screen and set a 25 minute timer"</code><button type="button" data-copy aria-label="Copy the two-step sentence">Copy</button></div>
+              <p class="after"><a href="/how-it-works.html#handoff">How a handoff works →</a></p>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ol>
+
+    <div class="closing">
+      <div>
+        <h2>A successful install is preparation.</h2>
+        <p>The first completed action is the outcome. When it works, the manual's first ten minutes take you the rest
+          of the way, from your first lesson to looking inside a decision.</p>
+      </div>
+      <div class="actions">
+        <a class="button primary" href="/manual/start/first-run.html">The first ten minutes</a>
+        <a class="quiet" href="/examples.html">Explore examples →</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- footer -->
+
+  <script>
+    for (const button of document.querySelectorAll("[data-copy]")) {
+      button.addEventListener("click", async () => {
+        const text = button.parentElement.querySelector("code").textContent
+        try {
+          await navigator.clipboard.writeText(text)
+          button.textContent = "Copied"
+          button.classList.add("done")
+          setTimeout(() => { button.textContent = "Copy"; button.classList.remove("done") }, 1600)
+        } catch {
+          button.textContent = "Select it"
+        }
+      })
+    }
+
+    // The route: terminal or app, from the buttons or from the address; the example, kept from the page that sent
+    // the reader here, with what it needs and what they will build.
+    {
+      const plan = document.querySelector("[data-plan]"), routes = [...document.querySelectorAll("[data-route]")]
+      const kept = document.querySelector("[data-kept]"), title = kept.querySelector("[data-kept-title]"), note = kept.querySelector("[data-kept-note]"), link = kept.querySelector("[data-kept-link]")
+      const examples = {
+        desktop: { title: "Everyday Mac tasks", route: "terminal", note: "Runs on a Mac with the collection installed. The steps below install it.", preview: 'evoke try "lock the screen"', run: 'evoke "lock the screen"', page: "/examples/desktop.html" },
+        "contact-to-draft": { title: "Look up a contact, prepare a draft", route: "sdk", note: "A pattern for your app: two reflexes as code, one of them yielding an address, and one weave() call.", page: "/examples/contact-to-draft.html" },
+        ops: { title: "Operate services in team language", route: "sdk", note: "A pattern for your app: your service names as a vocabulary, a manifest around kubectl, and the credentials it already uses.", page: "/examples/ops.html" },
+        inbox: { title: "Process an inbox of requests", route: "sdk", note: "A pattern for your app: decide() on each line, run what is settled, queue the rest for a person.", page: "/examples/inbox.html" },
+        runbook: { title: "Continue an operational procedure", route: "sdk", note: "A pattern for your app: three reflexes as code and a six-line loop that submits each next step.", page: "/examples/runbook.html" },
+        approval: { title: "Prepare an action for approval", route: "sdk", note: "A pattern for your app: decide() in one process, the decision held as plain data, run() with confirmed: true in another.", page: "/examples/approval.html" },
+      }
+      const params = new URLSearchParams(location.search)
+      const select = route => {
+        plan.classList.remove("terminal", "sdk"); plan.classList.add(route)
+        for (const b of routes) b.setAttribute("aria-pressed", String(b.dataset.route === route))
+      }
+      for (const b of routes) b.addEventListener("click", () => select(b.dataset.route))
+      const example = examples[params.get("example")]
+      const asked = params.get("mode") ?? params.get("route")
+      select(asked === "sdk" || asked === "terminal" ? asked : example?.route ?? "terminal")
+      if (example) {
+        title.textContent = `Example kept: ${example.title}.`
+        note.textContent = ` ${example.note}`
+        link.href = example.page; link.textContent = "See the example →"
+        kept.classList.add("on")
+        if (example.preview) document.querySelector("[data-preview]").textContent = example.preview
+        if (example.run) document.querySelector("[data-run]").textContent = example.run
+      }
+    }
+  </script>
+</body>
+</html>

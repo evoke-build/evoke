@@ -1,0 +1,16 @@
+  <meta name="theme-color" content="#0f0f10">
+  <link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/jetbrains-mono-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/site.css">
+  <link rel="icon" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script>
+    // A page reached with a hash lands on it at once; scrolling glides from the reader's first touch of the page.
+    if (location.hash) {
+      const html = document.documentElement, glide = () => html.style.removeProperty("scroll-behavior")
+      html.style.scrollBehavior = "auto"
+      addEventListener("pointerdown", glide, { once: true })
+      addEventListener("keydown", glide, { once: true })
+    }
+  </script>

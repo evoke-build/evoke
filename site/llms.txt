@@ -25,10 +25,13 @@ Install with `curl -fsSL https://evoke.build/install.sh | sh` on macOS or Linux,
 
 ## The site
 
+- [How it works](https://evoke.build/how-it-works.html): one sentence followed to an action: what an installed ability contains, what the sentence contributes, why a decision runs, asks, confirms or stops, how one result reaches the next step, how a program continues a workflow, the team's vocabulary, and what the application owns.
+- [Examples](https://evoke.build/examples.html): six examples, each on a page of its own with its request, its result, one boundary and what it needs: [everyday Mac tasks](https://evoke.build/examples/desktop.html), [a contact looked up and a draft prepared](https://evoke.build/examples/contact-to-draft.html), [services operated in team language](https://evoke.build/examples/ops.html), [an inbox of requests](https://evoke.build/examples/inbox.html), [a runbook](https://evoke.build/examples/runbook.html) and [an action prepared for approval](https://evoke.build/examples/approval.html).
+- [For developers](https://evoke.build/developers.html): an operation you have becomes a reflex, the boundary described, decisions inside your app, chaining, team names kept separate, testing both halves, sharing with a git tag, and where evoke fits beside an LLM.
+- [Get started](https://evoke.build/start.html): the terminal route or the app route, what each needs, install and configure, inspect one request, perform one action, then the next useful change.
 - [The idea](https://evoke.build/idea.html): why reflexes, in ten minutes: the problem trust poses, the move, the number, real sessions where nothing ran on a guess, the recipe, your words, a weave, and where it goes.
-- [Use cases](https://evoke.build/use-cases.html): seven real sessions, an ops channel, an inbox, a payments desk, a plant floor, a runbook, a lesson and a weave, each as files anyone can install and as code an app keeps.
 - [The reflex format](https://evoke.build/format.html): the format as a specification, version 1, frozen, with its schemas served at https://evoke.build/schemas/reflex.json and beside it.
-- [Frequently asked questions](https://evoke.build/faq.html): what a reflex is, what the number means, what it needs, where reflexes come from, what leaves your machine, and who makes it.
+- [Frequently asked questions](https://evoke.build/faq.html): what you install, what can go wrong, what leaves your machine and what it costs, in ten short answers.
 - [Privacy policy](https://evoke.build/privacy.html): no cookie, no analytics, no account, nothing held by us; what one request carries and what never travels; what stays on the machine, and how to forget it.
 
 {manual}

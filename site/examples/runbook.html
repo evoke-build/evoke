@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Continue an operational procedure - Evoke</title>
+  <meta name="description" content="Drain, fail over, verify. Each step's program returns the next sentence and a six-line loop submits it. Only the destructive step asks. A pattern for your app.">
+  <!-- head -->
+</head>
+<body>
+  <!-- bar -->
+
+  <main class="wrap example">
+    <div class="hero solo">
+      <div class="copy">
+        <p class="crumb"><a href="/examples.html">Examples</a> · 05 of 06</p>
+        <h1>A runbook where <em>each step names the next.</em></h1>
+        <p class="lede"><strong>Drain, fail over, verify.</strong> Each step's program returns the next sentence, and a
+          six-line loop submits it. Every hop passes the gate on its own, and only the destructive one stops for a
+          person. A pattern for your app. The database bodies shown are stand-ins that return fixed lines.</p>
+      </div>
+      <ul class="index" aria-label="The sections">
+        <li><a href="#request"><code>01</code>The request and the result</a></li>
+        <li><a href="#files"><code>02</code>The operations</a></li>
+        <li><a href="#boundary"><code>03</code>One boundary</a></li>
+        <li><a href="#needs"><code>04</code>Before you run it</a></li>
+      </ul>
+    </div>
+
+    <section id="request">
+      <div class="rule"><p class="label">The request and the result</p><span class="num">01</span></div>
+      <h2>Three steps, one sentence typed.</h2>
+      <p class="sub">The person types the first step. <strong>The program names the second, and the second names the
+        third.</strong> Every line is what Node printed.</p>
+      <div class="grid wide">
+        <div class="panel term demo runbook" role="figure" data-scene="runbook" aria-label="Three steps lighting up in turn, the middle one after a yes">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/runbook<span class="trail" aria-hidden="true"><b>drain</b><b>failover</b><b>verify</b></span></div>
+          <div class="room">
+            <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <g class="link l1"><line class="wire" x1="140" y1="104" x2="252" y2="104"/><line class="pulse" x1="140" y1="104" x2="252" y2="104"/></g>
+              <g class="link l2"><line class="wire" x1="308" y1="104" x2="420" y2="104"/><line class="pulse" x1="308" y1="104" x2="420" y2="104"/></g>
+              <g class="node drain" transform="translate(112 104)"><circle class="ring" r="26"/><circle class="core" r="7"/><text y="50" text-anchor="middle">drain</text><text class="dim" y="66" text-anchor="middle">write</text></g>
+              <g class="node failover" transform="translate(280 104)"><circle class="ring" r="26"/><circle class="core" r="7"/><text y="50" text-anchor="middle">failover</text><text class="dim" y="66" text-anchor="middle">destructive</text></g>
+              <g class="node verify" transform="translate(448 104)"><circle class="ring" r="26"/><circle class="core" r="7"/><text y="50" text-anchor="middle">verify</text><text class="dim" y="66" text-anchor="middle">read</text></g>
+            </svg>
+          </div>
+          <div class="strip" aria-live="off">
+            <span class="line say show"><span class="p">$</span> <span class="in">node runbook.ts "drain the primary"</span></span>
+            <span class="line out show">primary drained</span>
+            <span class="line own show">Promote the replica now?  [y]es [n]o &gt; <span class="in">y</span></span>
+            <span class="line out show">replica promoted</span>
+            <span class="line out show">writes landing on the new primary</span>
+          </div>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>A step names the next.</strong> The program returns <code>data.next</code>, a
+              sentence. The loop submits it as if a person had typed it.</span></li>
+            <li><b>2</b><span><strong>Every hop passes the bar.</strong> Drain is a write, verify is a read. Each was decided
+              and gated on its own.</span></li>
+            <li><b>3</b><span><strong>Only the failover asks.</strong> It is destructive, so it confirms every time,
+              however sure the classifier was.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="files">
+      <div class="rule"><p class="label">The operations</p><span class="num">02</span></div>
+      <h2>Three reflexes and a loop.</h2>
+      <p class="sub">A manifest and a body per step, as files or as code. <strong>The loop is the whole application:
+        while there is a next sentence, handle it.</strong></p>
+      <div class="grid wide">
+        <div class="panel tabbed">
+          <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The runbook as files, as code, and the app">
+            <button role="tab" id="t1" aria-controls="p1" aria-selected="true">files</button>
+            <button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1">code</button>
+            <button role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1">the app</button>
+          </div></div>
+          <div role="tabpanel" id="p1" aria-labelledby="t1">
+            <div class="file">drain/reflex.toml<span class="who">the author's</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
+<span class="s">Drain traffic from the primary database.</span>
+<span class="s">New connections go to the replica; open ones finish."""</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Drain the primary?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="s">"drain.mts"</span>
+
+<span class="t">[examples]</span>
+<span class="s">"drain the primary"</span> <span class="o">=</span> <span class="o">{</span><span class="o">}</span></pre>
+            <div class="file">drain/drain.mts<span class="who">the author's</span></div>
+<pre><span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"./reflex.d.ts"</span>
+
+<span class="w">export</span> <span class="w">default</span> <span class="o">(</span><span class="w">async</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="o">({</span>
+  <span class="k">text</span><span class="o">:</span> <span class="s">"primary drained"</span><span class="o">,</span>
+  <span class="k">data</span><span class="o">:</span> <span class="o">{</span> <span class="k">next</span><span class="o">:</span> <span class="s">"fail over to the replica"</span> <span class="o">},</span>
+<span class="o">}))</span> <span class="w">satisfies</span> Reflex</pre>
+          </div>
+          <div role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+            <div class="file">runbook.ts<span class="who you">yours</span></div>
+<pre><span class="c">// The same runbook, in code. Three reflexes, one loop.</span>
+<span class="w">import</span> <span class="o">{</span> load<span class="o">,</span> reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+<span class="w">import</span> <span class="o">{</span> jev <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke/jev"</span>
+<span class="w">import</span> <span class="o">{</span> done<span class="o">,</span> handlers <span class="o">}</span> <span class="w">from</span> <span class="s">"../terminal.ts"</span>
+
+<span class="w">const</span> drain <span class="o">=</span> reflex<span class="o">({</span>
+  <span class="k">description</span><span class="o">:</span> <span class="s">"Drain traffic from the primary database.\n"</span> <span class="o">+</span>
+    <span class="s">"New connections go to the replica; open ones finish."</span><span class="o">,</span>
+  <span class="k">effect</span><span class="o">:</span> <span class="s">"write"</span><span class="o">,</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="s">"Drain the primary?"</span><span class="o">,</span>
+  <span class="k">examples</span><span class="o">:</span> <span class="o">{</span> <span class="s">"drain the primary"</span><span class="o">:</span> <span class="o">{}</span> <span class="o">},</span>
+<span class="o">},</span> <span class="w">async</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="o">({</span>
+  <span class="k">text</span><span class="o">:</span> <span class="s">"primary drained"</span><span class="o">,</span>
+  <span class="k">data</span><span class="o">:</span> <span class="o">{</span> <span class="k">next</span><span class="o">:</span> <span class="s">"fail over to the replica"</span> <span class="o">},</span>
+<span class="o">}))</span>
+
+<span class="w">const</span> failover <span class="o">=</span> reflex<span class="o">({</span>
+  <span class="k">description</span><span class="o">:</span> <span class="s">"Promote the replica to primary.\n"</span> <span class="o">+</span>
+    <span class="s">"The old primary is demoted; it cannot be undone from here."</span><span class="o">,</span>
+  <span class="k">effect</span><span class="o">:</span> <span class="s">"destructive"</span><span class="o">,</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="s">"Promote the replica now?"</span><span class="o">,</span>
+  <span class="k">examples</span><span class="o">:</span> <span class="o">{</span> <span class="s">"fail over to the replica"</span><span class="o">:</span> <span class="o">{}</span> <span class="o">},</span>
+<span class="o">},</span> <span class="w">async</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="o">({</span>
+  <span class="k">text</span><span class="o">:</span> <span class="s">"replica promoted"</span><span class="o">,</span>
+  <span class="k">data</span><span class="o">:</span> <span class="o">{</span> <span class="k">next</span><span class="o">:</span> <span class="s">"check that writes land on the new primary"</span> <span class="o">},</span>
+<span class="o">}))</span>
+
+<span class="w">const</span> verify <span class="o">=</span> reflex<span class="o">({</span>
+  <span class="k">description</span><span class="o">:</span> <span class="s">"Check that writes land on the current primary."</span><span class="o">,</span>
+  <span class="k">effect</span><span class="o">:</span> <span class="s">"read"</span><span class="o">,</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="s">"Check writes?"</span><span class="o">,</span>
+  <span class="k">examples</span><span class="o">:</span> <span class="o">{</span> <span class="s">"check that writes land on the new primary"</span><span class="o">:</span> <span class="o">{}</span> <span class="o">},</span>
+<span class="o">},</span> <span class="w">async</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="s">"writes landing on the new primary"</span><span class="o">)</span>
+
+<span class="w">const</span> reflexes <span class="o">=</span> <span class="o">{</span> drain<span class="o">,</span> failover<span class="o">,</span> verify <span class="o">}</span>
+<span class="w">const</span> runbook <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> reflexes<span class="o">,</span> <span class="k">adapter</span><span class="o">:</span> jev<span class="o">()</span> <span class="o">})</span>
+
+<span class="w">let</span> next<span class="o">:</span> string <span class="o">|</span> <span class="n">undefined</span> <span class="o">=</span> process<span class="o">.</span>argv<span class="o">[</span><span class="n">2</span><span class="o">]</span>
+<span class="w">while</span> <span class="o">(</span>next<span class="o">)</span> <span class="o">{</span>
+  <span class="w">const</span> step <span class="o">=</span> <span class="w">await</span> runbook<span class="o">.</span>handle<span class="o">(</span>next<span class="o">,</span> handlers<span class="o">)</span>
+  <span class="w">if</span> <span class="o">(</span>step<span class="o">.</span>outcome <span class="o">!==</span> <span class="s">"ran"</span><span class="o">)</span> <span class="w">break</span>
+  console<span class="o">.</span>log<span class="o">(</span>step<span class="o">.</span>result<span class="o">.</span>text<span class="o">)</span>
+  next <span class="o">=</span> <span class="o">(</span>step<span class="o">.</span>result<span class="o">.</span>data <span class="w">as</span> <span class="o">{</span> next<span class="o">?:</span> string <span class="o">}</span> <span class="o">|</span> <span class="n">undefined</span><span class="o">)?.</span>next
+<span class="o">}</span>
+done<span class="o">()</span></pre>
+          </div>
+          <div role="tabpanel" id="p3" aria-labelledby="t3" hidden>
+            <div class="file">app.ts<span class="who">loads the files</span></div>
+<pre><span class="c">// A runbook as sentences, from files. Each step's body names the next step</span>
+<span class="c">// in words; only the destructive one stops for a person.</span>
+<span class="w">import</span> <span class="o">{</span> load <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+<span class="w">import</span> <span class="o">{</span> done<span class="o">,</span> handlers <span class="o">}</span> <span class="w">from</span> <span class="s">"../terminal.ts"</span>
+
+<span class="w">const</span> runbook <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> root<span class="o">:</span> <span class="w">import</span><span class="o">.</span>meta<span class="o">.</span>dirname <span class="o">})</span>
+
+<span class="w">let</span> next<span class="o">:</span> string <span class="o">|</span> <span class="n">undefined</span> <span class="o">=</span> process<span class="o">.</span>argv<span class="o">[</span><span class="n">2</span><span class="o">]</span>
+<span class="w">while</span> <span class="o">(</span>next<span class="o">)</span> <span class="o">{</span>
+  <span class="w">const</span> step <span class="o">=</span> <span class="w">await</span> runbook<span class="o">.</span>handle<span class="o">(</span>next<span class="o">,</span> handlers<span class="o">)</span>
+  <span class="w">if</span> <span class="o">(</span>step<span class="o">.</span>outcome <span class="o">!==</span> <span class="s">"ran"</span><span class="o">)</span> <span class="w">break</span>
+  console<span class="o">.</span>log<span class="o">(</span>step<span class="o">.</span>result<span class="o">.</span>text<span class="o">)</span>
+  next <span class="o">=</span> <span class="o">(</span>step<span class="o">.</span>result<span class="o">.</span>data <span class="w">as</span> <span class="o">{</span> next<span class="o">?:</span> string <span class="o">}</span> <span class="o">|</span> <span class="n">undefined</span><span class="o">)?.</span>next
+<span class="o">}</span>
+done<span class="o">()</span></pre>
+            <div class="file">terminal.ts<span class="who you">the two handlers every app shares</span></div>
+<pre><span class="c">// The two handlers every app here shares.</span>
+<span class="c">// A confirm is a question; an ask is a numbered menu, or a blank to type into.</span>
+<span class="w">import</span> <span class="o">{</span> createInterface <span class="o">}</span> <span class="w">from</span> <span class="s">"node:readline/promises"</span>
+<span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Handlers <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+
+<span class="w">const</span> <span class="o">{</span> <span class="k">stdin</span><span class="o">:</span> input<span class="o">,</span> <span class="k">stdout</span><span class="o">:</span> output <span class="o">}</span> <span class="o">=</span> process
+<span class="w">const</span> terminal <span class="o">=</span> createInterface<span class="o">({</span> input<span class="o">,</span> output <span class="o">})</span>
+
+<span class="c">// Fits a project of any reflexes</span>
+<span class="w">export</span> <span class="w">const</span> handlers<span class="o">:</span> Handlers<span class="o">&lt;</span>any<span class="o">&gt;</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="k">confirm</span><span class="o">:</span> <span class="w">async</span> d <span class="o">=&gt;</span> <span class="o">{</span>
+    <span class="w">const</span> typed <span class="o">=</span> <span class="w">await</span> terminal<span class="o">.</span>question<span class="o">(</span><span class="s">`${d.prompt.template}  [y]es [n]o &gt; `</span><span class="o">)</span>
+    <span class="w">return</span> typed<span class="o">.</span>startsWith<span class="o">(</span><span class="s">"y"</span><span class="o">)</span>
+  <span class="o">},</span>
+  <span class="k">ask</span><span class="o">:</span> <span class="w">async</span> d <span class="o">=&gt;</span> <span class="o">{</span>
+    <span class="w">const</span> given<span class="o">:</span> Record<span class="o">&lt;</span>string<span class="o">,</span> string<span class="o">&gt;</span> <span class="o">=</span> <span class="o">{}</span>
+    <span class="w">for</span> <span class="o">(</span><span class="w">const</span> <span class="o">{</span> arg<span class="o">,</span> ask<span class="o">,</span> choices <span class="o">}</span> <span class="w">of</span> d<span class="o">.</span>missing<span class="o">)</span> <span class="o">{</span>
+      <span class="w">const</span> keys <span class="o">=</span> choices<span class="o">.</span><span class="w">type</span> <span class="o">===</span> <span class="s">"options"</span> <span class="o">?</span> Object<span class="o">.</span>keys<span class="o">(</span>choices<span class="o">.</span>options<span class="o">)</span>
+        <span class="o">:</span> choices<span class="o">.</span><span class="w">type</span> <span class="o">===</span> <span class="s">"vocab"</span> <span class="o">?</span> Object<span class="o">.</span>keys<span class="o">(</span>choices<span class="o">.</span>words<span class="o">)</span> <span class="o">:</span> <span class="o">[]</span>
+      <span class="w">const</span> menu <span class="o">=</span> keys<span class="o">.</span>map<span class="o">((</span>key<span class="o">,</span> i<span class="o">)</span> <span class="o">=&gt;</span> <span class="s">`[${i + 1}] ${key}`</span><span class="o">).</span>join<span class="o">(</span><span class="s">"  "</span><span class="o">)</span>
+      <span class="w">const</span> typed <span class="o">=</span> <span class="w">await</span> terminal<span class="o">.</span>question<span class="o">(</span><span class="s">`${ask}  ${menu}${menu &amp;&amp; "  "}&gt; `</span><span class="o">)</span>
+      given<span class="o">[</span>arg<span class="o">]</span> <span class="o">=</span> keys<span class="o">[</span>Number<span class="o">(</span>typed<span class="o">)</span> <span class="o">-</span> <span class="n">1</span><span class="o">]</span> <span class="o">??</span> typed
+    <span class="o">}</span>
+    <span class="w">return</span> given
+  <span class="o">},</span>
+<span class="o">}</span>
+
+<span class="w">export</span> <span class="w">const</span> done <span class="o">=</span> <span class="o">()</span> <span class="o">=&gt;</span> terminal<span class="o">.</span>close<span class="o">()</span></pre>
+          </div>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>The bodies are stand-ins.</strong> Each returns its line and the next sentence.
+              Yours would drain, promote and check a real database.</span></li>
+            <li><b>2</b><span><strong>The loop stops the moment a step does not run.</strong> A no, an abstain or a
+              failure ends it. Nothing after runs, and nothing before is undone.</span></li>
+            <li><b>3</b><span><strong>The same loop over files or code.</strong> <code>load</code> takes a root with
+              <code>evoke.toml</code>, or the reflexes handed as objects.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="boundary">
+      <div class="rule"><p class="label">One boundary</p><span class="num">03</span></div>
+      <h2>The destructive step waits for a yes.</h2>
+      <p class="sub">The failover cannot be undone from where it runs, so its manifest says <code>destructive</code>.
+        <strong>Answer no, and the loop ends there.</strong> The drain stays done. The verify never runs.</p>
+      <div class="grid wide">
+        <div class="panel term" role="figure" aria-label="The failover's question">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>node</div>
+<pre><span class="p">$</span> <span class="in">node runbook.ts "drain the primary"</span>
+<span class="out">primary drained</span>
+<span class="own">Promote the replica now?  [y]es [n]o &gt; <span class="in">y</span></span>
+<span class="out">replica promoted
+writes landing on the new primary</span></pre>
+        </div>
+        <p class="caption">The question is the reflex's own <code>confirm</code> line. A confirm handler that returns
+          false makes <code>handle()</code> answer <code>declined</code>, and the loop's <code>break</code> does the rest.
+          <a href="/manual/sdk/decisions.html">handle, in the manual →</a></p>
+      </div>
+    </section>
+
+    <section id="needs">
+      <div class="rule"><p class="label">Before you run it</p><span class="num">04</span></div>
+      <h2>What this pattern needs.</h2>
+      <ul class="needs">
+        <li class="ok"><b>Node 24.5 or newer</b>And the SDK, <code>@evoke-build/evoke</code>.</li>
+        <li class="ok"><b>A classifier key</b>One request per step. The provider bills the use.</li>
+        <li class="no"><b>Real bodies</b>The three shown return fixed lines. Yours would talk to the database, and honour
+          the deadline's <code>signal</code>.</li>
+        <li class="no"><b>Recovery, decided by you</b>A step that fails stops the rest. What to do about the steps
+          already done is the application's call.</li>
+      </ul>
+      <p class="after">The files above are the whole example. Copy them from this page.</p>
+      <div class="actions">
+        <a class="button primary" href="/start.html?example=runbook">Adapt this pattern</a>
+        <a class="quiet" href="/how-it-works.html#runbook">How a continuation works →</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- footer -->
+  <script src="/scenes.js"></script>
+</body>
+</html>

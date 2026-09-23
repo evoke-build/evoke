@@ -408,9 +408,9 @@ pre.term .mid { color: var(--term-mid); }
 pre.term .buttons button { color: var(--term-dim); }
 pre.term .buttons button:hover { color: var(--term-fg); }
 
-/* The bar: the brand leads home, a way to the use cases */
+/* The bar: the brand leads home, and the site's pages sit beside the icons */
 
-.right-buttons a.use-cases {
+.right-buttons a.site {
   display: inline-block;
   margin: 0 14px 0 0;
   padding: 0 2px;
@@ -421,18 +421,18 @@ pre.term .buttons button:hover { color: var(--term-fg); }
   vertical-align: 1px;
 }
 
-.right-buttons a.use-cases:hover { color: var(--links); }
+.right-buttons a.site:hover { color: var(--links); }
 
-/* The idea, the one warm word in the bar, underlined softly */
-.right-buttons a.idea { color: var(--links); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .32em; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }
-.right-buttons a.idea:hover { color: var(--fg); text-decoration-color: var(--accent); }
+/* Get started, the one warm link in the bar, underlined softly */
+.right-buttons a.start { color: var(--links); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .32em; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.right-buttons a.start:hover { color: var(--fg); text-decoration-color: var(--accent); }
 
-/* Below tablet width the bar is full; the six sentences at the end of the page lead the way instead. */
+/* Below tablet width the bar is full; the examples at the end of the page lead the way instead. */
 @media (max-width: 720px) {
-  .right-buttons a.use-cases { display: none; }
+  .right-buttons a.site { display: none; }
 }
 
-/* The six sentences, closing every page. The tracks may go narrower than a sentence, which then ends in an
+/* The examples, closing every page. The tracks may go narrower than a sentence, which then ends in an
    ellipsis instead of widening the card past the column. */
 
 .at-work {
