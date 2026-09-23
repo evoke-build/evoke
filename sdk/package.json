@@ -4,6 +4,7 @@
   "description": "You invoke a function; you evoke a reflex. The SDK: load a project of reflexes, decide with Jev, run.",
   "keywords": [
     "jev",
+    "openjev",
     "typesafe",
     "classifier",
     "natural-language",
@@ -36,6 +37,10 @@
     "./jev": {
       "types": "./dist/jev.d.ts",
       "default": "./dist/jev.js"
+    },
+    "./openjev": {
+      "types": "./dist/openjev.d.ts",
+      "default": "./dist/openjev.js"
     },
     "./testing": {
       "types": "./dist/testing.d.ts",

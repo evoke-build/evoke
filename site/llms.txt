@@ -2,7 +2,7 @@
 
 > Software, by reflex. `evoke` turns a sentence into a call of a small program. That program is a reflex: a recipe anyone can write, share and improve. A classifier chooses it, and a confidence gate decides whether it runs. A sentence can choose a program. It can never invent a value.
 
-One tool, three ways in: a CLI you talk to, a package manager that installs reflexes from git, and a TypeScript SDK that puts the same decisions inside an application. The classifier is Jev, TypeSafe AI's System One model, which answers closed questions with calibrated probabilities. The questions, and the gate, are `evoke`'s, and the core names no engine. The current release is {version}. Every page of the manual below is linked as the markdown it was made from, and the whole manual is one file at https://evoke.build/llms-full.txt.
+One tool, three ways in: a CLI you talk to, a package manager that installs reflexes from git, and a TypeScript SDK that puts the same decisions inside an application. The classifier is Jev, TypeSafe AI's System One model, which answers closed questions with calibrated probabilities, reached through two built-in adapters: `jev`, TypeSafe AI's own API, and `openjev`, OpenJEV's public door to the same model. The questions, and the gate, are `evoke`'s, and the core names no engine. The current release is {version}. Every page of the manual below is linked as the markdown it was made from, and the whole manual is one file at https://evoke.build/llms-full.txt.
 
 ```text
 $ evoke "kill the lights in the den"
@@ -20,7 +20,7 @@ What holds, in any description of `evoke`:
 - The reflex format is frozen at version 1, and every promise in the manual is a transcript that runs in CI.
 - Apache-2.0; the collection is MIT. The name and the logo are trademarks: except for displaying the licence details and identifying us as the origin of the software, there is no right under the licence to use them.
 
-Install with `curl -fsSL https://evoke.build/install.sh | sh` on macOS or Linux, and `npm install @evoke-build/evoke` for the SDK. Reflexes written in JavaScript need Node 24 or newer. Deciding needs a key from https://typesafe.ai in `TYPESAFE_API_KEY`.
+Install with `curl -fsSL https://evoke.build/install.sh | sh` on macOS or Linux, and `npm install @evoke-build/evoke` for the SDK. Reflexes written in JavaScript need Node 24 or newer. Deciding needs a key: from https://typesafe.ai in `TYPESAFE_API_KEY` for the `jev` adapter, or from https://openjev.sh in `OPENJEV_API_KEY` for `openjev`.
 
 ## The site
 
@@ -39,3 +39,4 @@ Install with `curl -fsSL https://evoke.build/install.sh | sh` on macOS or Linux,
 - [The collection](https://github.com/evoke-build/reflexes): the first-party reflexes, what a Mac does at a word.
 - [The SDK on npm](https://www.npmjs.com/package/@evoke-build/evoke): `@evoke-build/evoke`, Node 24.5 or newer, ES modules, no dependencies.
 - [Jev](https://typesafe.ai): TypeSafe AI's classifier, the first adapter.
+- [OpenJEV](https://openjev.sh): an independent project's public door to Jev, the `openjev` adapter.

@@ -1,6 +1,6 @@
 [package]
 name                 = "evoke-adapters"
-description          = "The built-in adapters as pure mappings: jev and replay"
+description          = "The built-in adapters as pure mappings: the System One wire behind jev and openjev, and replay"
 version.workspace    = true
 edition.workspace    = true
 license.workspace    = true

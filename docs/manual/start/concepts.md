@@ -25,7 +25,7 @@ wording, and runs the program.
 | **Project**    | A directory of files you own: `evoke.toml`, `evoke.lock`, `overlays/`, `vocab/`. Your home project lives in `~/.config/evoke/`. An application has its own at its root. |
 | **Overlay**    | Your wording for one reflex, in one file, laid over the shipped manifest. It adds and replaces. It never deletes. |
 | **Vocabulary** | Your `word = "meaning"` list, shared by every argument that names it. A package never ships or writes one. |
-| **Adapter**    | The classifier behind a decision. Jev is the first. The tool names no engine in its files or its core. |
+| **Adapter**    | The classifier behind a decision, by name. `jev` and `openjev` both reach Jev, through different doors. The core names no engine. |
 | **Runtime**    | What runs a program: Node for a `.mts` or `.mjs` file, nothing for an argv. Chosen from the manifest. Authors never see it. |
 
 Two more words come up everywhere. A **call** is a reflex with its arguments filled in, on one line:

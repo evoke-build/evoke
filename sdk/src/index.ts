@@ -1,5 +1,6 @@
 // @evoke-build/evoke: load a project, decide, run. Six things to learn, in order: reflex() · load() · handle() ·
-// a Decision · run() · replay() — the last under ./testing, and Jev under ./jev, so this entry imports no engine.
+// a Decision · run() · replay() — the last under ./testing, and the two doors to Jev under ./jev and ./openjev, so
+// this entry imports no engine.
 
 export { load } from "./project.ts"
 export type { DecideOptions, Handlers, LoadOptions, Project, ReflexStatus, RunOptions, Turn, Vocab, WeaveOptions, Woven, WovenRound, WovenStep } from "./project.ts"

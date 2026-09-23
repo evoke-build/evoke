@@ -223,9 +223,9 @@ async function named(project: W.Project, root: string | undefined): Promise<Adap
     return Promise.reject(new DiagnosticError([{ message, fix: { type: "rerun" }, command: form }]))
   }
   if (root === undefined) return line("no adapter: none is named and none was passed", "jev()")
-  if (name === "jev") {
-    const { jev } = await import("./jev.ts")
-    return jev({ table: project.adapters[name] })
+  if (name === "jev" || name === "openjev") {
+    const { through } = await import("./systemone.ts")
+    return through(name, { table: project.adapters[name] })
   }
   if (name === "replay") return line(`adapter "replay" names a recording; pass one`, "replay(file)")
   return line(`adapter "${name}" is unknown; pass one`, "adapter")

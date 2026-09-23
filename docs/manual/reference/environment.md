@@ -7,7 +7,8 @@ nothing is sent anywhere but the adapter you chose.
 
 | Variable            | Read by                        | Means                                                                    |
 | :------------------ | :----------------------------- | :----------------------------------------------------------------------- |
-| `TYPESAFE_API_KEY`  | The Jev adapter, when deciding | The classifier's key. Never written to a file                            |
+| `TYPESAFE_API_KEY`  | The `jev` adapter, when deciding | The classifier's key, from typesafe.ai. Never written to a file        |
+| `OPENJEV_API_KEY`   | The `openjev` adapter, when deciding | The classifier's key, from openjev.sh. Never written to a file      |
 | `EVOKE_ANSWERS`     | The `replay` adapter           | A recording to answer from, with `adapter = "replay"` in `evoke.toml`     |
 | `<VAR>` of a `--env` setting | A body's run           | A config value, most often a secret, resolved for that run only          |
 | `NO_COLOR`          | The terminal                   | Set and not empty: no colour. The spinner and the line editor stay        |
@@ -49,5 +50,6 @@ Secrets reach a body only this way, for the length of one run.
 
 ## Time
 
-One decision has 30 seconds, shared by the adapter's answer and the body's run. A prompt never counts. The Jev
-transport gives a request 1.5 seconds once connected. It retries once after a connect error or a server error.
+One decision has 30 seconds, shared by the adapter's answer and the body's run. A prompt never counts. The `jev`
+adapter gives a request 1.5 seconds once connected, and `openjev` 3 seconds, since its door forwards the request
+onward. Each retries once after a connect error or a server error.

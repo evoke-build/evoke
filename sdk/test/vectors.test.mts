@@ -27,8 +27,8 @@ const RESULTS = new Set([
   "reference",
   "lock",
   "weave.plan",
-  "jev.settings",
-  "jev.answers",
+  "systemone.settings",
+  "systemone.answers",
   "replay.recording",
   "replay.answer",
 ])

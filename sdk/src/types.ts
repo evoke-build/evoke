@@ -869,7 +869,7 @@ export interface Executed {
   worst: Status
 }
 
-// ---- contract, edit, test; the adapters' jev and replay ----
+// ---- contract, edit, test; the adapters' systemone and replay ----
 
 // contract
 
@@ -999,13 +999,18 @@ export interface Theft {
   thief: LocalName
 }
 
-// jev
+// systemone
+
+/** A door on the System One wire: which address, under which key, naming which model. Its adapter name. */
+export type Door = "jev" | "openjev"
 
 /** What both hosts read before the first call. */
 export interface Settings {
   declared: Declared
   /** The variable the API key is read from. */
   credential: VarName
+  /** Where a key comes from, as the line that asks for one says it. */
+  issuer: string
   /** The endpoint both hosts post to. */
   url: string
   policy: Policy

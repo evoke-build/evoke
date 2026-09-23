@@ -269,13 +269,17 @@
         reports nothing. There is no server of ours on the way, and no telemetry.</p>
       <h3>When it decides</h3>
       <ul class="ticks">
-        <li><strong>One request leaves your machine</strong>, to the classifier your project names. Today that is
-          Jev, at <a href="https://typesafe.ai">TypeSafe AI</a>. It carries your sentence, and the questions built
-          from the reflexes you installed: their descriptions, options and examples, and your vocabulary's words
-          with the meaning you wrote for each.</li>
+        <li><strong>One request leaves your machine</strong>, to the adapter your project names: Jev, at
+          <a href="https://typesafe.ai">TypeSafe AI</a>, or <a href="https://openjev.sh">OpenJEV</a>, an independent
+          door that forwards the request to Jev. It carries your sentence, and the questions built from the
+          reflexes you installed: their descriptions, options and examples, and your vocabulary's words with the
+          meaning you wrote for each.</li>
         <li><strong>Nothing else of yours travels.</strong> Never a vocabulary's value, a setting, a key, a file,
           or anything else on your machine. Your key goes only in that request's header, to the classifier.</li>
         <li><strong>A proxy you name in your environment</strong> carries the connection, and sees ciphertext.</li>
+        <li><strong>With the <code>openjev</code> adapter, OpenJEV sees the request first.</strong> It is an
+          independent project, not TypeSafe AI's. As of the date at the top of this page it publishes no privacy
+          policy and no terms, so nothing states what it keeps. Weigh that before you choose it.</li>
         <li><strong>What the classifier does with the request</strong> is set by TypeSafe AI's
           <a href="https://typesafe.ai/legal/privacy">privacy policy</a> and
           <a href="https://typesafe.ai/legal/mca">customer agreement</a>, which you accept when you take a key. As of
@@ -328,13 +332,17 @@
 
     <section id="others">
       <div class="rule"><p class="label">Who else sees something</p><span class="num">05</span></div>
-      <h2>Four parties, each under its own terms.</h2>
+      <h2>Five parties, each under its own terms.</h2>
       <p class="sub">None of them is us. Each sees only what the line names, and its own policy governs what it
         keeps.</p>
       <ul class="ticks">
-        <li><strong>TypeSafe AI</strong> sees a decision's request, when your project names Jev. Its
+        <li><strong>TypeSafe AI</strong> sees a decision's request when your project names <code>jev</code>, and one
+          forwarded by OpenJEV when it names <code>openjev</code>. Its
           <a href="https://typesafe.ai/legal/privacy">privacy policy</a> and
           <a href="https://typesafe.ai/legal/mca">customer agreement</a> apply.</li>
+        <li><strong>OpenJEV</strong> sees a decision's request when your project names <code>openjev</code>, and
+          forwards it to Jev. It publishes no privacy policy and no terms, as of the date at the top of this
+          page.</li>
         <li><strong>GitHub</strong> sees a visit to this site, a download of a release, and a fetch from a repository
           it hosts. Its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy
           statement</a> applies.</li>

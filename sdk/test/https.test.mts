@@ -5,7 +5,7 @@ import { test } from "node:test"
 
 import type { DiagnosticError } from "../src/errors.ts"
 import { describe } from "../src/https.ts"
-import { proxied } from "../src/jev.ts"
+import { proxied } from "../src/systemone.ts"
 
 const HOST = "api.typesafe.ai"
 
@@ -27,22 +27,22 @@ test("the proxy comes from https_proxy, then HTTPS_PROXY; a value that is no pro
   const clear = () => { for (const name of ["https_proxy", "HTTPS_PROXY", "no_proxy", "NO_PROXY"]) delete process.env[name] }
   try {
     clear()
-    equal(proxied(), undefined)
+    equal(proxied("jev"), undefined)
     process.env.HTTPS_PROXY = "http://ana:s3cret@proxy.example.com:3128"
     process.env.NO_PROXY = "localhost,.internal.example.com"
-    const named = proxied()
+    const named = proxied("jev")
     equal(named?.via, "proxy.example.com:3128")
     equal(named?.env.NO_PROXY, "localhost,.internal.example.com")
     process.env.https_proxy = "http://first:8080"
-    equal(proxied()?.via, "first:8080")
+    equal(proxied("jev")?.via, "first:8080")
     clear()
     process.env.HTTPS_PROXY = "socks5://127.0.0.1:1080"
     throws(
-      () => proxied(),
+      () => proxied("jev"),
       (error: DiagnosticError) => error.message === "HTTPS_PROXY is not an http or https proxy address  →  export HTTPS_PROXY=<value>",
     )
     process.env.HTTPS_PROXY = "not a url"
-    throws(() => proxied(), (error: DiagnosticError) => error.message.startsWith("HTTPS_PROXY is not an http or https proxy address"))
+    throws(() => proxied("jev"), (error: DiagnosticError) => error.message.startsWith("HTTPS_PROXY is not an http or https proxy address"))
   } finally {
     clear()
     Object.assign(process.env, kept)

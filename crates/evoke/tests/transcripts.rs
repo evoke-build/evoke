@@ -64,6 +64,11 @@ fn first_ten() {
 }
 
 #[test]
+fn openjev() {
+    flow("openjev");
+}
+
+#[test]
 fn test_nothing() {
     flow("test-nothing");
 }

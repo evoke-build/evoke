@@ -2,7 +2,8 @@
 //! object holding the function's arguments by name, as the vectors write them. Out: `{ ok }` with the result,
 //! `{ err }` with the function's own error, or `{ bug }` for an op or an input the SDK should never have sent.
 
-use evoke_adapters::{jev, replay};
+use evoke_adapters::replay;
+use evoke_adapters::systemone::{self, Door};
 use evoke_core::document::Text;
 use evoke_core::manifest::{ConfigSpec, Effect, Recognizer};
 use evoke_core::name::{ArgName, LocalName, RelPath, Tag, VarName, VocabName};
@@ -206,9 +207,15 @@ fn tune(op: &str, input: &Json) -> Answer {
 
 fn adapters(op: &str, input: &Json) -> Answer {
     Ok(match op {
-        "jev.settings" => result(jev::settings(opt::<Json>(input, "table")?.as_ref())),
-        "jev.request" => ok(jev::request(&arg::<Request>(input, "request")?)),
-        "jev.answers" => result(jev::answers(
+        "systemone.settings" => result(systemone::settings(
+            arg::<Door>(input, "door")?,
+            opt::<Json>(input, "table")?.as_ref(),
+        )),
+        "systemone.request" => ok(systemone::request(
+            arg::<Door>(input, "door")?,
+            &arg::<Request>(input, "request")?,
+        )),
+        "systemone.answers" => result(systemone::answers(
             arg(input, "status")?,
             text(input, "body")?,
             &arg::<VarName>(input, "credential")?,

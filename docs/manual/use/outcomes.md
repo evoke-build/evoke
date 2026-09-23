@@ -94,9 +94,10 @@ $ evoke "what time is it"
 For each decision, the adapter answers one question per reflex and one per argument. **Confidence is the lowest
 top probability among the route and every argument question of the winner.** Unstated arguments and flags count
 too, until you answer for them: an argument you typed at a prompt is settled, and its judgment leaves the gate.
-The bars come from the adapter. They are calibrated, so each number means *the probability this is right*:
+The bars come from the adapter. Both built-in adapters reach Jev and ship the same numbers. They are calibrated,
+so each number means *the probability this is right*:
 
-| Floor         | Jev  | Gates                                                          |
+| Floor         | Default | Gates                                                       |
 | :------------ | :--- | :------------------------------------------------------------- |
 | `route`       | 0.5  | Under it, abstain                                              |
 | `read`        | 0.6  | A `read` reflex runs at or above it                            |
@@ -104,7 +105,8 @@ The bars come from the adapter. They are calibrated, so each number means *the p
 | `fits`        | 0.3  | A *runner-up* at or above it holds the outcome at confirm      |
 | destructive   | —    | Always confirms                                                |
 
-You may raise or lower them for your own machine, under `[adapters.jev]` in `evoke.toml`. `read` may never exceed
+You may raise or lower them for your own machine, under your adapter's table in `evoke.toml`, `[adapters.jev]` or
+`[adapters.openjev]`. `read` may never exceed
 `write`. No number makes a destructive reflex skip its question. There is no `--yes`. To run unattended, set a bar
 in a file you own, not a flag on a pipeline.
 

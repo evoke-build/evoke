@@ -142,16 +142,24 @@ test("a manifest handed as code is refused at load, ending in reflex(<name>)", a
     load({ reflexes: { broken }, adapter: answering() }),
     (error: DiagnosticError) => error.message === "broken: confirm names {who}, an optional argument  →  reflex(broken)",
   )
-  const key = process.env.TYPESAFE_API_KEY
+  const keys = { TYPESAFE_API_KEY: process.env.TYPESAFE_API_KEY, OPENJEV_API_KEY: process.env.OPENJEV_API_KEY }
   delete process.env.TYPESAFE_API_KEY
+  delete process.env.OPENJEV_API_KEY
   try {
     // A root without evoke.toml is the default project, which names jev.
     await rejects(
       load({ root: mkdtempSync(join(tmpdir(), "evoke-bare-")) }),
       (error: DiagnosticError) => error.message === "jev needs TYPESAFE_API_KEY, a key from typesafe.ai  →  export TYPESAFE_API_KEY=<value>",
     )
+    // A project naming the other door asks for that door's key.
+    const through = mkdtempSync(join(tmpdir(), "evoke-openjev-"))
+    writeFileSync(join(through, "evoke.toml"), 'adapter = "openjev"\n')
+    await rejects(
+      load({ root: through }),
+      (error: DiagnosticError) => error.message === "openjev needs OPENJEV_API_KEY, a key from openjev.sh  →  export OPENJEV_API_KEY=<value>",
+    )
   } finally {
-    if (key !== undefined) process.env.TYPESAFE_API_KEY = key
+    for (const [name, value] of Object.entries(keys)) if (value !== undefined) process.env[name] = value
   }
 })
 

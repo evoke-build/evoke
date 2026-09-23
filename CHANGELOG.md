@@ -6,6 +6,14 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A second adapter, `openjev`, reaches Jev through [OpenJEV](https://openjev.sh), an independent project's public
+  door to the same model: `adapter = "openjev"` in `evoke.toml`, the key in `OPENJEV_API_KEY`, the same `gate`
+  table under `[adapters.openjev]`, and `openjev()` from `@evoke-build/evoke/openjev` in the SDK. Both adapters
+  send one body and read one answer; the door sets the address, the key, the model named and the wait after
+  connect, 3 seconds for OpenJEV since it forwards the request onward. A missing key names the door that needs
+  it: `openjev needs OPENJEV_API_KEY, a key from openjev.sh`. OpenJEV publishes no terms and no privacy policy as
+  of this release; the install page and the site's privacy page say so, and what it sees.
+
 ## [0.4.0] - 2026-09-23
 
 - A sentence of several steps is read more carefully. `don’t` with the apostrophe a Mac types is a negation like

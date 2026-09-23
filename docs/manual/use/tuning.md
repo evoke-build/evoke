@@ -168,7 +168,8 @@ different engines:
 gate = { route = 0.5, read = 0.6, write = 0.85 }
 ```
 
-Each number means *the probability this is right*. `read` may not exceed `write`. Destructive reflexes always
+The `openjev` adapter takes the same table under `[adapters.openjev]`. Both reach Jev, so the numbers mean the
+same. Each number means *the probability this is right*. `read` may not exceed `write`. Destructive reflexes always
 confirm. [Outcomes](outcomes.md#what-confidence-is) explains what the numbers gate.
 
 **Next:** [Projects](projects.md).

@@ -1,0 +1,32 @@
+{
+  "input": {
+    "door": "openjev"
+  },
+  "expect": {
+    "ok": {
+      "declared": {
+        "id": "openjev",
+        "limits": {
+          "options": 255
+        },
+        "gate": {
+          "route": 0.5,
+          "fits": 0.3,
+          "read": 0.6,
+          "write": 0.8
+        }
+      },
+      "credential": "OPENJEV_API_KEY",
+      "issuer": "openjev.sh",
+      "url": "https://api.openjev.sh/v1/systemone",
+      "policy": {
+        "timeout": 3000,
+        "retries": 1,
+        "retry_statuses": [
+          500,
+          599
+        ]
+      }
+    }
+  }
+}

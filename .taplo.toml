@@ -3,6 +3,7 @@
 include = [
   ".taplo.toml",
   "Cargo.toml",
+  "clippy.toml",
   "crates/**/*.toml",
   "deny.toml",
   "mise.toml",

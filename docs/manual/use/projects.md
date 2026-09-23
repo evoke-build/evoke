@@ -40,6 +40,9 @@ gate = { write = 0.85 }
 
 - A **local name** matches `[a-z][a-z0-9_]*`. `none`, `unstated`, `fits` and `weave` are reserved. The local name is what
   the classifier reads, and the overlay file is named after it.
+- The built-in adapters are `jev`, TypeSafe AI's own API, `openjev`, OpenJEV's public door to the same model, and
+  `replay`, a recording for tests. The first two each read their own key and take the same `gate` table under
+  their own name: [Install](../start/install.md#the-key).
 - An adapter name resolves only against `evoke`'s built-ins, never from the project directory. An adapter sees
   every input, so that matters. A table for an adapter you did not select is inert. So one file serves devices on
   different engines.

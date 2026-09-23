@@ -1,0 +1,80 @@
+{
+  "input": {
+    "door": "openjev",
+    "request": {
+      "$ref": "fixtures/request-screenshot-window.json"
+    }
+  },
+  "expect": {
+    "model": "openjev",
+    "state": {
+      "request": "screenshot this window"
+    },
+    "questions": {
+      "route": {
+        "type": "choice",
+        "instructions": "Which one does the request ask for?",
+        "criteria": {
+          "screenshot": {
+            "what": "Capture the screen, a window or a selection.\nSaved to the desktop as PNG, or copied to the clipboard.",
+            "not_for": [
+              "recording the screen"
+            ],
+            "examples": [
+              "take a screenshot",
+              "screenshot this window",
+              "grab the screen to the clipboard"
+            ]
+          },
+          "none": "None of these."
+        }
+      },
+      "fits.screenshot": {
+        "type": "noul",
+        "instructions": "Does `screenshot` do the specific thing the request asks for?",
+        "criteria": {
+          "true": "Capture the screen, a window or a selection.\nSaved to the desktop as PNG, or copied to the clipboard.",
+          "false": "Something else, such as: recording the screen."
+        }
+      },
+      "screenshot.area": {
+        "type": "choice",
+        "instructions": "The whole screen, a window, or a selection?",
+        "criteria": {
+          "screen": {
+            "what": "Everything on every display.",
+            "examples": [
+              "grab the screen to the clipboard"
+            ]
+          },
+          "window": {
+            "what": "One window, chosen by clicking it.",
+            "examples": [
+              "screenshot this window"
+            ]
+          },
+          "unstated": {
+            "what": "The request does not say.",
+            "examples": [
+              "take a screenshot"
+            ]
+          }
+        }
+      },
+      "screenshot.clipboard": {
+        "type": "choice",
+        "instructions": "To the clipboard instead of a file?",
+        "criteria": {
+          "yes": {
+            "what": "The request asks for this.",
+            "examples": [
+              "grab the screen to the clipboard"
+            ]
+          },
+          "no": "The request asks for the opposite.",
+          "unstated": "The request does not say."
+        }
+      }
+    }
+  }
+}

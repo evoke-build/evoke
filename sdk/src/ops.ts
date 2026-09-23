@@ -61,9 +61,9 @@ export interface Ops {
   "weave.plan": { input: { plan: T.Plan; input: string; tags: T.Tag[]; answers: T.Answers }; output: T.Result<T.Planning, T.Fault> }
   "weave.execute": { input: { plan: T.Plan; gate?: T.Gate; weave: T.Weave; progress: T.Progress }; output: T.Running }
   // the adapters
-  "jev.settings": { input: { table?: T.Json }; output: T.Result<T.Settings, T.Diagnostic[]> }
-  "jev.request": { input: { request: T.Request }; output: T.Json }
-  "jev.answers": { input: { status: number; body: string; credential: T.VarName }; output: T.Result<T.Raw, T.Fault> }
+  "systemone.settings": { input: { door: T.Door; table?: T.Json }; output: T.Result<T.Settings, T.Diagnostic[]> }
+  "systemone.request": { input: { door: T.Door; request: T.Request }; output: T.Json }
+  "systemone.answers": { input: { status: number; body: string; credential: T.VarName }; output: T.Result<T.Raw, T.Fault> }
   "replay.recording": { input: { toml: string }; output: T.Result<T.Recording, string> }
   "replay.render": { input: { recording: T.Recording }; output: string }
   "replay.answer": { input: { recording: T.Recording; request: T.Request }; output: T.Result<T.Raw, T.Fault> }

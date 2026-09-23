@@ -1,0 +1,2 @@
+# Proper nouns the documentation names as they are written, which `doc_markdown` would otherwise want in backticks.
+doc-valid-idents = ["OpenJEV", "OpenRouter", "TypeSafe", ".."]

@@ -1,13 +1,14 @@
-//! Who answers: the `Adapter` trait over the two built-ins, resolved by name. In: the project's adapter name and
-//! its `[adapters.<name>]` table, the environment. Out: a boxed adapter, or every diagnostic in its way; a `Trace`
-//! per call. `Jev` is the pure mapping plus the network and the policy loop; `Replay` is the recording
-//! `EVOKE_ANSWERS` names plus its lookup. `declared` reads what an adapter declares without its credential, for
-//! the commands that never ask.
+//! Who answers: the `Adapter` trait over the built-ins, resolved by name. In: the project's adapter name and its
+//! `[adapters.<name>]` table, the environment. Out: a boxed adapter, or every diagnostic in its way; a `Trace`
+//! per call. `SystemOne` is the pure mapping behind a door — `jev` or `openjev` — plus the network and the
+//! policy loop; `Replay` is the recording `EVOKE_ANSWERS` names plus its lookup. `declared` reads what an adapter
+//! declares without its credential, for the commands that never ask.
 
+use std::fmt::Write as _;
 use std::path::Path;
 
-use evoke_adapters::jev::{self, Settings};
 use evoke_adapters::replay::{self, Recording};
+use evoke_adapters::systemone::{self, Door, Settings};
 use evoke_core::name::{AdapterId, AdapterName, VarName};
 use evoke_core::{Declared, Diagnostic, Digest, Fault, Fix, Json, Raw, Request};
 use serde::{Deserialize, Serialize};
@@ -48,8 +49,11 @@ pub fn resolve(
     settings: Option<&Json>,
     environment: &Environment,
 ) -> Result<Box<dyn Adapter>, Vec<Diagnostic>> {
+    if let Some(door) = Door::named(name.as_str()) {
+        return SystemOne::resolve(door, settings, environment)
+            .map(|adapter| Box::new(adapter) as Box<dyn Adapter>);
+    }
     match name.as_str() {
-        "jev" => Jev::resolve(settings, environment).map(|jev| Box::new(jev) as Box<dyn Adapter>),
         "replay" => Replay::resolve(environment)
             .map(|replay| Box::new(replay) as Box<dyn Adapter>)
             .map_err(|problem| vec![problem]),
@@ -58,15 +62,17 @@ pub fn resolve(
 }
 
 /// What the project's adapter declares — id, limits, gate — without its credential in hand: what a plan is
-/// compiled from when nothing is asked. `jev` declares from its settings; `replay` from its recording when
+/// compiled from when nothing is asked. A door declares from its settings; `replay` from its recording when
 /// `EVOKE_ANSWERS` names one, else as a bare `replay`.
 pub fn declared(
     name: &AdapterName,
     settings: Option<&Json>,
     environment: &Environment,
 ) -> Result<Declared, Vec<Diagnostic>> {
+    if let Some(door) = Door::named(name.as_str()) {
+        return systemone::settings(door, settings).map(|settings| settings.declared);
+    }
     match name.as_str() {
-        "jev" => jev::settings(settings).map(|settings| settings.declared),
         "replay" if environment.get(ANSWERS).is_some() => Replay::resolve(environment)
             .map(|replay| replay.recording.declared)
             .map_err(|problem| vec![problem]),
@@ -83,7 +89,9 @@ fn unknown(name: &str) -> Diagnostic {
     Diagnostic {
         reflex: None,
         at: None,
-        message: format!("adapter \"{name}\" is unknown; the built-ins are jev and replay"),
+        message: format!(
+            "adapter \"{name}\" is unknown; the built-ins are jev, openjev and replay"
+        ),
         fix: Fix::Check,
     }
 }
@@ -98,26 +106,33 @@ fn unset(what: &str, var: VarName) -> Diagnostic {
     }
 }
 
-struct Jev {
+/// One door on the System One wire, with its key and a connection.
+struct SystemOne {
+    door: Door,
     settings: Settings,
     key: String,
     agent: Agent,
 }
 
-impl Jev {
-    fn resolve(table: Option<&Json>, environment: &Environment) -> Result<Self, Vec<Diagnostic>> {
-        let settings = jev::settings(table)?;
+impl SystemOne {
+    fn resolve(
+        door: Door,
+        table: Option<&Json>,
+        environment: &Environment,
+    ) -> Result<Self, Vec<Diagnostic>> {
+        let settings = systemone::settings(door, table)?;
         let key = environment
             .get(settings.credential.as_str())
             .filter(|key| !key.is_empty())
             .ok_or_else(|| {
-                let mut needs = unset("jev", settings.credential.clone());
-                needs.message.push_str(", a key from typesafe.ai");
+                let mut needs = unset(door.name(), settings.credential.clone());
+                let _ = write!(needs.message, ", a key from {}", settings.issuer);
                 vec![needs]
             })?
             .to_owned();
         let agent = Agent::new(environment).map_err(|problem| vec![problem])?;
         Ok(Self {
+            door,
             settings,
             key,
             agent,
@@ -125,14 +140,14 @@ impl Jev {
     }
 }
 
-impl Adapter for Jev {
+impl Adapter for SystemOne {
     fn declared(&self) -> &Declared {
         &self.settings.declared
     }
 
     /// The policy loop: once more after a connect error or a retried status, never after a client error.
     fn answer(&self, request: &Request, deadline: Deadline) -> Result<Raw, Fault> {
-        let body = jev::request(request).to_string();
+        let body = systemone::request(self.door, request).to_string();
         let policy = &self.settings.policy;
         let mut attempt = 0;
         loop {
@@ -151,7 +166,7 @@ impl Adapter for Jev {
                 Err(transport) => return Err(transport.into()),
                 Ok(response) if again && policy.retried(response.status) => {}
                 Ok(response) => {
-                    return jev::answers(
+                    return systemone::answers(
                         response.status,
                         &response.body,
                         &self.settings.credential,
@@ -250,26 +265,40 @@ mod tests {
         let name = AdapterName::new("gpt").unwrap();
         let problems = resolve(&name, None, &environment).err().unwrap();
         assert_eq!(problems.len(), 1);
+        assert_eq!(
+            problems[0].message,
+            "adapter \"gpt\" is unknown; the built-ins are jev, openjev and replay"
+        );
         assert_eq!(problems[0].fix, Fix::Check);
         assert_eq!(declared(&name, None, &environment).unwrap_err(), problems);
     }
 
     #[test]
-    fn jev_without_its_key_says_where_one_comes_from() {
+    fn a_door_without_its_key_says_where_one_comes_from() {
         let environment = Environment(std::collections::BTreeMap::new());
-        let problems = resolve(&AdapterName::new("jev").unwrap(), None, &environment)
-            .err()
-            .unwrap();
-        assert_eq!(
-            problems[0].message,
-            "jev needs TYPESAFE_API_KEY, a key from typesafe.ai"
-        );
-        assert_eq!(
-            problems[0].fix,
-            Fix::ExportKey {
-                var: VarName::new("TYPESAFE_API_KEY").unwrap()
-            }
-        );
+        for (name, line, var) in [
+            (
+                "jev",
+                "jev needs TYPESAFE_API_KEY, a key from typesafe.ai",
+                "TYPESAFE_API_KEY",
+            ),
+            (
+                "openjev",
+                "openjev needs OPENJEV_API_KEY, a key from openjev.sh",
+                "OPENJEV_API_KEY",
+            ),
+        ] {
+            let problems = resolve(&AdapterName::new(name).unwrap(), None, &environment)
+                .err()
+                .unwrap();
+            assert_eq!(problems[0].message, line);
+            assert_eq!(
+                problems[0].fix,
+                Fix::ExportKey {
+                    var: VarName::new(var).unwrap()
+                }
+            );
+        }
     }
 
     #[test]
@@ -277,6 +306,9 @@ mod tests {
         let environment = Environment(std::collections::BTreeMap::new());
         let jev = declared(&AdapterName::new("jev").unwrap(), None, &environment).unwrap();
         assert!(jev.gate.is_some());
+        let openjev = declared(&AdapterName::new("openjev").unwrap(), None, &environment).unwrap();
+        assert_eq!(openjev.id.as_str(), "openjev");
+        assert_eq!(openjev.gate, jev.gate);
         let replay = declared(&AdapterName::new("replay").unwrap(), None, &environment).unwrap();
         assert_eq!(replay.id.as_str(), "replay");
         assert!(replay.gate.is_none() && replay.limits.is_none());

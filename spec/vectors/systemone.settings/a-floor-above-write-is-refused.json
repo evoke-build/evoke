@@ -1,0 +1,20 @@
+{
+  "input": {
+    "door": "jev",
+    "table": {
+      "gate": {
+        "read": 0.9
+      }
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "message": "adapters.jev.gate: read 0.9 is above write 0.8",
+        "fix": {
+          "type": "check"
+        }
+      }
+    ]
+  }
+}

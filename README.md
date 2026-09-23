@@ -31,7 +31,7 @@ asks first, every time.
 That is the idea behind a reflex. Your words pick a program from the ones you installed. Jev answers closed questions
 about your sentence, every answer a calibrated probability, and the weakest one decides. `evoke` is the first
 implementation of this idea: one core, a CLI, a package manager and a TypeScript SDK, with Jev as its first
-engine and the design bound to none. The whole idea, with real sessions, at
+engine, reached through two adapters, and the design bound to none. The whole idea, with real sessions, at
 [evoke.build](https://evoke.build).
 
 ## It stops
@@ -81,8 +81,8 @@ Tools and tasks are pinned by [mise](https://mise.jdx.dev). With git and a C com
 `mise install`, then `mise run lint` and `mise run test`. Those two are what CI runs; `mise tasks` lists the rest.
 Packaging a Linux release needs `musl-tools` as well. `bin/dx <command>` runs a command with the same toolchain
 inside an OrbStack machine named `devbox`, for those who develop in one. The tests need no key.
-To decide against Jev, export `TYPESAFE_API_KEY`. To decide without one, the `replay` adapter answers from a file
-you write: [Testing](https://evoke.build/manual/sdk/testing.html#the-cli-on-a-recording).
+To decide against Jev, export `TYPESAFE_API_KEY` for the `jev` adapter, or `OPENJEV_API_KEY` for `openjev`. To
+decide without one, the `replay` adapter answers from a file you write: [Testing](https://evoke.build/manual/sdk/testing.html#the-cli-on-a-recording).
 
 ## Licence
 

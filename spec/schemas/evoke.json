@@ -45,26 +45,21 @@
     },
     "adapters": {
       "type": "object",
-      "description": "Settings per adapter, under its name. A table for an unselected adapter is inert.",
+      "description": "Settings per adapter, under its name: jev, openjev or replay. A table for an unselected adapter is inert.",
       "propertyNames": { "$ref": "#/definitions/name" },
       "additionalProperties": { "type": "object" },
       "properties": {
         "jev": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {
-            "gate": {
-              "type": "object",
-              "additionalProperties": false,
-              "description": "Overrides of Jev's calibrated thresholds; each number means P(correct). read may not exceed write.",
-              "properties": {
-                "route": { "$ref": "#/definitions/probability" },
-                "fits": { "$ref": "#/definitions/probability" },
-                "read": { "$ref": "#/definitions/probability" },
-                "write": { "$ref": "#/definitions/probability" }
-              }
-            }
-          }
+          "description": "Jev through TypeSafe AI's own API, under TYPESAFE_API_KEY.",
+          "properties": { "gate": { "$ref": "#/definitions/gate" } }
+        },
+        "openjev": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Jev through OpenJEV's public door, under OPENJEV_API_KEY; the same gate keys.",
+          "properties": { "gate": { "$ref": "#/definitions/gate" } }
         },
         "replay": {
           "type": "object",
@@ -80,6 +75,17 @@
       "description": "A reflex's local name. none, unstated, fits and weave are reserved."
     },
     "probability": { "type": "number", "minimum": 0, "maximum": 1 },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Overrides of the calibrated thresholds; each number means P(correct). read may not exceed write.",
+      "properties": {
+        "route": { "$ref": "#/definitions/probability" },
+        "fits": { "$ref": "#/definitions/probability" },
+        "read": { "$ref": "#/definitions/probability" },
+        "write": { "$ref": "#/definitions/probability" }
+      }
+    },
     "ref": {
       "type": "string",
       "anyOf": [

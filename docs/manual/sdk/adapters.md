@@ -1,7 +1,9 @@
 # Adapters
 
 An adapter is the classifier behind a decision. It is an object that answers typed questions with probabilities.
-The core names no engine. A project names an adapter, and only your machine resolves the name.
+The core names no engine. A project names an adapter, and only your machine resolves the name. Two built-in
+adapters reach Jev: `jev()`, through TypeSafe AI's own API, and `openjev()`, through OpenJEV's public door. They
+send the same questions and ship the same bars.
 
 ## `jev()`: the first adapter
 
@@ -22,6 +24,27 @@ adapter passed in replaces both. The transport keeps one connection alive for th
 `HTTPS_PROXY` names when one is set; a proxy needs Node 24.5 or newer, and `jev()` says so on an older one. It
 retries once after a connect error or a server error, and never after a client error. No key is a
 `DiagnosticError` ending in `export TYPESAFE_API_KEY=<value>`.
+
+## `openjev()`: the same model, by a public door
+
+```ts
+import { openjev } from "@evoke-build/evoke/openjev"
+
+const project = await load({ reflexes, adapter: openjev() })
+const project = await load({ reflexes, adapter: openjev({ key, gate: { write: 0.85 } }) })
+```
+
+| Option | Meaning                                                                                       |
+| :----- | :-------------------------------------------------------------------------------------------- |
+| `key`  | The API key. Absent: `OPENJEV_API_KEY` from the environment, read when `openjev()` is called   |
+| `gate` | Floors over the same defaults as `jev()`. The same as `[adapters.openjev] gate` in `evoke.toml` |
+
+[OpenJEV](https://openjev.sh) is an independent project, not TypeSafe AI's. It forwards each request to Jev and
+returns Jev's answers. A key is free: its inference is paid for by the trading fees of its own token. As of this
+release it publishes no terms and no privacy policy, so weigh that before you choose it for an application. The
+transport is `jev()`'s, with 3 seconds once connected instead of 1.5, since the door forwards the request onward.
+Its `id` is `openjev`, the alias the service names, which follows the latest Jev: when Jev moves, answers may
+move under the same id. No key is a `DiagnosticError` ending in `export OPENJEV_API_KEY=<value>`.
 
 ## The contract
 

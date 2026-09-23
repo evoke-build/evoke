@@ -262,20 +262,23 @@
       <div class="qa" id="what-do-i-need">
         <h3>What do I need?</h3>
         <p>A Mac or a Linux machine. On Windows, WSL. <code>git</code> on your path, to install reflexes. Node 24 or
-          newer, for reflexes written in JavaScript. And a key for Jev, from TypeSafe AI, in your shell as
-          <code>TYPESAFE_API_KEY</code>. <a href="manual/start/install.html">Install.</a></p>
+          newer, for reflexes written in JavaScript. And a key for Jev: from TypeSafe AI as
+          <code>TYPESAFE_API_KEY</code>, or from OpenJEV as <code>OPENJEV_API_KEY</code>.
+          <a href="manual/start/install.html">Install.</a></p>
       </div>
       <div class="qa" id="do-i-need-an-account">
         <h3>Do I need an account?</h3>
         <p>Not with <code>evoke</code>. There is nothing to sign up for, and no server of ours anywhere: this site is
           static pages, the binary comes from GitHub releases, and a decision goes from your machine to the
-          classifier. The classifier's key is yours, from TypeSafe AI. Reflexes come from git with your own
-          credentials. <a href="privacy.html">Privacy.</a></p>
+          classifier. The classifier's key is yours, from TypeSafe AI or from OpenJEV. Reflexes come from git with
+          your own credentials. <a href="privacy.html">Privacy.</a></p>
       </div>
       <div class="qa" id="what-does-it-cost">
         <h3>What does it cost?</h3>
         <p><code>evoke</code> is free and open source, under Apache-2.0. Jev is <a href="https://typesafe.ai">TypeSafe
-          AI</a>'s service, and its key is billed by TypeSafe AI on its own terms. Nothing else is metered.</p>
+          AI</a>'s service, and a key from TypeSafe AI is billed on its own terms. A key from
+          <a href="https://openjev.sh">OpenJEV</a> is free: an independent project pays for the same model with the
+          trading fees of its own token. Nothing else is metered.</p>
       </div>
       <div class="qa" id="can-it-run-something-else">
         <h3>Can it run something I did not ask for?</h3>
@@ -362,9 +365,18 @@
       <div class="qa" id="what-is-jev">
         <h3>What is Jev?</h3>
         <p><a href="https://typesafe.ai">TypeSafe AI</a>'s System One model: a classifier that answers closed questions
-          with calibrated probabilities. <code>evoke</code> asks the questions and applies the gate. Jev is the first
-          adapter. The core names no engine, and any adapter that answers a closed choice with probabilities fits.
-          <a href="manual/sdk/adapters.html">Adapters.</a></p>
+          with calibrated probabilities. <code>evoke</code> asks the questions and applies the gate. Two built-in
+          adapters reach it: <code>jev</code>, through TypeSafe AI's own API, and <code>openjev</code>, through
+          OpenJEV's public door. The core names no engine, and any adapter that answers a closed choice with
+          probabilities fits. <a href="manual/sdk/adapters.html">Adapters.</a></p>
+      </div>
+      <div class="qa" id="what-is-openjev">
+        <h3>What is OpenJEV?</h3>
+        <p>An independent project, not TypeSafe AI's, that gives public access to Jev. A key is free: its inference
+          is paid for by the trading fees of its own token. It publishes no terms and no privacy policy, as of the
+          date on the <a href="privacy.html">privacy page</a>. With <code>adapter = "openjev"</code> in
+          <code>evoke.toml</code>, your request goes to OpenJEV first, and on to Jev.
+          <a href="manual/start/install.html#the-key">The key.</a></p>
       </div>
       <div class="qa" id="what-leaves-my-machine">
         <h3>What leaves my machine?</h3>
@@ -376,7 +388,8 @@
       <div class="qa" id="made-by-typesafe">
         <h3>Is evoke made by TypeSafe AI?</h3>
         <p>No. Jev is TypeSafe AI's model. <code>evoke</code> is a project of its own, under its own name and licence,
-          and it uses Jev through the same public API any customer does.</p>
+          and it reaches Jev through TypeSafe AI's own API, or through OpenJEV's public door, as any customer of either
+          does.</p>
       </div>
     </section>
 

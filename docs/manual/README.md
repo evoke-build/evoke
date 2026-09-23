@@ -5,7 +5,7 @@
 **Software, by reflex.** `evoke` turns a sentence into a call of a small program. That program is a *reflex*: a
 recipe anyone can write, share and improve. A classifier chooses it. A confidence gate decides whether it runs.
 A sentence can choose a program. It can never invent a value. The classifier is [Jev](https://typesafe.ai),
-TypeSafe AI's System One model, the first adapter of a design bound to none.
+TypeSafe AI's System One model, reached through either of two built-in adapters. The design is bound to none.
 
 ```text
 $ evoke "kill the lights in the den"
@@ -66,7 +66,7 @@ One tool does three jobs. A **CLI** you talk to. A **package manager** that inst
 | [Getting started](sdk/getting-started.md)   | The first hour: one file, one reflex, one decision                 |
 | [Projects in code](sdk/projects.md)         | `load()`, roots, reflexes as code, `with()`, generated types        |
 | [Decisions](sdk/decisions.md)               | The `Decision` union, `fill`, `run`, `handle`; `steps` and `weave`   |
-| [Adapters](sdk/adapters.md)                 | `jev()`, thresholds, and writing an adapter of your own             |
+| [Adapters](sdk/adapters.md)                 | `jev()` and `openjev()`, thresholds, and writing an adapter of your own |
 | [Testing](sdk/testing.md)                   | `replay()`: offline, deterministic tests over a recording           |
 | [Errors](sdk/errors.md)                     | The three errors, and what each asks of you                         |
 

@@ -1,4 +1,4 @@
-// The adapters: Jev's settings, key and policy loop over a stand-in transport; replay over the spec's own
+// The adapters: the doors' settings, keys and policy loop over a stand-in transport; replay over the spec's own
 // recording, a miss as a fault, and recording a miss into a file the core reads back.
 
 import { deepStrictEqual, equal, ok, rejects, throws } from "node:assert/strict"
@@ -11,7 +11,7 @@ import type { Adapter } from "../src/adapter.ts"
 import { answered } from "../src/adapter.ts"
 import { DiagnosticError, FaultError } from "../src/errors.ts"
 import { type Response, Transport, describe } from "../src/https.ts"
-import { type Post, over } from "../src/jev.ts"
+import { type Post, over } from "../src/systemone.ts"
 import { replay } from "../src/testing.ts"
 import type { Request } from "../src/types.ts"
 
@@ -24,27 +24,62 @@ const answers = JSON.stringify({
 })
 
 test("jev declares its id, limits and the gate with overrides, and needs its key", () => {
-  const adapter = over({ key: "k", gate: { write: 0.85 } }, async () => ({ status: 200, body: answers }))
+  const adapter = over("jev", { key: "k", gate: { write: 0.85 } }, async () => ({ status: 200, body: answers }))
   equal(adapter.id, "jev-1.13.0")
   deepStrictEqual(adapter.limits, { options: 255 })
   deepStrictEqual(adapter.gate, { route: 0.5, fits: 0.3, read: 0.6, write: 0.85 })
   throws(
-    () => over({ key: "k", gate: { read: 0.9 } }, async () => ({ status: 200, body: answers })),
+    () => over("jev", { key: "k", gate: { read: 0.9 } }, async () => ({ status: 200, body: answers })),
     (error: DiagnosticError) => error.message === "adapters.jev.gate: read 0.9 is above write 0.8  →  jev({ gate })",
   )
   const key = process.env.TYPESAFE_API_KEY
   delete process.env.TYPESAFE_API_KEY
   try {
     throws(
-      () => over({}, async () => ({ status: 200, body: answers })),
+      () => over("jev", {}, async () => ({ status: 200, body: answers })),
       (error: DiagnosticError) => error.message === "jev needs TYPESAFE_API_KEY, a key from typesafe.ai  →  export TYPESAFE_API_KEY=<value>",
     )
     throws(
-      () => over({ key: "" }, async () => ({ status: 200, body: answers })),
+      () => over("jev", { key: "" }, async () => ({ status: 200, body: answers })),
       (error: DiagnosticError) => error.message === "jev needs TYPESAFE_API_KEY, a key from typesafe.ai  →  export TYPESAFE_API_KEY=<value>",
     )
   } finally {
     if (key !== undefined) process.env.TYPESAFE_API_KEY = key
+  }
+})
+
+test("openjev is a second door on the same wire: its own key, address, model and wait", async () => {
+  const seen: { url: string; bearer: string; body: string; timeout: number }[] = []
+  const door = over("openjev", { key: "k" }, async (url, bearer, body, _signal, timeout) => {
+    seen.push({ url, bearer, body, timeout })
+    return { status: 200, body: answers }
+  })
+  equal(door.id, "openjev")
+  deepStrictEqual(door.limits, { options: 255 })
+  deepStrictEqual(door.gate, { route: 0.5, fits: 0.3, read: 0.6, write: 0.8 })
+  const { raw } = await answered(door, request, 30_000, undefined, "decide()")
+  deepStrictEqual(raw["fits.lights"], { yes: 0.7 })
+  equal(seen[0]?.url, "https://api.openjev.sh/v1/systemone")
+  equal(seen[0]?.bearer, "k")
+  equal(seen[0]?.timeout, 3000)
+  ok(seen[0]?.body.includes('"model":"openjev"'))
+  throws(
+    () => over("openjev", { key: "k", gate: { read: 0.9 } }, async () => ({ status: 200, body: answers })),
+    (error: DiagnosticError) => error.message === "adapters.openjev.gate: read 0.9 is above write 0.8  →  openjev({ gate })",
+  )
+  await rejects(
+    answered(over("openjev", { key: "k" }, async () => ({ status: 401, body: "" })), request, 30_000, undefined, "decide()"),
+    (error: FaultError) => error.message === "the key in OPENJEV_API_KEY was refused  →  export OPENJEV_API_KEY=<value>",
+  )
+  const key = process.env.OPENJEV_API_KEY
+  delete process.env.OPENJEV_API_KEY
+  try {
+    throws(
+      () => over("openjev", {}, async () => ({ status: 200, body: answers })),
+      (error: DiagnosticError) => error.message === "openjev needs OPENJEV_API_KEY, a key from openjev.sh  →  export OPENJEV_API_KEY=<value>",
+    )
+  } finally {
+    if (key !== undefined) process.env.OPENJEV_API_KEY = key
   }
 })
 
@@ -55,7 +90,7 @@ test("a question of evoke's own, weave.<name>, travels through jev and replay li
     proposed: [],
   }
   const bodies: string[] = []
-  const jev = over({ key: "k" }, async (_url, _bearer, body) => {
+  const jev = over("jev", { key: "k" }, async (_url, _bearer, body) => {
     bodies.push(body)
     return { status: 200, body: JSON.stringify({ answers: { "weave.split_0": { type: "noul", noul: 0.73 } } }) }
   })
@@ -80,28 +115,28 @@ test("the policy loop: once more after a connect error or a 5xx, never after a 4
     return next
   }
   const answer = { status: 200, body: answers }
-  const { raw, trace } = await answered(over({ key: "k" }, sequence(new Transport("connect refused", false), answer)), request, 30_000, undefined, "decide()")
+  const { raw, trace } = await answered(over("jev", { key: "k" }, sequence(new Transport("connect refused", false), answer)), request, 30_000, undefined, "decide()")
   deepStrictEqual(calls, ["k:1500", "k:1500"])
   deepStrictEqual(raw["fits.lights"], { yes: 0.7 })
   equal(trace.adapter, "jev-1.13.0")
   equal(trace.questions, Object.keys(request.questions).length)
   calls.length = 0
-  await answered(over({ key: "k" }, sequence({ status: 503, body: "" }, answer)), request, 30_000, undefined, "decide()")
+  await answered(over("jev", { key: "k" }, sequence({ status: 503, body: "" }, answer)), request, 30_000, undefined, "decide()")
   equal(calls.length, 2)
   await rejects(
-    answered(over({ key: "k" }, sequence({ status: 503, body: "" }, { status: 503, body: "" })), request, 30_000, undefined, "decide()"),
+    answered(over("jev", { key: "k" }, sequence({ status: 503, body: "" }, { status: 503, body: "" })), request, 30_000, undefined, "decide()"),
     (error: FaultError) => error.message === "the adapter answered 503  →  decide()",
   )
   await rejects(
-    answered(over({ key: "k" }, async () => ({ status: 429, body: "" })), request, 30_000, undefined, "decide()"),
+    answered(over("jev", { key: "k" }, async () => ({ status: 429, body: "" })), request, 30_000, undefined, "decide()"),
     (error: FaultError) => error.message === "the adapter answered 429  →  decide()",
   )
   await rejects(
-    answered(over({ key: "k" }, async () => ({ status: 401, body: "" })), request, 30_000, undefined, "decide()"),
+    answered(over("jev", { key: "k" }, async () => ({ status: 401, body: "" })), request, 30_000, undefined, "decide()"),
     (error: FaultError) => error.message === "the key in TYPESAFE_API_KEY was refused  →  export TYPESAFE_API_KEY=<value>" && error.fault.type === "refused",
   )
   await rejects(
-    answered(over({ key: "k" }, async () => { throw new Transport("reset", true) }), request, 30_000, undefined, "decide()"),
+    answered(over("jev", { key: "k" }, async () => { throw new Transport("reset", true) }), request, 30_000, undefined, "decide()"),
     (error: FaultError) => error.message === "reset  →  decide()",
   )
 })
@@ -162,7 +197,7 @@ test("recording a miss writes the file, which reads back", async () => {
 
 test("a fault from an adapter that could not name the call is rendered with it", async () => {
   await rejects(
-    answered(over({ key: "k" }, async () => ({ status: 429, body: "" })), request, 30_000, undefined, 'decide("kill the lights")'),
+    answered(over("jev", { key: "k" }, async () => ({ status: 429, body: "" })), request, 30_000, undefined, 'decide("kill the lights")'),
     (error: FaultError) => error.message === 'the adapter answered 429  →  decide("kill the lights")',
   )
   const adapter = replay(new URL("../../spec/transcripts/use/answers.toml", import.meta.url))

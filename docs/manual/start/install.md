@@ -10,7 +10,7 @@ installed for you.
 | The binary                            | macOS or Linux; Windows through WSL                                      |
 | Installing reflexes (`add`, `update`, `sync`) | `git` on your `PATH`; your own git configuration and credentials apply |
 | Reflexes that run a `.mts` or `.mjs` file | [Node](https://nodejs.org) 24 or newer on your `PATH` when you run `evoke add` or `evoke sync` |
-| Deciding                              | A key for the classifier: `TYPESAFE_API_KEY` for Jev, the first adapter |
+| Deciding                              | A key for the classifier: `TYPESAFE_API_KEY` for the `jev` adapter, `OPENJEV_API_KEY` for `openjev` |
 
 Some reflexes run a program with arguments instead of a JavaScript file. Those are *argv* reflexes. They need no
 runtime at all.
@@ -62,13 +62,30 @@ build step and no dependencies. The SDK has its own manual section: [Getting sta
 
 ## The key
 
-Jev is [TypeSafe AI](https://typesafe.ai)'s classifier. Put its key in your shell's environment. `evoke` reads it
-only at the moment it decides, and never writes it to a file:
+Jev is [TypeSafe AI](https://typesafe.ai)'s classifier. `evoke` reaches it through one of two adapters. Each reads
+its key from your shell's environment, only at the moment it decides, and never writes it to a file.
+
+The `jev` adapter is the default. It posts to TypeSafe AI's own API, under a key from
+[typesafe.ai](https://typesafe.ai):
 
 ```bash
 export TYPESAFE_API_KEY=<value>
 ```
 
-Without the key, the first decision prints this line and exits 3.
+The `openjev` adapter posts to [OpenJEV](https://openjev.sh), a public door to the same model. OpenJEV is an
+independent project, not TypeSafe AI's. A key is free: its inference is paid for by the trading fees of its own
+token. As of this release it publishes no terms and no privacy policy, so weigh that before you choose it. Name
+it in `evoke.toml` and export its key:
+
+```toml
+adapter = "openjev"
+```
+
+```bash
+export OPENJEV_API_KEY=<value>
+```
+
+Without the key, the first decision prints a line naming the one it needs, and exits 3. Both adapters ask the
+same questions and ship the same bars, so a project moves from one to the other with that one line.
 
 **Next:** [The first ten minutes](first-run.md).
