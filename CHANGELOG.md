@@ -18,7 +18,7 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   a bug is one line, with where, ending in the address to report it.
 - `evoke update` no longer stops at a reflex whose new manifest does not read: it is reported at its new tree in
   the store and skipped, and the rest move. `evoke show` lists the project before `sync`, each missing tree as an
-  inactive line, where it refused. A git call that gets no answer in a minute is a failure, never a hang. What
+  inactive line, where it refused. A git call that has not finished within a minute is a failure, never a hang. What
   ssh said is what the failure says, not git's "and the repository exists". A `trust.toml` that does not read
   names itself, and `evoke trust` writes it afresh. A runtime recorded on this machine and gone since ends in
   `evoke sync`. An owned file that is a symlink is written through, and a symlinked local reflex keeps the name
@@ -58,9 +58,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   weave's `At` is `Turn`, since `At` already names a line of a file. The first hour is written with `10 minutes`,
   which the duration recognizer reads, where `ten minutes` could never have run. Ten more op families are pinned
   by vectors, and a family the runners do not list fails their check.
-- A file body starts sooner: the loader warms Node's type stripper while the decision is made, some twenty
-  milliseconds a body paid after it, and in a sentence of several steps the next step's loader is started while
-  the current one runs.
+- A file body starts sooner: the loader warms Node's type stripper while the decision is made, a start-up cost a
+  body paid after it, and in a sentence of several steps the next step's loader is started while the current one
+  runs.
 - After a sentence of several steps, `evoke why` shows every step under its number with what became of it, and
   `evoke teach <call>` with no utterance takes the step the lesson's reflex decided, or names the steps. A step
   decided again with a bound value in its words and refused then says so, `"…" · no reflex`, where before it ended

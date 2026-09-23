@@ -4,8 +4,8 @@ Seven words, three steps, and one idea that makes the rest follow.
 
 ## The idea
 
-The classifier `evoke` uses is never trained on your reflexes or your words. It answers closed questions: *which
-of these? is this stated? yes or no?* It answers with calibrated probabilities. Everything it knows about a
+The classifier `evoke` uses answers closed questions: *which of these? is this stated? yes or no?* It answers
+with calibrated probabilities. Everything it knows about a
 reflex comes from the reflex's own description, sent in the request. So the wording **is** the tuning, and one
 line is documentation, tuning, test and customization at once:
 

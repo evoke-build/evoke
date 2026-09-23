@@ -83,8 +83,8 @@ An inactive reflex is never in the ranking. When one is left out, an abstain nam
 `evoke show` says why:
 
 ```text
-$ evoke "open my desktop"
-  none 0.80 · lights 0.10 · timer 0.05 · volume 0.05
+$ evoke "what time is it"
+  none 0.70 · timer 0.20 · lights 0.05 · volume 0.05
   open is inactive  →  evoke show
 [2]
 ```
@@ -146,6 +146,8 @@ $ evoke why
   fits   lights 0.70 · timer 0.05 · volume 0.05
   ran lights room="den" state="off" · weakest: room 0.85 · replay, 6 questions
 ```
+
+When the answers came from the cache, the last line ends in `· cached` in place of the adapter and its count.
 
 ## `run`: by name, no classifier
 

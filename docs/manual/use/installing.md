@@ -80,7 +80,7 @@ rest move, and the exit is 3. For each move, it prints the level of the change a
 | `stale`                               | You override something upstream changed: yours wins, both are shown once       |
 | `orphaned`                            | A line of yours addresses nothing any more: skipped, the rest applies          |
 | `effect  tightened to write`          | Upstream tightened the effect; it applies                                      |
-| `effect  destructive upstream; write kept until you accept` | Upstream loosened it; you keep what you consented to  |
+| `effect  write upstream; destructive kept until you accept` | Upstream loosened it; you keep what you consented to  |
 
 The lock holds the effect you consented to. Upstream may tighten it at any time. It loosens only through
 `evoke update --accept <name>`, which takes the looser effect at the current tag and says so. A new reflex in a
@@ -92,7 +92,7 @@ On a new device, or in CI, you have the lock and the store is empty. `evoke sync
 at every locked tag it needs, checks that each tree hashes to the lock, and records the runtime. It prints a `+`
 row per reflex placed, or `up to date`. It never changes the lock. A tag that moved or vanished is refused, with
 `evoke update <name>`. Before `sync`, `evoke show` lists what the lock names, each missing tree as an inactive
-line. A git call that gets no answer in a minute is a failure, never a hang.
+line. A git call that has not finished within a minute is a failure, never a hang.
 
 ```text
 $ evoke sync

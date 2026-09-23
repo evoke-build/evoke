@@ -1,7 +1,7 @@
 # The first ten minutes
 
-Ten minutes, from an empty machine to a reflex that learned a phrase of yours. Every line below is what the
-terminal shows.
+Ten minutes, from an empty machine to a reflex that learned a phrase of yours. Every output line below is what
+the terminal shows.
 
 ## 1. Say something
 

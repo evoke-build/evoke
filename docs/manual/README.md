@@ -1,4 +1,4 @@
-<p align="center"><img src="../../assets/logo.png" alt="" width="200"></p>
+<p align="center"><img src="../../assets/logo.png" alt="" width="200" height="200"></p>
 
 # The evoke manual
 

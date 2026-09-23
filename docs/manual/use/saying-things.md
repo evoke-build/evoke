@@ -31,7 +31,7 @@ den lights off
 >
 ```
 
-**A filter.** Pipe lines into `evoke`, and every line is one input, answered in order. A line that needs a
+**A filter.** Pipe lines into `evoke`, or into `evoke try`, and every line is one input, answered in order. A line that needs a
 prompt, a confirm or an ask, cannot be answered without a terminal. That line exits 3 and names the command to run
 yourself. The filter still answers every other line, and exits with the first non-zero code.
 

@@ -88,8 +88,9 @@ options.dim = "…"                                    # new wording for an exis
 "light a candle" = false
 ```
 
-A contract key makes the reflex inactive. That means `run`, a new argument, a new option key, a source, a range,
-or `config`.
+A contract key in an overlay makes the reflex inactive: `run`, `config`, `yields`, and an argument's source, range,
+flag or `optional`. A key that addresses nothing the reflex has, an argument or an option key of its own, is
+orphaned: skipped, and reported by `update`.
 
 ## `vocab/<name>.toml`
 
