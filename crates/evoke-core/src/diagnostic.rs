@@ -47,6 +47,10 @@ pub enum Fix {
     VocabRemove {
         vocab: VocabName,
     },
+    /// `evoke vocab <name>`: the words a vocabulary holds, where one named is not among them.
+    Vocab {
+        vocab: VocabName,
+    },
     ConfigSet {
         reflex: LocalName,
         key: ConfigKey,
@@ -86,6 +90,11 @@ pub enum Fix {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         name: Option<LocalName>,
     },
+    /// `evoke add <ref>…`: refs to install as they are — the rest of a collection one taken name refused, a ref
+    /// without a tag it has not, a collection without `--as`.
+    AddRefs {
+        references: Vec<String>,
+    },
     /// `evoke teach "<utterance>" not <reflex>`: a phrase that is not this reflex's.
     TeachNot {
         utterance: String,
@@ -106,6 +115,7 @@ impl Fix {
         match self {
             Self::VocabAdd { vocab } => format!("evoke vocab {vocab} add <word> \"<meaning>\""),
             Self::VocabRemove { vocab } => format!("evoke vocab {vocab} remove <word>"),
+            Self::Vocab { vocab } => format!("evoke vocab {vocab}"),
             Self::ConfigSet { reflex, key } => format!("evoke config {reflex} {key} <value>"),
             Self::ConfigEnv { reflex, key } => format!("evoke config {reflex} {key} --env <VAR>"),
             Self::Update {
@@ -133,6 +143,7 @@ impl Fix {
                 reference,
                 name: None,
             } => format!("evoke add {reference} --as <name>"),
+            Self::AddRefs { references } => format!("evoke add {}", references.join(" ")),
             Self::TeachNot { utterance, reflex } => format!(
                 "evoke teach {} not {reflex}",
                 serde_json::Value::String(utterance.clone())
@@ -178,6 +189,27 @@ mod tests {
 
     fn local(name: &str) -> LocalName {
         LocalName::new(name).unwrap()
+    }
+
+    #[test]
+    fn the_fixes_that_list_a_vocabulary_and_add_refs_as_they_are() {
+        assert_eq!(
+            Fix::Vocab {
+                vocab: VocabName::new("rooms").unwrap()
+            }
+            .command(""),
+            "evoke vocab rooms"
+        );
+        assert_eq!(
+            Fix::AddRefs {
+                references: vec![
+                    "radhi/home/timer".to_owned(),
+                    "radhi/home/volume".to_owned()
+                ]
+            }
+            .command(""),
+            "evoke add radhi/home/timer radhi/home/volume"
+        );
     }
 
     #[test]

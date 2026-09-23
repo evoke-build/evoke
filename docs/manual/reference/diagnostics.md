@@ -22,6 +22,8 @@ The set of fixing commands is closed. Each line ends in one of these:
 | `evoke add <ref> --as <name>`              | A local name is taken, or a `[reflexes]` line names something not locked    |
 | `evoke vocab <name> add <word> "<meaning>"`| A vocabulary is empty, or a word is not in it                               |
 | `evoke vocab <name> remove <word>`         | A vocabulary offers more words than the classifier takes in one question    |
+| `evoke vocab <name>`                       | A word to remove is not in the vocabulary                                   |
+| `evoke add <ref>…`                         | The rest of a collection one taken name refused; a ref without a tag it has not, or without `--as` |
 | `evoke config <reflex> <key> <value>`      | A declared setting is not set                                               |
 | `evoke config <reflex> <key> --env <VAR>`  | A secret is not set, or was set plain                                       |
 | `evoke show [<reflex>]`                    | Something answered by looking: an unknown argument, an option not offered, an undeclared key, a reflex not installed |

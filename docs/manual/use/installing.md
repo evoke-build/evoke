@@ -49,8 +49,8 @@ $ evoke add radhi/home/lights radhi/timer
    lines, and each newcomer's inactive lines.
 
 The **local name** is the ref's last segment. `--as <name>` picks another, for a single ref. The local name is
-what the classifier reads, and your overlay file is named after it. A name already taken is refused, with the
-`--as` line that fixes it.
+what the classifier reads, and your overlay file is named after it. A name already taken is refused. For one ref,
+the fix is the `--as` line; for a collection, the line that adds the rest.
 
 ## `remove`
 
@@ -68,7 +68,8 @@ $ evoke update
 
 `evoke update [<name>]` moves every unpinned remote reflex, or just one, to its newest tag. A pinned reflex moves
 to its pin. It **never prompts, never blocks, and never rewrites your files**. When nothing moves, it prints
-`up to date`. For each move, it prints the level of the change and one line per detail:
+`up to date`. A reflex whose new manifest does not read is reported at its new tree in the store and skipped; the
+rest move, and the exit is 3. For each move, it prints the level of the change and one line per detail:
 
 | Line                                  | Means                                                                          |
 | :------------------------------------ | :----------------------------------------------------------------------------- |
@@ -90,7 +91,8 @@ repository you already use is reported once, with its add line. `update` never a
 On a new device, or in CI, you have the lock and the store is empty. `evoke sync` fetches each repository once,
 at every locked tag it needs, checks that each tree hashes to the lock, and records the runtime. It prints a `+`
 row per reflex placed, or `up to date`. It never changes the lock. A tag that moved or vanished is refused, with
-`evoke update <name>`.
+`evoke update <name>`. Before `sync`, `evoke show` lists what the lock names, each missing tree as an inactive
+line. A git call that gets no answer in a minute is a failure, never a hang.
 
 ```text
 $ evoke sync

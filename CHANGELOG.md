@@ -16,6 +16,16 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   flag-shaped utterance and an empty one.
 - `Ctrl-C` while the spinner turns clears its line before `evoke` ends. The one line `evoke` prints when it hits
   a bug is one line, with where, ending in the address to report it.
+- `evoke update` no longer stops at a reflex whose new manifest does not read: it is reported at its new tree in
+  the store and skipped, and the rest move. `evoke show` lists the project before `sync`, each missing tree as an
+  inactive line, where it refused. A git call that gets no answer in a minute is a failure, never a hang. What
+  ssh said is what the failure says, not git's "and the repository exists". A `trust.toml` that does not read
+  names itself, and `evoke trust` writes it afresh. A runtime recorded on this machine and gone since ends in
+  `evoke sync`. An owned file that is a symlink is written through, and a symlinked local reflex keeps the name
+  you typed. `evoke test` with nothing to test says so. A collection refused by one taken name ends in the line
+  that adds the rest; a ref with a tag it has not, a collection with `--as`, a word to remove that is not there
+  and a directory that is not there each end in the command that helps. `update <name> --accept <other>` is
+  refused instead of dropping the accept. A failed keep leaves no `.tmp` directory in the store.
 - After a sentence of several steps, `evoke why` shows every step under its number with what became of it, and
   `evoke teach <call>` with no utterance takes the step the lesson's reflex decided, or names the steps. A step
   decided again with a bound value in its words and refused then says so, `"…" · no reflex`, where before it ended

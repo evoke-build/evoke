@@ -114,6 +114,7 @@ export type File =
 export type Fix =
   | { type: "vocab_add"; vocab: VocabName } // evoke vocab <vocab> add <word> "<meaning>"
   | { type: "vocab_remove"; vocab: VocabName } // evoke vocab <vocab> remove <word>
+  | { type: "vocab"; vocab: VocabName } // evoke vocab <vocab>
   | { type: "config_set"; reflex: LocalName; key: ConfigKey } // evoke config <reflex> <key> <value>
   | { type: "config_env"; reflex: LocalName; key: ConfigKey } // evoke config <reflex> <key> --env <VAR>
   | { type: "update"; reflex?: LocalName } // evoke update [reflex]
@@ -128,6 +129,7 @@ export type Fix =
   | { type: "add" } // evoke add evoke-build/reflexes
   | { type: "show"; reflex?: LocalName } // evoke show [reflex]
   | { type: "add_ref"; reference: string; name?: LocalName } // evoke add <reference> --as <name>
+  | { type: "add_refs"; references: string[] } // evoke add <reference>…
   | { type: "teach_not"; utterance: string; reflex: LocalName } // evoke teach "<utterance>" not <reflex>
   | { type: "new" } // evoke new <name>
   | { type: "test" } // evoke test

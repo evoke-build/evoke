@@ -1,0 +1,9 @@
+{
+  "input": {
+    "fix": {
+      "type": "add_refs",
+      "references": ["radhi/home/timer", "radhi/home/volume"]
+    }
+  },
+  "expect": "evoke add radhi/home/timer radhi/home/volume"
+}

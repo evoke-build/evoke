@@ -1,0 +1,18 @@
+reflex = 1
+
+description = """
+Keep a note.
+One line, kept in the notes app."""
+not_for = ["reminders at a time", "reading notes back"]
+tags = ["notes"]
+effect = "write"
+confirm = "Note {text}?"
+run = "note.mts"
+
+[args.text]
+ask  = "What should the note say?"
+pick = "quoted"
+
+[examples]
+'note "buy milk"'        = { text = "buy milk" }
+'write down "call dana"' = { text = "call dana" }

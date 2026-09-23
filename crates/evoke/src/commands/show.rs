@@ -14,7 +14,7 @@ use crate::hosts::{Environment, terminal};
 use crate::report::{self, Gutter};
 
 pub fn run(command: &Command, name: Option<&LocalName>, environment: &Environment) -> Exit {
-    let session = match session::open(command, false, environment, Opening::Tuning) {
+    let session = match session::open(command, false, environment, Opening::Listing) {
         Ok(session) => session,
         Err(exit) => return exit,
     };

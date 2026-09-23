@@ -1,5 +1,12 @@
+# Before sync, show lists what the project names, the reflex the store lacks inactive.
+$ evoke show
+  lights  radhi/home/lights 1.2.0
+  inactive  lights: lights is not in the store  →  evoke sync
 $ evoke sync
 + lights  radhi/home/lights 1.2.0  write  runs lights.mts
+$ evoke update lights --accept timer
+  --accept timer is not lights; accept the reflex you update  →  evoke --help
+[3]
 $ evoke update
   lights 1.2.0 → 2.0.0  major · code changed
     description  rewritten, taken (you have no override)
@@ -11,3 +18,15 @@ $ evoke update
   up to date
 $ evoke sync
   up to date
+# A reflex whose new manifest does not read is reported at the new tree and skipped; the rest move.
+$ evoke add radhi/tools@1.0.0
++ clock  radhi/tools/clock@1.0.0  read   runs clock.mts
++ note   radhi/tools/note@1.0.0   write  runs note.mts
+  the theft test did not finish: "turn on the kitchen lights" is not recorded  →  evoke test
+# The pins dropped by hand, as evoke.toml is yours to edit.
+$ printf 'adapter = "replay"\n\n[reflexes]\nlights = "radhi/home/lights"\nclock = "radhi/tools/clock"\nnote = "radhi/tools/note"\n\n[config.lights]\nbridge = "10.0.0.2"\ntoken  = { env = "HUE_TOKEN" }\n' > .config/evoke/evoke.toml
+$ evoke update
+  note 1.0.0 → 1.1.0  same
+    description  rewritten, taken (you have no override)
+  clock: effect must be read, write or destructive  →  ~/.cache/evoke/store/8416c7959e55e8f74c0dd96ca8396d1980acc68ccfa7ac32fd650be96f658703/reflex.toml:8:1
+[3]

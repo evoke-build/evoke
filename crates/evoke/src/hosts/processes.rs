@@ -7,10 +7,10 @@
 // killpg signals the group, which `std` can create but not signal.
 #![allow(unsafe_code)]
 
-use std::io::{Read, Write};
+use std::io::{self, Read, Write};
 use std::os::unix::process::CommandExt;
 use std::path::Path;
-use std::process::{Child, ChildStdin, ChildStdout, Command, ExitStatus, Stdio};
+use std::process::{Child, ChildStdin, ChildStdout, Command, ExitStatus, Output, Stdio};
 use std::sync::mpsc;
 use std::thread;
 use std::time::{Duration, Instant};
@@ -113,20 +113,23 @@ pub struct Warm {
     stdout: ChildStdout,
 }
 
-/// Starts the runtime with the loader, so it is ready when the decision is.
+/// Starts the runtime with the loader, so it is ready when the decision is. The loader warms Node's type
+/// stripper through an API still marked experimental: its warning is off, so a body's stderr is the body's.
 pub fn warm(runtime: &Path, environment: &Environment) -> Result<Warm, Failure> {
     let mut command = scrubbed(runtime, environment);
     command
-        .args(["--input-type=module", "-e", LOADER])
+        .args([
+            "--disable-warning=ExperimentalWarning",
+            "--input-type=module",
+            "-e",
+            LOADER,
+        ])
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::inherit());
-    let mut child = command.spawn().map_err(|error| {
-        failed(
-            &format!("starting {}", runtime.display()),
-            &super::cause(&error),
-        )
-    })?;
+    let mut child = command
+        .spawn()
+        .map_err(|error| not_started(runtime, &error))?;
     let stdin = child.stdin.take().expect("stdin is piped");
     let stdout = child.stdout.take().expect("stdout is piped");
     Ok(Warm {
@@ -229,7 +232,7 @@ pub fn probe(
         .stderr(Stdio::inherit());
     let mut child = command
         .spawn()
-        .map_err(|error| failed(&what, &super::cause(&error)))?;
+        .map_err(|error| not_started(runtime, &error))?;
     let stdout = child.stdout.take().expect("stdout is piped");
     let (output, status) =
         collect(stdout, &mut child, deadline).map_err(|why| failed(&what, &why))?;
@@ -339,6 +342,51 @@ fn collect(
     }
 }
 
+/// The runtime would not start. Gone since it was recorded — a Node removed or moved — is `evoke sync`, which
+/// records the one on `PATH` again.
+fn not_started(runtime: &Path, error: &io::Error) -> Failure {
+    let what = format!("starting {}", runtime.display());
+    if error.kind() == io::ErrorKind::NotFound {
+        return Failure {
+            what,
+            cause: Some("it is gone".to_owned()),
+            fix: Fix::Sync,
+        };
+    }
+    failed(&what, &super::cause(error))
+}
+
+/// A child's output — stdout and stderr drained as it runs, so neither pipe fills — and its status, within the
+/// duration; past it the child's group is ended and there is none. The child was spawned in a group of its own,
+/// with both streams piped.
+pub(super) fn output_within(mut child: Child, within: Duration) -> Option<Output> {
+    let stdout = child.stdout.take().map(drained);
+    let stderr = child.stderr.take().map(drained);
+    let Some(status) = exited(&mut child, within) else {
+        end(&mut child);
+        return None;
+    };
+    let bytes = |reader: Option<thread::JoinHandle<Vec<u8>>>| {
+        reader
+            .and_then(|reader| reader.join().ok())
+            .unwrap_or_default()
+    };
+    Some(Output {
+        status,
+        stdout: bytes(stdout),
+        stderr: bytes(stderr),
+    })
+}
+
+/// A pipe read to its end on a thread of its own.
+fn drained<R: Read + Send + 'static>(mut reader: R) -> thread::JoinHandle<Vec<u8>> {
+    thread::spawn(move || {
+        let mut bytes = Vec::new();
+        let _ = reader.read_to_end(&mut bytes);
+        bytes
+    })
+}
+
 /// SIGTERM to the group, a grace, SIGKILL; the child reaped.
 fn end(child: &mut Child) {
     let group = i32::try_from(child.id()).expect("a pid fits");
@@ -384,5 +432,47 @@ fn failed(what: &str, cause: &str) -> Failure {
         what: what.to_owned(),
         cause: Some(cause.to_owned()),
         fix: Fix::Rerun,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn sh(script: &str) -> Child {
+        Command::new("sh")
+            .args(["-c", script])
+            .stdin(Stdio::null())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .process_group(0)
+            .spawn()
+            .expect("sh spawns")
+    }
+
+    #[test]
+    fn a_child_within_the_bound_gives_its_output_and_one_past_it_nothing() {
+        let output = output_within(sh("echo out; echo err >&2"), Duration::from_secs(5)).unwrap();
+        assert!(output.status.success());
+        assert_eq!(output.stdout, b"out\n");
+        assert_eq!(output.stderr, b"err\n");
+        let started = Instant::now();
+        assert!(output_within(sh("sleep 30"), Duration::from_millis(200)).is_none());
+        assert!(started.elapsed() < Duration::from_secs(5));
+    }
+
+    #[test]
+    fn a_runtime_that_is_gone_is_a_sync() {
+        let gone = not_started(
+            Path::new("/nowhere/node"),
+            &io::Error::from(io::ErrorKind::NotFound),
+        );
+        assert_eq!(gone.what, "starting /nowhere/node");
+        assert_eq!(gone.fix, Fix::Sync);
+        let denied = not_started(
+            Path::new("/nowhere/node"),
+            &io::Error::from(io::ErrorKind::PermissionDenied),
+        );
+        assert_eq!(denied.fix, Fix::Rerun);
     }
 }

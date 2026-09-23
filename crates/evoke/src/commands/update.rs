@@ -1,8 +1,9 @@
 //! `evoke update [name] [--accept name]`: every unpinned remote reflex to its newest tag, a pinned one to its pin;
 //! each move read as the contract diff and what it means for your files, the consented effect kept until accepted;
 //! a reflex new to a repository you use reported; the lock written, your files never. What a move leaves inactive
-//! prints at the next run, with its fix. In: a name or none, a name whose looser effect to accept or none, the
-//! environment. Out: `Exit`, a block per reflex moved, or `up to date`.
+//! prints at the next run, with its fix. A reflex that cannot move — its new manifest does not read — is reported
+//! at the new tree, kept in the store, and skipped; the rest move. In: a name or none, a name whose looser effect
+//! to accept or none, the environment. Out: `Exit`, a block per reflex moved, or `up to date`.
 
 use std::collections::BTreeMap;
 
@@ -20,7 +21,7 @@ use super::session::{self, Opening, Session};
 use super::{Exit, about, default_name, nothing_installed};
 use crate::args::Command;
 use crate::hosts::store::Entry;
-use crate::hosts::{Environment, git, terminal};
+use crate::hosts::{Environment, files, git, terminal};
 use crate::report::{self as render, Updated};
 
 pub fn run(
@@ -67,6 +68,8 @@ fn updated(
     let mut moved = Vec::new();
     let mut new = BTreeMap::new();
     let mut remotes = git::Remotes::default();
+    // A reflex that cannot move is skipped, its problem the exit; the rest move.
+    let mut skipped: Option<Exit> = None;
     for name in &scope {
         match one(
             session,
@@ -79,6 +82,11 @@ fn updated(
         ) {
             Ok(Some(one)) => moved.push(one),
             Ok(None) => {}
+            Err(Exit::Human(problem)) => {
+                if let Some(Exit::Human(earlier)) = skipped.replace(Exit::Human(problem)) {
+                    session.reporter.note(input, &earlier);
+                }
+            }
             Err(exit) => return exit,
         }
     }
@@ -91,7 +99,7 @@ fn updated(
             return exit;
         }
     }
-    if moved.is_empty() {
+    if moved.is_empty() && skipped.is_none() {
         terminal::note(&render::up_to_date());
     }
     for one in &moved {
@@ -103,13 +111,13 @@ fn updated(
     for problem in new.values() {
         session.reporter.note(input, problem);
     }
-    Exit::Ran
+    skipped.unwrap_or(Exit::Ran)
 }
 
 /// One reflex brought to its target tag, when it is not there already; `--accept` at the current tag takes
 /// upstream's looser effect on.
 fn one(
-    session: &Session<'_>,
+    session: &mut Session<'_>,
     input: &str,
     name: &LocalName,
     accept: bool,
@@ -133,6 +141,8 @@ fn one(
             },
         ));
     };
+    // Owned, so the session is free for the move to report at the tree it keeps.
+    let (reference, pin) = (reference.clone(), *pin);
     let Some(locked) = lock.reflexes.get(name).cloned() else {
         return Err(about(
             name,
@@ -146,11 +156,11 @@ fn one(
     let by_looking = Fix::Show {
         reflex: Some(name.clone()),
     };
-    let tags = remotes.tags(reference).map_err(Exit::Failed)?;
+    let tags = remotes.tags(&reference).map_err(Exit::Failed)?;
     let target = match pin {
         Some(pin) => tags
             .iter()
-            .find(|tag| tag.version == *pin)
+            .find(|tag| tag.version == pin)
             .ok_or_else(|| about(name, format!("{reference} has no tag {pin}"), by_looking))?,
         None => tags.last().ok_or_else(|| {
             about(
@@ -179,7 +189,7 @@ fn one(
     }
     let r#move = Move {
         name,
-        reference,
+        reference: &reference,
         locked: &locked,
         target,
         previous: &previous,
@@ -199,8 +209,9 @@ struct Move<'a> {
 }
 
 /// The target fetched and kept, the contract diffed, your overlay read against both, the lock entry replaced.
+/// The tree is kept before its manifest is read, so a problem in it is reported where it now is.
 fn moved(
-    session: &Session<'_>,
+    session: &mut Session<'_>,
     input: &str,
     r#move: &Move<'_>,
     accept: bool,
@@ -233,9 +244,11 @@ fn moved(
             },
         ));
     };
-    let next = parsed(session, input, name, &tree.files)?;
-    let code_changed = code(&previous.files) != code(&tree.files);
     let kept = session.store.keep(tree.files).map_err(Exit::Failed)?;
+    let shown = files::shown(&kept.dir, session.environment());
+    session.reporter.paths.reflexes.insert(name.clone(), shown);
+    let next = parsed(session, input, name, &kept.files)?;
+    let code_changed = code(&previous.files) != code(&kept.files);
     let contract = diff(previous_manifest, &next);
     let consent = consent(locked.effect, next.effect);
     let yours = session.overlay_text(name)?;

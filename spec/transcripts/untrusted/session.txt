@@ -10,3 +10,13 @@ $ cd app && printf '"lights out" = { state = "off" }\n' >> overlays/lights.toml
 $ cd app && evoke "kill the lights in the den"
   ~/app changed since you trusted it  →  evoke trust
 [3]
+# A trust file that does not read names itself; evoke trust writes it afresh.
+$ printf 'not toml' > .local/state/evoke/trust.toml
+$ cd app && evoke "kill the lights in the den"
+  reading ~/.local/state/evoke/trust.toml: key with no value, expected `=`  →  evoke trust
+[1]
+$ cd app && evoke trust
++ trusted ~/app
+$ cd app && evoke "kill the lights in the den"
+  lights room="den" state="off"  0.85
+den lights off

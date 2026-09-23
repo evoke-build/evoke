@@ -1,0 +1,9 @@
+{
+  "input": {
+    "fix": {
+      "type": "vocab",
+      "vocab": "rooms"
+    }
+  },
+  "expect": "evoke vocab rooms"
+}

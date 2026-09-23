@@ -15,3 +15,8 @@ $ evoke "turn on the den lights"
   lights room="den" state="on" · write · weakest: state 0.75
   Set the den lights on?  [y]es [n]o [t]each > y
 den lights on
+# A runtime recorded on this machine and gone since is recorded again by sync.
+$ printf '/nowhere/node\n' > .local/state/evoke/runtime
+$ evoke "kill the lights in the den"
+  starting /nowhere/node: it is gone  →  evoke sync
+[1]

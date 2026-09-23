@@ -1033,6 +1033,18 @@ pub fn rows(rows: &[Row], gutter: Gutter) -> Text {
     }))
 }
 
+/// `evoke test` with no case to decide: the reflex named has no examples and no tests, or no active reflex has.
+#[must_use]
+pub fn nothing_to_test(name: Option<&LocalName>) -> Text {
+    let who = name.map_or_else(
+        || "no active reflex has".to_owned(),
+        |name| format!("{name} has no"),
+    );
+    indented(vec![Text::from(format!(
+        "nothing to test: {who} examples or tests"
+    ))])
+}
+
 /// `evoke update` with nothing to move, `evoke sync` with nothing to place: every remote reflex is where the lock
 /// says.
 #[must_use]

@@ -101,7 +101,7 @@ local reflex: [Installing reflexes](../use/installing.md#refs).
 | `evoke vocab <name> remove <word>`                        | Removes one. A word that is not there is refused                            |
 | `evoke config <name> <key> <value>`                       | Sets a declared setting under `[config.<name>]`                             |
 | `evoke config <name> <key> --env <VAR>`                   | Names the variable a setting is read from. The only way to set a secret     |
-| `evoke test [<name>]`                                     | Decides every example and test of every active reflex, or of one, without the cache. Exits 1 when a case failed |
+| `evoke test [<name>]`                                     | Decides every example and test of every active reflex, or of one, without the cache. Exits 1 when a case failed; nothing to test says so |
 
 None of these needs the classifier's key.
 

@@ -48,6 +48,10 @@ fn tested(
         .filter(|case| active.contains_key(&case.reflex))
         .filter(|case| name.is_none_or(|name| *name == case.reflex))
         .collect();
+    if cases.is_empty() {
+        terminal::note(&report::nothing_to_test(name));
+        return Ok(Exit::Ran);
+    }
     let digest = session.plan.digest();
     let before = session
         .state

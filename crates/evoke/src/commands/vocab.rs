@@ -1,7 +1,7 @@
 //! `evoke vocab <name> [add <word> "<meaning>" [--value v] | remove <word>]`: your words. In: the vocabulary's
 //! name, what changes or nothing, the environment. Out: `Exit`. Nothing to change lists the words, on stdout; a
-//! change lands in `vocab/<name>.toml` when the file still reads. Adding a word that is there replaces its meaning; removing
-//! one that is not is refused.
+//! change lands in `vocab/<name>.toml` when the file still reads. Adding a word that is there replaces its meaning;
+//! removing one that is not is refused, with the listing as the fix.
 
 use evoke_core::name::VocabName;
 use evoke_core::{Diagnostic, Fix, VocabChange, vocab_edit};
@@ -56,7 +56,9 @@ fn changed(
                 reflex: None,
                 at: None,
                 message: format!("\"{word}\" is not in vocabulary \"{name}\""),
-                fix: Fix::Rerun,
+                fix: Fix::Vocab {
+                    vocab: name.clone(),
+                },
             })
         }
         Some(change) => match session.apply(input, &vocab_edit(name.clone(), change.clone())) {

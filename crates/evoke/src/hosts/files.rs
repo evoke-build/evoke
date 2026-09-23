@@ -112,15 +112,16 @@ pub fn read(path: &Path) -> Result<Option<String>, Failure> {
 }
 
 /// A file written whole — beside its place, then moved in, so a crash mid-write leaves the old file whole — its
-/// directory made first.
+/// directory made first. A symlink is followed: the file it names is what is replaced, and the link stays.
 pub fn write(path: &Path, text: &str) -> Result<(), Failure> {
+    let path = fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf());
     if let Some(dir) = path.parent() {
         fs::create_dir_all(dir)
             .map_err(|error| failed(&format!("creating {}", dir.display()), &error))?;
     }
     let staged = path.with_extension(format!("{}.tmp", std::process::id()));
     fs::write(&staged, text)
-        .and_then(|()| fs::rename(&staged, path))
+        .and_then(|()| fs::rename(&staged, &path))
         .map_err(|error| failed(&format!("writing {}", path.display()), &error))
 }
 
@@ -231,9 +232,10 @@ fn toml_value(value: &Json) -> toml_edit::Value {
 }
 
 /// A directory as `evoke.toml` names a local reflex: relative to the root, `.`, `./dir` or `../dir`, whatever way it
-/// was typed from the working directory; none when there is no such directory.
+/// was typed from the working directory; none when there is no such directory. A symlinked directory keeps the
+/// name it was typed by.
 pub fn relative(root: &Path, typed: &str) -> Result<Option<String>, Failure> {
-    let dir = match fs::canonicalize(typed) {
+    let dir = match resolved(Path::new(typed)) {
         Ok(dir) => dir,
         Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
         Err(error) => return Err(failed(&format!("finding {typed}"), &error)),
@@ -266,6 +268,20 @@ pub fn relative(root: &Path, typed: &str) -> Result<Option<String>, Failure> {
         path.push_str(&segment);
     }
     Ok(Some(path))
+}
+
+/// A path made absolute: its parent canonical, its last name as typed, so a symlink keeps the name it is known
+/// by; `.` and `..` themselves canonical. What is named must be there.
+fn resolved(path: &Path) -> io::Result<PathBuf> {
+    let Some(name) = path.file_name() else {
+        return fs::canonicalize(path);
+    };
+    fs::symlink_metadata(path)?;
+    let parent = path
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or(Path::new("."));
+    Ok(fs::canonicalize(parent)?.join(name))
 }
 
 /// The path as a person reads it: `~/…` when it is under `$HOME`, however `$HOME` is spelled.
@@ -339,6 +355,65 @@ mod tests {
     /// This crate's directory, spelled with a `..` in it: an existing home a variable may spell any way.
     fn crooked_home() -> String {
         format!("{}/../evoke", env!("CARGO_MANIFEST_DIR"))
+    }
+
+    /// A fresh directory under the system's temporary one, removed with the guard.
+    struct Scratch(PathBuf);
+
+    impl Scratch {
+        fn new(name: &str) -> Self {
+            let dir =
+                std::env::temp_dir().join(format!("evoke-files-{name}-{}", std::process::id()));
+            let _ = fs::remove_dir_all(&dir);
+            fs::create_dir_all(&dir).unwrap();
+            Self(dir)
+        }
+    }
+
+    impl Drop for Scratch {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+
+    #[test]
+    fn a_write_follows_a_symlink_and_leaves_it_standing() {
+        let scratch = Scratch::new("link");
+        let real = scratch.0.join("real.toml");
+        let link = scratch.0.join("link.toml");
+        fs::write(&real, "before").unwrap();
+        std::os::unix::fs::symlink(&real, &link).unwrap();
+        write(&link, "after").unwrap();
+        assert!(
+            fs::symlink_metadata(&link)
+                .unwrap()
+                .file_type()
+                .is_symlink()
+        );
+        assert_eq!(fs::read_to_string(&real).unwrap(), "after");
+    }
+
+    #[test]
+    fn a_symlinked_directory_keeps_the_name_it_was_typed_by() {
+        let scratch = Scratch::new("dir");
+        let root = scratch.0.join("project");
+        fs::create_dir_all(root.join("real")).unwrap();
+        std::os::unix::fs::symlink(root.join("real"), root.join("link")).unwrap();
+        let typed = root.join("link");
+        assert_eq!(
+            relative(&root, typed.to_str().unwrap()).unwrap().as_deref(),
+            Some("./link")
+        );
+        assert_eq!(
+            relative(&root, root.join("real").to_str().unwrap())
+                .unwrap()
+                .as_deref(),
+            Some("./real")
+        );
+        assert_eq!(
+            relative(&root, root.join("none").to_str().unwrap()).unwrap(),
+            None
+        );
     }
 
     #[test]

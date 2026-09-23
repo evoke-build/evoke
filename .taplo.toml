@@ -5,9 +5,11 @@ exclude = ["mise.lock", "target/**", "internal/**"]
 align_entries = true
 column_width  = 120
 
-# The schemas of spec/schemas/ validate the seeds and every fixture.
+# The schemas of spec/schemas/ validate the seeds and every fixture — but one manifest that must not read, the
+# tree the update transcript skips.
 [[rule]]
 include = ["reflexes/*/reflex.toml", "spec/**/reflex.toml"]
+exclude = ["spec/transcripts/update/remote/radhi/tools/1.1.0/clock/reflex.toml"]
 [rule.schema]
 path = "spec/schemas/reflex.json"
 

@@ -42,17 +42,17 @@ impl Store {
             .dir
             .join(format!("{}.{}.tmp", hex(&h1), std::process::id()));
         let _ = fs::remove_dir_all(&staged);
-        for (path, bytes) in &files {
-            let file = staged.join(path.as_str());
-            if let Some(parent) = file.parent() {
-                fs::create_dir_all(parent).map_err(|error| failed(&what, &error.to_string()))?;
+        // What was staged goes with a failure, so a failed keep leaves nothing behind.
+        let moved = stage(&staged, &files).and_then(|()| {
+            if dir.exists() {
+                fs::remove_dir_all(&dir)?;
             }
-            fs::write(&file, bytes).map_err(|error| failed(&what, &error.to_string()))?;
+            fs::rename(&staged, &dir)
+        });
+        if let Err(error) = moved {
+            let _ = fs::remove_dir_all(&staged);
+            return Err(failed(&what, &super::cause(&error)));
         }
-        if dir.exists() {
-            fs::remove_dir_all(&dir).map_err(|error| failed(&what, &error.to_string()))?;
-        }
-        fs::rename(&staged, &dir).map_err(|error| failed(&what, &error.to_string()))?;
         Ok(Entry { h1, dir, files })
     }
 
@@ -81,6 +81,18 @@ impl Store {
     }
 }
 
+/// The tree's files written under the staging directory, each under its path.
+fn stage(staged: &Path, files: &[(RelPath, Vec<u8>)]) -> io::Result<()> {
+    for (path, bytes) in files {
+        let file = staged.join(path.as_str());
+        if let Some(parent) = file.parent() {
+            fs::create_dir_all(parent)?;
+        }
+        fs::write(&file, bytes)?;
+    }
+    Ok(())
+}
+
 /// The digest a tree would be kept under.
 #[must_use]
 pub fn hashed(files: &[(RelPath, Vec<u8>)]) -> Digest {
@@ -101,10 +113,10 @@ fn hex(h1: &Digest) -> String {
 fn walk(root: &Path, dir: &Path, files: &mut Vec<(RelPath, Vec<u8>)>) -> Result<bool, Failure> {
     let what = format!("reading {}", root.display());
     let mut entries: Vec<PathBuf> = fs::read_dir(dir)
-        .map_err(|error| failed(&what, &error.to_string()))?
+        .map_err(|error| failed(&what, &super::cause(&error)))?
         .map(|entry| entry.map(|entry| entry.path()))
         .collect::<Result<_, io::Error>>()
-        .map_err(|error| failed(&what, &error.to_string()))?;
+        .map_err(|error| failed(&what, &super::cause(&error)))?;
     entries.sort();
     for path in entries {
         if path.is_dir() {
@@ -121,7 +133,7 @@ fn walk(root: &Path, dir: &Path, files: &mut Vec<(RelPath, Vec<u8>)>) -> Result<
         else {
             return Ok(false);
         };
-        let bytes = fs::read(&path).map_err(|error| failed(&what, &error.to_string()))?;
+        let bytes = fs::read(&path).map_err(|error| failed(&what, &super::cause(&error)))?;
         files.push((relative, bytes));
     }
     Ok(true)

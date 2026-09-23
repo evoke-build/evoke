@@ -172,6 +172,27 @@ fn flow(name: &str) {
     let dir = spec().join("transcripts").join(name);
     let session = fs::read_to_string(dir.join("session.txt")).expect("session.txt");
     let tty = !session.lines().any(|line| line.starts_with("# no tty"));
+    let (home, environment) = prepared(name, &dir);
+    for step in steps(&session) {
+        let mut command = Command::new("sh");
+        command
+            .arg("-c")
+            .arg(&step.command)
+            .current_dir(&home)
+            .env_clear()
+            .envs(environment.iter().map(|(var, value)| (var, value)));
+        let (output, code) = if tty {
+            pty::run(command, &typed(&step.expected))
+        } else {
+            piped(command)
+        };
+        compare(&step, &output, code);
+    }
+}
+
+/// A flow's ground under `target/transcripts/<name>/`: its home copied, the runtime recorded, its remotes built,
+/// and the environment every command runs under.
+fn prepared(name: &str, dir: &Path) -> (PathBuf, Vec<(String, String)>) {
     let work = throwaway(name);
     let home = work.join("home");
     let source = if dir.join("home").is_dir() {
@@ -181,7 +202,7 @@ fn flow(name: &str) {
     };
     copy(&source, &home);
     runtime(&home);
-    remotes(&dir, &home, &work);
+    remotes(dir, &home, &work);
     let mut environment = vec![
         ("PATH".to_owned(), path()),
         ("HOME".to_owned(), utf8(&home)),
@@ -200,21 +221,44 @@ fn flow(name: &str) {
     if answers.is_file() {
         environment.push(("EVOKE_ANSWERS".to_owned(), utf8(&answers)));
     }
-    for step in steps(&session) {
-        let mut command = Command::new("sh");
-        command
+    (home, environment)
+}
+
+/// What was asked for reaches stdout and what `evoke` says about it stderr. A transcript reads both off one pipe
+/// and cannot tell; this reads them apart over the answering commands, on the `try` flow's ground.
+#[test]
+fn answers_reach_stdout_and_notes_stderr() {
+    let (home, environment) = prepared("streams", &spec().join("transcripts/try"));
+    let run = |command: &str| {
+        let output = Command::new("sh")
             .arg("-c")
-            .arg(&step.command)
+            .arg(command)
             .current_dir(&home)
             .env_clear()
-            .envs(environment.iter().map(|(var, value)| (var, value)));
-        let (output, code) = if tty {
-            pty::run(command, &typed(&step.expected))
-        } else {
-            piped(command)
-        };
-        compare(&step, &output, code);
-    }
+            .envs(environment.iter().map(|(var, value)| (var, value)))
+            .stdin(Stdio::null())
+            .output()
+            .expect("sh runs");
+        (
+            String::from_utf8_lossy(&output.stdout).into_owned(),
+            String::from_utf8_lossy(&output.stderr).into_owned(),
+        )
+    };
+    let (out, err) = run("evoke try \"kill the lights in the den\"");
+    assert!(out.starts_with("  lights 0.91 · none 0.06"), "{out}");
+    assert_eq!(err, "");
+    let (out, err) = run("evoke \"kill the lights in the den\"");
+    assert_eq!(out, "den lights off\n");
+    assert_eq!(err, "  lights room=\"den\" state=\"off\"  0.85\n");
+    let (out, err) = run("evoke vocab rooms");
+    assert!(out.starts_with("  den = "), "{out}");
+    assert_eq!(err, "");
+    let (out, err) = run("evoke --help");
+    assert!(out.starts_with("evoke "), "{out}");
+    assert_eq!(err, "");
+    let (out, err) = run("evoke show --json");
+    assert_eq!(out, "");
+    assert!(err.ends_with("  →  evoke --help\n"), "{err}");
 }
 
 /// The steps of a session: a `$ ` line opens one, `[N]` closes it with a code, `#` lines are notes.

@@ -1,5 +1,6 @@
 //! Every real owned file under `reflexes/` and `spec/transcripts/` parses: manifests, projects, vocabularies, and
-//! overlays against the local reflex beside them; and every manifest lints clean.
+//! overlays against the local reflex beside them; and every manifest lints clean. One manifest must not read —
+//! the tree the update transcript skips — and this checks that it does not.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -13,6 +14,9 @@ use evoke_core::{
 fn root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }
+
+/// The one manifest that must not read: what `evoke update` reports and skips in its transcript.
+const UNREADABLE: &str = "spec/transcripts/update/remote/radhi/tools/1.1.0/clock/reflex.toml";
 
 fn walk(dir: &Path, files: &mut Vec<PathBuf>) {
     for entry in fs::read_dir(dir).unwrap_or_else(|error| panic!("{}: {error}", dir.display())) {
@@ -127,6 +131,10 @@ fn every_seed_and_transcript_file_parses() {
     for path in &files {
         let Some(errors) = parse(path) else { continue };
         parsed += 1;
+        if path.ends_with(UNREADABLE) {
+            assert!(!errors.is_empty(), "{UNREADABLE} reads; it must not");
+            continue;
+        }
         for error in errors {
             failures.push(format!(
                 "{}: {} → {}",

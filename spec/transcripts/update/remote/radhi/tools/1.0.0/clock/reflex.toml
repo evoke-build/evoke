@@ -1,0 +1,14 @@
+reflex = 1
+
+description = """
+Tell the time.
+Hours and minutes, in words."""
+not_for = ["timers and alarms", "the date"]
+tags = ["time"]
+effect = "read"
+confirm = "Tell the time?"
+run = "clock.mts"
+
+[examples]
+"what time is it"  = {}
+"tell me the time" = {}

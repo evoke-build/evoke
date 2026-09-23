@@ -17,7 +17,7 @@ use evoke_core::{
 };
 
 use super::session::{self, Opening, Session};
-use super::{Exit, about, default_name, human};
+use super::{Exit, default_name, human};
 use crate::adapter;
 use crate::args::{Command, Ref};
 use crate::hosts::{Deadline, Environment, files, git, terminal, threads};
@@ -133,10 +133,7 @@ fn local(
     name: Option<&LocalName>,
 ) -> Result<Newcomer, Exit> {
     let Some(path) = files::relative(&session.root.path, &r.written).map_err(Exit::Failed)? else {
-        return Err(human(
-            format!("{} is not a directory", r.written),
-            Fix::Rerun,
-        ));
+        return Err(human(format!("{} is not a directory", r.written), Fix::New));
     };
     let dir: PathBuf = session.root.path.join(&path).components().collect();
     let text = files::read(&dir.join("reflex.toml")).map_err(Exit::Failed)?;
@@ -186,10 +183,14 @@ fn fetched(
 ) -> Result<Vec<Newcomer>, Exit> {
     let tags = remotes.tags(reference).map_err(Exit::Failed)?;
     let tag = match pin {
-        Some(pin) => tags
-            .iter()
-            .find(|tag| tag.version == pin)
-            .ok_or_else(|| human(format!("{reference} has no tag {pin}"), Fix::Rerun))?,
+        Some(pin) => tags.iter().find(|tag| tag.version == pin).ok_or_else(|| {
+            human(
+                format!("{reference} has no tag {pin}"),
+                Fix::AddRefs {
+                    references: vec![reference.to_string()],
+                },
+            )
+        })?,
         None => tags.last().ok_or_else(|| {
             human(
                 format!(
@@ -210,7 +211,9 @@ fn fetched(
     if !one && name.is_some() {
         return Err(human(
             format!("{reference} is a collection; --as names one reflex"),
-            Fix::Rerun,
+            Fix::AddRefs {
+                references: vec![reference.to_string()],
+            },
         ));
     }
     let mut found = Vec::new();
@@ -284,47 +287,71 @@ fn parsed(
 }
 
 /// Every newcomer's name is free: not another newcomer's, not an installed reflex's from elsewhere, not one
-/// already locked. An entry the project names but the lock lacks is taken over.
+/// already locked. An entry the project names but the lock lacks is taken over. One taken name refuses the add;
+/// when the add brought several, the fix installs the ones that are free.
 fn placed(session: &Session<'_>, newcomers: &[Newcomer]) -> Result<(), Exit> {
-    for (i, newcomer) in newcomers.iter().enumerate() {
-        let choose = Fix::AddRef {
-            reference: newcomer.written.clone(),
-            name: None,
-        };
-        if newcomers[..i]
-            .iter()
-            .any(|other| other.name == newcomer.name)
-        {
-            return Err(human(
-                format!("two of these would be named {}", newcomer.name),
-                choose,
-            ));
-        }
-        let locked = session
-            .lock
-            .as_ref()
-            .is_some_and(|lock| lock.reflexes.contains_key(&newcomer.name));
-        match session.project.reflexes.get(&newcomer.name) {
-            Some(existing) if *existing != newcomer.location => {
-                return Err(about(
-                    &newcomer.name,
-                    format!("{} is already installed from {existing}", newcomer.name),
-                    choose,
-                ));
-            }
-            Some(_) if locked => {
-                return Err(about(
-                    &newcomer.name,
-                    format!("{} is already installed", newcomer.name),
-                    Fix::Update {
-                        reflex: Some(newcomer.name.clone()),
-                    },
-                ));
-            }
-            _ => {}
-        }
+    let conflicts: Vec<Option<Diagnostic>> = newcomers
+        .iter()
+        .enumerate()
+        .map(|(i, newcomer)| conflict(session, &newcomers[..i], newcomer))
+        .collect();
+    let Some(first) = conflicts.iter().flatten().next() else {
+        return Ok(());
+    };
+    let free: Vec<String> = newcomers
+        .iter()
+        .zip(&conflicts)
+        .filter(|(_, conflict)| conflict.is_none())
+        .map(|(newcomer, _)| newcomer.written.clone())
+        .collect();
+    let mut problem = first.clone();
+    if newcomers.len() > 1 && !free.is_empty() {
+        problem.fix = Fix::AddRefs { references: free };
     }
-    Ok(())
+    Err(Exit::Human(problem))
+}
+
+/// Why a newcomer cannot take its name, when it cannot: `earlier` are the newcomers before it.
+fn conflict(
+    session: &Session<'_>,
+    earlier: &[Newcomer],
+    newcomer: &Newcomer,
+) -> Option<Diagnostic> {
+    let choose = Fix::AddRef {
+        reference: newcomer.written.clone(),
+        name: None,
+    };
+    if earlier.iter().any(|other| other.name == newcomer.name) {
+        return Some(Diagnostic {
+            reflex: None,
+            at: None,
+            message: format!("two of these would be named {}", newcomer.name),
+            fix: choose,
+        });
+    }
+    let locked = session
+        .lock
+        .as_ref()
+        .is_some_and(|lock| lock.reflexes.contains_key(&newcomer.name));
+    let (message, fix) = match session.project.reflexes.get(&newcomer.name) {
+        Some(existing) if *existing != newcomer.location => (
+            format!("{} is already installed from {existing}", newcomer.name),
+            choose,
+        ),
+        Some(_) if locked => (
+            format!("{} is already installed", newcomer.name),
+            Fix::Update {
+                reflex: Some(newcomer.name.clone()),
+            },
+        ),
+        _ => return None,
+    };
+    Some(Diagnostic {
+        reflex: Some(newcomer.name.clone()),
+        at: None,
+        message,
+        fix,
+    })
 }
 
 /// The route-only conflict test: every installed example routed over the set with the newcomers in it, through

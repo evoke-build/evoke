@@ -10,15 +10,19 @@
 use std::collections::BTreeMap;
 use std::io;
 use std::os::unix::fs::DirBuilderExt as _;
+use std::os::unix::process::CommandExt as _;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use evoke_core::Version;
 use evoke_core::name::RelPath;
 use evoke_core::project::{Commit, Reference, Repo};
 
-use super::{Failure, failed, terminal};
+use super::{Failure, failed, processes, terminal};
+
+/// The most one git call may take: a remote that never answers is a failure, not a hang.
+const BOUND: Duration = Duration::from_secs(60);
 
 /// What every git call is told: only https and ssh are spoken — a local mirror reached through
 /// `url.<path>.insteadOf` needs `protocol.file.allow` in the person's own configuration — and no hook runs from
@@ -389,8 +393,9 @@ fn text(dir: Option<&Path>, args: &[&str], what: &str) -> Result<String, Failure
     bytes(dir, args, what).map(|bytes| String::from_utf8_lossy(&bytes).into_owned())
 }
 
-/// One git command, its stdout; a failure carries the last line git wrote. The process environment passes through,
-/// so a person's own git configuration and credentials apply, but git never prompts.
+/// One git command, its stdout, within the bound; a failure carries what git said. The process environment
+/// passes through, so a person's own git configuration and credentials apply, but git never prompts. Git runs in
+/// a group of its own, so a call past the bound ends with the helpers it started.
 fn bytes(dir: Option<&Path>, args: &[&str], what: &str) -> Result<Vec<u8>, Failure> {
     let mut command = Command::new("git");
     if let Some(dir) = dir {
@@ -402,8 +407,11 @@ fn bytes(dir: Option<&Path>, args: &[&str], what: &str) -> Result<Vec<u8>, Failu
     command
         .args(args)
         .env("GIT_TERMINAL_PROMPT", "0")
-        .stdin(Stdio::null());
-    let output = command.output().map_err(|error| {
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .process_group(0);
+    let child = command.spawn().map_err(|error| {
         let cause = if error.kind() == io::ErrorKind::NotFound {
             "git is not on PATH, and fetching needs it".to_owned()
         } else {
@@ -411,6 +419,12 @@ fn bytes(dir: Option<&Path>, args: &[&str], what: &str) -> Result<Vec<u8>, Failu
         };
         failed(what, &cause)
     })?;
+    let Some(output) = processes::output_within(child, BOUND) else {
+        return Err(failed(
+            what,
+            &format!("git did not answer within {} s", BOUND.as_secs()),
+        ));
+    };
     if output.status.success() {
         return Ok(output.stdout);
     }
@@ -418,19 +432,28 @@ fn bytes(dir: Option<&Path>, args: &[&str], what: &str) -> Result<Vec<u8>, Failu
     Err(failed(what, &format!("git: {}", said(&stderr))))
 }
 
-/// What git said last, in the person's terms where git's are not: a repository GitHub hides behind a credential
-/// prompt is one that is not there, or private; else the last line, or that it failed.
+/// What git said, in the person's terms where git's are not: a repository GitHub hides behind a credential prompt
+/// is one that is not there, or private; what ssh said, when it spoke, since git's own last lines then only ask
+/// to check the access rights; else the `fatal:` line, else the last line, or that it failed.
 fn said(stderr: &str) -> &str {
-    let last = stderr
+    let lines: Vec<&str> = stderr
         .lines()
-        .rev()
-        .find(|line| !line.trim().is_empty())
-        .map_or("git failed", str::trim);
-    if last.contains("could not read Username") || last.contains("terminal prompts disabled") {
-        "no such repository, or one that needs credentials git could not ask for"
-    } else {
-        last
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .collect();
+    if lines.iter().any(|line| {
+        line.contains("could not read Username") || line.contains("terminal prompts disabled")
+    }) {
+        return "no such repository, or one that needs credentials git could not ask for";
     }
+    lines
+        .iter()
+        .rev()
+        .find(|line| line.starts_with("ssh:") || line.contains("Permission denied"))
+        .or_else(|| lines.iter().rev().find(|line| line.starts_with("fatal:")))
+        .or_else(|| lines.last())
+        .copied()
+        .unwrap_or("git failed")
 }
 
 /// A scratch repository under the temporary directory, removed when the fetch is over. Made exclusively, mode
@@ -495,7 +518,22 @@ mod tests {
     #[test]
     fn what_git_said_is_its_last_line_in_the_persons_terms() {
         assert_eq!(said("warning: x\nfatal: bad ref\n"), "fatal: bad ref");
+        assert_eq!(said("fatal: bad ref\nhint: try again\n"), "fatal: bad ref");
         assert_eq!(said("\n  \n"), "git failed");
+        let denied = "git@github.com: Permission denied (publickey).\r\nfatal: Could not read from remote \
+                      repository.\n\nPlease make sure you have the correct access rights\nand the repository \
+                      exists.\n";
+        assert_eq!(
+            said(denied),
+            "git@github.com: Permission denied (publickey)."
+        );
+        let unresolved = "ssh: Could not resolve hostname github.com: nodename nor servname provided, or not \
+                          known\nfatal: Could not read from remote repository.\n\nPlease make sure you have the \
+                          correct access rights\nand the repository exists.\n";
+        assert_eq!(
+            said(unresolved),
+            "ssh: Could not resolve hostname github.com: nodename nor servname provided, or not known"
+        );
         assert_eq!(
             said(
                 "fatal: could not read Username for 'https://github.com': terminal prompts disabled\n"

@@ -51,30 +51,33 @@ impl State {
         Ok(path)
     }
 
-    /// The digest a root was blessed at, or none.
+    /// The digest a root was blessed at, or none. A `trust.toml` that does not read is a stop naming it, and
+    /// `evoke trust` writes it afresh.
     pub fn trust(&self, root: &Path) -> Result<Option<Digest>, Failure> {
-        let Some(text) = read(&self.state.join("trust.toml"))? else {
+        let path = self.state.join("trust.toml");
+        let Some(text) = read(&path)? else {
             return Ok(None);
         };
-        let document: DocumentMut = text.parse().map_err(|error: toml_edit::TomlError| {
-            failed("reading trust.toml", &io::Error::other(error.message()))
-        })?;
+        let document: DocumentMut =
+            text.parse()
+                .map_err(|error: toml_edit::TomlError| Failure {
+                    what: format!("reading {}", path.display()),
+                    cause: Some(error.message().to_owned()),
+                    fix: Fix::Trust,
+                })?;
         Ok(document
             .get(&key(root))
             .and_then(Item::as_str)
             .and_then(|digest| Digest::try_from(digest.to_owned()).ok()))
     }
 
-    /// `evoke trust`: the root blessed at this digest, its entry made or replaced.
+    /// `evoke trust`: the root blessed at this digest, its entry made or replaced. A file that does not read is
+    /// started over: every other root is blessed again at its next `evoke trust`.
     pub fn bless(&self, root: &Path, digest: &Digest) -> Result<(), Failure> {
         let path = self.state.join("trust.toml");
-        let mut document: DocumentMut =
-            read(&path)?
-                .unwrap_or_default()
-                .parse()
-                .map_err(|error: toml_edit::TomlError| {
-                    failed("reading trust.toml", &io::Error::other(error.message()))
-                })?;
+        let mut document: DocumentMut = read(&path)?
+            .and_then(|text| text.parse().ok())
+            .unwrap_or_default();
         document[&key(root)] = value(digest.to_string());
         write(&path, &document.to_string())
     }
@@ -95,13 +98,8 @@ impl State {
 
     /// Keeps the answers for the request under the plan; written whole, then moved into place.
     pub fn keep(&self, plan: &Digest, request: &Request, answers: &Raw) -> Result<(), Failure> {
-        let path = self.entry(plan, request);
         let text = serde_json::to_string(answers).expect("answers serialize");
-        let staged = path.with_extension(format!("{}.tmp", std::process::id()));
-        write(&staged, &text).and_then(|()| {
-            fs::rename(&staged, &path)
-                .map_err(|error| failed(&format!("keeping {}", path.display()), &error))
-        })
+        write(&self.entry(plan, request), &text)
     }
 
     /// The last `test` run's verdicts under a plan, or none yet; one that does not read is none.
@@ -214,13 +212,9 @@ fn read(path: &Path) -> Result<Option<String>, Failure> {
     }
 }
 
-/// A file written whole — beside its place, then moved in — its directory made first.
+/// A file written whole, as an owned file is: beside its place, then moved in, its directory made first.
 fn write(path: &Path, text: &str) -> Result<(), Failure> {
-    dir_of(path)?;
-    let staged = path.with_extension(format!("{}.tmp", std::process::id()));
-    fs::write(&staged, text)
-        .and_then(|()| fs::rename(&staged, path))
-        .map_err(|error| failed(&format!("writing {}", path.display()), &error))
+    super::files::write(path, text)
 }
 
 /// A file of the person's own opened for appending, made mode 0600 when it is not there yet, its directory made.

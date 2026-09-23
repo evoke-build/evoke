@@ -17,7 +17,8 @@ Everything `evoke` reads or writes in a project, and who owns each file.
 ```
 
 `evoke` edits your files in place, keeping comments and order. It verifies each write by reading it back. On
-failure it writes nothing, and prints the line. The lock and the two `.d.ts` files are rendered whole.
+failure it writes nothing, and prints the line. The lock and the two `.d.ts` files are rendered whole. A file that
+is a symlink is written through; the link stays.
 
 ## `evoke.toml`
 

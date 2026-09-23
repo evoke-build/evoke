@@ -698,6 +698,13 @@ fn update(arguments: &[String]) -> Result<Command, Diagnostic> {
             }
         }
     }
+    if let (Some(reflex), Some(accepted)) = (&reflex, &accept)
+        && reflex != accepted
+    {
+        return Err(usage(format!(
+            "--accept {accepted} is not {reflex}; accept the reflex you update"
+        )));
+    }
     Ok(Command::Update { reflex, accept })
 }
 

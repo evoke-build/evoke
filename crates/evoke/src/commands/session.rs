@@ -60,6 +60,8 @@ pub enum Opening {
     Deciding,
     Tuning,
     Installing,
+    /// `show`: what is installed, placed or not — a remote reflex the store lacks is listed, inactive.
+    Listing,
 }
 
 /// What the confirm prompt read.
@@ -419,13 +421,14 @@ fn remote(
     ))
 }
 
-/// A remote reflex the store cannot place: inactive with the problem while installing, refused otherwise.
+/// A remote reflex the store cannot place: inactive with the problem while installing or listing, refused
+/// otherwise.
 fn unplaced(
     opening: Opening,
     configured: IndexMap<ConfigKey, Held>,
     problem: Diagnostic,
 ) -> Result<(Item, Option<(Manifest, PathBuf)>), Exit> {
-    if opening == Opening::Installing {
+    if matches!(opening, Opening::Installing | Opening::Listing) {
         Ok((
             Item {
                 wording: Err(vec![problem]),
