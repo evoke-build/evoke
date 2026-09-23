@@ -277,8 +277,8 @@
         <h3>What does it cost?</h3>
         <p><code>evoke</code> is free and open source, under Apache-2.0. Jev is <a href="https://typesafe.ai">TypeSafe
           AI</a>'s service, and a key from TypeSafe AI is billed on its own terms. A key from
-          <a href="https://openjev.sh">OpenJEV</a> is free: an independent project pays for the same model with the
-          trading fees of its own token. Nothing else is metered.</p>
+          <a href="https://openjev.sh">OpenJEV</a>, an independent service that forwards requests to Jev, is on
+          OpenJEV's terms, which it has not published. Nothing else is metered.</p>
       </div>
       <div class="qa" id="can-it-run-something-else">
         <h3>Can it run something I did not ask for?</h3>
@@ -367,16 +367,17 @@
         <p><a href="https://typesafe.ai">TypeSafe AI</a>'s System One model: a classifier that answers closed questions
           with calibrated probabilities. <code>evoke</code> asks the questions and applies the gate. Two built-in
           adapters reach it: <code>jev</code>, through TypeSafe AI's own API, and <code>openjev</code>, through
-          OpenJEV's public door. The core names no engine, and any adapter that answers a closed choice with
-          probabilities fits. <a href="manual/sdk/adapters.html">Adapters.</a></p>
+          OpenJEV, an independent service. The core names no engine, and any adapter that answers a closed choice
+          with probabilities fits. <a href="manual/sdk/adapters.html">Adapters.</a></p>
       </div>
       <div class="qa" id="what-is-openjev">
         <h3>What is OpenJEV?</h3>
-        <p>An independent project, not TypeSafe AI's, that gives public access to Jev. A key is free: its inference
-          is paid for by the trading fees of its own token. It publishes no terms and no privacy policy, as of the
-          date on the <a href="privacy.html">privacy page</a>. With <code>adapter = "openjev"</code> in
-          <code>evoke.toml</code>, your request goes to OpenJEV first, and on to Jev.
-          <a href="manual/start/install.html#the-key">The key.</a></p>
+        <p>An independent service, not TypeSafe AI's, that forwards requests to Jev and returns its answers.
+          <code>evoke</code> is affiliated with neither, and vouches for neither. A key from OpenJEV is on
+          OpenJEV's terms, and whether it may offer Jev is a matter between OpenJEV and TypeSafe AI. It publishes
+          no terms and no privacy policy, as of the date on the <a href="privacy.html">privacy page</a>. With
+          <code>adapter = "openjev"</code> in <code>evoke.toml</code>, your request goes to OpenJEV first, and on
+          to Jev. <a href="manual/start/install.html#the-key">The key.</a></p>
       </div>
       <div class="qa" id="what-leaves-my-machine">
         <h3>What leaves my machine?</h3>
@@ -386,10 +387,11 @@
           key or a file. Nothing goes to evoke.build. <a href="privacy.html">Privacy, in full.</a></p>
       </div>
       <div class="qa" id="made-by-typesafe">
-        <h3>Is evoke made by TypeSafe AI?</h3>
-        <p>No. Jev is TypeSafe AI's model. <code>evoke</code> is a project of its own, under its own name and licence,
-          and it reaches Jev through TypeSafe AI's own API, or through OpenJEV's public door, as any customer of either
-          does.</p>
+        <h3>Is evoke made by TypeSafe AI, or by OpenJEV?</h3>
+        <p>No. Jev is TypeSafe AI's model, and OpenJEV is an independent service. <code>evoke</code> is a project of
+          its own, under its own name and licence, affiliated with neither and vouching for neither. It reaches Jev
+          through TypeSafe AI's own API, or through OpenJEV, as any user of either does. Whether a service may offer
+          Jev is a matter between that service and TypeSafe AI.</p>
       </div>
     </section>
 

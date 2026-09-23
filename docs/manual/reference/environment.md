@@ -51,5 +51,5 @@ Secrets reach a body only this way, for the length of one run.
 ## Time
 
 One decision has 30 seconds, shared by the adapter's answer and the body's run. A prompt never counts. The `jev`
-adapter gives a request 1.5 seconds once connected, and `openjev` 3 seconds, since its door forwards the request
+adapter gives a request 1.5 seconds once connected, and `openjev` 3 seconds, since OpenJEV forwards the request
 onward. Each retries once after a connect error or a server error.

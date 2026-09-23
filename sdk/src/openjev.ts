@@ -1,4 +1,4 @@
-// @evoke-build/evoke/openjev: the same model by a public door. OpenJEV is an independent project's access to
+// @evoke-build/evoke/openjev: the same model through OpenJEV, an independent service that forwards requests to
 // Jev, under OPENJEV_API_KEY. The wire and the transport are ./systemone's; this entry names the door. In:
 // options. Out: an Adapter.
 

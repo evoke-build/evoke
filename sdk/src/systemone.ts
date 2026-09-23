@@ -1,9 +1,9 @@
 // The System One wire, behind two doors: jev, TypeSafe AI's own address under TYPESAFE_API_KEY, and openjev,
-// OpenJEV's public door to the same model under OPENJEV_API_KEY. The mapping is the core's — systemone.settings,
-// systemone.request and systemone.answers through the module — and the SDK adds the transport: one kept-alive
-// agent for the process, through the proxy the environment names, the bearer key, and the policy loop the
-// settings declare: once more after a connect error or a retried status, never after a client error. In: a door
-// and its options. Out: an Adapter.
+// OpenJEV, an independent service that forwards requests to Jev, under OPENJEV_API_KEY. The mapping is the
+// core's — systemone.settings, systemone.request and systemone.answers through the module — and the SDK adds
+// the transport: one kept-alive agent for the process, through the proxy the environment names, the bearer key,
+// and the policy loop the settings declare: once more after a connect error or a retried status, never after a
+// client error. In: a door and its options. Out: an Adapter.
 
 import { Agent } from "node:https"
 

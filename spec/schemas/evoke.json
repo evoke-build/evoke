@@ -58,7 +58,7 @@
         "openjev": {
           "type": "object",
           "additionalProperties": false,
-          "description": "Jev through OpenJEV's public door, under OPENJEV_API_KEY; the same gate keys.",
+          "description": "Jev through OpenJEV, an independent service, under OPENJEV_API_KEY; the same gate keys.",
           "properties": { "gate": { "$ref": "#/definitions/gate" } }
         },
         "replay": {

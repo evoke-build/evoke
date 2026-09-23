@@ -19,7 +19,7 @@ package ships four entries, so the main one imports no engine:
 | :------------------------------ | :------------------------------------------------------ |
 | `@evoke-build/evoke`            | `load`, `reflex`, the types, the errors                  |
 | `@evoke-build/evoke/jev`        | `jev()`, the first adapter                               |
-| `@evoke-build/evoke/openjev`    | `openjev()`, the same model through OpenJEV's public door |
+| `@evoke-build/evoke/openjev`    | `openjev()`, the same model through OpenJEV, an independent service |
 | `@evoke-build/evoke/testing`    | `replay()`, the recorded adapter for tests               |
 
 ## The first hour

@@ -1,7 +1,8 @@
 //! The System One wire as a pure mapping, behind two doors. In: a `Door` and its `[adapters.<name>]` table; a
 //! `Request`; a response's status and body. Out: `Settings` or the problems to fix; the request body; `Raw`
 //! answers or a `Fault`. Jev is the model behind both doors: `jev` posts to TypeSafe AI's own address under its
-//! key, `openjev` to OpenJEV's public door under a key of its own, and one body and one reading serve both.
+//! key, `openjev` to OpenJEV, an independent service that forwards requests to Jev, under a key of its own; one
+//! body and one reading serve both.
 
 use std::fmt;
 
@@ -23,7 +24,7 @@ use serde_json::json;
 pub enum Door {
     /// TypeSafe AI's own API.
     Jev,
-    /// OpenJEV, an independent project's public door to the same model.
+    /// OpenJEV, an independent service that forwards requests to Jev.
     OpenJev,
 }
 

@@ -2,8 +2,8 @@
 
 An adapter is the classifier behind a decision. It is an object that answers typed questions with probabilities.
 The core names no engine. A project names an adapter, and only your machine resolves the name. Two built-in
-adapters reach Jev: `jev()`, through TypeSafe AI's own API, and `openjev()`, through OpenJEV's public door. They
-send the same questions and ship the same bars.
+adapters reach Jev: `jev()`, through TypeSafe AI's own API, and `openjev()`, through OpenJEV, an independent
+service. They send the same questions and ship the same bars.
 
 ## `jev()`: the first adapter
 
@@ -25,7 +25,7 @@ adapter passed in replaces both. The transport keeps one connection alive for th
 retries once after a connect error or a server error, and never after a client error. No key is a
 `DiagnosticError` ending in `export TYPESAFE_API_KEY=<value>`.
 
-## `openjev()`: the same model, by a public door
+## `openjev()`: the same model, through OpenJEV
 
 ```ts
 import { openjev } from "@evoke-build/evoke/openjev"
@@ -39,12 +39,13 @@ const project = await load({ reflexes, adapter: openjev({ key, gate: { write: 0.
 | `key`  | The API key. Absent: `OPENJEV_API_KEY` from the environment, read when `openjev()` is called   |
 | `gate` | Floors over the same defaults as `jev()`. The same as `[adapters.openjev] gate` in `evoke.toml` |
 
-[OpenJEV](https://openjev.sh) is an independent project, not TypeSafe AI's. It forwards each request to Jev and
-returns Jev's answers. A key is free: its inference is paid for by the trading fees of its own token. As of this
-release it publishes no terms and no privacy policy, so weigh that before you choose it for an application. The
-transport is `jev()`'s, with 3 seconds once connected instead of 1.5, since the door forwards the request onward.
-Its `id` is `openjev`, the alias the service names, which follows the latest Jev: when Jev moves, answers may
-move under the same id. No key is a `DiagnosticError` ending in `export OPENJEV_API_KEY=<value>`.
+[OpenJEV](https://openjev.sh) is an independent service, not TypeSafe AI's. It forwards each request to Jev and
+returns Jev's answers. `evoke` is affiliated with neither, and vouches for neither. A key from OpenJEV is on
+OpenJEV's terms, and whether it may offer Jev is a matter between OpenJEV and TypeSafe AI. As of this release it
+publishes no terms and no privacy policy, so weigh that before you choose it for an application. The transport
+is `jev()`'s, with 3 seconds once connected instead of 1.5, since the service forwards the request onward. Its
+`id` is `openjev`, the alias the service names, which follows the latest Jev: when Jev moves, answers may move
+under the same id. No key is a `DiagnosticError` ending in `export OPENJEV_API_KEY=<value>`.
 
 ## The contract
 

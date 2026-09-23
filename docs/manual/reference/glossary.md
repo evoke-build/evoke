@@ -6,7 +6,7 @@ adapter, and the words of a weave.
 | Term             | Meaning                                                                                                   |
 | :--------------- | :-------------------------------------------------------------------------------------------------------- |
 | **Abstain**      | The outcome when *none* wins the route, or the winner is under the route floor. Exit 2                    |
-| **Adapter**      | The classifier behind a decision, as an object answering typed questions with probabilities. `jev` and `openjev` reach Jev by two doors; `replay` answers from a recording |
+| **Adapter**      | The classifier behind a decision, as an object answering typed questions with probabilities. `jev` and `openjev` reach Jev, through TypeSafe AI's API or through OpenJEV; `replay` answers from a recording |
 | **Argument**     | A question about the input and a value for the body: `options`, `vocab`, `pick` or `flag`                 |
 | **Ask**          | The outcome when a required argument is missing: `evoke` asks the argument's own question                 |
 | **Binding**      | A value of one step's result taken by a later step, by kind: filled into a required argument, or written into the words for an optional one |

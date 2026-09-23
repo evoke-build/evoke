@@ -6,13 +6,14 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
-- A second adapter, `openjev`, reaches Jev through [OpenJEV](https://openjev.sh), an independent project's public
-  door to the same model: `adapter = "openjev"` in `evoke.toml`, the key in `OPENJEV_API_KEY`, the same `gate`
+- A second adapter, `openjev`, reaches Jev through [OpenJEV](https://openjev.sh), an independent service that
+  forwards requests to Jev: `adapter = "openjev"` in `evoke.toml`, the key in `OPENJEV_API_KEY`, the same `gate`
   table under `[adapters.openjev]`, and `openjev()` from `@evoke-build/evoke/openjev` in the SDK. Both adapters
-  send one body and read one answer; the door sets the address, the key, the model named and the wait after
-  connect, 3 seconds for OpenJEV since it forwards the request onward. A missing key names the door that needs
-  it: `openjev needs OPENJEV_API_KEY, a key from openjev.sh`. OpenJEV publishes no terms and no privacy policy as
-  of this release; the install page and the site's privacy page say so, and what it sees.
+  send one body and read one answer; each sets its address, its key, the model it names and the wait after
+  connect, 3 seconds for OpenJEV since it forwards the request onward. A missing key names the adapter that
+  needs it: `openjev needs OPENJEV_API_KEY, a key from openjev.sh`. OpenJEV publishes no terms and no privacy
+  policy as of this release; the install page and the site's privacy page say so, and what it sees. `evoke` is
+  affiliated with neither TypeSafe AI nor OpenJEV, and vouches for neither.
 
 ## [0.4.0] - 2026-09-23
 

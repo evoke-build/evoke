@@ -72,10 +72,11 @@ The `jev` adapter is the default. It posts to TypeSafe AI's own API, under a key
 export TYPESAFE_API_KEY=<value>
 ```
 
-The `openjev` adapter posts to [OpenJEV](https://openjev.sh), a public door to the same model. OpenJEV is an
-independent project, not TypeSafe AI's. A key is free: its inference is paid for by the trading fees of its own
-token. As of this release it publishes no terms and no privacy policy, so weigh that before you choose it. Name
-it in `evoke.toml` and export its key:
+The `openjev` adapter posts to [OpenJEV](https://openjev.sh), an independent service that forwards the request
+to Jev and returns its answers. OpenJEV is not TypeSafe AI's. `evoke` is affiliated with neither, and vouches for
+neither. A key from OpenJEV is on OpenJEV's terms, and whether it may offer Jev is a matter between OpenJEV and
+TypeSafe AI. As of this release it publishes no terms and no privacy policy, so weigh that before you choose it.
+Name it in `evoke.toml` and export its key:
 
 ```toml
 adapter = "openjev"
