@@ -415,6 +415,7 @@ export type Prob = number
 export interface Limits {
   /** The most options one choice may offer; `compile` refuses a plan over it. */
   options?: number
+  /** The adapter's own token ceiling, declared for the record; nothing here enforces it. */
   tokens?: number
 }
 

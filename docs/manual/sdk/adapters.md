@@ -28,7 +28,7 @@ retries once after a connect error or a server error, and never after a client e
 ```ts
 interface Adapter {
   id: string                                           // opaque; changes whenever answers could; compared, never parsed
-  limits?: { options?: number; tokens?: number }       // per-call ceilings; a plan over them is refused at load
+  limits?: { options?: number; tokens?: number }       // options: a plan over it is refused at load; tokens: declared, not enforced
   gate?: { route: number; fits?: number; read: number; write: number }   // each number means P(correct)
   plan?: string                                        // a recording's plan digest; another plan refuses it
   answer(state: { request: string }, questions: Record<string, Question>, signal: AbortSignal): Promise<Raw>

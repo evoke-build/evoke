@@ -229,6 +229,8 @@ test("a root that is not a directory, a project with no root and no adapter, and
     (error: DiagnosticError) => error.message.endsWith('is not a directory  →  load({ root })'),
   )
   await rejects(
+    // The type requires the adapter without a root; JavaScript, which has no types, still gets the line.
+    // @ts-expect-error
     load({ reflexes: {} }),
     (error: DiagnosticError) => error.message === "no adapter: none is named and none was passed  →  load({ reflexes, adapter: jev() })",
   )

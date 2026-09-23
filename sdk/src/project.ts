@@ -147,7 +147,7 @@ export function load<R extends object = AnyReflexes>(
 ): Promise<Project<R>>
 /** A project from reflexes handed as code alone: R is inferred from them. */
 export function load<R extends object = AnyReflexes>(
-  options: { root?: undefined; reflexes?: { [K in keyof R]?: Inline<R[K]> | undefined } | undefined; adapter?: Adapter | undefined },
+  options: { root?: undefined; reflexes?: { [K in keyof R]?: Inline<R[K]> | undefined } | undefined; adapter: Adapter },
 ): Promise<Project<R>>
 export async function load<R extends object = AnyReflexes>(options: LoadOptions<R>): Promise<Project<R>> {
   const { root } = options
@@ -405,6 +405,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     },
 
     async handle(input, options = {}) {
+      nonEmpty(input, "handle")
       const readied = await ready(await project.decide(input, options), options)
       if (readied.ready) return { outcome: "ran", decision: readied.decision, result: await bodied(readied.decision, options.signal) }
       if (readied.status === "refused") return { outcome: "abstained", decision: readied.decision }
