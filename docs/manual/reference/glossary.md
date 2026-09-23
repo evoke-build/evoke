@@ -1,6 +1,7 @@
 # Glossary
 
-Every term `evoke` uses, one line each.
+Every term `evoke` uses, one line each: the outcomes of a decision, the parts of a reflex, the files of a project, the
+adapter, and the words of a weave.
 
 | Term             | Meaning                                                                                                   |
 | :--------------- | :-------------------------------------------------------------------------------------------------------- |

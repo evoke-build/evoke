@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy policy - Evoke</title>
+  <meta name="description" content="No cookies, no analytics, no accounts, nothing held by us. A decision goes from your machine to the classifier you chose. What is sent, and what stays.">
+  <link rel="canonical" href="https://evoke.build/privacy.html">
+  <meta name="robots" content="max-image-preview:large">
+  <meta name="theme-color" content="#0f0f10">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="evoke">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="Privacy policy - Evoke">
+  <meta property="og:description" content="No cookies, no analytics, no accounts. evoke sends nothing to us: a decision goes from your machine to the classifier you chose, with your key. What is sent, what stays, and who else sees it.">
+  <meta property="og:url" content="https://evoke.build/privacy.html">
+  <meta property="og:image" content="https://evoke.build/og.png">
+  <meta property="og:image:width" content="2400">
+  <meta property="og:image:height" content="1260">
+  <meta property="og:image:alt" content="evoke — Software, by reflex.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Privacy policy - Evoke">
+  <meta name="twitter:description" content="No cookies, no analytics, no accounts. evoke sends nothing to us: a decision goes from your machine to the classifier you chose, with your key.">
+  <meta name="twitter:image" content="https://evoke.build/og.png">
+  <meta name="twitter:image:alt" content="evoke — Software, by reflex.">
+  <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="icon" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://evoke.build/privacy.html",
+        "url": "https://evoke.build/privacy.html",
+        "name": "Privacy policy",
+        "headline": "Privacy policy",
+        "description": "No cookies, no analytics, no accounts, nothing held by us. A decision goes from your machine to the classifier you chose. What is sent, and what stays.",
+        "inLanguage": "en",
+        "isPartOf": { "@id": "https://evoke.build/#website" },
+        "about": { "@id": "https://evoke.build/#software" },
+        "author": { "@id": "https://evoke.build/#organization" },
+        "publisher": { "@id": "https://evoke.build/#organization" },
+        "datePublished": "2026-09-23",
+        "dateModified": "2026-09-23"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "evoke", "item": "https://evoke.build/" },
+          { "@type": "ListItem", "position": 2, "name": "Privacy policy" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <script>
+    // A page reached with a hash lands on it at once; scrolling glides from the reader's first touch of the page.
+    if (location.hash) {
+      const html = document.documentElement, glide = () => html.style.removeProperty("scroll-behavior")
+      html.style.scrollBehavior = "auto"
+      addEventListener("pointerdown", glide, { once: true })
+      addEventListener("keydown", glide, { once: true })
+    }
+  </script>
+  <style>
+    /* Palette: the site is dark, whatever the system prefers; --text a step below the ink, for a page that is read */
+    :root {
+      color-scheme: dark;
+      --bg: #0f0f10;
+      --fg: #ececec;
+      --text: #cccccc;
+      --muted: #9c9ca3;
+      --faint: #6c6c73;
+      --line: #232326;
+      --line-strong: #303035;
+      --panel: #151517;
+      --panel-head: #1b1b1e;
+      --accent: #e5761d;
+      --accent-ink: #ea8a40;
+      --accent-soft: rgba(234, 138, 64, .12);
+      --radius: 14px;
+      --radius-s: 9px;
+      --mono: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    /* Type: Geist and JetBrains Mono, served here and shown from the first paint: the text waits the moment the font takes, and is never drawn in another face first */
+    @font-face { font-family: "Geist"; src: url("fonts/geist.woff2") format("woff2"); font-weight: 100 900; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: block; }
+    @font-face { font-family: "Geist Fallback"; src: local("Helvetica Neue"), local("Arial"); size-adjust: 104.5%; ascent-override: 96%; descent-override: 28%; line-gap-override: 0%; }
+    @font-face { font-family: "JetBrains Mono Fallback"; src: local("Menlo"), local("SF Mono"), local("Consolas"), local("DejaVu Sans Mono"); size-adjust: 106%; ascent-override: 96.5%; descent-override: 24%; line-gap-override: 0%; }
+
+    /* Base */
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font: 16px/1.6 "Geist", "Geist Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0.002em;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent-ink); text-decoration: none; }
+    a:hover { text-decoration: underline; text-underline-offset: .15em; }
+    h1, h2, h3 { text-wrap: balance; }
+    p, li, dd { text-wrap: pretty; }
+    code { font-family: var(--mono); }
+    p code, li code, dd code { font-size: .86em; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: .05em .35em; color: inherit; white-space: nowrap; }
+    ::selection { background: color-mix(in srgb, var(--accent) 32%, transparent); }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+    .wrap { max-width: 76rem; margin: 0 auto; padding: 0 1.5rem; }
+    .sheet > * { min-width: 0; }
+    [id] { scroll-margin-top: 4.5rem; }
+
+    /* The bar */
+    header.top {
+      position: sticky; top: 0; z-index: 3;
+      background: color-mix(in srgb, var(--bg) 70%, transparent);
+      -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
+      border-bottom: 1px solid var(--line);
+    }
+    header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 3.5rem; }
+    .brand { display: flex; align-items: center; gap: .6rem; color: var(--fg); font-weight: 600; letter-spacing: -0.01em; font-size: 1.1rem; }
+    .brand:hover { text-decoration: none; }
+    .brand img { width: 26px; height: 26px; }
+    nav.links { display: flex; align-items: center; gap: 1.5rem; }
+    nav.links a { color: var(--muted); font-size: .95rem; font-weight: 450; }
+    nav.links a:hover, nav.links a.here { color: var(--fg); text-decoration: none; }
+    nav.links a.button { color: var(--fg); }
+    /* The idea leads the bar: the one warm word in the row, underlined softly, and it stays on a phone */
+    nav.links a.idea { color: var(--accent-ink); font-weight: 500; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .32em; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+    nav.links a.idea:hover { color: var(--fg); text-decoration-color: var(--accent); }
+    .button {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .7rem 1.3rem; border-radius: 999px;
+      border: 1px solid var(--line-strong); color: var(--fg);
+      font-weight: 500; font-size: .98rem; line-height: 1.2;
+      transition: border-color .15s, background-color .15s;
+    }
+    .button:hover { text-decoration: none; border-color: var(--muted); }
+    .button.small { padding: .42rem .95rem; font-size: .88rem; }
+
+    /* The opening: the policy in one sheet, then the sections */
+    .hero { padding: 4.5rem 0 0; }
+    .hero .copy { max-width: 46rem; }
+    .hero h1 { font-size: clamp(2.8rem, 5.6vw, 4.1rem); font-weight: 600; letter-spacing: -0.035em; line-height: .98; margin: 0 0 1.3rem; }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero .lede { font-size: 1.22rem; line-height: 1.5; color: var(--muted); max-width: 40rem; margin: 0; }
+    .hero .lede strong { color: var(--fg); font-weight: 560; }
+    .sheet { margin: 2.2rem 0 0; max-width: 46rem; }
+    .sheet dl { margin: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--panel); }
+    .sheet dl > div { display: grid; grid-template-columns: 8.5rem 1fr; gap: 1rem; padding: .8rem 1.3rem; border-top: 1px solid var(--line); }
+    .sheet dl > div:first-child { border-top: 0; }
+    .sheet dt { font: 500 .8rem/1.75 var(--mono); color: var(--accent-ink); }
+    .sheet dd { margin: 0; font-size: .98rem; line-height: 1.5; color: var(--text); }
+    .sheet dd b { color: var(--fg); font-weight: 560; }
+    .sheet dd code { background: var(--bg); }
+    .index { list-style: none; margin: 1.9rem 0 0; padding: 1.1rem 0 0; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: .65rem 2rem; }
+    .index a { display: inline-flex; align-items: baseline; gap: .6rem; color: var(--muted); font-size: .95rem; font-weight: 450; transition: color .15s; }
+    .index a:hover { color: var(--fg); text-decoration: none; }
+    .index code { font-size: .78rem; color: var(--accent-ink); background: none; border: 0; padding: 0; letter-spacing: .06em; }
+
+    /* Section furniture */
+    section { padding: 5rem 0 0; }
+    .rule { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 1.1rem; margin: 0 0 1.25rem; }
+    .label { font-size: .76rem; font-weight: 560; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); margin: 0; }
+    .rule .num { font: 500 .74rem/1 var(--mono); color: var(--faint); letter-spacing: .08em; }
+    section h2 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); font-weight: 560; letter-spacing: -0.024em; line-height: 1.12; margin: 0 0 .7rem; max-width: 30ch; }
+    p.sub { color: var(--text); font-size: 1.08rem; line-height: 1.55; max-width: 46rem; margin: 0 0 1.6rem; }
+    p.sub strong { color: var(--fg); font-weight: 560; }
+    section h3 { font-size: 1.02rem; font-weight: 560; letter-spacing: -0.01em; margin: 1.8rem 0 .7rem; color: var(--fg); }
+    p.after { color: var(--muted); font-size: .97rem; line-height: 1.55; max-width: 46rem; margin: 1.5rem 0 0; }
+    p.after strong { color: var(--fg); font-weight: 560; }
+
+    /* Ticks */
+    .ticks { list-style: none; margin: 0 0 1.4rem; padding: 0; display: grid; gap: .7rem; max-width: 46rem; }
+    .ticks li { position: relative; padding-left: 1.4rem; color: var(--text); font-size: 1.02rem; line-height: 1.55; }
+    .ticks li::before { content: ""; position: absolute; left: 0; top: .72em; width: .8rem; height: 2px; background: var(--accent); border-radius: 1px; }
+    .ticks li strong { color: var(--fg); font-weight: 560; }
+
+    footer { margin-top: 5.5rem; border-top: 1px solid var(--line); padding: 2.25rem 0 3rem; color: var(--muted); font-size: .9rem; }
+    footer .tag { margin: 0 0 1.4rem; font: 500 .9rem/1.5 var(--mono); color: var(--faint); }
+    footer .row { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; }
+    footer nav { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--fg); }
+
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media (max-width: 960px) {
+      section { padding-top: 4rem; }
+      .hero { padding-top: 3.5rem; }
+      nav.links { gap: 1rem; }
+      nav.links a.wide { display: none; }
+    }
+    @media (max-width: 560px) {
+      .sheet dl > div { grid-template-columns: 1fr; gap: .15rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="./"><img src="logo.png" alt="" width="26" height="26">evoke</a>
+      <nav class="links">
+        <a class="idea" href="idea.html">The idea</a>
+        <a href="manual/">Manual</a>
+        <a class="wide" href="use-cases.html">Use cases</a>
+        <a class="wide" href="format.html">Format</a>
+        <a class="wide" href="manual/sdk/getting-started.html">SDK</a>
+        <a class="wide" href="./#jev">Jev</a>
+        <a class="wide" href="https://github.com/evoke-build/evoke">GitHub</a>
+        <a class="button small" href="./#install">Install</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="hero">
+      <div class="copy">
+        <h1>Privacy <em>policy.</em></h1>
+        <p class="lede"><strong>This site sets no cookie and runs no analytics. The tool sends nothing to us.</strong>
+          What leaves your machine goes to the services you chose, with your own key. This page names each one.</p>
+      </div>
+      <div class="sheet">
+        <dl>
+          <div><dt>Cookies</dt><dd><b>None.</b> Not one, on any page.</dd></div>
+          <div><dt>Analytics</dt><dd><b>None.</b> No script watches you read, and nothing is loaded from a third party.</dd></div>
+          <div><dt>Accounts</dt><dd><b>None.</b> There is nothing to sign up for.</dd></div>
+          <div><dt>The tool</dt><dd><b>Runs on your machine and sends nothing to us.</b> Its one request goes to the classifier you chose, with your key.</dd></div>
+          <div><dt>Held by us</dt><dd><b>Nothing.</b> There is no server of ours.</dd></div>
+          <div><dt>The host</dt><dd>GitHub Pages, which logs the address of each visit.</dd></div>
+          <div><dt>Published by</dt><dd>Radhi Guennichi, the author of <code>evoke</code>.</dd></div>
+          <div><dt>Questions</dt><dd>An <a href="https://github.com/evoke-build/evoke/issues">issue</a> on GitHub. A vulnerability through the <a href="https://github.com/evoke-build/evoke/security/advisories/new">private form</a>.</dd></div>
+          <div><dt>Changed</dt><dd><time datetime="2026-09-23">23 September 2026</time>. Every change is a <a href="https://github.com/evoke-build/evoke/commits/main/site/privacy.html">public commit</a>.</dd></div>
+        </dl>
+      </div>
+      <ul class="index" aria-label="The sections">
+        <li><a href="#site"><code>01</code>This site</a></li>
+        <li><a href="#tool"><code>02</code>The tool</a></li>
+        <li><a href="#reflexes"><code>03</code>Reflexes</a></li>
+        <li><a href="#sdk"><code>04</code>The SDK</a></li>
+        <li><a href="#others"><code>05</code>Who else sees something</a></li>
+        <li><a href="#changes"><code>06</code>Changes and contact</a></li>
+      </ul>
+    </div>
+
+    <section id="site">
+      <div class="rule"><p class="label">This site</p><span class="num">01</span></div>
+      <h2>Static pages, and nothing that watches.</h2>
+      <p class="sub">evoke.build is a set of static pages. It sets no cookie, runs no analytics and asks you for
+        nothing. The pages, the fonts and the manual are served from this address, so reading here calls no
+        third party.</p>
+      <ul class="ticks">
+        <li><strong>The manual remembers your sidebar</strong> in your browser's own storage. It stays there, and
+          is sent nowhere.</li>
+        <li><strong>A Copy button touches your clipboard</strong> only when you press it.</li>
+        <li><strong>GitHub hosts these pages.</strong> It logs the IP address of each visit, for security, under
+          its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy
+          statement</a>.</li>
+        <li><strong>Installing goes through GitHub and npm.</strong> The install script fetches the release from
+          GitHub, and <code>npm</code> fetches the SDK from the npm registry. Each sees that download under its own
+          policy.</li>
+      </ul>
+    </section>
+
+    <section id="tool">
+      <div class="rule"><p class="label">The tool</p><span class="num">02</span></div>
+      <h2>Your sentence goes to the classifier. Nothing goes to us.</h2>
+      <p class="sub"><code>evoke</code> runs on your computer. It never contacts evoke.build, checks for nothing and
+        reports nothing. There is no server of ours on the way, and no telemetry.</p>
+      <h3>When it decides</h3>
+      <ul class="ticks">
+        <li><strong>One request leaves your machine</strong>, to the classifier your project names. Today that is
+          Jev, at <a href="https://typesafe.ai">TypeSafe AI</a>. It carries your sentence, and the questions built
+          from the reflexes you installed: their descriptions, options and examples, and your vocabulary's words
+          with the meaning you wrote for each.</li>
+        <li><strong>Nothing else of yours travels.</strong> Never a vocabulary's value, a setting, a key, a file,
+          or anything else on your machine. Your key goes only in that request's header, to the classifier.</li>
+        <li><strong>A proxy you name in your environment</strong> carries the connection, and sees ciphertext.</li>
+        <li><strong>What the classifier does with the request</strong> is set by TypeSafe AI's
+          <a href="https://typesafe.ai/legal/privacy">privacy policy</a> and
+          <a href="https://typesafe.ai/legal/mca">customer agreement</a>, which you accept when you take a key. As of
+          the date at the top of this page, both say your input is not used to train its models.</li>
+      </ul>
+      <h3>What stays on your machine</h3>
+      <ul class="ticks">
+        <li><strong>The log of decisions and the history of the REPL</strong> hold what you typed and what a
+          program returned, in <code>~/.local/state/evoke/</code>. Only you can read them.</li>
+        <li><strong>The answer cache and the fetched reflexes</strong> live under <code>~/.cache/evoke/</code>.
+          Delete them any time. The next run rebuilds them.</li>
+        <li><strong>Your words, your lessons and your settings</strong> are files you own and edit, in
+          <code>~/.config/evoke/</code>.</li>
+        <li><strong>No key is ever written to a file.</strong> A secret is only ever a reference to a variable in your
+          environment, and reaches a program for the length of one run.</li>
+      </ul>
+      <p class="after"><strong>To forget everything,</strong> delete those three directories. Every path is listed on
+        the manual's <a href="manual/reference/environment.html">environment page</a>, and the guarantees around them
+        on its <a href="manual/security.html">security page</a>.</p>
+    </section>
+
+    <section id="reflexes">
+      <div class="rule"><p class="label">Reflexes</p><span class="num">03</span></div>
+      <h2>A reflex is a program. It runs as you.</h2>
+      <p class="sub">A reflex runs under your account with the arguments decided, and does what its author wrote: an
+        email drafted, a file saved, a light switched. Where it sends what is the reflex's own doing, and its body
+        is one file you can read before you install it.</p>
+      <ul class="ticks">
+        <li><strong>Installing a reflex fetches it from the git host</strong> its ref names, with your own git
+          credentials. That host sees the fetch.</li>
+        <li><strong>A program runs under a scrubbed environment</strong> of five variables, and gets a secret only
+          through its settings, for one run.</li>
+        <li><strong>The first-party collection</strong> acts on your Mac, and reaches only the addresses you name: a
+          file to download, a site to visit, a mail to start.</li>
+      </ul>
+      <p class="after"><strong>Read what you install.</strong> <code>add</code> and <code>update</code> are the trust
+        decisions, and the <a href="manual/security.html">security page</a> says what is guaranteed around them, and
+        what is not.</p>
+    </section>
+
+    <section id="sdk">
+      <div class="rule"><p class="label">The SDK</p><span class="num">04</span></div>
+      <h2>Inside your application, under its policy.</h2>
+      <p class="sub">The SDK runs inside your application and sends the same request to the adapter your application
+        configures, with your application's key. We receive nothing.</p>
+      <p class="after">What your application does with its users' sentences, and what it tells them, is your
+        application's responsibility, and belongs in its own privacy policy. The
+        <a href="manual/sdk/adapters.html">adapters page</a> says exactly what an adapter is given.</p>
+    </section>
+
+    <section id="others">
+      <div class="rule"><p class="label">Who else sees something</p><span class="num">05</span></div>
+      <h2>Four parties, each under its own terms.</h2>
+      <p class="sub">None of them is us. Each sees only what the line names, and its own policy governs what it
+        keeps.</p>
+      <ul class="ticks">
+        <li><strong>TypeSafe AI</strong> sees a decision's request, when your project names Jev. Its
+          <a href="https://typesafe.ai/legal/privacy">privacy policy</a> and
+          <a href="https://typesafe.ai/legal/mca">customer agreement</a> apply.</li>
+        <li><strong>GitHub</strong> sees a visit to this site, a download of a release, and a fetch from a repository
+          it hosts. Its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy
+          statement</a> applies.</li>
+        <li><strong>npm</strong> sees an install of the SDK. Its
+          <a href="https://docs.npmjs.com/policies/privacy">privacy policy</a> applies.</li>
+        <li><strong>Your git host</strong> sees a fetch of a reflex you install from it, under your own account
+          and its terms.</li>
+      </ul>
+    </section>
+
+    <section id="changes">
+      <div class="rule"><p class="label">Changes and contact</p><span class="num">06</span></div>
+      <h2>This page is a file in the repository.</h2>
+      <p class="sub">Every change to it is a commit anyone can read, with its date, in the
+        <a href="https://github.com/evoke-build/evoke/commits/main/site/privacy.html">repository's history</a>. The
+        date at the top of this page is the last change.</p>
+      <ul class="ticks">
+        <li><strong>If a version of <code>evoke</code> or of this site ever sends or keeps something new,</strong>
+          this page changes in the same commit, so what the page says is what the tool does.</li>
+        <li><strong>Nothing is held by us,</strong> so there is nothing we could hand over, correct or delete. What is
+          on your machine, you delete. For the four parties above, their policies say how to ask.</li>
+        <li><strong>A question</strong> is an <a href="https://github.com/evoke-build/evoke/issues">issue</a> on
+          GitHub. <strong>A vulnerability</strong> goes through
+          <a href="https://github.com/evoke-build/evoke/security/advisories/new">GitHub's private form</a>, never a
+          public issue.</li>
+      </ul>
+      <p class="after"><a href="faq.html">Frequently asked questions →</a></p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p class="tag">You invoke a function; you evoke a reflex.</p>
+      <div class="row">
+        <div><a href="https://github.com/evoke-build/evoke/blob/main/LICENSE">Apache-2.0</a>; the collection is MIT.
+          The name and the logo are <a href="https://github.com/evoke-build/evoke/blob/main/TRADEMARK.md">trademarks</a>.
+          Jev is <a href="https://typesafe.ai">TypeSafe AI</a>'s.</div>
+        <nav>
+          <a href="manual/">Manual</a>
+          <a href="idea.html">The idea</a>
+          <a href="use-cases.html">Use cases</a>
+          <a href="format.html">The format</a>
+          <a href="manual/reference/cli.html">Reference</a>
+          <a href="manual/security.html">Security</a>
+          <a href="faq.html">FAQ</a>
+          <a rel="privacy-policy" href="privacy.html">Privacy</a>
+          <a href="https://github.com/evoke-build/reflexes">Collection</a>
+          <a href="https://github.com/evoke-build/evoke">GitHub</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

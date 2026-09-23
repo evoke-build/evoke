@@ -6,6 +6,16 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- evoke.build answers the questions people ask, on a page of its own, *Frequently asked questions*: what a reflex
+  is, what the number means, what it needs, where reflexes come from and who answers for what they do, what leaves
+  your machine, and who makes it — twenty-five short answers, each pointing at the page of the manual that holds
+  the long one, and served to search engines as the page's own structured data.
+- evoke.build states its privacy policy: no cookie, no analytics, no account, nothing held by us; what one request
+  carries from your machine to the classifier and what never travels; what stays on your machine and how to forget
+  it; a reflex as a program that runs as you; the SDK under its application's policy; the four parties that see
+  something, each under its own terms; and the page's date, which is the date of its last commit. The FAQ and the
+  policy are linked from every footer, and from a line under the card that closes every page of the manual.
+
 ## [0.3.0] - 2026-09-23
 
 - evoke.build explains the idea. A page of its own, *The idea*: why reflexes, in ten minutes — the problem trust

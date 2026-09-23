@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-#MISE description="Build evoke.build into target/site: the landing page, the idea page, the format page with its schemas, and the use-cases page, the install script, the manual rendered by mdBook with the site's bar and the use cases' sentences on every page, a canonical link, a description, a card and a breadcrumb trail on every page, the sitemap dated by git, and robots.txt — checking first that every link in the manual resolves"
+#MISE description="Build evoke.build into target/site: the landing page, the idea page, the format page with its schemas, the use-cases page, the FAQ with its questions as structured data, the privacy policy dated by git, the install script, the manual rendered by mdBook with the site's bar, the use cases' sentences and the FAQ and privacy links on every page, a canonical link, a description, a card and a breadcrumb trail on every page, the sitemap dated by git, and robots.txt — checking first that every link in the manual resolves"
 """The manual's README is its index: its tables become mdBook's SUMMARY.md, so the site's structure has one source.
 What a search engine or a shared link needs is written here, once, from the pages themselves and from git."""
-import html as html_text, json, re, shutil, subprocess, sys
+import datetime, html as html_text, json, re, shutil, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -38,7 +38,7 @@ def landing_palette():
         return {name: value.strip() for name, value in TOKEN.findall(block) if value.lstrip().startswith(("#", "rgb"))}
     landing = tokens(SITE / "index.html")
     problems = [f"{file.relative_to(ROOT)}: --{name} is {value}, the landing page's is {landing[name]}"
-                for file in (SITE / "use-cases.html", SITE / "idea.html", SITE / "format.html", SITE / "manual.css")
+                for file in (SITE / "use-cases.html", SITE / "idea.html", SITE / "format.html", SITE / "faq.html", SITE / "privacy.html", SITE / "manual.css")
                 for name, value in tokens(file).items() if name in landing and value != landing[name]]
     if problems:
         sys.exit("\n".join(problems))
@@ -155,11 +155,15 @@ AT_WORK = """                    <aside class="at-work" aria-label="The use case
                     </aside>
 """
 
+COLOPHON = """                    <p class="colophon"><a href="{root}faq.html">FAQ</a><a rel="privacy-policy" href="{root}privacy.html">Privacy</a><a href="https://github.com/evoke-build/evoke">GitHub</a></p>
+"""
+
 
 def furnished(page):
-    """A manual page furnished: the browser's chrome takes the page's colour, the bar carries the wordmark and it leads
-    home, a Use cases link joins the bar, and the use cases' sentences close the page. The pages nobody lands on, print and
-    404, take only the colour and the wordmark."""
+    """A manual page furnished: the browser's chrome takes the page's colour; the bar carries the wordmark as plain text,
+    so the title stays the page's one heading, and it leads home; a Use cases link joins the bar; the use cases' sentences
+    close the page, with the FAQ, the privacy policy and the repository in a line under them. The pages nobody lands on,
+    print and 404, take only the colour and the wordmark."""
     text = page.read_text()
     text = text.replace('<meta name="theme-color" content="#ffffff">', f'<meta name="theme-color" content="{palette["bg"]}">', 1)
     brand = "evoke"
@@ -167,8 +171,8 @@ def furnished(page):
         root = "../" * (len(page.relative_to(OUT / "manual").parts) - 1) + "../"
         brand = f'<a href="{root}">evoke</a>'
         text = text.replace('<div class="right-buttons">\n', f'<div class="right-buttons">\n                        <a class="use-cases idea" href="{root}idea.html">The idea</a>\n                        <a class="use-cases" href="{root}use-cases.html">Use cases</a>\n', 1)
-        text = text.replace("                    </main>", AT_WORK.replace("{root}", root) + "                    </main>", 1)
-    text = text.replace('<h1 class="menu-title">Evoke</h1>', f'<h1 class="menu-title">{brand}</h1>', 1)
+        text = text.replace("                    </main>", AT_WORK.replace("{root}", root) + COLOPHON.replace("{root}", root) + "                    </main>", 1)
+    text = text.replace('<h1 class="menu-title">Evoke</h1>', f'<p class="menu-title">{brand}</p>', 1)  # the title is the page's one heading
     page.write_text(text)
 
 
@@ -201,7 +205,8 @@ def widowless(page):
 
 def glue(parts, start, end):
     """The last two words between two indices of a split page joined by a no-break space, unless the break before the
-    last word sits inside code, or the words are joined already."""
+    last word sits inside code, the words are joined already, or they are the only two: a two-word heading glued whole
+    cannot wrap, and overflowed a phone."""
     chars, code = [], 0
     for i in range(start + 1, end):
         if i % 2:
@@ -217,7 +222,7 @@ def glue(parts, start, end):
     j = last
     while j >= 0 and not (space(chars[j][2]) and not chars[j][3]):
         j -= 1
-    if j < 0 or not any(not space(c) for _, _, c, _ in chars[:j]) or any(c == "\u00a0" for _, _, c, _ in chars[j:last]):
+    if j < 0 or len("".join(c for _, _, c, _ in chars[:j]).split()) < 2 or any(c == "\u00a0" for _, _, c, _ in chars[j:last]):
         return
     k = j
     while k > 0 and space(chars[k - 1][2]) and not chars[k - 1][3]:
@@ -232,16 +237,65 @@ def glue(parts, start, end):
         parts[i] = "".join(text)
 
 
+def answered(page):
+    """The FAQ's questions and answers, read from the page into its FAQPage entity, so the two never drift: what a
+    search engine is told is what a reader sees."""
+    text = page.read_text()
+    plain = lambda s: " ".join(html_text.unescape(re.sub(r"<[^>]+>", "", s)).split())
+    entities = [{"@type": "Question", "name": plain(question),
+                 "acceptedAnswer": {"@type": "Answer", "text": plain(" ".join(re.findall(r"<p[^>]*>(.*?)</p>", answer, re.S)))}}
+                for question, answer in re.findall(r'<div class="qa"[^>]*>\s*<h3>(.*?)</h3>(.*?)</div>', text, re.S)]
+    page.write_text(text.replace('"mainEntity": []', '"mainEntity": ' + json.dumps(entities, ensure_ascii=False), 1))
+
+
+def changed(page, dated):
+    """The privacy page says when it last changed: the date of the last commit to its source, the sitemap's own, shown
+    as a reader reads a date and as a search engine does."""
+    date = git("log", "-1", "--format=%cs", "--", str(source(page))) if dated else ""
+    if not date:
+        return
+    shown = datetime.date.fromisoformat(date).strftime("%-d %B %Y")
+    text = re.sub(r'<time datetime="[^"]*">[^<]*</time>', f'<time datetime="{date}">{shown}</time>', page.read_text(), count=1)
+    page.write_text(re.sub(r'"dateModified": "[^"]*"', f'"dateModified": "{date}"', text, count=1))
+
+
 def versioned(landing):
     """The landing page's structured data names the version Cargo.toml names."""
     version = re.search(r'^version\s*=\s*"([^"]+)"', (ROOT / "Cargo.toml").read_text(), re.M)[1]
     landing.write_text(re.sub(r'"softwareVersion": "[^"]*"', f'"softwareVersion": "{version}"', landing.read_text(), count=1))
 
 
-def sitemap(pages):
+def checked(pages):
+    """What a search engine reads on every listed page, held at build: a title of at most 60 characters, a description
+    of 50 to 160, a canonical address, one heading, and structured data that parses."""
+    problems = []
+    for page in pages:
+        text = page.read_text()
+        title = re.search(r"<title>(.*?)</title>", text, re.S)
+        summary_line = re.search(r'<meta name="description" content="([^"]*)">', text)
+        faults = []
+        if title is None or len(html_text.unescape(title[1])) > 60:
+            faults.append("the title")
+        if summary_line is None or not 50 <= len(html_text.unescape(summary_line[1])) <= 160:
+            faults.append("the description")
+        if '<link rel="canonical"' not in text:
+            faults.append("the canonical address")
+        if len(re.findall(r"<h1[\s>]", text)) != 1:
+            faults.append("one heading")
+        for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>', text, re.S):
+            try:
+                json.loads(block)
+            except ValueError:
+                faults.append("the structured data")
+        if faults:
+            problems.append(f"{page.relative_to(OUT)}: {', '.join(faults)}")
+    if problems:
+        sys.exit("\n".join(problems))
+
+
+def sitemap(pages, dated):
     """Every listed page, dated by the last commit that touched its source. A clone without history dates nothing:
     a search engine trusts a date only while every date is right."""
-    dated = git("rev-parse", "--is-shallow-repository") == "false"
     entries = []
     for page in pages:
         date = git("log", "-1", "--format=%cs", "--", str(source(page))) if dated else ""
@@ -250,7 +304,6 @@ def sitemap(pages):
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(entries) + "\n</urlset>\n")
     (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /manual/print.html\n\nSitemap: {URL}sitemap.xml\n")
-    return dated
 
 
 links_resolve()
@@ -260,14 +313,17 @@ shutil.rmtree(SRC, ignore_errors=True)
 shutil.copytree(MANUAL, SRC)
 (SRC / "SUMMARY.md").write_text(summary())
 subprocess.run(["mdbook", "build", str(SITE)], check=True)
-for name in ["index.html", "idea.html", "format.html", "use-cases.html", "install.sh", "og.png", "logo.png", "logo-512.png", "apple-touch-icon.png"]:
+for name in ["index.html", "idea.html", "format.html", "use-cases.html", "faq.html", "privacy.html", "install.sh", "og.png", "logo.png", "logo-512.png", "apple-touch-icon.png"]:
     shutil.copy(SITE / name, OUT / name)
 shutil.copy(SITE / "theme/favicon.png", OUT / "favicon.png")
 shutil.copytree(ROOT / "assets", OUT / "assets")
 shutil.copytree(SITE / "fonts", OUT / "fonts")
 shutil.copytree(ROOT / "spec/schemas", OUT / "schemas")  # the format's schemas, at the $id each declares
+dated = git("rev-parse", "--is-shallow-repository") == "false"
 versioned(OUT / "index.html")
-for name in ["index.html", "idea.html", "format.html", "use-cases.html"]:
+answered(OUT / "faq.html")
+changed(OUT / "privacy.html", dated)
+for name in ["index.html", "idea.html", "format.html", "use-cases.html", "faq.html", "privacy.html"]:
     widowless(OUT / name)
 manual_pages = sorted(OUT.glob("manual/**/*.html"))
 for page in manual_pages:
@@ -275,6 +331,7 @@ for page in manual_pages:
     described(page)
     widowless(page)
 shutil.copy(OUT / "manual/404.html", OUT / "404.html")
-listed = [OUT / "index.html", OUT / "idea.html", OUT / "format.html", OUT / "use-cases.html", OUT / "manual/index.html"] + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
-dated = sitemap(listed)
+listed = [OUT / "index.html", OUT / "idea.html", OUT / "format.html", OUT / "use-cases.html", OUT / "faq.html", OUT / "privacy.html", OUT / "manual/index.html"] + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
+sitemap(listed, dated)
+checked(listed)
 print(f"site: {OUT.relative_to(ROOT)} — {len(listed)} pages in the sitemap{'' if dated else ', undated: the clone has no history'}")

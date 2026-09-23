@@ -514,3 +514,22 @@ pre.term .buttons button:hover { color: var(--term-fg); }
 @media (max-width: 720px) {
   .at-work { grid-template-columns: minmax(0, 1fr); padding: 2rem 2.2rem; }
 }
+
+/* Under the card, one quiet line: the FAQ, the privacy policy and the repository, on every page of the manual. */
+
+.colophon {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 2rem;
+  margin: 1.6rem 0 0;
+  font-size: 1.35rem;
+  color: var(--faint);
+}
+
+.colophon a {
+  color: var(--muted) !important;
+  text-decoration: none !important;
+  transition: color 0.15s;
+}
+
+.colophon a:hover { color: var(--fg) !important; }
