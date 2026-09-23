@@ -6,16 +6,57 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A sentence of several steps is read more carefully. `don’t` with the apostrophe a Mac types is a negation like
+  `don't`. A second value the whole sentence already saw, "set a timer for 10 minutes and 30 seconds", is one
+  task that confirms with its unused span, not two timers. `them` over two steps that both yield what the next
+  takes confirms the plan when only one binds; before, the second was dropped in silence. A step that found
+  nothing to do, an empty list, skips clean: it stops nothing after it, and the run's status is `ran`, not
+  `skipped`. `that the` and `this is` are no longer read as references, `the address` beside a step that found
+  an address is that one thing, and a value bound from one step is written over the reference that named it. A
+  sentence with more than two dozen connectives is decided as one input instead of asking a question per
+  connective. A plan handed to the SDK's run is checked before it runs.
+- After a sentence of several steps, `evoke why` shows every step under its number with what became of it, and
+  `evoke teach <call>` with no utterance takes the step the lesson's reflex decided, or names the steps. A step
+  decided again with a bound value in its words and refused then says so, `"…" · no reflex`, where before it ended
+  the run in silence. A plan stopped before any step ran, its question or prompt declined or with no terminal to
+  ask, logs every step's line and prints it under `--json`. A question asked up front is asked again while the
+  answer is out of range, as one input's is. One step beside a part you said not to do is decided as one input;
+  a sentence that is only such parts says `nothing to do` instead of exiting in silence, and `try` says it too.
 - `[t]each` at a confirm records the lesson and runs, as the manual says. Before, an utterance the core would
   not file, a pasted bidi mark for instance, stopped the run the person had just said yes to; now the refusal
   prints and the run goes ahead. A confirm answered with anything but `y`, `n` or `t` says so before it asks
   again, and what you typed at a prompt is echoed plain, never raw.
+- An argument you answer for at a prompt is settled: its judgment leaves the gate, so a decision that asked for
+  the room no longer confirms a second time over the room you just typed. The other judgments still gate it.
+- `evoke show <name>` lists the lines of your overlay that address nothing the reflex has, as `update` reported
+  them once.
+- `evoke check` and `update` see two more contract changes: an argument made required or a config key made secret
+  is `major`, since a call, an example or a plain setting stops working; an argument made optional or a secret
+  made plain is `minor`. Before, all four read as wording, and a "patch" could break a call or turn a reflex
+  inactive.
+- An optional argument over an empty vocabulary no longer makes its reflex inactive: the argument is never asked
+  and never stated, and the reflex runs without it. The collection's `download` works the moment it is installed,
+  and takes a place once `places` has words. A required argument's empty vocabulary still makes the reflex
+  inactive, with the line that fills it.
+- `--tag` with a tag no reflex carries says so and ends in `evoke show`. Before, it reported the first inactive
+  reflex, whatever that reflex's tags. A tag only an inactive reflex carries still explains that reflex.
+- A value typed at a prompt or written in a call by name must read whole. Before, `volume level=1e3` ran with
+  `1`, `-5` ran with `5` and `1 hour 30 minutes` started a one-hour timer. Now a value that does not read whole
+  is refused, or asked again. A leading minus is part of a number, in a sentence too, so `-5` reads as `-5`.
+- The digits after a thousands comma or a decimal point are no candidate of their own: `1,000 seconds` no longer
+  proposes a zero-second `000 seconds`, and `0.4 seconds` no longer rounds to a timer of nothing.
+- A call or a lesson that names one argument twice through its former name, `state=off power=on`, is refused.
+  Before, the last value won without a word.
+- A step that names two earlier results has both written over their references; before, the second replaced
+  the first. A `-5 minutes` is a number, never a five-minute duration.
+- Under `--json`, a request that is only what not to do prints one abstain line instead of nothing. After a step
+  that ran in rounds, `why` and `teach` see the whole weave again.
 - Under `--json`, a failure at a prompt is the line's own `error`, one object per input, and a line written at a
   prompt shows on the terminal. `evoke why`'s own failures end in `evoke why`. A flag where a name should be,
   `evoke show --json`, is refused as a flag; `run` says its flag goes before the call; `teach` refuses a
   flag-shaped utterance and an empty one.
-- `Ctrl-C` while the spinner turns clears its line before `evoke` ends. The one line `evoke` prints when it hits
-  a bug is one line, with where, ending in the address to report it.
+- `evoke run --json` prints one object when the body fails, and prints the decision line when a confirm is
+  declined, as a decided input does.
 - `evoke update` no longer stops at a reflex whose new manifest does not read: it is reported at its new tree in
   the store and skipped, and the rest move. `evoke show` lists the project before `sync`, each missing tree as an
   inactive line, where it refused. A git call that has not finished within a minute is a failure, never a hang. What
@@ -26,19 +67,54 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   that adds the rest; a ref with a tag it has not, a collection with `--as`, a word to remove that is not there
   and a directory that is not there each end in the command that helps. `update <name> --accept <other>` is
   refused instead of dropping the accept. A failed keep leaves no `.tmp` directory in the store.
-- `evoke show <name>` lists the lines of your overlay that address nothing the reflex has, as `update` reported
-  them once.
+- `Ctrl-C` while the spinner turns clears its line before `evoke` ends. The one line `evoke` prints when it hits
+  a bug is one line, with where, ending in the address to report it.
 - `evoke check` on a body that does not load says why without an empty line first.
-- A step that names two earlier results has both written over their references; before, the second replaced
-  the first. A `-5 minutes` is a number, never a five-minute duration.
-- Under `--json`, a request that is only what not to do prints one abstain line instead of nothing. After a step
-  that ran in rounds, `why` and `teach` see the whole weave again.
-- `--tag` with a tag no reflex carries says so and ends in `evoke show`. Before, it reported the first inactive
-  reflex, whatever that reflex's tags. A tag only an inactive reflex carries still explains that reflex.
-- An optional argument over an empty vocabulary no longer makes its reflex inactive: the argument is never asked
-  and never stated, and the reflex runs without it. The collection's `download` works the moment it is installed,
-  and takes a place once `places` has words. A required argument's empty vocabulary still makes the reflex
-  inactive, with the line that fills it.
+- The frames a thrown error prints start at its first frame. A message of several lines is no longer repeated
+  above them.
+- A JavaScript body's result of any size reaches `evoke` and the SDK whole. Before, a result over 64 KiB, text or
+  data, failed as "the result line is not JSON" and echoed 64 KiB of itself. A line that does not read is echoed
+  to its first 120 characters.
+- A file body starts sooner: the loader warms Node's type stripper while the decision is made, a start-up cost a
+  body paid after it, and in a sentence of several steps the next step's loader is started while the current one
+  runs.
+- An engine answer to a question of the weave that fails validation is asked again on the next run. Before, it was
+  kept in the answer cache and served every time, exit 4 each time.
+- An engine answer whose probabilities do not sum to 1 is refused as malformed, exit 4, in both hosts. Before, the
+  Jev adapter scaled any answer to 1, so a deflated answer read as certainty. Two-decimal rounding is still allowed
+  for.
+- A recorded or coded adapter's yes/no answer that carries `no` must sum to 1 with `yes`, as a choice must.
+- A key the classifier refuses ends in `export TYPESAFE_API_KEY=<value>`, exit 4, in both hosts. Before, the line
+  said to run the command again. An empty `TYPESAFE_API_KEY` counts as unset, and the SDK's missing-key line reads
+  as the CLI's.
+- Both hosts read the proxy from the same two variables, `HTTPS_PROXY` and `NO_PROXY`, the lower-case names
+  first. Before, the CLI also read `ALL_PROXY` and `HTTP_PROXY`, so the two hosts could use different proxies. A
+  value that is not an `http` or `https` address is refused with the `export` line, never bypassed in silence. A
+  proxy's refusal names the proxy, an offline machine reads "could not resolve", and the CLI follows no redirect
+  from the endpoint.
+- Over the classifier's option limit on a vocabulary argument, the line names the vocabulary and ends in
+  `evoke vocab <name> remove <word>`, not in removing the reflex.
+- A control character in a local reflex path, a plain setting or a git URL is refused, as it is in every other
+  string of a project. A password or a token in a git URL is refused: git's credential helper holds it, never
+  `evoke.toml` or the lock. `.` and `..` are no ref segments, and a path typed as a ref is told how a local
+  reflex is written.
+- A digest in a lock or a trust file is lower-case hex only; `+f` pairs no longer pass as `0f`.
+- `[t]each` and `evoke teach` read an utterance in NFC, as a decision does, so a span the decision found is found
+  in the utterance it came from.
+- Lint's "addresses the model" matches whole words: "as an aid" and "the models" are no longer named.
+- A manifest saved with Windows line endings says so: "contains a carriage return (U+000D); save the file with LF
+  line endings".
+- The SDK's doors hold. A lone surrogate in an input, a name handed to `load` or `with` that is no name, an
+  adapter answering `NaN`, a file that will not read where the CLI would skip or refuse it: each was reported as
+  a bug in `evoke`; each is now the diagnostic, fault or failure it is, with its fix. `handle` declines on the
+  second answer that does not read, as its page said, where it threw. An empty input is refused before the
+  adapter is asked. Two test files recording into one `answers.toml` no longer lose each other's answers: the
+  file is read again and merged before each write. A body's own error is a `FailureError`'s `cause`. The
+  weave's `At` is `Turn`, since `At` already names a line of a file. The first hour is written with `10 minutes`,
+  which the duration recognizer reads, where `ten minutes` could never have run. Ten more op families are pinned
+  by vectors, and a family the runners do not list fails their check.
+- The SDK needs Node 24.5 or newer: the proxy support it relies on arrived there, and an older Node connected
+  around the proxy without a word. Through a proxy, a connection that never answers ends at the deadline.
 - The collection: `mail` is `write`, since a draft is written; `trash` says `destructive` in its manifest rather
   than by default; `wifi` finds the Wi-Fi device by its port's name instead of assuming `en0`, a file body now, so
   the next tag carries it; `note` starts on a fresh line when the file's last line has none; `lock`, `mail`,
@@ -49,82 +125,6 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   reserves `weave` as the binary does; the manifest schema wants the summary line the reader wants; the schemas
   point at the manual on the site; a `[adapters.replay]` table takes what a later `replay` may need. The
   first-reflex page's `try` block is what the binary prints.
-- The SDK's doors hold. A lone surrogate in an input, a name handed to `load` or `with` that is no name, an
-  adapter answering `NaN`, a file that will not read where the CLI would skip or refuse it: each was reported as
-  a bug in `evoke`; each is now the diagnostic, fault or failure it is, with its fix. `handle` declines on the
-  second answer that does not read, as its page said, where it threw. An empty input is refused before the
-  adapter is asked. Two test files recording into one `answers.toml` no longer lose each other's answers: the
-  file is read again and merged before each write. A body's own error is a `FailureError`'s `cause`. The
-  weave's `At` is `Turn`, since `At` already names a line of a file. The first hour is written with `10 minutes`,
-  which the duration recognizer reads, where `ten minutes` could never have run. Ten more op families are pinned
-  by vectors, and a family the runners do not list fails their check.
-- A file body starts sooner: the loader warms Node's type stripper while the decision is made, a start-up cost a
-  body paid after it, and in a sentence of several steps the next step's loader is started while the current one
-  runs.
-- After a sentence of several steps, `evoke why` shows every step under its number with what became of it, and
-  `evoke teach <call>` with no utterance takes the step the lesson's reflex decided, or names the steps. A step
-  decided again with a bound value in its words and refused then says so, `"…" · no reflex`, where before it ended
-  the run in silence. A plan stopped before any step ran, its question or prompt declined or with no terminal to
-  ask, logs every step's line and prints it under `--json`. A question asked up front is asked again while the
-  answer is out of range, as one input's is. One step beside a part you said not to do is decided as one input;
-  a sentence that is only such parts says `nothing to do` instead of exiting in silence, and `try` says it too.
-- A sentence of several steps is read more carefully. `don’t` with the apostrophe a Mac types is a negation like
-  `don't`. A second value the whole sentence already saw, "set a timer for 10 minutes and 30 seconds", is one
-  task that confirms with its unused span, not two timers. `them` over two steps that both yield what the next
-  takes confirms the plan when only one binds; before, the second was dropped in silence. A step that found
-  nothing to do, an empty list, skips clean: it stops nothing after it, and the run's status is `ran`, not
-  `skipped`. `that the` and `this is` are no longer read as references, `the address` beside a step that found
-  an address is that one thing, and a value bound from one step is written over the reference that named it. A
-  sentence with more than two dozen connectives is decided as one input instead of asking a question per
-  connective. A plan handed to the SDK's run is checked before it runs.
-- `evoke check` and `update` see two more contract changes: an argument made required or a config key made secret
-  is `major`, since a call, an example or a plain setting stops working; an argument made optional or a secret
-  made plain is `minor`. Before, all four read as wording, and a "patch" could break a call or turn a reflex
-  inactive.
-- An argument you answer for at a prompt is settled: its judgment leaves the gate, so a decision that asked for
-  the room no longer confirms a second time over the room you just typed. The other judgments still gate it.
-- A value typed at a prompt or written in a call by name must read whole. Before, `volume level=1e3` ran with
-  `1`, `-5` ran with `5` and `1 hour 30 minutes` started a one-hour timer. Now a value that does not read whole
-  is refused, or asked again. A leading minus is part of a number, in a sentence too, so `-5` reads as `-5`.
-- The digits after a thousands comma or a decimal point are no candidate of their own: `1,000 seconds` no longer
-  proposes a zero-second `000 seconds`, and `0.4 seconds` no longer rounds to a timer of nothing.
-- A call or a lesson that names one argument twice through its former name, `state=off power=on`, is refused.
-  Before, the last value won without a word.
-- A recorded or coded adapter's yes/no answer that carries `no` must sum to 1 with `yes`, as a choice must.
-- A digest in a lock or a trust file is lower-case hex only; `+f` pairs no longer pass as `0f`.
-- `[t]each` and `evoke teach` read an utterance in NFC, as a decision does, so a span the decision found is found
-  in the utterance it came from.
-- Lint's "addresses the model" matches whole words: "as an aid" and "the models" are no longer named.
-- A manifest saved with Windows line endings says so: "contains a carriage return (U+000D); save the file with LF
-  line endings".
-- A control character in a local reflex path, a plain setting or a git URL is refused, as it is in every other
-  string of a project. A password or a token in a git URL is refused: git's credential helper holds it, never
-  `evoke.toml` or the lock. `.` and `..` are no ref segments, and a path typed as a ref is told how a local
-  reflex is written.
-- Over the classifier's option limit on a vocabulary argument, the line names the vocabulary and ends in
-  `evoke vocab <name> remove <word>`, not in removing the reflex.
-- Both hosts read the proxy from the same two variables, `HTTPS_PROXY` and `NO_PROXY`, the lower-case names
-  first. Before, the CLI also read `ALL_PROXY` and `HTTP_PROXY`, so the two hosts could use different proxies. A
-  value that is not an `http` or `https` address is refused with the `export` line, never bypassed in silence. A
-  proxy's refusal names the proxy, an offline machine reads "could not resolve", and the CLI follows no redirect
-  from the endpoint.
-- The SDK needs Node 24.5 or newer: the proxy support it relies on arrived there, and an older Node connected
-  around the proxy without a word. Through a proxy, a connection that never answers ends at the deadline.
-- A key the classifier refuses ends in `export TYPESAFE_API_KEY=<value>`, exit 4, in both hosts. Before, the line
-  said to run the command again. An empty `TYPESAFE_API_KEY` counts as unset, and the SDK's missing-key line reads
-  as the CLI's.
-- An engine answer to a question of the weave that fails validation is asked again on the next run. Before, it was
-  kept in the answer cache and served every time, exit 4 each time.
-- A JavaScript body's result of any size reaches `evoke` and the SDK whole. Before, a result over 64 KiB, text or
-  data, failed as "the result line is not JSON" and echoed 64 KiB of itself. A line that does not read is echoed
-  to its first 120 characters.
-- `evoke run --json` prints one object when the body fails, and prints the decision line when a confirm is
-  declined, as a decided input does.
-- The frames a thrown error prints start at its first frame. A message of several lines is no longer repeated
-  above them.
-- An engine answer whose probabilities do not sum to 1 is refused as malformed, exit 4, in both hosts. Before, the
-  Jev adapter scaled any answer to 1, so a deflated answer read as certainty. Two-decimal rounding is still allowed
-  for.
 - evoke.build answers the questions people ask, on a page of its own, *Frequently asked questions*: what a reflex
   is, what the number means, what it needs, where reflexes come from and who answers for what they do, what leaves
   your machine, and who makes it — twenty-five short answers, each pointing at the page of the manual that holds
