@@ -824,3 +824,52 @@ mod wording {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// `spec/fixtures/plan.json`, changed by one closure, read back through the wire form's validation.
+    fn read(change: impl FnOnce(&mut serde_json::Value)) -> Result<Plan, String> {
+        let mut plan: serde_json::Value =
+            serde_json::from_str(include_str!("../../../spec/fixtures/plan.json")).unwrap();
+        change(&mut plan);
+        serde_json::from_value(plan).map_err(|error| error.to_string())
+    }
+
+    #[test]
+    fn the_wire_form_holds_only_a_plan_that_is_one() {
+        assert!(read(|_| {}).is_ok());
+        let route = read(|plan| {
+            plan["slots"].as_object_mut().unwrap().shift_remove("route");
+        });
+        assert!(route.unwrap_err().contains("a plan has a route choice"));
+        let ghost = read(|plan| {
+            let fits = plan["slots"]["fits.lights"].clone();
+            plan["slots"]["fits.ghost"] = fits;
+        });
+        assert!(
+            ghost
+                .unwrap_err()
+                .contains("the question fits.ghost names nothing active")
+        );
+        let unasked = read(|plan| {
+            plan["slots"]
+                .as_object_mut()
+                .unwrap()
+                .shift_remove("fits.lights");
+        });
+        assert!(
+            unasked
+                .unwrap_err()
+                .contains("lights is active without all of its questions")
+        );
+        let both = read(|plan| {
+            plan["inactive"]["lights"] = serde_json::json!([{ "reflex": "lights", "message": "x", "fix": { "type": "check" } }]);
+        });
+        assert!(
+            both.unwrap_err()
+                .contains("lights is both active and inactive")
+        );
+    }
+}

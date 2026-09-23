@@ -245,7 +245,7 @@ mod tests {
     }
 
     #[test]
-    fn a_pick_renders_its_span_quoted() {
+    fn quoted_wraps_and_escapes_its_text() {
         assert_eq!(quoted("say \"hi\""), "\"say \\\"hi\\\"\"");
     }
 

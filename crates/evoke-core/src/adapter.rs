@@ -560,7 +560,46 @@ mod tests {
     }
 
     #[test]
-    fn every_fault_fixes() {
+    fn every_fault_has_its_fix() {
+        let question = QuestionId::Route;
+        let rerun = [
+            Fault::Transport {
+                message: "reset".to_owned(),
+            },
+            Fault::Status { status: 503 },
+            Fault::Unanswered {
+                question: question.clone(),
+            },
+            Fault::Malformed {
+                question,
+                message: "no probabilities".to_owned(),
+            },
+            Fault::Unrecorded {
+                identity: crate::text::identity("what time is it"),
+            },
+        ];
+        for fault in rerun {
+            assert_eq!(fault.fix(), Fix::Rerun, "{fault}");
+        }
+        let key = VarName::new("TYPESAFE_API_KEY").unwrap();
+        assert_eq!(
+            Fault::Refused {
+                credential: key.clone()
+            }
+            .fix(),
+            Fix::ExportKey { var: key }
+        );
+        assert_eq!(
+            Fault::Retired {
+                id: AdapterId::new("engine-1").unwrap()
+            }
+            .fix(),
+            Fix::Update { reflex: None }
+        );
+    }
+
+    #[test]
+    fn a_fault_prints_and_serializes() {
         let id = QuestionId::Route;
         assert_eq!(
             Fault::Retired {

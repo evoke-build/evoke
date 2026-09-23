@@ -1,5 +1,5 @@
-//! Every real owned file under `reflexes/` and `spec/transcripts/` parses: manifests, projects, vocabularies, and
-//! overlays against the local reflex beside them; and every manifest lints clean. One manifest must not read —
+//! Every real owned file under `reflexes/` and `spec/transcripts/` parses: manifests, projects, locks, vocabularies,
+//! and overlays against the local reflex beside them; and every manifest lints clean. One manifest must not read —
 //! the tree the update transcript skips — and this checks that it does not.
 
 use std::fs;
@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 use evoke_core::document::Text;
 use evoke_core::name::{LocalName, VocabName};
 use evoke_core::{
-    Diagnostic, Document, File, Finding, Fix, lint, manifest, overlay, project, vocabulary,
+    Diagnostic, Document, File, Finding, Fix, lint, lock, manifest, overlay, project, vocabulary,
 };
 
 fn root() -> PathBuf {
@@ -64,6 +64,11 @@ fn parse(path: &Path) -> Option<Vec<Diagnostic>> {
         }
         Some("evoke.toml") => project(Document {
             file: File::Project,
+            text: Text::Toml(&text),
+        })
+        .err(),
+        Some("evoke.lock") => lock(Document {
+            file: File::Lock,
             text: Text::Toml(&text),
         })
         .err(),
