@@ -97,4 +97,5 @@ One tool does three jobs. A **CLI** you talk to. A **package manager** that inst
 - macOS and Linux; Windows through WSL. The [collection](collection.md)'s programs are for macOS.
 
 `evoke` is [Apache-2.0](https://github.com/evoke-build/evoke/blob/main/LICENSE); the collection is MIT. The name
-and the logo are [trademarks](https://github.com/evoke-build/evoke/blob/main/TRADEMARK.md).
+and the logo are [trademarks](https://github.com/evoke-build/evoke/blob/main/TRADEMARK.md): except for displaying the
+licence details and identifying us as the origin of the software, you have no right under the licence to use them.

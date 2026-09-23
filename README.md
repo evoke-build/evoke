@@ -85,5 +85,8 @@ you write: [Testing](https://evoke.build/manual/sdk/testing.html#the-cli-on-a-re
 
 ## Licence
 
-[Apache-2.0](LICENSE); the collection under [reflexes/](reflexes/README.md) is [MIT](reflexes/LICENSE). The name and
-the logo are trademarks: [TRADEMARK.md](TRADEMARK.md).
+[Apache-2.0](LICENSE); the collection under [reflexes/](reflexes/README.md) is [MIT](reflexes/LICENSE).
+
+**Trademarks.** Except for displaying the licence details and identifying us as the origin of the software, you have
+no right under the licence to use our trademarks, trade names, service marks or product names: the name `evoke`, the
+name evoke.build and the logo. A fork takes its own name and logo. [TRADEMARK.md](TRADEMARK.md).

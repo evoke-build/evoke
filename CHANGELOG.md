@@ -15,6 +15,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   it; a reflex as a program that runs as you; the SDK under its application's policy; the four parties that see
   something, each under its own terms; and the page's date, which is the date of its last commit. The FAQ and the
   policy are linked from every footer, and from a line under the card that closes every page of the manual.
+- The trademark rule is stated as a rights clause, in `TRADEMARK.md`, the README, the manual's index, every footer of
+  evoke.build and the FAQ: except for displaying the licence details and identifying us as the origin of the
+  software, you have no right under the licence to use our trademarks, trade names, service marks or product names.
 
 ## [0.3.0] - 2026-09-23
 
