@@ -3,24 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Evoke - Software, by reflex. Your words pick a program.</title>
-  <meta name="description" content="Say it, and the right small program runs. Chosen by Jev, TypeSafe AI's classifier, run only when it is sure enough. A CLI, a package manager, a TypeScript SDK.">
+  <title>Evoke - Your words pick the program</title>
+  <meta name="description" content="Type a sentence, and evoke runs the installed program that fits it. When unsure, it asks first. It is a CLI, a reflex package manager and a TypeScript SDK.">
   <link rel="canonical" href="https://evoke.build/">
   <meta name="robots" content="max-image-preview:large">
   <meta name="theme-color" content="#0f0f10">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="evoke">
   <meta property="og:locale" content="en_US">
-  <meta property="og:title" content="Evoke - Software, by reflex">
-  <meta property="og:description" content="A sentence becomes a call of a small program, chosen by Jev, TypeSafe AI's classifier, and run only when it is sure enough. Reflexes are recipes: written once, shared, improved by everyone.">
+  <meta property="og:title" content="Evoke - Your words pick the program">
+  <meta property="og:description" content="Type a sentence, and evoke runs the installed program that fits it, asking first when unsure. Reflexes are small programs anyone can write and share.">
   <meta property="og:url" content="https://evoke.build/">
   <meta property="og:image" content="https://evoke.build/og.png">
   <meta property="og:image:width" content="2400">
   <meta property="og:image:height" content="1260">
   <meta property="og:image:alt" content="evoke — Software, by reflex.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Evoke - Software, by reflex">
-  <meta name="twitter:description" content="A sentence becomes a call of a small program, chosen by Jev, TypeSafe AI's classifier, and run only when it is sure enough.">
+  <meta name="twitter:title" content="Evoke - Your words pick the program">
+  <meta name="twitter:description" content="Type a sentence, and evoke runs the installed program that fits it. When it is not sure enough, it asks first.">
   <meta name="twitter:image" content="https://evoke.build/og.png">
   <meta name="twitter:image:alt" content="evoke — Software, by reflex.">
   <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
@@ -37,7 +37,7 @@
         "@id": "https://evoke.build/#software",
         "name": "evoke",
         "url": "https://evoke.build/",
-        "description": "A sentence becomes a call of a small program, chosen by Jev, TypeSafe AI's classifier, and run only when it is sure enough. Reflexes are recipes anyone can write, share and improve. A CLI, a package manager that installs reflexes from git, and a TypeScript SDK.",
+        "description": "Type a sentence, and evoke runs the installed program that fits it, asking first when unsure. These programs are reflexes: anyone can write one, share it through git, and improve it. evoke is a CLI, a package manager for reflexes, and a TypeScript SDK.",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "macOS, Linux",
         "softwareVersion": "0.1.0",
@@ -588,24 +588,25 @@
   <main class="wrap">
     <div class="hero">
       <div class="copy">
-        <h1>Software, <em>by reflex.</em></h1>
-        <p class="lede"><strong>Say it, and the right small program runs when it is sure.</strong> A reflex is a
-          recipe: written once, shared, improved by everyone.</p>
+        <h1>Your words <em>pick the program.</em></h1>
+        <p class="lede"><strong>Type a sentence, and evoke runs the program that fits.</strong> It picks from the
+          small programs you installed, called reflexes, and fills in the details. When unsure, it asks. When nothing
+          fits, nothing runs.</p>
         <div class="cta">
           <a class="button primary" href="#install">Install</a>
-          <a class="button" href="use-cases.html">See it at work</a>
+          <a class="button" href="use-cases.html">See the use cases</a>
           <a class="quiet" href="manual/">Read the manual</a>
           <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
         </div>
         <ul class="jobs" aria-label="What evoke is">
-          <li class="lead">One core, three ways in.</li>
+          <li class="lead">Use it in a terminal, or inside your own app.</li>
           <li><a href="manual/use/saying-things.html"><code>$</code>a CLI</a></li>
-          <li><a href="manual/use/installing.html"><code>+</code>a package manager</a></li>
+          <li><a href="manual/use/installing.html"><code>+</code>a reflex package manager</a></li>
           <li><a href="manual/sdk/getting-started.html"><code>{ }</code>a TypeScript SDK</a></li>
         </ul>
       </div>
-      <div class="panel term demo" role="figure" data-state="on" aria-label="A lamp answering three sentences">
-        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>say it</b><b>install</b><b>your words</b></span></div>
+      <div class="panel term demo" role="figure" data-state="on" aria-label="An example lights reflex. Typed sentences turn a drawn lamp on, dim it and turn it off. Then the reflex is installed, and a room is added to your word list.">
+        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>type</b><b>install</b><b>add a room</b></span></div>
         <div class="room">
           <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
             <defs>
@@ -638,9 +639,9 @@
 
     <section id="work" class="work">
       <div class="rule"><p class="label">Use cases</p><span class="num">01</span></div>
-      <h2>Where people use it.</h2>
-      <p class="sub">Real sessions from an ops channel, an inbox, a payments desk, a plant floor, a runbook and a
-        lesson. <strong>Each one as files anyone can install, and as code your app keeps.</strong></p>
+      <h2>Six examples, from ops to the plant floor.</h2>
+      <p class="sub">Typing a request in plain words is easy. The hard part is making sure only the right thing runs.
+        <strong>Each example shows what ran, and where evoke checked first.</strong></p>
       <div class="grid">
         <a class="card" href="use-cases.html#ops">
           <div class="room ops">
@@ -665,7 +666,8 @@
             </svg>
             <span class="say"><i>$</i> evoke "scale checkout to 6 in staging"</span>
           </div>
-          <div class="text"><i>01</i><b>An ops channel</b><span>Scale, silence, roll back. A rollback always asks.</span></div>
+          <div class="text"><i>01</i><b>An ops channel</b><span>Scale a service, mute alerts, roll back. A rollback
+            always asks first.</span></div>
         </a>
         <a class="card" href="use-cases.html#stream">
           <div class="room inbox">
@@ -679,7 +681,8 @@
             </svg>
             <span class="say"><i>$</i> evoke &lt; inbox.txt</span>
           </div>
-          <div class="text"><i>02</i><b>An inbox</b><span>Lines in, decisions out. What needs a person is queued.</span></div>
+          <div class="text"><i>02</i><b>An inbox</b><span>Requests from a file. Clear ones run. Unclear ones wait for
+            a person.</span></div>
         </a>
         <a class="card" href="use-cases.html#bank">
           <div class="room desk">
@@ -694,7 +697,8 @@
             </svg>
             <span class="say"><i>$</i> evoke "pay Acme 12400 from ops"</span>
           </div>
-          <div class="text"><i>03</i><b>A payments desk</b><span>The maker types. The checker says yes.</span></div>
+          <div class="text"><i>03</i><b>A payments desk</b><span>One person types a payment. An app holds it until
+            someone else approves.</span></div>
         </a>
         <a class="card" href="use-cases.html#plant">
           <div class="room floor">
@@ -705,7 +709,8 @@
             </svg>
             <span class="say"><i>$</i> evoke "the filler is jammed, stop it"</span>
           </div>
-          <div class="text"><i>04</i><b>A plant floor</b><span>Stop the filler, in the night shift's own words.</span></div>
+          <div class="text"><i>04</i><b>A plant floor</b><span>Stop a jammed bottling line, in the night shift's own
+            words.</span></div>
         </a>
         <a class="card" href="use-cases.html#runbook">
           <div class="room chain">
@@ -718,7 +723,8 @@
             </svg>
             <span class="say"><i>$</i> node runbook.ts "drain the primary"</span>
           </div>
-          <div class="text"><i>05</i><b>A runbook</b><span>Each step names the next. Only the failover asks.</span></div>
+          <div class="text"><i>05</i><b>A runbook</b><span>Three steps switch a database to its standby. Only the
+            failover asks.</span></div>
         </a>
         <a class="card" href="use-cases.html#teach">
           <div class="room bar">
@@ -731,20 +737,21 @@
             </svg>
             <span class="say"><i>$</i> evoke "make db-3 shut up for 90 minutes"</span>
           </div>
-          <div class="text"><i>06</i><b>A lesson</b><span>A miss becomes a lesson, kept only if nothing regresses.</span></div>
+          <div class="text"><i>06</i><b>A lesson</b><span>A script teaches evoke a new phrase. It stays only if every
+            test passes.</span></div>
         </a>
       </div>
-      <p class="after"><a class="more" href="use-cases.html">All of them, with every file and every line →</a></p>
+      <p class="after"><a class="more" href="use-cases.html">Every example, with its files and code →</a></p>
     </section>
 
     <div class="showcase" id="reflex">
       <div class="rule"><p class="label">A reflex</p><span class="num">02</span></div>
-      <h2>The manifest is the recipe.</h2>
-      <p class="sub">One readable file defines the decision: what it does, what it is not for, what to ask, and what
-        to run. Jev reads it, and nothing else.</p>
+      <h2>A small program that says what it does.</h2>
+      <p class="sub">Its manifest, <code>reflex.toml</code>, says what it is for, what it is not for, and what to ask.
+        The classifier Jev, an online service, reads that wording to pick the reflex you mean.</p>
       <div class="grid">
         <div class="panel">
-          <div class="head"><i></i>lights/reflex.toml<span class="who">the author's</span></div>
+          <div class="head"><i></i>lights/reflex.toml<span class="who">by the author</span></div>
 <pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
 
 <span class="k">description</span> <span class="o">=</span> <span class="s">"""
@@ -758,23 +765,23 @@ Ceiling and lamp lights only."""</span>
 <span class="k">confirm</span> <span class="o">=</span> <span class="s">"Set the <span class="ph">{room}</span> lights <span class="ph">{state}</span>?"</span>
 <span class="k">run</span>     <span class="o">=</span> <span class="s">"lights.mts"</span>
 
-<span class="t">[args.room]</span>        <span class="c"># the options are the user's words</span>
+<span class="t">[args.room]</span>        <span class="c"># options come from your vocabulary</span>
 <span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which room?"</span>
 <span class="k">vocab</span> <span class="o">=</span> <span class="s">"rooms"</span>
 
-<span class="t">[args.state]</span>       <span class="c"># the options are the author's</span>
+<span class="t">[args.state]</span>       <span class="c"># options listed by the author</span>
 <span class="k">ask</span>         <span class="o">=</span> <span class="s">"What should the lights do?"</span>
 <span class="k">options.on</span>  <span class="o">=</span> <span class="s">"Switch on."</span>
 <span class="k">options.off</span> <span class="o">=</span> <span class="s">"Switch off."</span>
 <span class="k">options.dim</span> <span class="o">=</span> <span class="s">"Lower the brightness without switching off."</span>
 
-<span class="t">[args.brightness]</span>  <span class="c"># the value is a span of the input</span>
+<span class="t">[args.brightness]</span>  <span class="c"># a number from your sentence, checked</span>
 <span class="k">ask</span>      <span class="o">=</span> <span class="s">"How bright, in percent?"</span>
 <span class="k">pick</span>     <span class="o">=</span> <span class="s">"number"</span>
 <span class="k">range</span>    <span class="o">=</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">100</span><span class="o">]</span>
 <span class="k">optional</span> <span class="o">=</span> <span class="n">true</span>
 
-<span class="t">[examples]</span>         <span class="c"># sent to the classifier</span>
+<span class="t">[examples]</span>         <span class="c"># example sentences for the classifier</span>
 <span class="s">"turn on the kitchen lights"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"on"</span> <span class="o">}</span>
 <span class="s">"dim the den to 30 percent"</span>  <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"dim"</span><span class="o">,</span> <span class="k">brightness</span> <span class="o">=</span> <span class="s">"30 percent"</span> <span class="o">}</span></pre>
         </div>
@@ -793,31 +800,34 @@ Ceiling and lamp lights only."""</span>
 <span class="p">$</span> <span class="cursor"></span></pre>
           </div>
           <div class="panel">
-            <div class="head"><i></i>vocab/rooms.toml<span class="who you">yours</span></div>
+            <div class="head"><i></i>vocab/rooms.toml<span class="who you">your word list</span></div>
 <pre><span class="k">den</span>    <span class="o">=</span> <span class="s">"The TV room downstairs; also 'the snug'."</span>
 <span class="k">office</span> <span class="o">=</span> <span class="s">"The upstairs study."</span></pre>
           </div>
           <div class="panel">
-            <div class="head"><i></i>overlays/lights.toml<span class="who you">yours, taught</span></div>
+            <div class="head"><i></i>overlays/lights.toml<span class="who you">taught by you</span></div>
 <pre><span class="t">[examples]</span>
 <span class="s">"kill the lights"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"off"</span> <span class="o">}</span></pre>
           </div>
         </div>
       </div>
       <ol class="notes">
-        <li><b>1</b><span><strong>No room was named</strong>, so evoke asked. The rooms are your words.</span></li>
-        <li><b>2</b><span><strong>Not sure of the state</strong>, it checked before running.</span></li>
-        <li><b>3</b><span><strong><code>t</code> taught it.</strong> One line, in a file no update touches.</span></li>
+        <li><b>1</b><span><strong>No room was named</strong>, so evoke asked. It offered the rooms in your vocabulary,
+          a word list you own.</span></li>
+        <li><b>2</b><span><strong>evoke was only 0.58 sure that «kill» meant off.</strong> A write reflex, one that
+          changes something, needs 0.8 to run without asking.</span></li>
+        <li><b>3</b><span><strong>Pressing <code>t</code> (teach) saved the sentence, then ran it.</strong> It is now
+          an example sentence in your overlay, your own file that no update touches.</span></li>
       </ol>
     </div>
 
     <section id="weave" class="weave">
-      <div class="rule"><p class="label">Two things at once</p><span class="num">03</span></div>
-      <h2>One sentence, several recipes.</h2>
-      <p class="sub">A weave. Each part is decided on its own, in the order you said it. What one step finds, the
-        next one takes. <strong>The plan shows before anything runs.</strong></p>
+      <div class="rule"><p class="label">Several steps</p><span class="num">03</span></div>
+      <h2>One sentence can ask for several things.</h2>
+      <p class="sub">evoke splits it into steps, in the order your words give them. A later step can use what an
+        earlier one found. <strong>It prints the numbered plan before anything runs.</strong></p>
       <div class="grid">
-        <div class="panel term loom" role="figure" aria-label="A sentence read into two steps, planned and run">
+        <div class="panel term loom" role="figure" aria-label="One sentence split into two steps, planned, then run">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>read</b><b>plan</b><b class="on">run</b></span></div>
           <div class="room">
             <p class="said on"><span class="part">look up dana's address</span> <span class="part"><span class="and">and<span class="base" aria-hidden="true">and</span><span class="lit on" aria-hidden="true">and</span></span> email <span class="them">them<span class="base" aria-hidden="true">them</span><span class="lit on" aria-hidden="true">them</span></span></span></p>
@@ -839,7 +849,7 @@ Ceiling and lamp lights only."""</span>
           </div>
         </div>
         <div class="side">
-          <div class="panel term gate" role="figure" aria-label="A confirm declined at its turn">
+          <div class="panel term gate" role="figure" aria-label="The first step needs a yes and gets a no, so the second step is skipped">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
             <div class="strip" aria-live="off">
               <span class="line say on"><span class="p">$</span> <span class="in">evoke "start a 25 minute timer and kill the lights in the den"</span></span>
@@ -851,7 +861,7 @@ Ceiling and lamp lights only."""</span>
               <span class="line own on">[2]</span>
             </div>
           </div>
-          <div class="panel term refusal" role="figure" aria-label="A part that matches no reflex">
+          <div class="panel term refusal" role="figure" aria-label="One part matches no reflex, so nothing runs">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
             <div class="strip" aria-live="off">
               <span class="line say on"><span class="p">$</span> <span class="in">evoke "kill the lights in the den and feed the cat"</span></span>
@@ -863,29 +873,30 @@ Ceiling and lamp lights only."""</span>
         </div>
       </div>
       <ol class="notes">
-        <li><b>1</b><span><strong>«them» names step 1.</strong> mail needed an address, contact yields one, and the plan says so:
-          <code>takes email from 1</code>.</span></li>
-        <li><b>2</b><span><strong>A confirm asks at its turn.</strong> Say no, and the steps after it are skipped. The exit code is the
-          worst step's.</span></li>
-        <li><b>3</b><span><strong>A part that matches nothing</strong> refuses the whole sentence, before anything runs.</span></li>
+        <li><b>1</b><span><strong>«them» points back to step 1.</strong> The <code>mail</code> step needed an email
+          address, and <code>contact</code> found one. The plan shows it: <code>takes email from 1</code>.</span></li>
+        <li><b>2</b><span><strong>A step that needs your yes asks when its turn comes.</strong> Answer no, and later
+          steps are skipped. <code>[2]</code> means you said no, or nothing fit.</span></li>
+        <li><b>3</b><span><strong>If any part matches no reflex</strong>, nothing runs at all, so nothing is left half
+          done.</span></li>
       </ol>
-      <p class="after">The manual says <a href="manual/use/weaving.html">how a sentence is read</a>. The use cases show this
-        session <a href="use-cases.html#weave">as files and as code</a>.</p>
+      <p class="after">The manual calls this a weave and shows <a href="manual/use/weaving.html">how a sentence is
+        split</a>. The use cases show this example <a href="use-cases.html#weave">in files and in code</a>.</p>
     </section>
 
     <section id="shared">
-      <div class="rule"><p class="label">Shared</p><span class="num">04</span></div>
-      <h2>One recipe. Improved by everyone.</h2>
-      <p class="sub">A lesson is one line. Keep it in your overlay, or send it upstream, and every install decides
-        better. <strong>Nobody repeats themselves.</strong></p>
+      <div class="rule"><p class="label">Write and share</p><span class="num">04</span></div>
+      <h2>Nobody has to write the same reflex twice.</h2>
+      <p class="sub">Like a recipe, a reflex is written once, shared through git, and improved by the people who use
+        it.</p>
       <div class="split">
         <ol class="steps column">
-          <li><i>01</i><b>Write</b><span><code>evoke new</code> gives you three files that already work. <code>evoke check</code>
-            keeps the manifest honest.</span></li>
-          <li><i>02</i><b>Share</b><span>A git tag publishes. <code>evoke add owner/repo</code> installs it, pinned by
-            content. No accounts, no build step.</span></li>
-          <li><i>03</i><b>Improve</b><span>Teach a phrase, sharpen a question. Sent upstream, the next tag carries it to
-            everyone.</span></li>
+          <li><i>01</i><b>Write</b><span><code>evoke new</code> gives you three files that already work.
+            <code>evoke check</code> points out any line that needs fixing.</span></li>
+          <li><i>02</i><b>Share</b><span>Push it to git and tag a version, with no account, registry or build step.
+            Others install it with <code>evoke add owner/repo</code>.</span></li>
+          <li><i>03</i><b>Improve</b><span>A phrase you teach works for you at once. If the author adds it to a new
+            version, others get it when they update.</span></li>
         </ol>
         <div class="panel term">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
@@ -903,9 +914,9 @@ Ceiling and lamp lights only."""</span>
 <span class="p">$</span> <span class="in">git tag v1.0.0 &amp;&amp; git push --tags</span></pre>
         </div>
       </div>
-      <p class="caption">The line with the <b>+</b> is yours. The first-party collection,
-        <a href="https://github.com/evoke-build/reflexes">evoke-build/reflexes</a>, is thirteen recipes for what a Mac
-        does at a word.</p>
+      <p class="caption">In <code>evoke show</code>, a <b>+</b> marks a line of yours. The lights reflex is made up
+        for this page. The official collection, <code>evoke-build/reflexes</code>, holds
+        <a href="manual/collection.html">thirteen reflexes for everyday Mac tasks</a>.</p>
     </section>
 
     <section id="sdk">
@@ -938,12 +949,14 @@ Ceiling and lamp lights only."""</span>
 <span class="o">})</span></pre>
         </div>
         <div class="text">
-          <h2>Or write it in code.</h2>
-          <p>The same recipe as a TypeScript object. <strong>The whole loop is one call.</strong></p>
+          <h2>Put evoke inside your app.</h2>
+          <p>Write a reflex as a TypeScript object, with the manifest's fields and the function it runs. <strong>One
+            call to <code>handle()</code> decides, asks for what is missing, confirms and runs.</strong></p>
           <ul class="ticks">
-            <li>The argument types come from the recipe.</li>
-            <li>A <code>Decision</code> narrows by outcome, then by reflex.</li>
-            <li>Each tenant gets its own vocabulary. Tests replay recorded answers, offline.</li>
+            <li>TypeScript infers each argument's type. Here, <code>duration</code> is a number of seconds.</li>
+            <li><code>decide()</code> decides without running. It returns a typed <code>Decision</code>: run, confirm,
+              ask or do nothing.</li>
+            <li>Each customer of your app can have their own vocabulary.</li>
           </ul>
           <a class="more" href="manual/sdk/getting-started.html">Getting started with the SDK →</a>
         </div>
@@ -951,14 +964,17 @@ Ceiling and lamp lights only."""</span>
     </section>
 
     <section id="how">
-      <div class="rule"><p class="label">One decision</p><span class="num">06</span></div>
-      <h2>Every judgment on the table.</h2>
-      <p class="sub">One request asks every question. The weakest answer decides. <code>evoke try</code> shows all
-        of it.</p>
+      <div class="rule"><p class="label">How it decides</p><span class="num">06</span></div>
+      <h2>It runs on its own only when sure enough.</h2>
+      <p class="sub">A wrong action costs more than a question. A reflex states its effect: read, write or
+        destructive. The effect sets the bar: how sure evoke must be to run without asking.</p>
       <ol class="steps">
-        <li><i>01</i><b>Decide</b><span>Which reflex, which values, and how well it fits. Every answer is a probability.</span></li>
-        <li><i>02</i><b>Gate</b><span>The weakest answer is the confidence. Each effect has its bar.</span></li>
-        <li><i>03</i><b>Run</b><span>The program runs with its arguments and a deadline. One line comes back.</span></li>
+        <li><i>01</i><b>Decide</b><span>evoke asks the classifier which reflex fits, if any, and the value of each
+          argument. Each answer is a probability.</span></li>
+        <li><i>02</i><b>Check</b><span>Confidence is the weakest of those answers. A read reflex needs 0.6, a write
+          0.8. A destructive one always asks.</span></li>
+        <li><i>03</i><b>Run</b><span>The program runs with the chosen values and a time limit. When no reflex fits,
+          nothing runs.</span></li>
       </ol>
       <div class="panel term">
         <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
@@ -975,28 +991,31 @@ Ceiling and lamp lights only."""</span>
   fits   lights 0.70 · timer 0.05 · volume 0.05
   <span class="name">run</span> · weakest: room <span class="hi">0.85</span></span></pre>
       </div>
-      <p class="caption">Three words moved the weakest answer from <b>0.58</b> to <b>0.85</b>. An ask became a run.</p>
+      <p class="caption"><code>evoke try</code> shows every answer and runs nothing. Adding «in the den» named the
+        room and made «kill» clearly mean off. The weakest answer rose from <b>0.58</b> to <b>0.85</b>, over the 0.8
+        bar.</p>
     </section>
 
     <section id="jev">
       <div class="rule"><p class="label">The classifier</p><span class="num">07</span></div>
-      <h2>Jev answers. The gate decides.</h2>
-      <p class="sub"><a href="https://typesafe.ai">TypeSafe AI</a>'s System One model answers closed questions with
-        calibrated probabilities. The questions, and the gate, are <code>evoke</code>'s.</p>
+      <h2>Jev answers. evoke decides what runs.</h2>
+      <p class="sub">Jev is <a href="https://typesafe.ai">TypeSafe AI</a>'s classifier model, an online service you
+        use with your own key. evoke writes every question and applies every rule.</p>
       <div class="sheet">
         <dl>
-          <div><dt>Asks</dt><dd>Closed questions. <span>Which of these? Was it said? How well does it fit?</span></dd></div>
-          <div><dt>Answers</dt><dd>A calibrated probability per option. <span>The gate reads the weakest one.</span></dd></div>
-          <div><dt>Knows</dt><dd>The recipe's wording, sent with each request. <span>Read afresh every time.</span></dd></div>
-          <div><dt>Tuned by</dt><dd>A changed description or a new example. <span>The next decision reads it.</span></dd></div>
-          <div><dt>Two adapters</dt><dd><code>jev</code>, TypeSafe AI's API. <code>openjev</code>, a public door. <span>One model.</span></dd></div>
-          <div><dt>Bound to none</dt><dd>The core names no engine. <span>Any closed-choice classifier fits.</span></dd></div>
-          <div><dt>In tests</dt><dd>A recorded adapter replays real answers. <span>Offline, byte for byte.</span></dd></div>
+          <div><dt>Asks</dt><dd>Closed questions. <span>Which reflex? Which value? How well does it fit?</span></dd></div>
+          <div><dt>Answers</dt><dd>Calibrated probabilities. <span>0.85 means right about 85 times in 100.</span></dd></div>
+          <div><dt>Knows</dt><dd>Your reflexes' wording. <span>It comes with every request.</span></dd></div>
+          <div><dt>Improved by</dt><dd>A better description, a new example. <span>The next decision reads it.</span></dd></div>
+          <div><dt>Reached through</dt><dd>TypeSafe AI's API, or OpenJEV. <span>OpenJEV
+            is an independent project.</span></dd></div>
+          <div><dt>Replaceable</dt><dd>Another classifier could replace Jev. <span>No change to evoke's core.</span></dd></div>
+          <div><dt>In tests</dt><dd>Recorded answers are replayed offline. <span>Same result every time.</span></dd></div>
         </dl>
         <aside class="claim">
-          <p>Every decision <em>can be checked.</em></p>
-          <small>The question was closed. The options were yours. The number is the probability this is right, so a
-            bar of 0.8 is a policy, not a guess.</small>
+          <p>You choose <em>how sure is sure enough.</em></p>
+          <small>The answers are calibrated, so a bar of 0.8 lets through only answers right at least 8 times in 10.
+            You can move the bars in <code>evoke.toml</code>, a file you own.</small>
         </aside>
       </div>
     </section>
@@ -1004,15 +1023,17 @@ Ceiling and lamp lights only."""</span>
     <section id="trust">
       <div class="rule"><p class="label">Security</p><span class="num">08</span></div>
       <h2>What a sentence can and cannot do.</h2>
-      <p class="sub">A fetched reflex runs as you. <code>add</code> and <code>update</code> are where you decide to trust
-        it. Around that, four promises hold.</p>
+      <p class="sub">A reflex you install runs with your permissions. There is no sandbox yet, so read it before you
+        install or update it. <strong>evoke itself keeps four promises.</strong></p>
       <ul class="promises">
-        <li><b>State is only the sentence.</b><span>Jev sees your input and the recipes' questions. Nothing else of
-          yours.</span></li>
-        <li><b>Text can choose a call, never invent a value.</b><span>An option, your word, or a checked piece of the
-          input.</span></li>
-        <li><b>A destructive reflex always confirms.</b><span>There is no <code>--yes</code>.</span></li>
-        <li><b>Trust binds to content.</b><span>Tag, commit and hash in the lock. A tag that moved is refused.</span></li>
+        <li><b>Only words go to the classifier.</b><span>Your sentence and the wording of your reflexes and vocabulary.
+          Never files, settings or secrets.</span></li>
+        <li><b>A sentence can never invent a value.</b><span>Each value is an author's option, a word from your
+          vocabulary, or a checked piece of what you typed.</span></li>
+        <li><b>A destructive reflex always asks.</b><span>Destructive means it cannot be undone or costs something,
+          like a payment. No <code>--yes</code> flag skips the question.</span></li>
+        <li><b>You run exactly what you installed.</b><span>A lock file records each reflex you add from git, with a
+          hash of its files. If they change later, evoke will not run it.</span></li>
       </ul>
       <div class="panel term stops">
         <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
@@ -1025,30 +1046,34 @@ Ceiling and lamp lights only."""</span>
   <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span>
 <span class="out">volume set to 40%</span></pre>
       </div>
-      <p class="caption">Sure at <b>0.97</b>, and it still asked: a destructive reflex always does. A value outside its
-        range never reached a program. The range was on the line.</p>
-      <p class="after"><a href="manual/security.html">Everything guaranteed, and what is not →</a></p>
+      <p class="caption">Sure at <b>0.97</b>, and it still asked, because a restart is destructive. <b>150</b> percent
+        was outside 0 to 100, so it never reached the program. evoke asked for another value.</p>
+      <p class="after"><a href="manual/security.html">What evoke guarantees, and what it does not →</a></p>
     </section>
 
     <section id="install">
       <div class="rule"><p class="label">Start</p><span class="num">09</span></div>
       <h2>Install</h2>
-      <p class="sub">One small binary on macOS and Linux. Node next to it, for reflexes written in JavaScript.</p>
+      <p class="sub">evoke runs on macOS and Linux, and on Windows through WSL. You also need git, Node&nbsp;24 or newer
+        for most reflexes, and a key for Jev, from TypeSafe AI or OpenJEV.</p>
       <div class="install">
         <div class="way">
           <h3>The CLI</h3>
-          <p>Fetches the release for your machine, checks its digest, and puts <code>evoke</code> in <code>~/.local/bin</code>.</p>
+          <p>The script downloads the build for your machine, verifies its checksum, and puts <code>evoke</code> in
+            <code>~/.local/bin</code>.</p>
           <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
         </div>
         <div class="way">
           <h3>The SDK</h3>
-          <p>Node 24.5 or newer, ES modules, no dependencies. The core ships inside as WebAssembly.</p>
+          <p>It needs Node 24.5 or newer, is ES modules only, and has no dependencies. Inside is the CLI's own core,
+            compiled to WebAssembly.</p>
           <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
         </div>
       </div>
-      <p class="after">Then <a href="manual/start/first-run.html">the first ten minutes</a>: your key, the first-party
-        reflexes, your first lesson. Other ways, mise and from source, are on the
-        <a href="manual/start/install.html">install page</a>.</p>
+      <p class="after">Then follow the <a href="manual/start/first-run.html">ten-minute guide</a>: set your key, add
+        the Mac collection with <code>evoke add evoke-build/reflexes</code>, and type
+        <code>evoke "lock the screen"</code>. The <a href="manual/start/install.html">install page</a> lists other
+        ways, like mise.</p>
     </section>
   </main>
 
