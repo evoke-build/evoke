@@ -26,6 +26,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   that adds the rest; a ref with a tag it has not, a collection with `--as`, a word to remove that is not there
   and a directory that is not there each end in the command that helps. `update <name> --accept <other>` is
   refused instead of dropping the accept. A failed keep leaves no `.tmp` directory in the store.
+- `evoke show <name>` lists the lines of your overlay that address nothing the reflex has, as `update` reported
+  them once.
 - `evoke check` on a body that does not load says why without an empty line first.
 - A step that names two earlier results has both written over their references; before, the second replaced
   the first. A `-5 minutes` is a number, never a five-minute duration.

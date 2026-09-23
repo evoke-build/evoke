@@ -14,7 +14,8 @@ $ evoke show
 ```
 
 `evoke show <name>` prints the reflex's **effective** manifest: the shipped one with your overlay merged in. It
-prints TOML, one key per line, with `+` next to every line that is yours:
+prints TOML, one key per line, with `+` next to every line that is yours: A line of your overlay that addresses nothing the reflex has, an argument it
+dropped, is listed after the manifest as skipped, as `update` reported it.
 
 ```text
 $ evoke show lights

@@ -39,3 +39,20 @@ $ evoke update
 $ evoke update note --accept note
   note 1.1.0 → 1.1.0  same
     effect  write accepted; was destructive
+# What the overlay addresses that the reflex no longer has is listed whenever the reflex is shown.
+$ evoke show note
++ description = "Keep a note.\nOne line, kept where I keep them."
+  not_for = ["reminders at a time", "reading notes back"]
+  tags = ["notes"]
+  effect = "write"
+  confirm = "Note {text}?"
+  run = "note.mts"
+
+  [args.text]
+  ask = "What should the note say?"
+  pick = "quoted"
+
+  [examples]
+  'note "buy milk"' = { text = "buy milk" }
+  'write down "call dana"' = { text = "call dana" }
+  skipped  overlays/note.toml: args.tag addresses nothing

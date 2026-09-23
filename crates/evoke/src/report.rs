@@ -158,6 +158,17 @@ pub fn inactive(problems: &[Diagnostic], invoked: &str, paths: &Paths) -> Text {
     }))
 }
 
+/// The lines of an overlay that address nothing the reflex has, as `update` reported them: each skipped.
+pub fn orphaned(name: &LocalName, paths: &[KeyPath]) -> Text {
+    Text::lines(paths.iter().map(|path| {
+        let mut line = Text::from("  ");
+        line.roled(Role::Warning, "skipped").push(&plain(&format!(
+            "  overlays/{name}.toml: {path} addresses nothing"
+        )));
+        line
+    }))
+}
+
 /// `  →  <fix>` on the end of a line: the arrow with its role, the fix as plain as its text.
 fn fixed(text: &mut Text, fix: &str) {
     text.push("  ")

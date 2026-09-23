@@ -1,11 +1,12 @@
 //! `evoke show [name]`: what is installed, or one reflex as it is used. In: a name or none, the environment. Out:
 //! `Exit`. Without a name, every reflex on a line — the answer, on stdout — and each inactive one's problems
-//! with their fixes, on stderr; with one, the effective manifest, each line marked shipped or yours, then that
-//! reflex's problems.
+//! with their fixes, on stderr; with one, the effective manifest, each line marked shipped or yours, the lines of
+//! the overlay that address nothing the reflex has, then that reflex's problems.
 
+use evoke_core::document::Text as Source;
 use evoke_core::name::LocalName;
 use evoke_core::text::NonEmpty;
-use evoke_core::{Diagnostic, Fix};
+use evoke_core::{Diagnostic, Document, File, Fix, overlay};
 
 use super::session::{self, Opening, Session};
 use super::{Exit, nothing_installed};
@@ -62,6 +63,24 @@ fn shown(session: &Session<'_>, name: Option<&LocalName>) -> Exit {
     match &item.wording {
         Ok(effective) => {
             terminal::answer(&report::manifest(effective));
+            match session.overlay_text(name) {
+                Ok(Some(text)) => {
+                    if let Some((shipped, _)) = session.shipped.get(name)
+                        && let Ok(yours) = overlay(
+                            Document {
+                                file: File::Overlay { name: name.clone() },
+                                text: Source::Toml(&text),
+                            },
+                            shipped,
+                        )
+                        && !yours.orphaned.is_empty()
+                    {
+                        terminal::note(&report::orphaned(name, &yours.orphaned));
+                    }
+                }
+                Ok(None) => {}
+                Err(exit) => return exit,
+            }
             if let Some(problems) = session.plan.inactive().get(name) {
                 inactive(&problems.iter().cloned().collect::<Vec<_>>());
             }
