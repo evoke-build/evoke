@@ -445,17 +445,22 @@ pub fn request(
 }
 
 /// Nothing to ask about: the first inactive reflex's first problem, nothing installed, or a tag no reflex carries.
+/// Why there is nothing to ask. An inactive reflex the tags name — any inactive one, when nothing narrows —
+/// explains itself, since making it active is the way in; else the tags name nothing, or nothing is installed.
 fn nothing_to_ask(plan: &Plan, tags: &[Tag]) -> Diagnostic {
-    if let Some((_, problems)) = plan.inactive().first() {
+    let named = |name: &LocalName| {
+        tags.is_empty() || plan.tagged(name).iter().any(|tag| tags.contains(tag))
+    };
+    if let Some((_, problems)) = plan.inactive().iter().find(|(name, _)| named(name)) {
         return problems.first().clone();
     }
-    let (message, fix) = if plan.active().is_empty() {
+    let (message, fix) = if plan.active().is_empty() && plan.inactive().is_empty() {
         ("no reflexes are installed".to_owned(), Fix::Add)
     } else {
         let tags: Vec<&str> = tags.iter().map(Tag::as_str).collect();
         (
             format!("no reflex is tagged {}", tags.join(", ")),
-            Fix::Rerun,
+            Fix::Show { reflex: None },
         )
     };
     Diagnostic {

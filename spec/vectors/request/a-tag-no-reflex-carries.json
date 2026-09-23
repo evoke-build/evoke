@@ -111,17 +111,15 @@
     },
     "input": "kill the lights",
     "tags": [
-      "home"
+      "nothing"
     ],
     "scope": "full"
   },
   "expect": {
     "err": {
-      "reflex": "lights",
-      "message": "vocabulary \"rooms\" is empty",
+      "message": "no reflex is tagged nothing",
       "fix": {
-        "type": "vocab_add",
-        "vocab": "rooms"
+        "type": "show"
       }
     }
   }

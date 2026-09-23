@@ -26,3 +26,10 @@ $ evoke -- try
   none 0.90 · lights 0.04 · timer 0.03 · volume 0.03
   open is inactive  →  evoke show
 [2]
+# A tag no reflex carries says so; a tag only an inactive reflex carries explains that reflex.
+$ evoke try --tag nothing "kill the lights in the den"
+  no reflex is tagged nothing  →  evoke show
+[3]
+$ evoke try --tag files "kill the lights in the den"
+  open: vocabulary "places" is empty  →  evoke vocab places add <word> "<meaning>"
+[3]
