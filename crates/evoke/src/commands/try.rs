@@ -2,14 +2,15 @@
 //! environment. Out: `Exit`, 0 for any decision. Each input is decided on the session; nothing runs and no log is
 //! written. A stdin filter skips a blank line, stops at a read error, and exits with the first non-zero code.
 
-use evoke_core::{Decision, Fix, Gate};
+use evoke_core::{Decision, Gate};
 
 use super::Exit;
+use super::each_line;
 use super::session::{self, Opening, Session};
 use crate::adapter::Adapter;
 use crate::args::{Arguments, Command, Inputs};
 use crate::hosts::terminal::Text;
-use crate::hosts::{Environment, Failure, terminal};
+use crate::hosts::{Environment, terminal};
 use crate::report;
 
 pub fn run(command: &Command, arguments: &Arguments, environment: &Environment) -> Exit {
@@ -23,28 +24,9 @@ pub fn run(command: &Command, arguments: &Arguments, environment: &Environment) 
     };
     match &arguments.input {
         Inputs::One(input) => tried(&session, &*adapter, arguments, input),
-        Inputs::Stdin => {
-            let mut first = Exit::Ran;
-            for line in terminal::stdin_lines() {
-                let exit = match line {
-                    Ok(input) if input.trim().is_empty() => continue,
-                    Ok(input) => tried(&session, &*adapter, arguments, &input),
-                    Err(error) => {
-                        let failed = Exit::Failed(Failure {
-                            what: "reading stdin".to_owned(),
-                            cause: Some(error.to_string()),
-                            fix: Fix::Rerun,
-                        });
-                        let exit = session.reporter.exit("<input>", failed);
-                        return if first == Exit::Ran { exit } else { first };
-                    }
-                };
-                if first == Exit::Ran {
-                    first = exit;
-                }
-            }
-            first
-        }
+        Inputs::Stdin => each_line(arguments.json, |input| {
+            tried(&session, &*adapter, arguments, input)
+        }),
         Inputs::Terminal => unreachable!("try always has an input"),
     }
 }

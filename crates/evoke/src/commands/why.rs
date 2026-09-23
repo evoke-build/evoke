@@ -4,17 +4,25 @@
 use evoke_core::{Diagnostic, Fix};
 
 use super::Exit;
+use crate::args::Command;
 use crate::hosts::state::State;
 use crate::hosts::{Environment, terminal};
 use crate::report::{self, Line, Paths};
 
 pub fn run(environment: &Environment) -> Exit {
     let exit = explained(environment);
-    if let Some(line) = report::exit(&exit, "evoke \"<input>\"", Some(&Paths::of(environment))) {
+    // Nothing decided yet asks for an input; anything else that went wrong is fixed by running `why` again.
+    let invoked = match &exit {
+        Exit::Human(problem) if problem.message == NOTHING_YET => "evoke \"<input>\"".to_owned(),
+        _ => Command::Why.invoked(""),
+    };
+    if let Some(line) = report::exit(&exit, &invoked, Some(&Paths::of(environment))) {
         terminal::note(&line);
     }
     exit
 }
+
+const NOTHING_YET: &str = "nothing has been decided yet";
 
 fn explained(environment: &Environment) -> Exit {
     let state = match State::of(environment) {
@@ -27,7 +35,7 @@ fn explained(environment: &Environment) -> Exit {
             return Exit::Human(Diagnostic {
                 reflex: None,
                 at: None,
-                message: "nothing has been decided yet".to_owned(),
+                message: NOTHING_YET.to_owned(),
                 fix: Fix::Rerun,
             });
         }

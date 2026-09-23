@@ -18,17 +18,17 @@ pub fn run(
     change: Option<&VocabChange>,
     environment: &Environment,
 ) -> Exit {
-    let session = match session::open(command, false, environment, Opening::Tuning) {
+    let mut session = match session::open(command, false, environment, Opening::Tuning) {
         Ok(session) => session,
         Err(exit) => return exit,
     };
     let input = command.stand_in();
-    let exit = changed(&session, &input, name, change);
+    let exit = changed(&mut session, &input, name, change);
     session.reporter.exit(&input, exit)
 }
 
 fn changed(
-    session: &Session<'_>,
+    session: &mut Session<'_>,
     input: &str,
     name: &VocabName,
     change: Option<&VocabChange>,

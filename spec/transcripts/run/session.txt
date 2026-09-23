@@ -71,3 +71,7 @@ $ evoke run --json power action=restart
   Really restart now?  [y]es [n]o > n
 {"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","template":"Really restart now?"},"because":[{"type":"destructive"}],"trace":[]}
 [2]
+# A flag where the call is, or a name should be, is refused as a flag.
+$ evoke run lights room=den state=off --json
+  run takes --json before the call  →  evoke --help
+[3]

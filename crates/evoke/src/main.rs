@@ -19,7 +19,25 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 fn main() {
     std::panic::set_hook(Box::new(|panic| {
-        terminal::note(&format!("  evoke {VERSION} hit a bug: {panic}").into());
+        let payload = panic.payload();
+        let message = payload.downcast_ref::<&str>().map_or_else(
+            || {
+                payload
+                    .downcast_ref::<String>()
+                    .map_or("no message", String::as_str)
+            },
+            |message| *message,
+        );
+        let at = panic
+            .location()
+            .map_or_else(String::new, |at| format!(" ({}:{})", at.file(), at.line()));
+        terminal::note(
+            &format!(
+                "  evoke {VERSION} hit a bug: {}{at}  →  https://github.com/evoke-build/evoke/issues",
+                report::plain(message)
+            )
+            .into(),
+        );
     }));
     let code = std::panic::catch_unwind(run).map_or(1, |exit| exit.code());
     std::process::exit(code);

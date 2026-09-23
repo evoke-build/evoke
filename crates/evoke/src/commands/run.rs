@@ -5,8 +5,9 @@
 //! the line stands for the confirm that could not be shown. Nothing is logged: nothing was decided.
 
 use evoke_core::plan::Millis;
-use evoke_core::{Decision, Diagnostic, Fix, Input, Written, by_name};
+use evoke_core::{Decision, Input, Written, by_name};
 
+use super::needs_terminal;
 use super::session::{self, Confirmed, Opening, Session, dismiss};
 use super::{Decline, Exit};
 use crate::args::Command;
@@ -44,12 +45,7 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
         Decision::Confirm { chosen, prompt, .. } => {
             if !session.has_tty() {
                 dismiss(warm);
-                let human = Exit::Human(Diagnostic {
-                    reflex: None,
-                    at: None,
-                    message: "a confirm needs a terminal".to_owned(),
-                    fix: Fix::Rerun,
-                });
+                let human = Exit::Human(needs_terminal("a confirm"));
                 if json {
                     terminal::result(&line.json());
                     return human;

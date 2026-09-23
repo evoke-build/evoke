@@ -331,17 +331,14 @@ pub fn parse(
         "teach" => teach(rest),
         "show" => match rest {
             [] => Ok(Command::Show(None)),
-            [name] => LocalName::new(name)
-                .map(Some)
-                .map(Command::Show)
-                .map_err(usage),
+            [name] => named("show", name).map(Some).map(Command::Show),
             _ => Err(usage("show takes one name")),
         },
         "vocab" => vocab(rest),
         "config" => config(rest),
         "add" => add(rest),
         "remove" => match rest {
-            [name] => LocalName::new(name).map(Command::Remove).map_err(usage),
+            [name] => named("remove", name).map(Command::Remove),
             _ => Err(usage("remove takes one name: evoke remove <name>")),
         },
         "update" => update(rest),
@@ -350,17 +347,14 @@ pub fn parse(
         "trust" if rest.is_empty() => Ok(Command::Trust),
         "trust" => Err(usage("trust takes no arguments")),
         "new" => match rest {
-            [name] => LocalName::new(name).map(Command::New).map_err(usage),
+            [name] => named("new", name).map(Command::New),
             _ => Err(usage("new takes one name: evoke new <name>")),
         },
         "check" if rest.is_empty() => Ok(Command::Check),
         "check" => Err(usage("check takes no arguments")),
         "test" => match rest {
             [] => Ok(Command::Test(None)),
-            [name] => LocalName::new(name)
-                .map(Some)
-                .map(Command::Test)
-                .map_err(usage),
+            [name] => named("test", name).map(Some).map(Command::Test),
             _ => Err(usage("test takes one name: evoke test [<name>]")),
         },
         word if WORDS.contains(&word) => Err(usage(format!("evoke {word} is not available yet"))),
@@ -385,6 +379,9 @@ fn deciding(
             "--json" => json = true,
             "--tag" => {
                 let tag = rest.next().ok_or_else(|| usage("--tag needs a tag"))?;
+                if tag.starts_with('-') {
+                    return Err(usage(format!("--tag needs a tag, and {tag} is a flag")));
+                }
                 tags.push(Tag::new(tag).map_err(usage)?);
             }
             "--" => words.extend(rest.by_ref().map(String::as_str)),
@@ -417,6 +414,14 @@ fn deciding(
     Ok(Arguments { json, tags, input })
 }
 
+/// A command's one name: a flag in its place is refused as a flag, not as a malformed name.
+fn named(command: &str, token: &str) -> Result<LocalName, Diagnostic> {
+    if token.starts_with('-') && token.len() > 1 {
+        return Err(usage(format!("{token} is not a flag of {command}")));
+    }
+    LocalName::new(token).map_err(usage)
+}
+
 /// `[--json] <call>`: the flag first, then the call as one argument or as its words.
 fn run(arguments: &[String]) -> Result<Command, Diagnostic> {
     let mut json = false;
@@ -438,6 +443,9 @@ fn run(arguments: &[String]) -> Result<Command, Diagnostic> {
             "run needs a call: evoke run [--json] <name> [<arg>=<value> | <flag>]…",
         ));
     }
+    if let Some(flag) = rest.iter().find(|argument| argument.starts_with("--")) {
+        return Err(usage(format!("run takes {flag} before the call")));
+    }
     let written = call(&line(rest)).map_err(help)?;
     Ok(Command::Run { written, json })
 }
@@ -450,6 +458,14 @@ fn teach(arguments: &[String]) -> Result<Command, Diagnostic> {
     let Some((first, rest)) = arguments.split_first() else {
         return Err(usage(NEEDS));
     };
+    if first.starts_with('-') && first.len() > 1 {
+        return Err(usage(format!(
+            "{first} is not a flag of teach; teach takes none"
+        )));
+    }
+    if first.trim().is_empty() {
+        return Err(usage("teach needs an utterance; write it in quotes"));
+    }
     if first == "not" {
         return Ok(Command::Teach {
             spoken: Spoken::Last,

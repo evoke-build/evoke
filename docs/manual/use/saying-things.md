@@ -18,7 +18,8 @@ sentence that holds a character the shell would take, such as `?` or `*`.
 **The REPL.** Run `evoke` alone on a terminal. It prompts `> ` and decides each line as if you had typed it as the
 argument. It skips blank lines. It keeps one warm connection to the adapter. You can edit the line, and the arrow
 keys recall earlier ones from `~/.local/state/evoke/history`. `Ctrl-C` cancels the line. `Ctrl-D` on an empty line
-ends the session with exit 0.
+ends the session with exit 0. Under `TERM=dumb` the line is read plain: no editing, no history, and `Ctrl-C`
+ends the session.
 
 ```text
 $ evoke
@@ -93,8 +94,8 @@ with.
 | 3    | Needs a human: a missing key, an untrusted project, a prompt with no terminal, a line to fix |
 | 4    | The adapter failed                                                         |
 
-`Ctrl-C` ends `evoke` at once, wherever it is. A program it started ends with it. The shell reports the interrupt
-as exit 130.
+Outside the REPL, `Ctrl-C` ends `evoke` at once. A JavaScript body ends with it; a program run as an argv
+finishes on its own. The shell reports the interrupt as exit 130.
 
 ## Limits and time
 

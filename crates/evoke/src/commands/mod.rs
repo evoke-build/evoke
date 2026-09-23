@@ -176,3 +176,45 @@ impl Reporter<'_> {
         ));
     }
 }
+
+/// `<what> needs a terminal`: the stop when a prompt has none to read.
+#[must_use]
+pub fn needs_terminal(what: &str) -> Diagnostic {
+    Diagnostic {
+        reflex: None,
+        at: None,
+        message: format!("{what} needs a terminal"),
+        fix: Fix::Rerun,
+    }
+}
+
+/// Every non-blank line of stdin acted on in turn: the first non-zero exit is the command's, and a read error
+/// stops it, reported as the failure it is.
+pub fn each_line(json: bool, mut act: impl FnMut(&str) -> Exit) -> Exit {
+    let mut first = Exit::Ran;
+    for line in terminal::stdin_lines() {
+        let exit = match line {
+            Ok(input) if input.trim().is_empty() => continue,
+            Ok(input) => act(&input),
+            Err(error) => {
+                let failed = Exit::Failed(Failure {
+                    what: "reading stdin".to_owned(),
+                    cause: Some(error.to_string()),
+                    fix: Fix::Rerun,
+                });
+                if json {
+                    if let Some(object) = report::exit_json(&failed) {
+                        terminal::result(&object);
+                    }
+                } else if let Some(line) = report::exit(&failed, "<input>", None) {
+                    terminal::note(&line);
+                }
+                return if first == Exit::Ran { failed } else { first };
+            }
+        };
+        if first == Exit::Ran {
+            first = exit;
+        }
+    }
+    first
+}

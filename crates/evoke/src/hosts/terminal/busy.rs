@@ -3,14 +3,46 @@
 //! replayed answer never flickers; over a batch it counts what is done; it is cleared the instant the wait ends.
 //! In: what is happening, and the size of a batch. Out: nothing that outlives the wait.
 
+// The one signal handler: Ctrl-C while the spinner turns clears its line before the default action ends the
+// process, so the shell's next prompt never lands after a frame.
+#![allow(unsafe_code)]
+
 use std::io::{self, Write};
-use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::mpsc::{self, Receiver, RecvTimeoutError, Sender};
+use std::sync::{Arc, Once};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
 
 use super::Look;
+
+/// Whether a spinner is on the line right now, for the interrupt handler.
+static SPINNING: AtomicBool = AtomicBool::new(false);
+static INTERRUPTS: Once = Once::new();
+const CLEAR: &[u8] = b"\r\x1b[2K";
+
+/// Ctrl-C: the spinner's line cleared, then the signal handled as it would have been.
+extern "C" fn on_interrupt(signal: libc::c_int) {
+    if SPINNING.load(Ordering::Relaxed) {
+        // SAFETY: write is async-signal-safe, and the bytes are a static string.
+        let _ = unsafe { libc::write(2, CLEAR.as_ptr().cast(), CLEAR.len()) };
+    }
+    // SAFETY: the default action restored and the signal raised again ends the process as an unhandled Ctrl-C
+    // would, with the same status.
+    unsafe {
+        libc::signal(signal, libc::SIG_DFL);
+        libc::raise(signal);
+    }
+}
+
+fn handle_interrupts() {
+    let handler: extern "C" fn(libc::c_int) = on_interrupt;
+    // SAFETY: a handler that only writes a static string and re-raises is safe to install once.
+    #[allow(clippy::fn_to_numeric_cast)]
+    unsafe {
+        libc::signal(libc::SIGINT, handler as libc::sighandler_t);
+    }
+}
 
 const FRAMES: [&str; 10] = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 /// How long a wait lasts before the spinner shows.
@@ -34,6 +66,8 @@ impl Busy {
         if !look.animated {
             return Self(None);
         }
+        INTERRUPTS.call_once(handle_interrupts);
+        SPINNING.store(true, Ordering::Relaxed);
         let (stop, stopped) = mpsc::channel();
         let done = Arc::new(AtomicUsize::new(0));
         let counted = Arc::clone(&done);
@@ -54,6 +88,7 @@ impl Drop for Busy {
         if let Some(Spinning { stop, thread, .. }) = self.0.take() {
             drop(stop);
             let _ = thread.join();
+            SPINNING.store(false, Ordering::Relaxed);
         }
     }
 }

@@ -25,6 +25,7 @@ use indexmap::IndexMap;
 
 use super::session::{self, Confirmed, Decided, Opening, Session, Woven, dismiss};
 use super::{Decline, Exit};
+use super::{each_line, needs_terminal};
 use crate::adapter::Adapter;
 use crate::args::{Arguments, Command, Inputs};
 use crate::hosts::processes::{Returned, Warm};
@@ -48,28 +49,7 @@ pub fn run(command: &Command, arguments: &Arguments, environment: &Environment) 
     };
     match &arguments.input {
         Inputs::One(input) => using.act(input),
-        Inputs::Stdin => {
-            let mut first = Exit::Ran;
-            for line in terminal::stdin_lines() {
-                let exit = match line {
-                    Ok(input) if input.trim().is_empty() => continue,
-                    Ok(input) => using.act(&input),
-                    Err(error) => {
-                        let failed = Exit::Failed(Failure {
-                            what: "reading stdin".to_owned(),
-                            cause: Some(error.to_string()),
-                            fix: Fix::Rerun,
-                        });
-                        let exit = using.session.reporter.exit("<input>", failed);
-                        return if first == Exit::Ran { exit } else { first };
-                    }
-                };
-                if first == Exit::Ran {
-                    first = exit;
-                }
-            }
-            first
-        }
+        Inputs::Stdin => each_line(arguments.json, |input| using.act(input)),
         Inputs::Terminal => using.repl(),
     }
 }
@@ -259,10 +239,7 @@ impl Using<'_> {
                         Ok(Some(Confirmed::Yes)) => return Ok(chosen),
                         Ok(Some(Confirmed::Teach)) => {
                             let spoken = decided.request.state.request.as_str();
-                            if let Err(exit) = self.teach(spoken, &chosen) {
-                                dismiss(warm.take());
-                                return Err(self.stopped(input, line, exit, None));
-                            }
+                            self.teach(spoken, &chosen);
                             return Ok(chosen);
                         }
                         Ok(Some(Confirmed::No) | None) => {
@@ -304,6 +281,13 @@ impl Using<'_> {
         if let Some(step) = &mut line.step {
             step.status = status_of(&exit);
             step.why.clone_from(&why);
+        }
+        // A failure after the line was built — a file that would not take a word — is the line's own `error`,
+        // so under `--json` one object stands for the input.
+        if let Exit::Failed(failure) = &exit
+            && line.error.is_none()
+        {
+            line.error = Some(report::failure(failure));
         }
         let exit = self.logged(input, line, exit);
         Rounded {
@@ -656,23 +640,27 @@ impl Using<'_> {
         }
     }
 
-    /// `[t]each`: the overlay line for what the utterance stated, written when the file still reads; a refusal is
-    /// printed and the confirmation stands.
-    fn teach(&self, input: &str, chosen: &Chosen) -> Result<(), Exit> {
-        let utterance = Utterance::new(input).map_err(|why| {
+    /// `[t]each`: the overlay line for what the utterance stated, written when the file still reads; a refusal —
+    /// an utterance the core will not file, a lesson it cannot type, a file that will not take it — is printed,
+    /// and the confirmation stands: the person said yes to the call.
+    fn teach(&mut self, input: &str, chosen: &Chosen) {
+        let refused = |message: String| {
             Exit::Human(Diagnostic {
                 reflex: None,
                 at: None,
-                message: why,
+                message,
                 fix: Fix::Rerun,
             })
-        })?;
-        let edit =
-            teach(&utterance, Lesson::stated(chosen), &self.session.plan).map_err(Exit::Human)?;
-        if let Err(refused) = self.session.apply(input, &edit) {
-            self.session.reporter.exit(input, refused);
+        };
+        let taught = Utterance::new(input)
+            .map_err(|why| refused(format!("{} {why}", report::quoted(input))))
+            .and_then(|utterance| {
+                teach(&utterance, Lesson::stated(chosen), &self.session.plan).map_err(Exit::Human)
+            })
+            .and_then(|edit| self.session.apply(input, &edit));
+        if let Err(exit) = taught {
+            self.session.reporter.exit(input, exit);
         }
-        Ok(())
     }
 
     /// The prompt needs a terminal and there is none: under `--json` the decision line stands for the problem;
@@ -788,11 +776,11 @@ impl Using<'_> {
                     if let Some(value) = picked(typed, *pick) {
                         return Ok(Some(value));
                     }
-                    retry = Some(format!("\"{typed}\" is not {}", pick.wants()));
+                    retry = Some(format!("{} is not {}", report::quoted(typed), pick.wants()));
                     continue;
                 }
             }
-            retry = Some(format!("\"{typed}\" is not one of them"));
+            retry = Some(format!("{} is not one of them", report::quoted(typed)));
         }
     }
 
@@ -822,7 +810,7 @@ impl Using<'_> {
             }
             match Word::new(typed) {
                 Ok(word) => break word,
-                Err(why) => retry = Some(why),
+                Err(why) => retry = Some(report::plain(&why)),
             }
         };
         let mut retry = None;
@@ -839,7 +827,7 @@ impl Using<'_> {
             }
             match Clean::line(typed) {
                 Ok(what) => break what,
-                Err(why) => retry = Some(format!("\"{typed}\" {why}")),
+                Err(why) => retry = Some(format!("{} {why}", report::quoted(typed))),
             }
         };
         let change = VocabChange::Add {
@@ -897,16 +885,6 @@ fn why_of(exit: &Exit) -> Option<Stopped> {
         Exit::Adapter(fault) => Some(Stopped::Said {
             message: fault.to_string(),
         }),
-    }
-}
-
-/// `<what> needs a terminal`: the stop when a prompt has none to read.
-fn needs_terminal(what: &str) -> Diagnostic {
-    Diagnostic {
-        reflex: None,
-        at: None,
-        message: format!("{what} needs a terminal"),
-        fix: Fix::Rerun,
     }
 }
 

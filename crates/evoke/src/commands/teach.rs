@@ -39,7 +39,7 @@ pub fn run(command: &Command, spoken: &Spoken, lesson: &Taught, environment: &En
         lesson: lesson.clone(),
     };
     session.reporter.command = &settled;
-    let exit = taught(&session, &text, &lesson);
+    let exit = taught(&mut session, &text, &lesson);
     session.reporter.exit(&text, exit)
 }
 
@@ -55,7 +55,7 @@ fn last_input(session: &Session<'_>) -> Result<String, Exit> {
         .ok_or_else(|| human("nothing has been decided yet; name the utterance".to_owned()))
 }
 
-fn taught(session: &Session<'_>, text: &str, lesson: &Taught) -> Exit {
+fn taught(session: &mut Session<'_>, text: &str, lesson: &Taught) -> Exit {
     let utterance = match Utterance::new(text) {
         Ok(utterance) => utterance,
         Err(why) => return human(format!("\"{text}\" {why}")),

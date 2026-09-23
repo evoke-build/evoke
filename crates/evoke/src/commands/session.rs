@@ -855,9 +855,15 @@ impl Session<'_> {
     }
 
     /// An edit landed in its owned file, and its line printed.
-    pub fn apply(&self, input: &str, edit: &Edit) -> Result<Edited, Exit> {
+    pub fn apply(&mut self, input: &str, edit: &Edit) -> Result<Edited, Exit> {
         let edited = self.land(input, edit)?;
-        terminal::note(&report::written(&edited));
+        // Under `--json` stderr keeps quiet, so the line goes to the terminal itself, as a prompt's own line does.
+        let written = report::written(&edited);
+        if self.reporter.json {
+            self.show(&written)?;
+        } else {
+            terminal::note(&written);
+        }
         Ok(edited)
     }
 
@@ -1007,15 +1013,23 @@ impl Session<'_> {
         } else {
             terminal::note(own);
         }
+        let mut retry: Option<String> = None;
         loop {
-            let Some(typed) = self.prompt(&report::confirm_prompt(prompt, teachable))? else {
+            let asked = report::confirm_prompt(prompt, teachable, retry.as_deref());
+            let Some(typed) = self.prompt(&asked)? else {
                 return Ok(None);
             };
             match typed.trim().to_lowercase().as_str() {
                 "y" | "yes" => return Ok(Some(Confirmed::Yes)),
                 "n" | "no" => return Ok(Some(Confirmed::No)),
                 "t" | "teach" if teachable => return Ok(Some(Confirmed::Teach)),
-                _ => {}
+                "" => retry = None,
+                _ => {
+                    retry = Some(format!(
+                        "{} is not one of them",
+                        report::quoted(typed.trim())
+                    ));
+                }
             }
         }
     }

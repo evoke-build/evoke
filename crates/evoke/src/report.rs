@@ -184,7 +184,8 @@ fn fixing(problem: &Diagnostic, invoked: &str, paths: Option<&Paths>) -> String 
 
 /// Text that cannot repaint the terminal. The input is untrusted and is echoed in a fault and in the line to
 /// rerun, so a character `Clean` refuses, or a line feed, shows as its escape.
-fn plain(text: &str) -> String {
+#[must_use]
+pub fn plain(text: &str) -> String {
     let mut plain = String::with_capacity(text.len());
     for c in text.chars() {
         if c != '\n' && Clean::new(c.encode_utf8(&mut [0; 4])).is_ok() {
@@ -697,13 +698,14 @@ fn own(chosen: &Chosen, own: &str) -> Text {
 
 /// The confirm prompt itself, read on the terminal; `[t]each` only where there is an utterance to teach.
 #[must_use]
-pub fn confirm_prompt(prompt: &Prompt, teachable: bool) -> String {
+pub fn confirm_prompt(prompt: &Prompt, teachable: bool, retry: Option<&str>) -> String {
     let choices = if teachable {
         "[y]es [n]o [t]each"
     } else {
         "[y]es [n]o"
     };
-    format!("  {}  {choices} > ", prompt.template)
+    let retry = retry.map_or_else(String::new, |retry| format!("{retry}  "));
+    format!("  {}  {retry}{choices} > ", prompt.template)
 }
 
 /// The ask prompt: numbered choices, a vocabulary's `[+] add one`, or a pick typed freely; `retry` says why the

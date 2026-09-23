@@ -6,6 +6,16 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- `[t]each` at a confirm records the lesson and runs, as the manual says. Before, an utterance the core would
+  not file, a pasted bidi mark for instance, stopped the run the person had just said yes to; now the refusal
+  prints and the run goes ahead. A confirm answered with anything but `y`, `n` or `t` says so before it asks
+  again, and what you typed at a prompt is echoed plain, never raw.
+- Under `--json`, a failure at a prompt is the line's own `error`, one object per input, and a line written at a
+  prompt shows on the terminal. `evoke why`'s own failures end in `evoke why`. A flag where a name should be,
+  `evoke show --json`, is refused as a flag; `run` says its flag goes before the call; `teach` refuses a
+  flag-shaped utterance and an empty one.
+- `Ctrl-C` while the spinner turns clears its line before `evoke` ends. The one line `evoke` prints when it hits
+  a bug is one line, with where, ending in the address to report it.
 - A sentence of several steps is read more carefully. `don’t` with the apostrophe a Mac types is a negation like
   `don't`. A second value the whole sentence already saw, "set a timer for 10 minutes and 30 seconds", is one
   task that confirms with its unused span, not two timers. `them` over two steps that both yield what the next

@@ -18,17 +18,17 @@ pub fn run(
     setting: &Setting,
     environment: &Environment,
 ) -> Exit {
-    let session = match session::open(command, false, environment, Opening::Tuning) {
+    let mut session = match session::open(command, false, environment, Opening::Tuning) {
         Ok(session) => session,
         Err(exit) => return exit,
     };
     let input = command.stand_in();
-    let exit = set(&session, &input, reflex, key, setting);
+    let exit = set(&mut session, &input, reflex, key, setting);
     session.reporter.exit(&input, exit)
 }
 
 fn set(
-    session: &Session<'_>,
+    session: &mut Session<'_>,
     input: &str,
     reflex: &LocalName,
     key: &ConfigKey,
