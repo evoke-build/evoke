@@ -9,7 +9,8 @@ let body;
 try {
   body = await import(pathToFileURL(run).href);
 } catch (error) {
-  if (error instanceof Error && error.stack) process.stderr.write(`${where(error.stack)}\n`);
+  const frames = error instanceof Error && error.stack ? where(error.stack) : "";
+  if (frames) process.stderr.write(`${frames}\n`);
   fail(`${run} does not load: ${error instanceof Error ? error.message : String(error)}`);
 }
 if (body.default === undefined) fail(`${run} has no default export`);

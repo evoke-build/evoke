@@ -13,6 +13,9 @@ $ mkdir bodyless && printf 'reflex = 1\ndescription = "Nothing."\nconfirm = "Not
 $ mkdir dull && printf 'reflex = 1\ndescription = "Nothing."\nconfirm = "Nothing?"\nrun = "dull.mts"\n' > dull/reflex.toml && printf 'export default 5\n' > dull/dull.mts && cd dull && evoke check
   dull: the default export of dull.mts is not a function  →  evoke check
 [3]
+$ mkdir torn && printf 'reflex = 1\ndescription = "Nothing."\nconfirm = "Nothing?"\nrun = "torn.mts"\n' > torn/reflex.toml && printf 'export default (\n' > torn/torn.mts && cd torn && evoke check
+  torn: torn.mts does not load: Expression expected  →  evoke check
+[3]
 $ mkdir broken && printf 'reflex = 1\ndescription = "Nothing."\nconfirm = "Nothing?"\nrun = "nothing.ts"\n' > broken/reflex.toml && cd broken && evoke check
   broken: run: "nothing.ts" must end in .mts or .mjs  →  ~/broken/reflex.toml:4:1
 [3]
