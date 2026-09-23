@@ -14,6 +14,9 @@ fail() { echo "install.sh: $1" >&2; exit 1; }
 need() { command -v "$1" >/dev/null 2>&1 || fail "$1 is needed and is not on PATH"; }
 need curl
 need tar
+if command -v sha256sum >/dev/null 2>&1; then digest() { sha256sum "$1" | cut -d ' ' -f 1; }
+elif command -v shasum >/dev/null 2>&1; then digest() { shasum -a 256 "$1" | cut -d ' ' -f 1; }
+else fail "sha256sum or shasum is needed to check the download, and neither is on PATH"; fi
 
 case $(uname -s) in
   Darwin) os=apple-darwin ;;
@@ -37,11 +40,7 @@ fetch SHA256SUMS
 
 expected=$(awk -v file="$archive" '$2 == file { print $1 }' "$tmp/SHA256SUMS")
 [ -n "$expected" ] || fail "SHA256SUMS does not list $archive"
-if command -v sha256sum >/dev/null 2>&1; then
-  actual=$(sha256sum "$tmp/$archive" | cut -d ' ' -f 1)
-else
-  actual=$(shasum -a 256 "$tmp/$archive" | cut -d ' ' -f 1)
-fi
+actual=$(digest "$tmp/$archive")
 [ "$actual" = "$expected" ] || fail "$archive does not match SHA256SUMS; run this again, and report it if it happens twice"
 
 tar -xzf "$tmp/$archive" -C "$tmp" evoke
