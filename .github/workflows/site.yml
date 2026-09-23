@@ -5,7 +5,7 @@ name: Site
 on:
   push:
     branches: [main]
-    paths: [docs/manual/**, site/**, assets/**, mise.toml, mise.lock, .github/workflows/site.yml]
+    paths: [docs/manual/**, site/**, assets/**, spec/schemas/**, mise-tasks/site, Cargo.toml, mise.toml, mise.lock, .github/workflows/site.yml]
   workflow_dispatch:
 
 permissions:
