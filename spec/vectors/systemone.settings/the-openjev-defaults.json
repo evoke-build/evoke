@@ -5,7 +5,7 @@
   "expect": {
     "ok": {
       "declared": {
-        "id": "openjev",
+        "id": "jev-1.13.0",
         "limits": {
           "options": 255
         },

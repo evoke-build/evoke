@@ -9,7 +9,7 @@ use std::time::Duration;
 use evoke_core::name::VarName;
 use evoke_core::plan::Millis;
 use evoke_core::{Diagnostic, Fault, Fix};
-use ureq::http::Uri;
+use ureq::http::{HeaderMap, Uri};
 use ureq::tls::{RootCerts, TlsConfig};
 use ureq::{Error, Proxy, ProxyProtocol, Timeout};
 
@@ -87,10 +87,11 @@ fn proxy(environment: &Environment) -> Result<Option<Proxy>, Diagnostic> {
     builder.build().map(Some).map_err(|_| refused())
 }
 
-/// What the server answered.
+/// What the server answered; with a 429, the pause it asked for before the next attempt.
 pub struct Response {
     pub status: u16,
     pub body: String,
+    pub retry_after: Option<Duration>,
 }
 
 /// Why nothing was answered, in plain words, and whether a connection was made first: an attempt that never
@@ -143,14 +144,32 @@ pub fn post(
     match sent {
         Ok(mut response) => {
             let status = response.status().as_u16();
+            let retry_after = (status == 429).then(|| pause(response.headers())).flatten();
             let body = response
                 .body_mut()
                 .read_to_string()
                 .map_err(|error| describe(&error))?;
-            Ok(Response { status, body })
+            Ok(Response {
+                status,
+                body,
+                retry_after,
+            })
         }
         Err(error) => Err(describe(&error)),
     }
+}
+
+/// The pause a 429 asks for: `Retry-After` in seconds, at least one, so a service that says "now" is still paced;
+/// an HTTP date, which no engine sends, names no pause.
+fn pause(headers: &HeaderMap) -> Option<Duration> {
+    let seconds: u64 = headers
+        .get("retry-after")?
+        .to_str()
+        .ok()?
+        .trim()
+        .parse()
+        .ok()?;
+    Some(Duration::from_secs(seconds.max(1)))
 }
 
 /// The failure in plain words: where the connection was going, the proxy when one carries it; the system's own
@@ -240,6 +259,21 @@ fn seconds(ms: Millis) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_pause_is_retry_after_in_seconds_at_least_one() {
+        let mut headers = HeaderMap::new();
+        assert_eq!(pause(&headers), None);
+        headers.insert("retry-after", "1".parse().unwrap());
+        assert_eq!(pause(&headers), Some(Duration::from_secs(1)));
+        headers.insert("retry-after", "0".parse().unwrap());
+        assert_eq!(pause(&headers), Some(Duration::from_secs(1)));
+        headers.insert(
+            "retry-after",
+            "Wed, 23 Sep 2026 16:53:32 GMT".parse().unwrap(),
+        );
+        assert_eq!(pause(&headers), None);
+    }
     use ureq::ProxyProtocol;
 
     const URL: &str = "https://api.typesafe.ai/v1/systemone";

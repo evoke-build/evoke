@@ -11,10 +11,19 @@ import { getSystemErrorMessage } from "node:util"
 /** The most a response may carry: a decision's answers are kilobytes, so anything beyond is not the classifier. */
 const LIMIT = 10 * 1024 * 1024
 
-/** What the server answered. */
+/** What the server answered; with a 429, the pause it asked for before the next attempt, in milliseconds. */
 export interface Response {
   status: number
   body: string
+  retryAfter?: number | undefined
+}
+
+/** The pause a 429 asks for: `Retry-After` in seconds, at least one, so a service that says "now" is still paced;
+ * an HTTP date, which no engine sends, names no pause. */
+export function pause(header: string | string[] | undefined): number | undefined {
+  const text = Array.isArray(header) ? header[0] : header
+  if (text === undefined || !/^\s*\d+\s*$/.test(text)) return undefined
+  return Math.max(1, Number.parseInt(text, 10)) * 1000
 }
 
 /** Why nothing was answered, and whether a connection was made first. */
@@ -63,7 +72,11 @@ export function post(
           if (received > LIMIT) response.destroy(new Error(`more than ${LIMIT} bytes`))
           else text += chunk
         })
-        response.on("end", () => resolve({ status: response.statusCode ?? 0, body: text }))
+        response.on("end", () => {
+          const status = response.statusCode ?? 0
+          const retryAfter = status === 429 ? pause(response.headers["retry-after"]) : undefined
+          resolve({ status, body: text, ...(retryAfter === undefined ? {} : { retryAfter }) })
+        })
         response.on("error", error => reject(new Transport(`reading the response from ${host}: ${reason(error)}`, true)))
       },
     )

@@ -1,12 +1,11 @@
 {
   "input": {
-    "door": "openjev",
     "request": {
       "$ref": "fixtures/request-screenshot-window.json"
     }
   },
   "expect": {
-    "model": "openjev",
+    "model": "jev-1.13.0",
     "state": {
       "request": "screenshot this window"
     },

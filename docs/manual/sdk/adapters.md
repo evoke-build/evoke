@@ -22,7 +22,8 @@ const project = await load({ reflexes, adapter: jev({ key, gate: { write: 0.85 }
 When `load` resolves `jev` by name from `evoke.toml`, it is built under the file's `[adapters.jev]` table. An
 adapter passed in replaces both. The transport keeps one connection alive for the process, through the proxy
 `HTTPS_PROXY` names when one is set; a proxy needs Node 24.5 or newer, and `jev()` says so on an older one. It
-retries once after a connect error or a server error, and never after a client error. No key is a
+retries once after a connect error or a server error, and never after a client error, except a 429 that says
+how long to wait: that wait is waited out, and the request sent again, within the deadline. No key is a
 `DiagnosticError` ending in `export TYPESAFE_API_KEY=<value>`.
 
 ## `openjev()`: the same model, through OpenJEV
@@ -43,9 +44,11 @@ const project = await load({ reflexes, adapter: openjev({ key, gate: { write: 0.
 returns Jev's answers. `evoke` is affiliated with neither, and vouches for neither. A key from OpenJEV is on
 OpenJEV's terms, and whether it may offer Jev is a matter between OpenJEV and TypeSafe AI. As of this release it
 publishes no terms and no privacy policy, so weigh that before you choose it for an application. The transport
-is `jev()`'s, with 3 seconds once connected instead of 1.5, since the service forwards the request onward. Its
-`id` is `openjev`, the alias the service names, which follows the latest Jev: when Jev moves, answers may move
-under the same id. No key is a `DiagnosticError` ending in `export OPENJEV_API_KEY=<value>`.
+is `jev()`'s, with 3 seconds once connected instead of 1.5, since the service forwards the request onward, and
+OpenJEV asks a burst to slow down after about a dozen requests a second, which the wait honours. It names the
+model by version, `jev-1.13.0`, as `jev()` does, since OpenJEV forwards the name it is given: its `id` is Jev's
+own, so the answers behind it cannot move under one id. No key is a `DiagnosticError` ending in
+`export OPENJEV_API_KEY=<value>`.
 
 ## The contract
 

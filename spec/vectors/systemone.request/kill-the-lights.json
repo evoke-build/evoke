@@ -1,6 +1,5 @@
 {
   "input": {
-    "door": "jev",
     "request": {
       "$ref": "fixtures/request-kill-the-lights.json"
     }

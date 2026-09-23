@@ -6,6 +6,7 @@
 
 use std::fmt::Write as _;
 use std::path::Path;
+use std::thread;
 
 use evoke_adapters::replay::{self, Recording};
 use evoke_adapters::systemone::{self, Door, Settings};
@@ -13,7 +14,7 @@ use evoke_core::name::{AdapterId, AdapterName, VarName};
 use evoke_core::{Declared, Diagnostic, Digest, Fault, Fix, Json, Raw, Request};
 use serde::{Deserialize, Serialize};
 
-use crate::hosts::network::{self, Agent};
+use crate::hosts::network::{self, Agent, Response};
 use crate::hosts::{Deadline, Environment, files};
 
 /// The variable naming the recording `replay` answers from.
@@ -108,7 +109,6 @@ fn unset(what: &str, var: VarName) -> Diagnostic {
 
 /// One door on the System One wire, with its key and a connection.
 struct SystemOne {
-    door: Door,
     settings: Settings,
     key: String,
     agent: Agent,
@@ -132,7 +132,6 @@ impl SystemOne {
             .to_owned();
         let agent = Agent::new(environment).map_err(|problem| vec![problem])?;
         Ok(Self {
-            door,
             settings,
             key,
             agent,
@@ -145,14 +144,14 @@ impl Adapter for SystemOne {
         &self.settings.declared
     }
 
-    /// The policy loop: once more after a connect error or a retried status, never after a client error.
+    /// The policy loop: once more after a connect error or a retried status, never after a client error; a 429
+    /// that names a pause is waited out and sent again, as often as the deadline allows.
     fn answer(&self, request: &Request, deadline: Deadline) -> Result<Raw, Fault> {
-        let body = systemone::request(self.door, request).to_string();
+        let body = systemone::request(request).to_string();
         let policy = &self.settings.policy;
-        let mut attempt = 0;
+        let mut retried = 0;
         loop {
-            attempt += 1;
-            let again = attempt <= policy.retries;
+            let again = retried < policy.retries;
             let sent = network::post(
                 &self.agent,
                 &self.settings.url,
@@ -162,9 +161,13 @@ impl Adapter for SystemOne {
                 policy.timeout,
             );
             match sent {
-                Err(transport) if again && !transport.connected => {}
+                Err(transport) if again && !transport.connected => retried += 1,
                 Err(transport) => return Err(transport.into()),
-                Ok(response) if again && policy.retried(response.status) => {}
+                Ok(response) if again && policy.retried(response.status) => retried += 1,
+                Ok(Response {
+                    retry_after: Some(pause),
+                    ..
+                }) if pause <= deadline.remaining() => thread::sleep(pause),
                 Ok(response) => {
                     return systemone::answers(
                         response.status,
@@ -307,7 +310,7 @@ mod tests {
         let jev = declared(&AdapterName::new("jev").unwrap(), None, &environment).unwrap();
         assert!(jev.gate.is_some());
         let openjev = declared(&AdapterName::new("openjev").unwrap(), None, &environment).unwrap();
-        assert_eq!(openjev.id.as_str(), "openjev");
+        assert_eq!(openjev.id, jev.id);
         assert_eq!(openjev.gate, jev.gate);
         let replay = declared(&AdapterName::new("replay").unwrap(), None, &environment).unwrap();
         assert_eq!(replay.id.as_str(), "replay");

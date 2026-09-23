@@ -1,8 +1,8 @@
 //! The System One wire as a pure mapping, behind two doors. In: a `Door` and its `[adapters.<name>]` table; a
 //! `Request`; a response's status and body. Out: `Settings` or the problems to fix; the request body; `Raw`
-//! answers or a `Fault`. Jev is the model behind both doors: `jev` posts to TypeSafe AI's own address under its
-//! key, `openjev` to OpenJEV, an independent service that forwards requests to Jev, under a key of its own; one
-//! body and one reading serve both.
+//! answers or a `Fault`. Jev is the model behind both doors, named by version in every body: `jev` posts to
+//! TypeSafe AI's own address under its key, `openjev` to OpenJEV, an independent service that forwards the request
+//! to Jev, under a key of its own; one body and one reading serve both.
 
 use std::fmt;
 
@@ -28,13 +28,20 @@ pub enum Door {
     OpenJev,
 }
 
+/// The model every body names, which is the adapter's id at either door: it changes whenever answers could.
+/// OpenJEV forwards the name it is given, so the door pins it rather than take the service's alias, which
+/// follows the latest Jev.
+const MODEL: &str = "jev-1.13.0";
+
+/// The model as the adapter's id, at either door.
+fn id() -> AdapterId {
+    AdapterId::new(MODEL).expect("the model name is an id")
+}
+
 /// What tells one door from the other; the mapping behind them is one.
 struct Constants {
     /// The adapter's name, as a project names it and as a problem's key path begins.
     name: &'static str,
-    /// The model the body names, which is the adapter's id: it changes whenever answers could. OpenJEV's is an
-    /// alias that follows the latest Jev, so behind that door answers may move under one id.
-    model: &'static str,
     /// The endpoint both hosts post to.
     url: &'static str,
     /// The variable both hosts read the key from.
@@ -48,7 +55,6 @@ struct Constants {
 
 const JEV: Constants = Constants {
     name: "jev",
-    model: "jev-1.13.0",
     url: "https://api.typesafe.ai/v1/systemone",
     credential: "TYPESAFE_API_KEY",
     issuer: "typesafe.ai",
@@ -57,7 +63,6 @@ const JEV: Constants = Constants {
 
 const OPENJEV: Constants = Constants {
     name: "openjev",
-    model: "openjev",
     url: "https://api.openjev.sh/v1/systemone",
     credential: "OPENJEV_API_KEY",
     issuer: "openjev.sh",
@@ -65,11 +70,6 @@ const OPENJEV: Constants = Constants {
 };
 
 impl Constants {
-    /// The model as the adapter's id.
-    fn id(&self) -> AdapterId {
-        AdapterId::new(self.model).expect("the model name is an id")
-    }
-
     fn credential(&self) -> VarName {
         VarName::new(self.credential).expect("the credential is a variable name")
     }
@@ -178,7 +178,7 @@ pub fn settings(door: Door, table: Option<&Json>) -> Result<Settings, Vec<Diagno
     match gate {
         Some(gate) if errors.is_empty() => Ok(Settings {
             declared: Declared {
-                id: constants.id(),
+                id: id(),
                 limits: Some(Limits {
                     options: Some(OPTIONS),
                     tokens: None,
@@ -254,10 +254,10 @@ fn policy(timeout: Millis) -> Policy {
     }
 }
 
-/// The body of `POST /v1/systemone`: the door's model, the state, and each question as System One's `choice` or
-/// `noul`.
+/// The body of `POST /v1/systemone`: the model, the state, and each question as System One's `choice` or
+/// `noul`; the same at either door, which only says where it goes and under which key.
 #[must_use]
-pub fn request(door: Door, request: &Request) -> Json {
+pub fn request(request: &Request) -> Json {
     let questions: serde_json::Map<String, Json> = request
         .questions
         .iter()
@@ -278,7 +278,7 @@ pub fn request(door: Door, request: &Request) -> Json {
         })
         .collect();
     json!({
-        "model": door.constants().model,
+        "model": MODEL,
         "state": { "request": request.state.request },
         "questions": questions,
     })
@@ -410,7 +410,8 @@ mod tests {
     fn openjev_is_a_second_door_on_the_same_wire() {
         let jev = settings(Door::Jev, None).unwrap();
         let openjev = settings(Door::OpenJev, None).unwrap();
-        assert_eq!(openjev.declared.id.as_str(), "openjev");
+        assert_eq!(openjev.declared.id, jev.declared.id);
+        assert_eq!(openjev.declared.id.as_str(), "jev-1.13.0");
         assert_eq!(openjev.declared.limits, jev.declared.limits);
         assert_eq!(openjev.declared.gate, jev.declared.gate);
         assert_eq!(openjev.credential.as_str(), "OPENJEV_API_KEY");
@@ -443,15 +444,6 @@ mod tests {
             problems,
             ["adapters.openjev.gate.route must be a probability, 0 to 1"]
         );
-        let request: Request = serde_json::from_str(include_str!(
-            "../../../spec/fixtures/request-kill-the-lights.json"
-        ))
-        .unwrap();
-        let through_jev = super::request(Door::Jev, &request);
-        let through_openjev = super::request(Door::OpenJev, &request);
-        assert_eq!(through_openjev["model"], "openjev");
-        assert_eq!(through_openjev["state"], through_jev["state"]);
-        assert_eq!(through_openjev["questions"], through_jev["questions"]);
     }
 
     #[test]
@@ -531,7 +523,7 @@ mod tests {
             "../../../spec/fixtures/request-kill-the-lights.json"
         ))
         .unwrap();
-        let body = super::request(Door::Jev, &request);
+        let body = super::request(&request);
         assert_eq!(body["model"], "jev-1.13.0");
         assert_eq!(body["state"], json!({ "request": "kill the lights" }));
         let questions = body["questions"].as_object().unwrap();
@@ -589,7 +581,7 @@ mod tests {
                 no: evoke_core::adapter::Text::Plain(clean("One thing.")),
             },
         );
-        let body = super::request(Door::Jev, &request);
+        let body = super::request(&request);
         assert_eq!(body["questions"]["weave.split_0"]["type"], "noul");
         assert_eq!(
             body["questions"]["weave.split_0"]["criteria"]["true"],

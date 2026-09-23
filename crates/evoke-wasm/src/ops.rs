@@ -211,10 +211,7 @@ fn adapters(op: &str, input: &Json) -> Answer {
             arg::<Door>(input, "door")?,
             opt::<Json>(input, "table")?.as_ref(),
         )),
-        "systemone.request" => ok(systemone::request(
-            arg::<Door>(input, "door")?,
-            &arg::<Request>(input, "request")?,
-        )),
+        "systemone.request" => ok(systemone::request(&arg::<Request>(input, "request")?)),
         "systemone.answers" => result(systemone::answers(
             arg(input, "status")?,
             text(input, "body")?,

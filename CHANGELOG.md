@@ -13,7 +13,13 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   connect, 3 seconds for OpenJEV since it forwards the request onward. A missing key names the adapter that
   needs it: `openjev needs OPENJEV_API_KEY, a key from openjev.sh`. OpenJEV publishes no terms and no privacy
   policy as of this release; the install page and the site's privacy page say so, and what it sees. `evoke` is
-  affiliated with neither TypeSafe AI nor OpenJEV, and vouches for neither.
+  affiliated with neither TypeSafe AI nor OpenJEV, and vouches for neither. Both adapters name the model by
+  version, `jev-1.13.0`, since OpenJEV forwards the name it is given: the `openjev` adapter's id is Jev's own,
+  and the answers behind it cannot move under one id.
+- Both adapters wait out a 429 that says how long to wait: the seconds its `Retry-After` names, at least one,
+  and then the request is sent again, as often as the decision's 30 seconds allow. OpenJEV asks a burst to slow
+  down after about a dozen requests a second, so `evoke test` over the collection, which sends four at a time,
+  now completes through it where it stopped at the first 429.
 
 ## [0.4.0] - 2026-09-23
 

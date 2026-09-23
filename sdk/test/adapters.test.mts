@@ -10,7 +10,7 @@ import { test } from "node:test"
 import type { Adapter } from "../src/adapter.ts"
 import { answered } from "../src/adapter.ts"
 import { DiagnosticError, FaultError } from "../src/errors.ts"
-import { type Response, Transport, describe } from "../src/https.ts"
+import { type Response, Transport, describe, pause } from "../src/https.ts"
 import { type Post, over } from "../src/systemone.ts"
 import { replay } from "../src/testing.ts"
 import type { Request } from "../src/types.ts"
@@ -54,7 +54,7 @@ test("openjev is a second door on the same wire: its own key, address, model and
     seen.push({ url, bearer, body, timeout })
     return { status: 200, body: answers }
   })
-  equal(door.id, "openjev")
+  equal(door.id, "jev-1.13.0")
   deepStrictEqual(door.limits, { options: 255 })
   deepStrictEqual(door.gate, { route: 0.5, fits: 0.3, read: 0.6, write: 0.8 })
   const { raw } = await answered(door, request, 30_000, undefined, "decide()")
@@ -62,7 +62,7 @@ test("openjev is a second door on the same wire: its own key, address, model and
   equal(seen[0]?.url, "https://api.openjev.sh/v1/systemone")
   equal(seen[0]?.bearer, "k")
   equal(seen[0]?.timeout, 3000)
-  ok(seen[0]?.body.includes('"model":"openjev"'))
+  ok(seen[0]?.body.includes('"model":"jev-1.13.0"'))
   throws(
     () => over("openjev", { key: "k", gate: { read: 0.9 } }, async () => ({ status: 200, body: answers })),
     (error: DiagnosticError) => error.message === "adapters.openjev.gate: read 0.9 is above write 0.8  →  openjev({ gate })",
@@ -139,6 +139,37 @@ test("the policy loop: once more after a connect error or a 5xx, never after a 4
     answered(over("jev", { key: "k" }, async () => { throw new Transport("reset", true) }), request, 30_000, undefined, "decide()"),
     (error: FaultError) => error.message === "reset  →  decide()",
   )
+})
+
+test("a 429 that names a pause is waited out and sent again; one without is a fault; the deadline ends the wait", async () => {
+  const calls: number[] = []
+  const limited = (...replies: Response[]): Post => async () => {
+    calls.push(performance.now())
+    const next = replies.shift()
+    if (next === undefined) throw new Error("asked once too often")
+    return next
+  }
+  const answer = { status: 200, body: answers }
+  const { raw } = await answered(over("jev", { key: "k" }, limited({ status: 429, body: "", retryAfter: 30 }, answer)), request, 30_000, undefined, "decide()")
+  deepStrictEqual(raw["fits.lights"], { yes: 0.7 })
+  equal(calls.length, 2)
+  ok((calls[1] ?? 0) - (calls[0] ?? 0) >= 25)
+  await rejects(
+    answered(over("jev", { key: "k" }, async () => ({ status: 429, body: "" })), request, 30_000, undefined, "decide()"),
+    (error: FaultError) => error.message === "the adapter answered 429  →  decide()",
+  )
+  let asked = 0
+  await rejects(
+    answered(over("jev", { key: "k" }, async () => { asked += 1; return { status: 429, body: "", retryAfter: 10_000 } }), request, 40, undefined, "decide()"),
+    (error: FaultError) => error.message === "did not answer within 40 ms  →  decide()",
+  )
+  equal(asked, 1)
+  equal(pause("1"), 1000)
+  equal(pause("0"), 1000)
+  equal(pause(" 2 "), 2000)
+  equal(pause(["3"]), 3000)
+  equal(pause(undefined), undefined)
+  equal(pause("Wed, 23 Sep 2026 16:53:32 GMT"), undefined)
 })
 
 test("an adapter that ignores the deadline is a transport fault; the caller's abort is its own reason", async () => {

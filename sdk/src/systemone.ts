@@ -3,7 +3,8 @@
 // core's — systemone.settings, systemone.request and systemone.answers through the module — and the SDK adds
 // the transport: one kept-alive agent for the process, through the proxy the environment names, the bearer key,
 // and the policy loop the settings declare: once more after a connect error or a retried status, never after a
-// client error. In: a door and its options. Out: an Adapter.
+// client error, and a 429 that names a pause waited out and sent again while the deadline allows. In: a door and
+// its options. Out: an Adapter.
 
 import { Agent } from "node:https"
 
@@ -75,21 +76,46 @@ export function over(door: Door, options: DoorOptions, send: Post): Adapter {
     ...(declared.limits === undefined ? {} : { limits: declared.limits }),
     ...(declared.gate === undefined ? {} : { gate: declared.gate }),
     async answer(state: State, questions: Record<string, Question>, signal: AbortSignal): Promise<Raw> {
-      const body = JSON.stringify(call("systemone.request", { door, request: { state, questions, proposed: [] } }))
-      for (let attempt = 1; ; attempt++) {
-        const again = attempt <= policy.retries
+      const body = JSON.stringify(call("systemone.request", { request: { state, questions, proposed: [] } }))
+      let retried = 0
+      for (;;) {
+        const again = retried < policy.retries
         let response: Response
         try {
           response = await send(url, key, body, signal, policy.timeout)
         } catch (error) {
-          if (error instanceof Transport && again && !error.connected && !signal.aborted) continue
+          if (error instanceof Transport && again && !error.connected && !signal.aborted) {
+            retried += 1
+            continue
+          }
           throw error
         }
-        if (again && response.status >= lowest && response.status <= highest) continue
+        if (again && response.status >= lowest && response.status <= highest) {
+          retried += 1
+          continue
+        }
+        // The service asked for a pause before the next attempt: honoured until the deadline ends the wait.
+        if (response.status === 429 && response.retryAfter !== undefined && !signal.aborted) {
+          await pausing(response.retryAfter, signal)
+          if (!signal.aborted) continue
+        }
         return call("systemone.answers", { status: response.status, body: response.body, credential: settings.credential })
       }
     },
   }
+}
+
+/** A pause the service asked for, ended early by the signal. */
+function pausing(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise(resolve => {
+    const done = () => {
+      clearTimeout(timer)
+      signal.removeEventListener("abort", done)
+      resolve()
+    }
+    const timer = setTimeout(done, ms)
+    signal.addEventListener("abort", done, { once: true })
+  })
 }
 
 /** The door's settings from the table: a problem in a table from code ends in `<door>({ gate })`, in a file's in
