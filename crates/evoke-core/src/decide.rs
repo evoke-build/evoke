@@ -512,8 +512,9 @@ fn malformed(question: QuestionId, message: impl Into<String>) -> Fault {
     }
 }
 
-/// The answers taken apart: every asked question's answer, and nothing that was not asked.
-pub(crate) fn validated(request: &Request, raw: Raw) -> Result<Answers<'_>, Fault> {
+/// The answers taken apart: every asked question's answer, and nothing that was not asked. A host that caches
+/// answers checks them here before keeping them, and again on a hit, so a malformed answer is never served twice.
+pub fn validated(request: &Request, raw: Raw) -> Result<Answers<'_>, Fault> {
     let mut raw = raw.0;
     let mut answers = IndexMap::new();
     for (id, question) in &request.questions {

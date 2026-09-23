@@ -5,6 +5,22 @@ $ evoke "kill the lights in the den and start a 10 minute timer"
   2  timer duration="10 minute"  0.90
 den lights off
 10 minute timer started
+# A cached answer that does not validate is asked again, never served twice.
+$ printf '{"weave.split_0":{"yes":1.5}}' | tee .cache/evoke/answers/*/*.json > /dev/null
+$ evoke try "kill the lights in the den and start a 10 minute timer"
+  1  lights room="den" state="off"  0.85
+  2  timer duration="10 minute"  0.90
+  1  "kill the lights in the den"
+  lights 0.91 · none 0.06 · timer 0.02 · volume 0.01
+  room   den 0.85 · unstated 0.10 · office 0.05
+  state  off 0.88 · on 0.05 · dim 0.05 · unstated 0.02
+  fits   lights 0.70 · timer 0.05 · volume 0.05 · contact 0.02 · mail 0.02
+  run · weakest: room 0.85
+  2  "start a 10 minute timer"
+  timer 0.90 · none 0.06 · lights 0.02 · volume 0.02
+  duration  "10 minute" 0.90 · unstated 0.10
+  fits      timer 0.80 · lights 0.05 · volume 0.05 · contact 0.02 · mail 0.02
+  run · weakest: route 0.90
 $ evoke try "start a 10 minute timer, then kill the lights in the den"
   1  timer duration="10 minute"  0.90
   2  lights room="den" state="off"  0.85 · after 1

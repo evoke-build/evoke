@@ -32,7 +32,7 @@ pub use contract::{
 };
 pub use decide::{
     Asking, Cap, Choices, Chosen, Contender, Decision, Judged, Judgment, Missing, Prompt, Reading,
-    Scope, Why, Winner, by_name, fill, gate, picked, read, request,
+    Scope, Why, Winner, by_name, fill, gate, picked, read, request, validated,
 };
 pub use diagnostic::{At, Diagnostic, File, Fix};
 pub use digest::{Digest, compose, digest};

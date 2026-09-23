@@ -20,7 +20,7 @@ use evoke_core::{
     Chosen, Decision, Declared, Diagnostic, Document, Edit, Effective, File, Fix, Input, Installed,
     Item, Lock, Manifest, Owned, Plan, Planning, Project, Prompt, Raw, Reading, Request, Scope,
     Version, Weave, argv, compile, effective, envelope, gate, lock, manifest, overlay, project,
-    project_dts, read, render_lock, request, vocabulary,
+    project_dts, read, render_lock, request, validated, vocabulary,
 };
 use indexmap::IndexMap;
 
@@ -766,16 +766,13 @@ impl Session<'_> {
         request: &Request,
         trace: &mut Vec<Trace>,
     ) -> Result<Raw, Exit> {
+        // A hit that does not validate is a miss, and an answer is kept only once it validates, as `decided`
+        // does through `read`: one malformed answer is never served again.
         let cached = self
             .state
             .answers(&self.plan.digest(), request)
             .map_err(Exit::Failed)?
-            .filter(|answers| {
-                request
-                    .questions
-                    .keys()
-                    .all(|id| answers.0.contains_key(&id.to_string()))
-            });
+            .filter(|answers| validated(request, answers.clone()).is_ok());
         if let Some(answers) = cached {
             return Ok(answers);
         }
@@ -786,6 +783,7 @@ impl Session<'_> {
             questions: request.questions.len(),
             ms: deadline.elapsed(),
         });
+        validated(request, answers.clone()).map_err(Exit::Adapter)?;
         self.state
             .keep(&self.plan.digest(), request, &answers)
             .map_err(Exit::Failed)?;
