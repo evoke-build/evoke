@@ -19,3 +19,6 @@ $ evoke teach lights colour=blue
 $ evoke teach -x lights state=off
   -x is not a flag of teach; teach takes none  →  evoke --help
 [3]
+$ evoke teach "" lights state=off
+  teach needs an utterance; write it in quotes  →  evoke --help
+[3]
