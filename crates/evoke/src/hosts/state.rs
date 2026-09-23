@@ -129,33 +129,34 @@ impl State {
     }
 
     /// The log's last input, as its lines: one decision's, or every line of the last weave — the trailing lines
-    /// of one plan, each step's once — in the order they were written; nothing decided yet is empty.
+    /// of one plan, a step's rounds each under its number — in the order they were written; nothing decided yet
+    /// is empty. Read backwards, one weave's step numbers never rise, and a number repeated is a round of the
+    /// same step, with the step's own text: a rise, or the number repeated over other text, is the weave before.
     pub fn tail(&self) -> Result<Vec<String>, Failure> {
         let Some(text) = read(&self.state.join("log.jsonl"))? else {
             return Ok(Vec::new());
         };
         let mut lines: Vec<String> = Vec::new();
-        let mut seen: Vec<usize> = Vec::new();
-        let mut of: Option<usize> = None;
+        let mut last: Option<StepLine> = None;
         for line in text.lines().rev().filter(|line| !line.trim().is_empty()) {
-            match (step_of(line), of) {
+            match (step_of(line), &last) {
                 (None, None) => {
                     lines.push(line.to_owned());
                     break;
                 }
-                (Some((n, count)), None) => {
-                    of = Some(count);
-                    seen.push(n);
+                (Some(step), None) => {
+                    last = Some(step);
                     lines.push(line.to_owned());
                 }
-                (Some((n, count)), Some(expected)) if count == expected && !seen.contains(&n) => {
-                    seen.push(n);
+                (Some(step), Some(after))
+                    if step.of == after.of
+                        && (step.n < after.n
+                            || (step.n == after.n && step.input == after.input)) =>
+                {
+                    last = Some(step);
                     lines.push(line.to_owned());
                 }
                 _ => break,
-            }
-            if of.is_some_and(|count| seen.len() >= count) {
-                break;
             }
         }
         lines.reverse();
@@ -183,10 +184,21 @@ impl State {
 }
 
 /// A line's `step` and `steps` when it is a weave's, read without the line's shape, which `why` parses.
-fn step_of(line: &str) -> Option<(usize, usize)> {
+/// A weave's line: its step number, the plan's count, and the step's own text.
+struct StepLine {
+    n: usize,
+    of: usize,
+    input: String,
+}
+
+fn step_of(line: &str) -> Option<StepLine> {
     let fields: serde_json::Value = serde_json::from_str(line).ok()?;
     let number = |key: &str| usize::try_from(fields.get(key)?.as_u64()?).ok();
-    Some((number("step")?, number("steps")?))
+    Some(StepLine {
+        n: number("step")?,
+        of: number("steps")?,
+        input: fields.get("input")?.as_str()?.to_owned(),
+    })
 }
 
 /// A digest's hex, without its `h1:`: a directory or file name.
@@ -320,6 +332,26 @@ mod tests {
         );
         state.log(r#"{"input":"two"}"#).unwrap();
         assert_eq!(state.tail().unwrap(), vec![r#"{"input":"two"}"#]);
+        // A step that ran in rounds logged its number more than once, over its own text: every line is the tail's.
+        for line in [
+            r#"{"step":1,"steps":2,"input":"f"}"#,
+            r#"{"step":2,"steps":2,"input":"g"}"#,
+            r#"{"step":2,"steps":2,"input":"g"}"#,
+        ] {
+            state.log(line).unwrap();
+        }
+        assert_eq!(state.tail().unwrap().len(), 3);
+        // The next weave's first step, alone: the number repeated over other text is another weave.
+        state.log(r#"{"step":1,"steps":2,"input":"h"}"#).unwrap();
+        assert_eq!(
+            state.tail().unwrap(),
+            vec![r#"{"step":1,"steps":2,"input":"h"}"#]
+        );
+        state.log(r#"{"step":1,"steps":2,"input":"i"}"#).unwrap();
+        assert_eq!(
+            state.tail().unwrap(),
+            vec![r#"{"step":1,"steps":2,"input":"i"}"#]
+        );
         let _ = fs::remove_dir_all(dir);
     }
 }

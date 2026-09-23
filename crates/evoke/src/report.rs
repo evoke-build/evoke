@@ -616,6 +616,20 @@ pub fn step_refused(text: &str, why: &Stopped) -> Text {
     body
 }
 
+/// The `--json` line of a request that is only what not to do: an abstain over the whole input, with no
+/// judgment and no contender, since nothing was asked.
+#[must_use]
+pub fn nothing_to_do_json(input: &str) -> String {
+    serde_json::json!({
+        "input": input,
+        "outcome": "abstain",
+        "judgments": [],
+        "contenders": [],
+        "trace": [],
+    })
+    .to_string()
+}
+
 /// A request that is only what not to do: nothing to run, said in one line.
 #[must_use]
 pub fn nothing_to_do() -> Text {

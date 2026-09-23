@@ -74,6 +74,9 @@ $ evoke "don't start a timer"
 $ evoke try "don't start a timer"
   nothing to do: what you said not to do is no step
 # A question asked up front is asked again while the answer is out of range, as one input's would be.
+$ evoke --json "don't start a timer"
+{"input":"don't start a timer","outcome":"abstain","judgments":[],"contenders":[],"trace":[]}
+[2]
 $ evoke "turn up the volume and kill the lights in the den"
   1  volume · asks level
   How loud, in percent?  > 150

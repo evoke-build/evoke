@@ -305,7 +305,10 @@ impl Using<'_> {
         let json = self.arguments.json;
         if woven.weave.steps.is_empty() {
             dismiss(warm);
-            if !json {
+            if json {
+                // One line per input holds under --json: an abstain that judged nothing.
+                terminal::result(&report::nothing_to_do_json(input));
+            } else {
                 terminal::note(&report::nothing_to_do());
             }
             return Exit::Declined(Decline::Refused);
