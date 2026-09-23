@@ -1,0 +1,13 @@
+{
+  "input": {
+    "fault": {
+      "type": "retired",
+      "id": "jev-1.12.0"
+    },
+    "invoked": "evoke \"kill the lights\""
+  },
+  "expect": {
+    "message": "adapter jev-1.12.0 is retired",
+    "command": "evoke update"
+  }
+}

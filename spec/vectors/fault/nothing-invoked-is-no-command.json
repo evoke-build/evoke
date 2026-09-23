@@ -1,0 +1,12 @@
+{
+  "input": {
+    "fault": {
+      "type": "status",
+      "status": 503
+    }
+  },
+  "expect": {
+    "message": "the adapter answered 503",
+    "command": ""
+  }
+}

@@ -37,10 +37,11 @@ export function jev(options: JevOptions = {}): Adapter {
 export function over(options: JevOptions, send: Post): Adapter {
   const table = options.table ?? (options.gate === undefined ? undefined : { gate: options.gate })
   const settings = validated(table, options.table === undefined)
-  const key = options.key ?? process.env[settings.credential]
+  // An empty key is no key.
+  const key = options.key || process.env[settings.credential] || undefined
   if (key === undefined) {
     const fix = { type: "export_key", var: settings.credential } as const
-    throw new DiagnosticError([{ message: `jev needs ${settings.credential}`, fix, command: command(fix) }])
+    throw new DiagnosticError([{ message: `jev needs ${settings.credential}, a key from typesafe.ai`, fix, command: command(fix) }])
   }
   const { policy, url } = settings
   const [lowest, highest] = policy.retry_statuses
@@ -61,7 +62,7 @@ export function over(options: JevOptions, send: Post): Adapter {
           throw error
         }
         if (again && response.status >= lowest && response.status <= highest) continue
-        return call("jev.answers", { status: response.status, body: response.body })
+        return call("jev.answers", { status: response.status, body: response.body, credential: settings.credential })
       }
     },
   }

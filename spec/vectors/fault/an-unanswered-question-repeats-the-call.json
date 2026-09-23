@@ -1,0 +1,13 @@
+{
+  "input": {
+    "fault": {
+      "type": "unanswered",
+      "question": "lights.room"
+    },
+    "invoked": "decide()"
+  },
+  "expect": {
+    "message": "lights.room was not answered",
+    "command": "decide()"
+  }
+}

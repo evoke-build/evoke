@@ -6,6 +6,11 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A key the classifier refuses ends in `export TYPESAFE_API_KEY=<value>`, exit 4, in both hosts. Before, the line
+  said to run the command again. An empty `TYPESAFE_API_KEY` counts as unset, and the SDK's missing-key line reads
+  as the CLI's.
+- An engine answer to a question of the weave that fails validation is asked again on the next run. Before, it was
+  kept in the answer cache and served every time, exit 4 each time.
 - A JavaScript body's result of any size reaches `evoke` and the SDK whole. Before, a result over 64 KiB, text or
   data, failed as "the result line is not JSON" and echoed 64 KiB of itself. A line that does not read is echoed
   to its first 120 characters.

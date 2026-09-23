@@ -37,7 +37,11 @@ test("jev declares its id, limits and the gate with overrides, and needs its key
   try {
     throws(
       () => over({}, async () => ({ status: 200, body: answers })),
-      (error: DiagnosticError) => error.message === "jev needs TYPESAFE_API_KEY  →  export TYPESAFE_API_KEY=<value>",
+      (error: DiagnosticError) => error.message === "jev needs TYPESAFE_API_KEY, a key from typesafe.ai  →  export TYPESAFE_API_KEY=<value>",
+    )
+    throws(
+      () => over({ key: "" }, async () => ({ status: 200, body: answers })),
+      (error: DiagnosticError) => error.message === "jev needs TYPESAFE_API_KEY, a key from typesafe.ai  →  export TYPESAFE_API_KEY=<value>",
     )
   } finally {
     if (key !== undefined) process.env.TYPESAFE_API_KEY = key
@@ -91,6 +95,10 @@ test("the policy loop: once more after a connect error or a 5xx, never after a 4
   await rejects(
     answered(over({ key: "k" }, async () => ({ status: 429, body: "" })), request, 30_000, undefined, "decide()"),
     (error: FaultError) => error.message === "the adapter answered 429  →  decide()",
+  )
+  await rejects(
+    answered(over({ key: "k" }, async () => ({ status: 401, body: "" })), request, 30_000, undefined, "decide()"),
+    (error: FaultError) => error.message === "the key in TYPESAFE_API_KEY was refused  →  export TYPESAFE_API_KEY=<value>" && error.fault.type === "refused",
   )
   await rejects(
     answered(over({ key: "k" }, async () => { throw new Transport("reset", true) }), request, 30_000, undefined, "decide()"),

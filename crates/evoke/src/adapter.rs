@@ -109,6 +109,7 @@ impl Jev {
         let settings = jev::settings(table)?;
         let key = environment
             .get(settings.credential.as_str())
+            .filter(|key| !key.is_empty())
             .ok_or_else(|| {
                 let mut needs = unset("jev", settings.credential.clone());
                 needs.message.push_str(", a key from typesafe.ai");
@@ -148,7 +149,13 @@ impl Adapter for Jev {
                 Err(transport) if again && !transport.connected => {}
                 Err(transport) => return Err(transport.into()),
                 Ok(response) if again && policy.retried(response.status) => {}
-                Ok(response) => return jev::answers(response.status, &response.body),
+                Ok(response) => {
+                    return jev::answers(
+                        response.status,
+                        &response.body,
+                        &self.settings.credential,
+                    );
+                }
             }
         }
     }

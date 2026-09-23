@@ -1,0 +1,13 @@
+{
+  "input": {
+    "fault": {
+      "type": "unrecorded",
+      "identity": "what time is it"
+    },
+    "invoked": "evoke try \"what time is it\""
+  },
+  "expect": {
+    "message": "\"what time is it\" is not recorded",
+    "command": "evoke try \"what time is it\""
+  }
+}

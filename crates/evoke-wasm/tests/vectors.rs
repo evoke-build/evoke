@@ -111,6 +111,11 @@ fn identity_vectors() {
 }
 
 #[test]
+fn fault_vectors() {
+    family("fault");
+}
+
+#[test]
 fn manifest_vectors() {
     family("manifest");
 }

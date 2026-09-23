@@ -199,10 +199,15 @@ pub fn request(request: &Request) -> Json {
 }
 
 /// A response as `Raw` answers: a `choice` as given, scaled back to 1 only when two-decimal rounding left its sum a
-/// hair off; a `noul` as `{ "yes": p }`. A body that is not Jev's is a transport fault; an answer of the wrong
-/// shape is malformed for its question; a sum off by more than rounding reaches the core as given, for `read` to
-/// refuse.
-pub fn answers(status: u16, body: &str) -> Result<Raw, Fault> {
+/// hair off; a `noul` as `{ "yes": p }`. A 401 is the key refused, named by the variable that holds it; any other
+/// status is a fault of its own; a body that is not Jev's is a transport fault; an answer of the wrong shape is
+/// malformed for its question; a sum off by more than rounding reaches the core as given, for `read` to refuse.
+pub fn answers(status: u16, body: &str, credential: &VarName) -> Result<Raw, Fault> {
+    if status == 401 {
+        return Err(Fault::Refused {
+            credential: credential.clone(),
+        });
+    }
     if status != 200 {
         return Err(Fault::Status { status });
     }
@@ -476,6 +481,21 @@ mod tests {
         .unwrap();
         assert_eq!(inflated.0["route"]["a"], 3.0);
         assert_eq!(inflated.0["route"]["b"], 1.0);
+    }
+
+    /// The mapping with the built-in credential, as every test but the refusal's calls it.
+    fn answers(status: u16, body: &str) -> Result<Raw, Fault> {
+        super::answers(status, body, &credential())
+    }
+
+    #[test]
+    fn a_refused_key_names_its_variable() {
+        assert_eq!(
+            answers(401, "").unwrap_err(),
+            Fault::Refused {
+                credential: credential()
+            }
+        );
     }
 
     #[test]

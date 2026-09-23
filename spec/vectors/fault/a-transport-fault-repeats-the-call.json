@@ -1,0 +1,13 @@
+{
+  "input": {
+    "fault": {
+      "type": "transport",
+      "message": "could not connect to api.example.com: connection refused"
+    },
+    "invoked": "evoke \"kill the lights\""
+  },
+  "expect": {
+    "message": "could not connect to api.example.com: connection refused",
+    "command": "evoke \"kill the lights\""
+  }
+}

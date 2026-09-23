@@ -1,0 +1,13 @@
+{
+  "input": {
+    "fault": {
+      "type": "status",
+      "status": 429
+    },
+    "invoked": "evoke try \"kill the lights\""
+  },
+  "expect": {
+    "message": "the adapter answered 429",
+    "command": "evoke try \"kill the lights\""
+  }
+}

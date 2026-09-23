@@ -438,6 +438,7 @@ export type Raw = Record<QuestionId, Record<Key, number>>
 export type Fault =
   | { type: "transport"; message: string }
   | { type: "status"; status: number }
+  | { type: "refused"; credential: VarName } // the engine refused the key the variable holds
   | { type: "retired"; id: AdapterId }
   | { type: "unanswered"; question: QuestionId }
   | { type: "malformed"; question: QuestionId; message: string }

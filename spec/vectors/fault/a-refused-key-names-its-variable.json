@@ -1,0 +1,13 @@
+{
+  "input": {
+    "fault": {
+      "type": "refused",
+      "credential": "TYPESAFE_API_KEY"
+    },
+    "invoked": "evoke \"kill the lights\""
+  },
+  "expect": {
+    "message": "the key in TYPESAFE_API_KEY was refused",
+    "command": "export TYPESAFE_API_KEY=<value>"
+  }
+}

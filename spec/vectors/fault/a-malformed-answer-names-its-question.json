@@ -1,0 +1,14 @@
+{
+  "input": {
+    "fault": {
+      "type": "malformed",
+      "question": "route",
+      "message": "the probabilities sum to 0.3, not 1"
+    },
+    "invoked": "decide()"
+  },
+  "expect": {
+    "message": "route: the probabilities sum to 0.3, not 1",
+    "command": "decide()"
+  }
+}

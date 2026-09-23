@@ -62,7 +62,7 @@ export interface Ops {
   // the adapters
   "jev.settings": { input: { table?: T.Json }; output: T.Result<T.Settings, T.Diagnostic[]> }
   "jev.request": { input: { request: T.Request }; output: T.Json }
-  "jev.answers": { input: { status: number; body: string }; output: T.Result<T.Raw, T.Fault> }
+  "jev.answers": { input: { status: number; body: string; credential: T.VarName }; output: T.Result<T.Raw, T.Fault> }
   "replay.recording": { input: { toml: string }; output: T.Result<T.Recording, string> }
   "replay.render": { input: { recording: T.Recording }; output: string }
   "replay.answer": { input: { recording: T.Recording; request: T.Request }; output: T.Result<T.Raw, T.Fault> }

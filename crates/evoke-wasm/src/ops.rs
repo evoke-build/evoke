@@ -5,7 +5,7 @@
 use evoke_adapters::{jev, replay};
 use evoke_core::document::Text;
 use evoke_core::manifest::{ConfigSpec, Effect, Recognizer};
-use evoke_core::name::{ArgName, LocalName, RelPath, Tag};
+use evoke_core::name::{ArgName, LocalName, RelPath, Tag, VarName};
 use evoke_core::plan::Millis;
 use evoke_core::project::Location;
 use evoke_core::text::NonEmpty;
@@ -203,7 +203,11 @@ fn adapters(op: &str, input: &Json) -> Answer {
     Ok(match op {
         "jev.settings" => result(jev::settings(opt::<Json>(input, "table")?.as_ref())),
         "jev.request" => ok(jev::request(&arg::<Request>(input, "request")?)),
-        "jev.answers" => result(jev::answers(arg(input, "status")?, text(input, "body")?)),
+        "jev.answers" => result(jev::answers(
+            arg(input, "status")?,
+            text(input, "body")?,
+            &arg::<VarName>(input, "credential")?,
+        )),
         "replay.recording" => result(replay::recording(text(input, "toml")?)),
         "replay.render" => ok(replay::render(&arg(input, "recording")?)),
         "replay.answer" => result(replay::answer(

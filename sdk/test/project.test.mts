@@ -148,7 +148,7 @@ test("a manifest handed as code is refused at load, ending in reflex(<name>)", a
     // A root without evoke.toml is the default project, which names jev.
     await rejects(
       load({ root: mkdtempSync(join(tmpdir(), "evoke-bare-")) }),
-      (error: DiagnosticError) => error.message === "jev needs TYPESAFE_API_KEY  →  export TYPESAFE_API_KEY=<value>",
+      (error: DiagnosticError) => error.message === "jev needs TYPESAFE_API_KEY, a key from typesafe.ai  →  export TYPESAFE_API_KEY=<value>",
     )
   } finally {
     if (key !== undefined) process.env.TYPESAFE_API_KEY = key

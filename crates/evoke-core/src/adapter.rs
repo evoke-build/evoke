@@ -8,7 +8,7 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
 use crate::diagnostic::Fix;
-use crate::name::{AdapterId, ArgName, LocalName, OptionKey, WeaveName, Word};
+use crate::name::{AdapterId, ArgName, LocalName, OptionKey, VarName, WeaveName, Word};
 use crate::propose::Proposed;
 use crate::text::{Clean, Identity, Input};
 
@@ -418,6 +418,10 @@ pub enum Fault {
     Status {
         status: u16,
     },
+    /// The engine refused the key the named variable holds; the fix is a new value for it.
+    Refused {
+        credential: VarName,
+    },
     Retired {
         id: AdapterId,
     },
@@ -439,6 +443,7 @@ impl fmt::Display for Fault {
         match self {
             Self::Transport { message } => f.write_str(message),
             Self::Status { status } => write!(f, "the adapter answered {status}"),
+            Self::Refused { credential } => write!(f, "the key in {credential} was refused"),
             Self::Retired { id } => write!(f, "adapter {id} is retired"),
             Self::Unanswered { question } => write!(f, "{question} was not answered"),
             Self::Malformed { question, message } => write!(f, "{question}: {message}"),
@@ -452,6 +457,9 @@ impl Fault {
     pub fn fix(&self) -> Fix {
         match self {
             Self::Retired { .. } => Fix::Update { reflex: None },
+            Self::Refused { credential } => Fix::ExportKey {
+                var: credential.clone(),
+            },
             Self::Transport { .. }
             | Self::Status { .. }
             | Self::Unanswered { .. }
@@ -565,6 +573,19 @@ mod tests {
         assert_eq!(
             serde_json::to_value(Fault::Status { status: 429 }).unwrap(),
             serde_json::json!({ "type": "status", "status": 429 })
+        );
+        let credential = VarName::new("TYPESAFE_API_KEY").unwrap();
+        let refused = Fault::Refused {
+            credential: credential.clone(),
+        };
+        assert_eq!(
+            refused.to_string(),
+            "the key in TYPESAFE_API_KEY was refused"
+        );
+        assert_eq!(refused.fix(), Fix::ExportKey { var: credential });
+        assert_eq!(
+            serde_json::to_value(&refused).unwrap(),
+            serde_json::json!({ "type": "refused", "credential": "TYPESAFE_API_KEY" })
         );
     }
 }
