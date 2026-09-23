@@ -477,6 +477,8 @@ export interface Plan {
   active: Record<LocalName, Active>
   /** Every problem of every inactive reflex, each with its fix. */
   inactive: Record<LocalName, NonEmpty<Diagnostic>>
+  /** The tags of the inactive reflexes whose manifest read; absent when none carries any. */
+  tagged?: Record<LocalName, Tag[]>
   /** `route`, then per active reflex `fits.<name>` and every argument, in that order. */
   slots: Record<QuestionId, Slot>
   /** Per vocabulary, the words that carry a value. */

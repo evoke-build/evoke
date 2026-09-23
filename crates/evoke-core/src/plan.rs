@@ -68,6 +68,10 @@ pub struct Plan {
     digest: Digest,
     active: IndexMap<LocalName, Active>,
     inactive: IndexMap<LocalName, NonEmpty<Diagnostic>>,
+    /// The tags of the inactive reflexes whose manifest read, so a request narrowed by tag can say whether the
+    /// tag names an inactive reflex or none at all.
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    tagged: IndexMap<LocalName, Vec<Tag>>,
     slots: IndexMap<QuestionId, Slot>,
     values: IndexMap<VocabName, IndexMap<Word, String>>,
     deadline: Millis,
@@ -78,6 +82,8 @@ struct RawPlan {
     digest: Digest,
     active: IndexMap<LocalName, Active>,
     inactive: IndexMap<LocalName, NonEmpty<Diagnostic>>,
+    #[serde(default)]
+    tagged: IndexMap<LocalName, Vec<Tag>>,
     slots: IndexMap<QuestionId, Slot>,
     values: IndexMap<VocabName, IndexMap<Word, String>>,
     deadline: Millis,
@@ -93,6 +99,12 @@ impl Plan {
     #[must_use]
     pub fn active(&self) -> &IndexMap<LocalName, Active> {
         &self.active
+    }
+
+    /// The tags an inactive reflex carries; none when its manifest did not read.
+    #[must_use]
+    pub fn tagged(&self, name: &LocalName) -> &[Tag] {
+        self.tagged.get(name).map_or(&[], Vec::as_slice)
     }
 
     /// Every problem of every inactive reflex, each with its fix.
@@ -193,6 +205,7 @@ impl TryFrom<RawPlan> for Plan {
             digest: raw.digest,
             active: raw.active,
             inactive: raw.inactive,
+            tagged: raw.tagged,
             slots: raw.slots,
             values: raw.values,
             deadline: raw.deadline,
@@ -378,11 +391,17 @@ pub fn compile(set: &Installed, limits: Option<&Limits>) -> Result<Plan, Diagnos
     })?;
     let mut active = IndexMap::new();
     let mut inactive = IndexMap::new();
+    let mut tagged = IndexMap::new();
     let mut route = IndexMap::new();
     let mut own = Vec::new();
     for (name, item) in &set.reflexes {
         match judge(name, item, &set.vocab) {
             Err(problems) => {
+                if let Ok(effective) = &item.wording
+                    && !effective.manifest.tags.is_empty()
+                {
+                    tagged.insert(name.clone(), effective.manifest.tags.clone());
+                }
                 inactive.insert(name.clone(), problems);
             }
             Ok((manifest, judged)) => {
@@ -426,6 +445,7 @@ pub fn compile(set: &Installed, limits: Option<&Limits>) -> Result<Plan, Diagnos
         digest: Digest::of(&json),
         active,
         inactive,
+        tagged,
         slots,
         values,
         deadline: DEADLINE,

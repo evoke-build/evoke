@@ -91,6 +91,12 @@
           }
         ]
       },
+      "tagged": {
+        "lights": [
+          "home",
+          "lighting"
+        ]
+      },
       "slots": {
         "route": {
           "type": "choice",
