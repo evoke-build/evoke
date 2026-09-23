@@ -64,6 +64,11 @@ fn first_ten() {
 }
 
 #[test]
+fn test_nothing() {
+    flow("test-nothing");
+}
+
+#[test]
 fn repl() {
     flow("repl");
 }

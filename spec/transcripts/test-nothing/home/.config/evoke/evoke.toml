@@ -1,0 +1,4 @@
+adapter = "replay"
+
+[reflexes]
+bare = "./bare"

@@ -1,0 +1,5 @@
+# A reflex with no example and no test, alone: nothing to judge, said in one line.
+$ evoke test
+  nothing to test: no active reflex has examples or tests
+$ evoke test bare
+  nothing to test: bare has no examples or tests

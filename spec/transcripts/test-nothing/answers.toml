@@ -1,0 +1,10 @@
+# Nothing is recorded: the flow judges no case.
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.6
+write = 0.8
+
+[answers]
