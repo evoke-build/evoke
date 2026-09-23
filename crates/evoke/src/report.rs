@@ -16,7 +16,7 @@ use evoke_core::manifest::{Effect, Manifest, Run};
 use evoke_core::name::LocalName;
 use evoke_core::test::{Claim, Expected, Mismatch};
 use evoke_core::vocabulary::Vocabulary;
-use evoke_core::weave::{Because, Bound, Status, Step};
+use evoke_core::weave::{Because, Bound, Status, Step, Why as Stopped};
 use evoke_core::{
     At, Call, Case, Chosen, Clean, Contender, ContractDiff, Decision, Diagnostic, Effective, File,
     Finding, Fix, Gate, Input, Json, KeyPath, Level, Prompt, Proposed, Raw, Regression, Verdict,
@@ -361,7 +361,8 @@ impl Line {
     }
 
     /// The reflex the decision is about, when it is about one.
-    fn reflex(&self) -> Option<&LocalName> {
+    #[must_use]
+    pub fn reflex(&self) -> Option<&LocalName> {
         match &self.decision {
             Decision::Abstain { .. } => None,
             Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
@@ -409,18 +410,53 @@ pub fn tried(decided: &Decided, route_floor: Option<evoke_core::Prob>) -> Text {
     indented(lines)
 }
 
-/// `why`: the input, the block `try` shows, and what came of it.
+/// `why`: the last input's lines — one decision's, or a weave's steps each under its number — as the input, the
+/// block `try` shows, and what came of it.
 #[must_use]
-pub fn why(line: &Line) -> Text {
-    let mut lines = vec![Text::from(plain(&quoted(line.input.as_str())))];
-    lines.extend(block(
-        line.reflex(),
-        &line.answers,
-        &line.proposed,
-        line.contenders(),
-        None,
-    ));
-    let mut what = match (&line.decision, &line.result) {
+pub fn why(lines: &[Line]) -> Text {
+    let mut shown = Vec::new();
+    for line in lines {
+        let input = Text::from(plain(&quoted(line.input.as_str())));
+        shown.push(match &line.step {
+            Some(step) => numbered(step.n, step.of, input),
+            None => input,
+        });
+        shown.extend(block(
+            line.reflex(),
+            &line.answers,
+            &line.proposed,
+            line.contenders(),
+            None,
+        ));
+        shown.push(became(line));
+    }
+    indented(shown)
+}
+
+/// What came of a decision, then the adapter calls it took, or `cached`.
+fn became(line: &Line) -> Text {
+    let mut what = match &line.step {
+        Some(step) => stepped(line, step),
+        None => alone(line),
+    };
+    let calls: Vec<String> = line
+        .trace
+        .iter()
+        .map(|trace| format!("{}, {} questions", trace.adapter, trace.questions))
+        .collect();
+    let calls = if calls.is_empty() {
+        "cached".to_owned()
+    } else {
+        calls.join(" · ")
+    };
+    what.push(" · ").push(&calls);
+    what
+}
+
+/// One input's outcome: `ran`, `failed` or `confirm` with the call as judged, `ask` with what was asked, or
+/// `abstain`.
+fn alone(line: &Line) -> Text {
+    match (&line.decision, &line.result) {
         (Decision::Run { chosen } | Decision::Confirm { chosen, .. }, Some(_)) => {
             let mut what = Text::from("ran ");
             what.append(judged_call(chosen));
@@ -441,20 +477,55 @@ pub fn why(line: &Line) -> Text {
             Text::from(format!("ask {}", asked.join(" ")))
         }
         (Decision::Abstain { .. }, _) => Text::from("abstain"),
-    };
-    let calls: Vec<String> = line
-        .trace
-        .iter()
-        .map(|trace| format!("{}, {} questions", trace.adapter, trace.questions))
-        .collect();
-    let calls = if calls.is_empty() {
-        "cached".to_owned()
-    } else {
-        calls.join(" · ")
-    };
-    what.push(" · ").push(&calls);
-    lines.push(what);
-    indented(lines)
+    }
+}
+
+/// A step's outcome: its status, the call as judged — `ask <args>` for a step still asking, nothing for one that
+/// matched no reflex — and why it stopped, unless it was declined: the prompt's own line says no more than the
+/// call does.
+fn stepped(line: &Line, step: &StepLine) -> Text {
+    let mut text = Text::from(status_word(step.status));
+    match &line.decision {
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
+            text.push(" ").append(judged_call(chosen));
+        }
+        Decision::Ask { missing, .. } => {
+            let asked: Vec<&str> = missing.iter().map(|missing| missing.arg.as_str()).collect();
+            text.push(&format!(" ask {}", asked.join(" ")));
+        }
+        Decision::Abstain { .. } => {}
+    }
+    if step.status != Status::Declined
+        && let Some(why) = &step.why
+    {
+        text.push(" · ").push(&stopped(why));
+    }
+    text
+}
+
+/// A step's status, in the word its line carries.
+fn status_word(status: Status) -> &'static str {
+    match status {
+        Status::Ran => "ran",
+        Status::Failed => "failed",
+        Status::Declined => "declined",
+        Status::Refused => "refused",
+        Status::Skipped => "skipped",
+        Status::Unanswered => "unanswered",
+    }
+}
+
+/// Why a step stopped, in a person's words.
+#[must_use]
+pub fn stopped(why: &Stopped) -> String {
+    match why {
+        Stopped::EarlierStep => "an earlier step stopped".to_owned(),
+        Stopped::NothingToTake => "its source yielded nothing it takes".to_owned(),
+        Stopped::FoundNothing => "its source found nothing".to_owned(),
+        Stopped::NoReflex => "no reflex".to_owned(),
+        Stopped::ReadAs { reflex } => format!("read as {reflex}"),
+        Stopped::Said { message } => message.clone(),
+    }
 }
 
 /// The ranking alone, as an abstain shows it.
@@ -537,6 +608,20 @@ pub fn step_confirming(chosen: &Chosen, prompt: &Prompt) -> Text {
     own(chosen, &prompt.own)
 }
 
+/// A step refused at its turn, its bound values in its words: `"<words>" · no reflex`.
+#[must_use]
+pub fn step_refused(text: &str, why: &Stopped) -> Text {
+    let mut body = Text::from(quoted(text));
+    body.push(" · ").push(&stopped(why));
+    body
+}
+
+/// A request that is only what not to do: nothing to run, said in one line.
+#[must_use]
+pub fn nothing_to_do() -> Text {
+    indented(vec![Text::from(verdict(&Because::NothingToDo))])
+}
+
 /// A step as the plan shows it, before it runs.
 #[must_use]
 pub fn step_body(step: &Step, weave: &Weave) -> Text {
@@ -616,7 +701,7 @@ fn numbered(n: usize, of: usize, body: Text) -> Text {
 #[must_use]
 pub fn verdict(because: &Because) -> String {
     match because {
-        Because::NothingToDo => "nothing to do: every part of the request was left out".to_owned(),
+        Because::NothingToDo => "nothing to do: what you said not to do is no step".to_owned(),
         Because::NoReflex { step } => format!("step {step} matches no reflex"),
         Because::Needs { step, arg } => format!("step {step} needs {arg}"),
         Because::Several {
@@ -1712,7 +1797,7 @@ mod tests {
         let again = Line::parse(&line.log()).unwrap();
         assert_eq!(again.log(), line.log());
         assert!(!line.json().contains("\"answers\""));
-        let explained = why(&line);
+        let explained = why(std::slice::from_ref(&line));
         assert_eq!(
             explained.to_string(),
             "  \"kill the lights in the den\"\n  lights 0.91 · none 0.07 · timer 0.02\n  fits  lights 0.70 · timer 0.05\n  ran lights room=\"den\" state=\"off\" · weakest: room 0.85 · replay, 6 questions"

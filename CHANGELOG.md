@@ -16,6 +16,13 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   flag-shaped utterance and an empty one.
 - `Ctrl-C` while the spinner turns clears its line before `evoke` ends. The one line `evoke` prints when it hits
   a bug is one line, with where, ending in the address to report it.
+- After a sentence of several steps, `evoke why` shows every step under its number with what became of it, and
+  `evoke teach <call>` with no utterance takes the step the lesson's reflex decided, or names the steps. A step
+  decided again with a bound value in its words and refused then says so, `"…" · no reflex`, where before it ended
+  the run in silence. A plan stopped before any step ran, its question or prompt declined or with no terminal to
+  ask, logs every step's line and prints it under `--json`. A question asked up front is asked again while the
+  answer is out of range, as one input's is. One step beside a part you said not to do is decided as one input;
+  a sentence that is only such parts says `nothing to do` instead of exiting in silence, and `try` says it too.
 - A sentence of several steps is read more carefully. `don’t` with the apostrophe a Mac types is a negation like
   `don't`. A second value the whole sentence already saw, "set a timer for 10 minutes and 30 seconds", is one
   task that confirms with its unused span, not two timers. `them` over two steps that both yield what the next

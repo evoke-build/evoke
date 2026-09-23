@@ -134,7 +134,8 @@ $ evoke try "kill the lights"
 ## `why` — the last decision, explained
 
 Every real decision is logged. `evoke why` renders the last one as `try` would have, from the log alone, then says
-what became of it.
+what became of it. After a sentence of several steps, it shows each step under its number
+([Weaving](weaving.md)).
 
 ```text
 $ evoke why

@@ -1,5 +1,5 @@
-//! `evoke why`: the last decision, explained from the log. In: the environment. Out: `Exit`; the log's last line
-//! rendered as `try` would show it, with what came of it, on stdout.
+//! `evoke why`: the last decision, explained from the log. In: the environment. Out: `Exit`; the log's last
+//! input — one decision, or a weave's steps — rendered as `try` would show it, with what came of it, on stdout.
 
 use evoke_core::{Diagnostic, Fix};
 
@@ -29,9 +29,8 @@ fn explained(environment: &Environment) -> Exit {
         Ok(state) => state,
         Err(failure) => return Exit::Failed(failure),
     };
-    let last = match state.last() {
-        Ok(Some(last)) => last,
-        Ok(None) => {
+    let lines = match state.tail() {
+        Ok(lines) if lines.is_empty() => {
             return Exit::Human(Diagnostic {
                 reflex: None,
                 at: None,
@@ -39,11 +38,13 @@ fn explained(environment: &Environment) -> Exit {
                 fix: Fix::Rerun,
             });
         }
+        Ok(lines) => lines,
         Err(failure) => return Exit::Failed(failure),
     };
-    match Line::parse(&last) {
-        Ok(line) => {
-            terminal::answer(&report::why(&line));
+    let parsed: Result<Vec<Line>, String> = lines.iter().map(|line| Line::parse(line)).collect();
+    match parsed {
+        Ok(lines) => {
+            terminal::answer(&report::why(&lines));
             Exit::Ran
         }
         Err(why) => Exit::Human(Diagnostic {

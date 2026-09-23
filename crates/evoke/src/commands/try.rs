@@ -57,6 +57,10 @@ fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, in
         terminal::result(&report::plan_json(&woven));
         return Exit::Ran;
     }
+    if woven.weave.steps.is_empty() {
+        terminal::answer(&report::nothing_to_do());
+        return Exit::Ran;
+    }
     terminal::answer(&report::planned(&woven.weave));
     let of = woven.weave.steps.len();
     for step in &woven.weave.steps {

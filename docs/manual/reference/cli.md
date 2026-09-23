@@ -64,7 +64,7 @@ manual  https://evoke.build/manual/
 | `evoke "<input>"`      | Decides, gates, runs. Prints the call and confidence on stderr, and the result on stdout. Logged | 0 · 2 · 3 · 1 · 4 |
 | `evoke`                | On a terminal, the REPL: `> `, line editing, history. Piped, a filter: one input per line, and the first non-zero exit is kept | as each line |
 | `evoke try "<input>"`  | Decides only: the ranking, each argument's distribution, each `fits`, the outcome and the weakest judgment; a sentence of several steps shows the plan first, then each step's judgments under its number. Never logged | 0 · 4 |
-| `evoke why`            | The last logged decision, shown as `try` would show it, and what became of it                  | 0 · 3 |
+| `evoke why`            | The last logged decision, shown as `try` would show it, and what became of it; of a weave, every step | 0 · 3 |
 | `evoke run <call>`     | Runs the call by name. No classifier. The effect policy is kept, so a destructive call confirms with `[y]es [n]o`. `--json` prints the call and its result as one line. Not logged | 0 · 2 · 3 · 1 |
 
 | Flag          | With            | Does                                                                     |
@@ -95,7 +95,7 @@ local reflex: [Installing reflexes](../use/installing.md#refs).
 | `evoke show <name>`                                       | The effective manifest as TOML, with `+` in the gutter of every line that is yours. Then its inactive lines |
 | `evoke teach "<utterance>" <call>`                        | Writes the example to `overlays/<name>.toml`, with only what the call asserts |
 | `evoke teach "<utterance>" not <name>`                    | Writes `"<utterance>" = false` to the reflex's overlay                       |
-| `evoke teach <call>` · `evoke teach not <name>`           | The same, for the last input the log holds. A first word is the utterance when a call follows it, unless it names an installed reflex |
+| `evoke teach <call>` · `evoke teach not <name>`           | The same, for the last input the log holds; of a weave, the step the lesson's reflex decided. A first word is the utterance when a call follows it, unless it names an installed reflex |
 | `evoke vocab <name>`                                      | Lists the words. Empty exits 3, with the add line                            |
 | `evoke vocab <name> add <word> "<meaning>" [--value <v>]` | Adds or replaces a word                                                     |
 | `evoke vocab <name> remove <word>`                        | Removes one. A word that is not there is refused                            |

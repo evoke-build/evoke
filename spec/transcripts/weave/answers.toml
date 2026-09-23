@@ -158,6 +158,53 @@ route           = { lights = 0.9, timer = 0.01, volume = 0.01, none = 0.08 }
 [answers."start a 0 minute timer and kill the lights in the den"]
 "weave.split_0" = { yes = 0.95 }
 
+[answers."turn up the volume and kill the lights in the den"]
+"weave.split_0" = { yes = 0.95 }
+
+[answers."turn up the volume"]
+route          = { volume = 0.9, lights = 0.02, timer = 0.02, none = 0.06 }
+"fits.lights"  = { yes = 0.05 }
+"fits.timer"   = { yes = 0.05 }
+"fits.volume"  = { yes = 0.8 }
+"fits.contact" = { yes = 0.02 }
+"fits.mail"    = { yes = 0.02 }
+"lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"contact.name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+
+[answers."look up sam's address and copy them on a note to dana@example.com"]
+"weave.split_0" = { yes = 0.9 }
+
+[answers."look up sam's address"]
+route          = { contact = 0.9, mail = 0.03, lights = 0.01, none = 0.06 }
+"fits.lights"  = { yes = 0.02 }
+"fits.timer"   = { yes = 0.02 }
+"fits.volume"  = { yes = 0.02 }
+"fits.contact" = { yes = 0.8 }
+"fits.mail"    = { yes = 0.1 }
+"lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"contact.name" = { sam = 0.9, dana = 0.02, unstated = 0.08 }
+
+[answers."copy them on a note to dana@example.com"]
+route          = { mail = 0.85, contact = 0.05, none = 0.1 }
+"fits.lights"  = { yes = 0.02 }
+"fits.timer"   = { yes = 0.02 }
+"fits.volume"  = { yes = 0.02 }
+"fits.contact" = { yes = 0.1 }
+"fits.mail"    = { yes = 0.8 }
+"lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"contact.name" = { unstated = 0.9, dana = 0.05, sam = 0.05 }
+"mail.to"      = { "23-39" = 0.9, unstated = 0.1 }
+"mail.cc"      = { unstated = 0.95, "23-39" = 0.05 }
+
+[answers."copy sam@example.com on a note to dana@example.com"]
+route       = { none = 0.8, mail = 0.2 }
+"fits.mail" = { yes = 0.3 }
+"mail.to"   = { "34-50" = 0.6, "5-20" = 0.3, unstated = 0.1 }
+"mail.cc"   = { "5-20" = 0.5, "34-50" = 0.1, unstated = 0.4 }
+
 [answers."start a 0 minute timer"]
 route            = { timer = 0.9, lights = 0.02, volume = 0.02, none = 0.06 }
 "fits.lights"    = { yes = 0.05 }

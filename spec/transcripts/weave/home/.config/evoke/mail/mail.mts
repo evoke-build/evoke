@@ -1,2 +1,2 @@
-export default async ({ to, subject }: { to: string; subject?: string }) =>
-  `drafted to ${to}${subject === undefined ? "" : ` about ${subject}`}`
+export default async ({ to, cc, subject }: { to: string; cc?: string; subject?: string }) =>
+  `drafted to ${to}${cc === undefined ? "" : `, copy ${cc}`}${subject === undefined ? "" : ` about ${subject}`}`

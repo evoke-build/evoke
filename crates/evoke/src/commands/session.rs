@@ -111,14 +111,12 @@ impl Woven {
             .map(|(_, decided)| decided)
     }
 
-    /// The one decision a request read as: one step, nothing bound, nothing left out — what the foundation alone
-    /// would have made of it.
+    /// The one decision a request read as: one step, and so nothing bound — what the foundation alone would have
+    /// made of it. A part left out beside it changes nothing: what was said not to do is no step.
     #[must_use]
     pub fn single(&self, tags: &[Tag]) -> Option<&Decided> {
         match self.weave.steps.as_slice() {
-            [step] if self.weave.binds.is_empty() && self.weave.excluded.is_empty() => {
-                self.decided_for(step, tags)
-            }
+            [step] => self.decided_for(step, tags),
             _ => None,
         }
     }

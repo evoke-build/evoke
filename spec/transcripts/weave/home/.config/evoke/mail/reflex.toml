@@ -2,7 +2,7 @@ reflex = 1
 
 description = """
 Start an email in your mail app.
-To one address, with an optional subject; nothing goes out until you press send."""
+To one address, a copy to another, with an optional subject; nothing goes out until you press send."""
 
 not_for = ["reading or searching mail", "chat and text messages", "looking up an address"]
 tags    = ["mail"]
@@ -13,6 +13,11 @@ run     = "mail.mts"
 [args.to]
 ask  = "To which address?"
 pick = "email"
+
+[args.cc]
+ask      = "Copy whom?"
+pick     = "email"
+optional = true
 
 [args.subject]
 ask      = "What is the subject?"

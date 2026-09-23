@@ -4,8 +4,9 @@
 //! first, `[+]` adding a word to the vocabulary and reloading the plan; an abstain shows the ranking. More than
 //! one is a weave: the plan's own questions first, the plan shown, then each step at its turn through the same
 //! loop, a result threaded into a later step, and the worst step's exit. Every decision is logged, a step's with
-//! its number. The stdin filter answers every line and exits with the first non-zero code; the REPL reads lines
-//! from the terminal — edited, with its history under XDG — until the end of input, then exits 0.
+//! its number and what became of it, a plan stopped before any step ran included. The stdin filter answers every
+//! line and exits with the first non-zero code; the REPL reads lines from the terminal — edited, with its history
+//! under XDG — until the end of input, then exits 0.
 
 use evoke_core::call::Value;
 use evoke_core::decide::{Choices, Missing, Why};
@@ -14,12 +15,12 @@ use evoke_core::name::{ArgName, LocalName, OptionKey, VocabName, Word};
 use evoke_core::text::NonEmpty;
 use evoke_core::vocabulary::Meaning;
 use evoke_core::weave::{
-    self, Asked, Because, Bound, Handled, Outcome, Progress, Returned as Yielded, Status, Todo,
-    Why as Stopped,
+    self, Asked, Because, Binding, Bound, Handled, Outcome, Progress, Returned as Yielded, Status,
+    Step, Todo, Why as Stopped,
 };
 use evoke_core::{
     Chosen, Clean, Decision, Diagnostic, Executed, Fix, Gate, Lesson, Prompt, Running, Utterance,
-    VocabChange, fill, identity, picked, teach, vocab_edit,
+    VocabChange, Weave, fill, identity, picked, teach, vocab_edit,
 };
 use indexmap::IndexMap;
 
@@ -206,14 +207,12 @@ impl Using<'_> {
                         dismiss(warm.take());
                         return Err(self.no_terminal(input, line, "an ask"));
                     }
-                    let named: Vec<&str> = missing.iter().map(|m| m.arg.as_str()).collect();
-                    let named = named.join(", ");
                     let given = match self.answers(input, &asking.reflex, &missing) {
-                        Ok(Some(given)) => given,
-                        Ok(None) => {
+                        Ok(Answered::Given(given)) => given,
+                        Ok(Answered::Declined { ask }) => {
                             dismiss(warm.take());
                             let exit = Exit::Declined(Decline::Refused);
-                            let why = Stopped::Said { message: named };
+                            let why = Stopped::Said { message: ask };
                             return Err(self.stopped(input, line, exit, Some(why)));
                         }
                         Err(exit) => {
@@ -297,45 +296,27 @@ impl Using<'_> {
         }
     }
 
-    /// A weave: the plan's own questions first — a step's argument nothing binds, asked as at its turn; a
-    /// reference that takes nothing, confirmed — then the plan shown, and each step at its turn through the
-    /// foundation's own loop; the worst step's exit.
+    /// A weave: the plan's own questions first — a step's argument nothing binds, asked as at its turn, and
+    /// again while the answer is out of range; a reference that takes nothing, confirmed — then the plan shown,
+    /// and each step at its turn through the foundation's own loop; the worst step's exit. A request that is
+    /// only what not to do is nothing to do. A plan stopped before any step ran logs every step's line with what
+    /// stopped it.
     fn many(&mut self, input: &str, woven: Woven, warm: Option<Warm>) -> Exit {
-        let tags = self.arguments.tags.clone();
         let json = self.arguments.json;
-        let mut woven = woven;
-        while woven.weave.verdict.outcome == Outcome::Ask {
-            let seeded = match self.asked_up_front(&woven) {
-                Ok(Some(seeded)) => seeded,
-                Ok(None) => {
-                    dismiss(warm);
-                    return Exit::Declined(Decline::Refused);
-                }
-                Err(exit) => {
-                    dismiss(warm);
-                    return self.session.reporter.exit(input, exit);
-                }
-            };
-            let again = match self.session.weave(&*self.adapter, input, &tags, seeded) {
-                Ok(again) => again,
-                Err(exit) => {
-                    dismiss(warm);
-                    return self.session.reporter.exit(input, exit);
-                }
-            };
-            // A plan that asks the same again could not take the answer: a stop, never a loop.
-            if again.weave.verdict == woven.weave.verdict {
-                dismiss(warm);
-                let human = Exit::Human(Diagnostic {
-                    reflex: None,
-                    at: None,
-                    message: "the answer did not settle the plan".to_owned(),
-                    fix: Fix::Rerun,
-                });
-                return self.session.reporter.exit(input, human);
+        if woven.weave.steps.is_empty() {
+            dismiss(warm);
+            if !json {
+                terminal::note(&report::nothing_to_do());
             }
-            woven = again;
+            return Exit::Declined(Decline::Refused);
         }
+        let woven = match self.settled(input, woven) {
+            Ok(woven) => woven,
+            Err(exit) => {
+                dismiss(warm);
+                return exit;
+            }
+        };
         if !json {
             terminal::note(&report::planned(&woven.weave));
         }
@@ -346,10 +327,7 @@ impl Using<'_> {
         if woven.weave.verdict.outcome == Outcome::Confirm {
             if !self.session.has_tty() {
                 dismiss(warm);
-                return self
-                    .session
-                    .reporter
-                    .exit(input, Exit::Human(needs_terminal("a confirm")));
+                return self.unanswered(input, &woven, needs_terminal("a confirm"));
             }
             let reasons: Vec<String> = woven
                 .weave
@@ -367,7 +345,11 @@ impl Using<'_> {
                 Ok(Some(Confirmed::Yes)) => {}
                 Ok(_) => {
                     dismiss(warm);
-                    return Exit::Declined(Decline::Refused);
+                    let exit = Exit::Declined(Decline::Refused);
+                    return self.stopped_whole(input, &woven, exit, |_| {
+                        let message = prompt.own.clone();
+                        (Status::Declined, Stopped::Said { message })
+                    });
                 }
                 Err(exit) => {
                     dismiss(warm);
@@ -378,11 +360,71 @@ impl Using<'_> {
         self.executed(input, &woven, warm)
     }
 
+    /// The plan settled: asked up front while it asks, each answer standing in for the planner's own decision
+    /// of its step when the plan is read again. A stop is reported here: the question declined, or one no one
+    /// can answer, every step's line saying so.
+    fn settled(&mut self, input: &str, woven: Woven) -> Result<Woven, Exit> {
+        let tags = self.arguments.tags.clone();
+        let mut woven = woven;
+        let mut seeds: Vec<(Asked, Decided)> = Vec::new();
+        let mut shown: Vec<usize> = Vec::new();
+        while woven.weave.verdict.outcome == Outcome::Ask {
+            let fresh = match self.asked_up_front(&woven, &mut shown) {
+                Ok(UpFront::Seeded(fresh)) => fresh,
+                Ok(UpFront::Declined { step, ask }) => {
+                    let exit = Exit::Declined(Decline::Refused);
+                    return Err(self.stopped_whole(input, &woven, exit, |s| {
+                        if s.n == step {
+                            let message = ask.clone();
+                            (Status::Declined, Stopped::Said { message })
+                        } else {
+                            let message = PLAN_DECLINED.to_owned();
+                            (Status::Skipped, Stopped::Said { message })
+                        }
+                    }));
+                }
+                Err(Exit::Human(problem)) => return Err(self.unanswered(input, &woven, problem)),
+                Err(exit) => return Err(self.session.reporter.exit(input, exit)),
+            };
+            for seed in fresh {
+                match seeds.iter_mut().find(|(asked, _)| *asked == seed.0) {
+                    Some(held) => *held = seed,
+                    None => seeds.push(seed),
+                }
+            }
+            let again = self
+                .session
+                .weave(&*self.adapter, input, &tags, seeds.clone())
+                .map_err(|exit| self.session.reporter.exit(input, exit))?;
+            // An answer the plan did not take — it stands exactly as before — is a stop, never a loop. One it
+            // took and asks about again, out of range, is asked again with the reason, as one input is.
+            let taken = !seeds.is_empty()
+                && seeds.iter().all(|(_, seeded)| {
+                    again
+                        .weave
+                        .steps
+                        .iter()
+                        .any(|step| step.decision == seeded.decision)
+                });
+            if !taken {
+                let problem = Diagnostic {
+                    reflex: None,
+                    at: None,
+                    message: "the answer did not settle the plan".to_owned(),
+                    fix: Fix::Rerun,
+                };
+                return Err(self.unanswered(input, &again, problem));
+            }
+            woven = again;
+        }
+        Ok(woven)
+    }
+
     /// The plan's own questions before anything runs. A step's required argument no binding covers is asked as
     /// it would be at its turn, the ask narrowed to what nothing binds, and the step's decision filled for the
-    /// plan to stand again; none when a question was declined. Several fields, or one record of several, no
-    /// answer here can settle: a stop that names them.
-    fn asked_up_front(&mut self, woven: &Woven) -> Result<Option<Vec<(Asked, Decided)>>, Exit> {
+    /// plan to stand again; the step's line is shown ahead of its first question, and `shown` remembers it.
+    /// Several fields, or one record of several, no answer here can settle: a stop that names them.
+    fn asked_up_front(&mut self, woven: &Woven, shown: &mut Vec<usize>) -> Result<UpFront, Exit> {
         let tags = self.arguments.tags.clone();
         let json = self.arguments.json;
         let of = woven.weave.steps.len();
@@ -437,11 +479,13 @@ impl Using<'_> {
             }
             let first = unbound.remove(0);
             let asks = NonEmpty::new(first, unbound);
-            if !json {
+            if !json && !shown.contains(&n) {
                 terminal::note(&report::step(n, of, report::step_body(step, &woven.weave)));
+                shown.push(n);
             }
-            let Some(given) = self.answers(&step.text, &asking.reflex, &asks)? else {
-                return Ok(None);
+            let given = match self.answers(&step.text, &asking.reflex, &asks)? {
+                Answered::Given(given) => given,
+                Answered::Declined { ask } => return Ok(UpFront::Declined { step: n, ask }),
             };
             let filled = fill(&self.session.plan, asking.clone(), given, self.floors());
             let mut decided = woven
@@ -451,34 +495,55 @@ impl Using<'_> {
             decided.decision = filled;
             seeded.push((weave::asked_for(step, &tags), decided));
         }
-        Ok(Some(seeded))
+        Ok(UpFront::Seeded(seeded))
     }
 
     /// A plan refused whole: nothing runs; each step's line, the abstaining one refused, the rest skipped.
     fn refused(&self, input: &str, woven: &Woven) -> Exit {
-        let tags = self.arguments.tags.clone();
-        let of = woven.weave.steps.len();
         if !self.arguments.json
             && let Some(hint) = report::left_out(self.session.plan.inactive().keys())
         {
             terminal::note(&hint);
         }
+        let exit = Exit::Declined(Decline::Abstained);
+        self.stopped_whole(input, woven, exit, |step| {
+            if matches!(step.decision, Decision::Abstain { .. }) {
+                (Status::Refused, Stopped::NoReflex)
+            } else {
+                let message = "the request was refused".to_owned();
+                (Status::Skipped, Stopped::Said { message })
+            }
+        })
+    }
+
+    /// A question only a person can answer, and none did: every step's line `unanswered` with it.
+    fn unanswered(&self, input: &str, woven: &Woven, problem: Diagnostic) -> Exit {
+        let message = problem.message.clone();
+        self.stopped_whole(input, woven, Exit::Human(problem), |_| {
+            let message = message.clone();
+            (Status::Unanswered, Stopped::Said { message })
+        })
+    }
+
+    /// The plan stopped before any step ran: each step's line with what became of it — printed under `--json`,
+    /// logged — then the exit, reported once. Under `--json` a diagnostic is already every line's `why`, so
+    /// nothing more prints.
+    fn stopped_whole(
+        &self,
+        input: &str,
+        woven: &Woven,
+        exit: Exit,
+        became: impl Fn(&Step) -> (Status, Stopped),
+    ) -> Exit {
+        let tags = self.arguments.tags.clone();
+        let of = woven.weave.steps.len();
         for step in &woven.weave.steps {
             let Some(decided) = woven.decided_for(step, &tags) else {
                 continue;
             };
             let mut line = Line::of(decided);
             line.decision = step.decision.clone();
-            let (status, why) = if matches!(step.decision, Decision::Abstain { .. }) {
-                (Status::Refused, Stopped::NoReflex)
-            } else {
-                (
-                    Status::Skipped,
-                    Stopped::Said {
-                        message: "the request was refused".to_owned(),
-                    },
-                )
-            };
+            let (status, why) = became(step);
             line.step = Some(StepLine {
                 n: step.n,
                 of,
@@ -486,9 +551,17 @@ impl Using<'_> {
                 why: Some(why),
                 bound: Vec::new(),
             });
-            self.logged(input, &line, Exit::Ran);
+            if self.arguments.json {
+                terminal::result(&line.json());
+            }
+            if let Err(failure) = self.session.state.log(&line.log()) {
+                return self.session.reporter.exit(input, Exit::Failed(failure));
+            }
         }
-        Exit::Declined(Decline::Abstained)
+        if self.arguments.json && matches!(exit, Exit::Human(_)) {
+            return exit;
+        }
+        self.session.reporter.exit(input, exit)
     }
 
     /// The plan run: stage by stage, each round through the foundation's loop; a step decided again with its
@@ -506,7 +579,7 @@ impl Using<'_> {
             let todo = match running {
                 Running::Done { executed } => {
                     dismiss(warm);
-                    return self.ended(input, woven, &executed, exits);
+                    return self.ended(input, woven, &executed, &rewritten, exits);
                 }
                 Running::Todo { todo } => todo,
             };
@@ -580,36 +653,73 @@ impl Using<'_> {
         }
     }
 
-    /// The run over: every step that never ran said so, its line logged; then the worst step's exit — the one
-    /// already reported at its turn, or a source that yielded nothing its taker could use.
-    fn ended(&self, input: &str, woven: &Woven, executed: &Executed, exits: Vec<Exit>) -> Exit {
+    /// The run over: every step that never ran said so — refused once its bound values were in its words, or
+    /// skipped — its line logged; then the worst step's exit — the one already reported at its turn, or a source
+    /// that yielded nothing its taker could use.
+    fn ended(
+        &self,
+        input: &str,
+        woven: &Woven,
+        executed: &Executed,
+        rewritten: &[(Asked, Decided)],
+        exits: Vec<Exit>,
+    ) -> Exit {
         let tags = self.arguments.tags.clone();
         let of = woven.weave.steps.len();
         for outcome in &executed.steps {
-            if outcome.status != Status::Skipped {
+            if !matches!(outcome.status, Status::Skipped | Status::Refused) {
                 continue;
             }
             let Some(step) = woven.weave.step(outcome.step) else {
                 continue;
             };
-            let Some(decided) = woven.decided_for(step, &tags) else {
+            // A step refused with its values in its words was decided again on them: that decision is its line.
+            let refused = (outcome.status == Status::Refused)
+                .then(|| rewritten_text(step, &woven.weave, &outcome.bound));
+            let decided = match &refused {
+                Some(text) => rewritten
+                    .iter()
+                    .find(|(asked, _)| asked.text == *text && asked.only == step.reflex)
+                    .or_else(|| {
+                        rewritten.iter().rev().find(|(asked, decided)| {
+                            asked.only == step.reflex
+                                && matches!(decided.decision, Decision::Abstain { .. })
+                        })
+                    })
+                    .map(|(_, decided)| decided),
+                None => None,
+            }
+            .or_else(|| woven.decided_for(step, &tags));
+            let Some(decided) = decided else {
                 continue;
             };
             if !self.arguments.json {
-                let mut body = report::step_body(step, &woven.weave);
-                body.push(" · skipped");
+                let body = if let (Some(text), Some(why)) = (&refused, &outcome.why) {
+                    report::step_refused(text, why)
+                } else {
+                    let mut body = report::step_body(step, &woven.weave);
+                    body.push(" · skipped");
+                    body
+                };
                 terminal::note(&report::step(outcome.step, of, body));
             }
             let mut line = Line::of(decided);
-            line.decision = step.decision.clone();
+            if refused.is_none() {
+                line.decision = step.decision.clone();
+            }
             line.step = Some(StepLine {
                 n: outcome.step,
                 of,
-                status: Status::Skipped,
+                status: outcome.status,
                 why: outcome.why.clone(),
                 bound: outcome.bound.clone(),
             });
-            self.logged(input, &line, Exit::Ran);
+            let exit = if outcome.status == Status::Refused {
+                Exit::Declined(Decline::Abstained)
+            } else {
+                Exit::Ran
+            };
+            self.logged(input, &line, exit);
         }
         match executed.worst {
             Status::Ran | Status::Skipped => Exit::Ran,
@@ -705,24 +815,23 @@ impl Using<'_> {
         self.session.reporter.exit(input, exit)
     }
 
-    /// Every missing argument asked in turn; none at the end of input.
+    /// Every missing argument asked in turn; the question declined at the end of input, when one was.
     fn answers(
         &mut self,
         input: &str,
         reflex: &LocalName,
         missing: &NonEmpty<Missing>,
-    ) -> Result<Option<IndexMap<ArgName, Value>>, Exit> {
+    ) -> Result<Answered, Exit> {
         let mut given = IndexMap::new();
         for missing in missing.iter() {
             let vocabulary = self.vocabulary(reflex, &missing.arg);
-            match self.asked(input, missing, vocabulary.as_ref())? {
-                Some(value) => {
-                    given.insert(missing.arg.clone(), value);
-                }
-                None => return Ok(None),
-            }
+            let Some(value) = self.asked(input, missing, vocabulary.as_ref())? else {
+                let ask = missing.ask.to_string();
+                return Ok(Answered::Declined { ask });
+            };
+            given.insert(missing.arg.clone(), value);
         }
-        Ok(Some(given))
+        Ok(Answered::Given(given))
     }
 
     /// One missing argument asked until it has a value; none at the end of input. `+` at a vocabulary's prompt
@@ -858,6 +967,38 @@ struct Rounded {
     exit: Exit,
     why: Option<Stopped>,
     result: Option<Returned>,
+}
+
+/// What a step's questions came to: every value, or the question declined at the end of input.
+enum Answered {
+    Given(IndexMap<ArgName, Value>),
+    Declined { ask: String },
+}
+
+/// The plan's own questions asked up front: the decisions answered into, or the step whose question was declined.
+enum UpFront {
+    Seeded(Vec<(Asked, Decided)>),
+    Declined { step: usize, ask: String },
+}
+
+/// Why the other steps never ran when one's question was declined before anything did.
+const PLAN_DECLINED: &str = "the plan was declined";
+
+/// The step's words with its bound values written in, as the run decided them again.
+fn rewritten_text(step: &Step, weave: &Weave, bound: &[Bound]) -> String {
+    let values: Vec<(Binding, String)> = bound
+        .iter()
+        .filter_map(|b| {
+            let binding = weave.binds.iter().find(|binding| {
+                binding.to == step.n
+                    && binding.arg == b.arg
+                    && binding.from == b.from
+                    && binding.field == b.field
+            })?;
+            Some((binding.clone(), b.value.clone()))
+        })
+        .collect();
+    weave::running::rewrite(step, &values)
 }
 
 /// A step's status as its exit ranks it.

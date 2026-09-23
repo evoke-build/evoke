@@ -45,7 +45,8 @@ $ evoke teach lights state=dim
   and leaves `room` to the input.
 - `evoke teach "<utterance>" not <name>`: the utterance is never this reflex.
 - Leave the utterance out, and it means the last input you gave. Say something, see it decided, then
-  `evoke teach lights state=dim` corrects it.
+  `evoke teach lights state=dim` corrects it. After a sentence of several steps, it means the step the lesson's
+  reflex decided; when none or several did, `teach` names the steps and asks you to say which.
 - A one-word utterance needs no quotes: `evoke teach dim lights state=dim`. The first word is the utterance when
   a call follows it, unless the word names an installed reflex. Then the call begins with it.
 - `[t]each` at a confirm prompt does the same for the input just decided.

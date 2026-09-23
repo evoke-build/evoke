@@ -130,14 +130,38 @@ impl State {
             .map_err(|error| failed(&format!("appending to {}", path.display()), &error))
     }
 
-    /// The log's last line, or none yet.
-    pub fn last(&self) -> Result<Option<String>, Failure> {
-        Ok(read(&self.state.join("log.jsonl"))?.and_then(|text| {
-            text.lines()
-                .rev()
-                .find(|line| !line.trim().is_empty())
-                .map(str::to_owned)
-        }))
+    /// The log's last input, as its lines: one decision's, or every line of the last weave — the trailing lines
+    /// of one plan, each step's once — in the order they were written; nothing decided yet is empty.
+    pub fn tail(&self) -> Result<Vec<String>, Failure> {
+        let Some(text) = read(&self.state.join("log.jsonl"))? else {
+            return Ok(Vec::new());
+        };
+        let mut lines: Vec<String> = Vec::new();
+        let mut seen: Vec<usize> = Vec::new();
+        let mut of: Option<usize> = None;
+        for line in text.lines().rev().filter(|line| !line.trim().is_empty()) {
+            match (step_of(line), of) {
+                (None, None) => {
+                    lines.push(line.to_owned());
+                    break;
+                }
+                (Some((n, count)), None) => {
+                    of = Some(count);
+                    seen.push(n);
+                    lines.push(line.to_owned());
+                }
+                (Some((n, count)), Some(expected)) if count == expected && !seen.contains(&n) => {
+                    seen.push(n);
+                    lines.push(line.to_owned());
+                }
+                _ => break,
+            }
+            if of.is_some_and(|count| seen.len() >= count) {
+                break;
+            }
+        }
+        lines.reverse();
+        Ok(lines)
     }
 
     /// `answers/<plan>/<sha256 of the utterance identity and the question ids asked>.json`: one entry per plan,
@@ -158,6 +182,13 @@ impl State {
         name.push_str(".json");
         self.cache.join("answers").join(hex(plan)).join(name)
     }
+}
+
+/// A line's `step` and `steps` when it is a weave's, read without the line's shape, which `why` parses.
+fn step_of(line: &str) -> Option<(usize, usize)> {
+    let fields: serde_json::Value = serde_json::from_str(line).ok()?;
+    let number = |key: &str| usize::try_from(fields.get(key)?.as_u64()?).ok();
+    Some((number("step")?, number("steps")?))
 }
 
 /// A digest's hex, without its `h1:`: a directory or file name.
@@ -257,6 +288,44 @@ mod tests {
         state.keep(&plan, &narrowed, &answers).unwrap();
         assert_eq!(state.answers(&plan, &narrowed).unwrap(), Some(answers));
         assert_eq!(state.answers(&plan, &full).unwrap(), None);
+        let _ = fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn the_tail_is_the_last_input_s_lines() {
+        let dir = std::env::temp_dir().join(format!("evoke-tail-{}", std::process::id()));
+        let state = State::of(&Environment(BTreeMap::from([
+            ("XDG_CACHE_HOME".to_owned(), dir.display().to_string()),
+            ("XDG_STATE_HOME".to_owned(), dir.display().to_string()),
+        ])))
+        .unwrap();
+        assert!(state.tail().unwrap().is_empty());
+        state.log(r#"{"input":"one"}"#).unwrap();
+        assert_eq!(state.tail().unwrap(), vec![r#"{"input":"one"}"#]);
+        // Two weaves of two steps in a row: the tail is the second one's lines, in order.
+        for line in [
+            r#"{"step":1,"steps":2,"input":"a"}"#,
+            r#"{"step":2,"steps":2,"input":"b"}"#,
+            r#"{"step":1,"steps":2,"input":"c"}"#,
+            r#"{"step":2,"steps":2,"input":"d"}"#,
+        ] {
+            state.log(line).unwrap();
+        }
+        assert_eq!(
+            state.tail().unwrap(),
+            vec![
+                r#"{"step":1,"steps":2,"input":"c"}"#,
+                r#"{"step":2,"steps":2,"input":"d"}"#
+            ]
+        );
+        // A weave that logged one step of three, after another: its one line.
+        state.log(r#"{"step":2,"steps":3,"input":"e"}"#).unwrap();
+        assert_eq!(
+            state.tail().unwrap(),
+            vec![r#"{"step":2,"steps":3,"input":"e"}"#]
+        );
+        state.log(r#"{"input":"two"}"#).unwrap();
+        assert_eq!(state.tail().unwrap(), vec![r#"{"input":"two"}"#]);
         let _ = fs::remove_dir_all(dir);
     }
 }
