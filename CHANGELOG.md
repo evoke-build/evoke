@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-23
+
 - A sentence of several steps is read more carefully. `don’t` with the apostrophe a Mac types is a negation like
   `don't`. A second value the whole sentence already saw, "set a timer for 10 minutes and 30 seconds", is one
   task that confirms with its unused span, not two timers. `them` over two steps that both yield what the next
