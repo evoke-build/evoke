@@ -82,7 +82,6 @@
       --accent-ink: #ea8a40;
       --accent-soft: rgba(234, 138, 64, .12);
       --radius: 14px;
-      --radius-s: 9px;
       --term-bg: #141416;
       --term-head: #1a1a1d;
       --term-fg: #ebe8e3;
@@ -94,11 +93,10 @@
       --tk-table: #a3a6ff;
       --tk-string: #9ad18f;
       --tk-num: #f0c060;
-      --tk-comment: #7d7d7d;
+      --tk-ph: #f0c060;
+      --tk-comment: #8b8b8b;
       --tk-punct: #7d7d7d;
       --tk-kw: #a3a6ff;
-      --plus-bg: rgba(143, 212, 138, .1);
-      --plus-fg: #9ad18f;
       --shadow: 0 30px 60px -30px rgba(0, 0, 0, .6);
       --mono: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     }
@@ -108,7 +106,7 @@
     @font-face { font-family: "JetBrains Mono"; src: url("fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: block; }
     @font-face { font-family: "JetBrains Mono"; font-style: italic; src: url("fonts/jetbrains-mono-italic.woff2") format("woff2"); font-weight: 100 800; font-display: block; }
     @font-face { font-family: "Geist Fallback"; src: local("Helvetica Neue"), local("Arial"); size-adjust: 104.5%; ascent-override: 96%; descent-override: 28%; line-gap-override: 0%; }
-    @font-face { font-family: "JetBrains Mono Fallback"; src: local("Menlo"), local("SF Mono"), local("Consolas"), local("DejaVu Sans Mono"); size-adjust: 106%; ascent-override: 96.5%; descent-override: 24%; line-gap-override: 0%; }
+    @font-face { font-family: "JetBrains Mono Fallback"; src: local("Menlo-Regular"), local("Menlo"), local("SF Mono"), local("Consolas"), local("DejaVu Sans Mono"); size-adjust: 106%; ascent-override: 96.5%; descent-override: 24%; line-gap-override: 0%; }
 
     /* Base */
     * { box-sizing: border-box; }
@@ -207,7 +205,7 @@
     .panel pre .c { color: var(--tk-comment); font-style: italic; }
     .panel pre .o { color: var(--tk-punct); }
     .panel pre .w { color: var(--tk-kw); }
-    .panel pre .ph { color: var(--tk-num); font-weight: 500; }
+    .panel pre .ph { color: var(--tk-ph); font-weight: 500; }
     .panel.term { background: var(--term-bg); border-color: color-mix(in srgb, var(--term-bg) 60%, #fff 10%); color: var(--term-fg); box-shadow: var(--shadow); }
     .panel.term .head { background: var(--term-head); border-color: rgba(255, 255, 255, .06); color: var(--term-dim); }
     .panel.term .head .dots { display: flex; gap: 6px; margin-right: .3rem; }
@@ -233,7 +231,7 @@
     section { padding: 5rem 0 0; }
     .rule { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 1.1rem; margin: 0 0 1.25rem; }
     .label { font-size: .76rem; font-weight: 560; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); margin: 0; }
-    .rule .num { font: 500 .74rem/1 var(--mono); color: var(--faint); letter-spacing: .08em; }
+    .rule .num { font: 500 .74rem/1 var(--mono); color: var(--muted); letter-spacing: .08em; }
     section h2 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); font-weight: 560; letter-spacing: -0.024em; line-height: 1.12; margin: 0 0 .7rem; max-width: 30ch; }
     p.sub { color: var(--text); font-size: 1.08rem; line-height: 1.55; max-width: 46rem; margin: 0 0 2rem; }
     p.sub strong { color: var(--fg); font-weight: 560; }
@@ -289,7 +287,7 @@
     .pair > * { min-width: 0; }
 
     footer { margin-top: 5.5rem; border-top: 1px solid var(--line); padding: 2.25rem 0 3rem; color: var(--muted); font-size: .9rem; }
-    footer .tag { margin: 0 0 1.4rem; font: 500 .9rem/1.5 var(--mono); color: var(--faint); }
+    footer .tag { margin: 0 0 1.4rem; font: 500 .9rem/1.5 var(--mono); color: var(--muted); }
     footer .row { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; }
     footer nav { display: flex; flex-wrap: wrap; gap: 1.25rem; }
     footer a { color: var(--muted); }
@@ -321,7 +319,7 @@
   <header class="top">
     <div class="wrap">
       <a class="brand" href="./"><img src="logo.png" alt="" width="26" height="26">evoke</a>
-      <nav class="links">
+      <nav class="links" aria-label="Site">
         <a class="idea" href="idea.html">The idea</a>
         <a href="manual/">Manual</a>
         <a class="wide" href="use-cases.html">Use cases</a>
@@ -1026,6 +1024,8 @@ Ceiling and lamp lights only."""</span>
             <tr><td><code>weakest</code></td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td class="n">·</td><td><code>{ question, top, p }</code>.</td></tr>
             <tr><td><code>judgments</code></td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td>Every choice read: <code>{ question, top, p }</code>.</td></tr>
             <tr><td><code>contenders</code></td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td>The ranking: <code>{ reflex, route, fits? }</code>.</td></tr>
+            <tr><td><code>runner_up</code></td><td class="n">○</td><td class="n">○</td><td class="n">○</td><td class="n">·</td><td>The second reflex by route, <code>{ reflex, route, fits? }</code>, when there is one.</td></tr>
+            <tr><td><code>unconsumed</code></td><td class="n">·</td><td class="n">·</td><td class="y">●</td><td class="n">·</td><td>Typed spans no argument consumed, each <code>{ start, end, text }</code>.</td></tr>
             <tr><td><code>prompt</code></td><td class="n">·</td><td class="y">●</td><td class="n">·</td><td class="n">·</td><td><code>{ own, template }</code>: the tool's line and the reflex's question.</td></tr>
             <tr><td><code>because</code></td><td class="n">·</td><td class="y">●</td><td class="n">·</td><td class="n">·</td><td>Why it stopped, in order: <code>destructive</code>, <code>no_gate</code>, <code>under_floor</code>, <code>unconsumed_span</code>, <code>two_things</code>.</td></tr>
             <tr><td><code>missing</code></td><td class="n">·</td><td class="n">·</td><td class="y">●</td><td class="n">·</td><td>Per missing argument: <code>arg</code>, <code>ask</code>, <code>because</code>, <code>choices</code>.</td></tr>
@@ -1187,7 +1187,7 @@ Ceiling and lamp lights only."""</span>
       <div class="row">
         <div><a href="https://github.com/evoke-build/evoke/blob/main/LICENSE">Apache-2.0</a>; the collection is MIT.
           Jev is <a href="https://typesafe.ai">TypeSafe AI</a>'s.</div>
-        <nav>
+        <nav aria-label="Footer">
           <a href="manual/">Manual</a>
           <a href="idea.html">The idea</a>
           <a href="use-cases.html">Use cases</a>

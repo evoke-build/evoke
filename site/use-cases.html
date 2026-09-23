@@ -90,7 +90,7 @@
       --tk-table: #a3a6ff;
       --tk-string: #9ad18f;
       --tk-num: #f0c060;
-      --tk-comment: #7d7d7d;
+      --tk-comment: #8b8b8b;
       --tk-punct: #7d7d7d;
       --tk-kw: #a3a6ff;
       --tk-ph: #f0c060;
@@ -104,7 +104,7 @@
     @font-face { font-family: "JetBrains Mono"; src: url("fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: block; }
     @font-face { font-family: "JetBrains Mono"; font-style: italic; src: url("fonts/jetbrains-mono-italic.woff2") format("woff2"); font-weight: 100 800; font-display: block; }
     @font-face { font-family: "Geist Fallback"; src: local("Helvetica Neue"), local("Arial"); size-adjust: 104.5%; ascent-override: 96%; descent-override: 28%; line-gap-override: 0%; }
-    @font-face { font-family: "JetBrains Mono Fallback"; src: local("Menlo"), local("SF Mono"), local("Consolas"), local("DejaVu Sans Mono"); size-adjust: 106%; ascent-override: 96.5%; descent-override: 24%; line-gap-override: 0%; }
+    @font-face { font-family: "JetBrains Mono Fallback"; src: local("Menlo-Regular"), local("Menlo"), local("SF Mono"), local("Consolas"), local("DejaVu Sans Mono"); size-adjust: 106%; ascent-override: 96.5%; descent-override: 24%; line-gap-override: 0%; }
 
     /* Base */
     * { box-sizing: border-box; }
@@ -158,7 +158,7 @@
       transition: border-color .15s, background-color .15s;
     }
     .button:hover { text-decoration: none; border-color: var(--muted); }
-    .button.primary { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 70%, transparent); }
+    .button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 70%, transparent); }
     .button.primary:hover { background: var(--accent-ink); border-color: var(--accent-ink); }
     .button.small { padding: .42rem .95rem; font-size: .88rem; }
     .cmd { display: flex; align-items: center; gap: .6rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-s); padding: .55rem .5rem .55rem .9rem; }
@@ -392,7 +392,7 @@
     section { padding: 5rem 0 0; }
     .rule { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 1.1rem; margin: 0 0 1.25rem; }
     .label { font-size: .76rem; font-weight: 560; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); margin: 0; }
-    .rule .num { font: 500 .74rem/1 var(--mono); color: var(--faint); letter-spacing: .08em; }
+    .rule .num { font: 500 .74rem/1 var(--mono); color: var(--muted); letter-spacing: .08em; }
     section h2 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); font-weight: 560; letter-spacing: -0.024em; line-height: 1.12; margin: 0 0 .7rem; max-width: 30ch; }
     p.sub { color: var(--muted); font-size: 1.08rem; line-height: 1.55; max-width: 46rem; margin: 0 0 2rem; }
     p.sub strong { color: var(--fg); font-weight: 560; }
@@ -417,7 +417,7 @@
     .way .cmd { background: var(--bg); }
 
     footer { margin-top: 5.5rem; border-top: 1px solid var(--line); padding: 2.25rem 0 3rem; color: var(--muted); font-size: .9rem; }
-    footer .tag { margin: 0 0 1.4rem; font: 500 .9rem/1.5 var(--mono); color: var(--faint); }
+    footer .tag { margin: 0 0 1.4rem; font: 500 .9rem/1.5 var(--mono); color: var(--muted); }
     footer .row { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; }
     footer nav { display: flex; flex-wrap: wrap; gap: 1.25rem; }
     footer a { color: var(--muted); }
@@ -442,7 +442,7 @@
   <header class="top">
     <div class="wrap">
       <a class="brand" href="./"><img src="logo.png" alt="" width="26" height="26">evoke</a>
-      <nav class="links">
+      <nav class="links" aria-label="Site">
         <a class="idea" href="idea.html">The idea</a>
         <a href="manual/">Manual</a>
         <a class="here wide" href="use-cases.html" aria-current="page">Use cases</a>
@@ -479,7 +479,7 @@
       <p class="sub">Three recipes for one channel. The one that wraps <code>kubectl</code> is a manifest and nothing
         else. <strong>A write runs when the bar is met. A rollback always asks.</strong></p>
       <div class="grid">
-        <div class="panel term demo ops" data-scene="ops" data-checkout="2" data-payments="3" data-release="42" data-bell="ring" aria-label="An ops board answering four sentences">
+        <div class="panel term demo ops" role="figure" data-scene="ops" data-checkout="2" data-payments="3" data-release="42" data-bell="ring" aria-label="An ops board answering four sentences">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/ops<span class="trail" aria-hidden="true"><b>run</b><b>ask</b><b>confirm</b></span></div>
           <div class="room">
             <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -674,7 +674,7 @@ done<span class="o">()</span></pre>
       <p class="sub">The same three recipes, fed a file. <strong>What is sure runs.</strong> What needs a person is
         queued with its ranking. What is nobody's stays untouched.</p>
       <div class="grid">
-        <div class="panel term demo stream" data-scene="stream" aria-label="Three lines sorted into three lanes">
+        <div class="panel term demo stream" role="figure" data-scene="stream" aria-label="Three lines sorted into three lanes">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/ops<span class="trail" aria-hidden="true"><b>ran</b><b>queued</b><b>nobody's</b></span></div>
           <div class="room">
             <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -739,7 +739,7 @@ what is the weather like</pre>
       <p class="sub">A payee is one of your words, never invented. <strong>Paying is destructive, so the decision
         waits as plain data</strong> until a second person confirms it.</p>
       <div class="grid">
-        <div class="panel term demo bank" data-scene="bank" aria-label="A payment moving from the maker to the checker">
+        <div class="panel term demo bank" role="figure" data-scene="bank" aria-label="A payment moving from the maker to the checker">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/desk<span class="trail" aria-hidden="true"><b>maker</b><b>queue</b><b>checker</b></span></div>
           <div class="room">
             <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -914,7 +914,7 @@ console<span class="o">.</span>log<span class="o">((</span><span class="w">await
       <p class="sub">A line is a word whose value is the controller's id. <strong>The night shift's phrases live in an
         overlay the plant owns</strong>, and the shipped recipe never changes.</p>
       <div class="grid">
-        <div class="panel term demo plant" data-scene="plant" aria-label="Three production lines, two of them stopped at a word">
+        <div class="panel term demo plant" role="figure" data-scene="plant" aria-label="Three production lines, two of them stopped at a word">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/plant<span class="trail" aria-hidden="true"><b>say it</b><b>confirm</b><b>stopped</b></span></div>
           <div class="room">
             <svg aria-hidden="true">
@@ -1013,10 +1013,6 @@ console<span class="o">.</span>log<span class="o">((</span><span class="w">await
   <span class="w">return</span> <span class="s">`${line} stops at the end of this cycle`</span>
 <span class="o">})</span>
 
-  <span class="w">if</span> <span class="o">(!</span>response<span class="o">.</span>ok<span class="o">)</span> <span class="w">throw</span> <span class="w">new</span> Error<span class="o">(</span><span class="s">`the MES answered ${response.status}`</span><span class="o">)</span>
-  <span class="w">return</span> <span class="s">`work order ${order} on hold: ${reason}`</span>
-<span class="o">})</span>
-
 <span class="c">// The words are files the floor edits:</span>
 <span class="c">// words/vocab/lines.toml and words/overlays/stop.toml</span>
 <span class="w">const</span> plant <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span>
@@ -1043,7 +1039,7 @@ done<span class="o">()</span></pre>
       <p class="sub">Three recipes in a chain. <strong>Every hop passes the bar</strong>, and only the destructive one
         stops for a person.</p>
       <div class="grid">
-        <div class="panel term demo runbook" data-scene="runbook" aria-label="Three steps lighting up in turn, the middle one after a yes">
+        <div class="panel term demo runbook" role="figure" data-scene="runbook" aria-label="Three steps lighting up in turn, the middle one after a yes">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/runbook<span class="trail" aria-hidden="true"><b>drain</b><b>failover</b><b>verify</b></span></div>
           <div class="room">
             <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -1172,7 +1168,7 @@ done<span class="o">()</span></pre>
       <p class="sub">Claude proposes the line, <code>evoke teach</code> checks it at the door, <code>evoke test</code>
         keeps it only when nothing regresses, and <strong>git is the undo.</strong></p>
       <div class="grid">
-        <div class="panel term demo teach" data-scene="teach" data-mark="before" aria-label="A confidence rising past the bar after one lesson">
+        <div class="panel term demo teach" role="figure" data-scene="teach" data-mark="before" aria-label="A confidence rising past the bar after one lesson">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/ops<span class="trail" aria-hidden="true"><b>miss</b><b>lesson</b><b>run</b></span></div>
           <div class="room">
             <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -1186,8 +1182,8 @@ done<span class="o">()</span></pre>
           </div>
           <div class="strip" style="--lines: 6" aria-live="off">
             <span class="line say show"><span class="p">$</span> <span class="in">evoke try "make db-3 shut up for 90 minutes"</span></span>
-            <span class="line own show">  <b>silence</b> <i>1.00</i> · none 0.00 · scale 0.00 · rollback 0.00</span>
-            <span class="line own show">  host      <b>db-3</b> <i>0.93</i> · unstated 0.07 · web-1 0.00</span>
+            <span class="line own show">  <b>silence</b> <i>1.00</i> · none 0.00 · 2 more under 0.01</span>
+            <span class="line own show">  host      <b>db-3</b> <i>0.93</i> · unstated 0.07 · 1 more under 0.01</span>
             <span class="line own show">  duration  <b>"90 minutes"</b> <i>1.00</i> · unstated 0.00</span>
             <span class="line own show">  fits      silence 0.82 · scale 0.08 · rollback 0.08</span>
             <span class="line own show">  <b>run</b> · weakest: host <i>0.93</i></span>
@@ -1240,7 +1236,7 @@ sentence that fits no reflex<span class="o">,</span> or two<span class="o">.</sp
   <span class="k">lessons</span><span class="o">:</span> z<span class="o">.</span>array<span class="o">(</span>z<span class="o">.</span>object<span class="o">({</span> utterance<span class="o">:</span> z<span class="o">.</span>string<span class="o">(),</span> call<span class="o">:</span> z<span class="o">.</span>string<span class="o">()</span> <span class="o">})),</span>
 <span class="o">})</span>
 <span class="w">const</span> <span class="o">{</span> parsed_output <span class="o">}</span> <span class="o">=</span> <span class="w">await</span> <span class="w">new</span> Anthropic<span class="o">().</span>messages<span class="o">.</span>parse<span class="o">({</span>
-  <span class="k">model</span><span class="o">:</span> <span class="s">"claude-opus-5"</span><span class="o">,</span>
+  <span class="k">model</span><span class="o">:</span> <span class="s">"claude-opus-5-5"</span><span class="o">,</span>
   <span class="k">max_tokens</span><span class="o">:</span> <span class="n">4000</span><span class="o">,</span>
   <span class="k">system</span><span class="o">:</span> <span class="s">`${brief}\n\n${manifests.join("\n")}`</span><span class="o">,</span>
   <span class="k">messages</span><span class="o">:</span> <span class="o">[{</span> role<span class="o">:</span> <span class="s">"user"</span><span class="o">,</span> <span class="k">content</span><span class="o">:</span> misses<span class="o">.</span>join<span class="o">(</span><span class="s">"\n"</span><span class="o">)</span> <span class="o">}],</span>
@@ -1280,7 +1276,7 @@ try <span class="o">{</span>
       <p class="sub">Each part is decided on its own, in the order you said it. <strong>What one step finds, the next one
         takes, and the plan shows first.</strong> These lines are the ones the product's own tests pin.</p>
       <div class="grid">
-        <div class="panel term demo woven" data-scene="woven" data-names="1" data-n1="ran" data-n2="ran" data-wire="on" style="--lines: 8" aria-label="Two steps on one wire: run and bound, then declined, then refused">
+        <div class="panel term demo woven" role="figure" data-scene="woven" data-names="1" data-n1="ran" data-n2="ran" data-wire="on" style="--lines: 8" aria-label="Two steps on one wire: run and bound, then declined, then refused">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/home<span class="trail" aria-hidden="true"><b class="on">ran</b><b>declined</b><b>refused</b></span></div>
           <div class="room">
             <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -1429,12 +1425,12 @@ try <span class="o">{</span>
           <div class="way">
             <h3>The CLI</h3>
             <p>Fetches the release for your machine, checks its digest, and puts <code>evoke</code> in <code>~/.local/bin</code>.</p>
-            <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy>Copy</button></div>
+            <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
           </div>
           <div class="way">
             <h3>The SDK</h3>
             <p>Node 24.5 or newer, ES modules, no dependencies. The core ships inside as WebAssembly.</p>
-            <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy>Copy</button></div>
+            <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
           </div>
           <p class="after">Then <a href="manual/start/first-run.html">the first ten minutes</a>, and
             <a href="manual/sdk/getting-started.html">the SDK's first hour</a>.</p>
@@ -1449,7 +1445,7 @@ try <span class="o">{</span>
       <div class="row">
         <div><a href="https://github.com/evoke-build/evoke/blob/main/LICENSE">Apache-2.0</a>; the collection is MIT.
           Jev is <a href="https://typesafe.ai">TypeSafe AI</a>'s.</div>
-        <nav>
+        <nav aria-label="Footer">
           <a href="manual/">Manual</a>
           <a href="idea.html">The idea</a>
           <a href="use-cases.html">Use cases</a>
@@ -1550,7 +1546,7 @@ try <span class="o">{</span>
             { step: 0, text: '  {n:scale} service="checkout" env="staging" replicas="6"  {hi:0.90}', set: { l1: "ran" } },
             { cls: "out", text: "deployment.apps/checkout-api scaled" },
             { step: 1, text: '  an ask needs a terminal  →  evoke "silence db-3"', set: { l2: "queued" }, pause: 600 },
-            { step: 2, text: "  {n:none} {hi:1.00} · silence 0.00 · rollback 0.00 · scale 0.00", set: { l3: "none" } },
+            { step: 2, text: "  {n:none} {hi:1.00} · 3 more under 0.01", set: { l3: "none" } },
             { text: "[3]" },
           ], hold: 3400 },
           { say: "node queue.ts < inbox.txt", busy: "", lines: [
@@ -1593,21 +1589,21 @@ try <span class="o">{</span>
         ] },
         teach: { final: { mark: "after", lesson: "1" }, scenes: [
           { step: 0, say: 'evoke try "make db-3 shut up for 90 minutes"', busy: "", lines: [
-            { text: "  {n:silence} {hi:1.00} · rollback 0.00 · none 0.00 · scale 0.00" },
-            { text: "  host      {n:db-3} {mid:0.74} · unstated 0.26 · web-1 0.00" },
+            { text: "  {n:silence} {hi:1.00} · none 0.00 · 2 more under 0.01" },
+            { text: "  host      {n:db-3} {mid:0.74} · unstated 0.26 · 1 more under 0.01" },
             { text: '  duration  {n:"90 minutes"} {hi:1.00} · unstated 0.00' },
             { text: "  fits      silence 0.79 · scale 0.07 · rollback 0.09" },
             { text: '  {n:confirm} · silence host="db-3" duration="90 minutes" · write · weakest: host {mid:0.74}', set: { mark: "before" } },
           ], hold: 3000 },
-          { step: 1, say: "node ../teach.ts", busy: "asking claude-opus-5", lines: [
+          { step: 1, say: "node ../teach.ts", busy: "asking claude-opus-5-5", lines: [
             { cls: "add", text: '+ overlays/silence.toml  [examples] "make db-3 shut up for 90 minutes" = { host = "db-3", duration = "90 minutes" }', set: { lesson: "1" }, pause: 700 },
             { text: "  scale     6 passed" },
             { text: "  silence   7 passed" },
             { text: "  rollback  6 passed" },
           ], hold: 3000 },
           { step: 2, say: 'evoke try "make db-3 shut up for 90 minutes"', busy: "", lines: [
-            { text: "  {n:silence} {hi:1.00} · none 0.00 · scale 0.00 · rollback 0.00" },
-            { text: "  host      {n:db-3} {hi:0.93} · unstated 0.07 · web-1 0.00", set: { mark: "after" } },
+            { text: "  {n:silence} {hi:1.00} · none 0.00 · 2 more under 0.01" },
+            { text: "  host      {n:db-3} {hi:0.93} · unstated 0.07 · 1 more under 0.01", set: { mark: "after" } },
             { text: '  duration  {n:"90 minutes"} {hi:1.00} · unstated 0.00' },
             { text: "  fits      silence 0.82 · scale 0.08 · rollback 0.08" },
             { text: "  {n:run} · weakest: host {hi:0.93}" },

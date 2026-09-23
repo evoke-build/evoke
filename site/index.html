@@ -99,7 +99,6 @@
       --bg: #0f0f10;
       --fg: #ececec;
       --muted: #9c9ca3;
-      --faint: #6c6c73;
       --line: #232326;
       --line-strong: #303035;
       --panel: #151517;
@@ -120,7 +119,7 @@
       --tk-table: #a3a6ff;
       --tk-string: #9ad18f;
       --tk-num: #f0c060;
-      --tk-comment: #7d7d7d;
+      --tk-comment: #8b8b8b;
       --tk-punct: #7d7d7d;
       --tk-kw: #a3a6ff;
       --tk-ph: #f0c060;
@@ -136,7 +135,7 @@
     @font-face { font-family: "JetBrains Mono"; src: url("fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: block; }
     @font-face { font-family: "JetBrains Mono"; font-style: italic; src: url("fonts/jetbrains-mono-italic.woff2") format("woff2"); font-weight: 100 800; font-display: block; }
     @font-face { font-family: "Geist Fallback"; src: local("Helvetica Neue"), local("Arial"); size-adjust: 104.5%; ascent-override: 96%; descent-override: 28%; line-gap-override: 0%; }
-    @font-face { font-family: "JetBrains Mono Fallback"; src: local("Menlo"), local("SF Mono"), local("Consolas"), local("DejaVu Sans Mono"); size-adjust: 106%; ascent-override: 96.5%; descent-override: 24%; line-gap-override: 0%; }
+    @font-face { font-family: "JetBrains Mono Fallback"; src: local("Menlo-Regular"), local("Menlo"), local("SF Mono"), local("Consolas"), local("DejaVu Sans Mono"); size-adjust: 106%; ascent-override: 96.5%; descent-override: 24%; line-gap-override: 0%; }
 
     /* Base */
     * { box-sizing: border-box; }
@@ -164,7 +163,7 @@
 
     /* The bar */
     header.top {
-      position: sticky; top: 0; z-index: 2;
+      position: sticky; top: 0; z-index: 3;
       background: color-mix(in srgb, var(--bg) 70%, transparent);
       -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
       border-bottom: 1px solid var(--line);
@@ -190,7 +189,7 @@
       transition: border-color .15s, background-color .15s;
     }
     .button:hover { text-decoration: none; border-color: var(--muted); }
-    .button.primary { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 70%, transparent); }
+    .button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 70%, transparent); }
     .button.primary:hover { background: var(--accent-ink); border-color: var(--accent-ink); }
     .button.small { padding: .42rem .95rem; font-size: .88rem; }
     .cmd { display: flex; align-items: center; gap: .6rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-s); padding: .55rem .5rem .55rem .9rem; }
@@ -216,7 +215,7 @@
     .cta .cmd { flex: 1 1 100%; max-width: fit-content; margin-top: .25rem; }
     .cta .cmd code { font-size: .86rem; }
     .jobs { list-style: none; margin: 1.9rem 0 0; padding: 1.1rem 0 0; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: .65rem 2.25rem; max-width: 34rem; }
-    .jobs .lead { flex-basis: 100%; color: var(--faint); font-size: .95rem; font-weight: 450; }
+    .jobs .lead { flex-basis: 100%; color: var(--muted); font-size: .95rem; font-weight: 450; }
     .jobs a { display: inline-flex; align-items: baseline; gap: .6rem; color: var(--muted); font-size: .95rem; font-weight: 450; transition: color .15s; }
     .jobs a:hover { color: var(--fg); text-decoration: none; }
     .jobs code { font-size: .8rem; color: var(--accent-ink); background: none; border: 0; padding: 0; white-space: nowrap; }
@@ -233,7 +232,7 @@
     }
     .panel .head i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
     .panel .head .who {
-      margin-left: auto; font-family: inherit; font-size: .64rem; letter-spacing: .07em; text-transform: uppercase;
+      margin-left: auto; white-space: nowrap; font-family: inherit; font-size: .64rem; letter-spacing: .07em; text-transform: uppercase;
       padding: .16rem .55rem; border-radius: 99px; border: 1px solid var(--line-strong); color: var(--muted); line-height: 1.4;
     }
     .panel .head .who.you { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 45%, transparent); background: var(--accent-soft); }
@@ -311,7 +310,7 @@
     section { padding: 5rem 0 0; }
     .rule { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 1.1rem; margin: 0 0 1.25rem; }
     .label { font-size: .76rem; font-weight: 560; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); margin: 0; }
-    .rule .num { font: 500 .74rem/1 var(--mono); color: var(--faint); letter-spacing: .08em; }
+    .rule .num { font: 500 .74rem/1 var(--mono); color: var(--muted); letter-spacing: .08em; }
     section h2 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); font-weight: 560; letter-spacing: -0.024em; line-height: 1.12; margin: 0 0 .7rem; max-width: 30ch; }
     p.sub { color: var(--muted); font-size: 1.08rem; line-height: 1.55; max-width: 44rem; margin: 0 0 2rem; }
     p.sub strong { color: var(--fg); font-weight: 560; }
@@ -340,7 +339,7 @@
     .card .room svg { position: absolute; inset: 0; width: 100%; height: 100%; }
     .card .room text { font: 500 10px var(--mono); fill: #9a978f; }
     .card .room text.dim { fill: #5f5f66; }
-    .card .say { position: absolute; left: 1rem; bottom: .72rem; font: .74rem/1.4 var(--mono); color: var(--term-dim); white-space: nowrap; }
+    .card .say { position: absolute; left: 1rem; right: 1rem; bottom: .72rem; font: .74rem/1.35 var(--mono); color: var(--term-dim); overflow-wrap: anywhere; }
     .card .say i { font-style: normal; color: var(--accent); }
     .card .text { padding: .9rem 1.05rem 1.05rem; }
     .card .text i { font: 600 .68rem/1 var(--mono); font-style: normal; color: var(--accent-ink); letter-spacing: .12em; }
@@ -350,11 +349,11 @@
     @keyframes belt { to { stroke-dashoffset: -20; } }
     @keyframes pulse { 50% { filter: drop-shadow(0 0 8px rgba(240, 192, 96, .75)); } }
     /* 01 pods and a bell */
-    .ops .pod { fill: #26262b; stroke: #36363d; transition: fill .45s, stroke .45s, filter .45s; }
+    .ops .pod { fill: #26262b; stroke: #36363d; transition: fill .45s ease, stroke .45s ease, filter .45s ease; }
     .ops .pod:nth-child(2) { transition-delay: .06s; } .ops .pod:nth-child(3) { transition-delay: .12s; } .ops .pod:nth-child(4) { transition-delay: .18s; } .ops .pod:nth-child(5) { transition-delay: .24s; } .ops .pod:nth-child(6) { transition-delay: .3s; }
     .ops .pod:nth-child(-n+2), .card:is(.on, :hover, :focus-visible) .ops .pod { fill: var(--accent); stroke: var(--accent); filter: drop-shadow(0 0 5px rgba(229, 118, 29, .5)); }
     .ops .bell .body, .ops .bell .clapper { fill: var(--lamp); transition: fill .7s; }
-    .ops .wave { fill: none; stroke: var(--lamp); stroke-width: 2; stroke-linecap: round; opacity: .85; transition: opacity .6s; }
+    .ops .wave { fill: none; stroke: var(--lamp); stroke-width: 2; stroke-linecap: round; opacity: .85; transition: opacity .7s; }
     .card:is(.on, :hover, :focus-visible) .ops .bell .body, .card:is(.on, :hover, :focus-visible) .ops .bell .clapper { fill: #34343a; }
     .card:is(.on, :hover, :focus-visible) .ops .wave { opacity: 0; }
     /* 02 lines into lanes */
@@ -535,7 +534,7 @@
     .way .cmd { background: var(--bg); }
 
     footer { margin-top: 5.5rem; border-top: 1px solid var(--line); padding: 2.25rem 0 3rem; color: var(--muted); font-size: .9rem; }
-    footer .tag { margin: 0 0 1.4rem; font: 500 .9rem/1.5 var(--mono); color: var(--faint); }
+    footer .tag { margin: 0 0 1.4rem; font: 500 .9rem/1.5 var(--mono); color: var(--muted); }
     footer .row { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; }
     footer nav { display: flex; flex-wrap: wrap; gap: 1.25rem; }
     footer a { color: var(--muted); }
@@ -553,12 +552,19 @@
       nav.links a.wide { display: none; }
       .promises li { padding: .8rem 0; }
     }
+    @media (max-width: 1200px) { .hero .lede { font-size: 1.12rem; } }
     @media (max-width: 560px) {
       .sheet dl > div { grid-template-columns: 1fr; gap: .15rem; }
-      .cta .cmd code { white-space: normal; overflow-wrap: anywhere; line-height: 1.45; }
+      .cmd code { white-space: normal; overflow-wrap: anywhere; line-height: 1.45; }
       .demo .room { height: 12.5rem; }
       .demo .strip { height: calc(6 * 1.9em + 1.9rem); }
       .work .grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 400px) {
+      .brand { font-size: 1rem; }
+      nav.links { gap: .75rem; }
+      nav.links a { font-size: .9rem; white-space: nowrap; }
+      .button.small { padding: .38rem .75rem; }
     }
   </style>
 </head>
@@ -566,7 +572,7 @@
   <header class="top">
     <div class="wrap">
       <a class="brand" href="/"><img src="logo.png" alt="" width="26" height="26">evoke</a>
-      <nav class="links">
+      <nav class="links" aria-label="Site">
         <a class="idea" href="idea.html">The idea</a>
         <a href="manual/">Manual</a>
         <a class="wide" href="use-cases.html">Use cases</a>
@@ -589,7 +595,7 @@
           <a class="button primary" href="#install">Install</a>
           <a class="button" href="use-cases.html">See it at work</a>
           <a class="quiet" href="manual/">Read the manual</a>
-          <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy>Copy</button></div>
+          <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
         </div>
         <ul class="jobs" aria-label="What evoke is">
           <li class="lead">One core, three ways in.</li>
@@ -598,7 +604,7 @@
           <li><a href="manual/sdk/getting-started.html"><code>{ }</code>a TypeScript SDK</a></li>
         </ul>
       </div>
-      <div class="panel term demo" data-state="off" aria-label="A lamp answering three sentences">
+      <div class="panel term demo" role="figure" data-state="on" aria-label="A lamp answering three sentences">
         <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>say it</b><b>install</b><b>your words</b></span></div>
         <div class="room">
           <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -773,7 +779,7 @@ Ceiling and lamp lights only."""</span>
 <span class="s">"dim the den to 30 percent"</span>  <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"dim"</span><span class="o">,</span> <span class="k">brightness</span> <span class="o">=</span> <span class="s">"30 percent"</span> <span class="o">}</span></pre>
         </div>
         <div class="side">
-          <div class="panel term" aria-label="A terminal session">
+          <div class="panel term" role="figure" aria-label="A terminal session">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre><span class="p">$</span> <span class="in">evoke "kill the lights"</span>
 <span class="own">  Which room?  [1] den  [2] office  [+] add one  &gt;</span> <span class="in">1</span>
@@ -811,7 +817,7 @@ Ceiling and lamp lights only."""</span>
       <p class="sub">A weave. Each part is decided on its own, in the order you said it. What one step finds, the
         next one takes. <strong>The plan shows before anything runs.</strong></p>
       <div class="grid">
-        <div class="panel term loom" aria-label="A sentence read into two steps, planned and run">
+        <div class="panel term loom" role="figure" aria-label="A sentence read into two steps, planned and run">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>read</b><b>plan</b><b class="on">run</b></span></div>
           <div class="room">
             <p class="said on"><span class="part">look up dana's address</span> <span class="part"><span class="and">and<span class="base" aria-hidden="true">and</span><span class="lit on" aria-hidden="true">and</span></span> email <span class="them">them<span class="base" aria-hidden="true">them</span><span class="lit on" aria-hidden="true">them</span></span></span></p>
@@ -833,7 +839,7 @@ Ceiling and lamp lights only."""</span>
           </div>
         </div>
         <div class="side">
-          <div class="panel term gate" aria-label="A confirm declined at its turn">
+          <div class="panel term gate" role="figure" aria-label="A confirm declined at its turn">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
             <div class="strip" aria-live="off">
               <span class="line say on"><span class="p">$</span> <span class="in">evoke "start a 25 minute timer and kill the lights in the den"</span></span>
@@ -845,7 +851,7 @@ Ceiling and lamp lights only."""</span>
               <span class="line own on">[2]</span>
             </div>
           </div>
-          <div class="panel term refusal" aria-label="A part that matches no reflex">
+          <div class="panel term refusal" role="figure" aria-label="A part that matches no reflex">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
             <div class="strip" aria-live="off">
               <span class="line say on"><span class="p">$</span> <span class="in">evoke "kill the lights in the den and feed the cat"</span></span>
@@ -1031,12 +1037,12 @@ Ceiling and lamp lights only."""</span>
         <div class="way">
           <h3>The CLI</h3>
           <p>Fetches the release for your machine, checks its digest, and puts <code>evoke</code> in <code>~/.local/bin</code>.</p>
-          <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy>Copy</button></div>
+          <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
         </div>
         <div class="way">
           <h3>The SDK</h3>
           <p>Node 24.5 or newer, ES modules, no dependencies. The core ships inside as WebAssembly.</p>
-          <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy>Copy</button></div>
+          <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
         </div>
       </div>
       <p class="after">Then <a href="manual/start/first-run.html">the first ten minutes</a>: your key, the first-party
@@ -1051,7 +1057,7 @@ Ceiling and lamp lights only."""</span>
       <div class="row">
         <div><a href="https://github.com/evoke-build/evoke/blob/main/LICENSE">Apache-2.0</a>; the collection is MIT.
           Jev is <a href="https://typesafe.ai">TypeSafe AI</a>'s.</div>
-        <nav>
+        <nav aria-label="Footer">
           <a href="manual/">Manual</a>
           <a href="idea.html">The idea</a>
           <a href="use-cases.html">Use cases</a>
@@ -1141,9 +1147,15 @@ Ceiling and lamp lights only."""</span>
         demo.dataset.state = "on"
       } else {
         const spinner = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+        // It types only while on screen and the tab is shown, as the loom does.
+        let seen = false, waiting = []
+        const wake = () => { if (seen && !document.hidden) { for (const w of waiting) w(); waiting = [] } }
+        new IntersectionObserver(([entry]) => { seen = entry.isIntersecting; wake() }, { threshold: .25 }).observe(demo)
+        document.addEventListener("visibilitychange", wake)
+        const onScreen = () => seen && !document.hidden ? Promise.resolve() : new Promise(resolve => waiting.push(resolve))
         const run = async () => {
           for (;;) for (const scene of scenes) {
-            if (document.hidden) await new Promise(resolve => document.addEventListener("visibilitychange", resolve, { once: true }))
+            await onScreen()
             trail.forEach((b, i) => b.classList.toggle("on", i === scene.step))
             strip.classList.add("clear"); await wait(240); strip.replaceChildren(); strip.classList.remove("clear")
             await wait(420)

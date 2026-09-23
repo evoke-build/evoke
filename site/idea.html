@@ -25,7 +25,6 @@
   <meta name="twitter:image:alt" content="evoke — Software, by reflex.">
   <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/jetbrains-mono-italic.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="icon" href="favicon.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <script type="application/ld+json">
@@ -73,7 +72,6 @@
       --fg: #ececec;
       --text: #cccccc;
       --muted: #9c9ca3;
-      --faint: #6c6c73;
       --line: #232326;
       --line-strong: #303035;
       --panel: #151517;
@@ -94,11 +92,9 @@
       --tk-table: #a3a6ff;
       --tk-string: #9ad18f;
       --tk-num: #f0c060;
-      --tk-comment: #7d7d7d;
+      --tk-comment: #8b8b8b;
       --tk-punct: #7d7d7d;
       --tk-kw: #a3a6ff;
-      --plus-bg: rgba(143, 212, 138, .1);
-      --plus-fg: #9ad18f;
       --shadow: 0 30px 60px -30px rgba(0, 0, 0, .6);
       --mono: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     }
@@ -106,9 +102,8 @@
     /* Type: Geist and JetBrains Mono, served here and shown from the first paint: the text waits the moment the font takes, and is never drawn in another face first */
     @font-face { font-family: "Geist"; src: url("fonts/geist.woff2") format("woff2"); font-weight: 100 900; font-display: block; }
     @font-face { font-family: "JetBrains Mono"; src: url("fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; font-style: italic; src: url("fonts/jetbrains-mono-italic.woff2") format("woff2"); font-weight: 100 800; font-display: block; }
     @font-face { font-family: "Geist Fallback"; src: local("Helvetica Neue"), local("Arial"); size-adjust: 104.5%; ascent-override: 96%; descent-override: 28%; line-gap-override: 0%; }
-    @font-face { font-family: "JetBrains Mono Fallback"; src: local("Menlo"), local("SF Mono"), local("Consolas"), local("DejaVu Sans Mono"); size-adjust: 106%; ascent-override: 96.5%; descent-override: 24%; line-gap-override: 0%; }
+    @font-face { font-family: "JetBrains Mono Fallback"; src: local("Menlo-Regular"), local("Menlo"), local("SF Mono"), local("Consolas"), local("DejaVu Sans Mono"); size-adjust: 106%; ascent-override: 96.5%; descent-override: 24%; line-gap-override: 0%; }
 
     /* Base */
     * { box-sizing: border-box; }
@@ -162,7 +157,7 @@
       transition: border-color .15s, background-color .15s;
     }
     .button:hover { text-decoration: none; border-color: var(--muted); }
-    .button.primary { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 70%, transparent); }
+    .button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 70%, transparent); }
     .button.primary:hover { background: var(--accent-ink); border-color: var(--accent-ink); }
     .button.small { padding: .42rem .95rem; font-size: .88rem; }
     .cmd { display: flex; align-items: center; gap: .6rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-s); padding: .55rem .5rem .55rem .9rem; }
@@ -209,7 +204,6 @@
     .panel pre .t { color: var(--tk-table); font-weight: 500; }
     .panel pre .s { color: var(--tk-string); }
     .panel pre .n { color: var(--tk-num); }
-    .panel pre .c { color: var(--tk-comment); font-style: italic; }
     .panel pre .o { color: var(--tk-punct); }
     .panel pre .w { color: var(--tk-kw); }
     .panel.term { background: var(--term-bg); border-color: color-mix(in srgb, var(--term-bg) 60%, #fff 10%); color: var(--term-fg); box-shadow: var(--shadow); }
@@ -233,7 +227,7 @@
     section { padding: 5rem 0 0; }
     .rule { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 1.1rem; margin: 0 0 1.25rem; }
     .label { font-size: .76rem; font-weight: 560; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); margin: 0; }
-    .rule .num { font: 500 .74rem/1 var(--mono); color: var(--faint); letter-spacing: .08em; }
+    .rule .num { font: 500 .74rem/1 var(--mono); color: var(--muted); letter-spacing: .08em; }
     section h2 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); font-weight: 560; letter-spacing: -0.024em; line-height: 1.12; margin: 0 0 .7rem; max-width: 30ch; }
     p.sub { color: var(--text); font-size: 1.08rem; line-height: 1.55; max-width: 46rem; margin: 0 0 2rem; }
     p.sub strong { color: var(--fg); font-weight: 560; }
@@ -277,7 +271,7 @@
     .way .cmd { background: var(--bg); }
 
     footer { margin-top: 5.5rem; border-top: 1px solid var(--line); padding: 2.25rem 0 3rem; color: var(--muted); font-size: .9rem; }
-    footer .tag { margin: 0 0 1.4rem; font: 500 .9rem/1.5 var(--mono); color: var(--faint); }
+    footer .tag { margin: 0 0 1.4rem; font: 500 .9rem/1.5 var(--mono); color: var(--muted); }
     footer .row { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; }
     footer nav { display: flex; flex-wrap: wrap; gap: 1.25rem; }
     footer a { color: var(--muted); }
@@ -304,7 +298,7 @@
   <header class="top">
     <div class="wrap">
       <a class="brand" href="./"><img src="logo.png" alt="" width="26" height="26">evoke</a>
-      <nav class="links">
+      <nav class="links" aria-label="Site">
         <a class="idea here" href="idea.html" aria-current="page">The idea</a>
         <a href="manual/">Manual</a>
         <a class="wide" href="use-cases.html">Use cases</a>
@@ -572,12 +566,12 @@ Ceiling and lamp lights only."""</span>
         <div class="way">
           <h3>The CLI</h3>
           <p>Fetches the release for your machine, checks its digest, and puts <code>evoke</code> in <code>~/.local/bin</code>.</p>
-          <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy>Copy</button></div>
+          <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
         </div>
         <div class="way">
           <h3>The SDK</h3>
           <p>Node 24.5 or newer, ES modules, no dependencies. The core ships inside as WebAssembly.</p>
-          <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy>Copy</button></div>
+          <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
         </div>
       </div>
       <p class="after">Then <a href="manual/start/first-run.html">the first ten minutes</a>, or
@@ -591,7 +585,7 @@ Ceiling and lamp lights only."""</span>
       <div class="row">
         <div><a href="https://github.com/evoke-build/evoke/blob/main/LICENSE">Apache-2.0</a>; the collection is MIT.
           Jev is <a href="https://typesafe.ai">TypeSafe AI</a>'s.</div>
-        <nav>
+        <nav aria-label="Footer">
           <a href="manual/">Manual</a>
           <a href="idea.html">The idea</a>
           <a href="use-cases.html">Use cases</a>
