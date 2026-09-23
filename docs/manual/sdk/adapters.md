@@ -44,11 +44,9 @@ const project = await load({ reflexes, adapter: openjev({ key, gate: { write: 0.
 returns Jev's answers. `evoke` is affiliated with neither, and vouches for neither. A key from OpenJEV is on
 OpenJEV's terms, and whether it may offer Jev is a matter between OpenJEV and TypeSafe AI. As of this release it
 publishes no terms and no privacy policy, so weigh that before you choose it for an application. The transport
-is `jev()`'s, with 3 seconds once connected instead of 1.5, since the service forwards the request onward, and
-OpenJEV asks a burst to slow down after about a dozen requests a second, which the wait honours. It names the
-model by version, `jev-1.13.0`, as `jev()` does, since OpenJEV forwards the name it is given: its `id` is Jev's
-own, so the answers behind it cannot move under one id. No key is a `DiagnosticError` ending in
-`export OPENJEV_API_KEY=<value>`.
+is `jev()`'s, with 3 seconds once connected instead of 1.5, since the service forwards the request onward. It
+names the model by version, `jev-1.13.0`, as `jev()` does, so its `id` is Jev's own. No key is a
+`DiagnosticError` ending in `export OPENJEV_API_KEY=<value>`.
 
 ## The contract
 
