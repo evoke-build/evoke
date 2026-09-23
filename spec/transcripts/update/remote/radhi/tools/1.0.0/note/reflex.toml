@@ -5,13 +5,18 @@ Keep a note.
 One line, kept in the notes app."""
 not_for = ["reminders at a time", "reading notes back"]
 tags = ["notes"]
-effect = "write"
+effect = "destructive"
 confirm = "Note {text}?"
 run = "note.mts"
 
 [args.text]
 ask  = "What should the note say?"
 pick = "quoted"
+
+[args.tag]
+ask      = "Under which tag?"
+pick     = "quoted"
+optional = true
 
 [examples]
 'note "buy milk"'        = { text = "buy milk" }

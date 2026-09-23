@@ -26,6 +26,10 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   that adds the rest; a ref with a tag it has not, a collection with `--as`, a word to remove that is not there
   and a directory that is not there each end in the command that helps. `update <name> --accept <other>` is
   refused instead of dropping the accept. A failed keep leaves no `.tmp` directory in the store.
+- The project schema reads `ssh://git@host/…`, the form the manual documents and `evoke add` accepts, and
+  reserves `weave` as the binary does; the manifest schema wants the summary line the reader wants; the schemas
+  point at the manual on the site; a `[adapters.replay]` table takes what a later `replay` may need. The
+  first-reflex page's `try` block is what the binary prints.
 - The SDK's doors hold. A lone surrogate in an input, a name handed to `load` or `with` that is no name, an
   adapter answering `NaN`, a file that will not read where the CLI would skip or refuse it: each was reported as
   a bug in `evoke`; each is now the diagnostic, fault or failure it is, with its fix. `handle` declines on the

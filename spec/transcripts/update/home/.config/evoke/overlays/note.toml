@@ -1,0 +1,6 @@
+description = """
+Keep a note.
+One line, kept where I keep them."""
+
+[args.tag]
+ask = "Which tag?"

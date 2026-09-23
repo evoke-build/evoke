@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://evoke.build/schemas/evoke.json",
   "title": "evoke.toml",
-  "description": "A project: the reflexes you installed, their settings, and the adapter that decides. Reference: docs/manual/reference/files.md.",
+  "description": "A project: the reflexes you installed, their settings, and the adapter that decides. Reference: https://evoke.build/manual/reference/files.html.",
   "type": "object",
   "additionalProperties": false,
   "required": ["adapter"],
@@ -68,8 +68,7 @@
         },
         "replay": {
           "type": "object",
-          "additionalProperties": false,
-          "description": "The recorded adapter takes no settings; EVOKE_ANSWERS names its recording."
+          "description": "The recorded adapter takes no settings yet; EVOKE_ANSWERS names its recording."
         }
       }
     }
@@ -77,8 +76,8 @@
   "definitions": {
     "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
     "local_name": {
-      "allOf": [{ "$ref": "#/definitions/name" }, { "not": { "enum": ["none", "unstated", "fits"] } }],
-      "description": "A reflex's local name. none, unstated and fits are reserved."
+      "allOf": [{ "$ref": "#/definitions/name" }, { "not": { "enum": ["none", "unstated", "fits", "weave"] } }],
+      "description": "A reflex's local name. none, unstated, fits and weave are reserved."
     },
     "probability": { "type": "number", "minimum": 0, "maximum": 1 },
     "ref": {
@@ -89,8 +88,8 @@
           "description": "owner/repo[/dir][@tag] on GitHub. Unpinned, update moves it; @tag pins it."
         },
         {
-          "pattern": "^(https|ssh)://[^\\s#@]+(#[^\\s@]+)?(@v?[0-9]+\\.[0-9]+\\.[0-9]+)?$",
-          "description": "<git url>[#dir][@tag]; https and ssh only."
+          "pattern": "^(https|ssh)://([A-Za-z0-9._-]+@)?[^\\s#@]+(#[^\\s@]+)?(@v?[0-9]+\\.[0-9]+\\.[0-9]+)?$",
+          "description": "<git url>[#dir][@tag]; https and ssh only, a user before the host allowed, never a credential."
         },
         {
           "pattern": "^\\.\\.?/",

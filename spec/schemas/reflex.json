@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://evoke.build/schemas/reflex.json",
   "title": "reflex.toml",
-  "description": "A reflex's manifest: what the classifier reads and what the body receives. Wording may be overridden by an overlay; the contract (run, argument names, option keys, sources, range) may not. Reference: docs/manual/author/manifest.md.",
+  "description": "A reflex's manifest: what the classifier reads and what the body receives. Wording may be overridden by an overlay; the contract (run, argument names, option keys, sources, range) may not. Reference: https://evoke.build/manual/author/manifest.html.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -17,7 +17,15 @@
       "description": "The manifest format's version. Frozen at 1."
     },
     "description": {
-      "$ref": "#/definitions/text",
+      "allOf": [
+        {
+          "$ref": "#/definitions/text"
+        },
+        {
+          "pattern": "^[^\\n]",
+          "description": "The first line, the summary, is not empty."
+        }
+      ],
       "description": "What the reflex does, in the user's words. The first line is the summary, as in a git subject."
     },
     "not_for": {

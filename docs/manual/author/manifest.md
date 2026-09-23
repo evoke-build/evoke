@@ -73,7 +73,8 @@ level = "number"
 - Names of arguments, tags, config keys and vocabularies match `[a-z][a-z0-9_]*`. An argument name is also never
   a JavaScript reserved word, so a body can destructure it.
 - Option keys are one clean line each. `none` and `unstated` are reserved.
-- Unknown keys are reported, never fatal.
+- Unknown keys are reported, never fatal. The schema at `https://evoke.build/schemas/reflex.json` is strict, so
+  an editor flags a typo before `evoke check` does.
 
 ## What is contract, what is wording
 

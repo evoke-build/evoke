@@ -1,0 +1,78 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "reading": {
+      "$ref": "fixtures/reading-dana-address.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "outcome": "run",
+    "reflex": "contact",
+    "args": {
+      "name": {
+        "type": "word",
+        "word": "dana"
+      }
+    },
+    "call": "contact name=\"dana\"",
+    "effect": "read",
+    "confidence": 0.7,
+    "weakest": {
+      "question": "route",
+      "top": "contact",
+      "p": 0.7
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "contact",
+        "p": 0.7
+      },
+      {
+        "question": "contact.name",
+        "top": "dana",
+        "p": 0.9
+      }
+    ],
+    "runner_up": {
+      "reflex": "mail",
+      "route": 0.1,
+      "fits": 0.1
+    },
+    "contenders": [
+      {
+        "reflex": "contact",
+        "route": 0.7,
+        "fits": 0.7
+      },
+      {
+        "reflex": "mail",
+        "route": 0.1,
+        "fits": 0.1
+      },
+      {
+        "reflex": "lights",
+        "route": 0.02,
+        "fits": 0.02
+      },
+      {
+        "reflex": "timer",
+        "route": 0.02,
+        "fits": 0.02
+      },
+      {
+        "reflex": "volume",
+        "route": 0.02,
+        "fits": 0.02
+      }
+    ]
+  }
+}

@@ -93,9 +93,9 @@ $ evoke add ./hello
 + hello  ./hello  read  runs hello.mts
 $ evoke try 'say hi to "Ada"'
   hello 0.94 · none 0.06
-  who    "Ada" 0.97 · unstated 0.03
-  fits   hello 0.71
-  run · weakest: hello 0.94
+  who   "Ada" 0.97 · unstated 0.03
+  fits  hello 0.71
+  run · weakest: route 0.94
 $ evoke 'wave at "Grace"'
   hello who="Grace"  0.92
 Hello, Grace!

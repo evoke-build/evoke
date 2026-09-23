@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-#MISE description="Check the executable spec's shapes: vectors, fixtures and transcripts (spec/README.md)"
+#MISE description="Check the executable spec's shapes: vectors, fixtures and transcripts (spec/README.md), and that the runners list every flow and family"
 """Shape only; the rules themselves are checked by the suites that run the spec."""
 import json, re, sys
 from pathlib import Path
 
-SPEC = Path(__file__).resolve().parent.parent / "spec"
+ROOT = Path(__file__).resolve().parent.parent
+SPEC = ROOT / "spec"
 problems = []
 
 
@@ -44,6 +45,27 @@ for flow in sorted(p for p in SPEC.glob("transcripts/*") if p.is_dir() and p.nam
             problems.append(f"{session}:{n}: exit 0 is implied, not written")
         if "  →  " in line and not (line.startswith("  ") and line.split("  →  ")[-1].strip()):
             problems.append(f"{session}:{n}: a diagnostic is indented and ends with its fixing command")
+
+# Every ref form the manual documents reads under the project schema's grammar.
+patterns = [one["pattern"] for one in json.loads((SPEC / "schemas/evoke.json").read_text())["definitions"]["ref"]["anyOf"]]
+installing = (ROOT / "docs/manual/use/installing.md").read_text()
+refs_section = installing.split("## Refs", 1)[1].split("\n## ", 1)[0]
+forms = re.findall(r"^\| `([^`]+)` +\|", refs_section, re.M)
+if len(forms) < 5:
+    problems.append("docs/manual/use/installing.md: the table of ref forms was not found")
+for form in forms:
+    if not any(re.fullmatch(pattern, form) for pattern in patterns):
+        problems.append(f"docs/manual/use/installing.md: the ref form {form} does not read under spec/schemas/evoke.json")
+
+# A flow or a family the runners do not list runs nowhere.
+harness = (ROOT / "crates/evoke/tests/transcripts.rs").read_text()
+for flow in sorted(p.name for p in SPEC.glob("transcripts/*") if p.is_dir() and p.name != "home"):
+    if f'flow("{flow}")' not in harness:
+        problems.append(f"spec/transcripts/{flow}: no flow(\"{flow}\") in crates/evoke/tests/transcripts.rs")
+runner = (ROOT / "crates/evoke-wasm/tests/vectors.rs").read_text()
+for family in sorted(p.name for p in SPEC.glob("vectors/*") if p.is_dir()):
+    if f'=> "{family}",' not in runner:
+        problems.append(f"spec/vectors/{family}: not in the families! list of crates/evoke-wasm/tests/vectors.rs")
 
 if problems:
     print("\n".join(problems))

@@ -13,9 +13,10 @@ $ evoke show
   lights  radhi/home/lights 1.2.0  write  runs lights.mts
   timer   radhi/timer 1.0.1        write  runs timer.mts
   inactive  lights: HUE_TOKEN is not set  →  export HUE_TOKEN=<value>
+# A newcomer that wins an installed example steals its phrase; the fix is one line in your overlay.
 $ evoke add radhi/timer --as eggs
 + eggs  radhi/timer 1.0.1  write  runs timer.mts
-  the theft test did not finish: replay needs EVOKE_ANSWERS  →  evoke test
+  eggs: steals "count down 90 seconds" from timer  →  evoke teach "count down 90 seconds" not eggs
 # One taken name refuses a collection whole; the fix installs the rest. A ref without its tag, a collection
 # without --as, a directory that is not there: each fix is the command that helps.
 $ evoke add radhi/home
@@ -30,3 +31,5 @@ $ evoke add radhi/timer@9.9.9
 $ evoke add ./nowhere
   ./nowhere is not a directory  →  evoke new <name>
 [3]
+$ evoke remove eggs
+- eggs  radhi/timer 1.0.1  write  runs timer.mts

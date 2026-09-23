@@ -1,0 +1,57 @@
+{
+  "ranking": [
+    {
+      "reflex": "contact",
+      "route": 0.7,
+      "fits": 0.7
+    },
+    {
+      "reflex": "mail",
+      "route": 0.1,
+      "fits": 0.1
+    },
+    {
+      "reflex": "lights",
+      "route": 0.02,
+      "fits": 0.02
+    },
+    {
+      "reflex": "timer",
+      "route": 0.02,
+      "fits": 0.02
+    },
+    {
+      "reflex": "volume",
+      "route": 0.02,
+      "fits": 0.02
+    }
+  ],
+  "judgments": [
+    {
+      "question": "route",
+      "top": "contact",
+      "p": 0.7
+    },
+    {
+      "question": "contact.name",
+      "top": "dana",
+      "p": 0.9
+    }
+  ],
+  "winner": {
+    "reflex": "contact",
+    "args": {
+      "name": {
+        "type": "word",
+        "word": "dana"
+      }
+    },
+    "missing": [],
+    "unconsumed": [],
+    "runner_up": {
+      "reflex": "mail",
+      "route": 0.1,
+      "fits": 0.1
+    }
+  }
+}

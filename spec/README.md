@@ -6,7 +6,7 @@ three suites, owned by none. The seeds under [reflexes/](../reflexes/README.md) 
 | Directory      | Holds                                                                  | Run by                                            |
 | :------------- | :--------------------------------------------------------------------- | :------------------------------------------------ |
 | `schemas/`     | JSON Schema for `reflex.toml`, overlays, vocabularies and `evoke.toml` | `mise run lint`, through `.taplo.toml`; editors   |
-| `fixtures/`    | Wire values the vectors share                                          | —                                                 |
+| `fixtures/`    | Wire values the vectors share: frozen inputs, not mirrors of the seeds — `power.json` and `screenshot.json` carry the seeds' names and stay as they were, since digests derived from them are pinned across the vectors | — |
 | `vectors/`     | One directory per core function, one case per file                     | the core natively; the SDK through the wasm build |
 | `transcripts/` | One directory per flow: the terminal, word for word                    | the built binary, offline, on recorded answers    |
 
@@ -26,7 +26,9 @@ one number.
 
 The JSON every value takes, pinned by the vectors and mirrored by hand in `sdk/src/types.ts`:
 
-- A struct is an object with snake_case keys; an `Option` is absent when none; a collection is present even when empty.
+- A struct is an object with snake_case keys; an `Option` is absent when none. A collection is present even when
+  empty in a decision, a request and a reading; the plan's and the run's lists — `splits`, `excluded`, `binds`,
+  `refs`, `after`, `because`, `bound`, `rounds`, the answers gathered — are absent when empty.
 - A newtype is its value: a digest `"h1:<hex>"`, a version `"1.2.0"`, a question id `"lights.room"`, a probability
   `0.58`; a key path is an array of segments; a range is `[min, max]`.
 - An enum without data is its variant in snake_case, `"write"`; one with data is an object tagged by `type`,
@@ -45,11 +47,13 @@ and the seeds test read those directory names as owned files:
 
 - `session.txt` — the terminal. A line starting with `$ ` is a command, run by `sh -c` in `$HOME` under a
   pseudo-terminal with `TERM=dumb` and `NO_COLOR=1`, so the plain text is what is compared; the lines under it are
-  what the terminal showed, stdout and stderr as they came. A prompt ends with
-  `> ` and what was typed follows on the same line; a prompt with nothing after it gets the end of input, so `>`
-  alone ends a REPL. `[N]` alone on a line is a non-zero exit code; absent, the command exited 0. Lines compare
-  exactly but for trailing spaces; a line that is JSON is compared as JSON, `ms` values aside. A line starting with
-  `#` is a note for the reader; the note `# no tty` runs the flow's commands without a terminal.
+  what the terminal showed, stdout and stderr as they came. A prompt is the REPL's `> ` at the start of a line,
+  or a question two spaces in, ending in `?  ` and its choices; it ends with `> ` and what was typed follows on
+  the same line; a prompt with nothing after its `>` gets the end of input, so `>` alone ends a REPL. `[N]` alone
+  on a line is a non-zero exit code; absent, the command exited 0. Lines compare exactly but for trailing spaces;
+  a line that is JSON is compared as JSON, `ms` values aside and every number one kind. A line starting with `#`
+  is a note for the reader; the note `# no tty` runs the flow's commands without a terminal. A step that has not
+  finished within a minute fails, named, and its process group is ended.
 - `home/` — the throwaway `$HOME`: the project under `.config/evoke/`, local reflexes, XDG state as the flow needs it.
   A flow without one uses [`transcripts/home/`](home/.config/evoke/evoke.toml). Paths under it print as `~/…`. The
   runner records the `node` on its `PATH` in the home's state, as `evoke sync` will on a machine.

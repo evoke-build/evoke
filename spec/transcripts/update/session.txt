@@ -18,15 +18,24 @@ $ evoke update
   up to date
 $ evoke sync
   up to date
-# A reflex whose new manifest does not read is reported at the new tree and skipped; the rest move.
+# A reflex whose new manifest does not read is reported at the new tree and skipped; the rest move. Upstream
+# dropped an argument your overlay rewords and changed a description you override: orphaned, stale. It loosened
+# the effect: yours is kept until you accept.
 $ evoke add radhi/tools@1.0.0
-+ clock  radhi/tools/clock@1.0.0  read   runs clock.mts
-+ note   radhi/tools/note@1.0.0   write  runs note.mts
++ clock  radhi/tools/clock@1.0.0  read         runs clock.mts
++ note   radhi/tools/note@1.0.0   destructive  runs note.mts
   the theft test did not finish: "turn on the kitchen lights" is not recorded  →  evoke test
 # The pins dropped by hand, as evoke.toml is yours to edit.
 $ printf 'adapter = "replay"\n\n[reflexes]\nlights = "radhi/home/lights"\nclock = "radhi/tools/clock"\nnote = "radhi/tools/note"\n\n[config.lights]\nbridge = "10.0.0.2"\ntoken  = { env = "HUE_TOKEN" }\n' > .config/evoke/evoke.toml
 $ evoke update
-  note 1.0.0 → 1.1.0  same
-    description  rewritten, taken (you have no override)
+  note 1.0.0 → 1.1.0  major
+    description  rewritten, yours kept
+    args.tag     removed
+    args.tag     addresses nothing, skipped
+    effect       write upstream; destructive kept until you accept
+  note: upstream loosened the effect to write; destructive kept  →  evoke update --accept note
   clock: effect must be read, write or destructive  →  ~/.cache/evoke/store/8416c7959e55e8f74c0dd96ca8396d1980acc68ccfa7ac32fd650be96f658703/reflex.toml:8:1
 [3]
+$ evoke update note --accept note
+  note 1.1.0 → 1.1.0  same
+    effect  write accepted; was destructive

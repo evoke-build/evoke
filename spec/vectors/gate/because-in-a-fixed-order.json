@@ -20,7 +20,7 @@
         {
           "question": "route",
           "top": "lights",
-          "p": 0.91
+          "p": 0.85
         },
         {
           "question": "lights.room",
@@ -92,7 +92,7 @@
       {
         "question": "route",
         "top": "lights",
-        "p": 0.91
+        "p": 0.85
       },
       {
         "question": "lights.room",

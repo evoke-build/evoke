@@ -1,0 +1,28 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md). The theft test at add routes
+# every installed example over the new set, the route alone; lights is inactive here, so the route offers timer,
+# eggs and none, and eggs, a second timer, wins one of timer's phrases.
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.6
+write = 0.8
+
+[answers."turn on the kitchen lights"]
+route = { none = 0.9, timer = 0.05, eggs = 0.05 }
+
+[answers."dim the office to 30 percent"]
+route = { none = 0.88, timer = 0.06, eggs = 0.06 }
+
+[answers."set a timer for 10 minutes"]
+route = { timer = 0.6, eggs = 0.35, none = 0.05 }
+
+[answers."25 minute timer"]
+route = { timer = 0.55, eggs = 0.4, none = 0.05 }
+
+[answers.'timer for 3 minutes called "eggs"']
+route = { timer = 0.5, eggs = 0.45, none = 0.05 }
+
+[answers."count down 90 seconds"]
+route = { eggs = 0.55, timer = 0.4, none = 0.05 }

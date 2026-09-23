@@ -1,5 +1,31 @@
-# What the replay adapter answers, keyed by utterance identity (spec/README.md): nothing, so the theft test at
-# add cannot finish and says so.
+# What the replay adapter answers, keyed by utterance identity (spec/README.md): the two lines the manual's
+# first-reflex page shows; nothing for the installed examples, so the theft test at add cannot finish and says so.
 id = "replay"
 
-[answers]
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.6
+write = 0.8
+
+[answers.'say hi to "Ada"']
+route          = { hello = 0.94, none = 0.06 }
+"fits.hello"   = { yes = 0.71 }
+"fits.lights"  = { yes = 0.02 }
+"fits.timer"   = { yes = 0.02 }
+"fits.volume"  = { yes = 0.02 }
+"hello.who"    = { "11-14" = 0.97, unstated = 0.03 }
+"lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"timer.label"  = { unstated = 0.98, "11-14" = 0.02 }
+
+[answers.'wave at "Grace"']
+route          = { hello = 0.92, none = 0.08 }
+"fits.hello"   = { yes = 0.7 }
+"fits.lights"  = { yes = 0.02 }
+"fits.timer"   = { yes = 0.02 }
+"fits.volume"  = { yes = 0.02 }
+"hello.who"    = { "9-14" = 0.95, unstated = 0.05 }
+"lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"timer.label"  = { unstated = 0.98, "9-14" = 0.02 }

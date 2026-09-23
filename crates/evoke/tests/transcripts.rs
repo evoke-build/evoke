@@ -11,8 +11,10 @@ mod pty;
 use std::fmt::Write as _;
 use std::fs;
 use std::io::Read;
+use std::os::unix::process::CommandExt as _;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
+use std::time::Instant;
 
 use serde_json::Value as Json;
 
@@ -181,12 +183,15 @@ fn flow(name: &str) {
             .current_dir(&home)
             .env_clear()
             .envs(environment.iter().map(|(var, value)| (var, value)));
-        let (output, code) = if tty {
+        let ran = if tty {
             pty::run(command, &typed(&step.expected))
         } else {
             piped(command)
         };
-        compare(&step, &output, code);
+        match ran {
+            Ok((output, code)) => compare(&step, &output, code),
+            Err(why) => panic!("$ {}\n{why}", step.command),
+        }
     }
 }
 
@@ -292,27 +297,61 @@ fn exit_code(line: &str) -> Option<i32> {
 fn typed(expected: &[String]) -> Vec<String> {
     expected
         .iter()
-        .filter_map(|line| line.rfind("> ").map(|at| line[at + 2..].to_owned()))
+        .filter_map(|line| prompt(line).map(str::to_owned))
         .collect()
 }
 
-/// The command with stdout and stderr on one pipe, as they came, and no terminal anywhere.
-fn piped(mut command: Command) -> (String, i32) {
+/// What a line typed at a prompt, when the line is one: the REPL's `> ` at its start, or a question — two spaces
+/// in, ending in `?` and two spaces before its choices — with `> ` and the answer at its end. A line of a body's
+/// own output holding `> ` is no prompt, and a prompt with nothing after its `>` is answered with the end of input.
+fn prompt(line: &str) -> Option<&str> {
+    if let Some(rest) = line.strip_prefix("> ") {
+        return Some(rest);
+    }
+    if line.starts_with("  ") && line.contains("?  ") {
+        return line.rfind("> ").map(|at| &line[at + 2..]);
+    }
+    None
+}
+
+/// The command with stdout and stderr on one pipe, as they came, and no terminal anywhere; in a group of its
+/// own, ended whole when the deadline runs out.
+fn piped(mut command: Command) -> Result<(String, i32), String> {
     let (mut reader, writer) = std::io::pipe().expect("a pipe opens");
     let stderr = writer.try_clone().expect("the pipe is shared");
     command
         .stdin(Stdio::null())
         .stdout(Stdio::from(writer))
-        .stderr(Stdio::from(stderr));
+        .stderr(Stdio::from(stderr))
+        .process_group(0);
     let mut child = command.spawn().expect("sh spawns");
     drop(command);
-    let mut output = Vec::new();
-    reader.read_to_end(&mut output).expect("the pipe drains");
-    let status = child.wait().expect("the child is waited for");
-    (
+    let drained = std::thread::spawn(move || {
+        let mut output = Vec::new();
+        let _ = reader.read_to_end(&mut output);
+        output
+    });
+    let started = Instant::now();
+    let status = loop {
+        if let Some(status) = child.try_wait().expect("the child is waited for") {
+            break status;
+        }
+        if started.elapsed() >= pty::DEADLINE {
+            pty::end_group(&mut child);
+            let output = drained.join().unwrap_or_default();
+            return Err(format!(
+                "did not finish within {} s; the pipe held:\n{}",
+                pty::DEADLINE.as_secs(),
+                String::from_utf8_lossy(&output)
+            ));
+        }
+        std::thread::sleep(std::time::Duration::from_millis(5));
+    };
+    let output = drained.join().unwrap_or_default();
+    Ok((
         String::from_utf8_lossy(&output).into_owned(),
         status.code().unwrap_or(-1),
-    )
+    ))
 }
 
 /// Every expected line against the actual one, and the exit code; a mismatch shows both whole.
@@ -335,14 +374,15 @@ fn compare(step: &Step, output: &str, code: i32) {
     );
 }
 
-/// Exactly but for trailing spaces, or as JSON with every `ms` ignored.
+/// Exactly but for trailing spaces, or as JSON with every `ms` ignored and every number one kind, so `0.85` and
+/// `0.850`, `1` and `1.0`, are one value, as the spec states.
 fn same(expected: &str, actual: &str) -> bool {
     if expected.starts_with('{') {
         match (
             serde_json::from_str::<Json>(expected),
             serde_json::from_str::<Json>(actual),
         ) {
-            (Ok(expected), Ok(actual)) => without_ms(expected) == without_ms(actual),
+            (Ok(expected), Ok(actual)) => normalized(expected) == normalized(actual),
             _ => false,
         }
     } else {
@@ -350,14 +390,16 @@ fn same(expected: &str, actual: &str) -> bool {
     }
 }
 
-fn without_ms(value: Json) -> Json {
+/// Every `ms` dropped, every number an `f64`.
+fn normalized(value: Json) -> Json {
     match value {
         Json::Object(fields) => fields
             .into_iter()
             .filter(|(key, _)| key != "ms")
-            .map(|(key, value)| (key, without_ms(value)))
+            .map(|(key, value)| (key, normalized(value)))
             .collect(),
-        Json::Array(items) => items.into_iter().map(without_ms).collect(),
+        Json::Array(items) => items.into_iter().map(normalized).collect(),
+        Json::Number(n) => n.as_f64().map_or(Json::Null, Json::from),
         other => other,
     }
 }

@@ -22,3 +22,11 @@ route          = { lights = 0.91, timer = 0.02, volume = 0.01, none = 0.06 }
 "fits.volume"  = { yes = 0.05 }
 "lights.room"  = { den = 0.85, office = 0.05, unstated = 0.1 }
 "lights.state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
+
+[answers."try"]
+route          = { none = 0.9, lights = 0.04, timer = 0.03, volume = 0.03 }
+"fits.lights"  = { yes = 0.02 }
+"fits.timer"   = { yes = 0.02 }
+"fits.volume"  = { yes = 0.02 }
+"lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }

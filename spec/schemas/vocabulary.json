@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://evoke.build/schemas/vocabulary.json",
   "title": "vocab/<name>.toml",
-  "description": "Your closed set for every argument that names this vocabulary: word = meaning. Packages never ship or write one. Reference: docs/manual/reference/files.md.",
+  "description": "Your closed set for every argument that names this vocabulary: word = meaning. Packages never ship or write one. Reference: https://evoke.build/manual/reference/files.html.",
   "type": "object",
   "propertyNames": {
     "type": "string",

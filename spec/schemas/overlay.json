@@ -2,13 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://evoke.build/schemas/overlay.json",
   "title": "overlays/<name>.toml",
-  "description": "Your sparse manifest for one reflex, merged over the shipped one: tables merge by key, every value replaces whole. Wording only; a contract key makes the reflex inactive. Reference: docs/manual/reference/files.md.",
+  "description": "Your sparse manifest for one reflex, merged over the shipped one: tables merge by key, every value replaces whole. Wording only; a contract key makes the reflex inactive. Reference: https://evoke.build/manual/reference/files.html.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
     "description": {
-      "$ref": "#/definitions/text",
-      "description": "Replaces the shipped description whole."
+      "allOf": [{ "$ref": "#/definitions/text" }, { "pattern": "^[^\\n]" }],
+      "description": "Replaces the shipped description whole. The first line, the summary, is not empty."
     },
     "not_for": {
       "type": "array",

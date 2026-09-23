@@ -265,7 +265,7 @@ mod tests {
         let text = include_str!("../../../spec/transcripts/try/answers.toml");
         let read = recording(text).unwrap();
         assert_eq!(read.declared.id.as_str(), "replay");
-        assert_eq!(read.answers.len(), 2);
+        assert_eq!(read.answers.len(), 3);
         assert_eq!(read.declared.gate.map(|gate| gate.route().get()), Some(0.5));
         assert!(recording("id = \"\"\n[answers]\n").is_err());
         assert!(recording("id = \n").is_err());
