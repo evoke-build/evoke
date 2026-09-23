@@ -10,45 +10,59 @@
     .card { position: relative; width: 1200px; height: 630px; padding: 84px 96px 76px; box-sizing: border-box; }
     .brand { display: flex; align-items: center; gap: 18px; font-size: 40px; font-weight: 650; letter-spacing: -0.02em; }
     .brand img { width: 56px; height: 56px; }
-    h1 { font-size: 100px; font-weight: 700; letter-spacing: -0.045em; line-height: 0.96; margin: 46px 0 0; }
+    h1 { font-size: 100px; font-weight: 700; letter-spacing: -0.045em; line-height: 0.96; margin: 34px 0 0; }
     h1 em { font-style: normal; color: #ef7f2b; }
-    p { font-size: 28px; line-height: 1.38; color: #a4a4aa; margin: 30px 0 0; max-width: 690px; letter-spacing: -0.005em; }
+    p { font-size: 27px; line-height: 1.38; color: #a4a4aa; margin: 26px 0 0; max-width: 600px; letter-spacing: -0.005em; }
     p strong { color: #ececec; font-weight: 600; }
     .url { position: absolute; left: 96px; bottom: 76px; font: 500 24px/1 ui-monospace, "SF Mono", Menlo, monospace; color: #7b7b82; letter-spacing: .01em; }
     .url b { color: #ef7f2b; font-weight: 500; margin-right: 12px; }
-    .room { position: absolute; top: 0; right: 0; width: 520px; height: 630px; }
-    .room::before { content: ""; position: absolute; inset: 0; background: radial-gradient(60% 55% at 52% 44%, rgba(255, 213, 142, .16), transparent 72%); }
-    .room svg { position: absolute; inset: 0; width: 520px; height: 630px; }
-    .cord { stroke: #3f3f46; stroke-width: 2.5; }
-    .shade { fill: #26262b; stroke: #38383f; stroke-width: 1.5; }
-    .bulb { fill: #ffd58e; filter: drop-shadow(0 0 14px rgba(255, 213, 142, .95)); }
+    /* The scene: the hero's final frame, two installed reflexes and the address that went from one to the other */
+    .room { position: absolute; top: 107px; right: 64px; width: 400px; height: 416px; font: 17px/34px ui-monospace, "SF Mono", Menlo, monospace; color: #ebe8e3; }
+    .room::before { content: ""; position: absolute; inset: -120px -140px; background: radial-gradient(50% 50% at 50% 50%, rgba(229, 118, 29, .13), transparent 70%); }
+    .say { position: relative; font-size: 14px; white-space: nowrap; }
+    .say b { font-weight: 500; color: #e5761d; }
+    .say i { font-style: normal; color: #ea8a40; }
+    .say u { text-decoration: underline solid #8fd48a; text-underline-offset: 5px; }
+    .ability { position: absolute; left: 0; width: 364px; height: 166px; padding: 14px 16px 16px; box-sizing: border-box; background: #1a1a1e; border: 1px solid #36363d; border-radius: 12px; }
+    .a1 { top: 56px; }
+    .a2 { top: 250px; border-color: #7a4a22; box-shadow: 0 0 0 1px rgba(229, 118, 29, .18), 0 0 28px -8px rgba(229, 118, 29, .45); }
+    .top { display: flex; align-items: center; gap: 10px; height: 34px; }
+    .num { width: 24px; height: 24px; border-radius: 50%; background: rgba(234, 138, 64, .12); color: #ea8a40; font: 600 13px/24px ui-monospace, "SF Mono", Menlo, monospace; font-style: normal; text-align: center; }
+    .top svg { width: 19px; height: 19px; fill: none; stroke: #8f8c86; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .a2 .top svg { stroke: #ea8a40; }
+    .top b { color: #fff; font-weight: 500; }
+    .tag { margin-left: auto; color: #8fd48a; font-size: 14px; letter-spacing: .04em; opacity: .8; }
+    .what { height: 34px; color: #8f8c86; }
+    .row { display: flex; align-items: baseline; gap: 12px; height: 34px; }
+    .key { width: 76px; color: #8f8c86; }
+    .ok { color: #8fd48a; }
+    .cursor { display: inline-block; width: 10px; height: 20px; background: #ebe8e3; vertical-align: -3px; }
+    .thread { position: absolute; inset: 0; width: 400px; height: 416px; }
+    .thread path { fill: none; stroke: #8fd48a; stroke-width: 2; }
   </style>
 </head>
 <body>
   <div class="card">
     <div class="brand"><img src="../assets/logo.png" alt="">evoke</div>
     <h1>Software,<br><em>by reflex.</em></h1>
-    <p><strong>Say it, and the right small program runs.</strong> A reflex is a recipe: written once, improved by
-      everyone.</p>
+    <p><strong>Type a sentence, and the right small programs run.</strong> A reflex is a recipe: written once, improved
+      by everyone.</p>
     <div class="url"><b>$</b>evoke.build</div>
     <div class="room" aria-hidden="true">
-      <svg viewBox="0 0 520 630">
-        <defs>
-          <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#ffd58e" stop-opacity=".5"/>
-            <stop offset="1" stop-color="#ffd58e" stop-opacity="0"/>
-          </linearGradient>
-          <radialGradient id="pool">
-            <stop offset="0" stop-color="#ffd58e" stop-opacity=".42"/>
-            <stop offset="1" stop-color="#ffd58e" stop-opacity="0"/>
-          </radialGradient>
-        </defs>
-        <path d="M228 212 L58 560 L462 560 L292 212 Z" fill="url(#cone)"/>
-        <ellipse cx="260" cy="560" rx="230" ry="18" fill="url(#pool)"/>
-        <line class="cord" x1="260" y1="0" x2="260" y2="150"/>
-        <path class="shade" d="M196 212 C196 172 224 150 260 150 C296 150 324 172 324 212 Z"/>
-        <circle class="bulb" cx="260" cy="218" r="12"/>
-      </svg>
+      <div class="say"><b>$</b> evoke "look up dana's address <i>and</i> email <u>them</u>"</div>
+      <div class="ability a1">
+        <div class="top"><i class="num">1</i><svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="3"/><path d="M2.5 14.5c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5"/></svg><b>contact</b><span class="tag">+ installed</span></div>
+        <div class="what">Finds a person's email.</div>
+        <div class="row"><span class="key">name</span><span>dana</span></div>
+        <div class="row"><span class="key">email</span><span class="ok">dana@example.com</span></div>
+      </div>
+      <div class="ability a2">
+        <div class="top"><i class="num">2</i><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9.5" rx="1.8"/><path d="M2 4.5l6 4.5 6-4.5"/></svg><b>mail</b><span class="tag">+ installed</span></div>
+        <div class="what">Opens an email draft.</div>
+        <div class="row"><span class="key">to</span><span class="ok">dana@example.com</span></div>
+        <div class="row"><span class="key">subject</span><span class="cursor"></span></div>
+      </div>
+      <svg class="thread" viewBox="0 0 400 416"><path d="M278 190 H380 V350 H364"/></svg>
     </div>
   </div>
 </body>

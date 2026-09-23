@@ -203,7 +203,7 @@
     .cmd button:hover { color: var(--fg); border-color: var(--muted); }
     .cmd button.done { color: var(--accent-ink); border-color: var(--accent-ink); }
 
-    /* The hero: the words, and a lamp that listens */
+    /* The hero: the words, and a scene beside them */
     .hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 3.5rem; align-items: center; padding: 4.5rem 0 0; }
     .hero h1 { font-size: clamp(2.8rem, 5.6vw, 4.1rem); font-weight: 600; letter-spacing: -0.035em; line-height: .98; margin: 0 0 1.3rem; }
     .hero h1 em { display: block; font-style: normal; color: var(--accent); }  /* the second sentence on a line of its own */
@@ -265,34 +265,62 @@
     @keyframes blink { to { visibility: hidden; } }
     @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } html { scroll-behavior: auto; } }
 
-    /* The lamp */
-    .demo .room { position: relative; height: 15rem; background: #101013; overflow: hidden; }
-    .demo .room::after { content: ""; position: absolute; inset: 0; background: radial-gradient(70% 85% at 50% 45%, rgba(255, 213, 142, .2), transparent 72%); opacity: 0; transition: opacity 1s ease; }
-    .demo[data-state="on"] .room::after { opacity: 1; }
-    .demo[data-state="dim"] .room::after { opacity: .35; }
-    .demo svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .demo .light { opacity: 0; transition: opacity 1s ease; }
-    .demo[data-state="on"] .light { opacity: 1; }
-    .demo[data-state="dim"] .light { opacity: .38; }
-    .demo .cord { stroke: #3f3f46; stroke-width: 2; }
-    .demo .shade { fill: #26262b; stroke: #36363d; stroke-width: 1; }
-    .demo .bulb { fill: #34343a; transition: fill .8s ease, filter .8s ease; }
-    .demo[data-state="on"] .bulb { fill: var(--lamp); filter: drop-shadow(0 0 9px rgba(255, 213, 142, .95)); }
-    .demo[data-state="dim"] .bulb { fill: #c69c5c; filter: drop-shadow(0 0 4px rgba(255, 213, 142, .55)); }
-    .demo .floor { stroke: #1c1c21; stroke-width: 1; }
-    .demo .head .trail, .loom .head .trail { margin-left: auto; display: flex; gap: .95rem; font-size: .66rem; letter-spacing: .07em; text-transform: uppercase; }
-    .demo .head .trail b, .loom .head .trail b { font-weight: 500; color: var(--term-dim); opacity: .55; transition: color .35s ease, opacity .35s ease; }
-    .demo .head .trail b.on, .loom .head .trail b.on { color: var(--accent); opacity: 1; }
-    .demo .strip { height: calc(5 * 1.9em + 1.9rem); padding: .9rem 1.15rem 1rem; font: .8rem/1.9 var(--mono); border-top: 1px solid rgba(255, 255, 255, .07); overflow: hidden; }
-    .demo .line { display: block; min-height: 1.9em; white-space: pre-wrap; overflow-wrap: anywhere; opacity: 0; transition: opacity .3s ease; }
-    .demo .line.show { opacity: 1; }
-    .demo .strip.clear .line { opacity: 0; transition-duration: .2s; }
-    .demo .add { color: var(--term-ok); }
-    .demo .own b { color: var(--term-in); font-weight: 500; }
-    .demo .own i { font-style: normal; color: var(--term-ok); }
+    /* The hero's scene: two installed reflexes, one sentence, and the address that travels between them. The final
+       frame is the markup; motion lifts opacity and moves transforms, so the page never lays out twice. The thread is
+       measured from the slots it joins, and the cards stack when the panel is narrow. */
+    .hero .demo { container: demo / inline-size; }
+    :is(.demo, .loom) .head .trail { margin-left: auto; display: flex; gap: .95rem; font-size: .66rem; letter-spacing: .07em; text-transform: uppercase; }
+    :is(.demo, .loom) .head .trail b { font-weight: 500; color: var(--term-dim); opacity: .55; transition: color .35s ease, opacity .35s ease; }
+    :is(.demo, .loom) .head .trail b.on { color: var(--accent); opacity: 1; }
+    .demo .room { position: relative; display: flex; flex-direction: column; gap: 1rem; min-height: 21.5rem; padding: 1.05rem 1.1rem 1rem; background: #101013; font: .75rem/1.5rem var(--mono); color: var(--term-fg); }
+    .demo .say { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .demo .say .p { color: var(--accent); }
+    .demo .say .in { color: var(--term-in); }
+    .demo .c.seam { transition: opacity .3s ease, color .4s ease; }
+    .demo .c.ref { text-decoration: underline dotted transparent; text-underline-offset: .24em; transition: opacity .3s ease, color .4s ease, text-decoration-color .4s ease; }
+    .demo .say.cut .c.seam { color: var(--accent-ink); }
+    .demo .say.cut .c.ref { color: var(--term-mid); text-decoration-color: var(--term-mid); }
+    .demo .say.bound .c.ref { color: var(--term-in); text-decoration: underline solid var(--term-ok); }
+    .demo .pair { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 2.25rem; align-content: center; align-items: start; }
+    .demo .a2 { margin-top: 1.5rem; }  /* a step down: the address row of one card meets the to row of the other */
+    .demo .ability { padding: .55rem .8rem .7rem; background: #1a1a1e; border: 1px solid #36363d; border-radius: var(--radius-s); opacity: 0; transform: translateY(6px); transition: opacity .45s ease, transform .45s ease, border-color .5s ease, box-shadow .5s ease; }
+    .demo .ability.on { opacity: 1; transform: none; }
+    .demo .ability.live { border-color: color-mix(in srgb, var(--accent) 55%, #36363d); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 22px -6px color-mix(in srgb, var(--accent) 45%, transparent); }
+    .demo .top { display: flex; align-items: center; gap: .5rem; height: 1.5rem; }
+    .demo .num { flex: none; width: 1.05rem; height: 1.05rem; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); font: 600 .62rem/1.05rem var(--mono); font-style: normal; text-align: center; }
+    .demo .top svg { flex: none; width: 15px; height: 15px; fill: none; stroke: var(--term-dim); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: stroke .5s ease; }
+    .demo .ability.live .top svg { stroke: var(--accent-ink); }
+    .demo .top b { color: var(--term-in); font-weight: 500; }
+    .demo .tag { margin-left: auto; color: var(--term-ok); font-size: .66rem; letter-spacing: .04em; opacity: .8; white-space: nowrap; }
+    .demo .what { height: 1.5rem; color: var(--term-dim); white-space: nowrap; overflow: hidden; }
+    .demo .row { display: flex; align-items: baseline; gap: .6rem; height: 1.5rem; }
+    .demo .key { flex: none; width: 3.2rem; color: var(--term-dim); }
+    .demo .cell { position: relative; display: inline-grid; align-items: baseline; }
+    .demo .cell > span { grid-area: 1 / 1; }
+    .demo .blank { justify-self: stretch; align-self: baseline; height: 0; border-bottom: 1px dashed #45454d; transform: translateY(.28em); transition: opacity .35s ease; }  /* an empty slot, as wide as what will fill it */
+    .demo .cell:has(.on) .blank { opacity: 0; }
+    .demo .need { color: var(--term-mid); text-decoration: underline dotted var(--term-mid); text-underline-offset: .24em; }
+    .demo .val { position: relative; z-index: 1; padding: 0 .3rem; margin: 0 -.3rem; border-radius: 5px; background: #1a1a1e; }
+    .demo .val.give, .demo .val.take { color: var(--term-ok); }
+    .demo .val.name { min-width: 6ch; }
+    .demo .val.subj { min-width: 8ch; }
+    .demo .done { color: var(--term-fg); }
+    .demo .fly { position: absolute; z-index: 3; padding: 0 .3rem; border-radius: 5px; background: #1a1a1e; color: var(--term-ok); box-shadow: 0 0 0 1px rgba(143, 212, 138, .4), 0 10px 24px -8px rgba(0, 0, 0, .9); opacity: 0; transition: opacity .3s ease, transform 1s cubic-bezier(.3, .6, .2, 1); }
+    .demo .fly.go { transform: translate(var(--dx), var(--dy)); }
+    /* What fades in: a letter, a card's number, a value, the need and the last line; the flying address and the cards carry their own moves */
+    .demo .c, .demo .num, .demo .val, .demo .need, .demo .done { opacity: 0; transition: opacity .3s ease; }
+    .demo .on { opacity: 1; }
+    .demo .clear .on { opacity: 0; transition-duration: .24s; }
+    @container demo (max-width: 500px) {
+      .demo .room { min-height: 0; }
+      .demo .pair { grid-template-columns: minmax(0, 1fr); gap: 1.2rem; margin-right: 1.5rem; }
+      .demo .a2 { margin-top: 0; }
+    }
+    @container demo (max-width: 420px) { .demo .head .trail { gap: .5rem; font-size: .6rem; } }
+    @container demo (max-width: 300px) { .demo .head .trail { display: none; } }
 
-    /* Glows: a soft spotlight behind a section, masked at its own edges so it never shows a band. The hero's is
-       the lamp's light, and follows it: full when the lights are on, low when dim, dark when off. */
+    /* Glows: a soft spotlight behind a section, masked at its own edges so it never shows a band. The hero's warms
+       as the scene beside it moves from two installed reflexes to a draft ready to send. */
     .hero, .showcase, .work { position: relative; }
     .hero::before, .showcase::before, .work::before {
       content: ""; position: absolute; inset: -4rem 0 -3rem; z-index: -1; pointer-events: none;
@@ -300,9 +328,10 @@
       -webkit-mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
       mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
     }
-    .hero::before { --glow-x: 72%; --glow-y: 48%; inset: -3rem 0 -4rem; opacity: 0; transition: opacity 1.2s ease; }
-    .hero:has(.demo[data-state="on"])::before { opacity: 1; }
-    .hero:has(.demo[data-state="dim"])::before { opacity: .4; }
+    .hero::before { --glow-x: 72%; --glow-y: 48%; inset: -3rem 0 -4rem; opacity: .25; transition: opacity 1.2s ease; }
+    .hero:has(.demo[data-state="asked"])::before { opacity: .45; }
+    .hero:has(.demo[data-state="connected"])::before { opacity: .65; }
+    .hero:has(.demo[data-state="drafted"])::before { opacity: 1; }
     .work::before { --glow-y: 28%; }
 
     /* Section furniture */
@@ -429,11 +458,11 @@
     .weave .line i.mid { color: var(--term-mid); }
     .weave .p { color: var(--accent); }
     .weave .in { color: var(--term-in); }
-    .weave .typed { position: relative; }
-    .weave .c { position: relative; }
-    .weave .typed.at::before, .weave .c.at::after { content: ""; position: absolute; top: .2em; width: .55em; height: 1.05em; background: var(--term-fg); animation: blink 1.1s steps(2, start) infinite; }
-    .weave .typed.at::before { left: 0; }
-    .weave .c.at::after { left: 100%; margin-left: 1px; }
+    :is(.weave, .demo) .typed { position: relative; }
+    :is(.weave, .demo) .c { position: relative; }
+    :is(.weave, .demo) .typed.at::before, :is(.weave, .demo) .c.at::after { content: ""; position: absolute; top: .2em; width: .55em; height: 1.05em; background: var(--term-fg); animation: blink 1.1s steps(2, start) infinite; }
+    :is(.weave, .demo) .typed.at::before { left: 0; }
+    :is(.weave, .demo) .c.at::after { left: 100%; margin-left: 1px; }
     .loom .room { position: relative; padding: 1rem; background: #101013; font: .8rem/1.5rem var(--mono); color: var(--term-fg); }
     .loom .room p { margin: 0; }
     .loom .said { display: flex; justify-content: space-between; gap: 1rem; }
@@ -460,19 +489,19 @@
     .loom .fly.go { transform: translate(var(--dx), var(--dy)); }
     /* The threads: legs measured from the letters they join, each a box that grows from its start; dashed for the
        plan, and the binding filled green behind the value as it travels. */
-    .loom .threads { position: absolute; inset: 0; pointer-events: none; }
-    .loom .leg { position: absolute; transition: transform .25s ease; }
-    .loom .leg::before, .loom .leg::after { content: ""; position: absolute; inset: 0; }
-    .loom .leg::before { background: repeating-linear-gradient(90deg, var(--accent) 0 4px, transparent 4px 8px); }
-    .loom .leg.north::before, .loom .leg.south::before { background: repeating-linear-gradient(180deg, var(--accent) 0 4px, transparent 4px 8px); }
-    .loom .leg.east { transform-origin: left center; transform: scaleX(0); }
-    .loom .leg.west { transform-origin: right center; transform: scaleX(0); }
-    .loom .leg.south { transform-origin: center top; transform: scaleY(0); }
-    .loom .leg.north { transform-origin: center bottom; transform: scaleY(0); }
-    .loom .leg.on { transform: none; }
-    .loom .leg.bind::after { background: var(--term-ok); transform: scaleX(0); transform-origin: inherit; transition: transform var(--t, .6s) linear; }
-    .loom .leg.bind.north::after, .loom .leg.bind.south::after { transform: scaleY(0); }
-    .loom .leg.fill::after { transform: none; }
+    :is(.loom, .demo) .threads { position: absolute; inset: 0; pointer-events: none; }
+    :is(.loom, .demo) .leg { position: absolute; transition: transform .25s ease; }
+    :is(.loom, .demo) .leg::before, :is(.loom, .demo) .leg::after { content: ""; position: absolute; inset: 0; }
+    :is(.loom, .demo) .leg::before { background: repeating-linear-gradient(90deg, var(--accent) 0 4px, transparent 4px 8px); }
+    :is(.loom, .demo) .leg.north::before, :is(.loom, .demo) .leg.south::before { background: repeating-linear-gradient(180deg, var(--accent) 0 4px, transparent 4px 8px); }
+    :is(.loom, .demo) .leg.east { transform-origin: left center; transform: scaleX(0); }
+    :is(.loom, .demo) .leg.west { transform-origin: right center; transform: scaleX(0); }
+    :is(.loom, .demo) .leg.south { transform-origin: center top; transform: scaleY(0); }
+    :is(.loom, .demo) .leg.north { transform-origin: center bottom; transform: scaleY(0); }
+    :is(.loom, .demo) .leg.on { transform: none; }
+    :is(.loom, .demo) .leg.bind::after { background: var(--term-ok); transform: scaleX(0); transform-origin: inherit; transition: transform var(--t, .6s) linear; }
+    :is(.loom, .demo) .leg.bind.north::after, :is(.loom, .demo) .leg.bind.south::after { transform: scaleY(0); }
+    :is(.loom, .demo) .leg.bind.fill::after { transform: none; }
     /* What fades in: a line, a letter, the parts, the lit words, the question and its answer, a card, a value */
     .weave .line, .weave .c, .loom .said, .loom .base, .loom .lit, .loom .q, .loom .yes, .loom .step, .loom .val, .loom .need, .loom .fly { opacity: 0; transition: opacity .3s ease; }
     .weave .on { opacity: 1; }
@@ -555,8 +584,6 @@
     @media (max-width: 560px) {
       .sheet dl > div { grid-template-columns: 1fr; gap: .15rem; }
       .cmd code { white-space: normal; overflow-wrap: anywhere; line-height: 1.45; }
-      .demo .room { height: 12.5rem; }
-      .demo .strip { height: calc(6 * 1.9em + 1.9rem); }
       .work .grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 400px) {
@@ -604,34 +631,27 @@
           <li><a href="manual/sdk/getting-started.html"><code>{ }</code>a TypeScript SDK</a></li>
         </ul>
       </div>
-      <div class="panel term demo" role="figure" data-state="on" aria-label="An example lights reflex. Typed sentences turn a drawn lamp on, dim it and turn it off. Then the reflex is installed, and a room is added to your word list.">
-        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>type</b><b>install</b><b>add a room</b></span></div>
-        <div class="room">
-          <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <defs>
-              <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#ffd58e" stop-opacity=".5"/>
-                <stop offset="1" stop-color="#ffd58e" stop-opacity="0"/>
-              </linearGradient>
-              <radialGradient id="pool">
-                <stop offset="0" stop-color="#ffd58e" stop-opacity=".45"/>
-                <stop offset="1" stop-color="#ffd58e" stop-opacity="0"/>
-              </radialGradient>
-            </defs>
-            <g class="light">
-              <path d="M246 98 L150 226 L410 226 L314 98 Z" fill="url(#cone)"/>
-              <ellipse cx="280" cy="226" rx="150" ry="11" fill="url(#pool)"/>
-            </g>
-            <line class="floor" x1="0" y1="226.5" x2="560" y2="226.5"/>
-            <line class="cord" x1="280" y1="0" x2="280" y2="58"/>
-            <path class="shade" d="M238 98 C238 72 257 58 280 58 C303 58 322 72 322 98 Z"/>
-            <circle class="bulb" cx="280" cy="102" r="8"/>
-          </svg>
-        </div>
-        <div class="strip" aria-live="off">
-          <span class="line say show"><span class="p">$</span> <span class="in">evoke "lights on in the den"</span></span>
-          <span class="line own show">  <b>lights</b> room="den" state="on"  <i>0.91</i></span>
-          <span class="line out show">den lights on</span>
+      <div class="panel term demo" role="figure" data-state="drafted" aria-label="Two installed reflexes, contact and mail. The sentence «look up dana's address and email them» is typed. evoke reads it as two steps: contact finds dana's email address, and mail takes that address as its recipient. The lookup returns dana@example.com, the address travels into the draft's to field, and the draft opens with its subject waiting for you. Nothing is sent.">
+        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke<span class="trail" aria-hidden="true"><b>installed</b><b>asked</b><b>connected</b><b class="on">drafted</b></span></div>
+        <div class="room" aria-hidden="true">
+          <div class="say cut bound"><span class="p">$</span> <span class="in typed"><span class="c on">e</span><span class="c on">v</span><span class="c on">o</span><span class="c on">k</span><span class="c on">e</span><span class="c on"> </span><span class="c on">&quot;</span><span class="c on">l</span><span class="c on">o</span><span class="c on">o</span><span class="c on">k</span><span class="c on"> </span><span class="c on">u</span><span class="c on">p</span><span class="c on"> </span><span class="c on">d</span><span class="c on">a</span><span class="c on">n</span><span class="c on">a</span><span class="c on">'</span><span class="c on">s</span><span class="c on"> </span><span class="c on">a</span><span class="c on">d</span><span class="c on">d</span><span class="c on">r</span><span class="c on">e</span><span class="c on">s</span><span class="c on">s</span><span class="c on"> </span><span class="c on seam">a</span><span class="c on seam">n</span><span class="c on seam">d</span><span class="c on"> </span><span class="c on">e</span><span class="c on">m</span><span class="c on">a</span><span class="c on">i</span><span class="c on">l</span><span class="c on"> </span><span class="c on ref">t</span><span class="c on ref">h</span><span class="c on ref">e</span><span class="c on ref">m</span><span class="c on">&quot;</span></span></div>
+          <div class="pair">
+            <div class="ability a1 on">
+              <div class="top"><i class="num on">1</i><svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="3"/><path d="M2.5 14.5c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5"/></svg><b>contact</b><span class="tag">+ installed</span></div>
+              <div class="what">Finds a person's email.</div>
+              <div class="row"><span class="key">name</span><span class="cell"><span class="blank"></span><span class="val name on">dana</span></span></div>
+              <div class="row"><span class="key">email</span><span class="cell"><span class="blank"></span><span class="val give on">dana@example.com</span></span></div>
+            </div>
+            <div class="ability a2 on live">
+              <div class="top"><i class="num on">2</i><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9.5" rx="1.8"/><path d="M2 4.5l6 4.5 6-4.5"/></svg><b>mail</b><span class="tag">+ installed</span></div>
+              <div class="what">Opens an email draft.</div>
+              <div class="row"><span class="key">to</span><span class="cell"><span class="blank"></span><span class="need">them</span><span class="val take on">dana@example.com</span></span></div>
+              <div class="row"><span class="key">subject</span><span class="cell"><span class="blank"></span><span class="val subj on"><span class="cursor"></span></span></span></div>
+            </div>
+          </div>
+          <div class="done on">drafted to dana@example.com</div>
+          <span class="fly">dana@example.com</span>
+          <div class="threads"></div>
         </div>
       </div>
     </div>
@@ -1128,78 +1148,90 @@ Ceiling and lamp lights only."""</span>
       }
     }
 
-    // The lamp: say it, then install the reflex and give it your words; three sentences decided and run, on a loop.
+    // The hero: two installed reflexes, one sentence, and the address that travels between them, on a loop. The
+    // final frame is the markup; motion lifts opacity and moves transforms, and the thread is measured from the
+    // slots it joins, so it holds at any width.
     {
-      const demo = document.querySelector(".demo")
-      const strip = demo.querySelector(".strip")
-      const trail = demo.querySelectorAll(".trail b")
+      const demo = document.querySelector(".demo"), room = demo.querySelector(".room")
+      const $ = (sel, el = room) => el.querySelector(sel), $$ = (sel, el = room) => [...el.querySelectorAll(sel)]
+      const threads = $(".threads"), fly = $(".fly"), trail = $$(".trail b", demo)
+      const on = (el, yes = true) => el.classList.toggle("on", yes)
       const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
-      const line = (cls, text) => { const s = document.createElement("span"); s.className = "line " + cls; if (text !== undefined) s.textContent = text; return s }
-      const decided = (call, p) => {
-        const s = line("own"), b = document.createElement("b"), i = document.createElement("i")
-        b.textContent = "lights"; i.textContent = p
-        s.append("  ", b, " " + call + "  ", i)
-        return s
+
+      // The thread: legs from the found address to the card that takes it, beside the cards or down their side.
+      const state = { drawn: false, filled: false }
+      let legs = []
+      const box = el => {
+        const r = el.getBoundingClientRect(), o = room.getBoundingClientRect()
+        return { l: r.left - o.left, r: r.right - o.left, t: r.top - o.top, b: r.bottom - o.top, x: (r.left + r.right) / 2 - o.left, y: (r.top + r.bottom) / 2 - o.top }
       }
-      const prompt = (text, cursor) => {
-        const s = line("say"), p = document.createElement("span"), input = document.createElement("span")
-        p.className = "p"; p.textContent = "$"; input.className = "in"; input.textContent = text
-        s.append(p, " ", input)
-        if (cursor) { const c = document.createElement("span"); c.className = "cursor"; s.append(c) }
-        return s
+      const thread = points => points.slice(1).map(([x1, y1], i) => {
+        const [x0, y0] = points[i], leg = document.createElement("i"), s = leg.style, flat = y0 === y1
+        leg.className = `leg bind ${flat ? (x1 >= x0 ? "east" : "west") : (y1 >= y0 ? "south" : "north")}`
+        s.left = `${Math.min(x0, x1) - 1}px`; s.top = `${Math.min(y0, y1) - 1}px`
+        s.width = `${flat ? Math.abs(x1 - x0) + 2 : 2}px`; s.height = `${flat ? 2 : Math.abs(y1 - y0) + 2}px`
+        threads.append(leg)
+        return leg
+      })
+      const layout = () => {
+        threads.replaceChildren()
+        const give = box($(".give")), take = box($(".take")), one = box($(".a1")), two = box($(".a2")), stacked = two.t >= one.b
+        legs = thread(stacked
+          ? [[give.r + 6, give.y], [one.r + 12, give.y], [one.r + 12, take.y], [two.r, take.y]]
+          : Math.abs(give.y - take.y) < 1 ? [[give.r + 6, give.y], [two.l, give.y]]
+          : [[give.r + 6, give.y], [(one.r + two.l) / 2, give.y], [(one.r + two.l) / 2, take.y], [two.l, take.y]])
+        for (const leg of legs) { leg.style.setProperty("--t", `${1000 / legs.length}ms`); on(leg, state.drawn); leg.classList.toggle("fill", state.filled) }
+        fly.style.left = `${give.l}px`; fly.style.top = `${give.t}px`
+        fly.style.setProperty("--dx", `${take.l - give.l}px`); fly.style.setProperty("--dy", `${take.t - give.t}px`)
       }
-      const show = s => { strip.append(s); strip.scrollTop = strip.scrollHeight; requestAnimationFrame(() => s.classList.add("show")); return s }
-      const scenes = [
-        { step: 0, say: 'evoke "lights on in the den"', busy: "", hold: 2700, state: "on", lines: [
-          () => decided('room="den" state="on"', "0.91"), () => line("out", "den lights on"),
-        ] },
-        { step: 0, say: 'evoke "dim the den to 30 percent"', busy: "", hold: 2700, state: "dim", lines: [
-          () => decided('room="den" state="dim" brightness="30 percent"', "0.88"), () => line("out", "den lights dim 30%"),
-        ] },
-        { step: 0, say: 'evoke "kill the lights in the den"', busy: "", hold: 3200, state: "off", lines: [
-          () => decided('room="den" state="off"', "0.85"), () => line("out", "den lights off"),
-        ] },
-        { step: 1, say: "evoke add radhi/home/lights", busy: "fetching radhi/home/lights", hold: 3400, lines: [
-          () => line("add", "+ lights  radhi/home/lights 1.2.0  write  runs lights.mts"),
-          () => line("own", '  inactive  lights: vocabulary "rooms" is empty  →  evoke vocab rooms add <word> "<meaning>"'),
-        ] },
-        { step: 2, say: 'evoke vocab rooms add den "The TV room downstairs."', busy: null, hold: 2600, lines: [
-          () => line("add", '+ vocab/rooms.toml  den = "The TV room downstairs."'),
-        ] },
+      const draw = async () => { for (const leg of legs) { on(leg); await wait(220) } }
+      const fill = async () => { for (const leg of legs) { leg.classList.add("fill"); await wait(1000 / legs.length) } }
+
+      const say = $(".say"), typed = $(".typed"), chars = $$(".c"), cards = [$(".a1"), $(".a2")], nums = $$(".num")
+      const name = $(".val.name"), give = $(".give"), need = $(".need"), take = $(".take"), subject = $(".val.subj"), done = $(".done")
+      const stage = (i, what) => { trail.forEach((b, j) => on(b, j === i)); demo.dataset.state = what }
+      const type = async () => {
+        let last = typed
+        for (const c of chars) { await wait(28 + Math.random() * 30); last.classList.remove("at"); on(c); c.classList.add("at"); last = c }
+        await wait(260); last.classList.remove("at")
+      }
+      const clear = async () => {
+        room.classList.add("clear"); await wait(280)
+        for (const el of $$(".on, .at, .live, .cut, .bound, .go, .fill")) el.classList.remove("on", "at", "live", "cut", "bound", "go", "fill")
+        state.drawn = state.filled = false
+        room.classList.remove("clear")
+      }
+      // Each cue: the pause before it, then what it does.
+      const cues = [
+        [0, async () => { await clear(); stage(0, "installed"); typed.classList.add("at") }],
+        [350, () => on(cards[0])], [260, () => on(cards[1])],
+        [1500, async () => { layout(); stage(1, "asked"); await type() }],  // measured once the cards have settled
+        [650, () => { stage(2, "connected"); say.classList.add("cut") }],
+        [500, () => { on(nums[0]); on(name) }],
+        [500, () => { on(nums[1]); on(need) }],
+        [550, async () => { state.drawn = true; await draw() }],
+        [1300, () => cards[0].classList.add("live")],
+        [800, () => { on(give); cards[0].classList.remove("live") }],
+        [1000, () => on(fly)],
+        [450, async () => { fly.classList.add("go"); state.filled = true; await fill() }],
+        [0, () => { on(take); on(need, false); on(fly, false); say.classList.add("bound"); cards[1].classList.add("live") }],
+        [800, () => { stage(3, "drafted"); on(subject); on(done) }],
+        [4200, () => {}],
       ]
-      if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        trail[0].classList.add("on")
-        demo.dataset.state = "on"
-      } else {
-        const spinner = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
-        // It types only while on screen and the tab is shown, as the loom does.
-        let seen = false, waiting = []
-        const wake = () => { if (seen && !document.hidden) { for (const w of waiting) w(); waiting = [] } }
-        new IntersectionObserver(([entry]) => { seen = entry.isIntersecting; wake() }, { threshold: .25 }).observe(demo)
-        document.addEventListener("visibilitychange", wake)
-        const onScreen = () => seen && !document.hidden ? Promise.resolve() : new Promise(resolve => waiting.push(resolve))
-        const run = async () => {
-          for (;;) for (const scene of scenes) {
-            await onScreen()
-            trail.forEach((b, i) => b.classList.toggle("on", i === scene.step))
-            strip.classList.add("clear"); await wait(240); strip.replaceChildren(); strip.classList.remove("clear")
-            await wait(420)
-            const typed = show(prompt("", true)), input = typed.querySelector(".in")
-            let text = ""
-            for (const ch of scene.say) { text += ch; input.textContent = text; await wait(30 + Math.random() * 40) }
-            await wait(220); typed.querySelector(".cursor").remove()
-            if (scene.busy !== null) {
-              const busy = show(line("own"))
-              for (let i = 0; i < 10; i++) { busy.textContent = "  " + spinner[i] + (scene.busy ? " " + scene.busy : ""); await wait(65) }
-              busy.remove()
-            }
-            for (const make of scene.lines) { show(make()); await wait(170) }
-            if (scene.state) demo.dataset.state = scene.state
-            await wait(scene.hold)
-          }
+
+      let seen = false, waiting = []
+      const wake = () => { if (seen && !document.hidden) { for (const w of waiting) w(); waiting = [] } }
+      new IntersectionObserver(([entry]) => { seen = entry.isIntersecting; wake() }, { threshold: .25 }).observe(demo)
+      document.addEventListener("visibilitychange", wake)
+      const onScreen = () => seen && !document.hidden ? Promise.resolve() : new Promise(resolve => waiting.push(resolve))
+      state.drawn = state.filled = true
+      layout(); document.fonts.ready.then(layout); addEventListener("resize", layout)
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) (async () => {
+        for (;;) {
+          await onScreen()
+          for (const [pause, run] of cues) { await wait(pause); await run() }
         }
-        run()
-      }
+      })()
     }
 
     // A weave: one sentence read into two steps, the plan shown, then the run, on a loop; beside it a confirm
