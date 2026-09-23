@@ -67,7 +67,7 @@
     }
   },
   "expect": {
-    "outcome": "confirm",
+    "outcome": "run",
     "reflex": "lights",
     "args": {
       "room": {
@@ -81,22 +81,17 @@
     },
     "call": "lights room=\"den\" state=\"off\"",
     "effect": "write",
-    "confidence": 0.75,
+    "confidence": 0.9,
     "weakest": {
-      "question": "lights.room",
-      "top": "unstated",
-      "p": 0.75
+      "question": "route",
+      "top": "lights",
+      "p": 0.9
     },
     "judgments": [
       {
         "question": "route",
         "top": "lights",
         "p": 0.9
-      },
-      {
-        "question": "lights.room",
-        "top": "unstated",
-        "p": 0.75
       },
       {
         "question": "lights.state",
@@ -119,21 +114,6 @@
         "reflex": "timer",
         "route": 0.02,
         "fits": 0.05
-      }
-    ],
-    "prompt": {
-      "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.75",
-      "template": "Set the den lights off?"
-    },
-    "because": [
-      {
-        "type": "under_floor",
-        "judgment": {
-          "question": "lights.room",
-          "top": "unstated",
-          "p": 0.75
-        },
-        "floor": 0.8
       }
     ]
   }

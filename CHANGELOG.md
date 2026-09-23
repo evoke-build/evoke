@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- An argument you answer for at a prompt is settled: its judgment leaves the gate, so a decision that asked for
+  the room no longer confirms a second time over the room you just typed. The other judgments still gate it.
 - A value typed at a prompt or written in a call by name must read whole. Before, `volume level=1e3` ran with
   `1`, `-5` ran with `5` and `1 hour 30 minutes` started a one-hour timer. Now a value that does not read whole
   is refused, or asked again. A leading minus is part of a number, in a sentence too, so `-5` reads as `-5`.

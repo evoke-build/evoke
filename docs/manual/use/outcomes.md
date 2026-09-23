@@ -93,7 +93,8 @@ $ evoke "open my desktop"
 
 For each decision, the adapter answers one question per reflex and one per argument. **Confidence is the lowest
 top probability among the route and every argument question of the winner.** Unstated arguments and flags count
-too. The bars come from the adapter. They are calibrated, so each number means *the probability this is right*:
+too, until you answer for them: an argument you typed at a prompt is settled, and its judgment leaves the gate.
+The bars come from the adapter. They are calibrated, so each number means *the probability this is right*:
 
 | Floor         | Jev  | Gates                                                          |
 | :------------ | :--- | :------------------------------------------------------------- |

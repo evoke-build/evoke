@@ -57,22 +57,17 @@
     },
     "call": "power action=\"restart\"",
     "effect": "destructive",
-    "confidence": 0.9,
+    "confidence": 0.95,
     "weakest": {
-      "question": "power.action",
-      "top": "unstated",
-      "p": 0.9
+      "question": "route",
+      "top": "power",
+      "p": 0.95
     },
     "judgments": [
       {
         "question": "route",
         "top": "power",
         "p": 0.95
-      },
-      {
-        "question": "power.action",
-        "top": "unstated",
-        "p": 0.9
       }
     ],
     "contenders": [
@@ -83,7 +78,7 @@
       }
     ],
     "prompt": {
-      "own": "power action=\"restart\" · destructive · weakest: action 0.90",
+      "own": "power action=\"restart\" · destructive · weakest: route 0.95",
       "template": "Really restart now?"
     },
     "because": [

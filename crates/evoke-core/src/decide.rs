@@ -207,6 +207,28 @@ impl Judged {
         })
     }
 
+    /// The same, without the judgments of the arguments a person has just answered for: their `unstated` doubt is
+    /// settled by the answer, so it leaves the gate. The route always stays, so the judgments are never empty.
+    fn without(self, reflex: &LocalName, given: &IndexMap<ArgName, Value>) -> Self {
+        let kept: Vec<Judgment> = self
+            .judgments
+            .iter()
+            .filter(|judgment| {
+                !matches!(&judgment.question, QuestionId::Arg(of, arg) if of == reflex && given.contains_key(arg))
+            })
+            .cloned()
+            .collect();
+        let judgments = NonEmpty::try_from(kept).unwrap_or(self.judgments);
+        let weakest = weakest(&judgments).clone();
+        Self {
+            confidence: weakest.p,
+            weakest,
+            judgments,
+            runner_up: self.runner_up,
+            contenders: self.contenders,
+        }
+    }
+
     #[must_use]
     pub fn confidence(&self) -> Prob {
         self.confidence
@@ -922,7 +944,8 @@ pub fn gate(plan: &Plan, reading: Reading, gate: Option<&Gate>) -> Decision {
     )
 }
 
-/// An ask with its values given: the same gate over the judgments the ask carries.
+/// An ask with its values given: the same gate over the judgments the ask carries, less those of the arguments
+/// just answered for — an answer settles its argument, as one input naming it would have.
 #[must_use]
 pub fn fill(
     plan: &Plan,
@@ -942,6 +965,7 @@ pub fn fill(
             judgments: judged.judgments.into_iter().collect(),
         };
     };
+    let judged = judged.without(&reflex, &given);
     args.extend(given);
     let (args, missing) = settled(plan, &reflex, active, &args, &[]);
     decided(
