@@ -3,7 +3,7 @@
 An adapter is the classifier behind a decision. It is an object that answers typed questions with probabilities.
 The core names no engine. A project names an adapter, and only your machine resolves the name.
 
-## `jev()` — the first adapter
+## `jev()`: the first adapter
 
 ```ts
 import { jev } from "@evoke-build/evoke/jev"

@@ -60,8 +60,8 @@ The log, the trust file, the runtime path and the REPL's history are in `~/.loca
 
 An app keeps its project at its root and reads it with the SDK. `evoke add` next to the app writes the same three
 files, and `evoke.d.ts` types the app's decisions by reflex. Overlays and vocabularies under that root tune the
-app's wording, just as your home project tunes yours. The SDK can also hand over a vocabulary per call. So a
-multi-tenant server compiles each tenant's words into their own plan.
+app's wording, just as your home project tunes yours. The SDK can also compile the same project over a tenant's
+own vocabularies, with `with({ vocab })`. So a multi-tenant server keeps each tenant's words in their own plan.
 
 ## Local reflexes
 

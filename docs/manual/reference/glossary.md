@@ -9,6 +9,7 @@ adapter, and the words of a weave.
 | **Adapter**      | The classifier behind a decision, as an object answering typed questions with probabilities. Jev is the first; `replay` answers from a recording |
 | **Argument**     | A question about the input and a value for the body: `options`, `vocab`, `pick` or `flag`                 |
 | **Ask**          | The outcome when a required argument is missing: `evoke` asks the argument's own question                 |
+| **Binding**      | A value of one step's result taken by a later step, by kind: filled into a required argument, or written into the words for an optional one |
 | **Body**         | What `run` names: a `.mts`/`.mjs` file exporting a function, or a program with its arguments              |
 | **Call**         | A reflex with its arguments filled, on one line: `lights room="den" state="off"`                          |
 | **Cap**          | A reason a complete call stops at confirm: destructive, no gate, under floor, an unconsumed span, two things |
@@ -42,14 +43,13 @@ adapter, and the words of a weave.
 | **Run**          | The outcome when a call clears its floor. Also the key naming the body                                    |
 | **Runtime**      | What runs a body: Node for a file, nothing for an argv                                                    |
 | **Span**         | An exact piece of the input, by character offsets                                                         |
+| **Step**         | One part of a weave, decided as one input is; numbered as the plan prints it, run at its turn              |
 | **Store**        | `~/.cache/evoke/store/<h1>/`: fetched code, re-hashed before every run                                    |
 | **Tag**          | A word under `tags` for `--tag` to narrow by. Also a git version tag                                      |
 | **Trust**        | A project's four owned paths bound to their content. Required outside home                                |
 | **Unstated**     | The answer that an argument was not given in the input                                                    |
 | **Utterance**    | A sentence a record is keyed by                                                                           |
 | **Vocabulary**   | `vocab/<name>.toml`: your closed list of words, shared by every argument that names it                    |
-| **Wording**      | What a user may override: descriptions, questions, option meanings, records                               |
 | **Weave**        | A sentence read as several steps: each decided on its own, ordered by the words, a result threaded into a later step, the plan shown before anything runs |
-| **Step**         | One part of a weave, decided as one input is; numbered as the plan prints it, run at its turn              |
-| **Binding**      | A value of one step's result taken by a later step, by kind: filled into a required argument, or written into the words for an optional one |
+| **Wording**      | What a user may override: descriptions, questions, option meanings, records                               |
 | **Yield**        | A field of a result's `data` a later step may take, declared under `[yields]` with the kind that reads it |

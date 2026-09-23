@@ -36,7 +36,7 @@ One tool does three jobs. A **CLI** you talk to. A **package manager** that inst
 | [The first ten minutes](start/first-run.md) | Your first key, your first reflexes, your first lesson  |
 | [Concepts](start/concepts.md)               | The words, and the three steps of a decision            |
 
-### Use — the CLI
+### Use: the CLI
 
 | Page                                         | Read it when                                                     |
 | :------------------------------------------- | :--------------------------------------------------------------- |
@@ -47,7 +47,7 @@ One tool does three jobs. A **CLI** you talk to. A **package manager** that inst
 | [Tuning](use/tuning.md)                      | `teach`, overlays, vocabularies, `config`, `show`, `test`          |
 | [Projects](use/projects.md)                  | Your home project, an app's project, `evoke.toml`, trust           |
 
-### Author — writing reflexes
+### Author: writing reflexes
 
 | Page                                          | Read it when                                                   |
 | :-------------------------------------------- | :------------------------------------------------------------- |
@@ -59,7 +59,7 @@ One tool does three jobs. A **CLI** you talk to. A **package manager** that inst
 | [Wording](author/wording.md)                  | Writing descriptions the classifier reads well                  |
 | [Publishing](author/publishing.md)            | Tags, versions, the contract diff, collections, the Hub         |
 
-### SDK — `@evoke-build/evoke`
+### SDK: `@evoke-build/evoke`
 
 | Page                                        | Read it when                                                       |
 | :------------------------------------------ | :----------------------------------------------------------------- |

@@ -132,7 +132,7 @@ def described(page):
         page.write_text(text.replace("</head>", '<meta name="robots" content="noindex">\n</head>', 1))
         return
     title = html_text.unescape(titled[1])
-    name = title.removesuffix(" - Evoke")
+    name = title.removesuffix(" - evoke")
     summary_line = description(text) or re.search(r'<meta name="description" content="([^"]*)">', text)[1]
     quoted = html_text.escape(summary_line, quote=True)
     heading = html_text.escape(title, quote=True)
@@ -199,7 +199,7 @@ def furnished(page):
         brand = f'<a href="{root}">evoke</a>'
         text = text.replace('<div class="right-buttons">\n', f'<div class="right-buttons">\n                        <a class="use-cases idea" href="{root}idea.html">The idea</a>\n                        <a class="use-cases" href="{root}use-cases.html">Use cases</a>\n', 1)
         text = text.replace("                    </main>", AT_WORK.replace("{root}", root) + COLOPHON.replace("{root}", root) + "                    </main>", 1)
-    text = text.replace('<h1 class="menu-title">Evoke</h1>', f'<p class="menu-title">{brand}</p>', 1)  # the title is the page's one heading
+    text = text.replace('<h1 class="menu-title">evoke</h1>', f'<p class="menu-title">{brand}</p>', 1)  # the title is the page's one heading
     page.write_text(text)
 
 

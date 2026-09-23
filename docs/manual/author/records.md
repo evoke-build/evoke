@@ -1,13 +1,13 @@
 # Examples and tests
 
 Two tables, one shape. `[examples]` are sent to the classifier: they teach. `[tests]` are held out, never sent:
-they check. One line —
+they check. One line is documentation, tuning and test at once:
 
 ```toml
 "kill the lights" = { state = "off" }
 ```
 
-— is documentation, tuning and test at once. A user's overlay adds lines of the same shape.
+A user's overlay adds lines of the same shape.
 
 ## The shape
 

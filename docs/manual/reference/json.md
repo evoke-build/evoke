@@ -32,8 +32,8 @@ A sentence read as several steps ([Weaving](../use/weaving.md)) prints one line 
 line of its decision with four fields more: `step` and `steps` first, the step's number and the count; `bound`
 after `trace`, where a value came from another step, `[{ arg, from, field, value }]`; and `status` last, with
 `why` when the step stopped. A plan stopped before any step ran prints every step's line at once, its `status`
-`refused`, `skipped`, `declined` or `unanswered`. `evoke try --json` prints the plan whole instead, on one line —
-`input`, `splits`, `steps` with each step's decision, `binds`, `stages`, `verdict` — with `trace`, every adapter
+`refused`, `skipped`, `declined` or `unanswered`. `evoke try --json` prints the plan whole instead, on one line:
+`input`, `splits`, `steps` with each step's decision, `binds`, `stages`, `verdict`, and `trace`, every adapter
 call the plan took.
 
 | Field    | Holds                                                                                                   |

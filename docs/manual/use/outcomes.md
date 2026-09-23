@@ -113,7 +113,7 @@ in a file you own, not a flag on a pipeline.
 gate = { write = 0.85 }
 ```
 
-## `try` — decide, and show the work
+## `try`: decide, and show the work
 
 `evoke try "<input>"` decides without running, and prints every judgment: the ranking, each argument's
 distribution, each reflex's `fits`, then the outcome and the weakest judgment. Answers that would print as `0.00`
@@ -131,7 +131,7 @@ $ evoke try "kill the lights"
 
 `try --json` prints the decision as one JSON line: [The JSON line](../reference/json.md).
 
-## `why` — the last decision, explained
+## `why`: the last decision, explained
 
 Every real decision is logged. `evoke why` renders the last one as `try` would have, from the log alone, then says
 what became of it. After a sentence of several steps, it shows each step under its number
@@ -147,7 +147,7 @@ $ evoke why
   ran lights room="den" state="off" · weakest: room 0.85 · replay, 6 questions
 ```
 
-## `run` — by name, no classifier
+## `run`: by name, no classifier
 
 `evoke run <call>` runs a call you write yourself. Nothing is decided, so nothing prints but the call. The effect
 policy still holds: a destructive call confirms. Every value is checked, just as a decision's would be.

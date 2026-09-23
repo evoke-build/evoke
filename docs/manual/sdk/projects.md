@@ -61,7 +61,7 @@ project.plan       // the digest of the compiled set, "h1:…"; every decision c
 An inactive reflex is left out of every decision. The causes are an empty vocabulary, a setting unset, or an
 overlay that does not parse. Its `problems` each end in the command that fixes it.
 
-## `with({ vocab })` — a tenant's words
+## `with({ vocab })`: a tenant's words
 
 A vocabulary binds a project, not a call. `with` compiles the same set over vocabularies of its own, in the
 file's form. It is synchronous and takes milliseconds:

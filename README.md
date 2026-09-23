@@ -28,7 +28,7 @@ that never ran, so trust needs three things. Every value comes from you: from wh
 own. The confidence is a number that means what it says, so you can set a bar on it. And what cannot be undone
 asks first, every time.
 
-That is the idea behind a reflex. Your words pick a program. They never write one. Jev answers closed questions
+That is the idea behind a reflex. Your words pick a program from the ones you installed. Jev answers closed questions
 about your sentence, every answer a calibrated probability, and the weakest one decides. `evoke` is the first
 implementation of this idea: one core, a CLI, a package manager and a TypeScript SDK, with Jev as its first
 engine and the design bound to none. The whole idea, with real sessions, at
@@ -40,7 +40,7 @@ The value of all this is what it refuses to do. Three real sessions where nothin
 
 ```text
 $ evoke "restart the computer"
-  power action="restart" · destructive · weakest: action 0.97
+  power action="restart" · destructive · weakest: route 0.97
   Really restart now?  [y]es [n]o [t]each > n
 [2]
 $ evoke "set the volume to 150 percent"

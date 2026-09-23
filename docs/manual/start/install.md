@@ -69,6 +69,6 @@ only at the moment it decides, and never writes it to a file:
 export TYPESAFE_API_KEY=<value>
 ```
 
-Without the key, the first decision prints exactly this line and exits 3.
+Without the key, the first decision prints this line and exits 3.
 
 **Next:** [The first ten minutes](first-run.md).

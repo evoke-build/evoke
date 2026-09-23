@@ -34,7 +34,7 @@ export default (async ({ room, state, brightness = 30 }, { config, signal }) => 
 | Value        | Is                                                                                             |
 | :----------- | :--------------------------------------------------------------------------------------------- |
 | `args`       | Per argument: an option's key; a vocabulary word's value, or the word; a pick's value, meaning the number, the seconds, or the text; `true` for a flag. An optional argument left unstated is absent |
-| `input`      | The sentence as typed. The classifier cannot write, so free text like a reminder's message arrives here |
+| `input`      | The sentence as typed. Free text, a reminder's message, arrives here as it was typed             |
 | `config`     | Each `[config]` key as a string, secrets resolved from the environment for this run only        |
 | `signal`     | Aborted at the deadline, when the user declines, and on `SIGTERM`. Stop. Never guess           |
 
