@@ -34,11 +34,12 @@ function core(): Exports {
   return loaded
 }
 
-/** One op on one input: the raw reply. A trap in the core is a bug in evoke, thrown as one. */
+/** One op on one input: the raw reply. A trap in the core is a bug in evoke, thrown as one. A lone surrogate in
+ *  any string — `JSON.stringify` writes it as an escape, and no Rust string can hold it — crosses as U+FFFD. */
 export function reply(op: string, input: object): Reply {
   const wasm = core()
   const opBytes = encoder.encode(op)
-  const inputBytes = encoder.encode(JSON.stringify(input))
+  const inputBytes = encoder.encode(JSON.stringify(input).replace(/\\u(d[89a-f][0-9a-f]{2})/gi, "\\ufffd"))
   try {
     const opPtr = wasm.alloc(opBytes.length)
     const inputPtr = wasm.alloc(inputBytes.length)
@@ -98,6 +99,14 @@ export function fromCode(diagnostics: readonly Diagnostic[], invoked: string): D
 export function faulted(fault: Fault, invoked = ""): FaultError {
   const { message, command } = call("fault", { fault, invoked })
   return new FaultError(fault, message, command)
+}
+
+/** Why a text is no local or vocabulary name by the core's grammar, or nothing when it is one. */
+export function misnamed(text: string, kind: "local" | "vocab"): string | undefined {
+  const answer = reply("name", { text, kind })
+  if ("ok" in answer) return undefined
+  if ("bug" in answer) throw bug(answer.bug)
+  return String(answer.err)
 }
 
 /** A bug in evoke — never a user error. */

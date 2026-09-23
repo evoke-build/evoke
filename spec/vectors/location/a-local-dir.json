@@ -1,0 +1,9 @@
+{
+  "input": {
+    "location": {
+      "type": "local",
+      "path": "./lights"
+    }
+  },
+  "expect": "./lights"
+}

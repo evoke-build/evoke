@@ -12,7 +12,7 @@ explained in full in [the manual](https://evoke.build/manual/sdk/getting-started
 ## The first hour
 
 ```ts
-// app.ts · npm i @evoke-build/evoke · export TYPESAFE_API_KEY=… · node app.ts "timer for ten minutes"
+// app.ts · npm i @evoke-build/evoke · export TYPESAFE_API_KEY=… · node app.ts "timer for 10 minutes"
 import { load, reflex } from "@evoke-build/evoke"
 import { jev } from "@evoke-build/evoke/jev"
 
@@ -21,7 +21,7 @@ const timer = reflex({
   effect: "write",
   confirm: "Start a {duration} timer?",
   args: { duration: { ask: "How long?", pick: "duration" } },
-  examples: { "timer for ten minutes": { duration: "ten minutes" } },
+  examples: { "timer for 10 minutes": { duration: "10 minutes" } },
 }, async ({ duration }) => {                                   // duration: number — seconds, typed from the manifest
   setTimeout(() => console.log("ring"), duration * 1000)
   return `ringing in ${duration} s`
@@ -30,7 +30,7 @@ const timer = reflex({
 const project = await load({ reflexes: { timer }, adapter: jev() })
 
 const handled = await project.handle(process.argv[2] ?? "", {
-  confirm: async d => { console.log(d.prompt.template); return true },   // "Start a ten minutes timer?"
+  confirm: async d => { console.log(d.prompt.template); return true },   // "Start a 10 minutes timer?"
   ask: async d => ({ duration: "10 minutes" }),                           // d.missing says what is missing and why
 })
 console.log(handled.outcome === "ran" ? handled.result.text : handled.outcome)

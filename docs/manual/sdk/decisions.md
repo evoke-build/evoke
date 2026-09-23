@@ -95,8 +95,8 @@ const handled = await project.handle(input, {
 | `"declined"`      | `confirm` returned `false`, `ask` returned `undefined`, or an answer changed nothing           |
 | `"unanswered"`    | A confirm or an ask was reached and no handler was given. The decision itself is the answer   |
 
-An answer that does not read is asked again once, as at the terminal. Twice is a decline. Only a diagnostic, a
-fault or a failure throws.
+An answer that does not read is asked again once. Twice is a decline. An empty input is refused before the
+adapter is asked. Only a diagnostic, a fault or a failure throws.
 
 ## `steps(input, { tags?, signal? })` and `weave(input, { confirm?, ask?, proceed?, tags?, signal? })`
 
@@ -112,12 +112,13 @@ plan.verdict     // { outcome: "run" | "ask" | "confirm" | "refuse", because?: [
 ```
 
 Each step carries its `decision`, the `Decision` `decide` would have made of its words alone. `weave` settles
-what the plan asks first, then runs every step under `handle`'s handlers, each told which step asks:
+what the plan asks first, then runs every step under `handle`'s handlers, each told which step and round asks,
+a `Turn`:
 
 ```ts
 const woven = await project.weave(input, {
-  ask: (d, at) => ui.pick(d.missing, at.step),      // before anything runs, for a required argument no step provides
-  confirm: (d, at) => ui.confirm(d.prompt.template), // at the step's turn
+  ask: (d, turn) => ui.pick(d.missing, turn.step),   // before anything runs, for a required argument no step provides
+  confirm: (d, turn) => ui.confirm(d.prompt.template), // at the step's turn
   proceed: plan => ui.confirm("Run the plan as it stands?"),  // a step refers to another it takes nothing from
 })
 woven.status     // the worst step's: "ran", "failed", "declined", "refused", "unanswered"; or why nothing ran

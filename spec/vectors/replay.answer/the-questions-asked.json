@@ -1,0 +1,73 @@
+{
+  "input": {
+    "recording": {
+      "id": "replay",
+      "gate": {
+        "route": 0.5,
+        "fits": 0.3,
+        "read": 0.6,
+        "write": 0.8
+      },
+      "answers": {
+        "kill the lights": {
+          "route": {
+            "lights": 0.9,
+            "timer": 0.02,
+            "volume": 0.02,
+            "none": 0.06
+          },
+          "fits.lights": {
+            "yes": 0.7
+          },
+          "fits.timer": {
+            "yes": 0.05
+          },
+          "fits.volume": {
+            "yes": 0.05
+          },
+          "lights.room": {
+            "den": 0.2,
+            "office": 0.05,
+            "unstated": 0.75
+          },
+          "lights.state": {
+            "off": 0.58,
+            "on": 0.3,
+            "dim": 0.1,
+            "unstated": 0.02
+          }
+        }
+      }
+    },
+    "request": {
+      "$ref": "fixtures/request-kill-the-lights.json"
+    }
+  },
+  "expect": {
+    "ok": {
+      "route": {
+        "lights": 0.9,
+        "timer": 0.02,
+        "volume": 0.02,
+        "none": 0.06
+      },
+      "fits.lights": {
+        "yes": 0.7
+      },
+      "lights.room": {
+        "den": 0.2,
+        "office": 0.05,
+        "unstated": 0.75
+      },
+      "lights.state": {
+        "off": 0.58,
+        "on": 0.3,
+        "dim": 0.1,
+        "unstated": 0.02
+      },
+      "fits.timer": {
+        "yes": 0.05
+      }
+    }
+  }
+}

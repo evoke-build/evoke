@@ -14,7 +14,7 @@ import { replay } from "@evoke-build/evoke/testing"
 const record = process.env.RECORD ? jev() : undefined
 const project = await load({ reflexes: { timer }, adapter: replay(new URL("answers.toml", import.meta.url), { record }) })
 
-const d = await project.decide("timer for ten minutes")
+const d = await project.decide("timer for 10 minutes")
 assert.equal(d.outcome, "run")
 ```
 

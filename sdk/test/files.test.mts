@@ -1,6 +1,6 @@
 // The files box: the spec's home project read whole, and a store entry that stands only while it hashes.
 
-import { deepStrictEqual, equal } from "node:assert/strict"
+import { deepStrictEqual, equal, throws } from "node:assert/strict"
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
@@ -8,6 +8,7 @@ import { test } from "node:test"
 import { fileURLToPath } from "node:url"
 
 import { call } from "../src/core.ts"
+import { FailureError } from "../src/errors.ts"
 import { entry, snapshot } from "../src/files.ts"
 
 test("the owned files under a root, absent ones absent", () => {
@@ -39,3 +40,17 @@ function sha(text: string): string {
   return createHash("sha256").update(text).digest("hex")
 }
 import { createHash } from "node:crypto"
+
+test("a file that will not read is a failure naming it; a stem that is no name is not an owned file", () => {
+  const root = mkdtempSync(join(tmpdir(), "evoke-root-"))
+  mkdirSync(join(root, "vocab"))
+  writeFileSync(join(root, "vocab", "rooms.toml"), 'den = "The den."\n')
+  writeFileSync(join(root, "vocab", "Bad Name.toml"), "not = 'read'\n")
+  writeFileSync(join(root, "vocab", "notes.txt"), "")
+  deepStrictEqual(Object.keys(snapshot(root).vocab), ["rooms"])
+  mkdirSync(join(root, "evoke.toml"))
+  throws(
+    () => snapshot(root),
+    (error: FailureError) => error instanceof FailureError && error.what === `reading ${join(root, "evoke.toml")}` && error.command === "load()",
+  )
+})

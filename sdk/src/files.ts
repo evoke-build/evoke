@@ -8,7 +8,8 @@ import { readFileSync, readdirSync, statSync } from "node:fs"
 import { homedir } from "node:os"
 import { join } from "node:path"
 
-import { call } from "./core.ts"
+import { call, misnamed } from "./core.ts"
+import { FailureError } from "./errors.ts"
 
 /** The owned texts as found: absent when the file is. */
 export interface Snapshot {
@@ -25,35 +26,50 @@ export function snapshot(root: string): Snapshot {
   return {
     ...(project === undefined ? {} : { project }),
     ...(lock === undefined ? {} : { lock }),
-    overlays: named(join(root, "overlays")),
-    vocab: named(join(root, "vocab")),
+    overlays: named(join(root, "overlays"), "local"),
+    vocab: named(join(root, "vocab"), "vocab"),
   }
 }
 
-/** A file's text, or nothing when there is no such file. */
+/** A file's text, or nothing when there is no such file; one that will not read is a failure naming it. */
 export function text(path: string): string | undefined {
   try {
     return readFileSync(path, "utf8")
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined
-    throw error
+    throw unreadable(path, error)
   }
 }
 
-/** Every `<name>.toml` in a directory by name, in name order; none when there is no directory. */
-function named(dir: string): Record<string, string> {
+/** Every `<name>.toml` in a directory by name, in name order; none when there is no directory. A file whose stem
+ *  is no name is not an owned file and is left alone, as the CLI leaves it. */
+function named(dir: string, kind: "local" | "vocab"): Record<string, string> {
   const files: Record<string, string> = {}
   let entries: string[]
   try {
     entries = readdirSync(dir)
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return files
-    throw error
+    throw unreadable(dir, error)
   }
   for (const entry of entries.sort()) {
-    if (entry.endsWith(".toml")) files[entry.slice(0, -5)] = readFileSync(join(dir, entry), "utf8")
+    if (!entry.endsWith(".toml")) continue
+    const stem = entry.slice(0, -5)
+    if (misnamed(stem, kind) !== undefined) continue
+    const path = join(dir, entry)
+    try {
+      files[stem] = readFileSync(path, "utf8")
+    } catch (error) {
+      throw unreadable(path, error)
+    }
   }
   return files
+}
+
+/** A path that exists and will not read — a directory where a file should be, a permission missing. */
+function unreadable(path: string, error: unknown): FailureError {
+  const why = error instanceof Error ? error.message : String(error)
+  return new FailureError(`reading ${path}`, why, { type: "rerun" }, "load()")
 }
 
 /** The store: fetched trees under `$XDG_CACHE_HOME/evoke/store/<hex>/`. */
@@ -79,6 +95,10 @@ export function entry(h1: string): string | undefined {
       else hashed.push([relative, `h1:${createHash("sha256").update(readFileSync(path)).digest("hex")}`])
     }
   }
-  walk(dir, "")
+  try {
+    walk(dir, "")
+  } catch (error) {
+    throw unreadable(dir, error)
+  }
   return call("digest", { hashed }) === h1 ? dir : undefined
 }

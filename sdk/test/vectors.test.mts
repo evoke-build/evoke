@@ -13,6 +13,9 @@ const spec = new URL("../../spec/", import.meta.url)
 const RESULTS = new Set([
   "manifest",
   "overlay",
+  "vocabulary",
+  "project",
+  "name",
   "compile",
   "request",
   "read",
@@ -24,6 +27,10 @@ const RESULTS = new Set([
   "reference",
   "lock",
   "weave.plan",
+  "jev.settings",
+  "jev.answers",
+  "replay.recording",
+  "replay.answer",
 ])
 
 /** A JSON file under spec/, its { "$ref": … } objects replaced by what they name. */

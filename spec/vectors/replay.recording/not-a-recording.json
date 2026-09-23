@@ -1,0 +1,8 @@
+{
+  "input": {
+    "toml": "id = \"\"\n[answers]\n"
+  },
+  "expect": {
+    "err": "\"\" is empty"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "input": {
+    "status": 200,
+    "body": "{\"answers\": {\"route\": {\"type\": \"choice\", \"probabilities\": {\"lights\": 0.9, \"timer\": 0.02, \"volume\": 0.02, \"none\": 0.06}}, \"fits.lights\": {\"type\": \"noul\", \"noul\": 0.7}}}",
+    "credential": "TYPESAFE_API_KEY"
+  },
+  "expect": {
+    "ok": {
+      "route": {
+        "lights": 0.9,
+        "timer": 0.02,
+        "volume": 0.02,
+        "none": 0.06
+      },
+      "fits.lights": {
+        "yes": 0.7
+      }
+    }
+  }
+}

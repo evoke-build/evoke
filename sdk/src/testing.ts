@@ -2,7 +2,8 @@
 // then answers keyed by utterance identity — read and written through the core. With `record`, an utterance the
 // file lacks, or one recorded under fewer questions than are asked now, is asked of that adapter and the file
 // written back whole, so one run records a test suite and every run after is offline and deterministic. In: a
-// file, an adapter to record from. Out: an Adapter.
+// file, an adapter to record from. Out: an Adapter. Before each write the file is read again and merged, so two
+// suites recording into one file keep each other's answers.
 
 import { readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
@@ -39,7 +40,12 @@ export function replay(file: string | URL, options: ReplayOptions = {}): Adapter
         throw faulted({ type: "unrecorded", identity }, again)
       }
       const raw = await options.record.answer(state, questions, signal)
-      recording.answers[identity] = { ...recorded, ...raw }
+      // Another recorder may have written since this one read: the file is read again and merged under what
+      // this one holds, so two suites recording into one file lose nothing of each other's.
+      for (const [id, theirs] of Object.entries(read(path, options.record, again).answers)) {
+        recording.answers[id] = { ...theirs, ...recording.answers[id] }
+      }
+      recording.answers[identity] = { ...recording.answers[identity], ...recorded, ...raw }
       write(path, call("replay.render", { recording }), again)
       return call("replay.answer", { recording, request })
     },

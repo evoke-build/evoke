@@ -27,7 +27,7 @@ const timer = reflex({
   effect: "write",                                                   // absent means destructive
   confirm: "Start a {duration} timer?",                              // required
   args: { duration: { ask: "How long?", pick: "duration" } },
-  examples: { "timer for ten minutes": { duration: "ten minutes" } },
+  examples: { "timer for 10 minutes": { duration: "10 minutes" } },
 }, async ({ duration }, { input, signal }) => startTimer(duration))
 ```
 

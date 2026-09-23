@@ -1,0 +1,9 @@
+{
+  "input": {
+    "text": "weave",
+    "kind": "local"
+  },
+  "expect": {
+    "err": "\"weave\" is reserved"
+  }
+}

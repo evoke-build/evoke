@@ -15,6 +15,7 @@ export interface Ops {
   lock: { input: { doc: T.Document }; output: T.Result<T.Lock, T.Diagnostic[]> }
   render_lock: { input: { lock: T.Lock }; output: string }
   location: { input: { location: T.Location }; output: string }
+  name: { input: { text: string; kind: "local" | "vocab" }; output: T.Result<string, string> }
   reference: { input: { text: string }; output: T.Result<[T.Reference, T.Version | null], T.Diagnostic> }
   digest: { input: { hashed: [T.RelPath, T.Digest][] }; output: T.Digest }
   fix: { input: { fix: T.Fix; invoked?: string }; output: string }

@@ -1,0 +1,9 @@
+{
+  "input": {
+    "text": "Bad Name",
+    "kind": "local"
+  },
+  "expect": {
+    "err": "\"Bad Name\" is not a name: [a-z][a-z0-9_]*"
+  }
+}

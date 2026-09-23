@@ -5,7 +5,7 @@
 use evoke_adapters::{jev, replay};
 use evoke_core::document::Text;
 use evoke_core::manifest::{ConfigSpec, Effect, Recognizer};
-use evoke_core::name::{ArgName, LocalName, RelPath, Tag, VarName};
+use evoke_core::name::{ArgName, LocalName, RelPath, Tag, VarName, VocabName};
 use evoke_core::plan::Millis;
 use evoke_core::project::Location;
 use evoke_core::text::NonEmpty;
@@ -50,6 +50,11 @@ fn answer(op: &str, input: &Json) -> Answer {
         "lock" => result(lock(document(input, "doc")?)),
         "render_lock" => ok(render_lock(&arg::<Lock>(input, "lock")?)),
         "location" => ok(arg::<Location>(input, "location")?.to_string()),
+        "name" => match text(input, "kind")? {
+            "local" => result(LocalName::new(text(input, "text")?)),
+            "vocab" => result(VocabName::new(text(input, "text")?)),
+            kind => return Err(Bug(format!("kind: \"{kind}\" is neither local nor vocab"))),
+        },
         "reference" => result(reference(text(input, "text")?)),
         "digest" => ok(compose(&arg::<Vec<(RelPath, Digest)>>(input, "hashed")?)),
         "version" => ok(env!("CARGO_PKG_VERSION")),

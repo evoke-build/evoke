@@ -1,0 +1,29 @@
+{
+  "input": {},
+  "expect": {
+    "ok": {
+      "declared": {
+        "id": "jev-1.13.0",
+        "limits": {
+          "options": 255
+        },
+        "gate": {
+          "route": 0.5,
+          "fits": 0.3,
+          "read": 0.6,
+          "write": 0.8
+        }
+      },
+      "credential": "TYPESAFE_API_KEY",
+      "url": "https://api.typesafe.ai/v1/systemone",
+      "policy": {
+        "timeout": 1500,
+        "retries": 1,
+        "retry_statuses": [
+          500,
+          599
+        ]
+      }
+    }
+  }
+}

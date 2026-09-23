@@ -114,7 +114,7 @@ test("a reflex handed as code runs in-process with its values typed from the man
         duration: { ask: "How long?", pick: "duration" },
         loud: { ask: "Ring until dismissed?", flag: true },
       },
-      examples: { "timer for ten minutes": { duration: "ten minutes" } },
+      examples: { "timer for 10 minutes": { duration: "10 minutes" } },
     },
     async ({ duration, loud }, { input, signal }) => {
       const seconds: number = duration
@@ -248,8 +248,33 @@ test("handle asks again once for an answer that does not read, then declines", a
   const answers_ = ["attic", "den"]
   const recovered = await project.handle("kill the lights", { ask: () => ({ room: answers_.shift() }), confirm: () => true })
   equal(recovered.outcome, "ran")
+  const declined = await project.handle("kill the lights", { ask: () => ({ room: "attic" }) })
+  equal(declined.outcome, "declined")
+  if (declined.outcome === "declined") equal(declined.decision.outcome, "ask")
+})
+
+test("a name that is none, an empty input and an answer that is no text are refused, never bugs", async () => {
+  const timer = reflex({ description: "Start a timer.", confirm: "Start?", effect: "write" }, async () => "ok")
   await rejects(
-    project.handle("kill the lights", { ask: () => ({ room: "attic" }) }),
-    (error: DiagnosticError) => error.message.startsWith('room: "attic" is not one of den, office'),
+    load({ reflexes: { "Bad Name": timer }, adapter: replay(answers) }),
+    (error: DiagnosticError) => error.message === '"Bad Name" is not a name: [a-z][a-z0-9_]*  →  load({ reflexes })',
+  )
+  await rejects(
+    load({ reflexes: { weave: timer }, adapter: replay(answers) }),
+    (error: DiagnosticError) => error.message === '"weave" is reserved  →  load({ reflexes })',
+  )
+  const project = await load({ root: home, adapter: replay(answers) })
+  throws(
+    () => project.with({ vocab: { "Bad Name": { den: "The den." } } }),
+    (error: DiagnosticError) => error.message === '"Bad Name" is not a name: [a-z][a-z0-9_]*  →  with({ vocab })',
+  )
+  await rejects(project.decide("   "), (error: DiagnosticError) => error.message === 'the input is empty  →  decide("<input>")')
+  await rejects(project.steps(""), (error: DiagnosticError) => error.message === 'the input is empty  →  steps("<input>")')
+  await rejects(project.weave(""), (error: DiagnosticError) => error.message === 'the input is empty  →  weave("<input>")')
+  const asked = await project.decide("kill the lights")
+  if (asked.outcome !== "ask") return
+  throws(
+    () => project.fill(asked, { room: 5 as never }),
+    (error: DiagnosticError) => error.message === 'room: "5" is not one of den, office  →  fill(d, {"room":5})',
   )
 })

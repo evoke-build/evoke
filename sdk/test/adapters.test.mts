@@ -211,3 +211,34 @@ test("a transport failure is said in plain words, the host named, the system's o
   equal(describe(new Error("no answer within 1.5 s"), "api.typesafe.ai", true), "api.typesafe.ai: no answer within 1.5 s")
   equal(describe(Object.assign(new Error("boom"), { code: "EPIPE" }), "api.typesafe.ai", true), "api.typesafe.ai: boom")
 })
+
+test("an answer the core could not read is the adapter's fault, named before the boundary", async () => {
+  const nan: Adapter = { id: "fake-1", answer: async () => ({ route: { lights: Number.NaN } }) }
+  await rejects(
+    answered(nan, request, 30_000, undefined, "decide()"),
+    (error: FaultError) => error instanceof FaultError && error.fault.type === "malformed" && error.fault.question === "route" && error.message.includes("lights is NaN, not a probability"),
+  )
+  const hole: Adapter = { id: "fake-1", answer: async () => ({ route: { lights: undefined } }) as never }
+  await rejects(answered(hole, request, 30_000, undefined, "decide()"), (error: FaultError) => error.fault.type === "malformed")
+  const list: Adapter = { id: "fake-1", answer: async () => [] as never }
+  await rejects(answered(list, request, 30_000, undefined, "decide()"), (error: FaultError) => error.message.includes("the answer is an array, not an object"))
+})
+
+test("two recorders over one file keep each other's answers", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "evoke-"))
+  const file = join(dir, "answers.toml")
+  const source: Adapter = {
+    id: "fake-1",
+    answer: async (_state, questions) => Object.fromEntries(Object.keys(questions).map(id => [id, id === "route" ? { lights: 1 } : { yes: 0.5 }])),
+  }
+  const first = replay(file, { record: source })
+  const second = replay(file, { record: source })
+  await first.answer(request.state, request.questions, AbortSignal.timeout(1000))
+  await second.answer({ request: "what time is it" }, request.questions, AbortSignal.timeout(1000))
+  const text = readFileSync(file, "utf8")
+  ok(text.includes('[answers."kill the lights"]'), text)
+  ok(text.includes('[answers."what time is it"]'), text)
+  const both = replay(file)
+  deepStrictEqual((await both.answer(request.state, request.questions, AbortSignal.timeout(1000))).route, { lights: 1 })
+  deepStrictEqual((await both.answer({ request: "what time is it" }, request.questions, AbortSignal.timeout(1000))).route, { lights: 1 })
+})

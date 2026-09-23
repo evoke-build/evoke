@@ -20,3 +20,10 @@ test("two calls share one instance and free what they used", () => {
   deepStrictEqual(before, { ok: "kill the lights" })
   deepStrictEqual(after, before)
 })
+
+test("a lone surrogate crosses as U+FFFD, never as a bug", () => {
+  deepStrictEqual(reply("identity", { text: "kill \ud800 the lights" }), { ok: "kill \ufffd the lights" })
+  deepStrictEqual(reply("identity", { text: "a \udc00 b" }), { ok: "a \ufffd b" })
+  // A pair stays a pair.
+  deepStrictEqual(reply("identity", { text: "lights \u{1F4A1}" }), { ok: "lights \u{1F4A1}" })
+})

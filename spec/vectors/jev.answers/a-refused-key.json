@@ -1,0 +1,13 @@
+{
+  "input": {
+    "status": 401,
+    "body": "",
+    "credential": "TYPESAFE_API_KEY"
+  },
+  "expect": {
+    "err": {
+      "type": "refused",
+      "credential": "TYPESAFE_API_KEY"
+    }
+  }
+}

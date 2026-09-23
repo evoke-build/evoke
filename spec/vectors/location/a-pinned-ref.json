@@ -1,0 +1,17 @@
+{
+  "input": {
+    "location": {
+      "type": "remote",
+      "reference": {
+        "repo": {
+          "type": "github",
+          "owner": "radhi",
+          "name": "home"
+        },
+        "dir": "lights"
+      },
+      "pin": "1.2.0"
+    }
+  },
+  "expect": "radhi/home/lights@1.2.0"
+}

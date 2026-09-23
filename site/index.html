@@ -918,7 +918,7 @@ Ceiling and lamp lights only."""</span>
     <span class="k">duration</span><span class="o">:</span> <span class="o">{</span> <span class="k">ask</span><span class="o">:</span> <span class="s">"How long?"</span><span class="o">,</span> <span class="k">pick</span><span class="o">:</span> <span class="s">"duration"</span> <span class="o">},</span>
   <span class="o">},</span>
   <span class="k">examples</span><span class="o">:</span> <span class="o">{</span>
-    <span class="s">"timer for ten minutes"</span><span class="o">:</span> <span class="o">{</span> <span class="k">duration</span><span class="o">:</span> <span class="s">"ten minutes"</span> <span class="o">},</span>
+    <span class="s">"timer for 10 minutes"</span><span class="o">:</span> <span class="o">{</span> <span class="k">duration</span><span class="o">:</span> <span class="s">"10 minutes"</span> <span class="o">},</span>
   <span class="o">},</span>
 <span class="o">},</span> <span class="w">async</span> <span class="o">({</span> duration <span class="o">})</span> <span class="o">=&gt;</span> <span class="o">{</span>   <span class="c">// duration: number</span>
   setTimeout<span class="o">(()</span> <span class="o">=&gt;</span> console<span class="o">.</span>log<span class="o">(</span><span class="s">"ring"</span><span class="o">),</span> duration <span class="o">*</span> <span class="n">1000</span><span class="o">)</span>
@@ -926,7 +926,7 @@ Ceiling and lamp lights only."""</span>
 <span class="o">})</span>
 
 <span class="w">const</span> project <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> <span class="k">reflexes</span><span class="o">:</span> <span class="o">{</span> timer <span class="o">},</span> <span class="k">adapter</span><span class="o">:</span> jev<span class="o">()</span> <span class="o">})</span>
-<span class="w">const</span> handled <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>handle<span class="o">(</span><span class="s">"timer for ten minutes"</span><span class="o">,</span> <span class="o">{</span>
+<span class="w">const</span> handled <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>handle<span class="o">(</span><span class="s">"timer for 10 minutes"</span><span class="o">,</span> <span class="o">{</span>
   <span class="k">confirm</span><span class="o">:</span> <span class="w">async</span> d <span class="o">=&gt;</span> <span class="n">true</span><span class="o">,</span>
   <span class="k">ask</span><span class="o">:</span> <span class="w">async</span> d <span class="o">=&gt;</span> <span class="o">({</span> <span class="k">duration</span><span class="o">:</span> <span class="s">"10 minutes"</span> <span class="o">}),</span>
 <span class="o">})</span></pre>

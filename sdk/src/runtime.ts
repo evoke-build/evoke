@@ -65,7 +65,9 @@ export async function inline(
     const outcome = await Promise.race([settled, abandoned])
     if (signal?.aborted) throw signal.reason
     if ("abandoned" in outcome) throw failed(what, `did not finish within ${envelope.deadline} ms`)
-    if ("threw" in outcome) throw failed(what, outcome.threw instanceof Error ? outcome.threw.message : String(outcome.threw))
+    if ("threw" in outcome) {
+      throw failed(what, outcome.threw instanceof Error ? outcome.threw.message : String(outcome.threw), undefined, outcome.threw)
+    }
     return result(what, outcome.ok)
   } finally {
     clearTimeout(timer)
@@ -244,6 +246,6 @@ function ended(code: number | null): string {
   return code === null ? "was killed" : `exited ${code}`
 }
 
-function failed(what: string, why: string, fix: Fix = { type: "rerun" }): FailureError {
-  return new FailureError(what, why, fix, command(fix, `run(d)`))
+function failed(what: string, why: string, fix: Fix = { type: "rerun" }, cause?: unknown): FailureError {
+  return new FailureError(what, why, fix, command(fix, `run(d)`), cause === undefined ? undefined : { cause })
 }

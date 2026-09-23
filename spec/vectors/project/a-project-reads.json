@@ -1,0 +1,41 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "project"
+      },
+      "toml": "adapter = \"replay\"\n\n[reflexes]\nlights = \"radhi/home/lights\"\n\n[config.lights]\nbridge = \"10.0.0.2\"\ntoken  = { env = \"HUE_TOKEN\" }\n"
+    }
+  },
+  "expect": {
+    "ok": {
+      "adapter": "replay",
+      "reflexes": {
+        "lights": {
+          "type": "remote",
+          "reference": {
+            "repo": {
+              "type": "github",
+              "owner": "radhi",
+              "name": "home"
+            },
+            "dir": "lights"
+          }
+        }
+      },
+      "config": {
+        "lights": {
+          "bridge": {
+            "type": "plain",
+            "value": "10.0.0.2"
+          },
+          "token": {
+            "type": "env",
+            "var": "HUE_TOKEN"
+          }
+        }
+      },
+      "adapters": {}
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "vocab",
+        "name": "rooms"
+      },
+      "toml": "none = \"Nothing at all.\"\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "at": {
+          "file": {
+            "type": "vocab",
+            "name": "rooms"
+          },
+          "line": 1,
+          "column": 1
+        },
+        "message": "word \"none\" is reserved",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "vocab",
+              "name": "rooms"
+            },
+            "line": 1,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

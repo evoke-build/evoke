@@ -1,0 +1,9 @@
+{
+  "input": {
+    "text": "lights",
+    "kind": "local"
+  },
+  "expect": {
+    "ok": "lights"
+  }
+}

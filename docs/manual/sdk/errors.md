@@ -11,7 +11,7 @@ import { DiagnosticError, EvokeError, FailureError, FaultError } from "@evoke-bu
 | :---------------- | :------------- | :---------------------------------------------------------- | :------- |
 | `DiagnosticError` | `"diagnostic"` | Something a person fixes in the files or the environment: `problems`, each `{ reflex?, at?, message, fix, command }` | 3 |
 | `FaultError`      | `"fault"`      | The adapter failed, or its answers did not validate: `fault`, one of transport, status, refused, retired, unanswered, malformed, unrecorded | 4 |
-| `FailureError`    | `"failure"`    | A body or the machine failed: `what`, `why`, `fix`          | 1        |
+| `FailureError`    | `"failure"`    | A body or the machine failed: `what`, `why`, `fix`; a body's own error is the `cause` | 1 |
 
 All three extend `EvokeError`, which carries `command`. That is the literal line that fixes it. It is empty when
 the only fix is to try again. `fix` is the structured value, and `command` is its rendering. Render nothing

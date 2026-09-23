@@ -45,7 +45,7 @@ export async function answered(
   try {
     const raw = await Promise.race([adapter.answer(request.state, request.questions, own), aborted(own)])
     const ms = Math.round(performance.now() - started)
-    return { raw, trace: { adapter: adapter.id, questions: Object.keys(request.questions).length, ms } }
+    return { raw: checked(raw, request, invoked), trace: { adapter: adapter.id, questions: Object.keys(request.questions).length, ms } }
   } catch (error) {
     if (signal?.aborted) throw signal.reason
     // An adapter that could not name the call renders its fault again with it; one that knew better stands.
@@ -60,6 +60,28 @@ export async function answered(
   } finally {
     clearTimeout(timer)
   }
+}
+
+/** The answer as the core reads it — a distribution per question, every probability a finite number — or the
+ *  adapter's fault, named before the boundary: `NaN` and `undefined` cross as nothing, and would read as a bug. */
+function checked(raw: unknown, request: Request, invoked: string): Raw {
+  const first = Object.keys(request.questions)[0] ?? "route"
+  const malformed = (question: string, message: string) => faulted({ type: "malformed", question, message }, invoked)
+  if (raw === null || typeof raw !== "object" || Array.isArray(raw)) throw malformed(first, `the answer is ${kind(raw)}, not an object`)
+  for (const [question, answer] of Object.entries(raw)) {
+    if (answer === null || typeof answer !== "object" || Array.isArray(answer)) throw malformed(question, `${kind(answer)}, not a distribution`)
+    for (const [key, p] of Object.entries(answer)) {
+      if (typeof p !== "number" || !Number.isFinite(p)) throw malformed(question, `${key} is ${kind(p)}, not a probability`)
+    }
+  }
+  return raw as Raw
+}
+
+function kind(value: unknown): string {
+  if (value === null) return "null"
+  if (Array.isArray(value)) return "an array"
+  if (typeof value === "number") return Number.isNaN(value) ? "NaN" : "infinite"
+  return typeof value
 }
 
 /** A promise that rejects with the signal's reason, at once when it is already aborted. */

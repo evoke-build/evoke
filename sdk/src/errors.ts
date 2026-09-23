@@ -11,8 +11,8 @@ export abstract class EvokeError extends Error {
   /** The literal command or line that fixes it; empty when nothing but trying again applies. */
   readonly command: string
 
-  protected constructor(message: string, command: string) {
-    super(message)
+  protected constructor(message: string, command: string, options?: ErrorOptions) {
+    super(message, options)
     this.name = new.target.name
     this.command = command
   }
@@ -43,15 +43,15 @@ export class FaultError extends EvokeError {
   }
 }
 
-/** A host or a body failed: what was attempted, why, and what to do. */
+/** A host or a body failed: what was attempted, why, and what to do; a body's own error is the `cause`. */
 export class FailureError extends EvokeError {
   override readonly kind = "failure"
   readonly what: string
   readonly why: string | undefined
   readonly fix: Fix
 
-  constructor(what: string, why: string | undefined, fix: Fix, command: string) {
-    super(`${what}${why === undefined ? "" : `: ${why}`}  →  ${command}`, command)
+  constructor(what: string, why: string | undefined, fix: Fix, command: string, options?: ErrorOptions) {
+    super(`${what}${why === undefined ? "" : `: ${why}`}  →  ${command}`, command, options)
     this.what = what
     this.why = why
     this.fix = fix

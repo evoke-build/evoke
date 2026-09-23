@@ -8,7 +8,7 @@
 import { statSync } from "node:fs"
 
 import { type Adapter, type Trace, answered } from "./adapter.ts"
-import { bug, call, command, fromCode, problem, reply } from "./core.ts"
+import { bug, call, command, fromCode, misnamed, problem, reply } from "./core.ts"
 import type { Abstain, AnyReflexes, Ask, Confirm, Decision, Given, Handled, Line, Run } from "./decision.ts"
 import { DiagnosticError, FailureError, type Problem } from "./errors.ts"
 import { entry, snapshot, text } from "./files.ts"
@@ -49,7 +49,7 @@ export interface Handlers<R = AnyReflexes> {
 }
 
 /** Which step of a weave, and which of its rounds, a handler is asked for. */
-export interface At {
+export interface Turn {
   /** From 1, as the plan numbers them. */
   step: number
   /** From 0; a step bound to a list runs one round per record. */
@@ -61,10 +61,10 @@ export interface At {
 export interface WeaveOptions<R = AnyReflexes> extends DecideOptions {
   /** Asked at a step's confirm: `true` runs, `false` declines the step, which ends the weave after its stage.
    *  Absent and reached: the step is `unanswered`. */
-  confirm?: ((decision: Confirm<R>, at: At) => boolean | Promise<boolean>) | undefined
+  confirm?: ((decision: Confirm<R>, turn: Turn) => boolean | Promise<boolean>) | undefined
   /** Asked at a step's ask — before anything runs for a required argument no binding covers, else at the step's
    *  turn — as `handle` asks one. Absent and reached: `unanswered`. */
-  ask?: ((decision: Ask<R>, at: At) => Given<Ask<R>> | undefined | Promise<Given<Ask<R>> | undefined>) | undefined
+  ask?: ((decision: Ask<R>, turn: Turn) => Given<Ask<R>> | undefined | Promise<Given<Ask<R>> | undefined>) | undefined
   /** Asked when the plan holds at confirm — a step refers to another whose result it takes nothing from: `true`
    *  runs the plan as it stands. Absent and reached: nothing runs. */
   proceed?: ((plan: W.Weave) => boolean | Promise<boolean>) | undefined
@@ -164,6 +164,10 @@ export async function load<R extends object = AnyReflexes>(options: LoadOptions<
   const dirs: Record<string, string> = {}
   const bodies: Ground["bodies"] = {}
   const given = (options.reflexes ?? {}) as Record<string, Inline | undefined>
+  for (const name of Object.keys(given)) {
+    const why = misnamed(name, "local")
+    if (why !== undefined) throw refused(undefined, why, { type: "rerun" }, "load({ reflexes })")
+  }
   for (const [name, location] of Object.entries(project.reflexes)) {
     if (given[name] !== undefined) {
       throw refused(name, `${name} is both in evoke.toml and passed to load`, { type: "remove", reflex: name })
@@ -275,6 +279,11 @@ function invocation(input: string): string {
   return `decide(${JSON.stringify(shown(input))})`
 }
 
+/** An input with nothing in it never reaches the adapter: refused, with the call to make. */
+function nonEmpty(input: string, what: string): void {
+  if (input.trim() === "") throw refused(undefined, "the input is empty", { type: "rerun" }, `${what}("<input>")`)
+}
+
 /** An input as a fix line shows it: elided past sixty characters. */
 function shown(input: string): string {
   return input.length > 60 ? `${input.slice(0, 59)}…` : input
@@ -334,6 +343,8 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     with({ vocab }) {
       const replaced = { ...installed.vocab }
       for (const [name, words] of Object.entries(vocab)) {
+        const why = misnamed(name, "vocab")
+        if (why !== undefined) throw new DiagnosticError([{ message: why, fix: { type: "rerun" }, command: "with({ vocab })" }])
         const read = reply("vocabulary", { doc: { file: { type: "vocab", name }, json: words } })
         if ("bug" in read) throw bug(read.bug)
         if ("err" in read) throw fromCode(read.err as W.Diagnostic[], `with({ vocab: { ${name} } })`)
@@ -343,6 +354,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     },
 
     async decide(input, options = {}) {
+      nonEmpty(input, "decide")
       const invoked = invocation(input)
       const request = call("request", { plan, input, tags: options.tags ?? [], ...(options.only === undefined ? {} : { only: options.only }), scope: "full" }, invoked)
       const { raw, trace } = await answered(adapter, request, plan.deadline, options.signal, invoked)
@@ -356,13 +368,13 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
       const invoked = `fill(d, ${JSON.stringify(given)})`
       const wanted = asking.missing.map(missing => missing.arg)
       const values: Record<string, W.Value> = {}
-      for (const [name, answer] of Object.entries(given as Record<string, string | undefined>)) {
+      for (const [name, answer] of Object.entries(given as Record<string, unknown>)) {
         if (answer === undefined) continue
         const missing = asking.missing.find(missing => missing.arg === name)
         if (missing === undefined) {
           throw refused(undefined, `${name} is not being asked; the ask wants ${wanted.join(", ")}`, { type: "rerun" }, invoked)
         }
-        values[name] = typed(missing, answer, invoked)
+        values[name] = typed(missing, String(answer), invoked)
       }
       // The whole decision crosses: the core reads the fields of an Asking and ignores the SDK's own.
       const filled = call("fill", { plan, asking: asking as unknown as W.Asking, given: values, ...gate })
@@ -400,10 +412,12 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     },
 
     async steps(input, options = {}) {
+      nonEmpty(input, "steps")
       return planned(input, options, { decided: [] }, new Map())
     },
 
     async weave(input, options = {}) {
+      nonEmpty(input, "weave")
       const traces = new Map<string, Trace[]>()
       const answers: Gathered = { decided: [] }
       let woven = await planned(input, options, answers, traces)
@@ -477,7 +491,9 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
         try {
           filled = project.fill(narrowed, given)
         } catch (error) {
-          if (!(error instanceof DiagnosticError) || refusals++ > 0) throw error
+          if (!(error instanceof DiagnosticError)) throw error
+          // An answer that does not read is asked again once; twice is a decline.
+          if (refusals++ > 0) return "declined"
           continue
         }
         if (filled.outcome === "ask" && same(filled.missing, decision.missing)) return "declined"
@@ -559,8 +575,9 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
           try {
             filled = project.fill(decision, given)
           } catch (error) {
-            // An answer that does not read is asked again once, as at the terminal; twice is a decline.
-            if (!(error instanceof DiagnosticError) || refusals++ > 0) throw error
+            if (!(error instanceof DiagnosticError)) throw error
+            // An answer that does not read is asked again once; twice is a decline.
+            if (refusals++ > 0) return { ready: false, status: "declined", decision, why }
             continue
           }
           // An answer that leaves the ask exactly as it was is a decline, so a handler that never answers ends.
@@ -581,11 +598,11 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   }
 
   /** `weave`'s handlers as `ready` takes them: each told which step and round asks. */
-  function told(options: WeaveOptions<AnyReflexes>, at: At): Handlers<AnyReflexes> {
+  function told(options: WeaveOptions<AnyReflexes>, turn: Turn): Handlers<AnyReflexes> {
     const { confirm, ask } = options
     return {
-      ...(confirm === undefined ? {} : { confirm: (decision: Confirm<AnyReflexes>) => confirm(decision, at) }),
-      ...(ask === undefined ? {} : { ask: (decision: Ask<AnyReflexes>) => ask(decision, at) }),
+      ...(confirm === undefined ? {} : { confirm: (decision: Confirm<AnyReflexes>) => confirm(decision, turn) }),
+      ...(ask === undefined ? {} : { ask: (decision: Ask<AnyReflexes>) => ask(decision, turn) }),
     }
   }
 

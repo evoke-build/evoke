@@ -1,6 +1,7 @@
 //! Runs `spec/vectors/<family>/` through the op table: each case's `input` goes in by name, and the reply must
 //! equal `expect` — wrapped in `ok` for a function that cannot fail — numbers as one kind, key order free. A new
-//! family is one line in `RESULTS` when its function returns a `Result`, and one test below.
+//! family is one line in `families!`, and one in `RESULTS` when its function returns a `Result`; a directory the
+//! list lacks fails the last test.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -8,9 +9,12 @@ use std::path::{Path, PathBuf};
 use serde_json::{Value, json};
 
 /// The families whose function returns a `Result`, so their `expect` is already `{ ok } | { err }`.
-const RESULTS: [&str; 13] = [
+const RESULTS: [&str; 20] = [
     "manifest",
     "overlay",
+    "vocabulary",
+    "project",
+    "name",
     "compile",
     "request",
     "read",
@@ -22,6 +26,10 @@ const RESULTS: [&str; 13] = [
     "reference",
     "lock",
     "weave.plan",
+    "jev.settings",
+    "jev.answers",
+    "replay.recording",
+    "replay.answer",
 ];
 
 fn spec() -> PathBuf {
@@ -105,202 +113,92 @@ fn family(name: &str) {
     );
 }
 
-#[test]
-fn identity_vectors() {
-    family("identity");
+/// One test per family, and the list the directory must match: a family added under `spec/vectors/` and not
+/// named here fails the check below, so nothing runs nowhere. `version` alone has no family: it answers the
+/// build's own number.
+macro_rules! families {
+    ($($test:ident => $family:literal),* $(,)?) => {
+        const FAMILIES: &[&str] = &[$($family),*];
+        $(
+            #[test]
+            fn $test() {
+                family($family);
+            }
+        )*
+    };
+}
+
+families! {
+    identity_vectors => "identity",
+    fault_vectors => "fault",
+    manifest_vectors => "manifest",
+    overlay_vectors => "overlay",
+    effective_vectors => "effective",
+    report_vectors => "report",
+    compile_vectors => "compile",
+    propose_vectors => "propose",
+    request_vectors => "request",
+    read_vectors => "read",
+    gate_vectors => "gate",
+    fill_vectors => "fill",
+    diff_vectors => "diff",
+    consent_vectors => "consent",
+    teach_vectors => "teach",
+    envelope_vectors => "envelope",
+    argv_vectors => "argv",
+    call_vectors => "call",
+    by_name_vectors => "by_name",
+    set_config_vectors => "set_config",
+    vocab_edit_vectors => "vocab_edit",
+    reference_vectors => "reference",
+    lock_vectors => "lock",
+    render_lock_vectors => "render_lock",
+    add_entry_vectors => "add_entry",
+    remove_entry_vectors => "remove_entry",
+    lint_vectors => "lint",
+    cases_vectors => "cases",
+    thieves_vectors => "thieves",
+    judge_vectors => "judge",
+    regressions_vectors => "regressions",
+    weave_plan_vectors => "weave.plan",
+    weave_execute_vectors => "weave.execute",
+    baseline_vectors => "baseline",
+    reflex_dts_vectors => "reflex_dts",
+    project_dts_vectors => "project_dts",
+    digest_vectors => "digest",
+    fix_vectors => "fix",
+    values_vectors => "values",
+    picked_vectors => "picked",
+    vocabulary_vectors => "vocabulary",
+    project_vectors => "project",
+    name_vectors => "name",
+    location_vectors => "location",
+    jev_settings_vectors => "jev.settings",
+    jev_request_vectors => "jev.request",
+    jev_answers_vectors => "jev.answers",
+    replay_recording_vectors => "replay.recording",
+    replay_render_vectors => "replay.render",
+    replay_answer_vectors => "replay.answer",
 }
 
 #[test]
-fn fault_vectors() {
-    family("fault");
-}
-
-#[test]
-fn manifest_vectors() {
-    family("manifest");
-}
-
-#[test]
-fn overlay_vectors() {
-    family("overlay");
-}
-
-#[test]
-fn effective_vectors() {
-    family("effective");
-}
-
-#[test]
-fn report_vectors() {
-    family("report");
-}
-
-#[test]
-fn compile_vectors() {
-    family("compile");
-}
-
-#[test]
-fn propose_vectors() {
-    family("propose");
-}
-
-#[test]
-fn request_vectors() {
-    family("request");
-}
-
-#[test]
-fn read_vectors() {
-    family("read");
-}
-
-#[test]
-fn gate_vectors() {
-    family("gate");
-}
-
-#[test]
-fn fill_vectors() {
-    family("fill");
-}
-
-#[test]
-fn diff_vectors() {
-    family("diff");
-}
-
-#[test]
-fn consent_vectors() {
-    family("consent");
-}
-
-#[test]
-fn teach_vectors() {
-    family("teach");
-}
-
-#[test]
-fn envelope_vectors() {
-    family("envelope");
-}
-
-#[test]
-fn argv_vectors() {
-    family("argv");
-}
-
-#[test]
-fn call_vectors() {
-    family("call");
-}
-
-#[test]
-fn by_name_vectors() {
-    family("by_name");
-}
-
-#[test]
-fn set_config_vectors() {
-    family("set_config");
-}
-
-#[test]
-fn vocab_edit_vectors() {
-    family("vocab_edit");
-}
-
-#[test]
-fn reference_vectors() {
-    family("reference");
-}
-
-#[test]
-fn lock_vectors() {
-    family("lock");
-}
-
-#[test]
-fn render_lock_vectors() {
-    family("render_lock");
-}
-
-#[test]
-fn add_entry_vectors() {
-    family("add_entry");
-}
-
-#[test]
-fn remove_entry_vectors() {
-    family("remove_entry");
-}
-
-#[test]
-fn lint_vectors() {
-    family("lint");
-}
-
-#[test]
-fn cases_vectors() {
-    family("cases");
-}
-
-#[test]
-fn thieves_vectors() {
-    family("thieves");
-}
-
-#[test]
-fn judge_vectors() {
-    family("judge");
-}
-
-#[test]
-fn regressions_vectors() {
-    family("regressions");
-}
-
-#[test]
-fn weave_plan_vectors() {
-    family("weave.plan");
-}
-
-#[test]
-fn weave_execute_vectors() {
-    family("weave.execute");
-}
-
-#[test]
-fn baseline_vectors() {
-    family("baseline");
-}
-
-#[test]
-fn reflex_dts_vectors() {
-    family("reflex_dts");
-}
-
-#[test]
-fn project_dts_vectors() {
-    family("project_dts");
-}
-
-#[test]
-fn digest_vectors() {
-    family("digest");
-}
-
-#[test]
-fn fix_vectors() {
-    family("fix");
-}
-
-#[test]
-fn values_vectors() {
-    family("values");
-}
-
-#[test]
-fn picked_vectors() {
-    family("picked");
+fn every_family_in_the_directory_has_a_test() {
+    let dir = spec().join("vectors");
+    let mut found: Vec<String> = fs::read_dir(&dir)
+        .unwrap_or_else(|error| panic!("{}: {error}", dir.display()))
+        .map(|entry| {
+            entry
+                .expect("a directory entry")
+                .file_name()
+                .to_string_lossy()
+                .into_owned()
+        })
+        .collect();
+    found.sort();
+    let mut listed: Vec<&str> = FAMILIES.to_vec();
+    listed.sort_unstable();
+    assert_eq!(
+        found, listed,
+        "spec/vectors/ and the families tested here differ"
+    );
 }

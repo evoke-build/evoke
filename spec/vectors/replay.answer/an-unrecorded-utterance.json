@@ -1,0 +1,17 @@
+{
+  "input": {
+    "recording": {
+      "id": "replay",
+      "answers": {}
+    },
+    "request": {
+      "$ref": "fixtures/request-kill-the-lights.json"
+    }
+  },
+  "expect": {
+    "err": {
+      "type": "unrecorded",
+      "identity": "kill the lights"
+    }
+  }
+}

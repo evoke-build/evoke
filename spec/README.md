@@ -16,7 +16,8 @@ three suites, owned by none. The seeds under [reflexes/](../reflexes/README.md) 
 
 `vectors/<function>/<case>.json` is `{ "input": …, "expect": … }`. `input` holds the function's arguments by name, as
 the op table in `crates/evoke-wasm/src/ops.rs` takes them, one op per function of the core's surface; `expect` is the
-result, `{ "ok": … }` or `{ "err": … }` for a `Result`. Values take the [wire form](#wire);
+result, `{ "ok": … }` or `{ "err": … }` for a `Result`. Every op has a family but `version`, which answers the
+build's own number; a family the runners do not list fails their check. Values take the [wire form](#wire);
 `{ "$ref": "fixtures/<name>.json" }`, a path under `spec/`, stands for that file's value. A file goes in as
 `{ "file": …, "toml": "…" }` or `{ "file": …, "json": … }`. A runner compares typed values, so `40` and `40.0` are
 one number.

@@ -90,3 +90,10 @@ test("a program that cannot start says why; a grandchild holding stdout does not
   deepStrictEqual(result, { text: "hi" })
   ok(performance.now() - started < 2500, "settled at exit plus a grace, not at the grandchild's end")
 })
+
+test("a body's own error is the failure's cause", async () => {
+  await rejects(
+    inline("running timer", () => { throw new RangeError("boom") }, envelope(), undefined),
+    (error: FailureError) => error.message === "running timer: boom  →  run(d)" && error.cause instanceof RangeError,
+  )
+})

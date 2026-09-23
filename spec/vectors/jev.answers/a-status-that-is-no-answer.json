@@ -1,0 +1,13 @@
+{
+  "input": {
+    "status": 503,
+    "body": "busy",
+    "credential": "TYPESAFE_API_KEY"
+  },
+  "expect": {
+    "err": {
+      "type": "status",
+      "status": 503
+    }
+  }
+}

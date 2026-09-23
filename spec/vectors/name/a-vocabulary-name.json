@@ -1,0 +1,9 @@
+{
+  "input": {
+    "text": "rooms",
+    "kind": "vocab"
+  },
+  "expect": {
+    "ok": "rooms"
+  }
+}
