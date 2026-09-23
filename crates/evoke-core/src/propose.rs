@@ -111,7 +111,7 @@ impl Read {
 /// What one kind finds at a position of the input.
 type Recognizer = fn(&[char], usize) -> Option<Found>;
 
-/// In the spike's order: an earlier kind's match hides the candidates that start inside it.
+/// In this order: an earlier kind's match hides the candidates that start inside it.
 const RECOGNIZERS: [Recognizer; 5] = [quoted, url, email, duration, number];
 
 fn quoted(chars: &[char], i: usize) -> Option<Found> {
@@ -186,7 +186,7 @@ fn email(chars: &[char], i: usize) -> Option<Found> {
     })
 }
 
-/// Unit forms in the order the spike's expression tries them, with their seconds.
+/// Unit forms in the order they are tried, with their seconds.
 const UNITS: [(&str, f64); 15] = [
     ("seconds", 1.0),
     ("second", 1.0),

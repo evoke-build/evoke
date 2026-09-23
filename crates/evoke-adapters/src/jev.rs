@@ -31,7 +31,7 @@ struct Floors {
     write: Prob,
 }
 
-/// The floors the spike held: `route`, `fits` for the runner-up, `read`, `write`.
+/// The floors the adapter ships: `route`, `fits` for the runner-up, `read`, `write`.
 const DEFAULTS: Floors = Floors {
     route: floor(0.5),
     fits: floor(0.3),
@@ -448,7 +448,7 @@ mod tests {
         assert_eq!(raw.0["weave.split_0"]["yes"], 0.73);
     }
 
-    /// The shape Jev answered with during the spike: a choice with its probabilities, a noul with one number.
+    /// The shape Jev answers with: a choice with its probabilities, a noul with one number.
     const RESPONSE: &str = r#"{"model": "jev-1.13.0", "answers": {"fits.awake": {"type": "noul", "noul": 0.96}, "power.action": {"type": "choice", "choice": "unstated", "confidence": 0.94, "probabilities": {"sleep": 0.04, "shutdown": 0.0, "unstated": 0.96, "restart": 0.0}}, "route": {"type": "choice", "choice": "awake", "confidence": 0.99, "probabilities": {"awake": 0.99, "none": 0.01, "power": 0.0}}}, "usage": {"input_tokens": 5371}}"#;
 
     #[test]

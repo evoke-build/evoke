@@ -874,7 +874,7 @@ pub fn meaning_prompt(retry: Option<&str>) -> String {
     }
 }
 
-/// `evoke --help`: the version with the thesis, then every command by group — its line, then what it does, in
+/// `evoke --help`: the version with its line, then every command by group — its line, then what it does, in
 /// a second column where the terminal is wide enough for one and under the line where it is not — then the exit
 /// codes and the manual. Plain: it goes to stdout. `columns` is the terminal's width, when stdout is one.
 #[must_use]
