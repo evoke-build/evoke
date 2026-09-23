@@ -59,7 +59,8 @@ and the seeds test read those directory names as owned files:
   runner records the `node` on its `PATH` in the home's state, as `evoke sync` will on a machine.
 - `answers.toml` — what the `replay` adapter answers, keyed by utterance identity, with the gate it declares; the
   runner names it in `EVOKE_ANSWERS`. A flow without one makes no decision.
-- `remote/<owner>/<repo>/<tag>/` — a remote's tree at that tag. The runner builds a bare repository from the trees,
+- `remote/<owner>/<repo>/<tag>/` — a remote's tree at that tag; a link inside it is copied as what it points at, so
+  a tree can be the repository's own `reflexes/<name>`. The runner builds a bare repository from the trees,
   one commit per tag in version order, author and committer `evoke spec <spec@evoke.build>` at
   `2026-09-19T00:00:00Z`, message the tag; then points `https://github.com/<owner>/<repo>` at it through git's
   `url.<path>.insteadOf`. A lock in `home/` carries the commit and `h1` that recipe yields.

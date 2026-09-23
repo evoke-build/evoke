@@ -1,0 +1,106 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md): the first ten minutes over the
+# collection, installed from its own directories, every question the plan asks at each step.
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.6
+write = 0.8
+
+[answers."set the volume to 40 percent"]
+route                  = { volume = 0.93, awake = 0.01, timer = 0.01, none = 0.05 }
+"fits.awake"           = { yes = 0.02 }
+"fits.download"        = { yes = 0.02 }
+"fits.lock"            = { yes = 0.02 }
+"fits.mail"            = { yes = 0.02 }
+"fits.power"           = { yes = 0.02 }
+"fits.screenshot"      = { yes = 0.02 }
+"fits.timer"           = { yes = 0.03 }
+"fits.trash"           = { yes = 0.02 }
+"fits.volume"          = { yes = 0.8 }
+"fits.wifi"            = { yes = 0.02 }
+"fits.open"            = { yes = 0.02 }
+"power.action"         = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+"screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
+"screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
+"wifi.state"           = { unstated = 0.9, on = 0.05, off = 0.05 }
+"volume.level"         = { "18-28" = 0.95, unstated = 0.05 }
+
+[answers."kill the wifi"]
+route                  = { wifi = 0.9, power = 0.02, lock = 0.02, none = 0.06 }
+"fits.awake"           = { yes = 0.02 }
+"fits.download"        = { yes = 0.02 }
+"fits.lock"            = { yes = 0.05 }
+"fits.mail"            = { yes = 0.02 }
+"fits.power"           = { yes = 0.05 }
+"fits.screenshot"      = { yes = 0.02 }
+"fits.timer"           = { yes = 0.02 }
+"fits.trash"           = { yes = 0.02 }
+"fits.volume"          = { yes = 0.02 }
+"fits.wifi"            = { yes = 0.75 }
+"fits.open"            = { yes = 0.02 }
+"power.action"         = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+"screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
+"screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
+"wifi.state"           = { off = 0.72, on = 0.2, unstated = 0.08 }
+# Once places has a word, open is active and download's optional `to` has a question: the flow's last step asks.
+"download.to" = { unstated = 0.97, desktop = 0.03 }
+"open.place"  = { unstated = 0.96, desktop = 0.04 }
+"fits.note"   = { yes = 0.02 }
+
+[answers."restart the computer"]
+route                  = { power = 0.97, wifi = 0.01, none = 0.02 }
+"fits.awake"           = { yes = 0.02 }
+"fits.download"        = { yes = 0.02 }
+"fits.lock"            = { yes = 0.05 }
+"fits.mail"            = { yes = 0.02 }
+"fits.power"           = { yes = 0.9 }
+"fits.screenshot"      = { yes = 0.02 }
+"fits.timer"           = { yes = 0.02 }
+"fits.trash"           = { yes = 0.02 }
+"fits.volume"          = { yes = 0.02 }
+"fits.wifi"            = { yes = 0.05 }
+"fits.open"            = { yes = 0.02 }
+"power.action"         = { restart = 0.98, shutdown = 0.01, sleep = 0.01 }
+"screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
+"screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
+"wifi.state"           = { unstated = 0.9, on = 0.05, off = 0.05 }
+
+[answers."what time is it"]
+route                  = { none = 0.7, timer = 0.2, awake = 0.05, lock = 0.05 }
+"fits.awake"           = { yes = 0.05 }
+"fits.download"        = { yes = 0.02 }
+"fits.lock"            = { yes = 0.05 }
+"fits.mail"            = { yes = 0.02 }
+"fits.power"           = { yes = 0.02 }
+"fits.screenshot"      = { yes = 0.02 }
+"fits.timer"           = { yes = 0.2 }
+"fits.trash"           = { yes = 0.02 }
+"fits.volume"          = { yes = 0.02 }
+"fits.wifi"            = { yes = 0.02 }
+"fits.open"            = { yes = 0.02 }
+"power.action"         = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+"screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
+"screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
+"wifi.state"           = { unstated = 0.9, on = 0.05, off = 0.05 }
+
+[answers."open my desktop folder"]
+route                  = { open = 0.91, download = 0.02, lock = 0.01, none = 0.06 }
+"download.to"          = { unstated = 0.92, desktop = 0.08 }
+"fits.awake"           = { yes = 0.02 }
+"fits.download"        = { yes = 0.05 }
+"fits.lock"            = { yes = 0.02 }
+"fits.mail"            = { yes = 0.02 }
+"fits.power"           = { yes = 0.02 }
+"fits.screenshot"      = { yes = 0.02 }
+"fits.timer"           = { yes = 0.02 }
+"fits.trash"           = { yes = 0.02 }
+"fits.volume"          = { yes = 0.02 }
+"fits.wifi"            = { yes = 0.02 }
+"fits.open"            = { yes = 0.8 }
+"open.place"           = { desktop = 0.95, unstated = 0.05 }
+"power.action"         = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+"screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
+"screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
+"wifi.state"           = { unstated = 0.9, on = 0.05, off = 0.05 }

@@ -59,6 +59,11 @@ fn first_run() {
 }
 
 #[test]
+fn first_ten() {
+    flow("first-ten");
+}
+
+#[test]
 fn repl() {
     flow("repl");
 }
@@ -500,7 +505,8 @@ fn tagged(repo: &Path) -> Vec<(String, PathBuf)> {
 
 /// The recipe: a bare repository with one commit per tag in version order, each committed by the spec at one
 /// instant with the tag as its message, tagged without `v`. Returns the commits in order. `git_home` is git's
-/// `HOME`, kept away from the user's own `.gitconfig`.
+/// `HOME`, kept away from the user's own `.gitconfig`. A tree is copied first, links followed, so a tag that
+/// links to the collection's own directories commits their files, never the links.
 fn bare_repository(bare: &Path, trees: &[(String, PathBuf)], git_home: &Path) -> Vec<String> {
     let git = |args: &[&str], cwd: &Path, index: &Path| -> String {
         let output = Command::new("git")
@@ -532,7 +538,12 @@ fn bare_repository(bare: &Path, trees: &[(String, PathBuf)], git_home: &Path) ->
     let index = bare.join("index");
     git(&["init", "--quiet", "--bare"], bare, &index);
     let mut commits: Vec<String> = Vec::new();
-    for (tag, tree) in trees {
+    for (tag, linked) in trees {
+        let tree = &git_home
+            .join("trees")
+            .join(bare.file_name().expect("a repo"))
+            .join(tag);
+        copy(linked, tree);
         git(
             &["--work-tree", &utf8(tree), "add", "--all", "."],
             tree,

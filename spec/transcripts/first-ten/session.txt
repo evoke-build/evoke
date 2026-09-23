@@ -1,0 +1,51 @@
+# The first ten minutes over the collection, as the manual's page shows them; the recording answers as Jev would.
+# In the remote, volume.mts and wifi.mts stand in for the collection's bodies and say what those say on a Mac, and
+# ~/bin/open stands in for the Mac's open, which says nothing: the flow changes nothing on the machine it runs on.
+$ evoke add evoke-build/reflexes
++ awake       evoke-build/reflexes/awake 0.1.0       write        runs awake.mts
++ download    evoke-build/reflexes/download 0.1.0    write        runs download.mts
++ lock        evoke-build/reflexes/lock 0.1.0        write        runs lock.mts
++ mail        evoke-build/reflexes/mail 0.1.0        write        runs mail.mts
++ note        evoke-build/reflexes/note 0.1.0        write        runs note.mts
++ open        evoke-build/reflexes/open 0.1.0        read         runs open
++ power       evoke-build/reflexes/power 0.1.0       destructive  runs power.mts
++ screenshot  evoke-build/reflexes/screenshot 0.1.0  write        runs screenshot.mts
++ timer       evoke-build/reflexes/timer 0.1.0       write        runs timer.mts
++ trash       evoke-build/reflexes/trash 0.1.0       destructive  runs osascript
++ visit       evoke-build/reflexes/visit 0.1.0       read         runs visit.mts
++ volume      evoke-build/reflexes/volume 0.1.0      write        runs volume.mts
++ wifi        evoke-build/reflexes/wifi 0.1.0        write        runs wifi.mts
+  inactive  note: config "file" is not set      →  evoke config note file <value>
+  inactive  open: vocabulary "places" is empty  →  evoke vocab places add <word> "<meaning>"
+  inactive  visit: vocabulary "sites" is empty  →  evoke vocab sites add <word> "<meaning>"
+$ evoke "set the volume to 40 percent"
+  volume level="40 percent"  0.93
+volume 40%
+$ evoke "kill the wifi"
+  wifi state="off" · write · weakest: state 0.72
+  Turn Wi-Fi off?  [y]es [n]o [t]each > t
++ overlays/wifi.toml  [examples] "kill the wifi" = { state = "off" }
+wi-fi off
+$ evoke "restart the computer"
+  power action="restart" · destructive · weakest: route 0.97
+  Really restart now?  [y]es [n]o [t]each > n
+[2]
+$ evoke "what time is it"
+  none 0.70 · timer 0.20 · awake 0.05 · lock 0.05
+  note, open and visit are inactive  →  evoke show
+[2]
+$ evoke vocab places add desktop "The desktop." --value /Users/you/Desktop
++ vocab/places.toml  desktop = { what = "The desktop.", value = "/Users/you/Desktop" }
+$ PATH=~/bin:$PATH evoke "open my desktop folder"
+  open place="desktop"  0.91
+$ evoke config note file notes.txt
++ evoke.toml  [config.note] file = "notes.txt"
+$ evoke teach "go dark" wifi state=off
++ overlays/wifi.toml  [examples] "go dark" = { state = "off" }
+$ evoke teach "what time is it" not timer
++ overlays/timer.toml  [examples] "what time is it" = false
+$ evoke try "kill the wifi"
+  wifi 0.90 · none 0.06 · power 0.02 · lock 0.02
+  state  off 0.72 · on 0.20 · unstated 0.08
+  fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · timer 0.02 · trash 0.02 · volume 0.02
+  confirm · wifi state="off" · write · weakest: state 0.72
