@@ -1,8 +1,9 @@
 # The collection
 
 `evoke-build/reflexes` is the first-party collection: thirteen reflexes for what a Mac does at a word. Each
-reflex is one directory, with `reflex.toml` and the file it runs, where it runs one. There is nothing to build,
-and nothing to install but `evoke` itself.
+reflex is one directory, with `reflex.toml` and the file it runs, where it runs one. There is nothing to build.
+Eleven of the thirteen run a file and need Node 24 or newer on your `PATH`; `open` and `trash` run a program
+the Mac has.
 
 ```bash
 evoke add evoke-build/reflexes
@@ -13,7 +14,7 @@ evoke add evoke-build/reflexes
 | `awake`      | Keeps the laptop awake for a duration, or until `pkill caffeinate` | write       |                 |
 | `download`   | Saves a URL's file to `~/Downloads`, or to a place you name        | write       | `places`        |
 | `lock`       | Locks the screen                                                   | write       |                 |
-| `mail`       | Starts an email in your mail app                                   | read        |                 |
+| `mail`       | Starts an email in your mail app                                   | write       |                 |
 | `note`       | Appends a dated line to your notes file                            | write       | `file`          |
 | `open`       | Opens one of your folders                                          | read        | `places`        |
 | `power`      | Sleeps, restarts or shuts down                                     | destructive |                 |
@@ -26,8 +27,9 @@ evoke add evoke-build/reflexes
 
 ## Yours to set
 
-A reflex that reads your words or a setting stays inactive until it has them. `evoke` says which line gives it
-what it needs. Two vocabularies and one setting cover the collection:
+A reflex that needs your words or a setting for a required argument stays inactive until it has them. `evoke`
+says which line gives it what it needs. `download` runs without `places`; with it, a place you name. Two
+vocabularies and one setting cover the collection:
 
 ```bash
 evoke vocab places add desktop "The desktop." --value /Users/you/Desktop      # a word per folder; the value its path
@@ -44,14 +46,16 @@ private window` · `saved report.pdf to ~/Downloads (1.2 MB)`.
 
 ## How they are built
 
-- **macOS**, one self-contained file each. The first line of every body says so. `open`, `trash` and `wifi` are
-  argv reflexes and need no runtime.
+- **macOS**, one self-contained file each; a body that is not on a Mac says so and stops. `open` and `trash` are
+  argv reflexes and need no runtime. `wifi` finds the Wi-Fi device by its port's name: `en0` on a laptop, often
+  not on a desktop with Ethernet.
 - What outlives a run detaches and returns at once. `awake` leaves `caffeinate` running. `timer` leaves a script
   that waits, then notifies with a sound.
-- `power` sends the login window's own sleep, restart and shutdown events. So apps are asked to quit, and no
-  second dialog appears, since the decision was confirmed already. `lock` opens the system's lock screen and needs
-  no Accessibility permission.
-- `download` never writes over a file already there. It removes a partial file when a run is cut short. `visit`
+- `power` sleeps with `pmset`, and sends the login window's own restart and shutdown events. So apps are asked
+  to quit, and no second dialog appears, since the decision was confirmed already. `lock` opens the system's lock
+  screen and needs no Accessibility permission.
+- `download` never writes over a file already there. A download the 30 s deadline cuts short is removed, and the
+  run says so. A body that runs a program reports the program's own words when it fails. `visit`
   opens a private window through the default browser's own flag, in Chrome, Brave, Vivaldi, Edge or Firefox.
   Safari opens none from a script.
 - Every reflex carries at least three examples and three tests, one of them `false`. The reflexes name each other

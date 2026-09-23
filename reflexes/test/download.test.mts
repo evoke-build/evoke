@@ -57,6 +57,11 @@ test("a place is a path under ~, or a word for a folder there; one that is not t
   await rejects(download({ url: `${base}/files/report%20final.pdf`, to: "~/nowhere" }, context()), { message: "~/nowhere does not exist" })
 })
 
+test("a hidden file is never written", async () => {
+  await rejects(download({ url: `${base}/files/.env` }, context()), { message: ".env would be a hidden file" })
+  await rejects(access(join(home, "Downloads/.env")))
+})
+
 test("a file already there is never written over", async () => {
   await rejects(download({ url: `${base}/files/report%20final.pdf` }, context()), { message: "report final.pdf is already in ~/Downloads" })
   equal(await readFile(join(home, "Downloads/report final.pdf"), "utf8"), "twelve bytes")

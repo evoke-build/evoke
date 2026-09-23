@@ -1,0 +1,67 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-download.json"
+    },
+    "input": "download https://example.com/report.pdf",
+    "tags": [],
+    "scope": "full"
+  },
+  "expect": {
+    "ok": {
+      "state": {
+        "request": "download https://example.com/report.pdf"
+      },
+      "questions": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "download": {
+              "what": "Download a file from a URL.\nInto your downloads folder or a place you name; nothing is opened or run.",
+              "not_for": [
+                "opening a page in the browser",
+                "cloning a repository"
+              ],
+              "examples": [
+                "download https://example.com/report.pdf",
+                "fetch https://example.com/photos.zip to the desktop",
+                "save https://example.com/notes.txt"
+              ]
+            },
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        },
+        "fits.download": {
+          "type": "yesno",
+          "ask": "Does `download` do the specific thing the request asks for?",
+          "yes": "Download a file from a URL.\nInto your downloads folder or a place you name; nothing is opened or run.",
+          "no": "Something else, such as: opening a page in the browser; cloning a repository."
+        },
+        "download.url": {
+          "type": "choice",
+          "ask": "Which URL?",
+          "options": {
+            "9-39": "https://example.com/report.pdf",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        }
+      },
+      "proposed": [
+        {
+          "span": {
+            "start": 9,
+            "end": 39,
+            "text": "https://example.com/report.pdf"
+          },
+          "value": {
+            "type": "url",
+            "value": "https://example.com/report.pdf"
+          }
+        }
+      ]
+    }
+  }
+}

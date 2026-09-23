@@ -9,6 +9,17 @@ const exec = promisify(execFile)
 export default (async ({ to, subject }, { signal }) => {
   if (process.platform !== "darwin") throw new Error("runs on macOS only")
   const url = subject === undefined ? `mailto:${to}` : `mailto:${to}?subject=${encodeURIComponent(subject)}`
-  await exec("open", [url], { signal })
+  try {
+    await exec("open", [url], { signal })
+  } catch (error) {
+    if (signal.aborted) throw signal.reason
+    throw new Error(said(error) ?? "the mail app did not open")
+  }
   return subject === undefined ? `new mail to ${to}` : `new mail to ${to} about "${subject}"`
 }) satisfies Reflex
+
+/** What a failed command said on stderr, when it said anything; else nothing, and the caller's own words stand. */
+function said(error: unknown): string | undefined {
+  const text = typeof error === "object" && error !== null && "stderr" in error ? error.stderr : undefined
+  return typeof text === "string" && text.trim() !== "" ? text.trim() : undefined
+}

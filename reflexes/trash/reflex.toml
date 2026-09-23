@@ -6,6 +6,7 @@ Everything in it is gone for good."""
 
 not_for = ["deleting one file", "clearing downloads or caches"]
 tags    = ["files"]
+effect  = "destructive"
 confirm = "Empty the trash?"
 run     = ["osascript", "-e", 'tell application "Finder" to empty the trash']
 

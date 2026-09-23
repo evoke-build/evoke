@@ -49,8 +49,7 @@ each, never `none` or `unstated`. Examples that assert an option teach it: `"kil
 ## Vocabularies
 
 The user's closed set, by name. A reflex that names a vocabulary reads whatever the user put in
-`vocab/<name>.toml`. A package never ships or writes one. An empty vocabulary makes the reflex inactive until the
-user adds a word. The names are a convention the collection sets: `rooms`, `places`, `sites`. That way, two
+`vocab/<name>.toml`. A package never ships or writes one. An empty vocabulary makes the reflex inactive until a word is there, when the argument is required. An optional argument over an empty vocabulary is never asked and never stated, and the reflex stays active. The names are a convention the collection sets: `rooms`, `places`, `sites`. That way, two
 reflexes asking for a place share one list. A word's `value` is for the body only: a path, a URL, a device id.
 
 A shipped manifest may not assert a vocabulary argument in its records, not even as unstated. The words are not

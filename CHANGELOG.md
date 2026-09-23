@@ -26,6 +26,16 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   that adds the rest; a ref with a tag it has not, a collection with `--as`, a word to remove that is not there
   and a directory that is not there each end in the command that helps. `update <name> --accept <other>` is
   refused instead of dropping the accept. A failed keep leaves no `.tmp` directory in the store.
+- An optional argument over an empty vocabulary no longer makes its reflex inactive: the argument is never asked
+  and never stated, and the reflex runs without it. The collection's `download` works the moment it is installed,
+  and takes a place once `places` has words. A required argument's empty vocabulary still makes the reflex
+  inactive, with the line that fills it.
+- The collection: `mail` is `write`, since a draft is written; `trash` says `destructive` in its manifest rather
+  than by default; `wifi` finds the Wi-Fi device by its port's name instead of assuming `en0`, a file body now, so
+  the next tag carries it; `note` starts on a fresh line when the file's last line has none; `lock`, `mail`,
+  `power`, `visit` and `volume` report a failed command's own words instead of Node's `Command failed` line;
+  `screenshot` tells the deadline's end from a cancel; `visit`'s fix line names the word to give a URL. Eleven of
+  the thirteen need Node 24 or newer, and the pages say so.
 - The project schema reads `ssh://git@host/…`, the form the manual documents and `evoke add` accepts, and
   reserves `weave` as the binary does; the manifest schema wants the summary line the reader wants; the schemas
   point at the manual on the site; a `[adapters.replay]` table takes what a later `replay` may need. The

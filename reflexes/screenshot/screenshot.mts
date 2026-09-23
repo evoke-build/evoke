@@ -16,6 +16,7 @@ export default (async ({ area = "screen", clipboard }, { signal }) => {
   try {
     await exec("screencapture", ["-x", ...MODE[area], ...(clipboard ? ["-c"] : [file])], { signal })
   } catch (error) {
+    if (signal.aborted) throw signal.reason
     throw new Error(stderr(error) ?? "screenshot cancelled")
   }
   return clipboard ? "copied to the clipboard" : `saved ${shown(file)}`

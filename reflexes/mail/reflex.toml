@@ -6,7 +6,7 @@ To one address, with an optional subject; nothing goes out until you press send.
 
 not_for = ["reading or searching mail", "chat and text messages"]
 tags    = ["mail"]
-effect  = "read"
+effect  = "write"
 confirm = "Write to {to}?"
 run     = "mail.mts"
 

@@ -8,7 +8,7 @@ not_for = ["joining or leaving a network", "Bluetooth", "airplane mode"]
 tags    = ["network"]
 effect  = "write"
 confirm = "Turn Wi-Fi {state}?"
-run     = ["networksetup", "-setairportpower", "en0", "{state}"]
+run     = "wifi.mts"
 
 [args.state]
 ask         = "On or off?"

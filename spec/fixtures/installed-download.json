@@ -1,0 +1,19 @@
+{
+  "reflexes": {
+    "download": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "$ref": "fixtures/download.json"
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    }
+  },
+  "vocab": {},
+  "adapter": "jev-1.13.0",
+  "evoke": "0.1.0"
+}

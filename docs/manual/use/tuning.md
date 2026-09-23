@@ -2,9 +2,9 @@
 
 A reflex ships its wording. You own the last word. Every change lands in a file under your project. `evoke`
 writes it with your comments and order kept, and every later decision reads it. No command here needs the
-classifier's key.
+classifier's key but `test`, which asks it.
 
-## `show` — what is installed, and one reflex as used
+## `show`: what is installed, and one reflex as used
 
 ```text
 $ evoke show
@@ -29,7 +29,7 @@ $ evoke show lights
 + "kill the lights" = { state = "off" }
 ```
 
-## `teach` — one line in your overlay
+## `teach`: one line in your overlay
 
 ```text
 $ evoke teach "kill the lights" lights state=off
@@ -95,7 +95,8 @@ skipped. An overlay that fails to parse makes its reflex inactive, never silentl
 ## Vocabularies
 
 `vocab/<name>.toml` is a closed list of your words. Every argument that names the vocabulary shares it. A package
-never ships or writes one. A reflex that reads an empty vocabulary stays inactive until you fill it.
+never ships or writes one. A reflex whose required argument reads an empty vocabulary stays inactive until you
+fill it; an optional one is simply never stated.
 
 ```toml
 # vocab/rooms.toml
@@ -119,7 +120,7 @@ $ evoke vocab rooms remove attic
 `add` of a word already there replaces its meaning. A word may contain spaces. `none` and `unstated` are
 reserved. At an ask over a vocabulary, `+` adds a word without leaving the prompt.
 
-## `config` — settings and secrets
+## `config`: settings and secrets
 
 A manifest declares under `[config]` what it needs from you. Each setting lands under `[config.<name>]` in
 `evoke.toml`. A reflex with a setting unset stays inactive.
@@ -138,7 +139,7 @@ A **secret** is only ever set with `--env <VAR>`. Your file names the variable. 
 from the environment at run time, and nowhere else. `--env` works for any key. An undeclared key is refused, with
 `evoke show <name>`, which lists what the reflex declares.
 
-## `test` — every record, judged
+## `test`: every record, judged
 
 ```text
 $ evoke test

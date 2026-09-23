@@ -185,11 +185,20 @@ impl TryFrom<RawPlan> for Plan {
         }
         for (name, active) in &raw.active {
             let asked = |id: QuestionId| raw.slots.contains_key(&id);
+            // An optional argument over an empty vocabulary has no question: never asked, never stated.
+            let unasked = |argument: &Argument| {
+                matches!(
+                    argument.kind,
+                    Kind::Value {
+                        source: Source::Vocab(_),
+                        optional: true
+                    }
+                )
+            };
             if !asked(QuestionId::Fits(name.clone()))
-                || !active
-                    .args
-                    .keys()
-                    .all(|arg| asked(QuestionId::Arg(name.clone(), arg.clone())))
+                || !active.args.iter().all(|(arg, argument)| {
+                    asked(QuestionId::Arg(name.clone(), arg.clone())) || unasked(argument)
+                })
             {
                 return Err(format!("{name} is active without all of its questions"));
             }
@@ -480,12 +489,13 @@ fn judge<'a>(
     for arg in manifest.args.values() {
         let Kind::Value {
             source: Source::Vocab(vocabulary),
-            ..
+            optional,
         } = &arg.kind
         else {
             continue;
         };
-        if named.contains(&vocabulary) {
+        // An optional argument over an empty vocabulary is never asked and never stated: the reflex stays active.
+        if *optional || named.contains(&vocabulary) {
             continue;
         }
         named.push(vocabulary);
@@ -641,6 +651,7 @@ fn too_many_options(
 }
 
 /// One slot per argument: a choice with `unstated`, its examples attached to the options they assert; or a pick.
+/// An optional argument over an empty vocabulary has none: never asked, never stated.
 fn argument_slots(
     name: &LocalName,
     manifest: &Manifest,
@@ -650,7 +661,7 @@ fn argument_slots(
     manifest
         .args
         .iter()
-        .map(|(arg, argument)| {
+        .filter_map(|(arg, argument)| {
             let teach =
                 |key: &str, what: &Clean| match taught.get(arg).and_then(|keys| keys.get(key)) {
                     Some(examples) => Text::Rich {
@@ -700,21 +711,29 @@ fn argument_slots(
                 ))),
                 Kind::Value {
                     source: Source::Vocab(vocabulary),
-                    ..
-                } => Slot::Ready(Question::Choice(Choice::closed(
-                    ask,
-                    vocab
+                    optional,
+                } => {
+                    let words: Vec<_> = vocab
                         .get(vocabulary)
                         .into_iter()
                         .flat_map(|words| words.iter())
-                        .map(|(word, meaning)| {
-                            (Key::from(word), teach(word.as_str(), &meaning.what))
-                        })
-                        .collect(),
-                    sentinel(),
-                ))),
+                        .collect();
+                    if *optional && words.is_empty() {
+                        return None;
+                    }
+                    Slot::Ready(Question::Choice(Choice::closed(
+                        ask,
+                        words
+                            .into_iter()
+                            .map(|(word, meaning)| {
+                                (Key::from(word), teach(word.as_str(), &meaning.what))
+                            })
+                            .collect(),
+                        sentinel(),
+                    )))
+                }
             };
-            (QuestionId::Arg(name.clone(), arg.clone()), slot)
+            Some((QuestionId::Arg(name.clone(), arg.clone()), slot))
         })
         .collect()
 }

@@ -24,10 +24,18 @@ const HANDLERS = join(homedir(), "Library/Preferences/com.apple.LaunchServices/c
 export default (async ({ site, incognito }, { signal }) => {
   if (process.platform !== "darwin") throw new Error("runs on macOS only")
   if (!URL.canParse(site) || !/^https?:$/.test(new URL(site).protocol)) {
-    throw new Error(`"${site}" is a word without a URL: evoke vocab sites add ${site} "<meaning>" --value <url>`)
+    throw new Error(`"${site}" is not a URL; give the word one: evoke vocab sites add <word> "<meaning>" --value <url>`)
+  }
+  const opened = async (args: string[]) => {
+    try {
+      await exec("open", args, { signal })
+    } catch (error) {
+      if (signal.aborted) throw signal.reason
+      throw new Error(said(error) ?? `${site} did not open`)
+    }
   }
   if (!incognito) {
-    await exec("open", [site], { signal })
+    await opened([site])
     return `opened ${site}`
   }
   const browser = await defaultBrowser(signal)
@@ -35,9 +43,15 @@ export default (async ({ site, incognito }, { signal }) => {
   if (flag === undefined) {
     throw new Error(`${browser} opens no private window from a script; make Chrome, Brave, Vivaldi, Edge or Firefox the default browser`)
   }
-  await exec("open", ["-n", "-b", browser, "--args", flag, site], { signal })
+  await opened(["-n", "-b", browser, "--args", flag, site])
   return `opened ${site} in a private window`
 }) satisfies Reflex
+
+/** What a failed command said on stderr, when it said anything; else nothing, and the caller's own words stand. */
+function said(error: unknown): string | undefined {
+  const text = typeof error === "object" && error !== null && "stderr" in error ? error.stderr : undefined
+  return typeof text === "string" && text.trim() !== "" ? text.trim() : undefined
+}
 
 /** The bundle identifier LaunchServices hands `https` to; Safari when it names none. */
 async function defaultBrowser(signal: AbortSignal): Promise<string> {
