@@ -28,7 +28,7 @@ export class Transport extends Error {
   }
 }
 
-/** `POST url` with a bearer token and a JSON body. */
+/** `POST url` with a bearer token and a JSON body; `via` is the proxy's host when one carries the connection. */
 export function post(
   url: string,
   bearer: string,
@@ -36,6 +36,7 @@ export function post(
   agent: Agent,
   signal: AbortSignal,
   timeout: number,
+  via?: string,
 ): Promise<Response> {
   const host = new URL(url).host
   return new Promise((resolve, reject) => {
@@ -76,23 +77,30 @@ export function post(
       // A pooled socket the server closed while idle: nothing was received, so the attempt is safe to repeat.
       const stale = sent.reusedSocket && error.code === "ECONNRESET"
       const made = connected && !stale
-      reject(new Transport(describe(error, host, made), made))
+      reject(new Transport(describe(error, host, made, via), made))
     })
     sent.end(body)
   })
 }
 
-/** What went wrong, in plain words: the host named, the system's own cause, no code and no number. */
-export function describe(error: NodeJS.ErrnoException, host: string, connected: boolean): string {
+/** What went wrong, in plain words: the host named, or the proxy when one carries the connection; the system's
+ * own cause, no code and no number. */
+export function describe(error: NodeJS.ErrnoException, host: string, connected: boolean, via?: string): string {
+  if (error.code === "ERR_PROXY_TUNNEL") {
+    const status = "statusCode" in error && typeof error.statusCode === "number" ? `: ${error.statusCode}` : ""
+    return `the proxy ${via ?? "the environment names"} refused the connection${status}`
+  }
   if (error.syscall === "getaddrinfo") {
-    const named = "hostname" in error && typeof error.hostname === "string" ? error.hostname : host
+    const named = "hostname" in error && typeof error.hostname === "string" ? error.hostname : (via ?? host)
     return `could not resolve ${named}`
   }
   const cause = reason(error)
-  return connected ? `${host}: ${cause}` : `could not connect to ${host}: ${cause}`
+  if (connected) return `${host}: ${cause}`
+  return via === undefined ? `could not connect to ${host}: ${cause}` : `could not connect to the proxy ${via}: ${cause}`
 }
 
-/** The system's words for the error's number, the first of an aggregate's; else its code; else its message. */
+/** The system's words for the error's number, the first of an aggregate's; a reset by its name; else the message,
+ * else the code. */
 function reason(error: NodeJS.ErrnoException): string {
   const first = error instanceof AggregateError ? (error.errors[0] as NodeJS.ErrnoException | undefined) : undefined
   const errno = error.errno ?? first?.errno
@@ -100,8 +108,9 @@ function reason(error: NodeJS.ErrnoException): string {
     try {
       return getSystemErrorMessage(errno)
     } catch {
-      // Not a number the system names: the code says it.
+      // Not a number the system names: the words below say it.
     }
   }
-  return error.code ?? first?.code ?? error.message
+  if ((error.code ?? first?.code) === "ECONNRESET") return "connection reset"
+  return error.message || first?.message || error.code || first?.code || "no reason given"
 }

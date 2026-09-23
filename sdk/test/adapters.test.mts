@@ -209,5 +209,5 @@ test("a transport failure is said in plain words, the host named, the system's o
   })
   equal(describe(unknown, "api.typesafe.ai", false), "could not resolve proxy.example")
   equal(describe(new Error("no answer within 1.5 s"), "api.typesafe.ai", true), "api.typesafe.ai: no answer within 1.5 s")
-  equal(describe(Object.assign(new Error("boom"), { code: "EPIPE" }), "api.typesafe.ai", true), "api.typesafe.ai: EPIPE")
+  equal(describe(Object.assign(new Error("boom"), { code: "EPIPE" }), "api.typesafe.ai", true), "api.typesafe.ai: boom")
 })

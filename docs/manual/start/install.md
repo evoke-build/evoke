@@ -57,7 +57,7 @@ The archives are on [GitHub releases](https://github.com/evoke-build/evoke/relea
 npm install @evoke-build/evoke
 ```
 
-The package needs Node 24 or newer, and it is ES modules only. It carries the core as WebAssembly, so it has no
+The package needs Node 24.5 or newer, and it is ES modules only. It carries the core as WebAssembly, so it has no
 build step and no dependencies. The SDK has its own manual section: [Getting started](../sdk/getting-started.md).
 
 ## The key

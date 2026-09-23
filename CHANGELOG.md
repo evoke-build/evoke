@@ -6,6 +6,13 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- Both hosts read the proxy from the same two variables, `HTTPS_PROXY` and `NO_PROXY`, the lower-case names
+  first. Before, the CLI also read `ALL_PROXY` and `HTTP_PROXY`, so the two hosts could use different proxies. A
+  value that is not an `http` or `https` address is refused with the `export` line, never bypassed in silence. A
+  proxy's refusal names the proxy, an offline machine reads "could not resolve", and the CLI follows no redirect
+  from the endpoint.
+- The SDK needs Node 24.5 or newer: the proxy support it relies on arrived there, and an older Node connected
+  around the proxy without a word. Through a proxy, a connection that never answers ends at the deadline.
 - A key the classifier refuses ends in `export TYPESAFE_API_KEY=<value>`, exit 4, in both hosts. Before, the line
   said to run the command again. An empty `TYPESAFE_API_KEY` counts as unset, and the SDK's missing-key line reads
   as the CLI's.

@@ -7,7 +7,7 @@ import { Agent } from "node:https"
 
 import type { Adapter } from "./adapter.ts"
 import { call, command, fromCode, reply } from "./core.ts"
-import { DiagnosticError } from "./errors.ts"
+import { DiagnosticError, FailureError } from "./errors.ts"
 import { type Response, Transport, post } from "./https.ts"
 import type { Diagnostic, Gate, Question, Raw, Settings, State } from "./types.ts"
 
@@ -25,12 +25,34 @@ export type Post = (url: string, bearer: string, body: string, signal: AbortSign
 
 let shared: Agent | undefined
 
-/** Jev, ready to answer; throws at once when no key is set or an override is not a probability. */
+/** Jev, ready to answer; throws at once when no key is set, an override is not a probability, or the proxy named
+ * in the environment is no proxy address. */
 export function jev(options: JevOptions = {}): Adapter {
-  // The environment's proxy, `HTTPS_PROXY` and `NO_PROXY`, as the CLI's transport reads it.
-  shared ??= new Agent({ keepAlive: true, proxyEnv: process.env })
+  const proxy = proxied()
+  // One agent for the process. Through a proxy, the socket timeout is the one bound on the tunnel Node opens for
+  // it — no signal reaches that — so it is the decision's deadline; a direct connection is bounded by the request.
+  shared ??= new Agent({ keepAlive: true, ...(proxy === undefined ? {} : { proxyEnv: proxy.env, timeout: 30_000 }) })
   const agent = shared
-  return over(options, (url, bearer, body, signal, timeout) => post(url, bearer, body, agent, signal, timeout))
+  return over(options, (url, bearer, body, signal, timeout) => post(url, bearer, body, agent, signal, timeout, proxy?.via))
+}
+
+/** The proxy the environment names, as the CLI reads it: `https_proxy` before `HTTPS_PROXY`, `no_proxy` before
+ * `NO_PROXY`; an `http` or `https` address, else refused rather than bypassed in silence; and it needs the Node
+ * that carries `proxyEnv`. */
+export function proxied(): { env: Record<string, string>; via: string } | undefined {
+  const [name, value] = process.env.https_proxy ? ["https_proxy", process.env.https_proxy] : ["HTTPS_PROXY", process.env.HTTPS_PROXY]
+  if (!value) return undefined
+  const url = URL.canParse(value) ? new URL(value) : undefined
+  if (url === undefined || !/^https?:$/.test(url.protocol)) {
+    const fix = { type: "export_key", var: name } as const
+    throw new DiagnosticError([{ message: `${name} is not an http or https proxy address`, fix, command: command(fix) }])
+  }
+  const [major = 0, minor = 0] = process.versions.node.split(".").map(Number)
+  if (major < 24 || (major === 24 && minor < 5)) {
+    throw new FailureError(`connecting through the proxy ${url.host}`, `needs Node 24.5 or newer, and this is ${process.versions.node}`, { type: "rerun" }, "jev()")
+  }
+  const bypass = process.env.no_proxy || process.env.NO_PROXY
+  return { env: { HTTPS_PROXY: value, ...(bypass ? { NO_PROXY: bypass } : {}) }, via: url.host }
 }
 
 /** @internal The adapter over any transport; `jev()` gives it the network. */

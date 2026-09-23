@@ -116,10 +116,11 @@ impl Jev {
                 vec![needs]
             })?
             .to_owned();
+        let agent = Agent::new(environment).map_err(|problem| vec![problem])?;
         Ok(Self {
             settings,
             key,
-            agent: Agent::new(),
+            agent,
         })
     }
 }

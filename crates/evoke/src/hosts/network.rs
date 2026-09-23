@@ -6,30 +6,85 @@
 use std::io;
 use std::time::Duration;
 
-use evoke_core::Fault;
+use evoke_core::name::VarName;
 use evoke_core::plan::Millis;
+use evoke_core::{Diagnostic, Fault, Fix};
 use ureq::http::Uri;
 use ureq::tls::{RootCerts, TlsConfig};
-use ureq::{Error, Proxy, Timeout};
+use ureq::{Error, Proxy, ProxyProtocol, Timeout};
 
-use super::Deadline;
+use super::{Deadline, Environment};
 
-/// A kept-alive agent: Mozilla's roots, never the platform's; the proxy `HTTPS_PROXY` and `NO_PROXY` name, as
-/// ureq reads them; a status is a response, never an error.
+/// The variables a proxy is read from, the lower-case name first, as Node reads them for the SDK.
+const PROXY: [&str; 2] = ["https_proxy", "HTTPS_PROXY"];
+const NO_PROXY: [&str; 2] = ["no_proxy", "NO_PROXY"];
+
+/// A kept-alive agent: Mozilla's roots, never the platform's; the proxy `HTTPS_PROXY` names and the hosts
+/// `NO_PROXY` exempts, the same two variables in both hosts; no redirect, since the endpoint never moves; a status
+/// is a response, never an error.
 pub struct Agent(ureq::Agent);
 
 impl Agent {
-    #[must_use]
-    pub fn new() -> Self {
+    /// The agent, or the line that says the proxy variable holds no proxy address.
+    pub fn new(environment: &Environment) -> Result<Self, Diagnostic> {
         let tls = TlsConfig::builder().root_certs(RootCerts::WebPki).build();
-        Self(
+        Ok(Self(
             ureq::Agent::config_builder()
                 .http_status_as_error(false)
+                .max_redirects(0)
+                .proxy(proxy(environment)?)
                 .tls_config(tls)
                 .build()
                 .new_agent(),
-        )
+        ))
     }
+}
+
+/// The proxy the environment names, or none: `http://[user:password@]host[:port]`, `https` allowed too; the
+/// `NO_PROXY` list beside it. A value that is not such an address is refused rather than bypassed in silence.
+fn proxy(environment: &Environment) -> Result<Option<Proxy>, Diagnostic> {
+    let Some((var, value)) = PROXY
+        .into_iter()
+        .find_map(|var| environment.get(var).map(|value| (var, value)))
+    else {
+        return Ok(None);
+    };
+    let refused = || Diagnostic {
+        reflex: None,
+        at: None,
+        message: format!("{var} is not an http or https proxy address"),
+        fix: Fix::ExportKey {
+            var: VarName::new(var).expect("the variable is a name"),
+        },
+    };
+    let uri: Uri = value.parse().map_err(|_| refused())?;
+    let protocol = match uri.scheme_str() {
+        Some("http") => ProxyProtocol::Http,
+        Some("https") => ProxyProtocol::Https,
+        _ => return Err(refused()),
+    };
+    let (Some(authority), Some(host)) = (uri.authority(), uri.host()) else {
+        return Err(refused());
+    };
+    let mut builder = Proxy::builder(protocol).host(host);
+    if let Some(port) = uri.port_u16() {
+        builder = builder.port(port);
+    }
+    if let Some((userinfo, _)) = authority.as_str().rsplit_once('@') {
+        let (user, password) = userinfo.split_once(':').unwrap_or((userinfo, ""));
+        builder = builder.username(user).password(password);
+    }
+    for entry in NO_PROXY
+        .into_iter()
+        .find_map(|var| environment.get(var))
+        .unwrap_or_default()
+        .split(',')
+        .map(str::trim)
+        .filter(|entry| !entry.is_empty())
+    {
+        builder = builder.no_proxy(entry);
+    }
+    builder.build().map(Some).map_err(|_| refused())
 }
 
 /// What the server answered.
@@ -112,6 +167,10 @@ fn describe(error: &Error, proxy: Option<&Proxy>, url: &str, timeout: Millis) ->
     let (connected, message) = match error {
         Error::HostNotFound => (false, format!("could not resolve {via}")),
         Error::ConnectionFailed => (false, format!("could not connect to {via}")),
+        Error::ConnectProxyFailed(status) => {
+            (false, format!("{via} refused the connection: {status}"))
+        }
+        Error::Io(error) if unresolved(error) => (false, format!("could not resolve {via}")),
         Error::Timeout(Timeout::Resolve) => (false, format!("resolving {via} timed out")),
         Error::Timeout(Timeout::Connect) => (false, format!("connecting to {via} timed out")),
         Error::Timeout(Timeout::Global | Timeout::PerCall) => {
@@ -128,6 +187,13 @@ fn describe(error: &Error, proxy: Option<&Proxy>, url: &str, timeout: Millis) ->
         error => (true, format!("{host}: {error}")),
     };
     Transport { connected, message }
+}
+
+/// The resolver's failure, which std reports as an uncategorised io error with a fixed prefix.
+fn unresolved(error: &io::Error) -> bool {
+    error
+        .to_string()
+        .starts_with("failed to lookup address information")
 }
 
 /// Whether an io error came after a connection was made, and its cause as the system words it, without the
@@ -219,6 +285,27 @@ mod tests {
             carried.message,
             "could not connect to the proxy 127.0.0.1:9: connection refused"
         );
+        let denied = describe(
+            &Error::ConnectProxyFailed("407".to_owned()),
+            Some(&proxy),
+            URL,
+            Millis(1500),
+        );
+        assert!(!denied.connected);
+        assert_eq!(
+            denied.message,
+            "the proxy 127.0.0.1:9 refused the connection: 407"
+        );
+        let offline = describe(
+            &Error::Io(io::Error::other(
+                "failed to lookup address information: Temporary failure in name resolution",
+            )),
+            None,
+            URL,
+            Millis(1500),
+        );
+        assert!(!offline.connected);
+        assert_eq!(offline.message, "could not resolve api.typesafe.ai");
         let bypassed = Proxy::builder(ProxyProtocol::Http)
             .host("127.0.0.1")
             .port(9)
@@ -230,6 +317,51 @@ mod tests {
             direct.message,
             "could not connect to api.typesafe.ai: connection refused"
         );
+    }
+
+    #[test]
+    fn the_proxy_comes_from_two_variables_and_a_bad_value_is_refused() {
+        let env = |pairs: &[(&str, &str)]| {
+            Environment(
+                pairs
+                    .iter()
+                    .map(|(var, value)| ((*var).to_owned(), (*value).to_owned()))
+                    .collect(),
+            )
+        };
+        assert!(proxy(&env(&[])).unwrap().is_none());
+        let named = proxy(&env(&[
+            ("HTTPS_PROXY", "http://ana:s3cret@proxy.example.com:3128"),
+            ("NO_PROXY", "localhost, .internal.example.com"),
+        ]))
+        .unwrap()
+        .unwrap();
+        assert_eq!(named.host(), "proxy.example.com");
+        assert_eq!(named.port(), 3128);
+        assert_eq!(named.username(), Some("ana"));
+        assert_eq!(named.password(), Some("s3cret"));
+        assert!(named.is_no_proxy(&"https://api.internal.example.com/".parse().unwrap()));
+        assert!(!named.is_no_proxy(&URL.parse().unwrap()));
+        let lower = proxy(&env(&[
+            ("https_proxy", "http://first:80"),
+            ("HTTPS_PROXY", "http://second:80"),
+        ]))
+        .unwrap()
+        .unwrap();
+        assert_eq!(lower.host(), "first");
+        for bad in ["socks5://127.0.0.1:1080", "not a url", "127.0.0.1:8080"] {
+            let problem = proxy(&env(&[("HTTPS_PROXY", bad)])).unwrap_err();
+            assert_eq!(
+                problem.message,
+                "HTTPS_PROXY is not an http or https proxy address"
+            );
+            assert_eq!(
+                problem.fix,
+                Fix::ExportKey {
+                    var: VarName::new("HTTPS_PROXY").unwrap()
+                }
+            );
+        }
     }
 
     #[test]
