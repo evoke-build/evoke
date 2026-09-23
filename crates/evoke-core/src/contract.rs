@@ -35,19 +35,59 @@ pub enum Level {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Change {
-    ArgRemoved { arg: ArgName },
-    OptionRemoved { arg: ArgName, key: OptionKey },
-    ArgRenamed { from: ArgName, to: ArgName },
-    SourceChanged { arg: ArgName },
-    RangeChanged { arg: ArgName },
+    ArgRemoved {
+        arg: ArgName,
+    },
+    OptionRemoved {
+        arg: ArgName,
+        key: OptionKey,
+    },
+    ArgRenamed {
+        from: ArgName,
+        to: ArgName,
+    },
+    SourceChanged {
+        arg: ArgName,
+    },
+    RangeChanged {
+        arg: ArgName,
+    },
     RunChanged,
-    ArgAdded { arg: ArgName },
-    OptionAdded { arg: ArgName, key: OptionKey },
-    ConfigAdded { key: ConfigKey },
-    ConfigRemoved { key: ConfigKey },
-    YieldAdded { field: FieldName },
-    YieldRemoved { field: FieldName },
-    YieldChanged { field: FieldName },
+    /// An optional argument made required: a call or an example without it no longer stands.
+    Required {
+        arg: ArgName,
+    },
+    /// A config key made secret: a plain setting for it turns the reflex inactive.
+    ConfigSecret {
+        key: ConfigKey,
+        secret: bool,
+    },
+    ArgAdded {
+        arg: ArgName,
+    },
+    /// A required argument made optional.
+    Optional {
+        arg: ArgName,
+    },
+    OptionAdded {
+        arg: ArgName,
+        key: OptionKey,
+    },
+    ConfigAdded {
+        key: ConfigKey,
+    },
+    ConfigRemoved {
+        key: ConfigKey,
+    },
+    YieldAdded {
+        field: FieldName,
+    },
+    YieldRemoved {
+        field: FieldName,
+    },
+    YieldChanged {
+        field: FieldName,
+    },
 }
 
 impl Change {
@@ -61,9 +101,13 @@ impl Change {
             | Self::SourceChanged { .. }
             | Self::RangeChanged { .. }
             | Self::RunChanged
+            | Self::Required { .. }
+            | Self::ConfigSecret { secret: true, .. }
             | Self::YieldRemoved { .. }
             | Self::YieldChanged { .. } => true,
-            Self::ArgAdded { .. }
+            Self::ConfigSecret { secret: false, .. }
+            | Self::ArgAdded { .. }
+            | Self::Optional { .. }
             | Self::OptionAdded { .. }
             | Self::ConfigAdded { .. }
             | Self::ConfigRemoved { .. }
@@ -118,9 +162,14 @@ pub fn diff(previous: &Manifest, next: &Manifest) -> ContractDiff {
     if followed(&previous.run, &renamed) != next.run {
         changes.push(Change::RunChanged);
     }
-    for key in previous.config.keys() {
-        if !next.config.contains_key(key) {
-            changes.push(Change::ConfigRemoved { key: key.clone() });
+    for (key, before) in &previous.config {
+        match next.config.get(key) {
+            None => changes.push(Change::ConfigRemoved { key: key.clone() }),
+            Some(after) if after.secret != before.secret => changes.push(Change::ConfigSecret {
+                key: key.clone(),
+                secret: after.secret,
+            }),
+            Some(_) => {}
         }
     }
     for key in next.config.keys() {
@@ -352,13 +401,33 @@ fn addresses(findings: &mut Vec<Finding>, path: &KeyPath, text: &str) {
     }
 }
 
-/// The changes to one argument that survives, under its current name.
+/// The changes to one argument that survives, under its current name: its source, and whether it may be left out.
 fn compare(name: &ArgName, before: &Kind, after: &Kind) -> Vec<Change> {
-    let (before, after) = match (before, after) {
+    let (before, after, optional) = match (before, after) {
         (Kind::Flag, Kind::Flag) => return Vec::new(),
-        (Kind::Value { source: a, .. }, Kind::Value { source: b, .. }) => (a, b),
+        (
+            Kind::Value {
+                source: a,
+                optional: was,
+            },
+            Kind::Value {
+                source: b,
+                optional: is,
+            },
+        ) => (a, b, (*was, *is)),
         _ => return vec![Change::SourceChanged { arg: name.clone() }],
     };
+    let mut changes = match optional {
+        (true, false) => vec![Change::Required { arg: name.clone() }],
+        (false, true) => vec![Change::Optional { arg: name.clone() }],
+        _ => Vec::new(),
+    };
+    changes.extend(sourced(name, before, after));
+    changes
+}
+
+/// The changes to an argument's source: option keys that came and went, a range or a recognizer that moved.
+fn sourced(name: &ArgName, before: &Source, after: &Source) -> Vec<Change> {
     match (before, after) {
         (Source::Options(before), Source::Options(after)) => {
             let removed = before.keys().filter(|key| !after.contains_key(*key));

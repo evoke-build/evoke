@@ -1017,7 +1017,16 @@ pub fn change(change: &Change) -> (String, String) {
         Change::SourceChanged { arg } => (format!("args.{arg}"), "source changed".to_owned()),
         Change::RangeChanged { arg } => (format!("args.{arg}"), "range changed".to_owned()),
         Change::RunChanged => ("run".to_owned(), "changed".to_owned()),
+        Change::Required { arg } => (format!("args.{arg}"), "now required".to_owned()),
+        Change::ConfigSecret { key, secret: true } => (
+            format!("config.{key}"),
+            "now a secret; a plain setting turns the reflex inactive".to_owned(),
+        ),
+        Change::ConfigSecret { key, secret: false } => {
+            (format!("config.{key}"), "no longer a secret".to_owned())
+        }
         Change::ArgAdded { arg } => (format!("args.{arg}"), "added".to_owned()),
+        Change::Optional { arg } => (format!("args.{arg}"), "now optional".to_owned()),
         Change::OptionAdded { arg, key } => {
             (format!("args.{arg}.options.{key}"), "added".to_owned())
         }

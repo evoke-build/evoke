@@ -886,7 +886,10 @@ export type Change =
   | { type: "source_changed"; arg: ArgName }
   | { type: "range_changed"; arg: ArgName }
   | { type: "run_changed" }
+  | { type: "required"; arg: ArgName }
+  | { type: "config_secret"; key: ConfigKey; secret: boolean }
   | { type: "arg_added"; arg: ArgName }
+  | { type: "optional"; arg: ArgName }
   | { type: "option_added"; arg: ArgName; key: OptionKey }
   | { type: "config_added"; key: ConfigKey }
   | { type: "config_removed"; key: ConfigKey }

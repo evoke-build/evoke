@@ -6,6 +6,10 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- `evoke check` and `update` see two more contract changes: an argument made required or a config key made secret
+  is `major`, since a call, an example or a plain setting stops working; an argument made optional or a secret
+  made plain is `minor`. Before, all four read as wording, and a "patch" could break a call or turn a reflex
+  inactive.
 - An argument you answer for at a prompt is settled: its judgment leaves the gate, so a decision that asked for
   the room no longer confirms a second time over the room you just typed. The other judgments still gate it.
 - A value typed at a prompt or written in a call by name must read whole. Before, `volume level=1e3` ran with
