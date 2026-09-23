@@ -198,8 +198,10 @@ pub fn request(request: &Request) -> Json {
     })
 }
 
-/// A response as `Raw` answers: a `choice` normalized to sum to 1, a `noul` as `{ "yes": p }`. A body that is not
-/// Jev's is a transport fault; an answer of the wrong shape is malformed for its question.
+/// A response as `Raw` answers: a `choice` as given, scaled back to 1 only when two-decimal rounding left its sum a
+/// hair off; a `noul` as `{ "yes": p }`. A body that is not Jev's is a transport fault; an answer of the wrong
+/// shape is malformed for its question; a sum off by more than rounding reaches the core as given, for `read` to
+/// refuse.
 pub fn answers(status: u16, body: &str) -> Result<Raw, Fault> {
     if status != 200 {
         return Err(Fault::Status { status });
@@ -233,8 +235,12 @@ pub fn answers(status: u16, body: &str) -> Result<Raw, Fault> {
                     .map(|(key, p)| p.as_f64().map(|p| (key.clone(), p)))
                     .collect::<Option<_>>()
                     .ok_or_else(|| malformed("a probability is not a number".to_owned()))?;
+                // Jev prints two decimals, so a sum drifts by at most half a unit in the last place per
+                // option, and by less than 0.05 over any question; a wider gap is the engine's, never hidden.
                 let sum: f64 = probabilities.values().sum();
-                if sum.is_finite() && sum > 0.0 {
+                let rounding = u32::try_from(probabilities.len())
+                    .map_or(0.05, |n| (0.005 * f64::from(n)).min(0.05));
+                if sum.is_finite() && sum > 0.0 && (sum - 1.0).abs() <= rounding {
                     for p in probabilities.values_mut() {
                         *p /= sum;
                     }
@@ -445,13 +451,31 @@ mod tests {
         assert_eq!(raw.0["fits.awake"]["yes"], 0.96);
         assert_eq!(raw.0["route"]["awake"], 0.99);
         assert_eq!(raw.0["power.action"]["unstated"], 0.96);
-        let normalized = answers(
+        let rounded = answers(
+            200,
+            r#"{"answers": {"route": {"type": "choice", "probabilities": {"a": 0.33, "b": 0.33, "c": 0.33}}}}"#,
+        )
+        .unwrap();
+        let third = rounded.0["route"]["a"];
+        assert!((third - 1.0 / 3.0).abs() < 1e-12);
+        assert!((rounded.0["route"].values().sum::<f64>() - 1.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn a_sum_off_by_more_than_rounding_reaches_the_core_as_given() {
+        let deflated = answers(
+            200,
+            r#"{"answers": {"route": {"type": "choice", "probabilities": {"a": 0.3}}}}"#,
+        )
+        .unwrap();
+        assert_eq!(deflated.0["route"]["a"], 0.3);
+        let inflated = answers(
             200,
             r#"{"answers": {"route": {"type": "choice", "probabilities": {"a": 3, "b": 1}}}}"#,
         )
         .unwrap();
-        assert_eq!(normalized.0["route"]["a"], 0.75);
-        assert_eq!(normalized.0["route"]["b"], 0.25);
+        assert_eq!(inflated.0["route"]["a"], 3.0);
+        assert_eq!(inflated.0["route"]["b"], 1.0);
     }
 
     #[test]

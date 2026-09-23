@@ -6,6 +6,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- An engine answer whose probabilities do not sum to 1 is refused as malformed, exit 4, in both hosts. Before, the
+  Jev adapter scaled any answer to 1, so a deflated answer read as certainty. Two-decimal rounding is still allowed
+  for.
 - evoke.build answers the questions people ask, on a page of its own, *Frequently asked questions*: what a reflex
   is, what the number means, what it needs, where reflexes come from and who answers for what they do, what leaves
   your machine, and who makes it — twenty-five short answers, each pointing at the page of the manual that holds
