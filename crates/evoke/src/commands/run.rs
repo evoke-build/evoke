@@ -60,6 +60,9 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
             match session.confirmed(&own, &prompt, false) {
                 Ok(Some(Confirmed::No) | None) => {
                     dismiss(warm);
+                    if json {
+                        terminal::result(&line.json());
+                    }
                     return session
                         .reporter
                         .exit(&input, Exit::Declined(Decline::Refused));
@@ -91,6 +94,10 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
     };
     if json {
         terminal::result(&line.json());
+        // A body's failure is the line's own `error`: nothing more prints, so a line stays one object.
+        if line.error.is_some() {
+            return exit;
+        }
     }
     session.reporter.exit(&input, exit)
 }

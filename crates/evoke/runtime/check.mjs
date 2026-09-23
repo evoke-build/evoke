@@ -1,6 +1,7 @@
 // The probe `evoke check` runs: the body named by the one argument is imported, never called, and its default
-// export must be a function. Otherwise one line on stdout says why — { error } — and stderr says where: Node's
-// own frame and message, without the frames inside Node itself.
+// export must be a function. Otherwise one line on stdout says why — { error } — and stderr says where: the
+// frames, without those inside Node itself.
+import { writeSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 const run = process.argv[1];
@@ -14,11 +15,22 @@ try {
 if (body.default === undefined) fail(`${run} has no default export`);
 if (typeof body.default !== "function") fail(`the default export of ${run} is not a function`);
 
+// Written whole and synchronously, so the line is there before the exit.
 function fail(message) {
-  process.stdout.write(`${JSON.stringify({ error: message })}\n`);
+  const bytes = Buffer.from(`${JSON.stringify({ error: message })}\n`);
+  for (let written = 0; written < bytes.length; ) {
+    try {
+      written += writeSync(1, bytes, written);
+    } catch (error) {
+      if (error.code !== "EAGAIN") throw error;
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1);
+    }
+  }
   process.exit(1);
 }
 
 function where(stack) {
-  return stack.split("\n").filter((line) => !line.includes("node:internal")).join("\n");
+  const lines = stack.split("\n");
+  const first = lines.findIndex((line) => line.startsWith("    at "));
+  return (first < 0 ? [] : lines.slice(first)).filter((line) => !line.includes("node:internal")).join("\n");
 }

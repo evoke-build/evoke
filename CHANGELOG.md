@@ -6,6 +6,13 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A JavaScript body's result of any size reaches `evoke` and the SDK whole. Before, a result over 64 KiB, text or
+  data, failed as "the result line is not JSON" and echoed 64 KiB of itself. A line that does not read is echoed
+  to its first 120 characters.
+- `evoke run --json` prints one object when the body fails, and prints the decision line when a confirm is
+  declined, as a decided input does.
+- The frames a thrown error prints start at its first frame. A message of several lines is no longer repeated
+  above them.
 - An engine answer whose probabilities do not sum to 1 is refused as malformed, exit 4, in both hosts. Before, the
   Jev adapter scaled any answer to 1, so a deflated answer read as certainty. Two-decimal rounding is still allowed
   for.

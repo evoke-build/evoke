@@ -189,7 +189,7 @@ impl Warm {
             Err(_) if line.is_empty() => Err(failed(what, &ended(status, "without a result"))),
             Err(_) => Err(failed(
                 what,
-                &format!("the result line is not JSON: {line}"),
+                &format!("the result line is not JSON: {}", shortened(line)),
             )),
         }
     }
@@ -280,6 +280,18 @@ pub fn program(
         text: output.strip_suffix('\n').unwrap_or(&output).to_owned(),
         data: None,
     })
+}
+
+/// The first characters of a line that did not read, so a body's whole output never lands in a diagnostic.
+fn shortened(line: &str) -> String {
+    const SHOWN: usize = 120;
+    let mut chars = line.chars();
+    let head: String = chars.by_ref().take(SHOWN).collect();
+    if chars.next().is_some() {
+        format!("{head}…")
+    } else {
+        head
+    }
 }
 
 /// A command under the scrubbed environment, in its own group; what a caller adds comes on top.

@@ -33,3 +33,41 @@ $ evoke run --json power action=restart
 $ evoke run --json lights room=attic state=off
 {"reflex":"lights","message":"\"attic\" is not in vocabulary \"rooms\"","fix":{"type":"vocab_add","vocab":"rooms"}}
 [3]
+# An argv body: a placeholder is replaced by the value, an unstated optional element is dropped, a value that
+# would start with a dash never reaches the program, the input and a setting arrive in the environment, stdout is
+# the result, and a non-zero exit is failure.
+$ evoke run shout word=hello tone=loud
+  shout word="hello" tone="loud"
+hello! loud
+$ evoke run shout word=hello
+  shout word="hello"
+hello!
+$ evoke run shout word=-n
+  shout word="-n"
+  running shout: word is "-n", which starts with -; an argv cannot carry it  →  evoke run shout word=-n
+[1]
+$ evoke "whisper hello there"
+  whisper  0.95
+whisper hello there
+gently
+$ evoke run fail
+  fail
+  running fail: exited 1  →  evoke run fail
+[1]
+# A file body's result of any size arrives whole; a thrown error prints its frames, then one line.
+$ evoke run big
+  big
+ok
+$ evoke run throws
+  throws
+    at body (throws.mts:1:1)
+  running throws: first line\nsecond line of the message  →  evoke run throws
+[1]
+$ evoke run --json throws 2>/dev/null
+{"input":"","outcome":"run","reflex":"throws","args":{},"call":"throws","effect":"read","trace":[],"error":"running throws: first line\\nsecond line of the message"}
+[1]
+$ evoke run --json power action=restart
+  power action="restart" · destructive
+  Really restart now?  [y]es [n]o > n
+{"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","template":"Really restart now?"},"because":[{"type":"destructive"}],"trace":[]}
+[2]

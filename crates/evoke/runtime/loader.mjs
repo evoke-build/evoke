@@ -9,7 +9,19 @@ import { pathToFileURL } from "node:url";
 
 const GRACE = 1000;
 const controller = new AbortController();
-const out = (value) => writeSync(1, `${JSON.stringify(value)}\n`);
+// The whole line, however long: `process.stdout` below puts the pipe in non-blocking mode, so one write may take
+// part of it, and the next may be told to wait a moment.
+const out = (value) => {
+  const bytes = Buffer.from(`${JSON.stringify(value)}\n`);
+  for (let written = 0; written < bytes.length; ) {
+    try {
+      written += writeSync(1, bytes, written);
+    } catch (error) {
+      if (error.code !== "EAGAIN") throw error;
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1);
+    }
+  }
+};
 const fail = (message) => {
   out({ error: message });
   process.exit(1);
@@ -66,9 +78,9 @@ async function run(line) {
 }
 
 function where(stack) {
-  return stack
-    .split("\n")
-    .slice(1)
+  const lines = stack.split("\n");
+  const first = lines.findIndex((line) => line.startsWith("    at "));
+  return (first < 0 ? [] : lines.slice(first))
     .filter((line) => !line.includes("node:internal") && !line.includes("[eval"))
     .join("\n");
 }

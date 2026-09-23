@@ -1,10 +1,18 @@
 adapter = "replay"
 
 [reflexes]
-lights = "./lights"
-timer  = "./timer"
-volume = "./volume"
-power  = "./power"
+lights  = "./lights"
+timer   = "./timer"
+volume  = "./volume"
+power   = "./power"
+shout   = "./shout"
+whisper = "./whisper"
+fail    = "./fail"
+big     = "./big"
+throws  = "./throws"
 
 [config.lights]
 bridge = "10.0.0.2"
+
+[config.whisper]
+greeting = "gently"
