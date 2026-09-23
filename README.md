@@ -31,8 +31,8 @@ asks first, every time.
 That is the idea behind a reflex. Your words pick a program. They never write one. Jev answers closed questions
 about your sentence, every answer a calibrated probability, and the weakest one decides. `evoke` is the first
 implementation of this idea: one core, a CLI, a package manager and a TypeScript SDK, with Jev as its first
-engine and the design bound to none. The whole idea in ten minutes, with real sessions:
-[evoke.build/idea.html](https://evoke.build/idea.html).
+engine and the design bound to none. The whole idea, with real sessions, at
+[evoke.build](https://evoke.build).
 
 ## It stops
 
