@@ -342,7 +342,6 @@ pub fn rewrite(step: &Step, values: &Values) -> String {
         }
     }
     let chars: Vec<char> = step.text.chars().collect();
-    let mut text = step.text.clone();
     let mut spans: Vec<(usize, usize, &Vec<String>)> = step
         .refs
         .iter()
@@ -356,15 +355,58 @@ pub fn rewrite(step: &Step, values: &Values) -> String {
             )
         })
         .collect();
-    spans.sort_by_key(|(start, _, _)| std::cmp::Reverse(*start));
+    // The text is rebuilt once, left to right, so every reference is replaced, not the last one alone.
+    spans.sort_by_key(|(start, _, _)| *start);
+    let mut text = String::new();
+    let mut at = 0;
     for (start, end, values) in spans {
-        let before: String = chars[..start].iter().collect();
-        let after: String = chars[end..].iter().collect();
-        text = format!("{before}{}{after}", values.join(" and "));
+        let start = start.max(at);
+        text.extend(&chars[at..start]);
+        text.push_str(&values.join(" and "));
+        at = end.max(start);
     }
+    text.extend(&chars[at..]);
     if loose.is_empty() {
         text
     } else {
         format!("{text} {}", loose.join(" and "))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::reading::Ref;
+    use super::super::{Binding, Weave};
+    use super::*;
+
+    /// «email them» from the address weave, given a second reference and two bound values: both are written
+    /// over their references, left to right.
+    #[test]
+    fn every_bound_reference_is_written_over() {
+        let weave: Weave = serde_json::from_str(include_str!(
+            "../../../../spec/fixtures/weave-address-mail.json"
+        ))
+        .unwrap();
+        let mut step = weave.steps[1].clone();
+        step.text = "email them about them".to_owned();
+        let second: Ref = serde_json::from_value(serde_json::json!({
+            "span": { "start": 17, "end": 21, "text": "them" }, "from": [1], "how": "pronoun"
+        }))
+        .unwrap();
+        step.refs.push(second);
+        let bind = |from: usize, arg: &str| -> Binding {
+            serde_json::from_value(serde_json::json!({
+                "from": from, "to": 3, "arg": arg, "field": "email", "kind": "email", "via": "rewrite"
+            }))
+            .unwrap()
+        };
+        let values: Values = vec![
+            (bind(1, "to"), "dana@example.com".to_owned()),
+            (bind(2, "cc"), "bob@example.com".to_owned()),
+        ];
+        assert_eq!(
+            rewrite(&step, &values),
+            "email dana@example.com about bob@example.com"
+        );
     }
 }

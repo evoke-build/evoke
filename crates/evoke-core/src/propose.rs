@@ -206,6 +206,10 @@ const UNITS: [(&str, f64); 15] = [
 ];
 
 fn duration(chars: &[char], i: usize) -> Option<Found> {
+    // A minus the number's own — `-5 minutes` — makes no duration: the number stands alone, negative.
+    if i > 0 && chars[i - 1] == '-' && (i == 1 || !is_word(chars[i - 2])) {
+        return None;
+    }
     let (amount, after) = decimal(chars, i)?;
     let unit_at = after_space(chars, after);
     let (end, seconds_each) = UNITS

@@ -27,6 +27,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   and a directory that is not there each end in the command that helps. `update <name> --accept <other>` is
   refused instead of dropping the accept. A failed keep leaves no `.tmp` directory in the store.
 - `evoke check` on a body that does not load says why without an empty line first.
+- A step that names two earlier results has both written over their references; before, the second replaced
+  the first. A `-5 minutes` is a number, never a five-minute duration.
 - `--tag` with a tag no reflex carries says so and ends in `evoke show`. Before, it reported the first inactive
   reflex, whatever that reflex's tags. A tag only an inactive reflex carries still explains that reflex.
 - An optional argument over an empty vocabulary no longer makes its reflex inactive: the argument is never asked

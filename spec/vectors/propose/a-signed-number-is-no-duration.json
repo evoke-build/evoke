@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "timer for -5 minutes"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 10,
+        "end": 12,
+        "text": "-5"
+      },
+      "value": {
+        "type": "number",
+        "value": -5
+      }
+    }
+  ]
+}
