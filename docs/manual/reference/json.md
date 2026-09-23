@@ -39,6 +39,9 @@ after `trace`, where a value came from another step, `[{ arg, from, field, value
 | `status` | `"ran"`, `"failed"`, `"declined"`, `"refused"`, `"skipped"`, `"unanswered"`                              |
 | `why`    | `{ "type": "earlier_step" }`, `nothing_to_take`, `found_nothing`, `no_reflex`, `{ "type": "read_as", "reflex" }`, or `{ "type": "said", "message" }`: a prompt's own line, a failure, a question no one answered |
 
+In the plan `evoke try --json` prints, a step's `refs` count the steps they may name from 0; `step`, `after`,
+`stages` and `binds` count from 1.
+
 A call by name, `evoke run --json`, prints the same line with nothing judged: `input` is empty, there is no
 `confidence`, `weakest`, `judgments` or `contenders`, `trace` is empty, and `result` or `error` says what the body
 did. A destructive call carries `prompt` and `because` like any confirm. Nothing was decided.

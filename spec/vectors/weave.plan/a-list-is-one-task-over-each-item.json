@@ -416,8 +416,7 @@
                 ],
                 "how": "phrase",
                 "weak": true,
-                "noun": "light",
-                "many": true
+                "noun": "light"
               }
             ],
             "repair": "spliced"

@@ -6,6 +6,15 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A sentence of several steps is read more carefully. `don’t` with the apostrophe a Mac types is a negation like
+  `don't`. A second value the whole sentence already saw, "set a timer for 10 minutes and 30 seconds", is one
+  task that confirms with its unused span, not two timers. `them` over two steps that both yield what the next
+  takes confirms the plan when only one binds; before, the second was dropped in silence. A step that found
+  nothing to do, an empty list, skips clean: it stops nothing after it, and the run's status is `ran`, not
+  `skipped`. `that the` and `this is` are no longer read as references, `the address` beside a step that found
+  an address is that one thing, and a value bound from one step is written over the reference that named it. A
+  sentence with more than two dozen connectives is decided as one input instead of asking a question per
+  connective. A plan handed to the SDK's run is checked before it runs.
 - `evoke check` and `update` see two more contract changes: an argument made required or a config key made secret
   is `major`, since a call, an example or a plain setting stops working; an argument made optional or a secret
   made plain is `minor`. Before, all four read as wording, and a "patch" could break a call or turn a reflex

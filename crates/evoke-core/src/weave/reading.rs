@@ -124,9 +124,12 @@ const DETERMINERS: [&str; 8] = [
     "that", "this", "those", "these", "the", "its", "each", "every",
 ];
 const ADJECTIVES: [&str; 3] = ["same", "resulting", "new"];
-/// A noun after a determiner that names no thing.
-const STOP: [&str; 10] = [
-    "one", "same", "other", "way", "time", "first", "second", "last", "next", "rest",
+/// A noun after a determiner that names no thing — and the words that follow `that` or `this` when it is a
+/// conjunction, «make sure that the timer is off», not a reference.
+const STOP: [&str; 34] = [
+    "one", "same", "other", "way", "time", "first", "second", "last", "next", "rest", "the", "a",
+    "an", "it", "is", "was", "are", "were", "will", "would", "can", "could", "should", "there",
+    "they", "we", "you", "i", "no", "not", "all", "any", "some", "of",
 ];
 
 /// The words a subject may be written as before a `before` or `after` clause: `you`, `we`, `i`, with a tense.
@@ -243,12 +246,13 @@ fn spaces(chars: &[char], at: usize) -> Option<usize> {
     (i > at).then_some(i)
 }
 
-/// Whether `word` stands at `at`, letter for letter, case aside.
+/// Whether `word` stands at `at`, letter for letter, case aside; a curly apostrophe reads as the straight one, so
+/// «don’t», as a Mac types it, is «don't».
 fn starts_with_word(chars: &[char], at: usize, word: &str) -> bool {
     let mut i = at;
     for w in word.chars() {
         match chars.get(i) {
-            Some(c) if c.to_ascii_lowercase() == w => i += 1,
+            Some(c) if c.to_ascii_lowercase() == w || (*c == '\u{2019}' && w == '\'') => i += 1,
             _ => return false,
         }
     }
@@ -451,6 +455,10 @@ fn pronoun_at(chars: &[char], i: usize) -> Option<(usize, &'static str)> {
 /// noun's first five letters: «that summary» after «summarize it». `the <noun>` is weak: never a step by its verb.
 #[must_use]
 pub fn refs_by_code(segs: &[Segment], k: usize, fields: &[Vec<String>]) -> Vec<Ref> {
+    // The first segment has nothing earlier to refer to.
+    if k == 0 {
+        return Vec::new();
+    }
     let chars: Vec<char> = segs[k].text.chars().collect();
     let mut refs: Vec<Ref> = Vec::new();
     let mut i = 0;
@@ -486,13 +494,17 @@ pub fn refs_by_code(segs: &[Segment], k: usize, fields: &[Vec<String>]) -> Vec<R
         if STOP.contains(&noun.as_str()) {
             continue;
         }
-        let stem = noun.strip_suffix('s').unwrap_or(&noun).to_owned();
+        let stem = stem_of(&noun).to_owned();
         let weak = det == "the";
         let from = earlier(segs, k, fields, &stem, weak);
         if from.is_empty() {
             continue;
         }
-        let many = det == "each" || det == "every" || stem != noun;
+        // Plural from the words: `each`, `every`, or a noun in `s` the source did not write that way — «the
+        // address» beside «look up dana's address» is that one thing.
+        let many = det == "each"
+            || det == "every"
+            || (stem != noun && !attested(segs, fields, from[0], &noun));
         refs.push(Ref {
             span: Where {
                 start,
@@ -555,7 +567,7 @@ fn earlier(
         }
         if fields
             .get(j)
-            .is_some_and(|fields| fields.iter().any(|f| f == stem))
+            .is_some_and(|fields| fields.iter().any(|f| stem_of(f) == stem))
         {
             return vec![j];
         }
@@ -569,6 +581,30 @@ fn earlier(
         }
     }
     Vec::new()
+}
+
+/// A word's stem, the same on both sides of a comparison: `addresses` and `address` meet at `address`, `clients`
+/// and `client` at `client`; a word in `ss` stays as it is.
+pub(crate) fn stem_of(word: &str) -> &str {
+    if let Some(head) = word.strip_suffix("sses") {
+        &word[..head.len() + 2]
+    } else if word.ends_with('s') && !word.ends_with("ss") {
+        &word[..word.len() - 1]
+    } else {
+        word
+    }
+}
+
+/// Whether a noun, as written, stands whole among step `j`'s words or names a field of its result.
+fn attested(segs: &[Segment], fields: &[Vec<String>], j: usize, noun: &str) -> bool {
+    let chars: Vec<char> = segs[j].text.chars().collect();
+    (0..chars.len()).any(|i| {
+        boundary(&chars, i)
+            && starts_with_word(&chars, i, noun)
+            && ends_word(&chars, i + noun.len())
+    }) || fields
+        .get(j)
+        .is_some_and(|fields| fields.iter().any(|f| f == noun))
 }
 
 /// `\b<stem>s?\b` in the text, case aside: where the first one starts, in characters.
@@ -731,14 +767,23 @@ pub(crate) fn referred(
     let answers = validated(request, raw)?;
     for (k, step) in refs.iter_mut().enumerate().skip(2) {
         for (i, r) in step.iter_mut().enumerate() {
-            let Some(answer) = answers.get(&own(&format!("ref_{k}_{i}"))) else {
+            let id = own(&format!("ref_{k}_{i}"));
+            let (Some(answer), Some(Question::Choice(choice))) =
+                (answers.get(&id), request.questions.get(&id))
+            else {
                 continue;
             };
-            let Some((best, p)) = answer
-                .iter()
-                .max_by(|a, b| a.1.get().total_cmp(&b.1.get()))
-                .map(|(key, p)| (key.as_str().to_owned(), *p))
-            else {
+            // The first of the highest, in the request's own order, as the foundation reads a tie.
+            let mut best: Option<(String, Prob)> = None;
+            for key in choice.options().keys() {
+                let p = answer.get(key).copied();
+                if let Some(p) = p
+                    && best.as_ref().is_none_or(|(_, b)| p.get() > b.get())
+                {
+                    best = Some((key.as_str().to_owned(), p));
+                }
+            }
+            let Some((best, p)) = best else {
                 continue;
             };
             if let Some(j) = best
@@ -880,6 +925,7 @@ mod tests {
             ]
         );
         assert!(negated("don't archive the logo"));
+        assert!(negated("don\u{2019}t archive the logo"));
         assert!(!negated("note the time"));
         assert!(refers_back("pull up every one of them"));
         assert!(!refers_back("look up order 4821"));
@@ -947,6 +993,25 @@ mod tests {
         assert_eq!(refs[0].span.text, "each of them");
         assert!(refs[0].many);
         assert_eq!(refs[0].from, [0]);
+        // `that` before a function word is a conjunction, not a reference; the first segment refers to nothing.
+        let steps = segs(&["kill the lights", "make sure that the timer is off"]);
+        assert!(refs_by_code(&steps, 1, &[vec![]]).is_empty());
+        assert!(refs_by_code(&steps, 0, &[vec![]]).is_empty());
+        // A noun in `s` the source wrote that way names that one thing; one the source did not is many.
+        let steps = segs(&["look up dana's address", "print the address"]);
+        let refs = refs_by_code(&steps, 1, &[vec!["address".to_owned()]]);
+        assert_eq!(refs[0].noun.as_deref(), Some("address"));
+        assert!(!refs[0].many);
+        assert_eq!(stem_of("classes"), "class");
+        assert_eq!(stem_of("clients"), "client");
+        assert_eq!(stem_of("status"), "statu");
+        let steps = segs(&["list the team", "email the addresses"]);
+        let refs = refs_by_code(&steps, 1, &[vec!["address".to_owned()]]);
+        assert_eq!(refs[0].from, [0]);
+        assert!(refs[0].many);
+        let steps = segs(&["check the status", "print that status"]);
+        let refs = refs_by_code(&steps, 1, &[vec!["status".to_owned()]]);
+        assert!(!refs[0].many);
     }
 
     #[test]

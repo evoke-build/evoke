@@ -14,21 +14,23 @@ den lights off
 
 ## How a sentence is read
 
-- Where a connective could separate two things — `and`, `then`, `but`, a comma, `after`, `before` — the
+- A connective can separate two things: `and`, `then`, `but`, a comma, `after`, `before`. At each one the
   classifier is asked whether it does. "kill the lights in the den and start a 10 minute timer" is two things.
-  "set a timer for 10 minutes and 30 seconds" is one.
+  "set a timer for 10 minutes and 30 seconds" is one. A sentence with more than two dozen such points, a pasted
+  list, is decided as one input.
 - Each part is decided as one input is: routed, gated, its arguments read. A part that matches nothing on its own
   is tried as another item of its neighbour's task first: "check stock for widgets and gadgets" is two stock
   checks. Failing that, the whole request is refused rather than half done.
-- A part that begins with `not`, `don't`, `never` or `without` is left out. What you said not to do is no step.
+- A part that begins with `not`, `don't`, `never` or `without` is left out, however the apostrophe is typed. What
+  you said not to do is no step.
 - `then`, `after that` and `next` order the steps. `before you X, Y` and `Y after you X` both read as `X, then Y`.
-  Two writes never run side by side. Reads may.
+  When a write is among the steps, every step runs alone. A plan of reads may run them side by side.
 
 ## What a step takes from another
 
 A body may declare what its result holds, under `[yields]` in its manifest ([The manifest](../author/manifest.md)).
-A later step that refers to it — `it`, `them`, `that report`, `the address` — takes a field of the right kind into
-the argument it lacks:
+A later step may refer to it with `it`, `them`, `that report` or `the address`. It takes a field of the right kind
+into the argument it lacks:
 
 ```text
 $ evoke "look up dana's address and email them"

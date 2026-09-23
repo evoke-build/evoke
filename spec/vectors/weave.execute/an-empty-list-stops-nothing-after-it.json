@@ -1,0 +1,114 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave-lists.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "weave": {
+      "$ref": "fixtures/weave-people-mail-timer.json"
+    },
+    "progress": {
+      "handled": [
+        {
+          "step": 1,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "nobody",
+            "data": {
+              "people": []
+            }
+          }
+        }
+      ]
+    }
+  },
+  "expect": {
+    "type": "todo",
+    "todo": {
+      "type": "handle",
+      "handling": [
+        {
+          "step": 3,
+          "round": 0,
+          "decision": {
+            "outcome": "run",
+            "reflex": "timer",
+            "args": {
+              "duration": {
+                "type": "pick",
+                "span": {
+                  "start": 8,
+                  "end": 17,
+                  "text": "10 minute"
+                },
+                "value": {
+                  "type": "duration",
+                  "value": 600
+                }
+              }
+            },
+            "call": "timer duration=\"10 minute\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "timer",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "timer",
+                "p": 0.9
+              },
+              {
+                "question": "timer.duration",
+                "top": "8-17",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "lights",
+              "route": 0.02,
+              "fits": 0.05
+            },
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "lights",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "volume",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "contact",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "mail",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          },
+          "input": "start a 10 minute timer"
+        }
+      ]
+    }
+  }
+}

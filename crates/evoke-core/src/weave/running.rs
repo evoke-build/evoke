@@ -127,8 +127,13 @@ impl Runner<'_> {
             if !handling.is_empty() {
                 return Err(Todo::Handle { handling });
             }
+            // A step that found nothing to do skipped clean and stops nothing; anything else that did not run
+            // ends the weave after its stage.
             if stage.iter().any(|&n| {
-                walks[n - 1].status.as_ref().map(|(status, _)| *status) != Some(Status::Ran)
+                !matches!(
+                    &walks[n - 1].status,
+                    Some((Status::Ran, _) | (Status::Skipped, Some(Why::FoundNothing)))
+                )
             }) {
                 stopped = true;
             }
@@ -246,6 +251,15 @@ fn rounds_for(binds: &[&Binding], walks: &[Walk]) -> Option<Vec<Values>> {
     let mut plain: Values = Vec::new();
     let mut lists: Vec<(Binding, Vec<String>)> = Vec::new();
     for binding in binds {
+        // A source that found nothing skipped clean; so does what takes from it.
+        if walks.get(binding.from - 1).is_some_and(|walk| {
+            matches!(
+                walk.status,
+                Some((Status::Skipped, Some(Why::FoundNothing)))
+            )
+        }) {
+            return Some(Vec::new());
+        }
         let data = walks
             .get(binding.from - 1)
             .and_then(|walk| walk.result.as_ref())
@@ -303,26 +317,54 @@ fn scalar(value: &Json) -> Option<String> {
     }
 }
 
-/// The step's words with the values in place: over the reference when one was found, else appended. A quoted
-/// value is written in quotes; a number, an address or a URL bare, as its recognizer reads it.
+/// The step's words with the values in place: each over the reference that named its source, several from one
+/// source joined with «and»; a value no reference names is appended. A quoted value is written in quotes; a
+/// number, an address or a URL bare, as its recognizer reads it.
 #[must_use]
 pub fn rewrite(step: &Step, values: &Values) -> String {
-    let literal = values
-        .iter()
-        .map(|(b, value)| {
-            if b.kind == Recognizer::Quoted {
-                format!("\"{value}\"")
-            } else {
-                value.clone()
-            }
-        })
-        .collect::<Vec<_>>()
-        .join(" and ");
-    let Some(span) = step.refs.first().map(|r| &r.span) else {
-        return format!("{} {literal}", step.text);
+    let literal = |(binding, value): &(Binding, String)| {
+        if binding.kind == Recognizer::Quoted {
+            format!("\"{value}\"")
+        } else {
+            value.clone()
+        }
     };
+    let mut over: Vec<Vec<String>> = vec![Vec::new(); step.refs.len()];
+    let mut loose: Vec<String> = Vec::new();
+    for value in values {
+        match step
+            .refs
+            .iter()
+            .position(|r| r.from.contains(&(value.0.from.saturating_sub(1))))
+        {
+            Some(i) => over[i].push(literal(value)),
+            None => loose.push(literal(value)),
+        }
+    }
     let chars: Vec<char> = step.text.chars().collect();
-    let before: String = chars[..span.start.min(chars.len())].iter().collect();
-    let after: String = chars[span.end.min(chars.len())..].iter().collect();
-    format!("{before}{literal}{after}")
+    let mut text = step.text.clone();
+    let mut spans: Vec<(usize, usize, &Vec<String>)> = step
+        .refs
+        .iter()
+        .zip(&over)
+        .filter(|(_, values)| !values.is_empty())
+        .map(|(r, values)| {
+            (
+                r.span.start.min(chars.len()),
+                r.span.end.min(chars.len()),
+                values,
+            )
+        })
+        .collect();
+    spans.sort_by_key(|(start, _, _)| std::cmp::Reverse(*start));
+    for (start, end, values) in spans {
+        let before: String = chars[..start].iter().collect();
+        let after: String = chars[end..].iter().collect();
+        text = format!("{before}{}{after}", values.join(" and "));
+    }
+    if loose.is_empty() {
+        text
+    } else {
+        format!("{text} {}", loose.join(" and "))
+    }
 }

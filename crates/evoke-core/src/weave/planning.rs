@@ -11,7 +11,7 @@ use super::{
 };
 use crate::adapter::{Fault, Prob};
 use crate::call::Value;
-use crate::decide::Decision;
+use crate::decide::{Cap, Decision};
 use crate::manifest::{Effect, Kind, Recognizer, Source, Yield};
 use crate::name::{ArgName, FieldName, LocalName, Tag};
 use crate::plan::Plan;
@@ -22,6 +22,9 @@ const LOW: f64 = 0.35;
 const FIRM: f64 = 0.8;
 /// Under this the engine doubted the split: a part that decided as another reflex tries the fan-out first.
 const DOUBT: f64 = 0.5;
+/// The most split points one request is asked about; past it — a pasted list, a hostile line — the request is
+/// one input, since each question carries both sides of the sentence and the request would grow as its square.
+const MOST_SPLITS: usize = 24;
 /// The plan of a request over the answers so far: the weave, or what is needed next; a fault when an answer does
 /// not validate against its request.
 pub fn plan(plan: &Plan, input: &str, tags: &[Tag], answers: &Answers) -> Result<Planning, Fault> {
@@ -182,6 +185,9 @@ impl Planner<'_> {
     /// cannot be asked about, a control character among its words, is one step.
     fn judge(&self) -> Result<Result<Vec<Split>, Need>, Fault> {
         let all = reading::splits(&self.request, true);
+        if all.len() > MOST_SPLITS {
+            return Ok(Ok(Vec::new()));
+        }
         Ok(match reading::judging(&self.request, &all) {
             Err(Unclean) => Ok(Vec::new()),
             Ok(None) => Ok(all
@@ -247,6 +253,18 @@ impl Planner<'_> {
             let parts = reading::segments(&seg.text, &inner);
             let kept: Vec<&Segment> = parts.iter().filter(|part| !part.excluded).collect();
             if kept.len() < 2 {
+                k += 1;
+                continue;
+            }
+            // A second value the whole's decision already saw and no argument took — «10 minutes and 30
+            // seconds» — is one task, not a list: the step confirms with its unused span at its turn, as the
+            // foundation does.
+            if let Decision::Confirm { because, .. } = &draft.decisions[k]
+                && because.iter().any(|cap| {
+                    matches!(cap, Cap::UnconsumedSpan { span }
+                        if kept.iter().any(|part| span.start() >= part.start && span.end() <= part.end))
+                })
+            {
                 k += 1;
                 continue;
             }
@@ -602,23 +620,37 @@ impl Planner<'_> {
                     .filter_map(|j| steps.get(*j))
                     .filter(|s| s.reflex.is_some() && s.n < step.n)
                     .collect();
-                let mut bound = false;
+                let mut took: Vec<usize> = Vec::new();
                 for source in &sources {
                     if self.take(step, r, source, &receivers, &mut out) {
-                        bound = true;
+                        took.push(source.n);
                         follow(after, step.n, source.n);
                     }
                 }
+                let bound = !took.is_empty();
                 if !bound && r.weak {
                     continue;
                 }
                 for source in &sources {
                     follow(after, step.n, source.n);
                 }
-                if !bound && !sources.is_empty() {
+                // A plural over several sources: one that yields what the step takes and bound nothing is not
+                // dropped in silence; the plan confirms, as it does for a reference nothing takes.
+                let dropped: Vec<usize> = if bound && r.many {
+                    sources
+                        .iter()
+                        .filter(|s| !took.contains(&s.n) && self.offers(s, &receivers))
+                        .map(|s| s.n)
+                        .collect()
+                } else if !bound && !sources.is_empty() {
+                    sources.iter().map(|s| s.n).collect()
+                } else {
+                    Vec::new()
+                };
+                if !dropped.is_empty() {
                     out.because.push(Because::TakesNothing {
                         step: step.n,
-                        sources: sources.iter().map(|s| s.n).collect(),
+                        sources: dropped,
                     });
                 }
             }
@@ -665,13 +697,7 @@ impl Planner<'_> {
         let named: Vec<&Candidate> = r.noun.as_ref().map_or_else(Vec::new, |noun| {
             candidates
                 .iter()
-                .filter(|c| {
-                    c.field
-                        .as_str()
-                        .strip_suffix('s')
-                        .unwrap_or(c.field.as_str())
-                        == noun
-                })
+                .filter(|c| reading::stem_of(c.field.as_str()) == noun)
                 .collect()
         });
         let chosen: Vec<&Candidate> = if named.is_empty() {
@@ -718,6 +744,17 @@ impl Planner<'_> {
             each: c.each.clone(),
         });
         true
+    }
+
+    /// Whether a source yields anything a receiver of the step could take, free or not.
+    fn offers(&self, source: &Step, receivers: &[Receiver]) -> bool {
+        let yields = source
+            .reflex
+            .as_ref()
+            .and_then(|reflex| self.plan.active().get(reflex))
+            .map(|active| &active.yields);
+        let all: Vec<&Receiver> = receivers.iter().collect();
+        !takeable(yields, &all).is_empty()
     }
 
     /// The arguments of a step a bound value may reach: every pick the words left unstated, the missing required

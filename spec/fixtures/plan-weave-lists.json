@@ -1,0 +1,331 @@
+{
+  "digest": "h1:52865838a2795094adf2d23d6d01214b386257fd0e7223902825f321eaed24e6",
+  "active": {
+    "lights": {
+      "effect": "write",
+      "run": "lights.mts",
+      "confirm": "Set the {room} lights {state}?",
+      "args": {
+        "room": {
+          "ask": "Which room?",
+          "vocab": "rooms",
+          "optional": false,
+          "was": []
+        },
+        "state": {
+          "ask": "What should the lights do?",
+          "options": {
+            "on": "Switch on.",
+            "off": "Switch off.",
+            "dim": "Lower the brightness without switching off."
+          },
+          "optional": false,
+          "was": []
+        },
+        "brightness": {
+          "ask": "How bright, in percent?",
+          "pick": "number",
+          "range": [
+            1,
+            100
+          ],
+          "optional": true,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {
+        "bridge": {
+          "type": "plain",
+          "value": "10.0.0.2"
+        }
+      },
+      "tags": [
+        "home",
+        "lighting"
+      ]
+    },
+    "timer": {
+      "effect": "write",
+      "run": "timer.mts",
+      "confirm": "Start a {duration} timer?",
+      "args": {
+        "duration": {
+          "ask": "How long?",
+          "pick": "duration",
+          "optional": false,
+          "was": []
+        },
+        "label": {
+          "ask": "What is the timer for?",
+          "pick": "quoted",
+          "optional": true,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "time"
+      ]
+    },
+    "volume": {
+      "effect": "write",
+      "run": "volume.mts",
+      "confirm": "Set the volume to {level}?",
+      "args": {
+        "level": {
+          "ask": "How loud, in percent?",
+          "pick": "number",
+          "range": [
+            0,
+            100
+          ],
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "sound"
+      ]
+    },
+    "contact": {
+      "effect": "read",
+      "run": "contact.mts",
+      "confirm": "Look up {name}'s address?",
+      "args": {
+        "name": {
+          "ask": "Whose address?",
+          "vocab": "people",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {
+        "people": {
+          "each": {
+            "email": "email"
+          }
+        }
+      },
+      "config": {},
+      "tags": [
+        "people"
+      ]
+    },
+    "mail": {
+      "effect": "write",
+      "run": "mail.mts",
+      "confirm": "Write to {to}?",
+      "args": {
+        "to": {
+          "ask": "To which address?",
+          "pick": "email",
+          "optional": false,
+          "was": []
+        },
+        "subject": {
+          "ask": "What is the subject?",
+          "pick": "quoted",
+          "optional": true,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "mail"
+      ]
+    }
+  },
+  "inactive": {},
+  "slots": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "lights": {
+          "what": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
+          "not_for": [
+            "colour scenes and schedules",
+            "asking whether a light is on"
+          ],
+          "examples": [
+            "turn on the kitchen lights",
+            "dim the office to 30 percent"
+          ]
+        },
+        "timer": {
+          "what": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+          "not_for": [
+            "keeping the laptop awake",
+            "alarms at a time of day",
+            "asking the time"
+          ],
+          "examples": [
+            "set a timer for 10 minutes",
+            "25 minute timer",
+            "timer for 3 minutes called \"eggs\"",
+            "count down 90 seconds"
+          ]
+        },
+        "volume": {
+          "what": "Set the output volume.\nA percentage of the maximum; 0 is silent.",
+          "not_for": [
+            "muting and unmuting",
+            "screen brightness",
+            "one app's volume"
+          ],
+          "examples": [
+            "set the volume to 40 percent",
+            "volume 15",
+            "turn the sound up to 80"
+          ]
+        },
+        "contact": {
+          "what": "Look up a person's email address in the team directory.\nOne person at a time; prints the address.",
+          "not_for": [
+            "writing to anyone",
+            "phone numbers",
+            "adding a person to the directory"
+          ],
+          "examples": [
+            "look up dana's address",
+            "what is sam's email",
+            "find the address for dana"
+          ]
+        },
+        "mail": {
+          "what": "Start an email in your mail app.\nTo one address, with an optional subject; nothing goes out until you press send.",
+          "not_for": [
+            "reading or searching mail",
+            "chat and text messages",
+            "looking up an address"
+          ],
+          "examples": [
+            "email ana@example.com",
+            "write to sam@example.com about \"friday\"",
+            "send a note to team@example.com"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "fits.lights": {
+      "type": "yesno",
+      "ask": "Does `lights` do the specific thing the request asks for?",
+      "yes": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
+      "no": "Something else, such as: colour scenes and schedules; asking whether a light is on."
+    },
+    "lights.room": {
+      "type": "choice",
+      "ask": "Which room?",
+      "options": {
+        "den": "The TV room downstairs; also 'the snug'.",
+        "office": "The upstairs study.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "lights.state": {
+      "type": "choice",
+      "ask": "What should the lights do?",
+      "options": {
+        "on": {
+          "what": "Switch on.",
+          "examples": [
+            "turn on the kitchen lights"
+          ]
+        },
+        "off": "Switch off.",
+        "dim": {
+          "what": "Lower the brightness without switching off.",
+          "examples": [
+            "dim the office to 30 percent"
+          ]
+        },
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "lights.brightness": {
+      "type": "pick",
+      "ask": "How bright, in percent?",
+      "pick": "number",
+      "optional": true
+    },
+    "fits.timer": {
+      "type": "yesno",
+      "ask": "Does `timer` do the specific thing the request asks for?",
+      "yes": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+      "no": "Something else, such as: keeping the laptop awake; alarms at a time of day; asking the time."
+    },
+    "timer.duration": {
+      "type": "pick",
+      "ask": "How long?",
+      "pick": "duration",
+      "optional": false
+    },
+    "timer.label": {
+      "type": "pick",
+      "ask": "What is the timer for?",
+      "pick": "quoted",
+      "optional": true
+    },
+    "fits.volume": {
+      "type": "yesno",
+      "ask": "Does `volume` do the specific thing the request asks for?",
+      "yes": "Set the output volume.\nA percentage of the maximum; 0 is silent.",
+      "no": "Something else, such as: muting and unmuting; screen brightness; one app's volume."
+    },
+    "volume.level": {
+      "type": "pick",
+      "ask": "How loud, in percent?",
+      "pick": "number",
+      "optional": false
+    },
+    "fits.contact": {
+      "type": "yesno",
+      "ask": "Does `contact` do the specific thing the request asks for?",
+      "yes": "Look up a person's email address in the team directory.\nOne person at a time; prints the address.",
+      "no": "Something else, such as: writing to anyone; phone numbers; adding a person to the directory."
+    },
+    "contact.name": {
+      "type": "choice",
+      "ask": "Whose address?",
+      "options": {
+        "dana": "Dana Ortiz, operations.",
+        "sam": "Sam Lee, sales.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.mail": {
+      "type": "yesno",
+      "ask": "Does `mail` do the specific thing the request asks for?",
+      "yes": "Start an email in your mail app.\nTo one address, with an optional subject; nothing goes out until you press send.",
+      "no": "Something else, such as: reading or searching mail; chat and text messages; looking up an address."
+    },
+    "mail.to": {
+      "type": "pick",
+      "ask": "To which address?",
+      "pick": "email",
+      "optional": false
+    },
+    "mail.subject": {
+      "type": "pick",
+      "ask": "What is the subject?",
+      "pick": "quoted",
+      "optional": true
+    }
+  },
+  "values": {
+    "rooms": {
+      "office": "group-7"
+    }
+  },
+  "deadline": 30000
+}

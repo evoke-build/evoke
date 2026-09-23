@@ -1,0 +1,226 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "input": "set a timer for 10 minutes and 30 seconds",
+    "tags": [],
+    "answers": {
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.1
+        }
+      },
+      "decided": [
+        [
+          {
+            "text": "set a timer for 10 minutes and 30 seconds"
+          },
+          {
+            "outcome": "confirm",
+            "reflex": "timer",
+            "args": {
+              "duration": {
+                "type": "pick",
+                "span": {
+                  "start": 16,
+                  "end": 26,
+                  "text": "10 minutes"
+                },
+                "value": {
+                  "type": "duration",
+                  "value": 600
+                }
+              }
+            },
+            "call": "timer duration=\"10 minutes\"",
+            "effect": "write",
+            "confidence": 0.85,
+            "weakest": {
+              "question": "timer.duration",
+              "top": "16-26",
+              "p": 0.85
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "timer",
+                "p": 0.9
+              },
+              {
+                "question": "timer.duration",
+                "top": "16-26",
+                "p": 0.85
+              }
+            ],
+            "runner_up": {
+              "reflex": "lights",
+              "route": 0.02,
+              "fits": 0.05
+            },
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "lights",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "volume",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "contact",
+                "route": 0,
+                "fits": 0.05
+              },
+              {
+                "reflex": "mail",
+                "route": 0,
+                "fits": 0.05
+              }
+            ],
+            "prompt": {
+              "own": "timer duration=\"10 minutes\" · write · weakest: duration 0.85 · unused \"30 seconds\"",
+              "template": "Start a 10 minutes timer?"
+            },
+            "because": [
+              {
+                "type": "unconsumed_span",
+                "span": {
+                  "start": 31,
+                  "end": 41,
+                  "text": "30 seconds"
+                }
+              }
+            ]
+          }
+        ]
+      ]
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "set a timer for 10 minutes and 30 seconds",
+        "splits": [
+          {
+            "start": 26,
+            "end": 31,
+            "word": "and",
+            "order": "and",
+            "p": 0.1
+          }
+        ],
+        "steps": [
+          {
+            "n": 1,
+            "text": "set a timer for 10 minutes and 30 seconds",
+            "end": 41,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "timer",
+              "args": {
+                "duration": {
+                  "type": "pick",
+                  "span": {
+                    "start": 16,
+                    "end": 26,
+                    "text": "10 minutes"
+                  },
+                  "value": {
+                    "type": "duration",
+                    "value": 600
+                  }
+                }
+              },
+              "call": "timer duration=\"10 minutes\"",
+              "effect": "write",
+              "confidence": 0.85,
+              "weakest": {
+                "question": "timer.duration",
+                "top": "16-26",
+                "p": 0.85
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "timer",
+                  "p": 0.9
+                },
+                {
+                  "question": "timer.duration",
+                  "top": "16-26",
+                  "p": 0.85
+                }
+              ],
+              "runner_up": {
+                "reflex": "lights",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              "contenders": [
+                {
+                  "reflex": "timer",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "lights",
+                  "route": 0.02,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0.02,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0,
+                  "fits": 0.05
+                }
+              ],
+              "prompt": {
+                "own": "timer duration=\"10 minutes\" · write · weakest: duration 0.85 · unused \"30 seconds\"",
+                "template": "Start a 10 minutes timer?"
+              },
+              "because": [
+                {
+                  "type": "unconsumed_span",
+                  "span": {
+                    "start": 31,
+                    "end": 41,
+                    "text": "30 seconds"
+                  }
+                }
+              ]
+            },
+            "reflex": "timer",
+            "effect": "write"
+          }
+        ],
+        "exclusive": false,
+        "stages": [
+          [
+            1
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        }
+      }
+    }
+  }
+}

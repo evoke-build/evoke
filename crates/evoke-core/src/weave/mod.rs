@@ -161,6 +161,7 @@ pub struct Verdict {
 /// The plan: the request in the words' own order, its split points as judged, the steps, what was left out, the
 /// bindings, the schedule and the verdict.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(try_from = "RawWeave")]
 pub struct Weave {
     pub input: String,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -176,6 +177,72 @@ pub struct Weave {
     /// A stage's steps run together; stages run in order.
     pub stages: Vec<Vec<usize>>,
     pub verdict: Verdict,
+}
+
+#[derive(Deserialize)]
+struct RawWeave {
+    input: String,
+    #[serde(default)]
+    splits: Vec<Split>,
+    steps: Vec<Step>,
+    #[serde(default)]
+    excluded: Vec<String>,
+    #[serde(default)]
+    binds: Vec<Binding>,
+    exclusive: bool,
+    stages: Vec<Vec<usize>>,
+    verdict: Verdict,
+}
+
+impl TryFrom<RawWeave> for Weave {
+    type Error = String;
+
+    /// A plan from the wire holds together: steps numbered from 1 in order, every step in exactly one stage, every
+    /// binding from an earlier step to a later one — so the run never reaches for a step that is not there.
+    fn try_from(raw: RawWeave) -> Result<Self, String> {
+        let count = raw.steps.len();
+        if let Some((i, step)) = raw
+            .steps
+            .iter()
+            .enumerate()
+            .find(|(i, step)| step.n != i + 1)
+        {
+            return Err(format!(
+                "step {} stands where step {} should",
+                step.n,
+                i + 1
+            ));
+        }
+        let mut staged = vec![false; count];
+        for n in raw.stages.iter().flatten() {
+            match n.checked_sub(1).and_then(|i| staged.get_mut(i)) {
+                Some(seen) if !*seen => *seen = true,
+                Some(_) => return Err(format!("step {n} is in two stages")),
+                None => return Err(format!("a stage names step {n}, which the plan lacks")),
+            }
+        }
+        if let Some(i) = staged.iter().position(|seen| !seen) {
+            return Err(format!("step {} is in no stage", i + 1));
+        }
+        for b in &raw.binds {
+            if b.from == 0 || b.to > count || b.from >= b.to {
+                return Err(format!(
+                    "a binding from step {} to step {} names no earlier step of the plan",
+                    b.from, b.to
+                ));
+            }
+        }
+        Ok(Self {
+            input: raw.input,
+            splits: raw.splits,
+            steps: raw.steps,
+            excluded: raw.excluded,
+            binds: raw.binds,
+            exclusive: raw.exclusive,
+            stages: raw.stages,
+            verdict: raw.verdict,
+        })
+    }
 }
 
 impl Weave {
@@ -313,6 +380,12 @@ impl Executed {
             .map(|step| step.status)
             .max_by(|a, b| rank(*a).cmp(&rank(*b)))
             .unwrap_or(Status::Ran);
+        // A skipped step adds nothing of its own: a weave whose worst is a skip ran.
+        let worst = if worst == Status::Skipped {
+            Status::Ran
+        } else {
+            worst
+        };
         let failed = steps.iter().any(|step| {
             step.status == Status::Skipped && matches!(step.why, Some(Why::NothingToTake))
         });
@@ -367,4 +440,34 @@ pub(crate) fn field_names(yields: &IndexMap<FieldName, crate::manifest::Yield>) 
                 .collect(),
         })
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A plan from the wire is refused before the run can reach for a step that is not there.
+    #[test]
+    fn a_plan_from_the_wire_holds_together() {
+        let base = serde_json::json!({
+            "input": "x", "steps": [], "exclusive": false, "stages": [], "verdict": { "outcome": "refuse" }
+        });
+        assert!(serde_json::from_value::<Weave>(base.clone()).is_ok());
+        let mut staged = base.clone();
+        staged["stages"] = serde_json::json!([[1]]);
+        assert_eq!(
+            serde_json::from_value::<Weave>(staged)
+                .unwrap_err()
+                .to_string(),
+            "a stage names step 1, which the plan lacks"
+        );
+        let mut bound = base;
+        bound["binds"] = serde_json::json!([{ "from": 0, "to": 1, "arg": "to", "field": "email", "kind": "email", "via": "fill" }]);
+        assert_eq!(
+            serde_json::from_value::<Weave>(bound)
+                .unwrap_err()
+                .to_string(),
+            "a binding from step 0 to step 1 names no earlier step of the plan"
+        );
+    }
 }

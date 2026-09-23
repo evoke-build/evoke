@@ -1,0 +1,63 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave-lists.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "weave": {
+      "$ref": "fixtures/weave-people-mail.json"
+    },
+    "progress": {
+      "handled": [
+        {
+          "step": 1,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "nobody",
+            "data": {
+              "people": []
+            }
+          }
+        }
+      ]
+    }
+  },
+  "expect": {
+    "type": "done",
+    "executed": {
+      "steps": [
+        {
+          "step": 1,
+          "status": "ran",
+          "rounds": [
+            {
+              "step": 1,
+              "round": 0,
+              "status": "ran",
+              "result": {
+                "text": "nobody",
+                "data": {
+                  "people": []
+                }
+              }
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "status": "skipped",
+          "why": {
+            "type": "found_nothing"
+          }
+        }
+      ],
+      "worst": "ran"
+    }
+  }
+}

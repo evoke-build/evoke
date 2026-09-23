@@ -1,0 +1,23 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "input": "aa, bb, cc, dd, ee, ff, gg, hh, ii, jj, kk, ll, mm, nn, oo, pp, qq, rr, ss, tt, uu, vv, ww, xx, yy, zz, aa, bb, cc, dd",
+    "tags": [],
+    "answers": {}
+  },
+  "expect": {
+    "ok": {
+      "type": "need",
+      "need": {
+        "type": "decide",
+        "asked": [
+          {
+            "text": "aa, bb, cc, dd, ee, ff, gg, hh, ii, jj, kk, ll, mm, nn, oo, pp, qq, rr, ss, tt, uu, vv, ww, xx, yy, zz, aa, bb, cc, dd"
+          }
+        ]
+      }
+    }
+  }
+}
