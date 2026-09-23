@@ -34,8 +34,9 @@ jobs:
       - uses: jdx/mise-action@v4
         with:
           cache: true
+      - uses: Swatinem/rust-cache@v2
       - if: runner.os == 'Linux'
-        run: sudo apt-get install --yes --no-install-recommends musl-tools
+        run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends musl-tools
       - run: rustup target add ${{ matrix.target }}
       - run: mise run package ${{ matrix.target }}
       - uses: actions/upload-artifact@v7
@@ -71,12 +72,13 @@ jobs:
       - uses: actions/attest-build-provenance@v4
         with:
           subject-path: dist/evoke-*.tar.gz
-      - name: The release, with the changelog's section as its notes
+      - name: The release, with the changelog's section as its notes, public once its archives are up
         run: |
           mise run changelog "${GITHUB_REF_NAME#v}" > notes.md
           gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 ||
-            gh release create "$GITHUB_REF_NAME" --title "evoke ${GITHUB_REF_NAME#v}" --notes-file notes.md
+            gh release create "$GITHUB_REF_NAME" --draft --title "evoke ${GITHUB_REF_NAME#v}" --notes-file notes.md
           gh release upload --clobber "$GITHUB_REF_NAME" dist/*
+          gh release edit "$GITHUB_REF_NAME" --draft=false
 
   tap:
     needs: release
@@ -121,9 +123,15 @@ jobs:
         run: |
           version=${GITHUB_REF_NAME#v}
           test "$(node --print 'require("./package.json").version')" = "$version"
-          if [ -z "$(npm view @evoke-build/evoke version 2>/dev/null)" ]; then
-            echo "@evoke-build/evoke is not on npm; its first publish is the owner's, by hand, and is what a trusted publisher is configured on"
-          elif [ -n "$(npm view "@evoke-build/evoke@$version" version 2>/dev/null)" ]; then
+          # npm's own answer, as JSON: a package npm has never seen is E404; anything else that fails is npm out of
+          # reach, and the job says so instead of taking silence for absence.
+          if ! published=$(npm view @evoke-build/evoke versions --json 2>&1); then
+            case $published in
+              *E404*) echo "@evoke-build/evoke is not on npm; its first publish is the owner's, by hand, and is what a trusted publisher is configured on"; exit 0 ;;
+              *) echo "npm could not be asked: $published" >&2; exit 1 ;;
+            esac
+          fi
+          if printf '%s' "$published" | node --input-type=module -e 'import { readFileSync } from "node:fs"; const v = JSON.parse(readFileSync(0, "utf8")); process.exit([v].flat().includes(process.argv[1]) ? 0 : 1)' -- "$version"; then
             echo "@evoke-build/evoke@$version is already on npm"
           else
             npm publish

@@ -1,5 +1,16 @@
-# TOML formatting and checks, run by: bin/dx mise run lint
-exclude = ["mise.lock", "target/**", "internal/**"]
+# TOML formatting and checks, run by: bin/dx mise run lint. The files named here and no other: a personal override
+# such as mise.local.toml is left alone.
+include = [
+  ".taplo.toml",
+  "Cargo.toml",
+  "crates/**/*.toml",
+  "deny.toml",
+  "mise.toml",
+  "reflexes/*/reflex.toml",
+  "ruff.toml",
+  "site/book.toml",
+  "spec/**/*.toml",
+]
 
 [formatting]
 align_entries = true

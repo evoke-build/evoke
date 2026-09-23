@@ -4,7 +4,6 @@
 //! natively, so the vectors pin it here and the SDK pins it again through the built module.
 
 // Errors are data with their own types, as in the core.
-#![allow(clippy::missing_errors_doc)]
 
 #[cfg(target_arch = "wasm32")]
 mod boundary;

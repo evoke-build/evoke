@@ -77,9 +77,10 @@ says why. `evoke try` puts every judgment on the table, and a bar is a line in a
 
 ## Developing
 
-Tools and tasks are pinned by [mise](https://mise.jdx.dev). Run `mise install`, then `mise run lint` and
-`mise run test`. Those two are what CI runs; `mise tasks` lists the rest. `bin/dx <command>` runs a command with
-the same toolchain inside an OrbStack machine named `devbox`, for those who develop in one. The tests need no key.
+Tools and tasks are pinned by [mise](https://mise.jdx.dev). With git and a C compiler on the machine, run
+`mise install`, then `mise run lint` and `mise run test`. Those two are what CI runs; `mise tasks` lists the rest.
+Packaging a Linux release needs `musl-tools` as well. `bin/dx <command>` runs a command with the same toolchain
+inside an OrbStack machine named `devbox`, for those who develop in one. The tests need no key.
 To decide against Jev, export `TYPESAFE_API_KEY`. To decide without one, the `replay` adapter answers from a file
 you write: [Testing](https://evoke.build/manual/sdk/testing.html#the-cli-on-a-recording).
 

@@ -3,7 +3,7 @@
 //! terminal does not say.
 
 // TIOCGWINSZ is an ioctl: the kernel fills a struct of its own, and `std` has no door to it.
-#![allow(unsafe_code)]
+#![expect(unsafe_code)]
 
 use std::io::{self, IsTerminal};
 

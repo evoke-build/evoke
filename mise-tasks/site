@@ -1,8 +1,22 @@
 #!/usr/bin/env python3
-#MISE description="Build evoke.build into target/site: the landing page, the idea page, the format page with its schemas, the use-cases page, the FAQ with its questions as structured data, the privacy policy dated by git, the install script, the manual rendered by mdBook with the site's bar, the use cases' sentences and the FAQ and privacy links on every page, a canonical link, a description, a card and a breadcrumb trail on every page, the manual's markdown beside each page, llms.txt and llms-full.txt for a language model, the sitemap dated by git, and robots.txt — checking first that every link in the manual resolves, and last that every address the two files name is served"
-"""The manual's README is its index: its tables become mdBook's SUMMARY.md, so the site's structure has one source.
+# MISE description="Build evoke.build into target/site: the pages, the manual by mdBook, the schemas, llms.txt and the sitemap; the manual's links checked first, the served addresses last"
+"""Build evoke.build into target/site: the landing page, the idea page, the format page with its schemas, the
+use-cases page, the FAQ with its questions as structured data, the privacy policy dated by git, the install script,
+the manual rendered by mdBook with the site's bar, the use cases' sentences and the FAQ and privacy links on every
+page, a canonical link, a description, a card and a breadcrumb trail on every page, the manual's markdown beside
+each page, llms.txt and llms-full.txt for a language model, the sitemap dated by git, and robots.txt. It checks
+first that every link in the manual resolves, and last that every address the two files name is served.
+
+The manual's README is its index: its tables become mdBook's SUMMARY.md, so the site's structure has one source.
 What a search engine or a shared link needs is written here, once, from the pages themselves and from git."""
-import datetime, html as html_text, json, re, shutil, subprocess, sys
+
+import datetime
+import html as html_text
+import json
+import re
+import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -14,7 +28,7 @@ LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)\)")
 TOKEN = re.compile(r"--([a-z-]+):\s*([^;]+);")
 UNLISTED = {"404.html", "print.html", "toc.html"}
 SITE_URL = re.compile(r"https://evoke\.build/[^\s)\]>\"'`]*")
-VERSION = re.search(r'^version\s*=\s*"([^"]+)"', (ROOT / "Cargo.toml").read_text(), re.M)[1]
+VERSION = re.search(r'^version\s*=\s*"([^"]+)"', (ROOT / "Cargo.toml").read_text(), re.MULTILINE)[1]
 
 
 def links_resolve():
@@ -35,13 +49,25 @@ def links_resolve():
 def landing_palette():
     """The landing page's palette, and a check that the use-cases page and the manual keep to it: a colour either one
     declares under the landing page's name carries the landing page's value, so the three never drift apart."""
+
     def tokens(file):
-        block = re.search(r":root\s*\{(.*?)\}", file.read_text(), re.S)[1]
+        block = re.search(r":root\s*\{(.*?)\}", file.read_text(), re.DOTALL)[1]
         return {name: value.strip() for name, value in TOKEN.findall(block) if value.lstrip().startswith(("#", "rgb"))}
+
     landing = tokens(SITE / "index.html")
-    problems = [f"{file.relative_to(ROOT)}: --{name} is {value}, the landing page's is {landing[name]}"
-                for file in (SITE / "use-cases.html", SITE / "idea.html", SITE / "format.html", SITE / "faq.html", SITE / "privacy.html", SITE / "manual.css")
-                for name, value in tokens(file).items() if name in landing and value != landing[name]]
+    problems = [
+        f"{file.relative_to(ROOT)}: --{name} is {value}, the landing page's is {landing[name]}"
+        for file in (
+            SITE / "use-cases.html",
+            SITE / "idea.html",
+            SITE / "format.html",
+            SITE / "faq.html",
+            SITE / "privacy.html",
+            SITE / "manual.css",
+        )
+        for name, value in tokens(file).items()
+        if name in landing and value != landing[name]
+    ]
     if problems:
         sys.exit("\n".join(problems))
     return landing
@@ -74,7 +100,7 @@ def summary():
 def address(page):
     """The page's public address: a directory's index is the directory."""
     rel = page.relative_to(OUT).as_posix()
-    return URL + (rel[: -len("index.html")] if rel.endswith("index.html") else rel)
+    return URL + (rel.removesuffix("index.html"))
 
 
 def published(page):
@@ -100,13 +126,14 @@ def source(page):
 
 
 def git(*args):
-    return subprocess.run(["git", *args], capture_output=True, text=True, cwd=ROOT).stdout.strip()
+    """What git printed, or nothing: a date git cannot give is an empty string, and the caller says so."""
+    return subprocess.run(["git", *args], capture_output=True, text=True, cwd=ROOT, check=False).stdout.strip()
 
 
 def description(page_html):
     """The page's first paragraph, as one line of at most 160 characters, ending at a word."""
     main = page_html.split("<main", 1)[-1]
-    found = re.search(r"<p>(.*?)</p>", main, re.S)
+    found = re.search(r"<p>(.*?)</p>", main, re.DOTALL)
     if not found:
         return None
     text = " ".join(html_text.unescape(re.sub(r"<[^>]+>", "", found[1])).split())
@@ -121,7 +148,9 @@ def trail(page, name):
     if page != OUT / "manual/index.html":
         steps.append({"@type": "ListItem", "position": 2, "name": "Manual", "item": URL + "manual/"})
     steps.append({"@type": "ListItem", "position": len(steps) + 1, "name": name})
-    return json.dumps({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": steps}, ensure_ascii=False)
+    return json.dumps(
+        {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": steps}, ensure_ascii=False
+    )
 
 
 def described(page):
@@ -136,29 +165,33 @@ def described(page):
     summary_line = description(text) or re.search(r'<meta name="description" content="([^"]*)">', text)[1]
     quoted = html_text.escape(summary_line, quote=True)
     heading = html_text.escape(title, quote=True)
-    head = "\n".join([
-        f'<link rel="canonical" href="{address(page)}">',
-        f'<link rel="alternate" type="text/markdown" href="{markdown(page)}">',
-        '<meta name="robots" content="max-image-preview:large">',
-        '<meta property="og:type" content="article">',
-        '<meta property="og:site_name" content="evoke">',
-        '<meta property="og:locale" content="en_US">',
-        f'<meta property="og:title" content="{heading}">',
-        f'<meta property="og:description" content="{quoted}">',
-        f'<meta property="og:url" content="{address(page)}">',
-        f'<meta property="og:image" content="{CARD}">',
-        '<meta property="og:image:width" content="2400">',
-        '<meta property="og:image:height" content="1260">',
-        f'<meta property="og:image:alt" content="{CARD_ALT}">',
-        '<meta name="twitter:card" content="summary_large_image">',
-        f'<meta name="twitter:title" content="{heading}">',
-        f'<meta name="twitter:description" content="{quoted}">',
-        f'<meta name="twitter:image" content="{CARD}">',
-        f'<meta name="twitter:image:alt" content="{CARD_ALT}">',
-        f'<script type="application/ld+json">{trail(page, name)}</script>',
-        "</head>",
-    ])
-    text = re.sub(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{quoted}">', text, count=1)
+    head = "\n".join(
+        [
+            f'<link rel="canonical" href="{address(page)}">',
+            f'<link rel="alternate" type="text/markdown" href="{markdown(page)}">',
+            '<meta name="robots" content="max-image-preview:large">',
+            '<meta property="og:type" content="article">',
+            '<meta property="og:site_name" content="evoke">',
+            '<meta property="og:locale" content="en_US">',
+            f'<meta property="og:title" content="{heading}">',
+            f'<meta property="og:description" content="{quoted}">',
+            f'<meta property="og:url" content="{address(page)}">',
+            f'<meta property="og:image" content="{CARD}">',
+            '<meta property="og:image:width" content="2400">',
+            '<meta property="og:image:height" content="1260">',
+            f'<meta property="og:image:alt" content="{CARD_ALT}">',
+            '<meta name="twitter:card" content="summary_large_image">',
+            f'<meta name="twitter:title" content="{heading}">',
+            f'<meta name="twitter:description" content="{quoted}">',
+            f'<meta name="twitter:image" content="{CARD}">',
+            f'<meta name="twitter:image:alt" content="{CARD_ALT}">',
+            f'<script type="application/ld+json">{trail(page, name)}</script>',
+            "</head>",
+        ]
+    )
+    text = re.sub(
+        r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{quoted}">', text, count=1
+    )
     page.write_text(text.replace("</head>", head, 1))
 
 
@@ -192,14 +225,26 @@ def furnished(page):
     close the page, with the FAQ, the privacy policy and the repository in a line under them. The pages nobody lands on,
     print and 404, take only the colour and the wordmark."""
     text = page.read_text()
-    text = text.replace('<meta name="theme-color" content="#ffffff">', f'<meta name="theme-color" content="{palette["bg"]}">', 1)
+    text = text.replace(
+        '<meta name="theme-color" content="#ffffff">', f'<meta name="theme-color" content="{palette["bg"]}">', 1
+    )
     brand = "evoke"
     if page.name not in UNLISTED:
         root = "../" * (len(page.relative_to(OUT / "manual").parts) - 1) + "../"
         brand = f'<a href="{root}">evoke</a>'
-        text = text.replace('<div class="right-buttons">\n', f'<div class="right-buttons">\n                        <a class="use-cases idea" href="{root}idea.html">The idea</a>\n                        <a class="use-cases" href="{root}use-cases.html">Use cases</a>\n', 1)
-        text = text.replace("                    </main>", AT_WORK.replace("{root}", root) + COLOPHON.replace("{root}", root) + "                    </main>", 1)
-    text = text.replace('<h1 class="menu-title">evoke</h1>', f'<p class="menu-title">{brand}</p>', 1)  # the title is the page's one heading
+        text = text.replace(
+            '<div class="right-buttons">\n',
+            f'<div class="right-buttons">\n                        <a class="use-cases idea" href="{root}idea.html">The idea</a>\n                        <a class="use-cases" href="{root}use-cases.html">Use cases</a>\n',
+            1,
+        )
+        text = text.replace(
+            "                    </main>",
+            AT_WORK.replace("{root}", root) + COLOPHON.replace("{root}", root) + "                    </main>",
+            1,
+        )
+    text = text.replace(
+        '<h1 class="menu-title">evoke</h1>', f'<p class="menu-title">{brand}</p>', 1
+    )  # the title is the page's one heading
     page.write_text(text)
 
 
@@ -249,7 +294,11 @@ def glue(parts, start, end):
     j = last
     while j >= 0 and not (space(chars[j][2]) and not chars[j][3]):
         j -= 1
-    if j < 0 or len("".join(c for _, _, c, _ in chars[:j]).split()) < 2 or any(c == "\u00a0" for _, _, c, _ in chars[j:last]):
+    if (
+        j < 0
+        or len("".join(c for _, _, c, _ in chars[:j]).split()) < 2
+        or any(c == "\u00a0" for _, _, c, _ in chars[j:last])
+    ):
         return
     k = j
     while k > 0 and space(chars[k - 1][2]) and not chars[k - 1][3]:
@@ -269,9 +318,17 @@ def answered(page):
     search engine is told is what a reader sees."""
     text = page.read_text()
     plain = lambda s: " ".join(html_text.unescape(re.sub(r"<[^>]+>", "", s)).split())
-    entities = [{"@type": "Question", "name": plain(question),
-                 "acceptedAnswer": {"@type": "Answer", "text": plain(" ".join(re.findall(r"<p[^>]*>(.*?)</p>", answer, re.S)))}}
-                for question, answer in re.findall(r'<div class="qa"[^>]*>\s*<h3>(.*?)</h3>(.*?)</div>', text, re.S)]
+    entities = [
+        {
+            "@type": "Question",
+            "name": plain(question),
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": plain(" ".join(re.findall(r"<p[^>]*>(.*?)</p>", answer, re.DOTALL))),
+            },
+        }
+        for question, answer in re.findall(r'<div class="qa"[^>]*>\s*<h3>(.*?)</h3>(.*?)</div>', text, re.DOTALL)
+    ]
     page.write_text(text.replace('"mainEntity": []', '"mainEntity": ' + json.dumps(entities, ensure_ascii=False), 1))
 
 
@@ -282,13 +339,17 @@ def changed(page, dated):
     if not date:
         return
     shown = datetime.date.fromisoformat(date).strftime("%-d %B %Y")
-    text = re.sub(r'<time datetime="[^"]*">[^<]*</time>', f'<time datetime="{date}">{shown}</time>', page.read_text(), count=1)
+    text = re.sub(
+        r'<time datetime="[^"]*">[^<]*</time>', f'<time datetime="{date}">{shown}</time>', page.read_text(), count=1
+    )
     page.write_text(re.sub(r'"dateModified": "[^"]*"', f'"dateModified": "{date}"', text, count=1))
 
 
 def versioned(landing):
     """The landing page's structured data names the version Cargo.toml names."""
-    landing.write_text(re.sub(r'"softwareVersion": "[^"]*"', f'"softwareVersion": "{VERSION}"', landing.read_text(), count=1))
+    landing.write_text(
+        re.sub(r'"softwareVersion": "[^"]*"', f'"softwareVersion": "{VERSION}"', landing.read_text(), count=1)
+    )
 
 
 def twinned():
@@ -302,6 +363,7 @@ def twinned():
 def absolute(page):
     """A manual source with every relative link made absolute, to the page it names on the site, so the text reads,
     and cites, away from its directory."""
+
     def link(found):
         path, _, fragment = found[2].partition("#")
         if not path or path.startswith(("http://", "https://")):
@@ -309,6 +371,7 @@ def absolute(page):
         target = (page.parent / path).resolve()
         url = published(target) if target.is_relative_to(MANUAL) else URL + target.relative_to(ROOT).as_posix()
         return f"[{found[1]}]({url}{'#' + fragment if fragment else ''})"
+
     return LINK.sub(link, page.read_text())
 
 
@@ -330,10 +393,14 @@ def llms():
 
 def whole():
     """/llms-full.txt: the manual as one file, in reading order, each page under its address, every link absolute."""
-    parts = [f"# The evoke manual, in one file\n\nevoke {VERSION}. Every page of {URL}manual/ follows, in reading order, each under its address. "
-             f"The index, for a reader that wants less, is {URL}llms.txt.\n"]
+    parts = [
+        (
+            f"# The evoke manual, in one file\n\nevoke {VERSION}. Every page of {URL}manual/ follows, in reading order, "
+            f"each under its address. The index, for a reader that wants less, is {URL}llms.txt.\n"
+        )
+    ]
     for page in [MANUAL / "README.md"] + [MANUAL / path for _, _, path, _ in contents()]:
-        text = re.sub(r'^<p align="center">.*?</p>\n\n', "", absolute(page), count=1, flags=re.S)
+        text = re.sub(r'^<p align="center">.*?</p>\n\n', "", absolute(page), count=1, flags=re.DOTALL)
         parts.append(f"---\n\nSource: {published(page)}\n\n{text.strip()}\n")
     (OUT / "llms-full.txt").write_text("\n".join(parts))
 
@@ -344,7 +411,7 @@ def served(*files):
     problems = []
     for file in files:
         for target in SITE_URL.findall(file.read_text()):
-            path = target[len(URL):].split("#")[0].rstrip(".,;:")
+            path = target[len(URL) :].split("#")[0].rstrip(".,;:")
             if not (OUT / (path + "index.html" if path == "" or path.endswith("/") else path)).is_file():
                 problems.append(f"{file.relative_to(OUT)}: {target} is not served")
     if problems:
@@ -357,7 +424,7 @@ def checked(pages):
     problems = []
     for page in pages:
         text = page.read_text()
-        title = re.search(r"<title>(.*?)</title>", text, re.S)
+        title = re.search(r"<title>(.*?)</title>", text, re.DOTALL)
         summary_line = re.search(r'<meta name="description" content="([^"]*)">', text)
         faults = []
         if title is None or len(html_text.unescape(title[1])) > 60:
@@ -368,7 +435,7 @@ def checked(pages):
             faults.append("the canonical address")
         if len(re.findall(r"<h1[\s>]", text)) != 1:
             faults.append("one heading")
-        for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>', text, re.S):
+        for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>', text, re.DOTALL):
             try:
                 json.loads(block)
             except ValueError:
@@ -388,8 +455,11 @@ def sitemap(pages, dated):
         entries.append(f"  <url><loc>{address(page)}</loc>{f'<lastmod>{date}</lastmod>' if date else ''}</url>")
     (OUT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(entries) + "\n</urlset>\n")
-    (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /manual/print.html\n\nSitemap: {URL}sitemap.xml\n")
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(entries) + "\n</urlset>\n"
+    )
+    (OUT / "robots.txt").write_text(
+        f"User-agent: *\nAllow: /\nDisallow: /manual/print.html\n\nSitemap: {URL}sitemap.xml\n"
+    )
 
 
 links_resolve()
@@ -399,7 +469,19 @@ shutil.rmtree(SRC, ignore_errors=True)
 shutil.copytree(MANUAL, SRC)
 (SRC / "SUMMARY.md").write_text(summary())
 subprocess.run(["mdbook", "build", str(SITE)], check=True)
-for name in ["index.html", "idea.html", "format.html", "use-cases.html", "faq.html", "privacy.html", "install.sh", "og.png", "logo.png", "logo-512.png", "apple-touch-icon.png"]:
+for name in [
+    "index.html",
+    "idea.html",
+    "format.html",
+    "use-cases.html",
+    "faq.html",
+    "privacy.html",
+    "install.sh",
+    "og.png",
+    "logo.png",
+    "logo-512.png",
+    "apple-touch-icon.png",
+]:
     shutil.copy(SITE / name, OUT / name)
 shutil.copy(SITE / "theme/favicon.png", OUT / "favicon.png")
 shutil.copytree(ROOT / "assets", OUT / "assets")
@@ -420,9 +502,19 @@ for page in manual_pages:
     described(page)
     widowless(page)
 shutil.copy(OUT / "manual/404.html", OUT / "404.html")
-listed = [OUT / "index.html", OUT / "idea.html", OUT / "format.html", OUT / "use-cases.html", OUT / "faq.html", OUT / "privacy.html", OUT / "manual/index.html"] + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
+listed = [
+    OUT / "index.html",
+    OUT / "idea.html",
+    OUT / "format.html",
+    OUT / "use-cases.html",
+    OUT / "faq.html",
+    OUT / "privacy.html",
+    OUT / "manual/index.html",
+] + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
 sitemap(listed, dated)
 checked(listed)
 served(OUT / "llms.txt", OUT / "llms-full.txt")
-print(f"site: {OUT.relative_to(ROOT)} — {len(listed)} pages in the sitemap{'' if dated else ', undated: the clone has no history'}, "
-      f"{len(contents()) + 1} in llms-full.txt")
+print(
+    f"site: {OUT.relative_to(ROOT)} — {len(listed)} pages in the sitemap{'' if dated else ', undated: the clone has no history'}, "
+    f"{len(contents()) + 1} in llms-full.txt"
+)

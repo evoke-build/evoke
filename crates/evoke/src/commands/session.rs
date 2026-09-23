@@ -268,7 +268,7 @@ fn prepare(
 /// The installed set as the host found it: every reflex `evoke.toml` names with its overlay and configuration —
 /// a local one under its path, a remote one in the store by the lock's digest — and every vocabulary; beside it,
 /// each shipped manifest with its directory.
-#[allow(clippy::type_complexity)]
+#[expect(clippy::type_complexity)]
 fn installed(
     ground: &Ground<'_>,
     project: &Project,

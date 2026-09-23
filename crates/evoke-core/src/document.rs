@@ -164,7 +164,7 @@ impl Node {
     }
 
     /// A finite number: what JSON can carry.
-    #[allow(clippy::cast_precision_loss)] // a TOML integer read as a number: the design's ranges are small
+    #[expect(clippy::cast_precision_loss)] // a TOML integer read as a number: the design's ranges are small
     pub(crate) fn number(&self) -> Option<f64> {
         match self.value {
             Value::Int(i) => Some(i as f64),

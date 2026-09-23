@@ -3,7 +3,7 @@
 //! result and the `--json` line reach stdout; everything else goes to stderr.
 
 // Errors are data with their own types, as in the core: `Diagnostic` and `Exit` are the surface's errors by design.
-#![allow(clippy::result_large_err)]
+#![expect(clippy::result_large_err)]
 
 mod adapter;
 mod args;

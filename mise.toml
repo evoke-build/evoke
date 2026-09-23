@@ -10,6 +10,7 @@ cargo-deny                = "0.20.2"
 "github:rust-lang/mdBook" = { version = "0.5.4", exe = "mdbook" }
 node                      = "24.20.0"
 python                    = "3.14.7"
+ruff                      = "0.16.8"
 rust                      = { version = "1.98.1", components = ["rustfmt", "clippy"], targets = ["wasm32-unknown-unknown"] }
 shellcheck                = "0.11.0"
 taplo                     = "0.10.0"
@@ -20,6 +21,8 @@ description = "Lint everything: shell, TOML, the spec's shapes, the manual's lin
 env = { RUST_LOG = "warn" }
 run = [
   "shellcheck bin/* site/install.sh mise-tasks/formula mise-tasks/package mise-tasks/publish-reflexes mise-tasks/release",
+  "ruff check mise-tasks/changelog mise-tasks/lint-spec mise-tasks/site",
+  "ruff format --check mise-tasks/changelog mise-tasks/lint-spec mise-tasks/site",
   "taplo fmt --check",
   "taplo check",
   "mise run lint-spec",

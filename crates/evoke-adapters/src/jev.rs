@@ -268,7 +268,7 @@ pub fn answers(status: u16, body: &str, credential: &VarName) -> Result<Raw, Fau
 
 #[cfg(test)]
 // The numbers under test are literals, compared exactly.
-#[allow(clippy::float_cmp)]
+#[expect(clippy::float_cmp)]
 mod tests {
     use evoke_core::diagnostic::File;
     use evoke_core::document::Text;

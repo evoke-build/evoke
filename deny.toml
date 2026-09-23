@@ -1,18 +1,18 @@
 # The dependency audit, run by: bin/dx mise run lint (cargo deny check). Adding a dependency is an owner decision.
+# The graph is the one the release builds: the four targets, so a crate only Windows pulls in is never audited.
 [graph]
 all-features = true
+targets      = ["aarch64-apple-darwin", "x86_64-apple-darwin", "aarch64-unknown-linux-musl", "x86_64-unknown-linux-musl"]
 
 [advisories]
 yanked = "deny"
 
 # Apache-2.0 and MIT, plus what the listed dependencies carry: ISC (ring, rustls-webpki, untrusted),
 # BSD-3-Clause (subtle), Unicode-3.0 (unicode-ident, behind serde's derive), CDLA-Permissive-2.0 (webpki-roots, the
-# root certificates ureq trusts), BSL-1.0 (clipboard-win and error-code, rustyline's Windows clipboard, never built
-# here).
+# root certificates ureq trusts).
 [licenses]
-allow                  = ["Apache-2.0", "MIT", "ISC", "BSD-3-Clause", "Unicode-3.0", "CDLA-Permissive-2.0", "BSL-1.0"]
-confidence-threshold   = 0.9
-unused-allowed-license = "allow"
+allow                = ["Apache-2.0", "MIT", "ISC", "BSD-3-Clause", "Unicode-3.0", "CDLA-Permissive-2.0"]
+confidence-threshold = 0.9
 
 [bans]
 multiple-versions    = "warn"

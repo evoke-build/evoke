@@ -263,7 +263,7 @@ fn decimal(chars: &[char], i: usize) -> Option<(f64, usize)> {
 
 /// Whole seconds, to the nearest; an amount past what seconds can hold is no candidate, and neither is one that
 /// rounds to nothing, `0.4 seconds`; a `0` said outright stays.
-#[allow(
+#[expect(
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss,
     clippy::cast_precision_loss
@@ -302,8 +302,6 @@ fn starts_with(chars: &[char], at: usize, text: &str) -> bool {
 }
 
 #[cfg(test)]
-// The numbers under test are literals, compared exactly.
-#[allow(clippy::float_cmp)]
 mod tests {
     use super::*;
 

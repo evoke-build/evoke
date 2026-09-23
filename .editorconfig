@@ -10,3 +10,10 @@ indent_size = 2
 
 [*.md]
 trim_trailing_whitespace = false
+
+# rustfmt's default, and the Python tasks' own
+[*.rs]
+indent_size = 4
+
+[{*.py,mise-tasks/changelog,mise-tasks/lint-spec,mise-tasks/site}]
+indent_size = 4

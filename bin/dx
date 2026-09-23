@@ -4,12 +4,16 @@
 #   bin/dx <command> [args...]      e.g. bin/dx mise run lint
 #
 # From macOS with OrbStack it enters `devbox` at the same path and working directory; anywhere else it runs the
-# command directly.
+# command directly. The machine needs git, a C compiler and mise; packaging a Linux release needs musl-tools too.
 set -eu
 
 [ $# -gt 0 ] || { echo "usage: bin/dx <command> [args...]" >&2; exit 64; }
 
 if [ "$(uname -s)" = "Darwin" ] && command -v orb >/dev/null 2>&1; then
+  if ! orb list 2>/dev/null | grep -qw devbox; then
+    echo "bin/dx: OrbStack has no machine named devbox; make one with git, a C compiler and mise, or run the command without bin/dx" >&2
+    exit 69
+  fi
   exec orb -m devbox mise exec -- "$@"
 fi
 exec mise exec -- "$@"

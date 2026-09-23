@@ -176,7 +176,7 @@ impl Using<'_> {
 
     /// The loop up to the run: an abstain stops; an ask is answered and filled until nothing is missing; a
     /// confirm is put. The call ready to run, or what became of the round instead, the loader dismissed.
-    #[allow(clippy::too_many_arguments)]
+    #[expect(clippy::too_many_arguments)]
     fn readied(
         &mut self,
         input: &str,

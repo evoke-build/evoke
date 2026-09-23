@@ -2,7 +2,9 @@
 
 #![forbid(unsafe_code)]
 // Errors are data with their own types, not prose to document; `Diagnostic` is the surface's error by design.
-#![allow(clippy::missing_errors_doc, clippy::result_large_err)]
+#![expect(clippy::missing_errors_doc)]
+// An Err of a Diagnostic is large with 64-bit pointers and not on wasm32, so this cannot be an expectation.
+#![allow(clippy::result_large_err)]
 
 pub mod adapter;
 pub mod call;

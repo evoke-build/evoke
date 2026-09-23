@@ -1,5 +1,5 @@
 #!/bin/sh
-#MISE description="Cut a release: the version into Cargo.toml, sdk/package.json, the help transcript and the manual, the changelog dated, one commit, one tag; the push builds it"
+#MISE description="Cut a release: lint and test, then the version into Cargo.toml, sdk/package.json, the help transcript and the manual, the changelog dated, one commit, one tag; the push builds it"
 # Usage: mise run release <X.Y.Z>    on a clean main, with what changed written under CHANGELOG.md's Unreleased
 set -eu
 cd "$(dirname "$0")/.."
@@ -12,6 +12,10 @@ git rev-parse -q --verify "refs/tags/v$version" >/dev/null && fail "v$version is
 
 previous=$(sed -n 's/^version *= *"\([^"]*\)".*/\1/p' Cargo.toml | head -1)
 [ -n "$previous" ] || fail "Cargo.toml names no version"
+
+# What CI will run on the tag, run first: a tag is cut only from a tree that passes.
+mise run lint
+mise run test
 
 mise run changelog --cut "$version"
 sed -i.bak "s/^\(version *= *\)\"[^\"]*\"/\1\"$version\"/" Cargo.toml && rm Cargo.toml.bak

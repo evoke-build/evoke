@@ -169,7 +169,7 @@ pub fn answer(recording: &Recording, request: &Request) -> Result<Raw, Fault> {
 
 #[cfg(test)]
 // The numbers under test are literals, compared exactly.
-#[allow(clippy::float_cmp)]
+#[expect(clippy::float_cmp)]
 mod tests {
     use super::*;
 

@@ -3,7 +3,7 @@
 //! buffer — its own and the reply's — with `free`. Nothing is kept between calls.
 
 // Raw buffers cross the boundary here and nowhere else.
-#![allow(unsafe_code)]
+#![expect(unsafe_code)]
 
 use std::slice;
 

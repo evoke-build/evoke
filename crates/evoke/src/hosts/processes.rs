@@ -5,7 +5,7 @@
 //! body returned, whether it loads, or a `Failure`.
 
 // killpg signals the group, which `std` can create but not signal.
-#![allow(unsafe_code)]
+#![expect(unsafe_code)]
 
 use std::io::{self, Read, Write};
 use std::os::unix::process::CommandExt;

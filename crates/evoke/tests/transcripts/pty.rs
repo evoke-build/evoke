@@ -3,7 +3,7 @@
 
 // The one place in the workspace that needs unsafe: libc's openpty returns raw descriptors, and pre_exec runs
 // between fork and exec, where only async-signal-safe calls are allowed — setsid and one ioctl are.
-#![allow(unsafe_code)]
+#![expect(unsafe_code)]
 
 use std::fs::File;
 use std::io::{self, Read, Write};

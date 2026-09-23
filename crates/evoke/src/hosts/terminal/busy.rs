@@ -5,7 +5,7 @@
 
 // The one signal handler: Ctrl-C while the spinner turns clears its line before the default action ends the
 // process, so the shell's next prompt never lands after a frame.
-#![allow(unsafe_code)]
+#![expect(unsafe_code)]
 
 use std::io::{self, Write};
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
@@ -38,7 +38,6 @@ extern "C" fn on_interrupt(signal: libc::c_int) {
 fn handle_interrupts() {
     let handler: extern "C" fn(libc::c_int) = on_interrupt;
     // SAFETY: a handler that only writes a static string and re-raises is safe to install once.
-    #[allow(clippy::fn_to_numeric_cast)]
     unsafe {
         libc::signal(libc::SIGINT, handler as libc::sighandler_t);
     }

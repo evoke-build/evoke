@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-#MISE description="Read CHANGELOG.md: print a version's section, or cut the Unreleased section as a version dated today"
+# MISE description="Read CHANGELOG.md: print a version's section, or cut the Unreleased section as a version dated today"
 """Usage: mise run changelog <version>          the section of that version, for a release's notes; none is an error
-          mise run changelog --cut <version>    the Unreleased section becomes `## [<version>] - <today>`, and a new
-                                                empty Unreleased section is opened above it"""
-import datetime, re, sys
+mise run changelog --cut <version>    the Unreleased section becomes `## [<version>] - <today>`, and a new
+                                      empty Unreleased section is opened above it"""
+
+import datetime
+import re
+import sys
 from pathlib import Path
 
 CHANGELOG = Path(__file__).resolve().parent.parent / "CHANGELOG.md"
@@ -18,8 +21,10 @@ def fail(message):
 def sections(text):
     """(version, body) for each `## [version]` heading, in file order; the body is what follows, up to the next."""
     found = list(HEADING.finditer(text))
-    return [(m["version"], text[m.end() : found[i + 1].start() if i + 1 < len(found) else len(text)].strip("\n"))
-            for i, m in enumerate(found)]
+    return [
+        (m["version"], text[m.end() : found[i + 1].start() if i + 1 < len(found) else len(text)].strip("\n"))
+        for i, m in enumerate(found)
+    ]
 
 
 args = sys.argv[1:]
@@ -37,10 +42,16 @@ elif len(args) == 2 and args[0] == "--cut":
     entries = dict(sections(text))
     if version in entries:
         fail(f"CHANGELOG.md already has `## [{version}]`")
-    if not entries.get("Unreleased"):
+    if "Unreleased" not in entries:
+        fail("CHANGELOG.md has no `## [Unreleased]` section")
+    if not entries["Unreleased"]:
         fail("the `## [Unreleased]` section is empty; write what changed first")
-    today = datetime.date.today().isoformat()
-    CHANGELOG.write_text(text.replace("## [Unreleased]", f"## [Unreleased]\n\n## [{version}] - {today}", 1))
+    today = datetime.datetime.now(tz=datetime.UTC).date().isoformat()
+    # The whole heading line goes, whatever followed the brackets, so nothing of it rides onto the version.
+    cut = re.sub(
+        r"^## \[Unreleased\].*$", f"## [Unreleased]\n\n## [{version}] - {today}", text, count=1, flags=re.MULTILINE
+    )
+    CHANGELOG.write_text(cut)
     print(f"CHANGELOG.md: [Unreleased] cut as [{version}] - {today}")
 else:
     fail(__doc__)

@@ -7,6 +7,10 @@ set -eu
 cd "$(dirname "$0")/.."
 
 remote=${REFLEXES_REMOTE:-git@github.com:evoke-build/reflexes.git}
+if [ "$(git branch --show-current)" != main ]; then
+  echo "the collection is published from main; this is $(git branch --show-current)" >&2
+  exit 1
+fi
 if [ -n "$(git status --porcelain -- reflexes)" ]; then
   echo "reflexes/ has uncommitted changes; commit them first" >&2
   exit 1

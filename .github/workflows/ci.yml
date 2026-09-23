@@ -20,5 +20,6 @@ jobs:
       - uses: jdx/mise-action@v4
         with:
           cache: true
+      - uses: Swatinem/rust-cache@v2
       - run: mise run lint
       - run: mise run test

@@ -900,7 +900,7 @@ fn out_of_range(pick: &Pick, value: &PickValue) -> Option<Range<f64>> {
 }
 
 /// Seconds as a number, to compare with a range.
-#[allow(clippy::cast_precision_loss)]
+#[expect(clippy::cast_precision_loss)]
 fn seconds(seconds: u64) -> f64 {
     seconds as f64
 }
