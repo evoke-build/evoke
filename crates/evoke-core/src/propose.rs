@@ -219,7 +219,12 @@ fn duration(chars: &[char], i: usize) -> Option<Found> {
 }
 
 fn number(chars: &[char], i: usize) -> Option<Found> {
-    let (value, after) = decimal(chars, i)?;
+    // A minus is the number's when nothing wordlike stands before it and a digit follows: `-5`, never `5-10`.
+    let signed = chars[i] == '-'
+        && chars.get(i + 1).is_some_and(char::is_ascii_digit)
+        && (i == 0 || !is_word(chars[i - 1]));
+    let (value, after) = decimal(chars, if signed { i + 1 } else { i })?;
+    let value = if signed { -value } else { value };
     let unit_at = after_space(chars, after);
     let end = if let Some(end) = unit_end(chars, unit_at, "percent") {
         end
@@ -235,9 +240,11 @@ fn number(chars: &[char], i: usize) -> Option<Found> {
     })
 }
 
-/// `\b\d+(\.\d+)?` at `i`: the number and where it ends; digits past what a number holds are no candidate.
+/// `\b\d+(\.\d+)?` at `i`: the number and where it ends; digits past what a number holds are no candidate, and
+/// neither are the digits after a digit and a comma or a point, `000` in `1,000` and `4` in `0.4`.
 fn decimal(chars: &[char], i: usize) -> Option<(f64, usize)> {
-    if !chars[i].is_ascii_digit() || (i > 0 && is_word(chars[i - 1])) {
+    let inside = i >= 2 && matches!(chars[i - 1], ',' | '.') && chars[i - 2].is_ascii_digit();
+    if !chars[i].is_ascii_digit() || (i > 0 && is_word(chars[i - 1])) || inside {
         return None;
     }
     let digits = |from: usize| {
@@ -254,13 +261,17 @@ fn decimal(chars: &[char], i: usize) -> Option<(f64, usize)> {
     value.is_finite().then_some((value, end))
 }
 
-/// Whole seconds, to the nearest; an amount past what seconds can hold is no candidate.
+/// Whole seconds, to the nearest; an amount past what seconds can hold is no candidate, and neither is one that
+/// rounds to nothing, `0.4 seconds`; a `0` said outright stays.
 #[allow(
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss,
     clippy::cast_precision_loss
 )]
 fn seconds(amount: f64) -> Option<u64> {
+    if amount > 0.0 && amount < 0.5 {
+        return None;
+    }
     let whole = amount.round();
     (whole < u64::MAX as f64).then_some(whole as u64)
 }

@@ -62,8 +62,8 @@ A pick reads a piece of the input, word for word. Five recognizers exist:
 
 | `pick`     | Recognizes                                      | Value             | `range` |
 | :--------- | :---------------------------------------------- | :---------------- | :------ |
-| `number`   | A bare number, unit words kept in the span: `30 percent` | The number  | yes     |
-| `duration` | `10 minutes`, `2 hours`, `90 seconds`, `1 hour 30 minutes` | Whole seconds | yes  |
+| `number`   | A bare number, unit words kept in the span: `30 percent`; a leading minus is the number's: `-5` | The number | yes |
+| `duration` | One number and one unit: `10 minutes`, `2 hours`, `90 seconds` | Whole seconds | yes |
 | `email`    | An address                                      | The text          | no      |
 | `url`      | A URL                                           | The text          | no      |
 | `quoted`   | `"…"`, `“…”` or `‘…’`; a straight single quote is an apostrophe | The text between the quotes | no |

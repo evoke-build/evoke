@@ -1,0 +1,40 @@
+{
+  "input": {
+    "input": "wait 1,000 seconds, or 0.4 seconds, or 0 seconds"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 5,
+        "end": 6,
+        "text": "1"
+      },
+      "value": {
+        "type": "number",
+        "value": 1
+      }
+    },
+    {
+      "span": {
+        "start": 23,
+        "end": 26,
+        "text": "0.4"
+      },
+      "value": {
+        "type": "number",
+        "value": 0.4
+      }
+    },
+    {
+      "span": {
+        "start": 39,
+        "end": 48,
+        "text": "0 seconds"
+      },
+      "value": {
+        "type": "duration",
+        "value": 0
+      }
+    }
+  ]
+}

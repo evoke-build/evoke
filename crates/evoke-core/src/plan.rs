@@ -404,25 +404,10 @@ pub fn compile(set: &Installed, limits: Option<&Limits>) -> Result<Plan, Diagnos
             .collect();
     if let Some(max) = limits.and_then(|limits| limits.options) {
         for (id, slot) in &slots {
-            let Slot::Ready(Question::Choice(choice)) = slot else {
-                continue;
-            };
-            let count = choice.options().len();
-            if count > max as usize {
-                let remove = match id {
-                    QuestionId::Arg(reflex, _) => Some(reflex),
-                    QuestionId::Route | QuestionId::Fits(_) | QuestionId::Weave(_) => {
-                        active.keys().last()
-                    }
-                };
-                return Err(Diagnostic {
-                    reflex: id.reflex().cloned(),
-                    at: None,
-                    message: format!("{id} has {count} options; the adapter takes at most {max}"),
-                    fix: remove.map_or(Fix::Check, |reflex| Fix::Remove {
-                        reflex: reflex.clone(),
-                    }),
-                });
+            if let Slot::Ready(Question::Choice(choice)) = slot
+                && choice.options().len() > max as usize
+            {
+                return Err(too_many_options(id, choice.options().len(), max, &active));
             }
         }
     }
@@ -581,6 +566,58 @@ fn fits(name: &LocalName, manifest: &Manifest) -> Slot {
         yes: Text::Plain(clean(&manifest.description.to_string())),
         no: Text::Plain(clean(&no)),
     })
+}
+
+/// A question over the adapter's option limit: the line names what to remove. For a vocabulary argument the words
+/// are the user's, so the fix is a shorter vocabulary, not a removed reflex; for the route it is the last reflex
+/// installed.
+fn too_many_options(
+    id: &QuestionId,
+    count: usize,
+    max: u32,
+    active: &IndexMap<LocalName, Active>,
+) -> Diagnostic {
+    let options = format!("{id} has {count} options; the adapter takes at most {max}");
+    let (message, fix) = match id {
+        QuestionId::Arg(reflex, arg) => match active
+            .get(reflex)
+            .and_then(|active| active.args.get(arg))
+            .map(|argument| &argument.kind)
+        {
+            Some(Kind::Value {
+                source: Source::Vocab(vocab),
+                ..
+            }) => (
+                format!(
+                    "{id} offers {count} words of \"{vocab}\"; the adapter takes at most {max}"
+                ),
+                Fix::VocabRemove {
+                    vocab: vocab.clone(),
+                },
+            ),
+            _ => (
+                options,
+                Fix::Remove {
+                    reflex: reflex.clone(),
+                },
+            ),
+        },
+        QuestionId::Route | QuestionId::Fits(_) | QuestionId::Weave(_) => (
+            options,
+            active
+                .keys()
+                .last()
+                .map_or(Fix::Check, |reflex| Fix::Remove {
+                    reflex: reflex.clone(),
+                }),
+        ),
+    };
+    Diagnostic {
+        reflex: id.reflex().cloned(),
+        at: None,
+        message,
+        fix,
+    }
 }
 
 /// One slot per argument: a choice with `unstated`, its examples attached to the options they assert; or a pick.

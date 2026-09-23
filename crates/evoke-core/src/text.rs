@@ -64,6 +64,11 @@ impl fmt::Display for Clean {
 
 impl fmt::Display for Unclean {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.0 == '\r' {
+            return f.write_str(
+                "contains a carriage return (U+000D); save the file with LF line endings",
+            );
+        }
         let kind = if is_bidi(self.0) {
             "a bidi control"
         } else {
@@ -173,8 +178,10 @@ struct RawUtterance {
 }
 
 impl Utterance {
+    /// NFC, as an input is, so a span an input produced is found in the utterance it came from.
     pub fn new(text: &str) -> Result<Self, String> {
-        let text = Clean::line(text)?;
+        let text: String = text.nfc().collect();
+        let text = Clean::line(&text)?;
         let id = identity(text.as_str());
         Ok(Self { text, id })
     }

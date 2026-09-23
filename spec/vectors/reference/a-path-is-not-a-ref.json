@@ -1,0 +1,13 @@
+{
+  "input": {
+    "text": "/tmp/lights"
+  },
+  "expect": {
+    "err": {
+      "message": "\"/tmp/lights\" is a path; a local reflex is written ./dir or ../dir, relative to evoke.toml",
+      "fix": {
+        "type": "rerun"
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "wait 5-10 minutes"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 5,
+        "end": 6,
+        "text": "5"
+      },
+      "value": {
+        "type": "number",
+        "value": 5
+      }
+    },
+    {
+      "span": {
+        "start": 7,
+        "end": 17,
+        "text": "10 minutes"
+      },
+      "value": {
+        "type": "duration",
+        "value": 600
+      }
+    }
+  ]
+}

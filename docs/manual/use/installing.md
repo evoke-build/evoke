@@ -16,7 +16,8 @@ installed that a person did not name. No install-time code ever runs.
 | `./dir`, `../dir`                 | A local directory, relative to `evoke.toml`. Never fetched, never locked            |
 
 An unpinned ref means its newest tag at `add`, and `update` moves it forward. A repository with no version tag
-cannot be installed. Its author publishes one with `git push --tags`.
+cannot be installed. Its author publishes one with `git push --tags`. A password or a token in a URL is refused:
+git's credential helper holds those, never a project file.
 
 ## `add`
 

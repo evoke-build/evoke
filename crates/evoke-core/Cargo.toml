@@ -1,6 +1,6 @@
 [package]
 name                 = "evoke-core"
-description          = "The rules, pure: parse, merge, compile, propose, read, gate, diff"
+description          = "The rules, pure: parse, merge, compile, propose, read, gate, weave, diff"
 version.workspace    = true
 edition.workspace    = true
 license.workspace    = true

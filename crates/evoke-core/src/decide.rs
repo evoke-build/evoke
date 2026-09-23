@@ -550,6 +550,12 @@ pub fn validated(request: &Request, raw: Raw) -> Result<Answers<'_>, Fault> {
                     question: id.clone(),
                 });
             }
+            Question::YesNo { .. } if answer.contains_key("no") && (sum - 1.0).abs() > 1e-6 => {
+                return Err(malformed(
+                    id.clone(),
+                    format!("yes and no sum to {}, not 1", shown(sum)),
+                ));
+            }
             _ => {}
         }
         answers.insert(id, answer);
@@ -1123,14 +1129,24 @@ fn capped(active: &Active, chosen: Chosen, unconsumed: Vec<Span>, gate: Option<&
     }
 }
 
-/// Typed text run through a pick's recognizer, as the prompt and a call by name read it: the first candidate of
-/// its kind; a quoted pick takes the whole text when nothing is quoted.
+/// Typed text run through a pick's recognizer, as the prompt and a call by name read it: a candidate of its kind
+/// that covers the whole text, spaces at the ends aside — `1e3` and `1 hour 30 minutes` read as nothing, so a call
+/// by name is refused and a prompt asks again, never trimmed to the part that read; a quoted pick takes the whole
+/// text when no quotes enclose it whole.
 #[must_use]
 pub fn picked(text: &str, recognizer: Recognizer) -> Option<Value> {
-    let input = Input::new(text).ok()?;
-    let found = propose(&input)
-        .into_iter()
-        .find(|proposed| proposes(recognizer, &proposed.value));
+    let input = Input::new(text.trim()).ok()?;
+    let whole = input.as_str().chars().count();
+    let found = propose(&input).into_iter().find(|proposed| {
+        proposes(recognizer, &proposed.value)
+            && match recognizer {
+                // A quoted span stands inside its quotes.
+                Recognizer::Quoted => {
+                    proposed.span.start() == 1 && proposed.span.end() + 1 == whole
+                }
+                _ => proposed.span.start() == 0 && proposed.span.end() == whole,
+            }
+    });
     match (found, recognizer) {
         (Some(proposed), _) => Some(Value::Pick {
             span: proposed.span,
@@ -1158,6 +1174,15 @@ pub fn by_name(plan: &Plan, written: Written) -> Result<Decision, Diagnostic> {
     let mut given = IndexMap::new();
     for (name, text) in &written.args {
         let (current, argument) = active.argument(&reflex, name.as_str())?;
+        if given.contains_key(current) {
+            return Err(refused(
+                &reflex,
+                format!("{name} and {current} are one argument; it is given twice"),
+                Fix::Show {
+                    reflex: Some(reflex.clone()),
+                },
+            ));
+        }
         let value = named(plan, &reflex, current, argument, text.as_deref())?;
         given.insert(current.clone(), value);
     }

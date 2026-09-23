@@ -1,0 +1,7 @@
+{
+  "input": {
+    "text": "1e3",
+    "recognizer": "number"
+  },
+  "expect": null
+}

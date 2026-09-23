@@ -11,6 +11,7 @@ use crate::digest::Digest;
 use crate::document::{self, Diagnostics, Document, Json, Node, Table, Value};
 use crate::manifest::{self, Effect};
 use crate::name::{AdapterId, AdapterName, ConfigKey, LocalName, Owner, RelPath, Segment, VarName};
+use crate::text::Clean;
 
 /// What you wrote: the adapter that decides, the reflexes you installed, their settings, the adapters' own tables.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -59,14 +60,16 @@ pub enum Repo {
     },
 }
 
-/// A git URL over an allow-listed scheme: `https` or `ssh`; a user may stand before the host, as `git@` does; no
-/// `#` or whitespace anywhere, and no `@` past the host.
+/// A git URL over an allow-listed scheme: `https` or `ssh`; a user may stand before an ssh host, as `git@` does,
+/// never a password, and never anything before an https host, since a token there is a secret in a project file;
+/// no `#`, whitespace or control character anywhere, and no `@` past the host.
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(try_from = "String")]
 pub struct GitUrl(String);
 
 impl GitUrl {
     pub fn new(text: &str) -> Result<Self, String> {
+        Clean::line(text).map_err(|why| format!("the URL {why}"))?;
         let Some((scheme, rest)) = text.split_once("://") else {
             return Err(format!("\"{text}\" is not a URL"));
         };
@@ -88,6 +91,14 @@ impl GitUrl {
             return Err(format!(
                 "\"{text}\" is not a git URL: <scheme>://[<user>@]<host>/<path>"
             ));
+        }
+        if let Some((userinfo, _)) = authority.rsplit_once('@')
+            && (userinfo.contains(':') || scheme == "https")
+        {
+            return Err(
+                "the URL carries a credential; git's credential helper holds it, never a project file"
+                    .to_owned(),
+            );
         }
         Ok(Self(text.to_owned()))
     }
@@ -283,6 +294,11 @@ fn parse_reference(text: &str) -> Result<(Reference, Option<Version>), String> {
     if is_local(text) {
         return Err(format!("\"{text}\" is local; a ref names a repository"));
     }
+    if text.starts_with('/') || text.starts_with('~') || text == "." || text == ".." {
+        return Err(format!(
+            "\"{text}\" is a path; a local reflex is written ./dir or ../dir, relative to evoke.toml"
+        ));
+    }
     if !text.contains("://") && text.contains(':') {
         return Err(format!("\"{text}\" is scp-like; write ssh://<host>/<path>"));
     }
@@ -361,6 +377,7 @@ fn is_local(text: &str) -> bool {
 
 fn location(text: &str) -> Result<Location, String> {
     if is_local(text) {
+        Clean::line(text).map_err(|why| format!("\"{text}\" {why}"))?;
         return Ok(Location::Local {
             path: text.to_owned(),
         });
@@ -467,6 +484,12 @@ fn config(d: &mut Diagnostics, node: Node) -> IndexMap<LocalName, IndexMap<Confi
 }
 
 fn setting(d: &mut Diagnostics, node: Node) -> Option<Setting> {
+    if let Value::Str(value) = &node.value
+        && let Err(why) = Clean::line(value)
+    {
+        d.fail(node.at.as_ref(), format!("{} {why}", node.name()));
+        return None;
+    }
     match node.value {
         Value::Str(value) => Some(Setting::Plain { value }),
         Value::Table(_) => {

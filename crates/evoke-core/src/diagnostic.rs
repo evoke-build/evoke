@@ -43,6 +43,10 @@ pub enum Fix {
     VocabAdd {
         vocab: VocabName,
     },
+    /// `evoke vocab <name> remove <word>`: a vocabulary offers more words than the adapter takes in one question.
+    VocabRemove {
+        vocab: VocabName,
+    },
     ConfigSet {
         reflex: LocalName,
         key: ConfigKey,
@@ -101,6 +105,7 @@ impl Fix {
     pub fn command(&self, invoked: &str) -> String {
         match self {
             Self::VocabAdd { vocab } => format!("evoke vocab {vocab} add <word> \"<meaning>\""),
+            Self::VocabRemove { vocab } => format!("evoke vocab {vocab} remove <word>"),
             Self::ConfigSet { reflex, key } => format!("evoke config {reflex} {key} <value>"),
             Self::ConfigEnv { reflex, key } => format!("evoke config {reflex} {key} --env <VAR>"),
             Self::Update {
@@ -177,6 +182,13 @@ mod tests {
 
     #[test]
     fn every_fix_is_a_literal_command() {
+        assert_eq!(
+            Fix::VocabRemove {
+                vocab: VocabName::new("rooms").unwrap()
+            }
+            .command(""),
+            "evoke vocab rooms remove <word>"
+        );
         let key = ConfigKey::new("token").unwrap();
         let at = At {
             file: File::Overlay {

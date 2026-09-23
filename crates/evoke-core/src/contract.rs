@@ -194,8 +194,8 @@ const OPTIONS: usize = 24;
 const RECORDS: usize = 40;
 const UTTERANCE_CHARS: usize = 200;
 
-/// Phrases that address a model rather than describe an action, matched case-insensitively; the first found names
-/// the finding.
+/// Phrases that address a model rather than describe an action, matched on whole words, case aside; the first
+/// found names the finding.
 const ADDRESSES_MODEL: [&str; 25] = [
     "ignore previous",
     "ignore all previous",
@@ -334,10 +334,15 @@ fn cap_entries(
 }
 
 fn addresses(findings: &mut Vec<Finding>, path: &KeyPath, text: &str) {
-    let lower = text.to_lowercase();
+    // Whole words: "as an aid" is not "as an ai", and "the models" is not "the model".
+    let words: Vec<&str> = text
+        .split(|c: char| !c.is_alphanumeric())
+        .filter(|word| !word.is_empty())
+        .collect();
+    let padded = format!(" {} ", words.join(" ").to_lowercase());
     if let Some(phrase) = ADDRESSES_MODEL
         .iter()
-        .find(|phrase| lower.contains(*phrase))
+        .find(|phrase| padded.contains(&format!(" {phrase} ")))
     {
         findings.push(Finding {
             rule: LintRule::AddressesModel,

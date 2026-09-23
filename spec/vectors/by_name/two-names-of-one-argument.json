@@ -1,0 +1,25 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-renamed.json"
+    },
+    "written": {
+      "reflex": "lights",
+      "args": {
+        "room": "den",
+        "state": "off",
+        "power": "on"
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "reflex": "lights",
+      "message": "power and state are one argument; it is given twice",
+      "fix": {
+        "type": "show",
+        "reflex": "lights"
+      }
+    }
+  }
+}

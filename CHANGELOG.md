@@ -6,6 +6,26 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A value typed at a prompt or written in a call by name must read whole. Before, `volume level=1e3` ran with
+  `1`, `-5` ran with `5` and `1 hour 30 minutes` started a one-hour timer. Now a value that does not read whole
+  is refused, or asked again. A leading minus is part of a number, in a sentence too, so `-5` reads as `-5`.
+- The digits after a thousands comma or a decimal point are no candidate of their own: `1,000 seconds` no longer
+  proposes a zero-second `000 seconds`, and `0.4 seconds` no longer rounds to a timer of nothing.
+- A call or a lesson that names one argument twice through its former name, `state=off power=on`, is refused.
+  Before, the last value won without a word.
+- A recorded or coded adapter's yes/no answer that carries `no` must sum to 1 with `yes`, as a choice must.
+- A digest in a lock or a trust file is lower-case hex only; `+f` pairs no longer pass as `0f`.
+- `[t]each` and `evoke teach` read an utterance in NFC, as a decision does, so a span the decision found is found
+  in the utterance it came from.
+- Lint's "addresses the model" matches whole words: "as an aid" and "the models" are no longer named.
+- A manifest saved with Windows line endings says so: "contains a carriage return (U+000D); save the file with LF
+  line endings".
+- A control character in a local reflex path, a plain setting or a git URL is refused, as it is in every other
+  string of a project. A password or a token in a git URL is refused: git's credential helper holds it, never
+  `evoke.toml` or the lock. `.` and `..` are no ref segments, and a path typed as a ref is told how a local
+  reflex is written.
+- Over the classifier's option limit on a vocabulary argument, the line names the vocabulary and ends in
+  `evoke vocab <name> remove <word>`, not in removing the reflex.
 - Both hosts read the proxy from the same two variables, `HTTPS_PROXY` and `NO_PROXY`, the lower-case names
   first. Before, the CLI also read `ALL_PROXY` and `HTTP_PROXY`, so the two hosts could use different proxies. A
   value that is not an `http` or `https` address is refused with the `export` line, never bypassed in silence. A

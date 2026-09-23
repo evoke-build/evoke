@@ -1,0 +1,74 @@
+{
+  "input": {
+    "manifest": {
+      "description": "Book a seat, as an aid to travel; note the models of the car.\nA description whose words merely contain the phrases.",
+      "not_for": [
+        "colour scenes and schedules",
+        "asking whether a light is on"
+      ],
+      "tags": [
+        "home",
+        "lighting"
+      ],
+      "effect": "write",
+      "confirm": "Set the {room} lights {state}?",
+      "run": "lights.mts",
+      "config": {
+        "bridge": {
+          "about": "Hue bridge address",
+          "secret": false
+        },
+        "token": {
+          "about": "Hue API key",
+          "secret": true
+        }
+      },
+      "args": {
+        "room": {
+          "ask": "Which room?",
+          "vocab": "rooms",
+          "optional": false,
+          "was": []
+        },
+        "state": {
+          "ask": "What should the lights do?",
+          "options": {
+            "on": "Switch on.",
+            "off": "Switch off.",
+            "dim": "Lower the brightness without switching off."
+          },
+          "optional": false,
+          "was": []
+        },
+        "brightness": {
+          "ask": "How bright, in percent?",
+          "pick": "number",
+          "range": [
+            1,
+            100
+          ],
+          "optional": true,
+          "was": []
+        }
+      },
+      "yields": {},
+      "examples": {
+        "turn on the kitchen lights": {
+          "state": "on"
+        },
+        "dim the office to 30 percent": {
+          "state": "dim",
+          "brightness": "30 percent"
+        }
+      },
+      "tests": {
+        "make it darker in here": {
+          "state": "dim"
+        },
+        "light a candle": false
+      },
+      "unknown": []
+    }
+  },
+  "expect": []
+}

@@ -220,7 +220,8 @@ name!(
     Segment,
     |s: &str| {
         let head = s.starts_with(|c: char| c.is_ascii_alphanumeric() || c == '.' || c == '_');
-        if head && s.chars().all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-')) {
+        let dots = s == "." || s == "..";
+        if head && !dots && s.chars().all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-')) {
             Ok(())
         } else {
             Err(format!("\"{s}\" is not a ref segment: [A-Za-z0-9._][A-Za-z0-9._-]*"))

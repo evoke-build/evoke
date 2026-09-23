@@ -62,6 +62,7 @@ impl TryFrom<String> for Digest {
         let hex = text
             .strip_prefix("h1:")
             .filter(|hex| hex.len() == 64)
+            .filter(|hex| hex.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f')))
             .ok_or_else(invalid)?;
         let mut bytes = [0u8; 32];
         for (byte, i) in bytes.iter_mut().zip((0..64).step_by(2)) {

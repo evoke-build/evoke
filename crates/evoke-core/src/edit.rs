@@ -98,6 +98,13 @@ impl Lesson {
         let mut asserts = IndexMap::new();
         for (name, text) in &written.args {
             let (current, argument) = active.argument(&reflex, name.as_str())?;
+            if asserts.contains_key(current) {
+                return Err(refused(
+                    Some(&reflex),
+                    format!("{name} and {current} are one argument; it is given twice"),
+                    Fix::Rerun,
+                ));
+            }
             let assertion = match (&argument.kind, text) {
                 (Kind::Flag, None) => Ok(Assertion::Flag),
                 (Kind::Flag, Some(_)) => Err("is a flag; write it bare".to_owned()),
@@ -129,6 +136,13 @@ impl Lesson {
                     let name = ArgName::new(name)
                         .map_err(|why| refused(Some(&reflex), why, Fix::Rerun))?;
                     let (current, argument) = active.argument(&reflex, name.as_str())?;
+                    if asserts.contains_key(current) {
+                        return Err(refused(
+                            Some(&reflex),
+                            format!("{name} and {current} are one argument; it is given twice"),
+                            Fix::Rerun,
+                        ));
+                    }
                     let assertion = typed(&argument.kind, value).map_err(|why| {
                         refused(Some(&reflex), format!("{name} {why}"), Fix::Rerun)
                     })?;

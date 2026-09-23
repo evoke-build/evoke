@@ -1,0 +1,34 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "lock"
+      },
+      "toml": "lock = 1\nevoke = \"0.3.0\"\n\n[adapter]\nname = \"replay\"\nid = \"replay\"\n\n[reflexes.lights]\nref    = \"radhi/home/lights\"\ntag    = \"1.2.0\"\ncommit = \"7a498d11d5375f3cb65c575c3186bc64ecac7f52\"\nh1     = \"h1:+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f\"\neffect = \"write\"\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "at": {
+          "file": {
+            "type": "lock"
+          },
+          "line": 12,
+          "column": 1
+        },
+        "message": "reflexes.lights.h1: \"h1:+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f\" is not a digest: h1:<64 hex>",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "lock"
+            },
+            "line": 12,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

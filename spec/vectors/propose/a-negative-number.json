@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "set it to -5"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 10,
+        "end": 12,
+        "text": "-5"
+      },
+      "value": {
+        "type": "number",
+        "value": -5
+      }
+    }
+  ]
+}
