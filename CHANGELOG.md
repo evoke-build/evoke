@@ -19,6 +19,12 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   except for displaying the licence details and identifying us as the origin of the software, you have no right
   under the licence to use our trademarks, trade names, service marks or product names. The footers of evoke.build
   name the licence and the engine, nothing more.
+- evoke.build reads well to a language model. `/llms.txt` is the index: what `evoke` is and what holds in any
+  description of it, written once, then the site's pages and every page of the manual, taken from the manual's own
+  index and linked as the markdown each was made from. Every page of the manual is served beside its markdown,
+  `install.html` beside `install.md`, and its head names the twin. `/llms-full.txt` is the whole manual in one file,
+  in reading order, each page under its address, every link absolute. What the two files tell a model to fetch, the
+  build checks it serves.
 
 ## [0.3.0] - 2026-09-23
 

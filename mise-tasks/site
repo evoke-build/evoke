@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#MISE description="Build evoke.build into target/site: the landing page, the idea page, the format page with its schemas, the use-cases page, the FAQ with its questions as structured data, the privacy policy dated by git, the install script, the manual rendered by mdBook with the site's bar, the use cases' sentences and the FAQ and privacy links on every page, a canonical link, a description, a card and a breadcrumb trail on every page, the sitemap dated by git, and robots.txt — checking first that every link in the manual resolves"
+#MISE description="Build evoke.build into target/site: the landing page, the idea page, the format page with its schemas, the use-cases page, the FAQ with its questions as structured data, the privacy policy dated by git, the install script, the manual rendered by mdBook with the site's bar, the use cases' sentences and the FAQ and privacy links on every page, a canonical link, a description, a card and a breadcrumb trail on every page, the manual's markdown beside each page, llms.txt and llms-full.txt for a language model, the sitemap dated by git, and robots.txt — checking first that every link in the manual resolves, and last that every address the two files name is served"
 """The manual's README is its index: its tables become mdBook's SUMMARY.md, so the site's structure has one source.
 What a search engine or a shared link needs is written here, once, from the pages themselves and from git."""
 import datetime, html as html_text, json, re, shutil, subprocess, sys
@@ -13,6 +13,8 @@ CARD_ALT = "evoke — Software, by reflex."
 LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)\)")
 TOKEN = re.compile(r"--([a-z-]+):\s*([^;]+);")
 UNLISTED = {"404.html", "print.html", "toc.html"}
+SITE_URL = re.compile(r"https://evoke\.build/[^\s)\]>\"'`]*")
+VERSION = re.search(r'^version\s*=\s*"([^"]+)"', (ROOT / "Cargo.toml").read_text(), re.M)[1]
 
 
 def links_resolve():
@@ -45,15 +47,27 @@ def landing_palette():
     return landing
 
 
-def summary():
-    """SUMMARY.md from the README: the README first, then each `###` section as a part, each table row a page."""
-    lines = ["[The manual](README.md)", ""]
+def contents():
+    """The manual's table of contents, from the README: each page's part, title, path and the README's own line on
+    when to read it, in reading order. SUMMARY.md, llms.txt and llms-full.txt all follow it."""
+    rows, part = [], None
     manual = (MANUAL / "README.md").read_text().split("\n## The manual\n", 1)[1].split("\n## ", 1)[0]
     for line in manual.splitlines():
         if line.startswith("### "):
-            lines += ["", f"# {line[4:]}", ""]
+            part = line[4:]
         elif line.startswith("| [") and (link := LINK.search(line)):
-            lines.append(f"- [{link[1]}]({link[2]})")
+            rows.append((part, link[1], link[2], line.strip().strip("|").split("|")[1].strip()))
+    return rows
+
+
+def summary():
+    """SUMMARY.md from the README: the README first, then each `###` section as a part, each table row a page."""
+    lines, part = ["[The manual](README.md)", ""], None
+    for section, title, path, _ in contents():
+        if section != part:
+            lines += ["", f"# {section}", ""]
+            part = section
+        lines.append(f"- [{title}]({path})")
     return "\n".join(lines) + "\n"
 
 
@@ -61,6 +75,18 @@ def address(page):
     """The page's public address: a directory's index is the directory."""
     rel = page.relative_to(OUT).as_posix()
     return URL + (rel[: -len("index.html")] if rel.endswith("index.html") else rel)
+
+
+def published(page):
+    """The address of the page a manual source is made into."""
+    rel = page.relative_to(MANUAL).as_posix()
+    return URL + "manual/" + ("" if rel == "README.md" else rel[: -len(".md")] + ".html")
+
+
+def markdown(page):
+    """The address of a built manual page's markdown twin."""
+    url = address(page)
+    return url + "index.md" if url.endswith("/") else url[: -len(".html")] + ".md"
 
 
 def source(page):
@@ -112,6 +138,7 @@ def described(page):
     heading = html_text.escape(title, quote=True)
     head = "\n".join([
         f'<link rel="canonical" href="{address(page)}">',
+        f'<link rel="alternate" type="text/markdown" href="{markdown(page)}">',
         '<meta name="robots" content="max-image-preview:large">',
         '<meta property="og:type" content="article">',
         '<meta property="og:site_name" content="evoke">',
@@ -261,8 +288,67 @@ def changed(page, dated):
 
 def versioned(landing):
     """The landing page's structured data names the version Cargo.toml names."""
-    version = re.search(r'^version\s*=\s*"([^"]+)"', (ROOT / "Cargo.toml").read_text(), re.M)[1]
-    landing.write_text(re.sub(r'"softwareVersion": "[^"]*"', f'"softwareVersion": "{version}"', landing.read_text(), count=1))
+    landing.write_text(re.sub(r'"softwareVersion": "[^"]*"', f'"softwareVersion": "{VERSION}"', landing.read_text(), count=1))
+
+
+def twinned():
+    """Every page of the manual served beside its markdown source, README.md as index.md, so a reader that wants text
+    gets the file the page was made from, its relative links resolving to the twins beside it."""
+    for page in MANUAL.rglob("*.md"):
+        rel = page.relative_to(MANUAL).as_posix()
+        shutil.copy(page, OUT / "manual" / ("index.md" if rel == "README.md" else rel))
+
+
+def absolute(page):
+    """A manual source with every relative link made absolute, to the page it names on the site, so the text reads,
+    and cites, away from its directory."""
+    def link(found):
+        path, _, fragment = found[2].partition("#")
+        if not path or path.startswith(("http://", "https://")):
+            return found[0]
+        target = (page.parent / path).resolve()
+        url = published(target) if target.is_relative_to(MANUAL) else URL + target.relative_to(ROOT).as_posix()
+        return f"[{found[1]}]({url}{'#' + fragment if fragment else ''})"
+    return LINK.sub(link, page.read_text())
+
+
+def llms():
+    """/llms.txt from its source in site/: the head as written, the manual's parts as sections of links to each page's
+    markdown twin with the README's own line on when to read it, and the version Cargo.toml names."""
+    sections, part = [], None
+    for section, title, path, when in contents():
+        if section != part:
+            sections += ["", f"## {section}", ""]
+            part = section
+        sections.append(f"- [{title}]({URL}manual/{path[: -len('.md')]}.md): {when}")
+    text = (SITE / "llms.txt").read_text()
+    for token in ("{manual}", "{version}"):
+        if text.count(token) != 1:
+            sys.exit(f"site/llms.txt: {token} must appear once")
+    (OUT / "llms.txt").write_text(text.replace("{manual}", "\n".join(sections).strip()).replace("{version}", VERSION))
+
+
+def whole():
+    """/llms-full.txt: the manual as one file, in reading order, each page under its address, every link absolute."""
+    parts = [f"# The evoke manual, in one file\n\nevoke {VERSION}. Every page of {URL}manual/ follows, in reading order, each under its address. "
+             f"The index, for a reader that wants less, is {URL}llms.txt.\n"]
+    for page in [MANUAL / "README.md"] + [MANUAL / path for _, _, path, _ in contents()]:
+        text = re.sub(r'^<p align="center">.*?</p>\n\n', "", absolute(page), count=1, flags=re.S)
+        parts.append(f"---\n\nSource: {published(page)}\n\n{text.strip()}\n")
+    (OUT / "llms-full.txt").write_text("\n".join(parts))
+
+
+def served(*files):
+    """Every address into evoke.build the given files name is a file the build wrote: what a model is told to fetch,
+    it can fetch."""
+    problems = []
+    for file in files:
+        for target in SITE_URL.findall(file.read_text()):
+            path = target[len(URL):].split("#")[0].rstrip(".,;:")
+            if not (OUT / (path + "index.html" if path == "" or path.endswith("/") else path)).is_file():
+                problems.append(f"{file.relative_to(OUT)}: {target} is not served")
+    if problems:
+        sys.exit("\n".join(problems))
 
 
 def checked(pages):
@@ -321,6 +407,9 @@ shutil.copytree(SITE / "fonts", OUT / "fonts")
 shutil.copytree(ROOT / "spec/schemas", OUT / "schemas")  # the format's schemas, at the $id each declares
 dated = git("rev-parse", "--is-shallow-repository") == "false"
 versioned(OUT / "index.html")
+twinned()
+llms()
+whole()
 answered(OUT / "faq.html")
 changed(OUT / "privacy.html", dated)
 for name in ["index.html", "idea.html", "format.html", "use-cases.html", "faq.html", "privacy.html"]:
@@ -334,4 +423,6 @@ shutil.copy(OUT / "manual/404.html", OUT / "404.html")
 listed = [OUT / "index.html", OUT / "idea.html", OUT / "format.html", OUT / "use-cases.html", OUT / "faq.html", OUT / "privacy.html", OUT / "manual/index.html"] + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
 sitemap(listed, dated)
 checked(listed)
-print(f"site: {OUT.relative_to(ROOT)} — {len(listed)} pages in the sitemap{'' if dated else ', undated: the clone has no history'}")
+served(OUT / "llms.txt", OUT / "llms-full.txt")
+print(f"site: {OUT.relative_to(ROOT)} — {len(listed)} pages in the sitemap{'' if dated else ', undated: the clone has no history'}, "
+      f"{len(contents()) + 1} in llms-full.txt")

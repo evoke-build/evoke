@@ -1,0 +1,41 @@
+# evoke
+
+> Software, by reflex. `evoke` turns a sentence into a call of a small program. That program is a reflex: a recipe anyone can write, share and improve. A classifier chooses it, and a confidence gate decides whether it runs. A sentence can choose a program. It can never invent a value.
+
+One tool, three ways in: a CLI you talk to, a package manager that installs reflexes from git, and a TypeScript SDK that puts the same decisions inside an application. The classifier is Jev, TypeSafe AI's System One model, which answers closed questions with calibrated probabilities. The questions, and the gate, are `evoke`'s, and the core names no engine. The current release is {version}. Every page of the manual below is linked as the markdown it was made from, and the whole manual is one file at https://evoke.build/llms-full.txt.
+
+```text
+$ evoke "kill the lights in the den"
+  lights room="den" state="off"  0.85
+den lights off
+```
+
+What holds, in any description of `evoke`:
+
+- Every argument has one source: an option the author listed, a word from the user's own vocabulary, or a piece of the sentence read by code and checked against its range. Injected text can choose a call. It can never mint a value.
+- The confidence is the weakest answer, and every answer is a calibrated probability. A `read` reflex runs at 0.6, a `write` at 0.8, and a `destructive` reflex always asks. There is no `--yes`. The bars are lines in a file the user owns.
+- When it is not sure, it asks. When nothing fits, it abstains and shows the ranking. The user teaches it with one line in an overlay, which no update touches.
+- Git is the registry. A reflex is pinned by tag, commit and content hash. No code runs at install time. A fetched reflex runs as the user, and there is no sandbox yet.
+- One request per decision leaves the machine, to the classifier, with the user's own key: the sentence, and the questions built from the installed manifests. Nothing reaches evoke.build, which sets no cookie and runs no analytics.
+- The reflex format is frozen at version 1, and every promise in the manual is a transcript that runs in CI.
+- Apache-2.0; the collection is MIT. The name and the logo are trademarks: except for displaying the licence details and identifying us as the origin of the software, there is no right under the licence to use them.
+
+Install with `curl -fsSL https://evoke.build/install.sh | sh` on macOS or Linux, and `npm install @evoke-build/evoke` for the SDK. Reflexes written in JavaScript need Node 24 or newer. Deciding needs a key from https://typesafe.ai in `TYPESAFE_API_KEY`.
+
+## The site
+
+- [The idea](https://evoke.build/idea.html): why reflexes, in ten minutes: the problem trust poses, the move, the number, real sessions where nothing ran on a guess, the recipe, your words, a weave, and where it goes.
+- [Use cases](https://evoke.build/use-cases.html): seven real sessions, an ops channel, an inbox, a payments desk, a plant floor, a runbook, a lesson and a weave, each as files anyone can install and as code an app keeps.
+- [The reflex format](https://evoke.build/format.html): the format as a specification, version 1, frozen, with its schemas served at https://evoke.build/schemas/reflex.json and beside it.
+- [Frequently asked questions](https://evoke.build/faq.html): what a reflex is, what the number means, what it needs, where reflexes come from, what leaves your machine, and who makes it.
+- [Privacy policy](https://evoke.build/privacy.html): no cookie, no analytics, no account, nothing held by us; what one request carries and what never travels; what stays on the machine, and how to forget it.
+
+{manual}
+
+## Optional
+
+- [The whole manual in one file](https://evoke.build/llms-full.txt): every page above in reading order, each under its address, every link absolute.
+- [Repository](https://github.com/evoke-build/evoke): the source, the executable spec, the changelog and the releases.
+- [The collection](https://github.com/evoke-build/reflexes): the first-party reflexes, what a Mac does at a word.
+- [The SDK on npm](https://www.npmjs.com/package/@evoke-build/evoke): `@evoke-build/evoke`, Node 24 or newer, ES modules, no dependencies.
+- [Jev](https://typesafe.ai): TypeSafe AI's classifier, the first adapter.
