@@ -1,7 +1,7 @@
 # Wording
 
-The classifier is never trained. What it knows about your reflex is your manifest, turned into questions. So the
-wording decides accuracy. This page is the craft of it.
+What the classifier knows about your reflex is your manifest, turned into questions. So the wording decides
+accuracy. This page is the craft of it.
 
 ## What the classifier sees
 
@@ -69,6 +69,6 @@ thing between a sentence and an action.
 - Vary the verbs and the phrasing: *set a timer for 10 minutes*, *25 minute timer*, *count down 90 seconds*.
 - Cover every option and every pick. Include an unstated case for what is optional.
 - Keep them true. An example that asserts a wrong value teaches the wrong thing, and `evoke test` runs it.
-- Jev reads English most accurately. A user's overlay carries any other language.
+- Write in the language your users speak. A user's overlay carries any other.
 
 **Next:** [Publishing](publishing.md).
