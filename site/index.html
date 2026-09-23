@@ -3,24 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Evoke - Your words pick the programs</title>
-  <meta name="description" content="Type a sentence, and evoke runs the installed programs that fit, one or a chain. When unsure, it asks first. A CLI, reflex package manager and TypeScript SDK.">
+  <title>Evoke - Install abilities. Connect them with a sentence.</title>
+  <meta name="description" content="evoke packages small programs with the descriptions and rules needed to call them in everyday language. A CLI, package manager and TypeScript SDK.">
   <link rel="canonical" href="https://evoke.build/">
   <meta name="robots" content="max-image-preview:large">
   <meta name="theme-color" content="#0f0f10">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="evoke">
   <meta property="og:locale" content="en_US">
-  <meta property="og:title" content="Evoke - Your words pick the programs">
-  <meta property="og:description" content="Type a sentence, and evoke runs the installed programs that fit, one or a whole chain. When unsure, it asks first. Reflexes are small programs anyone can write and share.">
+  <meta property="og:title" content="Evoke - Install abilities. Connect them with a sentence.">
+  <meta property="og:description" content="evoke packages small programs with the descriptions and rules needed to call them in everyday language. A CLI, package manager and TypeScript SDK.">
   <meta property="og:url" content="https://evoke.build/">
   <meta property="og:image" content="https://evoke.build/og.png">
   <meta property="og:image:width" content="2400">
   <meta property="og:image:height" content="1260">
   <meta property="og:image:alt" content="evoke — Software, by reflex.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Evoke - Your words pick the programs">
-  <meta name="twitter:description" content="Type a sentence, and evoke runs the installed programs that fit, one or a whole chain. When it is not sure enough, it asks first.">
+  <meta name="twitter:title" content="Evoke - Install abilities. Connect them with a sentence.">
+  <meta name="twitter:description" content="evoke packages small programs with the descriptions and rules needed to call them in everyday language. A CLI, package manager and TypeScript SDK.">
   <meta name="twitter:image" content="https://evoke.build/og.png">
   <meta name="twitter:image:alt" content="evoke — Software, by reflex.">
   <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
@@ -37,7 +37,7 @@
         "@id": "https://evoke.build/#software",
         "name": "evoke",
         "url": "https://evoke.build/",
-        "description": "Type a sentence, and evoke runs the installed programs that fit, one or a whole chain, asking first when unsure. These programs are reflexes: anyone can write one, share it through git, and improve it. evoke is a CLI, a package manager for reflexes, and a TypeScript SDK.",
+        "description": "evoke packages small programs, called reflexes, with the descriptions and rules needed to call them in everyday language. One sentence combines compatible ones into a plan, passes results between steps, and pauses for confirmation where you set it. Anyone can write a reflex, share it through git, and improve it. evoke is a CLI, a package manager for reflexes, and a TypeScript SDK.",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "macOS, Linux",
         "softwareVersion": "0.1.0",
@@ -206,7 +206,7 @@
     /* The hero: the words, and a lamp that listens */
     .hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 3.5rem; align-items: center; padding: 4.5rem 0 0; }
     .hero h1 { font-size: clamp(2.8rem, 5.6vw, 4.1rem); font-weight: 600; letter-spacing: -0.035em; line-height: .98; margin: 0 0 1.3rem; }
-    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero h1 em { display: block; font-style: normal; color: var(--accent); }  /* the second sentence on a line of its own */
     .hero .lede { font-size: 1.22rem; line-height: 1.5; color: var(--muted); max-width: 38rem; margin: 0 0 1.9rem; }
     .hero .lede strong { color: var(--fg); font-weight: 560; }
     .cta { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; }
@@ -215,7 +215,6 @@
     .cta .cmd { flex: 1 1 100%; max-width: fit-content; margin-top: .25rem; }
     .cta .cmd code { font-size: .86rem; }
     .jobs { list-style: none; margin: 1.9rem 0 0; padding: 1.1rem 0 0; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: .65rem 2.25rem; max-width: 34rem; }
-    .jobs .lead { flex-basis: 100%; color: var(--muted); font-size: .95rem; font-weight: 450; }
     .jobs a { display: inline-flex; align-items: baseline; gap: .6rem; color: var(--muted); font-size: .95rem; font-weight: 450; transition: color .15s; }
     .jobs a:hover { color: var(--fg); text-decoration: none; }
     .jobs code { font-size: .8rem; color: var(--accent-ink); background: none; border: 0; padding: 0; white-space: nowrap; }
@@ -589,20 +588,19 @@
   <main class="wrap">
     <div class="hero">
       <div class="copy">
-        <h1>Your words <em>pick the programs.</em></h1>
-        <p class="lede"><strong>Type a sentence, and evoke runs the programs that fit, one or a whole chain.</strong>
-          Each is a small program you installed, called a reflex. When unsure, it asks. When nothing fits, nothing
-          runs.</p>
+        <h1>Install abilities. <em>Connect them with a sentence.</em></h1>
+        <p class="lede"><strong>evoke packages small programs with the descriptions and rules needed to call them in
+          everyday language.</strong> Combine compatible actions into a plan, pass results between steps, and set when
+          execution needs confirmation.</p>
         <div class="cta">
           <a class="button primary" href="#install">Install</a>
-          <a class="button" href="use-cases.html">See the use cases</a>
-          <a class="quiet" href="manual/">Read the manual</a>
+          <a class="button" href="#weave">Watch a workflow take shape</a>
+          <a class="quiet" href="manual/author/first-reflex.html">Build your first capability</a>
           <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
         </div>
         <ul class="jobs" aria-label="What evoke is">
-          <li class="lead">Use it in a terminal, or inside your own app.</li>
           <li><a href="manual/use/saying-things.html"><code>$</code>a CLI</a></li>
-          <li><a href="manual/use/installing.html"><code>+</code>a reflex package manager</a></li>
+          <li><a href="manual/use/installing.html"><code>+</code>a package manager</a></li>
           <li><a href="manual/sdk/getting-started.html"><code>{ }</code>a TypeScript SDK</a></li>
         </ul>
       </div>
