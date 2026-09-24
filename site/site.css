@@ -699,6 +699,7 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 
 /* Questions and answers */
 .qa { border-top: 1px solid var(--line); padding: 1.5rem 0 1.6rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 1rem 3rem; }
+h2 + .qa { margin-top: 1.5rem; }  /* the heading leads the list, clear of its first rule */
 .qa h3 { margin: 0; font-size: 1.15rem; font-weight: 560; letter-spacing: -.012em; line-height: 1.35; }
 .qa div p { margin: 0 0 .75rem; color: var(--text); line-height: 1.6; }
 .qa div p:last-child { margin-bottom: 0; }
