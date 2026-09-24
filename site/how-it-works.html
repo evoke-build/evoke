@@ -156,7 +156,7 @@ One person at a time; prints the address."""</span>
       <div class="grid wide">
         <figure class="figure gate">
           <div class="scene">
-            <svg viewBox="0 0 640 250" aria-hidden="true">
+            <svg class="wide" viewBox="0 0 640 250" aria-hidden="true">
               <line class="wire thin" x1="120" y1="44" x2="600" y2="44"/>
               <g class="ticks">
                 <line class="tick" x1="120" y1="38" x2="120" y2="50"/><text class="dim" x="120" y="28" text-anchor="middle">0</text>
@@ -188,6 +188,37 @@ One person at a time; prints the address."""</span>
                 <circle class="dot mid" cx="586" cy="212" r="5"/><text class="mid" x="600" y="235" text-anchor="end">power 0.97 · confirm, always</text>
               </g>
             </svg>
+            <svg class="narrow" viewBox="0 0 340 348" aria-hidden="true">
+              <line class="wire thin" x1="20" y1="44" x2="320" y2="44"/>
+              <g class="ticks">
+                <line class="tick" x1="20" y1="38" x2="20" y2="50"/><text class="dim" x="20" y="30" text-anchor="middle">0</text>
+                <line class="tick" x1="170" y1="38" x2="170" y2="50"/><text class="ink" x="166" y="30" text-anchor="end">route 0.5</text>
+                <line class="tick" x1="200" y1="38" x2="200" y2="50"/><text class="ink" x="200" y="14" text-anchor="middle">read 0.6</text>
+                <line class="tick" x1="260" y1="38" x2="260" y2="50"/><text class="ink" x="260" y="30" text-anchor="middle">write 0.8</text>
+                <line class="tick" x1="320" y1="38" x2="320" y2="50"/><text class="dim" x="320" y="30" text-anchor="middle">1</text>
+              </g>
+              <g class="lane">
+                <text class="lane" x="20" y="84">route</text><text class="dim" x="320" y="84" text-anchor="end">under the floor: nothing runs</text>
+                <line class="band" x1="20" y1="98" x2="320" y2="98"/><line class="band no" x1="20" y1="98" x2="170" y2="98"/>
+                <circle class="dot no" cx="155" cy="98" r="5"/><text class="no" x="155" y="122" text-anchor="middle">«make it cosy» 0.45</text>
+              </g>
+              <g class="lane">
+                <text class="lane" x="20" y="156">read</text>
+                <line class="band" x1="20" y1="170" x2="320" y2="170"/><line class="band ok" x1="200" y1="170" x2="320" y2="170"/>
+                <circle class="dot ok" cx="290" cy="170" r="5"/><text class="ok" x="320" y="194" text-anchor="end">contact 0.90 · ran</text>
+              </g>
+              <g class="lane">
+                <text class="lane" x="20" y="228">write</text><text class="mid" x="230" y="228" text-anchor="middle">lights 0.70 · confirm</text>
+                <line class="band" x1="20" y1="242" x2="320" y2="242"/><line class="band ok" x1="260" y1="242" x2="320" y2="242"/>
+                <circle class="dot mid" cx="230" cy="242" r="5"/><circle class="dot ok" cx="299" cy="242" r="5"/>
+                <text class="ok" x="320" y="266" text-anchor="end">volume 0.93 · ran</text>
+              </g>
+              <g class="lane">
+                <text class="lane" x="20" y="300">destructive</text>
+                <line class="band" x1="20" y1="314" x2="320" y2="314"/><line class="band mid" x1="20" y1="314" x2="320" y2="314"/>
+                <circle class="dot mid" cx="311" cy="314" r="5"/><text class="mid" x="320" y="338" text-anchor="end">power 0.97 · confirm, always</text>
+              </g>
+            </svg>
           </div>
           <figcaption><b>Every number is calibrated.</b> 0.85 means right about 85 times in 100. The bars are lines in a
             file you own, and a read may never run at a higher bar than a write.</figcaption>
@@ -214,7 +245,7 @@ One person at a time; prints the address."""</span>
       <div class="grid wide">
         <figure class="figure">
           <div class="scene">
-            <svg viewBox="0 0 640 190" aria-hidden="true">
+            <svg class="wide" viewBox="0 0 640 190" aria-hidden="true">
               <rect class="box" x="24" y="30" width="228" height="130" rx="10"/>
               <text class="dim" x="44" y="58">contact/reflex.toml</text>
               <text x="44" y="100"><tspan class="t">[yields]</tspan> <tspan class="k">email</tspan> <tspan class="o">=</tspan> <tspan class="kind">"email"</tspan></text>
@@ -230,6 +261,23 @@ One person at a time; prints the address."""</span>
                 <rect class="tab" x="7" y="-6" width="36" height="12"/>
                 <text class="tab" x="25" y="3" text-anchor="middle">email</text>
               </g>
+            </svg>
+            <svg class="narrow" viewBox="0 0 340 312" aria-hidden="true">
+              <rect class="box" x="20" y="10" width="300" height="104" rx="10"/>
+              <text class="dim" x="40" y="38">contact/reflex.toml</text>
+              <text x="40" y="68"><tspan class="t">[yields]</tspan> <tspan class="k">email</tspan> <tspan class="o">=</tspan> <tspan class="kind">"email"</tspan></text>
+              <text class="dim" x="40" y="96">gives back an address</text>
+              <path class="wire ok" d="M170 114 V198"/>
+              <g class="chip" transform="translate(108 142)">
+                <rect width="124" height="28" rx="7"/>
+                <text x="62" y="18.5" text-anchor="middle">dana@example.com</text>
+                <rect class="tab" x="7" y="-6" width="36" height="12"/>
+                <text class="tab" x="25" y="3" text-anchor="middle">email</text>
+              </g>
+              <rect class="box" x="20" y="198" width="300" height="104" rx="10"/>
+              <text class="dim" x="40" y="226">mail/reflex.toml</text>
+              <text x="40" y="256"><tspan class="t">[args.to]</tspan> <tspan class="k">pick</tspan> <tspan class="o">=</tspan> <tspan class="kind">"email"</tspan></text>
+              <text class="dim" x="40" y="284">takes an address</text>
             </svg>
           </div>
           <figcaption><b>Same kind, so it binds.</b> «them» in the sentence names step 1. Its <code>email</code> field is
@@ -265,7 +313,7 @@ One person at a time; prints the address."""</span>
       <div class="grid wide">
         <figure class="figure">
           <div class="scene">
-            <svg viewBox="0 0 640 200" aria-hidden="true">
+            <svg class="wide" viewBox="0 0 640 200" aria-hidden="true">
               <path class="wire" d="M150 84 H270"/><path class="wire" d="M370 84 H490"/>
               <text class="dim" x="210" y="70" text-anchor="middle">next: "fail over…"</text>
               <text class="dim" x="430" y="70" text-anchor="middle">next: "check that…"</text>
@@ -275,6 +323,21 @@ One person at a time; prints the address."""</span>
               <path class="wire dash" d="M120 26 H520"/><text class="accent" x="320" y="18" text-anchor="middle">one loop in your app</text>
               <path class="wire dash" d="M120 26 V58"/><path class="wire dash" d="M320 26 V58"/><path class="wire dash" d="M520 26 V58"/>
               <text class="dim" x="320" y="184" text-anchor="middle">Each step passes the gate on its own. Only the destructive one asks a person.</text>
+            </svg>
+            <svg class="narrow" viewBox="0 0 340 370" aria-hidden="true">
+              <path class="wire dash" d="M40 30 V294"/><path class="wire dash" d="M40 54 H72"/><path class="wire dash" d="M40 174 H72"/><path class="wire dash" d="M40 294 H72"/>
+              <text class="accent" x="40" y="20">one loop in your app</text>
+              <path class="wire" d="M96 78 V150"/><path class="wire" d="M96 198 V270"/>
+              <text class="dim" x="136" y="118">next: "fail over…"</text>
+              <text class="dim" x="136" y="238">next: "check that…"</text>
+              <g transform="translate(96 54)"><circle class="box ok" r="24"/><circle class="dot ok" r="6"/></g>
+              <text class="ink" x="136" y="52">drain</text><text class="dim" x="136" y="70">write · ran</text>
+              <g transform="translate(96 174)"><circle class="box mid" r="24"/><circle class="dot mid" r="6"/></g>
+              <text class="ink" x="136" y="172">failover</text><text class="mid" x="136" y="190">destructive · asked</text>
+              <g transform="translate(96 294)"><circle class="box ok" r="24"/><circle class="dot ok" r="6"/></g>
+              <text class="ink" x="136" y="292">verify</text><text class="dim" x="136" y="310">read · ran</text>
+              <text class="dim" x="170" y="340" text-anchor="middle">Each step passes the gate on its own.</text>
+              <text class="dim" x="170" y="358" text-anchor="middle">Only the destructive one asks a person.</text>
             </svg>
           </div>
           <figcaption><b>Three reflexes, one loop.</b> Every hop is a decision like any other. The loop is six lines of
@@ -306,7 +369,7 @@ writes landing on the new primary</span></pre>
       <div class="grid wide">
         <figure class="figure">
           <div class="scene">
-            <svg viewBox="0 0 640 210" aria-hidden="true">
+            <svg class="wide" viewBox="0 0 640 210" aria-hidden="true">
               <rect class="box soft" x="32" y="72" width="300" height="110" rx="10"/>
               <text class="dim" x="52" y="114">lights/reflex.toml · the author's</text>
               <text class="ink" x="52" y="140">description, args, effect,</text>
@@ -322,6 +385,24 @@ writes landing on the new primary</span></pre>
               <text class="ok" x="452" y="114">+ your ask</text>
               <text class="ok" x="452" y="136">+ your examples</text>
               <text class="dim" x="320" y="202" text-anchor="middle">Tables merge by key. A value replaces whole. Nothing is ever deleted.</text>
+            </svg>
+            <svg class="narrow" viewBox="0 0 340 392" aria-hidden="true">
+              <rect class="box soft" x="20" y="72" width="272" height="112" rx="10"/>
+              <text class="dim" x="36" y="114">lights/reflex.toml · the author's</text>
+              <text class="ink" x="36" y="140">description, args, effect,</text>
+              <text class="ink" x="36" y="160">the examples that ship</text>
+              <rect class="box you" x="34" y="44" width="272" height="46" rx="10"/>
+              <text class="accent" x="50" y="72">overlays/lights.toml · yours</text>
+              <rect class="box you" x="48" y="16" width="272" height="46" rx="10"/>
+              <text class="accent" x="64" y="44">vocab/rooms.toml · yours</text>
+              <path class="wire" d="M170 184 V210"/><circle class="dot dim" cx="170" cy="210" r="4"/>
+              <rect class="box" x="20" y="222" width="300" height="112" rx="10"/>
+              <text class="dim" x="40" y="250">what evoke reads</text>
+              <text class="ink" x="40" y="276">their description</text>
+              <text class="ok" x="40" y="298">+ your ask</text>
+              <text class="ok" x="40" y="320">+ your examples</text>
+              <text class="dim" x="170" y="362" text-anchor="middle">Tables merge by key. A value replaces whole.</text>
+              <text class="dim" x="170" y="380" text-anchor="middle">Nothing is ever deleted.</text>
             </svg>
           </div>
           <figcaption><b>One merge rule.</b> Your file adds and replaces wording. It cannot change the contract: the

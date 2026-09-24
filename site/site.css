@@ -581,8 +581,16 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .scene .icon.ok { stroke: var(--term-ok); }
 .scene .icon.mid { stroke: var(--term-mid); }
 .scene .icon.no { stroke: var(--term-no); }
-.figure { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.figure { container: figure / inline-size; margin: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
 .figure .scene { padding: .4rem; }
+/* A figure narrower than its drawing reads it redrawn in a column, so its text keeps the page's own size */
+.scene .narrow { display: none; }
+@container figure (max-width: 559.98px) {
+  .scene .wide { display: none; }
+  .scene .narrow { display: block; max-width: 24rem; margin: 0 auto; }
+}
+.scene .narrow text:not(.tab) { font-size: 12px; }
+.scene .narrow .chip text.tab { font-size: 10px; }
 .figure figcaption { padding: .8rem 1.1rem .95rem; border-top: 1px solid var(--line); background: var(--panel); color: var(--muted); font-size: .92rem; line-height: 1.5; }
 .figure figcaption b { color: var(--fg); font-weight: 560; }
 
