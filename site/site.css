@@ -169,6 +169,7 @@ p.sub strong { color: var(--fg); font-weight: 560; }
 .caption b { color: var(--fg); font-weight: 560; font-family: var(--mono); font-size: .92em; }
 p.after { color: var(--muted); font-size: .97rem; margin: 1.5rem 0 0; max-width: 44rem; }
 p.after strong { color: var(--fg); font-weight: 560; }
+p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the first */
 .prose { color: var(--text); font-size: 1.02rem; line-height: 1.65; max-width: 44rem; }
 .prose p { margin: 0 0 1rem; }
 .prose strong { color: var(--fg); font-weight: 560; }
@@ -185,7 +186,7 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .split { display: grid; grid-template-columns: minmax(0, 1fr) clamp(16rem, 32%, 25rem); gap: 3rem; align-items: start; }  /* code, and its notes at a reading width */
 .split .text { padding-top: .5rem; }
 .split > .caption { margin: .5rem 0 0; }
-.split .text p { color: var(--muted); font-size: 1.08rem; line-height: 1.55; margin: 0 0 1.1rem; }
+.split .text p:not(.after) { color: var(--muted); font-size: 1.08rem; line-height: 1.55; margin: 0 0 1.1rem; }
 .split .text p strong { color: var(--fg); font-weight: 560; }
 .split .text h3 { font-size: 1.25rem; font-weight: 560; letter-spacing: -.012em; margin: 0 0 .6rem; }
 
@@ -738,6 +739,7 @@ footer a:hover { color: var(--fg); }
 @media (max-width: 560px) {
   .sheet dl > div { grid-template-columns: minmax(0, 1fr); gap: .15rem; }
   .cmd code { font-size: .8rem; }
+  p.after .also { display: block; margin: .6rem 0 0; }
   .panel pre { padding: 1rem 1rem 1.05rem; font-size: .78rem; }
   .cards, .cards.two, .grid.three { grid-template-columns: minmax(0, 1fr); }
   .plan > li { grid-template-columns: minmax(0, 1fr); gap: .3rem; padding: 1.3rem 0; }
