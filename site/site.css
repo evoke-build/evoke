@@ -708,6 +708,7 @@ h2 + .qa { margin-top: 1.5rem; }  /* the heading leads the list, clear of its fi
 
 /* Requirements before a run */
 .needs { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem; margin: 0; padding: 0; list-style: none; }
+h2 + .needs { margin-top: 1.5rem; }  /* the cards stand clear of their heading */
 .needs li { border: 1px solid var(--line); border-radius: var(--radius-s); padding: .9rem 1.05rem; background: var(--panel); font-size: .94rem; line-height: 1.5; color: var(--muted); }
 .needs li b { display: block; color: var(--fg); font-weight: 560; margin-bottom: .15rem; }
 .needs li.ok b::before, .needs li.no b::before { content: ""; display: inline-block; width: .5rem; height: .5rem; border-radius: 50%; margin: 0 .5rem .1rem 0; background: var(--term-ok); }
