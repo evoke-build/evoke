@@ -207,7 +207,7 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .panel.term .head .dots i:nth-child(1) { background: #ff5f57; }
 .panel.term .head .dots i:nth-child(2) { background: #febc2e; }
 .panel.term .head .dots i:nth-child(3) { background: #28c840; }
-.panel.term pre, .panel.wrap pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.panel.term pre, .panel.wrap pre { white-space: pre-wrap; overflow-wrap: anywhere; text-indent: 4ch hanging each-line; }  /* a wrapped line hangs under its start */
 .panel.wrap { max-width: none; margin: 0; padding: 0; }  /* wrap names the lines here, not the page's container */
 .panel.term pre { color: var(--term-fg); }
 .panel .p { color: var(--accent); }
@@ -358,7 +358,7 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .walk .tty { position: relative; flex: 1 0 auto; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; border-top: 1px solid rgba(255, 255, 255, .07); font: .75rem/1.9 var(--mono); -webkit-mask-image: linear-gradient(transparent, #000 1.1rem); mask-image: linear-gradient(transparent, #000 1.1rem); }
 .walk .scroll { position: relative; padding: .7rem 1.1rem .85rem; transition: transform .5s cubic-bezier(.3, .7, .2, 1); }
 .walk .before { position: absolute; left: 0; right: 0; bottom: 100%; padding: .7rem 1.1rem 0; }
-.walk .line { display: block; min-height: 1.9em; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--term-dim); }
+.walk .line { display: block; min-height: 1.9em; white-space: pre-wrap; overflow-wrap: anywhere; text-indent: 4ch hanging; color: var(--term-dim); }
 .walk .line.out { color: var(--term-fg); }
 .walk .line.mid { color: var(--term-mid); }
 .walk .line.no, .walk .line em { font-style: normal; color: var(--term-no); }
@@ -713,7 +713,7 @@ footer a:hover { color: var(--fg); }
 @media (max-width: 1200px) { .hero .lede { font-size: 1.12rem; } }
 @media (max-width: 560px) {
   .sheet dl > div { grid-template-columns: minmax(0, 1fr); gap: .15rem; }
-  .cmd code { white-space: normal; overflow-wrap: anywhere; line-height: 1.45; }
+  .cmd code { white-space: normal; overflow-wrap: anywhere; line-height: 1.45; text-indent: 2ch hanging; }
   .cards, .cards.two, .grid.three { grid-template-columns: minmax(0, 1fr); }
   .plan > li { grid-template-columns: minmax(0, 1fr); gap: .3rem; padding: 1.3rem 0; }
   .closing { padding: 1.6rem 1.4rem; }
@@ -736,7 +736,7 @@ footer a:hover { color: var(--fg); }
 .demo .head .trail b { font-weight: 500; color: var(--term-dim); opacity: .55; transition: color .35s ease, opacity .35s ease; }
 .demo .head .trail b.on { color: var(--accent); opacity: 1; }
 .demo .strip { height: calc(var(--lines, 5) * 1.9em + 1.9rem); padding: .9rem 1.15rem 1rem; font: .8rem/1.9 var(--mono); border-top: 1px solid rgba(255, 255, 255, .07); overflow: hidden; }
-.demo .line { display: block; min-height: 1.9em; white-space: pre-wrap; overflow-wrap: anywhere; opacity: 0; transition: opacity .3s ease; }
+.demo .line { display: block; min-height: 1.9em; white-space: pre-wrap; overflow-wrap: anywhere; text-indent: 4ch hanging; opacity: 0; transition: opacity .3s ease; }
 .demo .line.show { opacity: 1; }
 .demo .strip.clear .line { opacity: 0; transition-duration: .2s; }
 .demo .line b { color: var(--term-in); font-weight: 500; }
