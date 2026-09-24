@@ -431,8 +431,8 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .card:hover { text-decoration: none; border-color: var(--line-strong); transform: translateY(-2px); box-shadow: var(--shadow); }
 .card .room { position: relative; height: 9rem; background: var(--room); overflow: hidden; }
 .card .room svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.card .room text { font: 500 10px var(--mono); fill: #9a978f; }
-.card .room text.dim { fill: #5f5f66; }
+.card .room :where(text) { font: 500 10px var(--mono); fill: #9a978f; }  /* a default each small stage's own colours override */
+.card .room :where(text.dim) { fill: #5f5f66; }
 .card .say { position: absolute; left: 1rem; right: 1rem; bottom: .72rem; font: .74rem/1.35 var(--mono); color: var(--term-dim); overflow-wrap: anywhere; }
 .card .say i { font-style: normal; color: var(--accent); }
 .card .text { padding: .9rem 1.05rem 1.05rem; }
