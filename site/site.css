@@ -9,7 +9,7 @@
   --fg: #ececec;
   --text: #cccccc;
   --muted: #9c9ca3;
-  --faint: #6c6c73;
+  --faint: #84848c;
   --line: #232326;
   --line-strong: #303035;
   --panel: #151517;
@@ -33,7 +33,7 @@
   --tk-string: #9ad18f;
   --tk-num: #f0c060;
   --tk-comment: #8b8b8b;
-  --tk-punct: #7d7d7d;
+  --tk-punct: #868686;
   --tk-kw: #a3a6ff;
   --tk-ph: #f0c060;
   --plus-bg: rgba(143, 212, 138, .1);
@@ -442,7 +442,7 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 .card .room { display: flex; flex-direction: column; background: var(--room); overflow: hidden; }
 .card .room svg { display: block; flex: none; width: 100%; height: 7rem; margin-top: .45rem; }  /* the drawing scales to fit, never cropped */
 .card .room :where(text) { font: 500 10px var(--mono); fill: #9a978f; }  /* a default each small stage's own colours override */
-.card .room :where(text.dim) { fill: #5f5f66; }
+.card .room :where(text.dim) { fill: var(--faint); }
 .card .say { padding: .3rem 1rem .8rem; font: .74rem/1.35 var(--mono); color: var(--term-dim); overflow-wrap: anywhere; }
 .card .say i { font-style: normal; color: var(--accent); }
 .card .text { padding: .9rem 1.05rem 1.05rem; }
@@ -468,7 +468,7 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 .inbox .i1 { transform: translate(40px, 18px); } .inbox .i2 { transform: translate(40px, 50px); } .inbox .i3 { transform: translate(40px, 82px); }
 .card:is(.on, :hover, :focus-visible) .inbox .i1 { transform: translate(186px, 18px); }
 .card:is(.on, :hover, :focus-visible) .inbox .i2 { transform: translate(186px, 50px); }
-.card:is(.on, :hover, :focus-visible) .inbox .i3 { transform: translate(186px, 82px); opacity: .45; }
+.card:is(.on, :hover, :focus-visible) .inbox .i3 { transform: translate(186px, 82px); opacity: .6; }
 .inbox .lane circle { fill: #1a1a1e; stroke: #36363d; stroke-width: 1.5; transition: stroke .5s; }
 .inbox .lane path { fill: none; stroke: #5f5f66; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: stroke .5s; }
 .inbox .lane .face { fill: #5f5f66; transition: fill .5s; }
@@ -549,7 +549,7 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 .scene { position: relative; background: var(--room); overflow: hidden; }
 .scene svg { display: block; width: 100%; height: auto; }
 .scene text { font: 500 11px var(--mono); fill: #a8a59d; }
-.scene text.dim { fill: #5f5f66; }
+.scene text.dim { fill: var(--faint); }
 .scene text.ink { fill: #ebe8e3; }
 .scene text.ok { fill: var(--term-ok); }
 .scene text.mid { fill: var(--term-mid); }
@@ -745,10 +745,10 @@ footer a:hover { color: var(--fg); }
 .demo .room { position: relative; height: 15rem; background: var(--room); overflow: hidden; }
 .demo .room svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .demo .room text { font: 500 12px var(--mono); fill: #9a978f; }
-.demo .room text.dim { fill: #5f5f66; }
+.demo .room text.dim { fill: var(--faint); }
 .demo .head .trail { margin-left: auto; display: flex; gap: .95rem; font-size: .66rem; letter-spacing: .07em; text-transform: uppercase; }
-.demo .head .trail b { font-weight: 500; color: var(--term-dim); opacity: .55; transition: color .35s ease, opacity .35s ease; }
-.demo .head .trail b.on { color: var(--accent); opacity: 1; }
+.demo .head .trail b { font-weight: 500; color: var(--faint); transition: color .35s ease; }
+.demo .head .trail b.on { color: var(--accent); }
 .demo .strip { height: calc(var(--lines, 5) * 1.9em + 1.9rem); padding: .9rem 1.15rem 1rem; font: .8rem/1.9 var(--mono); border-top: 1px solid rgba(255, 255, 255, .07); overflow: hidden; }
 .demo .line { display: block; min-height: 1.9em; white-space: pre-wrap; overflow-wrap: anywhere; text-indent: 4ch hanging; opacity: 0; transition: opacity .3s ease; }
 .demo .line.show { opacity: 1; }
@@ -793,7 +793,7 @@ footer a:hover { color: var(--fg); }
 .ops-room[data-checkout="2"] .checkout .pod:nth-child(-n+2), .ops-room[data-checkout="6"] .checkout .pod:nth-child(-n+6),
 .ops-room[data-payments="3"] .payments .pod:nth-child(-n+3), .ops-room[data-payments="1"] .payments .pod:nth-child(-n+1) { fill: var(--accent); stroke: var(--accent); filter: drop-shadow(0 0 5px rgba(229, 118, 29, .5)); }
 .ops-room .chip { fill: #1c1c21; stroke: #36363d; transition: fill .5s, stroke .5s; }
-.ops-room .chip + text { fill: #5f5f66; transition: fill .5s; }
+.ops-room .chip + text { fill: var(--faint); transition: fill .5s; }
 .ops-room[data-release="42"] .v42, .ops-room[data-release="41"] .v41 { fill: #22233a; stroke: #7c80f0; }
 .ops-room[data-release="42"] .v42 + text, .ops-room[data-release="41"] .v41 + text { fill: #c9cbff; }
 .ops-room .bell .body, .ops-room .bell .clapper { fill: #34343a; transition: fill .8s; }
@@ -811,7 +811,7 @@ footer a:hover { color: var(--fg); }
 .stream .i1 { transform: translate(70px, 54px); } .stream .i2 { transform: translate(70px, 104px); } .stream .i3 { transform: translate(70px, 154px); }
 .stream[data-l1="ran"] .i1 { transform: translate(222px, 54px); }
 .stream[data-l2="queued"] .i2 { transform: translate(222px, 104px); }
-.stream[data-l3="none"] .i3 { transform: translate(222px, 154px); opacity: .45; }
+.stream[data-l3="none"] .i3 { transform: translate(222px, 154px); opacity: .6; }
 .stream .lane .mark { fill: #1a1a1e; stroke: #36363d; stroke-width: 1.5; transition: stroke .5s; }
 .stream .lane path { fill: none; stroke: #5f5f66; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: stroke .5s; }
 .stream .lane .face { fill: #5f5f66; transition: fill .5s; }

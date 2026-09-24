@@ -17,7 +17,7 @@ html:root {
   --bg: #0f0f10;
   --fg: #ececec;
   --muted: #9c9ca3;
-  --faint: #6c6c73;
+  --faint: #84848c;
   --line: #232326;
   --line-strong: #303035;
   --panel: #151517;
@@ -36,7 +36,7 @@ html:root {
   --tk-string: #9ad18f;
   --tk-num: #f0c060;
   --tk-comment: #8b8b8b;
-  --tk-punct: #7d7d7d;
+  --tk-punct: #868686;
   --tk-kw: #a3a6ff;
 
   /* The manual's own two: the running prose, and the sidebar's links */
