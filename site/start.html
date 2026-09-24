@@ -95,7 +95,7 @@
           </div>
           <p class="only sdk"><strong>One file holds the whole loop.</strong> A reflex handed as code, nothing on disk, and
             one call that decides, asks, confirms and runs.</p>
-          <div class="panel wrap only sdk">
+          <div class="panel only sdk">
             <div class="head"><i></i>app.ts</div>
 <pre><span class="w">import</span> <span class="o">{</span> load<span class="o">,</span> reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
 <span class="w">import</span> <span class="o">{</span> jev <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke/jev"</span>
@@ -139,7 +139,7 @@ console<span class="o">.</span>log<span class="o">(</span>handled<span class="o"
           </div>
           <p class="only sdk"><code>decide()</code> makes a decision and runs nothing. It is a typed union: narrow it by
             outcome, then by reflex.</p>
-          <div class="panel wrap only sdk">
+          <div class="panel only sdk">
             <div class="head"><i></i>decide only</div>
 <pre><span class="w">const</span> d <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>decide<span class="o">(</span><span class="s">"timer for 10 minutes"</span><span class="o">)</span>
 <span class="w">if</span> <span class="o">(</span>d<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"run"</span><span class="o">)</span> console<span class="o">.</span>log<span class="o">(</span>d<span class="o">.</span>call<span class="o">,</span> d<span class="o">.</span>confidence<span class="o">)</span>   <span class="c">// timer duration="10 minutes" 0.9…</span></pre>

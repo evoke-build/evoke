@@ -42,7 +42,7 @@
       <h2>Start with an operation you already have.</h2>
       <p class="sub"><code>evoke new</code> writes a reflex that already works. <strong>The body is your code.</strong>
         It receives typed arguments, returns one line, and can call anything you already have.</p>
-      <div class="split code-left">
+      <div class="split">
         <div class="panel">
           <div class="file">hello/hello.mts<span class="who you">your code</span></div>
 <pre><span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"./reflex.d.ts"</span>
@@ -82,8 +82,8 @@
       <h2>Describe the boundary.</h2>
       <p class="sub">The manifest is what the classifier reads and what the body receives. <strong>Its wording decides
         accuracy.</strong> Every input has exactly one source, so a sentence can never invent a value.</p>
-      <div class="split code-left">
-        <div class="panel wrap">
+      <div class="split">
+        <div class="panel">
           <div class="head"><i></i>lights/reflex.toml<span class="who">the whole shape</span></div>
 <pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
 
@@ -222,8 +222,8 @@ woven<span class="o">.</span>status     <span class="c">// the worst step's: "ra
       <h2>Keep team-specific names separate.</h2>
       <p class="sub">Your data supplies the vocabulary. <strong>The operation underneath never changes.</strong> A
         multi-tenant server compiles the same reflexes over each tenant's own words, in milliseconds.</p>
-      <div class="split code-left">
-        <div class="panel wrap">
+      <div class="split">
+        <div class="panel">
           <div class="head"><i></i>server.ts</div>
 <pre><span class="w">const</span> tenant <span class="o">=</span> project<span class="o">.</span>with<span class="o">({</span> <span class="k">vocab</span><span class="o">:</span> <span class="o">{</span> <span class="k">rooms</span><span class="o">:</span> <span class="w">await</span> db<span class="o">.</span>rooms<span class="o">(</span>user<span class="o">)</span> <span class="o">}</span> <span class="o">})</span>
 <span class="w">const</span> d <span class="o">=</span> <span class="w">await</span> tenant<span class="o">.</span>decide<span class="o">(</span>input<span class="o">)</span>
@@ -251,8 +251,8 @@ woven<span class="o">.</span>status     <span class="c">// the worst step's: "ra
       <h2>Test the interpretation and the program.</h2>
       <p class="sub">Three tests, each for a different thing. <strong>The wording over the installed set, the control flow
         offline, and the body as a plain function.</strong></p>
-      <div class="grid three">
-        <div class="stack">
+      <div class="stack">
+        <div class="split">
           <div class="panel term quiet" role="figure" aria-label="evoke test">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>the wording</div>
 <pre><span class="p">$</span> <span class="in">evoke test</span>
@@ -265,7 +265,7 @@ woven<span class="o">.</span>status     <span class="c">// the worst step's: "ra
           <p class="caption">Every example and every held-out test, decided over everything installed. A neighbour
             installed beside yours is part of the test.</p>
         </div>
-        <div class="stack">
+        <div class="split">
           <div class="panel">
             <div class="head"><i></i>the control flow, offline</div>
 <pre><span class="w">const</span> record <span class="o">=</span> process<span class="o">.</span>env<span class="o">.</span>RECORD <span class="o">?</span> jev<span class="o">()</span> <span class="o">:</span> <span class="n">undefined</span>
@@ -279,7 +279,7 @@ assert<span class="o">.</span>equal<span class="o">(</span>d<span class="o">.</s
           <p class="caption">One run records the answers. Every run after is offline and gives the same result. The
             gate in tests is the gate in production.</p>
         </div>
-        <div class="stack">
+        <div class="split">
           <div class="panel">
             <div class="head"><i></i>the program, as a function</div>
 <pre><span class="w">import</span> note <span class="w">from</span> <span class="s">"../note/note.mts"</span>

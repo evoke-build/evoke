@@ -114,7 +114,7 @@ a.quiet:hover { color: var(--fg); text-decoration: none; }
 .cta .cmd { flex: 1 1 100%; max-width: fit-content; margin-top: .25rem; }
 .cta .cmd code { font-size: .86rem; }
 .cmd { display: flex; align-items: center; gap: .6rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-s); padding: .55rem .5rem .55rem .9rem; }
-.cmd code { flex: 1; font-size: .9rem; white-space: nowrap; overflow-x: auto; color: var(--fg); background: none; border: 0; border-radius: 0; padding: 0; }  /* a command, never the inline code of the list it sits in */
+.cmd code { flex: 1; font-size: .9rem; white-space: pre; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; color: var(--fg); background: none; border: 0; border-radius: 0; padding: 0; }  /* a command, never the inline code of the list it sits in */
 .cmd code::before { content: "$ "; color: var(--accent); }
 .cmd button { flex: none; border: 1px solid var(--line); background: var(--bg); color: var(--muted); border-radius: 999px; padding: .3rem .7rem; font-size: .78rem; cursor: pointer; transition: color .15s, border-color .15s; }
 .cmd button:hover { color: var(--fg); border-color: var(--muted); }
@@ -174,9 +174,9 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .grid.even { grid-template-columns: 1fr 1fr; }
 .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .side, .stack { display: grid; gap: 1.1rem; align-content: start; }
-.split { display: grid; grid-template-columns: 1fr 1.2fr; gap: 3rem; align-items: start; }
-.split.code-left { grid-template-columns: 1.2fr 1fr; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) clamp(16rem, 32%, 25rem); gap: 3rem; align-items: start; }  /* code, and its notes at a reading width */
 .split .text { padding-top: .5rem; }
+.split > .caption { margin: .5rem 0 0; }
 .split .text p { color: var(--muted); font-size: 1.08rem; line-height: 1.55; margin: 0 0 1.1rem; }
 .split .text p strong { color: var(--fg); font-weight: 560; }
 .split .text h3 { font-size: 1.25rem; font-weight: 560; letter-spacing: -.012em; margin: 0 0 .6rem; }
@@ -190,7 +190,7 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .panel .file { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .6rem; padding: .55rem 1.1rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--panel-head); font: 500 .74rem/1.4 var(--mono); color: var(--muted); }
 .panel .file:first-child { border-top: 0; }
 .panel .file .who { margin-left: auto; white-space: nowrap; font-size: .62rem; letter-spacing: .07em; text-transform: uppercase; padding: .14rem .5rem; border-radius: 99px; border: 1px solid var(--line-strong); }
-.panel pre { margin: 0; padding: 1.1rem 1.2rem 1.2rem; font-size: .84rem; line-height: 1.85; overflow-x: auto; color: var(--fg); }
+.panel pre { margin: 0; padding: 1.1rem 1.2rem 1.2rem; font-size: .84rem; line-height: 1.85; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; color: var(--fg); }
 .panel pre .k { color: var(--tk-key); }
 .panel pre .t { color: var(--tk-table); font-weight: 500; }
 .panel pre .s { color: var(--tk-string); }
@@ -201,6 +201,13 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .panel pre .ph { color: var(--tk-ph); font-weight: 500; }
 .panel pre .plus { display: inline-block; width: 100%; background: var(--plus-bg); color: var(--plus-fg); margin: 0 -1.2rem; padding: 0 1.2rem; }
 .panel pre mark { background: var(--accent-soft); color: inherit; border-radius: 4px; box-shadow: 0 0 0 2px var(--accent-soft); }
+/* Code and commands keep their lines. A line wider than its box scrolls, and the side it hides behind fades while there is more */
+@property --fade-l { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --fade-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@keyframes fades { from { --fade-r: 2.5rem; } 10% { --fade-l: 2.5rem; } 90% { --fade-r: 2.5rem; } to { --fade-l: 2.5rem; } }
+@supports (animation-timeline: scroll()) {
+  .panel pre, .cmd code { -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent); mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent); animation: fades linear both; animation-timeline: scroll(self inline); }
+}
 .panel.term { background: var(--term-bg); border-color: color-mix(in srgb, var(--term-bg) 60%, #fff 10%); color: var(--term-fg); box-shadow: var(--shadow); }
 .panel.term .head { background: var(--term-head); border-color: rgba(255, 255, 255, .06); color: var(--term-dim); }
 .panel.term .head .dots { display: flex; gap: 6px; margin-right: .3rem; }
@@ -208,8 +215,7 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .panel.term .head .dots i:nth-child(1) { background: #ff5f57; }
 .panel.term .head .dots i:nth-child(2) { background: #febc2e; }
 .panel.term .head .dots i:nth-child(3) { background: #28c840; }
-.panel.term pre, .panel.wrap pre { white-space: pre-wrap; overflow-wrap: anywhere; text-indent: 4ch hanging each-line; }  /* a wrapped line hangs under its start */
-.panel.wrap { max-width: none; margin: 0; padding: 0; }  /* wrap names the lines here, not the page's container */
+.panel.term pre { white-space: pre-wrap; overflow-wrap: anywhere; text-indent: 4ch hanging each-line; }  /* a terminal wraps, and a wrapped line hangs under its start */
 .panel.term pre { color: var(--term-fg); }
 .panel .p { color: var(--accent); }
 .panel .in { color: var(--term-in); }
@@ -702,13 +708,13 @@ footer a:hover { color: var(--fg); }
 
 /* Narrower */
 @media (max-width: 960px) {
-  .hero, .grid, .split, .split.code-left, .sheet, .ways, .promises, .compare, .routes, .closing, .qa { grid-template-columns: minmax(0, 1fr); }
+  .hero, .grid, .split, .sheet, .ways, .promises, .compare, .routes, .closing, .qa { grid-template-columns: minmax(0, 1fr); }
   .hero { gap: 2.5rem; padding-top: 3.5rem; }
   .hero.solo { padding-top: 3rem; }
   .steps, .notes, .steps.two, .notes.two { grid-template-columns: minmax(0, 1fr); }
   .cards, .grid.three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .split { gap: 1.75rem; }
-  .split.code-left .panel { order: 2; }
+  .split:has(> .caption) { gap: 1.1rem; }
   section { padding-top: 4rem; }
   .closing .actions { justify-content: flex-start; }
   .qa { gap: .6rem; }
@@ -716,7 +722,8 @@ footer a:hover { color: var(--fg); }
 @media (max-width: 1200px) { .hero .lede { font-size: 1.12rem; } }
 @media (max-width: 560px) {
   .sheet dl > div { grid-template-columns: minmax(0, 1fr); gap: .15rem; }
-  .cmd code { white-space: normal; overflow-wrap: anywhere; line-height: 1.45; text-indent: 2ch hanging; }
+  .cmd code { font-size: .8rem; }
+  .panel pre { padding: 1rem 1rem 1.05rem; font-size: .78rem; }
   .cards, .cards.two, .grid.three { grid-template-columns: minmax(0, 1fr); }
   .plan > li { grid-template-columns: minmax(0, 1fr); gap: .3rem; padding: 1.3rem 0; }
   .closing { padding: 1.6rem 1.4rem; }
@@ -754,7 +761,6 @@ footer a:hover { color: var(--fg); }
 .tabbed .tabs::-webkit-scrollbar { display: none; }
 .tabbed [role="tabpanel"][hidden] { display: none; }
 .tabbed pre { font-size: .78rem; }
-@media (max-width: 560px) { .tabbed pre { white-space: pre-wrap; overflow-wrap: anywhere; } }
 /* the Mac */
 .mac-room .lid { fill: #1a1a1e; stroke: #36363d; stroke-width: 1.5; }
 .mac-room .screen { fill: #0c0c0e; }
