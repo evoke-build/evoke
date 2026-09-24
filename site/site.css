@@ -529,7 +529,7 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .card:is(.on, :hover, :focus-visible) .duo .bind { stroke-dashoffset: 0; }
 .duo .value { fill: var(--term-ok); transition: opacity .4s .5s; opacity: 0; }
 .card:is(.on, :hover, :focus-visible) .duo .value { opacity: 1; }
-.duo .pending { fill: var(--term-mid); transition: opacity .4s; }
+.duo .pending { fill: var(--accent-ink); transition: opacity .4s; }
 .card:is(.on, :hover, :focus-visible) .duo .pending { opacity: 0; }
 .card:is(.on, :hover, :focus-visible) .duo .b2 { stroke: color-mix(in srgb, var(--accent) 55%, #36363d); }
 @media (prefers-reduced-motion: reduce) { .floor .flow, .chain .pulse, .chain .ring { animation: none; } }
@@ -545,6 +545,14 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .scene text.no { fill: var(--term-no); }
 .scene text.accent { fill: var(--accent-ink); }
 .scene text.big { font-size: 13px; }
+.scene tspan.t { fill: var(--tk-table); }
+.scene tspan.k { fill: var(--tk-key); }
+.scene tspan.o { fill: var(--tk-punct); }
+.scene tspan.kind { fill: var(--term-ok); text-decoration: underline; }
+.scene .chip rect { fill: var(--card); stroke: rgba(143, 212, 138, .5); stroke-width: 1; }
+.scene .chip text { font-size: 11px; fill: var(--term-ok); }
+.scene .chip rect.tab { fill: var(--room); stroke: none; }
+.scene .chip text.tab { font-size: 9px; fill: var(--term-ok); }
 .scene .box { fill: #1a1a1e; stroke: #36363d; stroke-width: 1.5; }
 .scene .box.soft { fill: #151517; stroke: #2a2a2f; }
 .scene .box.you { stroke: color-mix(in srgb, var(--accent) 55%, #36363d); }
@@ -840,6 +848,6 @@ footer a:hover { color: var(--fg); }
 .woven .w1, .woven .w2, .woven .w3, .woven .state { opacity: 0; transition: opacity .5s; }
 .woven[data-names="1"] .w1, .woven[data-names="2"] .w2, .woven[data-names="3"] .w3 { opacity: 1; }
 .woven .state.declined { fill: var(--term-no); }
-.woven .state.skipped { fill: var(--term-mid); }
+.woven .state.skipped { fill: var(--term-dim); }
 .woven[data-n1="declined"] .state.declined, .woven[data-n2="skipped"] .state.skipped { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .stream .belt, .runbook .pulse, .runbook .ring, .woven .pulse, .woven .ring { animation: none; } }

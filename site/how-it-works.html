@@ -160,9 +160,9 @@ One person at a time; prints the address."""</span>
               <line class="wire thin" x1="120" y1="44" x2="600" y2="44"/>
               <g class="ticks">
                 <line class="tick" x1="120" y1="38" x2="120" y2="50"/><text class="dim" x="120" y="28" text-anchor="middle">0</text>
-                <line class="tick" x1="360" y1="38" x2="360" y2="50"/><text class="accent" x="360" y="28" text-anchor="middle">route 0.5</text>
-                <line class="tick" x1="408" y1="38" x2="408" y2="50"/><text class="ok" x="408" y="12" text-anchor="middle">read 0.6</text>
-                <line class="tick" x1="504" y1="38" x2="504" y2="50"/><text class="mid" x="504" y="28" text-anchor="middle">write 0.8</text>
+                <line class="tick" x1="360" y1="38" x2="360" y2="50"/><text class="ink" x="360" y="28" text-anchor="middle">route 0.5</text>
+                <line class="tick" x1="408" y1="38" x2="408" y2="50"/><text class="ink" x="408" y="12" text-anchor="middle">read 0.6</text>
+                <line class="tick" x1="504" y1="38" x2="504" y2="50"/><text class="ink" x="504" y="28" text-anchor="middle">write 0.8</text>
                 <line class="tick" x1="600" y1="38" x2="600" y2="50"/><text class="dim" x="600" y="28" text-anchor="middle">1</text>
               </g>
               <g class="lane">
@@ -215,20 +215,21 @@ One person at a time; prints the address."""</span>
         <figure class="figure">
           <div class="scene">
             <svg viewBox="0 0 640 190" aria-hidden="true">
-              <rect class="box" x="24" y="24" width="272" height="140" rx="10"/>
-              <text class="dim" x="44" y="50">contact/reflex.toml</text>
-              <text class="accent" x="44" y="86">[yields]</text>
-              <text class="ink" x="44" y="108">email = "email"</text>
-              <text class="dim" x="44" y="146">the result holds an address</text>
-              <rect class="box" x="344" y="24" width="272" height="140" rx="10"/>
-              <text class="dim" x="364" y="50">mail/reflex.toml</text>
-              <text class="accent" x="364" y="86">[args.to]</text>
-              <text class="ink" x="364" y="108">ask  = "To which address?"</text>
-              <text class="ink" x="364" y="130">pick = "email"</text>
-              <text class="dim" x="364" y="152">the input wants an address</text>
-              <path class="wire ok" d="M296 104 H320 V126 H344"/>
-              <circle class="dot ok" cx="344" cy="126" r="4"/>
-              <text class="ok" x="320" y="94" text-anchor="middle">email</text>
+              <rect class="box" x="24" y="30" width="228" height="130" rx="10"/>
+              <text class="dim" x="44" y="58">contact/reflex.toml</text>
+              <text x="44" y="100"><tspan class="t">[yields]</tspan> <tspan class="k">email</tspan> <tspan class="o">=</tspan> <tspan class="kind">"email"</tspan></text>
+              <text class="dim" x="44" y="140">gives back an address</text>
+              <rect class="box" x="388" y="30" width="228" height="130" rx="10"/>
+              <text class="dim" x="408" y="58">mail/reflex.toml</text>
+              <text x="408" y="100"><tspan class="t">[args.to]</tspan> <tspan class="k">pick</tspan> <tspan class="o">=</tspan> <tspan class="kind">"email"</tspan></text>
+              <text class="dim" x="408" y="140">takes an address</text>
+              <path class="wire ok" d="M252 96 H388"/>
+              <g class="chip" transform="translate(258 82)">
+                <rect width="124" height="28" rx="7"/>
+                <text x="62" y="18.5" text-anchor="middle">dana@example.com</text>
+                <rect class="tab" x="7" y="-6" width="36" height="12"/>
+                <text class="tab" x="25" y="3" text-anchor="middle">email</text>
+              </g>
             </svg>
           </div>
           <figcaption><b>Same kind, so it binds.</b> «them» in the sentence names step 1. Its <code>email</code> field is
@@ -273,7 +274,7 @@ One person at a time; prints the address."""</span>
               <g transform="translate(520 84)"><circle class="box ok" r="26"/><circle class="dot ok" r="6"/><text class="ink" y="50" text-anchor="middle">verify</text><text class="dim" y="66" text-anchor="middle">read · ran</text></g>
               <path class="wire dash" d="M120 26 H520"/><text class="accent" x="320" y="18" text-anchor="middle">one loop in your app</text>
               <path class="wire dash" d="M120 26 V58"/><path class="wire dash" d="M320 26 V58"/><path class="wire dash" d="M520 26 V58"/>
-              <text class="dim" x="320" y="184" text-anchor="middle">each step passes the gate on its own; only the destructive one stops for a person</text>
+              <text class="dim" x="320" y="184" text-anchor="middle">Each step passes the gate on its own. Only the destructive one asks a person.</text>
             </svg>
           </div>
           <figcaption><b>Three reflexes, one loop.</b> Every hop is a decision like any other. The loop is six lines of
@@ -307,20 +308,20 @@ writes landing on the new primary</span></pre>
           <div class="scene">
             <svg viewBox="0 0 640 210" aria-hidden="true">
               <rect class="box soft" x="32" y="72" width="300" height="110" rx="10"/>
-              <text class="dim" x="52" y="98">lights/reflex.toml · the author's</text>
-              <text class="ink" x="52" y="122">description, args, effect,</text>
-              <text class="ink" x="52" y="142">the examples that ship</text>
+              <text class="dim" x="52" y="114">lights/reflex.toml · the author's</text>
+              <text class="ink" x="52" y="140">description, args, effect,</text>
+              <text class="ink" x="52" y="160">the examples that ship</text>
               <rect class="box you" x="52" y="44" width="300" height="46" rx="10"/>
               <text class="accent" x="72" y="72">overlays/lights.toml · yours</text>
               <rect class="box you" x="72" y="16" width="300" height="46" rx="10"/>
               <text class="accent" x="92" y="44">vocab/rooms.toml · yours</text>
-              <path class="wire" d="M384 100 H420"/><circle class="dot" cx="420" cy="100" r="4"/>
+              <path class="wire" d="M384 100 H420"/><circle class="dot dim" cx="420" cy="100" r="4"/>
               <rect class="box" x="432" y="40" width="184" height="120" rx="10"/>
               <text class="dim" x="452" y="66">what evoke reads</text>
               <text class="ink" x="452" y="92">their description</text>
               <text class="ok" x="452" y="114">+ your ask</text>
               <text class="ok" x="452" y="136">+ your examples</text>
-              <text class="dim" x="320" y="202" text-anchor="middle">tables merge by key; a value replaces whole; nothing is ever deleted</text>
+              <text class="dim" x="320" y="202" text-anchor="middle">Tables merge by key. A value replaces whole. Nothing is ever deleted.</text>
             </svg>
           </div>
           <figcaption><b>One merge rule.</b> Your file adds and replaces wording. It cannot change the contract: the
