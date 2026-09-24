@@ -106,8 +106,8 @@ header.top .button.small { flex: none; margin-left: .5rem; }
 .button.small { padding: .42rem .95rem; font-size: .88rem; }
 .button:disabled { opacity: .45; cursor: default; border-color: var(--line-strong); }
 .button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent-ink); }
-.quiet { color: var(--muted); font-size: .95rem; font-weight: 500; padding: .7rem 0; transition: color .15s; }
-.quiet:hover { color: var(--fg); text-decoration: none; }
+a.quiet { color: var(--muted); font-size: .95rem; font-weight: 500; padding: .7rem 0; transition: color .15s; }
+a.quiet:hover { color: var(--fg); text-decoration: none; }
 .cta { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; }
 .cta .cmd { flex: 1 1 100%; max-width: fit-content; margin-top: .25rem; }
 .cta .cmd code { font-size: .86rem; }
@@ -717,7 +717,6 @@ footer a:hover { color: var(--fg); }
   .cards, .cards.two, .grid.three { grid-template-columns: minmax(0, 1fr); }
   .plan > li { grid-template-columns: minmax(0, 1fr); gap: .3rem; padding: 1.3rem 0; }
   .closing { padding: 1.6rem 1.4rem; }
-  .walk-controls .quiet { margin-left: 0; }
 }
 @media (max-width: 400px) {
   .hero h1 { font-size: min(2.8rem, 11.6vw); }
