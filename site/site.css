@@ -660,11 +660,14 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 
 /* Get started: a route, and the steps of it */
 .routes { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin: 0 0 2.5rem; }
-.route { text-align: left; display: block; width: 100%; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.15rem 1.3rem; background: var(--panel); color: inherit; cursor: pointer; transition: border-color .2s; }
+.route { position: relative; text-align: left; display: block; width: 100%; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.15rem 3.2rem 1.15rem 1.3rem; background: var(--panel); color: inherit; cursor: pointer; transition: border-color .2s; }
+.route::after { content: ""; position: absolute; top: 1.3rem; right: 1.3rem; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1.5px solid var(--line-strong); transition: border-color .2s; }  /* a radio mark: the choice reads as one */
 .route:hover { border-color: var(--line-strong); text-decoration: none; }
+.route:hover::after { border-color: var(--muted); }
 .route[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent); }
+.route[aria-pressed="true"]::after { border-color: var(--accent); background: radial-gradient(circle, var(--accent) 0 3.6px, transparent 4.1px); }
 .route b { display: block; font-size: 1.05rem; font-weight: 560; margin-bottom: .2rem; }
-.route span { display: block; color: var(--muted); font-size: .94rem; line-height: 1.5; }
+.route span { display: block; color: var(--muted); font-size: .94rem; line-height: 1.5; text-wrap: pretty; }
 .kept { display: none; align-items: center; gap: .6rem 1rem; flex-wrap: wrap; margin: 0 0 2rem; padding: .9rem 1.2rem; border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); border-radius: var(--radius-s); background: var(--accent-soft); font-size: .95rem; color: var(--text); }
 .kept.on { display: flex; }
 .kept b { color: var(--fg); font-weight: 560; }
