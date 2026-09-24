@@ -208,6 +208,7 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .panel.term .head .dots i:nth-child(2) { background: #febc2e; }
 .panel.term .head .dots i:nth-child(3) { background: #28c840; }
 .panel.term pre, .panel.wrap pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.panel.wrap { max-width: none; margin: 0; padding: 0; }  /* wrap names the lines here, not the page's container */
 .panel.term pre { color: var(--term-fg); }
 .panel .p { color: var(--accent); }
 .panel .in { color: var(--term-in); }
