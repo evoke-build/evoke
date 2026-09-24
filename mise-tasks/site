@@ -348,6 +348,8 @@ def furnished(page):
     text = text.replace(
         '<h1 class="menu-title">evoke</h1>', f'<p class="menu-title">{brand}</p>', 1
     )  # the title is the page's one heading
+    # a table of pages shares one column split with the others on its page
+    text = re.sub(r"<table>(\s*<thead>\s*<tr><th[^>]*>Page</th>)", r'<table class="pages">\1', text)
     # a short piece of inline code stays whole on a line; a long one may still wrap at its spaces
     text = re.sub(
         r"<code>([^<]*)</code>",

@@ -189,6 +189,11 @@ html {
 .content pre.term > code { white-space: pre-wrap; overflow-wrap: anywhere; text-indent: 4ch hanging each-line; }
 .content code.whole { white-space: nowrap; }
 
+/* Tables of pages split their columns in one place, so a page of them reads as one list */
+.content table.pages { table-layout: fixed; width: 100%; }
+.content table.pages th:first-child { width: 30%; }
+@media (max-width: 480px) { .content table.pages th:first-child { width: 40%; } }
+
 .hljs {
   background: transparent;
   color: var(--fg);
