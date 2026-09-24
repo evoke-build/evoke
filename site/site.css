@@ -112,7 +112,7 @@ header.top .button.small { flex: none; margin-left: .5rem; }
 .cta .cmd { flex: 1 1 100%; max-width: fit-content; margin-top: .25rem; }
 .cta .cmd code { font-size: .86rem; }
 .cmd { display: flex; align-items: center; gap: .6rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-s); padding: .55rem .5rem .55rem .9rem; }
-.cmd code { flex: 1; font-size: .9rem; white-space: nowrap; overflow-x: auto; color: var(--fg); }
+.cmd code { flex: 1; font-size: .9rem; white-space: nowrap; overflow-x: auto; color: var(--fg); background: none; border: 0; border-radius: 0; padding: 0; }  /* a command, never the inline code of the list it sits in */
 .cmd code::before { content: "$ "; color: var(--accent); }
 .cmd button { flex: none; border: 1px solid var(--line); background: var(--bg); color: var(--muted); border-radius: 999px; padding: .3rem .7rem; font-size: .78rem; cursor: pointer; transition: color .15s, border-color .15s; }
 .cmd button:hover { color: var(--fg); border-color: var(--muted); }
