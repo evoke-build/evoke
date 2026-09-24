@@ -580,7 +580,7 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 .scene .box.ok { stroke: var(--term-ok); }
 .scene .box.mid { stroke: var(--term-mid); }
 .scene .box.no { stroke: var(--term-no); }
-.scene .wire { fill: none; stroke: #36363d; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.scene .wire { fill: none; stroke: #505058; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .scene .wire.dash { stroke: var(--accent); stroke-dasharray: 4 5; }
 .scene .wire.ok { stroke: var(--term-ok); }
 .scene .wire.mid { stroke: var(--term-mid); }
