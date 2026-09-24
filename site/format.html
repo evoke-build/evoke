@@ -49,7 +49,7 @@
     .clause p strong { color: var(--fg); font-weight: 560; }
     .clause .panel { margin: 1.1rem 0 1.2rem; }
     .clause .panel + p { margin-top: .2rem; }
-    .kw { font: 500 .8em/1 var(--mono); letter-spacing: .05em; color: var(--fg); }
+    .kw { font: 500 .8em/1 var(--mono); letter-spacing: .05em; word-spacing: -.3em; color: var(--fg); }  /* MUST NOT reads as one keyword */
     .terms { margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 2.5rem; max-width: 60rem; }
     .terms > div { display: grid; grid-template-columns: 8rem 1fr; gap: .6rem; padding: .75rem 0; border-top: 1px solid var(--line); }
     .terms dt { font-weight: 560; color: var(--fg); font-size: .98rem; }
@@ -64,7 +64,7 @@
     td strong { color: var(--fg); font-weight: 560; }
     td.y { color: var(--term-ok); font-family: var(--mono); font-size: .86em; white-space: nowrap; }
     td.n { color: var(--faint); font-family: var(--mono); font-size: .86em; white-space: nowrap; }
-    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; margin: 1.1rem 0 1.2rem; }
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: stretch; margin: 1.1rem 0 1.2rem; }  /* two files, one height */
     .pair > * { min-width: 0; }
     @media (max-width: 960px) { .pair, .terms { grid-template-columns: minmax(0, 1fr); } .terms > div { grid-template-columns: minmax(0, 1fr); gap: .15rem; } }
     @media (max-width: 560px) {
@@ -592,17 +592,17 @@ Ceiling and lamp lights only."""</span>
         <div class="panel">
           <div class="head"><i></i>overlays/lights.toml<span class="who">yours</span></div>
 <pre><span class="k">description</span> <span class="o">=</span> <span class="s">"Turn the lights in one room on, off, or dim them."</span>   <span class="c"># replaces whole</span>
-<span class="k">effect</span>      <span class="o">=</span> <span class="s">"destructive"</span>                                        <span class="c"># may only tighten</span>
+<span class="k">effect</span>      <span class="o">=</span> <span class="s">"destructive"</span>                                         <span class="c"># may only tighten</span>
 
 <span class="t">[args.state]</span>
 <span class="k">ask</span> <span class="o">=</span> <span class="s">"On, off or dim?"</span>                                             <span class="c"># new wording for an argument</span>
 <span class="k">options.dim</span> <span class="o">=</span> <span class="s">"Lower the brightness; the lights stay on."</span>           <span class="c"># an existing key only</span>
 
 <span class="t">[examples]</span>
-<span class="s">"kill the lights"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"off"</span> <span class="o">}</span>                              <span class="c"># sent to the classifier</span>
+<span class="s">"kill the lights"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"off"</span> <span class="o">}</span>                               <span class="c"># sent to the classifier</span>
 
 <span class="t">[tests]</span>
-<span class="s">"turn on the kitchen lights"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"on"</span> <span class="o">}</span>                    <span class="c"># a shipped example, held out now</span></pre>
+<span class="s">"turn on the kitchen lights"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"on"</span> <span class="o">}</span>                     <span class="c"># a shipped example, held out now</span></pre>
         </div>
         <p>An overlay <span class="kw">MAY</span> change wording: <code>description</code>, <code>not_for</code>,
           <code>tags</code>, <code>confirm</code>, each argument's <code>ask</code>, the meaning of its existing options,
