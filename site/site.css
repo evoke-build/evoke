@@ -73,28 +73,29 @@ button { font: inherit; color: inherit; }
 .hero > *, .grid > *, .split > *, .side > *, .stack > *, .sheet > *, .ways > *, .cards > *, .pair > *, .cta > .cmd, .routes > * { min-width: 0; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
-/* The bar: the brand leads home; five pages and a pill. On a phone the pages fold into a menu the pill stays beside. */
+/* The bar: the brand leads home; five pages and a pill. On a phone the pages fold into a menu the pill stays beside.
+   The links follow the menu rather than sit in it: a closed details shows nothing it holds, whatever the width.
+   The pill stands 1.5rem, the links' own gap, after the links or the menu. */
 header.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 72%, transparent); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5); border-bottom: 1px solid var(--line); }
 header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 3.5rem; }
 .brand { display: flex; align-items: center; gap: .6rem; color: var(--fg); font-weight: 600; letter-spacing: -.01em; font-size: 1.1rem; }
 .brand:hover { text-decoration: none; }
 .brand img { width: 26px; height: 26px; }
-.menu { display: flex; align-items: center; gap: 1.25rem; margin-left: auto; }
-.menu summary { display: none; list-style: none; cursor: pointer; color: var(--muted); font-size: .95rem; font-weight: 500; padding: .4rem .2rem; }
+.menu { display: none; }
+.menu summary { display: block; list-style: none; cursor: pointer; color: var(--muted); font-size: .95rem; font-weight: 500; padding: .4rem .2rem; }
 .menu summary::-webkit-details-marker { display: none; }
 .menu summary:hover { color: var(--fg); }
-nav.links { display: flex; align-items: center; gap: 1.5rem; }
+nav.links { display: flex; align-items: center; gap: 1.5rem; margin-left: auto; }
 nav.links a { color: var(--muted); font-size: .95rem; font-weight: 450; white-space: nowrap; transition: color .15s; }
 nav.links a:hover { color: var(--fg); text-decoration: none; }
 nav.links a[aria-current] { color: var(--fg); }
-header.top .button.small { flex: none; }
+header.top .button.small { flex: none; margin-left: .5rem; }
 @media (max-width: 760px) {
-  .menu { position: static; }
-  .menu summary { display: block; }
-  .menu:not([open]) nav.links { display: none; }
-  .menu[open] nav.links { position: absolute; left: 0; right: 0; top: 3.5rem; flex-direction: column; align-items: stretch; gap: 0; padding: .5rem 1.5rem 1rem; background: color-mix(in srgb, var(--bg) 96%, transparent); border-bottom: 1px solid var(--line); }
-  .menu[open] nav.links a { padding: .65rem 0; border-top: 1px solid var(--line); font-size: 1rem; }
-  .menu[open] nav.links a:first-child { border-top: 0; }
+  .menu { display: block; margin-left: auto; }
+  nav.links { display: none; position: absolute; left: 0; right: 0; top: 3.5rem; flex-direction: column; align-items: stretch; gap: 0; padding: .5rem 1.5rem 1rem; background: color-mix(in srgb, var(--bg) 96%, transparent); border-bottom: 1px solid var(--line); }
+  .menu[open] + nav.links { display: flex; }
+  nav.links a { padding: .65rem 0; border-top: 1px solid var(--line); font-size: 1rem; }
+  nav.links a:first-child { border-top: 0; }
 }
 
 /* Buttons and commands: actions are pills, surfaces keep their corners */
