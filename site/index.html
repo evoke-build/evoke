@@ -645,7 +645,8 @@ A greeting with the name given, printed back."""</span>
       })
     }
 
-    // The example cards: their small stages play in turn while the row is on screen and motion is welcome.
+    // The example cards: their small stages play in turn while the row is on screen and motion is welcome; without
+    // motion, each rests on what its sentence did.
     {
       const cards = [...document.querySelectorAll(".cards .card")]
       if (cards.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -657,7 +658,7 @@ A greeting with the name given, printed back."""</span>
           i = (i + 1) % cards.length
           cards[i].classList.add("on")
         }, 2600)
-      }
+      } else for (const card of cards) card.classList.add("on")
     }
 
     // The walkthrough: three recorded sentences, a scene each, stepped through or watched once. A scene's frame is

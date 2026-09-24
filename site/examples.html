@@ -154,7 +154,8 @@
   <!-- footer -->
 
   <script>
-    // The six small stages play in turn while the grid is on screen and motion is welcome.
+    // The six small stages play in turn while the grid is on screen and motion is welcome; without motion, each rests
+    // on what its sentence did.
     {
       const cards = [...document.querySelectorAll(".cards .card")]
       if (cards.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -166,7 +167,7 @@
           i = (i + 1) % cards.length
           cards[i].classList.add("on")
         }, 2600)
-      }
+      } else for (const card of cards) card.classList.add("on")
     }
   </script>
 </body>

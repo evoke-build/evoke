@@ -543,7 +543,7 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 .duo .pending { fill: var(--accent-ink); transition: opacity .4s; }
 .card:is(.on, :hover, :focus-visible) .duo .pending { opacity: 0; }
 .card:is(.on, :hover, :focus-visible) .duo .b2 { stroke: color-mix(in srgb, var(--accent) 55%, #36363d); }
-@media (prefers-reduced-motion: reduce) { .floor .flow, .chain .pulse, .chain .ring { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .floor .flow, .chain .pulse, .chain .ring { animation: none; } .card .room * { transition: none; } }  /* each rests on its result */
 
 /* Scenes: a composed figure in a room, drawn in the palette; the same classes on every page */
 .scene { position: relative; background: var(--room); overflow: hidden; }
