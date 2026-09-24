@@ -284,6 +284,8 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .walk .num { flex: none; width: 1.1rem; height: 1.1rem; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); font: 600 .62rem/1.1rem var(--mono); font-style: normal; text-align: center; }
 .walk .top svg { flex: none; width: 15px; height: 15px; fill: none; stroke: var(--term-dim); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .walk .top b { min-width: 0; color: var(--term-in); font-weight: 500; }
+.walk .top :is(svg, b) { transition: transform .45s cubic-bezier(.3, .7, .2, 1); }
+.walk .num.off ~ :is(svg, b) { transform: translateX(-1.6rem); }  /* the name starts flush until the plan numbers it */
 .walk .conf { margin-left: auto; font-style: normal; color: var(--term-ok); }
 .walk .what { margin-top: .3rem; font: 450 .78rem/1.42 var(--sans); color: #b5b2ab; }
 .walk .row { display: contents; }
