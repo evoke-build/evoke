@@ -369,7 +369,7 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 
 /* The terminal: the command typed and the lines printed, the session at its foot and what came before above it; it
    scrolls as a terminal does */
-.walk .tty { position: relative; flex: 1 0 auto; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; border-top: 1px solid rgba(255, 255, 255, .07); font: .75rem/1.9 var(--mono); -webkit-mask-image: linear-gradient(transparent, #000 1.1rem); mask-image: linear-gradient(transparent, #000 1.1rem); }
+.walk .tty { position: relative; flex: 1 0 auto; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; border-top: 1px solid rgba(255, 255, 255, .07); font: .75rem/1.9 var(--mono); -webkit-mask-image: linear-gradient(transparent .9em, #000 2.4em); mask-image: linear-gradient(transparent .9em, #000 2.4em); }  /* history fades upward; a sliver of a cut row never shows */
 .walk .scroll { position: relative; padding: .7rem 1.1rem .85rem; transition: transform .5s cubic-bezier(.3, .7, .2, 1); }
 .walk .before { position: absolute; left: 0; right: 0; bottom: 100%; padding: .7rem 1.1rem 0; }
 .walk .line { display: block; min-height: 1.9em; white-space: pre-wrap; overflow-wrap: anywhere; text-indent: 4ch hanging; color: var(--term-dim); }
