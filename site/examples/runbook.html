@@ -211,16 +211,13 @@ done<span class="o">()</span></pre>
       <div class="rule"><p class="label">One boundary</p><span class="num">03</span></div>
       <h2>The destructive step waits for a yes.</h2>
       <p class="sub">The failover cannot be undone from where it runs, so its manifest says <code>destructive</code>.
-        Here the answer was yes. <strong>Answer no, and the loop ends there.</strong> The drain stays done. The verify
-        never runs.</p>
+        <strong>Answer no, and the loop ends there.</strong> The drain stays done. The verify never runs.</p>
       <div class="grid">
         <div class="panel term" role="figure" aria-label="The failover's question">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>node</div>
 <pre><span class="p">$</span> <span class="in">node runbook.ts "drain the primary"</span>
 <span class="out">primary drained</span>
-<span class="own">Promote the replica now?  [y]es [n]o &gt; <span class="in">y</span></span>
-<span class="out">replica promoted
-writes landing on the new primary</span></pre>
+<span class="own">Promote the replica now?  [y]es [n]o &gt; <span class="in">n</span></span></pre>
         </div>
         <p class="caption">The question is the reflex's own <code>confirm</code> line. A confirm handler that returns
           false makes <code>handle()</code> answer <code>declined</code>, and the loop's <code>break</code> does the rest.
