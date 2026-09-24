@@ -705,9 +705,11 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 /* The footer */
 footer { margin-top: 5.5rem; border-top: 1px solid var(--line); padding: 2.25rem 0 3rem; color: var(--muted); font-size: .9rem; }
 footer .tag { margin: 0 0 1.4rem; font: 500 .9rem/1.5 var(--mono); color: var(--muted); }
+footer .tag span { display: inline-block; }  /* a narrow screen breaks the line at its semicolon */
 footer .row { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; }
-footer nav { display: flex; flex-wrap: wrap; gap: 1.25rem; }
-footer a { color: var(--muted); }
+footer nav { display: flex; flex-wrap: wrap; gap: 0 1.25rem; margin: -.55rem 0; }
+footer nav a { padding: .55rem 0; }  /* a finger-sized target, the same rhythm */
+footer a { color: var(--muted); white-space: nowrap; }
 footer a:hover { color: var(--fg); }
 
 /* Narrower */
