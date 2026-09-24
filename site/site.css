@@ -143,7 +143,10 @@ a.more { display: inline-block; padding: .6rem 0; margin: -.6rem 0; }
 .jobs a { display: inline-flex; align-items: baseline; gap: .6rem; color: var(--muted); font-size: .95rem; font-weight: 450; transition: color .15s; }
 .jobs a:hover { color: var(--fg); text-decoration: none; }
 .jobs code { font-size: .8rem; color: var(--accent-ink); background: none; border: 0; padding: 0; white-space: nowrap; }
-.index { list-style: none; margin: 0; padding: 1.25rem 0 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: .55rem 2rem; }
+.index { --cols: 4; list-style: none; margin: 0; padding: 1.25rem 0 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(auto-fill, minmax(max(13rem, (100% - (var(--cols) - 1) * 2rem) / var(--cols)), 1fr)); gap: .55rem 2rem; }
+/* the columns come from the count: rows fill, and a narrow screen still drops a column */
+.index:has(> li:nth-child(3):last-child), .index:has(> li:nth-child(6):last-child), .index:has(> li:nth-child(9):last-child) { --cols: 3; }
+.index:has(> li:nth-child(5):last-child), .index:has(> li:nth-child(10):last-child) { --cols: 5; }
 .index a { display: inline-flex; align-items: baseline; gap: .7rem; color: var(--muted); font-size: .95rem; transition: color .15s; }
 .index a:hover { color: var(--fg); text-decoration: none; }
 .index code { font-size: .74rem; color: var(--accent-ink); background: none; border: 0; padding: 0; letter-spacing: .08em; }
