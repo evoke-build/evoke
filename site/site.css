@@ -138,7 +138,7 @@ a.more { display: inline-block; padding: .6rem 0; margin: -.6rem 0; }
 .hero.solo .sheet { max-width: 46rem; margin: 2.2rem 0 0; }
 .hero .lede { font-size: 1.22rem; line-height: 1.5; color: var(--muted); max-width: 38rem; margin: 0 0 1.9rem; }
 .hero .lede strong { color: var(--fg); font-weight: 560; }
-.hero .note { margin: 1.1rem 0 0; color: var(--muted); font-size: .92rem; line-height: 1.5; max-width: 34rem; }
+.hero .note { margin: 1.1rem 0 0; color: var(--muted); font-size: .86rem; line-height: 1.5; max-width: 34rem; }
 .jobs { list-style: none; margin: 1.9rem 0 0; padding: 1.1rem 0 0; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: .65rem 2.25rem; max-width: 34rem; }
 .jobs a { display: inline-flex; align-items: baseline; gap: .6rem; color: var(--muted); font-size: .95rem; font-weight: 450; transition: color .15s; }
 .jobs a:hover { color: var(--fg); text-decoration: none; }
@@ -432,7 +432,7 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 .walk-notes code.said { display: block; width: fit-content; max-width: 100%; margin-top: .45rem; padding: .3rem .55rem; font-size: .74rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--term-fg); background: var(--term-bg); }
 .walk-door { display: flex; flex-wrap: wrap; gap: .35rem 1.4rem; margin: .9rem 0 0; }
 .walk-door a { font-size: .93rem; font-weight: 560; }
-.walk-legend { margin: 1.1rem 0 0; color: var(--faint); font-size: .8rem; line-height: 1.5; }
+.walk-legend { margin: 1.1rem 0 0; color: var(--faint); font-size: .86rem; line-height: 1.5; }
 .walk-legend p { margin: 0; }
 .walk-legend b { color: var(--muted); font-weight: 500; }
 .walk-key { list-style: none; display: flex; flex-wrap: wrap; gap: .35rem 1.75rem; margin: .75rem 0 0; padding: .6rem 0 0; border-top: 1px solid var(--line); color: var(--text); font-size: .86rem; }
