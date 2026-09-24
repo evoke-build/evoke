@@ -18,6 +18,7 @@ import re
 import shutil
 import subprocess
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -73,6 +74,57 @@ def site_palette():
     if problems:
         sys.exit("\n".join(problems))
     return shared
+
+
+def recorded():
+    """Every line the home page's walkthrough shows as printed, a terminal line or a judgment quoted under it, is a
+    line the binary printed in the weave flow, whose transcript the tests replay: the page shows nothing invented."""
+    session = (ROOT / "spec/transcripts/weave/session.txt").read_text().splitlines()
+    page = (SITE / "index.html").read_text()
+    start, end = page.find('<div class="walk"'), page.find('<section id="reflex">')
+    if start < 0 or end < start:
+        sys.exit('site/index.html: no walkthrough between <div class="walk" and <section id="reflex">')
+    walk = page[start:end]
+
+    class Quoted(HTMLParser):  # an element left open, as a void one is, closes with its parent
+        def __init__(self):
+            super().__init__(convert_charrefs=True)
+            self.open, self.found = [], []
+
+        def handle_starttag(self, tag, attrs):
+            classes, kind = (dict(attrs).get("class") or "").split(), {"span": "line", "code": "said"}.get(tag, "")
+            self.open.append([tag, kind if kind in classes else "", []])
+
+        def handle_endtag(self, tag):
+            while self.open:
+                name, kind, text = self.open.pop()
+                if kind:
+                    self.found.append((kind, "".join(text)))
+                if self.open:
+                    self.open[-1][2].extend(text)
+                if name == tag:
+                    break
+
+        def handle_data(self, data):
+            if self.open:
+                self.open[-1][2].append(data)
+
+    quoted = Quoted()
+    quoted.feed(walk)
+    lines, stripped = {line.rstrip() for line in session}, {line.strip() for line in session}
+    problems = [
+        f"site/index.html: the walkthrough shows {text!r}, which the weave transcript never printed"
+        for kind, text in quoted.found
+        if not (
+            text.rstrip() in lines
+            if kind == "line"
+            else text in stripped or any(line.startswith("{") and text in line for line in session)
+        )
+    ]
+    if not quoted.found:
+        problems.append("site/index.html: the walkthrough shows no printed line")
+    if problems:
+        sys.exit("\n".join(problems))
 
 
 def pages():
@@ -535,6 +587,7 @@ def sitemap(pages, dated):
 
 links_resolve()
 palette = site_palette()
+recorded()
 shutil.rmtree(OUT, ignore_errors=True)
 shutil.rmtree(SRC, ignore_errors=True)
 shutil.copytree(MANUAL, SRC)
