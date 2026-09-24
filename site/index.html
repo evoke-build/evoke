@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Evoke - Install abilities. Ask for them in your words.</title>
+  <title>Evoke - You invoke a function. You evoke a reflex.</title>
   <meta name="description" content="evoke runs the small program your sentence asks for, and can pass one program's result to the next. A CLI, a package manager and a TypeScript SDK.">
   <!-- head -->
   <script type="application/ld+json">
@@ -81,15 +81,14 @@
   <main class="wrap">
     <div class="hero">
       <div class="copy">
-        <h1>Install abilities. <em>Ask for them in your words.</em></h1>
-        <p class="lede"><strong>evoke runs the small program your sentence asks for.</strong> It takes the program's
-          inputs from your words, and asks when it isn't sure. Ask for two in one sentence, and the first hands its
-          result to the second.</p>
+        <h1>You invoke<br> a function. <em>You evoke<br> a reflex.</em></h1>
+        <p class="lede"><strong>A reflex is a small program you install and ask for in your words.</strong> evoke fills in
+          its inputs, or asks when it isn't sure. Ask for two at once, and the first hands its result to the second.</p>
         <div class="cta">
           <button class="button primary" type="button" data-see>See it work</button>
           <a class="button" href="/start.html">Get started</a>
         </div>
-        <p class="note">Free and open source. An online classifier reads your sentences. You bring its key, and its provider bills you.</p>
+        <p class="note">Free and open source. An online classifier reads your sentences. It needs <a href="/start.html#needs">a key</a> from its provider, who bills you for its use.</p>
         <ul class="jobs" aria-label="What evoke is">
           <li><a href="/manual/use/saying-things.html"><code>$</code>a CLI</a></li>
           <li><a href="/manual/use/installing.html"><code>+</code>a package manager</a></li>
@@ -109,7 +108,7 @@
             </div>
             <div class="scenes">
               <div class="scene on" id="walk-a" role="tabpanel" aria-labelledby="walk-tab-a" data-stage="5">
-                <div class="room" role="figure" aria-label="A recorded session, replayed. Five abilities are installed, among them contact and mail. contact looks up a person's email address, and mail starts an email in your mail app. The sentence «look up dana's address and email them» is typed. evoke reads two steps and shows the plan first: contact for dana, then mail to «them». contact gives back an email, and mail's to input takes an email, so the address can travel. contact finds dana@example.com. The address becomes the draft's recipient, and a draft opens, its subject waiting for you. Nothing is sent.">
+                <div class="room" role="figure" aria-label="A recorded session, replayed. Five reflexes are installed, among them contact and mail. contact looks up a person's email address, and mail starts an email in your mail app. The sentence «look up dana's address and email them» is typed. evoke reads two steps and shows the plan first: contact for dana, then mail to «them». contact gives back an email, and mail's to input takes an email, so the address can travel. contact finds dana@example.com. The address becomes the draft's recipient, and a draft opens, its subject waiting for you. Nothing is sent.">
                   <p class="part q1" data-lit="and" data-on="2-">"<button type="button" class="word" data-point="look" aria-describedby="walk-a-look">look up</button> <button type="button" class="word" data-point="dana" aria-describedby="walk-a-dana">dana</button>'s address"</p>
                   <p class="seam" data-on="2-"><button type="button" class="word" data-point="and" aria-describedby="walk-a-and">and</button><small>yes 0.90</small></p>
                   <p class="part q2" data-lit="and" data-on="2-">"<button type="button" class="word" data-point="email" aria-describedby="walk-a-email">email</button> <button type="button" class="word ref bound" data-point="them" data-at="plan:2-3 bound:4-" aria-describedby="walk-a-them">them</button>"</p>
@@ -250,7 +249,7 @@ Count down a duration, then sound an alert.</span>
               </div>
 
               <div class="scene" id="walk-c" role="tabpanel" aria-labelledby="walk-tab-c" data-stage="3" inert>
-                <div class="room" role="figure" aria-label="A recorded session, replayed. The sentence «kill the lights in the den and feed the cat» is typed. The first part reads as lights, in the den. No installed ability feeds a cat, so the second part matches nothing. evoke refuses the whole sentence before any step starts, and nothing runs, not even the lights.">
+                <div class="room" role="figure" aria-label="A recorded session, replayed. The sentence «kill the lights in the den and feed the cat» is typed. The first part reads as lights, in the den. No installed reflex feeds a cat, so the second part matches nothing. evoke refuses the whole sentence before any step starts, and nothing runs, not even the lights.">
                   <p class="part q1" data-lit="and" data-on="2-">"<button type="button" class="word" data-point="kill" aria-describedby="walk-c-kill">kill the lights</button> in the den"</p>
                   <p class="seam" data-on="2-"><button type="button" class="word" data-point="and" aria-describedby="walk-c-and">and</button><small>yes 0.95</small></p>
                   <p class="part q2" data-lit="and" data-on="2-">"<button type="button" class="word ref stop" data-point="cat" data-at="stop:2-" aria-describedby="walk-c-cat">feed the cat</button>"</p>
@@ -307,7 +306,7 @@ Turn the lights in one room on, off, or dim them.</span>
 
           <div class="walk-notes" aria-hidden="true">
             <div class="set on" data-for="walk-a">
-              <p><strong>Five abilities are installed.</strong> Each came with a manifest: what it does, what it takes, what it gives back.</p>
+              <p><strong>Five reflexes are installed.</strong> Each came with a manifest: what it does, what it takes, what it gives back.</p>
               <p><strong>You type one sentence.</strong> Each card is its manifest, turned face up.</p>
               <p><strong>The plan comes first.</strong> «and» splits the sentence in two. «them» points at what step 1 will find.</p>
               <p><strong>Step 1 runs.</strong> contact finds dana's address.</p>
@@ -320,7 +319,7 @@ Turn the lights in one room on, off, or dim them.</span>
               <p id="walk-a-them" data-point="them"><strong>«them» takes the email step 1 found: the kind mail needs.</strong> <code class="said">"binds":[{"from":1,"to":2,"arg":"to","field":"email","kind":"email","via":"fill"}]</code></p>
             </div>
             <div class="set" data-for="walk-b">
-              <p><strong>Five abilities are installed.</strong> Each came with a manifest: what it does, what it takes, what it gives back.</p>
+              <p><strong>Five reflexes are installed.</strong> Each came with a manifest: what it does, what it takes, what it gives back.</p>
               <p><strong>You type one sentence.</strong> This time, its second part is about a timer.</p>
               <p><strong>«them» points at step 1, but a timer takes no address.</strong> contact gives back an <code>email</code>. The timer takes a <code>duration</code>.</p>
               <p><strong>So evoke asks before anything runs.</strong> A word that points at a step it takes nothing from always asks. Here, the answer was yes.</p>
@@ -332,9 +331,9 @@ Turn the lights in one room on, off, or dim them.</span>
               <p id="walk-b-them" data-point="them"><strong>«them» finds no slot of its kind in the timer.</strong> <code class="said">step 2 refers to step 1, but takes nothing from it</code></p>
             </div>
             <div class="set" data-for="walk-c">
-              <p><strong>Five abilities are installed.</strong> Each came with a manifest: what it does, what it takes, what it gives back.</p>
+              <p><strong>Five reflexes are installed.</strong> Each came with a manifest: what it does, what it takes, what it gives back.</p>
               <p><strong>You type one sentence.</strong> This time, its second part is about feeding the cat.</p>
-              <p><strong>No installed ability feeds a cat.</strong> The second part matches nothing.</p>
+              <p><strong>No installed reflex feeds a cat.</strong> The second part matches nothing.</p>
               <p class="on"><strong>So nothing runs, not even the lights.</strong> evoke refuses the whole sentence before any step starts.</p>
               <p id="walk-c-kill" data-point="kill"><strong>«kill the lights in the den» reads as lights.</strong> <code class="said">lights 0.91 · none 0.06 · timer 0.02 · volume 0.01</code></p>
               <p id="walk-c-and" data-point="and"><strong>Asked whether «and» joins two tasks, the classifier said yes.</strong> <code class="said">"splits":[{"start":26,"end":31,"word":"and","order":"and","p":0.95}]</code></p>
@@ -358,9 +357,9 @@ Turn the lights in one room on, off, or dim them.</span>
 
     <section id="reflex">
       <div class="rule"><p class="label">A reflex</p><span class="num">01</span></div>
-      <h2>An ability comes with a way to ask for it.</h2>
-      <p class="sub">The <code>mail</code> ability from the walkthrough is a small program with a manifest. The manifest
-        says what it does, what it is not for, and what to ask you when something is missing. <strong>This package is called a reflex.</strong></p>
+      <h2>A reflex comes with a way to ask for it.</h2>
+      <p class="sub">The <code>mail</code> reflex from the walkthrough is a small program and its manifest. <strong>The
+        manifest says what it does, what it is not for, and what to ask you when something is missing.</strong></p>
       <div class="split">
         <div class="panel">
           <div class="head"><i></i>mail/reflex.toml<span class="who">by the author</span></div>
@@ -593,7 +592,7 @@ A greeting with the name given, printed back."""</span>
             <li><strong>The effect is your claim about it.</strong> A read, a write, or something that cannot be undone.</li>
             <li><strong><code>evoke check</code> points at any line to fix</strong> and keeps the types beside the body current.</li>
           </ul>
-          <a class="more" href="/developers.html">Build an ability →</a>
+          <a class="more" href="/developers.html">Build a reflex →</a>
         </div>
       </div>
     </section>
