@@ -755,7 +755,7 @@ footer a:hover { color: var(--fg); }
 .demo .line i.mid { color: var(--term-mid); }
 .example .demo { position: sticky; top: 4.75rem; }
 @media (max-width: 960px) { .example .demo { position: static; } }
-@media (max-width: 560px) { .demo .room { height: 12.5rem; } .demo .strip { height: calc(8 * 1.9em + 1.9rem); } }
+@media (max-width: 560px) { .demo .room { height: auto; aspect-ratio: 15 / 8; max-height: 15rem; } .demo .strip { height: calc(8 * 1.9em + 1.9rem); } }
 /* A panel with tabs: files, code, the app */
 .tabbed .head { padding: .45rem .7rem .45rem .95rem; }
 .tabbed .tabs { overflow-x: auto; scrollbar-width: none; }
@@ -768,8 +768,8 @@ footer a:hover { color: var(--fg); }
 .mac-room .base { fill: #26262b; }
 .mac-room .icon { fill: none; stroke: #6a6a72; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: stroke .6s; }
 .mac-room .level { fill: #26262b; }
-.mac-room .fill { fill: var(--term-mid); transition: width .9s cubic-bezier(.2, .7, .2, 1), fill .6s; width: 26px; }
-.mac-room[data-volume="40"] .fill { width: 64px; fill: var(--term-ok); }
+.mac-room .fill { fill: var(--term-mid); transition: width .9s cubic-bezier(.2, .7, .2, 1), fill .6s; width: 23px; }
+.mac-room[data-volume="40"] .fill { width: 58px; fill: var(--term-ok); }
 .mac-room .pct { fill: var(--term-mid); transition: opacity .4s; }
 .mac-room .pct.after { opacity: 0; fill: var(--term-ok); }
 .mac-room[data-volume="40"] .pct.before { opacity: 0; }
@@ -806,9 +806,9 @@ footer a:hover { color: var(--fg); }
 .stream .item text { fill: #d6d3cc; }
 .stream .item { transition: transform 1s cubic-bezier(.2, .7, .2, 1), opacity .8s; }
 .stream .i1 { transform: translate(70px, 54px); } .stream .i2 { transform: translate(70px, 104px); } .stream .i3 { transform: translate(70px, 154px); }
-.stream[data-l1="ran"] .i1 { transform: translate(228px, 54px); }
-.stream[data-l2="queued"] .i2 { transform: translate(228px, 104px); }
-.stream[data-l3="none"] .i3 { transform: translate(228px, 154px); opacity: .45; }
+.stream[data-l1="ran"] .i1 { transform: translate(222px, 54px); }
+.stream[data-l2="queued"] .i2 { transform: translate(222px, 104px); }
+.stream[data-l3="none"] .i3 { transform: translate(222px, 154px); opacity: .45; }
 .stream .lane .mark { fill: #1a1a1e; stroke: #36363d; stroke-width: 1.5; transition: stroke .5s; }
 .stream .lane path { fill: none; stroke: #5f5f66; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: stroke .5s; }
 .stream .lane .face { fill: #5f5f66; transition: fill .5s; }
@@ -822,13 +822,13 @@ footer a:hover { color: var(--fg); }
 .bank[data-card="maker"] .maker .head, .bank[data-card="checker"] .checker .head { fill: var(--lamp); }
 .bank[data-card="maker"] .maker .body, .bank[data-card="checker"] .checker .body { stroke: var(--lamp); }
 .bank .queue { fill: none; stroke: #36363d; stroke-dasharray: 5 6; }
-.bank .card { transform: translate(80px, 140px); opacity: 0; transition: transform 1s cubic-bezier(.2, .7, .2, 1), opacity .6s; }
+.bank .card { transform: translate(62px, 140px); opacity: 0; transition: transform 1s cubic-bezier(.2, .7, .2, 1), opacity .6s; }
 .bank .card rect { fill: #1d1d22; stroke: #4a4a52; transition: stroke .5s; }
 .bank .card text { fill: #ebe8e3; font-size: 11px; }
 .bank .card text.dim { fill: #8f8c86; }
 .bank[data-card="maker"] .card { opacity: 1; }
 .bank[data-card="queue"] .card { transform: translate(210px, 140px); opacity: 1; }
-.bank[data-card="checker"] .card { transform: translate(340px, 140px); opacity: 1; }
+.bank[data-card="checker"] .card { transform: translate(358px, 140px); opacity: 1; }
 .bank .stamp { opacity: 0; transition: opacity .4s; }
 .bank .stamp circle { fill: #101013; stroke-width: 2; }
 .bank .stamp path { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
