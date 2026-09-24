@@ -415,7 +415,8 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
   .walk .rail { display: grid; grid-template-columns: repeat(var(--across, 3), auto); justify-content: space-evenly; }
   .walk .rail button { padding-block: .45rem; }
 }
-@container walk (max-width: 420px) { .walk .panel.term .head .dots { display: none; } .walk .head .tabs { margin-left: -.35rem; } .walk .tty { font-size: .69rem; } }
+@container walk (max-width: 420px) { .walk .panel.term .head .dots { display: none; } .walk .head { padding-left: .6rem; } .walk .head .tabs { margin-left: -.35rem; } .walk .tabs button { padding-inline: .45rem; } .walk .tty { font-size: .69rem; } }
+@container walk (max-width: 340px) { .walk .tabs button { font-size: .7rem; } }  /* the three sentences keep one row */
 
 /* Under the panel: what the stage shows, or what a word reached; the doors; the grammar, once */
 .walk-notes { position: relative; z-index: 2; display: grid; margin: 1rem 0 0; }
@@ -733,6 +734,7 @@ footer a:hover { color: var(--fg); }
 @media (max-width: 560px) {
   .sheet dl > div { grid-template-columns: minmax(0, 1fr); gap: .15rem; }
   .cmd code { font-size: .8rem; }
+  .jobs { flex-direction: column; gap: .5rem; }  /* the three jobs as a short list, not a 2 + 1 row */
   .walk-key { display: grid; grid-template-columns: repeat(2, max-content); }
   p.after .also { display: block; margin: .6rem 0 0; }
   .panel pre { padding: 1rem 1rem 1.05rem; font-size: .78rem; }
