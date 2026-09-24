@@ -229,101 +229,199 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .tabs button:hover { color: var(--fg); }
 .tabs button[aria-selected="true"] { color: var(--fg); background: var(--line); }
 
-/* Ability cards: a program, its purpose and its slots, as the walkthrough draws them */
-.ability { padding: .55rem .8rem .7rem; background: var(--card); border: 1px solid var(--card-line); border-radius: var(--radius-s); font: .75rem/1.5rem var(--mono); color: var(--term-fg); }
-.ability .top { display: flex; align-items: center; gap: .5rem; height: 1.5rem; }
-.ability .num { flex: none; width: 1.05rem; height: 1.05rem; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); font: 600 .62rem/1.05rem var(--mono); font-style: normal; text-align: center; }
-.ability .top svg { flex: none; width: 15px; height: 15px; fill: none; stroke: var(--term-dim); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: stroke .5s ease; }
-.ability .top b { color: var(--term-in); font-weight: 500; }
-.ability .tag { margin-left: auto; color: var(--term-ok); font-size: .66rem; letter-spacing: .04em; opacity: .8; white-space: nowrap; }
-.ability .tag.effect { color: var(--term-mid); }
-.ability .tag.effect.read { color: var(--term-ok); }
-.ability .tag.effect.destructive { color: var(--term-no); }
-.ability .what { height: 1.5rem; color: var(--term-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ability .row { display: flex; align-items: baseline; gap: .6rem; height: 1.5rem; }
-.ability .key { flex: none; width: 3.2rem; color: var(--term-dim); }
-.ability .cell { position: relative; display: inline-grid; align-items: baseline; }
-.ability .cell > span { grid-area: 1 / 1; }
-.ability .blank { justify-self: stretch; align-self: baseline; height: 0; border-bottom: 1px dashed #45454d; transform: translateY(.28em); transition: opacity .35s ease; }
-.ability .need { color: var(--term-mid); text-decoration: underline dotted var(--term-mid); text-underline-offset: .24em; }
-.ability .val { position: relative; z-index: 1; padding: 0 .3rem; margin: 0 -.3rem; border-radius: 5px; background: var(--card); }
-.ability .val.give, .ability .val.take, .ability .ok { color: var(--term-ok); }
-.ability.live { border-color: color-mix(in srgb, var(--accent) 55%, var(--card-line)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 22px -6px color-mix(in srgb, var(--accent) 45%, transparent); }
-.ability.live .top svg { stroke: var(--accent-ink); }
-
-/* Threads: legs measured from the slots they join, drawn as boxes that grow from their start; dashed for a plan,
-   filled green behind a value as it travels */
-.threads { position: absolute; inset: 0; pointer-events: none; }
-.leg { position: absolute; transition: transform .25s ease; }
-.leg::before, .leg::after { content: ""; position: absolute; inset: 0; }
-.leg::before { background: repeating-linear-gradient(90deg, var(--accent) 0 4px, transparent 4px 8px); }
-.leg.north::before, .leg.south::before { background: repeating-linear-gradient(180deg, var(--accent) 0 4px, transparent 4px 8px); }
-.leg.east { transform-origin: left center; transform: scaleX(0); }
-.leg.west { transform-origin: right center; transform: scaleX(0); }
-.leg.south { transform-origin: center top; transform: scaleY(0); }
-.leg.north { transform-origin: center bottom; transform: scaleY(0); }
-.leg.on { transform: none; }
-.leg.bind::after { background: var(--term-ok); transform: scaleX(0); transform-origin: inherit; transition: transform var(--t, .6s) linear; }
-.leg.bind.north::after, .leg.bind.south::after { transform: scaleY(0); }
-.leg.bind.fill::after { transform: none; }
-
-/* The walkthrough: two installed reflexes, one sentence, and the address that travels between them, in six stages
-   a reader steps through. The final frame is the markup; motion lifts opacity and moves transforms only. */
+/* The walkthrough: three recorded sentences, one scene each, stepped through or watched once. A scene's frame is its
+   stage and the final frame is the markup. A card is a manifest turned face up; a slot wears its kind on a tab; a
+   value docks only where the kinds match. The grammar: dashed accent for the plan, green for a value bound or a
+   step that ran, amber for a question to you, red for a stop. Motion is opacity and transforms only, and every
+   measure comes from the slots, so the page lays out once. */
 .walk { container: walk / inline-size; }
-.walk .head { flex-wrap: wrap; white-space: nowrap; }
-.walk .head .stages { margin-left: auto; display: flex; gap: .15rem; }
-.walk .head .stages button { border: 0; background: transparent; padding: .1rem .45rem; border-radius: 5px; font: 500 .64rem/1.5 var(--mono); letter-spacing: .07em; text-transform: uppercase; color: var(--term-dim); opacity: .55; cursor: pointer; transition: color .35s ease, opacity .35s ease; }
-.walk .head .stages button:hover { opacity: .9; }
-.walk .head .stages button.on { color: var(--accent); opacity: 1; }
-.walk .room { position: relative; display: flex; flex-direction: column; gap: 1rem; min-height: 21.5rem; padding: 1.05rem 1.1rem 1rem; background: var(--room); font: .75rem/1.5rem var(--mono); color: var(--term-fg); }
-.walk .say { white-space: pre-wrap; overflow-wrap: anywhere; }
-.walk .say .p { color: var(--accent); }
-.walk .say .in { color: var(--term-in); }
-.walk .typed { position: relative; }
-.walk .c { position: relative; }
-.walk .typed.at::before, .walk .c.at::after { content: ""; position: absolute; top: .2em; width: .55em; height: 1.05em; background: var(--term-fg); animation: blink 1.1s steps(2, start) infinite; }
-.walk .typed.at::before { left: 0; }
-.walk .c.at::after { left: 100%; margin-left: 1px; }
-.walk .c.seam { transition: opacity .3s ease, color .4s ease; }
-.walk .c.ref { text-decoration: underline dotted transparent; text-underline-offset: .24em; transition: opacity .3s ease, color .4s ease, text-decoration-color .4s ease; }
-.walk .say.cut .c.seam { color: var(--accent-ink); }
-.walk .say.cut .c.ref { color: var(--term-mid); text-decoration-color: var(--term-mid); }
-.walk .say.bound .c.ref { color: var(--term-in); text-decoration: underline solid var(--term-ok); }
-.walk .pair { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 2.25rem; align-content: center; align-items: start; }
-.walk .a2 { margin-top: 1.5rem; }  /* a step down: the email row of one card meets the to row of the other */
-.walk .ability { opacity: 0; transform: translateY(6px); transition: opacity .45s ease, transform .45s ease, border-color .5s ease, box-shadow .5s ease; }
-.walk .ability.on { opacity: 1; transform: none; }
-.walk .cell:has(.on) .blank { opacity: 0; }
-.walk .val.name { min-width: 6ch; }
-.walk .val.subj { min-width: 8ch; }
-.walk .done { color: var(--term-fg); }
-.walk .fly { position: absolute; z-index: 3; padding: 0 .3rem; border-radius: 5px; background: var(--card); color: var(--term-ok); box-shadow: 0 0 0 1px rgba(143, 212, 138, .4), 0 10px 24px -8px rgba(0, 0, 0, .9); opacity: 0; transition: opacity .3s ease, transform 1s cubic-bezier(.3, .6, .2, 1); }
-.walk .fly.go { transform: translate(var(--dx), var(--dy)); }
-.walk .strip { padding: .8rem 1.1rem .9rem; font: .75rem/1.9 var(--mono); border-top: 1px solid rgba(255, 255, 255, .07); }
+.walk .head { padding: .45rem .6rem .45rem .95rem; }
+.walk .head .tabs { margin-left: .35rem; flex-wrap: wrap; }
+.walk .scenes { display: grid; }
+.walk .scene { grid-area: 1 / 1; display: flex; flex-direction: column; min-width: 0; transition: opacity .35s ease, visibility 0s linear .35s; }
+.walk .scene:not(.on) { opacity: 0; visibility: hidden; }
+.walk .scene.on { transition-delay: 0s; }
+.walk .off { opacity: 0; visibility: hidden; }
+.walk [data-on] { transition: opacity .3s ease, visibility 0s linear .3s; }
+.walk [data-on]:not(.off) { transition-delay: 0s; }
+
+/* The room: the sentence's parts over the abilities they reached, «and» in the seam between them */
+.walk .room { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 3.6rem minmax(0, 1fr); grid-template-areas: "q1 and q2" "c1 . c2" "k1 . k2"; align-items: start; padding: 1.1rem 1.1rem 1rem; background: var(--room); font: .75rem/1.5 var(--mono); color: var(--term-fg); }
+.walk .part, .walk .seam, .walk .why, .walk .what, .walk .file { margin: 0; }
+.walk .part { align-self: end; margin-bottom: .6rem; overflow-wrap: anywhere; }
+.walk .q1 { grid-area: q1; }
+.walk .q2 { grid-area: q2; }
+.walk .seam { position: relative; grid-area: and; align-self: end; justify-self: center; margin-bottom: .6rem; }
+.walk .seam .word { color: var(--accent-ink); }
+.walk .seam small { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: .1rem; font-size: .6rem; line-height: 1.2; color: var(--term-dim); white-space: nowrap; }
+.walk .word { padding: 0; border: 0; border-radius: 3px; background: none; font: inherit; color: inherit; cursor: pointer; text-decoration: underline dotted color-mix(in srgb, currentColor 50%, transparent); text-decoration-thickness: 1px; text-underline-offset: .3em; }
+.walk .word:hover, .walk .word.pointed { text-decoration-style: solid; text-decoration-color: currentColor; }
+.walk .ref.plan { color: var(--accent-ink); text-decoration: underline dashed var(--accent); }
+.walk .ref.bound { color: var(--term-ok); text-decoration: underline solid var(--term-ok); }
+.walk .ref.ask { color: var(--term-mid); text-decoration: underline dashed var(--term-mid); }
+.walk .ref.stop { color: var(--term-no); text-decoration: underline dashed var(--term-no); }
+.walk .ref { text-decoration-thickness: 1px; text-underline-offset: .3em; }
+
+/* A card: the program on its face, the manifest on its back; stage 0 shows the back */
+.walk .card { position: relative; align-self: start; min-width: 0; perspective: 1200px; transition: opacity .45s ease, transform .45s ease; }
+.walk .c1 { grid-area: c1; }
+.walk .c2 { grid-area: c2; }
+.walk .hide { opacity: 0; }
+.walk .card.hide { transform: translateY(8px); }
+.walk .faces { display: grid; transform-style: preserve-3d; transition: transform .75s cubic-bezier(.3, .7, .2, 1), opacity .5s ease; }
+.walk .scene[data-stage="0"] .faces { transform: rotateY(-180deg); }
+.walk .face { grid-area: 1 / 1; min-width: 0; padding: .55rem .75rem .8rem; background: var(--card); border: 1px solid var(--card-line); border-radius: var(--radius-s); -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.walk .face.back { transform: rotateY(180deg); }
+.walk .card::before, .walk .card::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-s); pointer-events: none; opacity: 0; transition: opacity .5s ease; }
+.walk .card::before { box-shadow: 0 0 0 1px rgba(143, 212, 138, .42); }
+.walk .card::after { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 60%, transparent), 0 0 26px -6px color-mix(in srgb, var(--accent) 55%, transparent); }
+.walk .card.ran::before, .walk .card.live::after { opacity: 1; }
+.walk .card.dark .faces { opacity: .45; }
+.walk .front { display: grid; grid-template-columns: max-content minmax(0, 1fr); align-content: start; column-gap: .7rem; }
+.walk .front > :is(.top, .what) { grid-column: 1 / -1; }
+.walk .top { display: flex; align-items: center; gap: .5rem; height: 1.5rem; }
+.walk .num { flex: none; width: 1.1rem; height: 1.1rem; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); font: 600 .62rem/1.1rem var(--mono); font-style: normal; text-align: center; }
+.walk .top svg { flex: none; width: 15px; height: 15px; fill: none; stroke: var(--term-dim); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.walk .top b { min-width: 0; color: var(--term-in); font-weight: 500; }
+.walk .conf { margin-left: auto; font-style: normal; color: var(--term-ok); }
+.walk .what { margin-top: .3rem; font: 450 .78rem/1.42 var(--sans); color: #b5b2ab; }
+.walk .row { display: contents; }
+.walk .key { align-self: center; margin-top: .75rem; color: var(--term-dim); }
+.walk .row .slot { justify-self: start; margin-top: .75rem; }
+.walk .face.back .file { margin: -.55rem -.75rem .55rem; padding: .4rem .75rem; border-top: 0; border-radius: var(--radius-s) var(--radius-s) 0 0; font-size: .66rem; }
+.walk .face.back pre { padding: 0; font-size: .63rem; line-height: 1.55; overflow: visible; }
+
+/* A slot wears its kind on a tab; a value is a chip laid exactly over it */
+.walk .slot { position: relative; display: inline-grid; align-items: center; min-width: 0; min-height: 1.5rem; padding: 0 .45rem; border: 1px dashed #45454d; border-radius: 6px; color: var(--term-in); }
+.walk .slot > * { grid-area: 1 / 1; }
+.walk .slot::before { content: attr(data-kind); position: absolute; z-index: 2; top: 0; left: .4rem; transform: translateY(-58%); padding: 0 .25rem; background: var(--card); font-size: .6rem; line-height: 1; letter-spacing: .02em; color: var(--term-dim); }
+.walk .slot.plan::before { color: var(--accent-ink); }
+.walk .slot.bound::before { color: var(--term-ok); }
+.walk .slot.ask::before { color: var(--term-mid); }
+.walk .v { position: relative; z-index: 1; margin: -1px calc(-.45rem - 1px); padding: 0 .45rem; line-height: calc(1.5rem - 2px); border: 1px solid #4a4a52; border-radius: 6px; background: var(--card); white-space: nowrap; }
+.walk .v.ok { color: var(--term-ok); border-color: rgba(143, 212, 138, .5); }
+.walk .v.plan { color: var(--accent-ink); border-style: dashed; border-color: color-mix(in srgb, var(--accent) 70%, transparent); }
+.walk .slot .caret { justify-self: start; width: .5em; height: 1.05em; min-width: 7ch; background: linear-gradient(var(--term-fg), var(--term-fg)) left / .5em 100% no-repeat; animation: blink 1.1s steps(2, start) infinite; }
+.walk .slot.dock::after { content: ""; position: absolute; inset: -1px; border-radius: 6px; box-shadow: 0 0 0 2px rgba(143, 212, 138, .55); opacity: 0; animation: dock .7s ease-out; }
+@keyframes dock { from { opacity: 1; transform: scale(1.14); } to { opacity: 0; transform: scale(1); } }
+
+/* Why it may travel: the two lines of the two manifests, the kind lit on both */
+.walk .why { margin-top: .55rem; font-size: .68rem; line-height: 1.45; color: var(--term-dim); }
+.walk .k1 { grid-area: k1; }
+.walk .k2 { grid-area: k2; }
+.walk .why .t { color: var(--tk-table); }
+.walk .why .k { color: var(--tk-key); }
+.walk .why .o { color: var(--tk-punct); }
+.walk .why mark { background: none; color: var(--tk-string); text-decoration: underline solid; text-decoration-thickness: 1px; text-underline-offset: .28em; }
+.walk .why.ok mark { color: var(--term-ok); }
+.walk .why.ask mark { color: var(--term-mid); }
+
+/* A card for what nothing installed matches */
+.walk .none { align-self: stretch; }
+.walk .none .faces, .walk .none .face { height: 100%; }
+.walk .none .face { display: grid; place-content: center; justify-items: center; gap: .3rem; padding: 1rem; text-align: center; background: transparent; border: 1px dashed color-mix(in srgb, var(--term-no) 60%, transparent); }
+.walk .none .face > * { margin: 0; }
+.walk .none .said { color: var(--term-no); }
+.walk .none .what { margin: 0; color: var(--term-dim); }
+
+/* The thread: legs measured from the slots they join, boxes that grow from their start; dashed for the plan, filled
+   green behind the value as it travels, amber where it finds no slot of its kind */
+.walk .threads { position: absolute; inset: 0; pointer-events: none; }
+.walk .leg { position: absolute; transition: transform .22s ease calc(var(--i) * .2s); }
+.walk .leg::before, .walk .leg::after { content: ""; position: absolute; inset: 0; }
+.walk .leg::before { background: repeating-linear-gradient(90deg, var(--accent) 0 4px, transparent 4px 8px); }
+.walk .leg:is(.north, .south)::before { background: repeating-linear-gradient(180deg, var(--accent) 0 4px, transparent 4px 8px); }
+.walk .threads.ask .leg::before { background: repeating-linear-gradient(90deg, var(--term-mid) 0 4px, transparent 4px 8px); }
+.walk .threads.ask .leg:is(.north, .south)::before { background: repeating-linear-gradient(180deg, var(--term-mid) 0 4px, transparent 4px 8px); }
+.walk .leg.east { transform-origin: left center; transform: scaleX(0); }
+.walk .leg.west { transform-origin: right center; transform: scaleX(0); }
+.walk .leg.south { transform-origin: center top; transform: scaleY(0); }
+.walk .leg.north { transform-origin: center bottom; transform: scaleY(0); }
+.walk .threads:is(.plan, .bound, .ask) .leg { transform: none; }
+.walk .leg::after { background: var(--term-ok); transform: scaleX(0); transform-origin: inherit; transition: transform calc(1s / var(--n)) linear calc(var(--i) * 1s / var(--n)); }
+.walk .leg:is(.north, .south)::after { transform: scaleY(0); }
+.walk .threads.bound .leg::after { transform: none; }
+.walk .threads.lit .leg { filter: brightness(1.5); }
+.walk .end { position: absolute; width: 1.1rem; height: 1.1rem; margin: -.55rem 0 0 -.55rem; border-radius: 50%; display: grid; place-items: center; background: var(--term-mid); color: var(--room); font: 700 .62rem/1 var(--mono); font-style: normal; transform: scale(0); transition: transform .3s cubic-bezier(.3, 1.5, .5, 1) calc(var(--n) * .2s); }
+.walk .threads.ask .end { transform: none; }
+.walk .fly { position: absolute; z-index: 3; left: 0; top: 0; opacity: 0; visibility: hidden; pointer-events: none; border-radius: 6px; box-shadow: 0 12px 26px -10px rgba(0, 0, 0, .9); }
+.walk .fly.on { opacity: 1; visibility: visible; transition: opacity .25s ease; }
+
+/* What a reader pointed at */
+.walk .lit { outline: 1.5px solid color-mix(in srgb, var(--term-in) 55%, transparent); outline-offset: 3px; }
+.walk .card.lit { outline-offset: 5px; border-radius: var(--radius-s); }
+.walk .slot.lit { border-radius: 6px; }
+
+/* The terminal: the command typed and the lines printed, the session at its foot and what came before above it; it
+   scrolls as a terminal does */
+.walk .tty { position: relative; flex: 1 0 auto; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; border-top: 1px solid rgba(255, 255, 255, .07); font: .75rem/1.9 var(--mono); -webkit-mask-image: linear-gradient(transparent, #000 1.1rem); mask-image: linear-gradient(transparent, #000 1.1rem); }
+.walk .scroll { position: relative; padding: .7rem 1.1rem .85rem; transition: transform .5s cubic-bezier(.3, .7, .2, 1); }
+.walk .before { position: absolute; left: 0; right: 0; bottom: 100%; padding: .7rem 1.1rem 0; }
 .walk .line { display: block; min-height: 1.9em; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--term-dim); }
 .walk .line.out { color: var(--term-fg); }
+.walk .line.mid { color: var(--term-mid); }
+.walk .line.no, .walk .line em { font-style: normal; color: var(--term-no); }
 .walk .line b { color: var(--term-in); font-weight: 500; }
 .walk .line i { font-style: normal; color: var(--term-ok); }
-/* What fades in: a letter, a number, a value, the need, the last line, a strip line */
-.walk .c, .walk .num, .walk .val, .walk .need, .walk .done, .walk .line { opacity: 0; transition: opacity .3s ease; }
-.walk .on { opacity: 1; }
-.walk .clear .on { opacity: 0; transition-duration: .24s; }
-.walk.still * { transition: none !important; animation: none !important; }
-@container walk (max-width: 500px) {
-  .walk .room { min-height: 0; }
-  .walk .pair { grid-template-columns: minmax(0, 1fr); gap: 1.2rem; margin-right: 1.5rem; }
-  .walk .a2 { margin-top: 0; }
+.walk .line .in { color: var(--term-in); }
+.walk .ch { position: relative; }
+.walk .ch.at::after { content: ""; position: absolute; left: 100%; top: .28em; width: .55em; height: 1.1em; margin-left: 1px; background: var(--term-fg); }
+
+/* The stepper: the stages of the sentence shown, the current one lit, a step back and a step on */
+.walk .foot { display: flex; align-items: center; gap: .35rem; padding: .4rem .45rem; border-top: 1px solid rgba(255, 255, 255, .07); background: var(--term-head); }
+.walk .rail { list-style: none; flex: 1; display: flex; flex-wrap: wrap; justify-content: space-around; align-items: center; gap: .1rem; min-width: 0; margin: 0; padding: 0; }
+.walk .rail button { padding: .3rem .45rem; border: 0; border-radius: 6px; background: transparent; font: 500 .68rem/1.2 var(--mono); color: var(--term-dim); cursor: pointer; transition: color .3s ease, background-color .3s ease; }
+.walk .rail button.past { color: var(--term-fg); }
+.walk .rail button:hover { color: var(--term-in); }
+.walk .rail button[aria-current] { color: var(--accent-ink); background: var(--accent-soft); }
+.walk .rail button.ok:is([aria-current], .past) { color: var(--term-ok); }
+.walk .rail button.mid:is([aria-current], .past) { color: var(--term-mid); }
+.walk .rail button.no:is([aria-current], .past) { color: var(--term-no); }
+.walk .rail button.ok[aria-current] { background: rgba(143, 212, 138, .1); }
+.walk .rail button.mid[aria-current] { background: rgba(240, 192, 96, .1); }
+.walk .rail button.no[aria-current] { background: rgba(255, 123, 115, .1); }
+.walk .step { flex: none; display: grid; place-items: center; width: 1.9rem; height: 1.9rem; padding: 0; border: 1px solid var(--line-strong); border-radius: 50%; background: transparent; color: var(--term-fg); cursor: pointer; transition: border-color .15s, color .15s; }
+.walk .step:hover { border-color: var(--muted); color: var(--term-in); }
+.walk .step:disabled { opacity: .35; cursor: default; border-color: var(--line-strong); }
+.walk .step svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.walk .step .re, .walk .step.again .go { display: none; }
+.walk .step.again .re { display: block; }
+
+/* Moments of the show */
+.walk .scene.clear :is(.room > *, .scroll) { opacity: 0; transition: opacity .25s ease; }
+.walk .jump, .walk .jump *, .walk .jump *::before, .walk .jump *::after, .walk.still *, .walk.still *::before, .walk.still *::after { transition: none !important; animation: none !important; }
+
+/* A narrow panel: one column, the sentence reading down between the cards, the thread down their side */
+@container walk (max-width: 499px) {
+  .walk .room { grid-template-columns: minmax(0, 1fr); grid-template-areas: "q1" "c1" "k1" "and" "q2" "c2" "k2"; padding-right: 2.4rem; }
+  .walk .seam { justify-self: start; display: flex; align-items: baseline; gap: .55rem; margin: 1rem 0 .5rem; }
+  .walk .seam small { position: static; transform: none; margin: 0; }
+  .walk .part { margin-bottom: .45rem; }
+  .walk .none { min-height: 5rem; }
+  .walk .rail { display: grid; grid-template-columns: repeat(var(--across, 3), auto); justify-content: space-evenly; }
 }
-@container walk (max-width: 520px) { .walk .head .stages { flex-basis: 100%; margin: .15rem 0 -.1rem; justify-content: space-between; gap: 0; } .walk .head .stages button { padding: .1rem .25rem; } }
-@container walk (max-width: 380px) { .walk .head .stages button { font-size: .58rem; letter-spacing: .04em; } }
-.walk-notes { display: grid; margin: 1rem 0 0; }
-.walk-notes p { grid-area: 1 / 1; margin: 0; color: var(--muted); font-size: .97rem; line-height: 1.5; opacity: 0; transition: opacity .3s ease; }
-.walk-notes p.on { opacity: 1; }
+@container walk (max-width: 420px) { .walk .panel.term .head .dots { display: none; } .walk .head .tabs { margin-left: -.35rem; } .walk .tty { font-size: .69rem; } }
+
+/* Under the panel: what the stage shows, or what a word reached; the doors; the grammar, once */
+.walk-notes { position: relative; z-index: 2; display: grid; margin: 1rem 0 0; }
+.walk-notes .set { grid-area: 1 / 1; display: grid; }
+.walk-notes p { grid-area: 1 / 1; margin: 0; color: var(--muted); font-size: .97rem; line-height: 1.5; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility 0s linear .3s; }
+.walk-notes .set.on p.on { opacity: 1; visibility: visible; transition-delay: 0s; }
+.walk-notes p[data-point] { position: absolute; inset: 0 0 auto; padding-bottom: .9rem; background: var(--bg); pointer-events: none; }
 .walk-notes p strong { color: var(--fg); font-weight: 560; }
-.walk-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem .75rem; margin-top: .9rem; }
-.walk-controls .quiet { padding: .42rem 0; margin-left: auto; font-size: .92rem; }
-.walk-legend { margin: .55rem 0 0; color: var(--faint); font-size: .8rem; }
+.walk-notes code.said { display: block; width: fit-content; max-width: 100%; margin-top: .45rem; padding: .3rem .55rem; font-size: .74rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--term-fg); background: var(--term-bg); }
+.walk-door { display: flex; flex-wrap: wrap; gap: .35rem 1.4rem; margin: .9rem 0 0; }
+.walk-door a { font-size: .93rem; font-weight: 560; }
+.walk-legend { margin: 1.1rem 0 0; color: var(--faint); font-size: .8rem; line-height: 1.5; }
+.walk-legend p { margin: 0; }
 .walk-legend b { color: var(--muted); font-weight: 500; }
+.walk-key { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr)); gap: .35rem 1rem; margin: .75rem 0 0; padding: .6rem 0 0; border-top: 1px solid var(--line); color: var(--text); font-size: .86rem; }
+.walk-key li { display: inline-flex; align-items: center; gap: .45rem; }
+.walk-key li::before { content: ""; flex: none; width: 1.3rem; border-top: 2px solid; }
+.walk-key .plan::before { border-top-style: dashed; border-color: var(--accent); }
+.walk-key .ok::before { border-color: var(--term-ok); }
+.walk-key .mid::before { border-color: var(--term-mid); }
+.walk-key .no::before { border-color: var(--term-no); }
 
 /* Cards: a door into an example, each with a small stage and a line */
 .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }

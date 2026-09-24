@@ -101,50 +101,262 @@
         </ul>
       </div>
       <div class="scene-col">
-        <div class="panel term walk" role="figure" data-stage="5" aria-label="A walkthrough of a recorded session. Two reflexes are installed, contact and mail. The sentence «look up dana's address and email them» is typed. evoke reads it as two steps: contact finds dana's email address, and mail takes that address as its recipient. The lookup returns dana@example.com, the address travels into the draft's to field, and the draft opens with its subject waiting for you. Nothing is sent.">
-          <div class="head"><span class="dots"><i></i><i></i><i></i></span>walkthrough<span class="stages" aria-label="The stages"><button type="button">installed</button><button type="button">asked</button><button type="button">planned</button><button type="button">found</button><button type="button">connected</button><button type="button" class="on">drafted</button></span></div>
-          <div class="room" aria-hidden="true">
-            <div class="say cut bound"><span class="p">$</span> <span class="in typed"><span class="c on">e</span><span class="c on">v</span><span class="c on">o</span><span class="c on">k</span><span class="c on">e</span><span class="c on"> </span><span class="c on">&quot;</span><span class="c on">l</span><span class="c on">o</span><span class="c on">o</span><span class="c on">k</span><span class="c on"> </span><span class="c on">u</span><span class="c on">p</span><span class="c on"> </span><span class="c on">d</span><span class="c on">a</span><span class="c on">n</span><span class="c on">a</span><span class="c on">'</span><span class="c on">s</span><span class="c on"> </span><span class="c on">a</span><span class="c on">d</span><span class="c on">d</span><span class="c on">r</span><span class="c on">e</span><span class="c on">s</span><span class="c on">s</span><span class="c on"> </span><span class="c on seam">a</span><span class="c on seam">n</span><span class="c on seam">d</span><span class="c on"> </span><span class="c on">e</span><span class="c on">m</span><span class="c on">a</span><span class="c on">i</span><span class="c on">l</span><span class="c on"> </span><span class="c on ref">t</span><span class="c on ref">h</span><span class="c on ref">e</span><span class="c on ref">m</span><span class="c on">&quot;</span></span></div>
-            <div class="pair">
-              <div class="ability a1 on">
-                <div class="top"><i class="num on">1</i><svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="3"/><path d="M2.5 14.5c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5"/></svg><b>contact</b><span class="tag">+ installed</span></div>
-                <div class="what">Finds a person's email.</div>
-                <div class="row"><span class="key">name</span><span class="cell"><span class="blank"></span><span class="val name on">dana</span></span></div>
-                <div class="row"><span class="key">email</span><span class="cell"><span class="blank"></span><span class="val give on">dana@example.com</span></span></div>
-              </div>
-              <div class="ability a2 on live">
-                <div class="top"><i class="num on">2</i><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9.5" rx="1.8"/><path d="M2 4.5l6 4.5 6-4.5"/></svg><b>mail</b><span class="tag">+ installed</span></div>
-                <div class="what">Opens an email draft.</div>
-                <div class="row"><span class="key">to</span><span class="cell"><span class="blank"></span><span class="need">them</span><span class="val take on">dana@example.com</span></span></div>
-                <div class="row"><span class="key">subject</span><span class="cell"><span class="blank"></span><span class="val subj on"><span class="cursor"></span></span></span></div>
+        <div class="walk" data-stage="5">
+          <div class="panel term">
+            <div class="head">
+              <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <div class="tabs" role="tablist" aria-label="Three recorded sentences">
+                <button type="button" role="tab" id="walk-tab-a" aria-controls="walk-a" aria-selected="true">email them</button>
+                <button type="button" role="tab" id="walk-tab-b" aria-controls="walk-b" aria-selected="false" tabindex="-1">timer for them</button>
+                <button type="button" role="tab" id="walk-tab-c" aria-controls="walk-c" aria-selected="false" tabindex="-1">feed the cat</button>
               </div>
             </div>
-            <div class="done on">drafted to dana@example.com</div>
-            <span class="fly">dana@example.com</span>
-            <div class="threads"></div>
+            <div class="scenes">
+              <div class="scene on" id="walk-a" role="tabpanel" aria-labelledby="walk-tab-a" data-stage="5">
+                <div class="room" role="figure" aria-label="A recorded session, replayed. Five abilities are installed, among them contact and mail. contact looks up a person's email address, and mail starts an email in your mail app. The sentence «look up dana's address and email them» is typed. evoke reads two steps and shows the plan first: contact for dana, then mail to «them». contact gives back an email, and mail's to input takes an email, so the address can travel. contact finds dana@example.com. The address becomes the draft's recipient, and a draft opens, its subject waiting for you. Nothing is sent.">
+                  <p class="part q1" data-lit="and" data-on="2-">"<button type="button" class="word" data-point="look" aria-describedby="walk-a-look">look up</button> <button type="button" class="word" data-point="dana" aria-describedby="walk-a-dana">dana</button>'s address"</p>
+                  <p class="seam" data-on="2-"><button type="button" class="word" data-point="and" aria-describedby="walk-a-and">and</button><small>yes 0.90</small></p>
+                  <p class="part q2" data-lit="and" data-on="2-">"<button type="button" class="word" data-point="email" aria-describedby="walk-a-email">email</button> <button type="button" class="word ref bound" data-point="them" data-at="plan:2-3 bound:4-" aria-describedby="walk-a-them">them</button>"</p>
+                  <div class="card c1 ran" aria-hidden="true" data-lit="look" data-at="ran:3-">
+                    <div class="faces">
+                      <div class="face front">
+                        <div class="top"><i class="num" data-on="2-">1</i><svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="3"/><path d="M2.5 14.5c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5"/></svg><b>contact</b><em class="conf" data-on="2-">0.90</em></div>
+                        <p class="what">Look up a person's email address in the team directory.</p>
+                        <div class="row"><span class="key">name</span><span class="slot" data-kind="people" data-lit="dana"><span class="v" data-on="2-">dana</span></span></div>
+                        <div class="row"><span class="key">email</span><span class="slot bound" data-kind="email" data-lit="them" data-thread="from" data-at="plan:2 bound:4-"><span class="v ok" data-on="3-">dana@example.com</span></span></div>
+                      </div>
+                      <div class="face back"><p class="file">contact/reflex.toml</p><pre><span class="k">description</span> <span class="o">=</span> <span class="s">"""
+Look up a person's email address in the team directory.</span>
+<span class="o">…</span>
+<span class="t">[args.name]</span> <span class="k">vocab</span> <span class="o">=</span> <span class="s">"people"</span>
+<span class="t">[yields]</span> <span class="k">email</span> <span class="o">=</span> <span class="s">"email"</span></pre></div>
+                    </div>
+                  </div>
+                  <div class="card c2 ran" aria-hidden="true" data-lit="email" data-at="ran:5-">
+                    <div class="faces">
+                      <div class="face front">
+                        <div class="top"><i class="num" data-on="2-">2</i><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9.5" rx="1.8"/><path d="M2 4.5l6 4.5 6-4.5"/></svg><b>mail</b><em class="conf" data-on="4-">0.88</em></div>
+                        <p class="what">Start an email in your mail app.</p>
+                        <div class="row"><span class="key">to</span><span class="slot bound" data-kind="email" data-lit="them" data-thread="to" data-at="plan:2-3 bound:4-"><span class="v plan off" data-on="2-3">them</span><span class="v ok" data-on="4-">dana@example.com</span></span></div>
+                        <div class="row"><span class="key">subject</span><span class="slot" data-kind="quoted"><i class="caret" data-on="5-"></i></span></div>
+                      </div>
+                      <div class="face back"><p class="file">mail/reflex.toml</p><pre><span class="k">description</span> <span class="o">=</span> <span class="s">"""
+Start an email in your mail app.</span>
+<span class="o">…</span>
+<span class="t">[args.to]</span> <span class="k">pick</span> <span class="o">=</span> <span class="s">"email"</span>
+<span class="t">[args.subject]</span> <span class="k">pick</span> <span class="o">=</span> <span class="s">"quoted"</span></pre></div>
+                    </div>
+                  </div>
+                  <p class="why k1 ok" aria-hidden="true" data-on="4-"><span class="t">[yields]</span> <span class="k">email</span> <span class="o">=</span> <mark>"email"</mark></p>
+                  <p class="why k2 ok" aria-hidden="true" data-on="4-"><span class="t">[args.to]</span> <span class="k">pick</span> <span class="o">=</span> <mark>"email"</mark></p>
+                  <div class="threads bound" aria-hidden="true" data-lit="them" data-at="plan:2-3 bound:4-"></div>
+                  <span class="fly slot" aria-hidden="true" data-kind="email"><span class="v ok">dana@example.com</span></span>
+                </div>
+                <div class="tty" role="group" aria-label="What the terminal printed">
+                  <div class="scroll">
+                    <div class="before">
+                      <span class="line prompt"><span class="p">$</span> <span class="in">evoke show</span></span>
+                      <span class="line">  lights   ./lights   write  runs lights.mts</span>
+                      <span class="line">  timer    ./timer    write  runs timer.mts</span>
+                      <span class="line">  volume   ./volume   write  runs volume.mts</span>
+                      <span class="line" data-card="c1">  <b>contact</b>  ./contact  read   runs contact.mts</span>
+                      <span class="line" data-card="c2">  <b>mail</b>     ./mail     write  runs mail.mts</span>
+                    </div>
+                    <span class="line prompt" data-on="1-"><span class="p">$</span> <span class="in">evoke "look up dana's address and email them"</span></span>
+                    <span class="line" data-on="2-">  1  <b>contact</b> name="dana"  <i>0.90</i></span>
+                    <span class="line" data-on="2-">  2  <b>mail</b> · takes email from 1</span>
+                    <span class="line out" data-on="3-">dana &lt;dana@example.com&gt;</span>
+                    <span class="line" data-on="4-">  2  <b>mail</b> to="dana@example.com"  <i>0.88</i></span>
+                    <span class="line out" data-on="5-">drafted to dana@example.com</span>
+                  </div>
+                </div>
+                <div class="foot">
+                  <button type="button" class="step prev" aria-label="Previous stage"><svg viewBox="0 0 16 16"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg></button>
+                  <ol class="rail" aria-label="Stages" style="--across: 3">
+                    <li><button type="button">installed</button></li>
+                    <li><button type="button">typed</button></li>
+                    <li><button type="button">planned</button></li>
+                    <li><button type="button">found</button></li>
+                    <li><button type="button">connected</button></li>
+                    <li><button type="button" class="ok" aria-current="step">drafted</button></li>
+                  </ol>
+                  <button type="button" class="step next again" aria-label="Replay"><svg class="go" viewBox="0 0 16 16"><path d="M6 3.5 10.5 8 6 12.5"/></svg><svg class="re" viewBox="0 0 16 16"><path d="M3.2 8.8A5 5 0 1 0 4.6 4.4"/><path d="M4.4 1.9v2.8h2.8"/></svg></button>
+                </div>
+              </div>
+
+              <div class="scene" id="walk-b" role="tabpanel" aria-labelledby="walk-tab-b" data-stage="4" inert>
+                <div class="room" role="figure" aria-label="A recorded session, replayed. The sentence «look up dana's address and start a 10 minute timer for them» is typed. evoke reads two steps: contact for dana, then a 10 minute timer. «them» points at step 1, but the timer takes a duration, not an email. So step 2 takes nothing from step 1, and evoke asks whether to run the plan as it stands. The answer is yes. dana's address is looked up, and a 10 minute timer starts. The address stays where it was found.">
+                  <p class="part q1" data-lit="and" data-on="2-">"<button type="button" class="word" data-point="look" aria-describedby="walk-b-look">look up</button> <button type="button" class="word" data-point="dana" aria-describedby="walk-b-dana">dana</button>'s address"</p>
+                  <p class="seam" data-on="2-"><button type="button" class="word" data-point="and" aria-describedby="walk-b-and">and</button><small>yes 0.90</small></p>
+                  <p class="part q2" data-lit="and" data-on="2-">"start a 10 minute <button type="button" class="word" data-point="timer" aria-describedby="walk-b-timer">timer</button> for <button type="button" class="word ref ask" data-point="them" data-at="ask:2-" aria-describedby="walk-b-them">them</button>"</p>
+                  <div class="card c1 ran" aria-hidden="true" data-lit="look" data-at="ran:4-">
+                    <div class="faces">
+                      <div class="face front">
+                        <div class="top"><i class="num" data-on="2-">1</i><svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="3"/><path d="M2.5 14.5c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5"/></svg><b>contact</b><em class="conf" data-on="2-">0.90</em></div>
+                        <p class="what">Look up a person's email address in the team directory.</p>
+                        <div class="row"><span class="key">name</span><span class="slot" data-kind="people" data-lit="dana"><span class="v" data-on="2-">dana</span></span></div>
+                        <div class="row"><span class="key">email</span><span class="slot ask" data-kind="email" data-lit="them" data-thread="from" data-at="ask:2-"><span class="v ok" data-on="4-">dana@example.com</span></span></div>
+                      </div>
+                      <div class="face back"><p class="file">contact/reflex.toml</p><pre><span class="k">description</span> <span class="o">=</span> <span class="s">"""
+Look up a person's email address in the team directory.</span>
+<span class="o">…</span>
+<span class="t">[args.name]</span> <span class="k">vocab</span> <span class="o">=</span> <span class="s">"people"</span>
+<span class="t">[yields]</span> <span class="k">email</span> <span class="o">=</span> <span class="s">"email"</span></pre></div>
+                    </div>
+                  </div>
+                  <div class="card c2 ran" aria-hidden="true" data-lit="timer them" data-at="ran:4-">
+                    <div class="faces">
+                      <div class="face front">
+                        <div class="top"><i class="num" data-on="2-">2</i><svg viewBox="0 0 16 16"><circle cx="8" cy="9.2" r="5.3"/><path d="M8 9.2V6.4M6.2 1.6h3.6M8 1.6v2.3"/></svg><b>timer</b><em class="conf" data-on="2-">0.88</em></div>
+                        <p class="what">Count down a duration, then sound an alert.</p>
+                        <div class="row"><span class="key">duration</span><span class="slot" data-kind="duration" data-thread="to"><span class="v" data-on="2-">10 minute</span></span></div>
+                      </div>
+                      <div class="face back"><p class="file">timer/reflex.toml</p><pre><span class="k">description</span> <span class="o">=</span> <span class="s">"""
+Count down a duration, then sound an alert.</span>
+<span class="o">…</span>
+<span class="t">[args.duration]</span> <span class="k">pick</span> <span class="o">=</span> <span class="s">"duration"</span></pre></div>
+                    </div>
+                  </div>
+                  <p class="why k1 ask" aria-hidden="true" data-on="2-"><span class="t">[yields]</span> <span class="k">email</span> <span class="o">=</span> <mark>"email"</mark></p>
+                  <p class="why k2 ask" aria-hidden="true" data-on="2-"><span class="t">[args.duration]</span> <span class="k">pick</span> <span class="o">=</span> <mark>"duration"</mark></p>
+                  <div class="threads ask" aria-hidden="true" data-lit="them" data-at="ask:2-" data-end="ask"></div>
+                </div>
+                <div class="tty" role="group" aria-label="What the terminal printed">
+                  <div class="scroll">
+                    <div class="before">
+                      <span class="line prompt"><span class="p">$</span> <span class="in">evoke show</span></span>
+                      <span class="line">  lights   ./lights   write  runs lights.mts</span>
+                      <span class="line" data-card="c2">  <b>timer</b>    ./timer    write  runs timer.mts</span>
+                      <span class="line">  volume   ./volume   write  runs volume.mts</span>
+                      <span class="line" data-card="c1">  <b>contact</b>  ./contact  read   runs contact.mts</span>
+                      <span class="line">  mail     ./mail     write  runs mail.mts</span>
+                    </div>
+                    <span class="line prompt" data-on="1-"><span class="p">$</span> <span class="in">evoke "look up dana's address and start a 10 minute timer for them"</span></span>
+                    <span class="line" data-on="2-">  1  <b>contact</b> name="dana"  <i>0.90</i></span>
+                    <span class="line" data-on="2-">  2  <b>timer</b> duration="10 minute"  <i>0.88</i> · after 1</span>
+                    <span class="line mid" data-on="2-">  step 2 refers to step 1, but takes nothing from it</span>
+                    <span class="line mid" data-on="3-">  Run the plan as it stands?  [y]es [n]o &gt; <span class="in">y</span></span>
+                    <span class="line out" data-on="4-">dana &lt;dana@example.com&gt;</span>
+                    <span class="line out" data-on="4-">10 minute timer started</span>
+                  </div>
+                </div>
+                <div class="foot">
+                  <button type="button" class="step prev" aria-label="Previous stage"><svg viewBox="0 0 16 16"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg></button>
+                  <ol class="rail" aria-label="Stages" style="--across: 3">
+                    <li><button type="button">installed</button></li>
+                    <li><button type="button">typed</button></li>
+                    <li><button type="button">planned</button></li>
+                    <li><button type="button" class="mid">asked</button></li>
+                    <li><button type="button" class="ok" aria-current="step">ran</button></li>
+                  </ol>
+                  <button type="button" class="step next again" aria-label="Replay"><svg class="go" viewBox="0 0 16 16"><path d="M6 3.5 10.5 8 6 12.5"/></svg><svg class="re" viewBox="0 0 16 16"><path d="M3.2 8.8A5 5 0 1 0 4.6 4.4"/><path d="M4.4 1.9v2.8h2.8"/></svg></button>
+                </div>
+              </div>
+
+              <div class="scene" id="walk-c" role="tabpanel" aria-labelledby="walk-tab-c" data-stage="3" inert>
+                <div class="room" role="figure" aria-label="A recorded session, replayed. The sentence «kill the lights in the den and feed the cat» is typed. The first part reads as lights, in the den. No installed ability feeds a cat, so the second part matches nothing. evoke refuses the whole sentence before any step starts, and nothing runs, not even the lights.">
+                  <p class="part q1" data-lit="and" data-on="2-">"<button type="button" class="word" data-point="kill" aria-describedby="walk-c-kill">kill the lights</button> in the den"</p>
+                  <p class="seam" data-on="2-"><button type="button" class="word" data-point="and" aria-describedby="walk-c-and">and</button><small>yes 0.95</small></p>
+                  <p class="part q2" data-lit="and" data-on="2-">"<button type="button" class="word ref stop" data-point="cat" data-at="stop:2-" aria-describedby="walk-c-cat">feed the cat</button>"</p>
+                  <div class="card c1 dark" aria-hidden="true" data-lit="kill" data-at="dark:3-">
+                    <div class="faces">
+                      <div class="face front">
+                        <div class="top"><i class="num" data-on="2-">1</i><svg viewBox="0 0 16 16"><path d="M6 12.2h4M6.6 14.4h2.8M8 1.6a4.4 4.4 0 0 0-2.7 7.9c.5.4.8.9.8 1.5v.2h3.8V11c0-.6.3-1.1.8-1.5A4.4 4.4 0 0 0 8 1.6Z"/></svg><b>lights</b><em class="conf" data-on="2-">0.85</em></div>
+                        <p class="what">Turn the lights in one room on, off, or dim them.</p>
+                        <div class="row"><span class="key">room</span><span class="slot" data-kind="rooms"><span class="v" data-on="2-">den</span></span></div>
+                        <div class="row"><span class="key">state</span><span class="slot" data-kind="options"><span class="v" data-on="2-">off</span></span></div>
+                      </div>
+                      <div class="face back"><p class="file">lights/reflex.toml</p><pre><span class="k">description</span> <span class="o">=</span> <span class="s">"""
+Turn the lights in one room on, off, or dim them.</span>
+<span class="o">…</span>
+<span class="t">[args.room]</span> <span class="k">vocab</span> <span class="o">=</span> <span class="s">"rooms"</span>
+<span class="t">[args.state]</span> <span class="k">options.off</span> <span class="o">=</span> <span class="s">"Switch off."</span></pre></div>
+                    </div>
+                  </div>
+                  <div class="card c2 none" aria-hidden="true" data-lit="cat" data-on="2-">
+                    <div class="faces">
+                      <div class="face front"><p class="said">"feed the cat"</p><p class="what">Nothing installed matches.</p></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="tty" role="group" aria-label="What the terminal printed">
+                  <div class="scroll">
+                    <div class="before">
+                      <span class="line prompt"><span class="p">$</span> <span class="in">evoke show</span></span>
+                      <span class="line" data-card="c1">  <b>lights</b>   ./lights   write  runs lights.mts</span>
+                      <span class="line">  timer    ./timer    write  runs timer.mts</span>
+                      <span class="line">  volume   ./volume   write  runs volume.mts</span>
+                      <span class="line">  contact  ./contact  read   runs contact.mts</span>
+                      <span class="line">  mail     ./mail     write  runs mail.mts</span>
+                    </div>
+                    <span class="line prompt" data-on="1-"><span class="p">$</span> <span class="in">evoke "kill the lights in the den and feed the cat"</span></span>
+                    <span class="line" data-on="2-">  1  <b>lights</b> room="den" state="off"  <i>0.85</i></span>
+                    <span class="line" data-on="2-">  2  "feed the cat" · <em>no reflex</em></span>
+                    <span class="line no" data-on="3-">[2]</span>
+                  </div>
+                </div>
+                <div class="foot">
+                  <button type="button" class="step prev" aria-label="Previous stage"><svg viewBox="0 0 16 16"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg></button>
+                  <ol class="rail" aria-label="Stages" style="--across: 2">
+                    <li><button type="button">installed</button></li>
+                    <li><button type="button">typed</button></li>
+                    <li><button type="button">planned</button></li>
+                    <li><button type="button" class="no" aria-current="step">refused</button></li>
+                  </ol>
+                  <button type="button" class="step next again" aria-label="Replay"><svg class="go" viewBox="0 0 16 16"><path d="M6 3.5 10.5 8 6 12.5"/></svg><svg class="re" viewBox="0 0 16 16"><path d="M3.2 8.8A5 5 0 1 0 4.6 4.4"/><path d="M4.4 1.9v2.8h2.8"/></svg></button>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="strip" aria-label="What the terminal printed">
-            <span class="line on">  1  <b>contact</b> name="dana"  <i>0.90</i></span>
-            <span class="line on">  2  <b>mail</b> · takes email from 1</span>
-            <span class="line out on">dana &lt;dana@example.com&gt;</span>
-            <span class="line on">  2  <b>mail</b> to="dana@example.com"  <i>0.88</i></span>
-            <span class="line out on">drafted to dana@example.com</span>
+
+          <div class="walk-notes" aria-hidden="true">
+            <div class="set on" data-for="walk-a">
+              <p><strong>Five abilities are installed.</strong> Each came with a manifest: what it does, what it takes, what it gives back.</p>
+              <p><strong>You type one sentence.</strong> Each card is its manifest, turned face up.</p>
+              <p><strong>The plan comes first.</strong> «and» splits the sentence in two. «them» points at what step 1 will find.</p>
+              <p><strong>Step 1 runs.</strong> contact finds dana's address.</p>
+              <p><strong>The address becomes the recipient.</strong> contact gives back an <code>email</code>, and mail's <code>to</code> takes an <code>email</code>.</p>
+              <p class="on"><strong>A draft opens, and you still press send.</strong> The tabs above hold two more sentences: one that asks first, and one that stops.</p>
+              <p id="walk-a-look" data-point="look"><strong>«look up dana's address» reads as contact.</strong> <code class="said">contact 0.90 · none 0.06 · mail 0.03 · lights 0.01</code></p>
+              <p id="walk-a-dana" data-point="dana"><strong>«dana» is a word from your list of people.</strong> <code class="said">name  dana 0.90 · unstated 0.08 · sam 0.02</code></p>
+              <p id="walk-a-and" data-point="and"><strong>Asked whether «and» joins two tasks, the classifier said yes.</strong> <code class="said">"splits":[{"start":22,"end":27,"word":"and","order":"and","p":0.9}]</code></p>
+              <p id="walk-a-email" data-point="email"><strong>«email them» reads as mail.</strong> <code class="said">mail 0.88 · none 0.08 · contact 0.04</code></p>
+              <p id="walk-a-them" data-point="them"><strong>«them» takes the email step 1 found: the kind mail needs.</strong> <code class="said">"binds":[{"from":1,"to":2,"arg":"to","field":"email","kind":"email","via":"fill"}]</code></p>
+            </div>
+            <div class="set" data-for="walk-b">
+              <p><strong>Five abilities are installed.</strong> Each came with a manifest: what it does, what it takes, what it gives back.</p>
+              <p><strong>You type one sentence.</strong> This time, its second part is about a timer.</p>
+              <p><strong>«them» points at step 1, but a timer takes no address.</strong> contact gives back an <code>email</code>. The timer takes a <code>duration</code>.</p>
+              <p><strong>So evoke asks before anything runs.</strong> A word that points at a step it takes nothing from always asks. Here, the answer was yes.</p>
+              <p class="on"><strong>Both steps ran, each on its own.</strong> The address had nowhere to go.</p>
+              <p id="walk-b-look" data-point="look"><strong>«look up dana's address» reads as contact.</strong> <code class="said">contact 0.90 · none 0.06 · mail 0.03 · lights 0.01</code></p>
+              <p id="walk-b-dana" data-point="dana"><strong>«dana» is a word from your list of people.</strong> <code class="said">name  dana 0.90 · unstated 0.08 · sam 0.02</code></p>
+              <p id="walk-b-and" data-point="and"><strong>Asked whether «and» joins two tasks, the classifier said yes.</strong> <code class="said">"splits":[{"start":22,"end":27,"word":"and","order":"and","p":0.9}]</code></p>
+              <p id="walk-b-timer" data-point="timer"><strong>«start a 10 minute timer for them» reads as timer.</strong> <code class="said">timer 0.88 · none 0.08 · lights 0.02 · volume 0.02</code></p>
+              <p id="walk-b-them" data-point="them"><strong>«them» finds no slot of its kind in the timer.</strong> <code class="said">step 2 refers to step 1, but takes nothing from it</code></p>
+            </div>
+            <div class="set" data-for="walk-c">
+              <p><strong>Five abilities are installed.</strong> Each came with a manifest: what it does, what it takes, what it gives back.</p>
+              <p><strong>You type one sentence.</strong> This time, its second part is about feeding the cat.</p>
+              <p><strong>No installed ability feeds a cat.</strong> The second part matches nothing.</p>
+              <p class="on"><strong>So nothing runs, not even the lights.</strong> evoke refuses the whole sentence before any step starts.</p>
+              <p id="walk-c-kill" data-point="kill"><strong>«kill the lights in the den» reads as lights.</strong> <code class="said">lights 0.91 · none 0.06 · timer 0.02 · volume 0.01</code></p>
+              <p id="walk-c-and" data-point="and"><strong>Asked whether «and» joins two tasks, the classifier said yes.</strong> <code class="said">"splits":[{"start":26,"end":31,"word":"and","order":"and","p":0.95}]</code></p>
+              <p id="walk-c-cat" data-point="cat"><strong>Nothing installed matches «feed the cat».</strong> <code class="said">none 0.95 · lights 0.05</code></p>
+            </div>
+          </div>
+          <p class="sr" aria-live="polite"></p>
+          <ul class="walk-key" aria-label="What the colours mean">
+            <li class="plan">the plan</li>
+            <li class="ok">bound, or ran</li>
+            <li class="mid">asks you</li>
+            <li class="no">stops</li>
+          </ul>
+          <p class="walk-door"><a href="/examples/contact-to-draft.html">See this example →</a><a href="/start.html#install">Try the collection in a terminal →</a></p>
+          <div class="walk-legend">
+            <p><b>A recorded session, replayed here.</b> The contact ability is a stand-in from the product's tests. In the collection, mail opens a real draft on a Mac.</p>
           </div>
         </div>
-        <div class="walk-notes" aria-live="polite">
-          <p><strong>Two abilities are installed.</strong> Each came with a description and the inputs it needs.</p>
-          <p><strong>You type one sentence.</strong> It asks for two things.</p>
-          <p><strong>evoke reads two steps and shows the plan first.</strong> The word «them» points at what step 1 will find.</p>
-          <p><strong>Step 1 runs.</strong> It finds the address, and says so.</p>
-          <p><strong>The address becomes the recipient.</strong> Nothing was typed twice, and nothing was guessed.</p>
-          <p class="on"><strong>You installed two abilities. You asked for one workflow.</strong> With the collection's mail reflex, a draft opens in your mail app. You still press send.</p>
-        </div>
-        <div class="walk-controls">
-          <button class="button small" type="button" data-next>Next step</button>
-          <button class="button small" type="button" data-replay>Replay</button>
-          <a class="quiet" href="/examples/contact-to-draft.html">See this example →</a>
-        </div>
-        <p class="walk-legend"><b>A recorded session, replayed on this page.</b> Nothing runs here, and no key is needed.</p>
       </div>
     </div>
 
@@ -449,120 +661,258 @@ A greeting with the name given, printed back."""</span>
       }
     }
 
-    // The walkthrough: six stages a reader steps through, or watches once. The final frame is the markup; each
-    // stage's frame is a set of classes, and moving one stage forward plays the motion between them: opacity
-    // and transforms only, the thread measured from the slots it joins, so the page never lays out twice.
+    // The walkthrough: three recorded sentences, a scene each, stepped through or watched once. A scene's frame is
+    // its stage: each element names the stages it shows in (data-on) and the classes it wears (data-at), and the
+    // final frame is the markup. Moving one stage on plays the motion between two frames: opacity and transforms
+    // only, the thread and the flight measured from the slots, so the page never lays out twice.
     {
-      const walk = document.querySelector(".walk"), room = walk.querySelector(".room"), col = walk.parentElement
-      const $ = (sel, el = walk) => el.querySelector(sel), $$ = (sel, el = walk) => [...el.querySelectorAll(sel)]
-      const threads = $(".threads"), fly = $(".fly"), stages = $$(".stages button"), notes = $$(".walk-notes p", col)
-      const say = $(".say"), typed = $(".typed"), chars = $$(".c"), cards = [$(".a1"), $(".a2")], nums = $$(".num")
-      const name = $(".val.name"), give = $(".give"), need = $(".need"), take = $(".take"), subject = $(".val.subj"), done = $(".done")
-      const lines = $$(".strip .line"), next = $("[data-next]", col), replay = $("[data-replay]", col), see = document.querySelector("[data-see]")
-      const on = (el, yes = true) => el.classList.toggle("on", yes)
-      const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
+      const walk = document.querySelector(".walk")
       const still = matchMedia("(prefers-reduced-motion: reduce)").matches
-      const LAST = 5
-      let stage = LAST, run = 0
+      const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
+      const $$ = (sel, el) => [...el.querySelectorAll(sel)]
+      const span = text => { const [a, b] = text.split("-"); return [+a, b === undefined ? +a : b === "" ? Infinity : +b] }
+      const within = (n, [a, b]) => n >= a && n <= b
+      const tabs = $$('[role="tab"]', walk), sets = $$(".walk-notes .set", walk), said = walk.querySelector("[aria-live]")
+      let run = 0  // the show playing; a reader's touch ends it
 
-      // The thread: legs from the found address to the card that takes it, beside the cards or down their side.
-      let legs = []
-      const box = el => {
-        const r = el.getBoundingClientRect(), o = room.getBoundingClientRect()
-        return { l: r.left - o.left, r: r.right - o.left, t: r.top - o.top, b: r.bottom - o.top, x: (r.left + r.right) / 2 - o.left, y: (r.top + r.bottom) / 2 - o.top }
-      }
-      const thread = points => points.slice(1).map(([x1, y1], i) => {
-        const [x0, y0] = points[i], leg = document.createElement("i"), s = leg.style, flat = y0 === y1
-        leg.className = `leg bind ${flat ? (x1 >= x0 ? "east" : "west") : (y1 >= y0 ? "south" : "north")}`
-        s.left = `${Math.min(x0, x1) - 1}px`; s.top = `${Math.min(y0, y1) - 1}px`
-        s.width = `${flat ? Math.abs(x1 - x0) + 2 : 2}px`; s.height = `${flat ? 2 : Math.abs(y1 - y0) + 2}px`
-        threads.append(leg)
-        return leg
+      const scenes = $$(".scene", walk).map((el, i) => {
+        const notes = $$("p", sets[i]), rail = $$(".rail button", el)
+        for (const input of $$(".prompt .in", el))  // a span per character, so a command can be typed
+          input.replaceChildren(...[...input.textContent].map(ch => Object.assign(document.createElement("span"), { className: "ch", textContent: ch })))
+        return {
+          el, tab: tabs[i], notes, rail, last: rail.length - 1, stage: rail.length - 1, point: null, pinned: null,
+          staged: notes.filter(p => !p.dataset.point),
+          on: $$("[data-on]", el).map(x => [x, span(x.dataset.on)]),
+          at: $$("[data-at]", el).map(x => [x, x.dataset.at.split(" ").map(pair => { const [name, r] = pair.split(":"); return [name, span(r)] })]),
+          room: el.querySelector(".room"), threads: el.querySelector(".threads"), fly: el.querySelector(".fly"),
+          cards: $$(".card", el), tty: el.querySelector(".tty"), scroll: el.querySelector(".scroll"),
+          before: el.querySelector(".before"), cmd: el.querySelector(".scroll > .prompt"),
+          prev: el.querySelector(".step.prev"), next: el.querySelector(".step.next"), offsets: [0, 0],
+        }
       })
-      const layout = () => {
-        threads.replaceChildren()
-        const g = box(give), t = box(take), one = box(cards[0]), two = box(cards[1]), stacked = two.t >= one.b
-        legs = thread(stacked
-          ? [[g.r + 6, g.y], [one.r + 12, g.y], [one.r + 12, t.y], [two.r, t.y]]
-          : Math.abs(g.y - t.y) < 1 ? [[g.r + 6, g.y], [two.l, g.y]]
-          : [[g.r + 6, g.y], [(one.r + two.l) / 2, g.y], [(one.r + two.l) / 2, t.y], [two.l, t.y]])
-        for (const leg of legs) { leg.style.setProperty("--t", `${1000 / legs.length}ms`); on(leg, stage >= 2); leg.classList.toggle("fill", stage >= 4) }
-        fly.style.left = `${g.l}px`; fly.style.top = `${g.t}px`
-        fly.style.setProperty("--dx", `${t.l - g.l}px`); fly.style.setProperty("--dy", `${t.t - g.t}px`)
-      }
+      let active = scenes[0]
 
-      // One stage's frame, whole: every class set from the stage number.
-      const show = n => {
-        stage = n
-        walk.dataset.stage = n
-        stages.forEach((b, i) => on(b, i === n))
-        notes.forEach((p, i) => on(p, i === n))
-        next.disabled = n === LAST
-        cards.forEach(c => on(c))
-        typed.classList.toggle("at", n === 0)
-        chars.forEach(c => { on(c, n >= 1); c.classList.remove("at") })
-        say.classList.toggle("cut", n >= 2); say.classList.toggle("bound", n >= 4)
-        nums.forEach(i => on(i, n >= 2)); on(name, n >= 2); on(need, n >= 2 && n < 4)
-        on(give, n >= 3); on(take, n >= 4); on(subject, n >= 5); on(done, n >= 5)
-        cards[0].classList.toggle("live", n === 3); cards[1].classList.toggle("live", n >= 4)
-        fly.classList.remove("on", "go")
-        lines.forEach((l, i) => on(l, n >= [2, 2, 3, 4, 5][i]))
-        for (const leg of legs) { on(leg, n >= 2); leg.classList.toggle("fill", n >= 4) }
+      // Where things are: the terminal's scroll before the sentence prints, the thread, the flight.
+      // Layout offsets, not client rects: a card turning over must not bend the thread.
+      const box = (el, room) => {
+        let l = 0, t = 0
+        for (let x = el; x && x !== room; x = x.offsetParent) { l += x.offsetLeft; t += x.offsetTop; if (x.offsetParent !== room) { l += x.offsetParent.clientLeft; t += x.offsetParent.clientTop } }
+        return { l, t, r: l + el.offsetWidth, b: t + el.offsetHeight, y: t + el.offsetHeight / 2 }
       }
-      // The motion from one stage to the next; anything else is the frame at once.
-      const type = async id => {
-        let last = typed
-        for (const c of chars) { await wait(28 + Math.random() * 30); if (id !== run) return; last.classList.remove("at"); on(c); c.classList.add("at"); last = c }
-        await wait(260); last.classList.remove("at")
+      const layout = s => {
+        // The session sits at the terminal's foot, the list above it as history: before the sentence prints, the
+        // terminal scrolls back to show that list whole, and then the typed command under it.
+        const height = s.tty.clientHeight, shown = s.before.offsetHeight, gap = s.scroll.offsetTop
+        const first = Math.max(0, Math.min(shown, height) - gap)
+        s.offsets = [first, Math.max(0, Math.min(first, height - gap - s.cmd.offsetTop - s.cmd.offsetHeight))]
+        if (s.stage < 2) s.scroll.style.transform = `translateY(${s.offsets[s.stage]}px)`
+        s.threads?.replaceChildren()
+        const from = s.el.querySelector('[data-thread="from"]'), to = s.el.querySelector('[data-thread="to"]')
+        if (!s.threads || !from || !to) return
+        const f = box(from, s.room), t = box(to, s.room), one = box(s.cards[0], s.room), two = box(s.cards[1], s.room)
+        const side = one.r + 14, mid = (one.r + two.l) / 2
+        const points = two.t >= one.b ? [[f.r, f.y], [side, f.y], [side, t.y], [two.r, t.y]]
+          : Math.abs(f.y - t.y) < 1 ? [[f.r, f.y], [two.l, f.y]]
+          : [[f.r, f.y], [mid, f.y], [mid, t.y], [two.l, t.y]]
+        const legs = points.slice(1).map(([x1, y1], i) => {
+          const [x0, y0] = points[i], flat = Math.abs(y1 - y0) < .5, leg = document.createElement("i"), st = leg.style
+          leg.className = `leg ${flat ? (x1 >= x0 ? "east" : "west") : (y1 >= y0 ? "south" : "north")}`
+          st.left = `${Math.min(x0, x1) - 1}px`; st.top = `${Math.min(y0, y1) - 1}px`
+          st.width = `${flat ? Math.abs(x1 - x0) + 2 : 2}px`; st.height = `${flat ? 2 : Math.abs(y1 - y0) + 2}px`
+          st.setProperty("--i", i); st.setProperty("--n", points.length - 1)
+          return leg
+        })
+        s.threads.append(...legs)
+        if (s.threads.dataset.end) {
+          const [x, y] = points.at(-1), end = Object.assign(document.createElement("i"), { className: "end", textContent: "?" })
+          end.style.left = `${x}px`; end.style.top = `${y}px`; end.style.setProperty("--n", legs.length)
+          s.threads.append(end)
+        }
+        if (s.fly) {
+          s.fly.style.left = `${f.l}px`; s.fly.style.top = `${f.t}px`
+          s.fly.dataset.dx = t.l - f.l; s.fly.dataset.dy = t.t - f.t
+        }
       }
-      const step = async n => {
-        const id = run
-        if (still || n !== stage + 1) return show(n)
-        if (n === 1) { typed.classList.remove("at"); typed.classList.add("at"); await type(id); if (id !== run) return; return show(1) }
-        if (n === 2) {
-          say.classList.add("cut"); on(lines[0]); await wait(450); if (id !== run) return
-          on(nums[0]); on(name); await wait(450); if (id !== run) return
-          on(nums[1]); on(need); on(lines[1]); await wait(500); if (id !== run) return
-          for (const leg of legs) { on(leg); await wait(220); if (id !== run) return }
-          return show(2)
-        }
-        if (n === 3) {
-          cards[0].classList.add("live"); await wait(900); if (id !== run) return
-          on(give); on(lines[2]); await wait(700); if (id !== run) return
-          return show(3)
-        }
-        if (n === 4) {
-          on(fly); await wait(450); if (id !== run) return
-          fly.classList.add("go")
-          for (const leg of legs) { leg.classList.add("fill"); await wait(1000 / legs.length); if (id !== run) return }
-          on(take); on(need, false); on(fly, false); say.classList.add("bound"); cards[0].classList.remove("live"); cards[1].classList.add("live"); on(lines[3])
-          await wait(400); if (id !== run) return
-          return show(4)
-        }
-        return show(n)
+      const measure = () => scenes.forEach(layout)
+
+      // A frame, whole: every element and class set from the stage number, nothing in motion.
+      const show = (s, n) => {
+        s.el.dataset.stage = n
+        mark(s, n)
+        for (const [x, r] of s.on) x.classList.toggle("off", !within(n, r))
+        for (const [x, list] of s.at) for (const [name, r] of list) x.classList.toggle(name, within(n, r))
+        for (const x of $$(".hide, .live, .dock", s.el)) x.classList.remove("hide", "live", "dock")
+        for (const c of $$(".ch", s.el)) c.classList.remove("off", "at")
+        s.fly?.classList.remove("on"); s.fly?.getAnimations().forEach(a => a.cancel())
+        s.scroll.style.transform = n < 2 ? `translateY(${s.offsets[n]}px)` : ""
       }
-      // Watched once: the stages in turn, then it rests on the draft.
-      const play = async () => {
+      // Where the reader is: the stage's name lit, its note shown, the two steps enabled. Set as a motion starts.
+      const mark = (s, n) => {
+        s.stage = n
+        if (s === active) walk.dataset.stage = n
+        s.rail.forEach((b, i) => { b.classList.toggle("past", i < n); if (i === n) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current") })
+        s.prev.disabled = n === 0
+        s.next.classList.toggle("again", n === s.last)
+        s.next.setAttribute("aria-label", n === s.last ? "Replay" : "Next stage")
+        note(s)
+      }
+      const jump = (s, n) => { s.el.classList.add("jump"); show(s, n); s.el.offsetWidth; s.el.classList.remove("jump") }
+      const note = s => s.notes.forEach(p => p.classList.toggle("on", s.point ? p.dataset.point === s.point : p === s.staged[s.stage]))
+      const tell = s => { said.textContent = s.staged[s.stage].textContent }
+
+      // The motion from one stage to the next; any other move is the frame at once.
+      const arriving = (s, n, inside) => s.on.filter(([x, [a]]) => a === n && inside.contains(x)).map(([x]) => x)
+      const appear = async (id, items, gap = 150) => {
+        for (const x of items) x.classList.add("off")
+        for (const x of items) { x.classList.remove("off"); await wait(gap); if (id !== run) return false }
+        return true
+      }
+      const type = async (id, line) => {
+        const chars = $$(".ch", line)
+        chars.forEach(c => c.classList.add("off")); line.classList.remove("off")
+        let last = null
+        for (const c of chars) { await wait(18 + Math.random() * 22); if (id !== run) return false; last?.classList.remove("at"); c.classList.remove("off", "at"); c.classList.add("at"); last = c }
+        await wait(220); last?.classList.remove("at")
+        return id === run
+      }
+      const motions = {
+        async installed(s, id) {  // the list of what is installed, and the manifests of the two that take part
+          const lines = $$(".line", s.before)
+          lines.forEach(l => l.classList.add("hide")); s.cards.forEach(c => c.classList.add("hide"))
+          lines[0].classList.remove("hide")
+          if (!await type(id, lines[0])) return
+          for (const line of lines.slice(1)) {
+            await wait(120); if (id !== run) return
+            line.classList.remove("hide")
+            if (line.dataset.card) s.el.querySelector(`.${line.dataset.card}`).classList.remove("hide")
+          }
+        },
+        async typed(s, id) {  // the cards turn face up; the sentence types on the next prompt
+          s.el.dataset.stage = 1
+          s.scroll.style.transform = `translateY(${s.offsets[1]}px)`
+          await wait(550); if (id !== run) return
+          await type(id, s.cmd)
+        },
+        async planned(s, id, n) {  // the parts over the cards they reached, the numbers and values, then the lines and the thread
+          if (!await appear(id, arriving(s, n, s.room), 80)) return
+          s.scroll.style.transform = ""
+          if (!await appear(id, arriving(s, n, s.scroll), 220)) return
+          for (const [x, list] of s.at) for (const [name, r] of list) x.classList.toggle(name, within(n, r))
+          await wait(650)
+        },
+        async found(s, id, n) { s.cards[0].classList.add("live"); await wait(750); if (id !== run) return; await appear(id, arriving(s, n, s.el), 240) },
+        async connected(s, id, n) {  // the address travels the thread into the slot of its kind
+          const { fly, threads } = s, target = s.el.querySelector('[data-thread="to"]')
+          fly.classList.add("on"); await wait(300); if (id !== run) return
+          threads.classList.add("bound")
+          const flight = fly.animate([{ transform: "none" }, { transform: `translate(${fly.dataset.dx}px, ${fly.dataset.dy}px)` }], { duration: 1000, easing: "cubic-bezier(.35, .1, .25, 1)", fill: "forwards" })
+          await flight.finished.catch(() => {}); if (id !== run) return
+          target.classList.add("dock")
+          const room = arriving(s, n, s.room)
+          room.forEach(x => x.classList.remove("off")); fly.classList.remove("on")
+          for (const [x, list] of s.at) for (const [name, r] of list) x.classList.toggle(name, within(n, r))
+          await wait(350); if (id !== run) return
+          await appear(id, arriving(s, n, s.scroll))
+          await wait(300)
+        },
+        async drafted(s, id, n) { s.cards[1].classList.add("live"); await wait(700); if (id !== run) return; await appear(id, arriving(s, n, s.el), 240) },
+        async asked(s, id, n) {  // the question, and the answer typed
+          const [prompt] = arriving(s, n, s.scroll), answer = prompt.querySelector(".in")
+          answer.classList.add("hide"); await appear(id, [prompt]); await wait(650); if (id !== run) return
+          answer.classList.remove("hide"); await wait(450)
+        },
+        async ran(s, id, n) {
+          const [first, second] = arriving(s, n, s.scroll), [chip] = arriving(s, n, s.room)
+          s.cards[0].classList.add("live"); await wait(600); if (id !== run) return
+          chip.classList.remove("off"); first.classList.remove("off"); s.cards[0].classList.replace("live", "ran")
+          await wait(350); if (id !== run) return
+          s.cards[1].classList.add("live"); await wait(600); if (id !== run) return
+          second.classList.remove("off"); await wait(300)
+        },
+      }
+      const step = async (s, n) => {
+        const id = run, motion = motions[s.rail[n].textContent]
+        if (still || n !== s.stage + 1 || !motion) return show(s, n)
+        mark(s, n)
+        await motion(s, id, n)
+        if (id === run) show(s, n)
+      }
+      // Watched once: the stages in turn, then it rests on the last.
+      const play = async s => {
         const id = ++run
-        room.classList.add("clear"); await wait(280); if (id !== run) return
-        room.classList.remove("clear"); show(0)
-        for (const [pause, n] of [[900, 1], [700, 2], [1600, 3], [1200, 4], [1400, 5]]) { await wait(pause); if (id !== run) return; await step(n) }
+        s.el.classList.add("clear"); await wait(280); if (id !== run) return
+        jump(s, 0); s.el.classList.remove("clear")
+        await motions.installed(s, id); if (id !== run) return
+        show(s, 0)
+        for (let n = 1; n <= s.last; n++) { await wait(n === 1 ? 800 : 650); if (id !== run) return; await step(s, n) }
       }
       const hold = () => ++run  // a reader's touch ends the show
 
-      layout(); document.fonts.ready.then(layout); addEventListener("resize", layout)
+      // A reader points at a word: what it reached lights, and the note says what the classifier answered.
+      const point = (s, name) => {
+        s.point = name
+        for (const x of $$("[data-lit]", s.el)) x.classList.toggle("lit", !!name && x.dataset.lit.split(" ").includes(name))
+        for (const w of $$(".word", s.el)) w.classList.toggle("pointed", w.dataset.point === name)
+        note(s)
+      }
+      const choose = (s, focus) => {
+        if (s !== active) {
+          const was = active
+          was.el.classList.remove("on"); was.el.inert = true; was.tab.setAttribute("aria-selected", "false"); was.tab.tabIndex = -1
+          sets[scenes.indexOf(was)].classList.remove("on")
+          active = s
+          s.el.classList.add("on"); s.el.inert = false; s.tab.setAttribute("aria-selected", "true"); s.tab.tabIndex = 0
+          sets[scenes.indexOf(s)].classList.add("on")
+          walk.dataset.stage = s.stage
+        }
+        if (focus) s.tab.focus()
+        hold()
+        if (still) { show(s, s.last); tell(s) } else play(s)
+      }
+
+      measure(); document.fonts.ready.then(measure)
+      let pending = 0
+      new ResizeObserver(() => { cancelAnimationFrame(pending); pending = requestAnimationFrame(measure) }).observe(walk)
       if (still) walk.classList.add("still")
-      show(LAST)
-      next.addEventListener("click", () => { hold(); step(Math.min(stage + 1, LAST)) })
-      replay.addEventListener("click", () => still ? (hold(), show(0)) : play())
-      stages.forEach((b, i) => b.addEventListener("click", () => { hold(); show(i) }))
-      see?.addEventListener("click", () => {
+      for (const s of scenes) {
+        show(s, s.last)
+        s.rail.forEach((b, i) => b.addEventListener("click", () => { hold(); show(s, i); tell(s) }))
+        s.prev.addEventListener("click", () => { hold(); show(s, Math.max(s.stage - 1, 0)); tell(s) })
+        s.next.addEventListener("click", () => {
+          if (s.stage === s.last) return still ? (hold(), show(s, 0), tell(s)) : play(s)
+          hold(); show(s, s.stage)  // a show cut short finishes its frame before the next one plays
+          step(s, s.stage + 1).then(() => tell(s))
+        })
+        for (const w of $$(".word", s.el)) {
+          const name = w.dataset.point
+          w.addEventListener("pointerenter", () => point(s, name))
+          w.addEventListener("pointerleave", () => point(s, w === document.activeElement ? name : s.pinned))
+          w.addEventListener("focus", () => point(s, name))
+          w.addEventListener("blur", () => { s.pinned = null; point(s, null) })
+          w.addEventListener("click", () => { s.pinned = s.pinned === name ? null : name; point(s, s.pinned) })
+        }
+      }
+      document.addEventListener("pointerdown", event => {  // a pinned word lets go when the reader touches anything else
+        if (event.target.closest(".walk .word")) return
+        for (const s of scenes) if (s.pinned) { s.pinned = null; point(s, null) }
+      })
+      tabs.forEach((tab, i) => {
+        tab.addEventListener("click", () => choose(scenes[i]))
+        tab.addEventListener("keydown", event => {
+          const move = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0
+          if (!move) return
+          event.preventDefault()
+          choose(scenes[(i + move + scenes.length) % scenes.length], true)
+        })
+      })
+      document.querySelector("[data-see]")?.addEventListener("click", () => {
         walk.scrollIntoView({ block: "center", behavior: still ? "auto" : "smooth" })
-        still ? (hold(), show(0)) : play()
+        if (active !== scenes[0]) choose(scenes[0])
+        else if (still) { hold(); show(active, 0); tell(active) } else play(active)
       })
       if (!still) {
         let seen = false
-        new IntersectionObserver(([entry]) => { if (entry.isIntersecting && !seen) { seen = true; play() } }, { threshold: .35 }).observe(walk)
+        new IntersectionObserver(([entry]) => { if (entry.isIntersecting && !seen) { seen = true; play(active) } }, { threshold: .3 }).observe(walk.querySelector(".panel"))
       }
     }
   </script>
