@@ -32,7 +32,7 @@
       <h2>Three steps, one sentence typed.</h2>
       <p class="sub">The person types the first step. <strong>The program names the second, and the second names the
         third.</strong> Every line is what Node printed.</p>
-      <div class="grid wide">
+      <div class="grid">
         <div class="panel term demo runbook" role="figure" data-scene="runbook" aria-label="Three steps lighting up in turn, the middle one after a yes">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/runbook<span class="trail" aria-hidden="true"><b>drain</b><b>failover</b><b>verify</b></span></div>
           <div class="room">
@@ -70,7 +70,7 @@
       <h2>Three reflexes and a loop.</h2>
       <p class="sub">A manifest and a body per step, as files or as code. <strong>The loop is the whole application:
         while there is a next sentence, handle it.</strong></p>
-      <div class="grid wide">
+      <div class="grid">
         <div class="panel tabbed">
           <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The runbook as files, as code, and the app">
             <button role="tab" id="t1" aria-controls="p1" aria-selected="true">files</button>
@@ -212,7 +212,7 @@ done<span class="o">()</span></pre>
       <h2>The destructive step waits for a yes.</h2>
       <p class="sub">The failover cannot be undone from where it runs, so its manifest says <code>destructive</code>.
         <strong>Answer no, and the loop ends there.</strong> The drain stays done. The verify never runs.</p>
-      <div class="grid wide">
+      <div class="grid">
         <div class="panel term" role="figure" aria-label="The failover's question">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>node</div>
 <pre><span class="p">$</span> <span class="in">node runbook.ts "drain the primary"</span>

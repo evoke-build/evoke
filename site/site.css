@@ -66,7 +66,7 @@ p code, li code, dd code, dt code, h3 code, .note code, .step-note code { font-s
 button { font: inherit; color: inherit; }
 ::selection { background: color-mix(in srgb, var(--accent) 32%, transparent); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
-.wrap { max-width: 76rem; margin: 0 auto; padding: 0 1.5rem; }
+.wrap { max-width: 80rem; margin: 0 auto; padding: 0 1.5rem; }
 [id] { scroll-margin-top: 4.5rem; }
 .sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 /* A grid or flex item never widens its track: what is wider than the track scrolls inside its own box */
@@ -180,7 +180,6 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .split .text p { color: var(--muted); font-size: 1.08rem; line-height: 1.55; margin: 0 0 1.1rem; }
 .split .text p strong { color: var(--fg); font-weight: 560; }
 .split .text h3 { font-size: 1.25rem; font-weight: 560; letter-spacing: -.012em; margin: 0 0 .6rem; }
-@media (min-width: 1360px) { .grid.wide { margin-left: -2.5rem; margin-right: -2.5rem; } }
 
 /* Panels: an editor, a terminal, a file inside either */
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
@@ -703,7 +702,7 @@ footer a:hover { color: var(--fg); }
 
 /* Narrower */
 @media (max-width: 960px) {
-  .hero, .grid, .grid.wide, .split, .split.code-left, .sheet, .ways, .promises, .compare, .routes, .closing, .qa { grid-template-columns: minmax(0, 1fr); }
+  .hero, .grid, .split, .split.code-left, .sheet, .ways, .promises, .compare, .routes, .closing, .qa { grid-template-columns: minmax(0, 1fr); }
   .hero { gap: 2.5rem; padding-top: 3.5rem; }
   .hero.solo { padding-top: 3rem; }
   .steps, .notes, .steps.two, .notes.two { grid-template-columns: minmax(0, 1fr); }
