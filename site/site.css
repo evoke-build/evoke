@@ -215,7 +215,7 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 @property --fade-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
 @keyframes fades { from { --fade-r: 2.5rem; } 10% { --fade-l: 2.5rem; } 90% { --fade-r: 2.5rem; } to { --fade-l: 2.5rem; } }
 @supports (animation-timeline: scroll()) {
-  .panel pre, .cmd code { -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent); mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent); animation: fades linear both; animation-timeline: scroll(self inline); }
+  .panel pre, .cmd code, .tabbed .tabs { -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent); mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent); animation: fades linear both; animation-timeline: scroll(self inline); }
 }
 .panel.term { background: var(--term-bg); border-color: color-mix(in srgb, var(--term-bg) 60%, #fff 10%); color: var(--term-fg); box-shadow: var(--shadow); }
 .panel.term .head { background: var(--term-head); border-color: rgba(255, 255, 255, .06); color: var(--term-dim); }
@@ -773,8 +773,8 @@ footer a:hover { color: var(--fg); }
 @media (max-width: 960px) { .example .demo { position: static; } }
 @media (max-width: 560px) { .demo .room { height: auto; aspect-ratio: 15 / 8; max-height: 15rem; } .demo .strip { height: calc(8 * 1.9em + 1.9rem); } }
 /* A panel with tabs: files, code, the app */
-.tabbed .head { padding: .45rem .7rem .45rem .95rem; }
-.tabbed .tabs { overflow-x: auto; scrollbar-width: none; }
+.tabbed .head { flex-wrap: nowrap; padding: .45rem .7rem .45rem .95rem; }
+.tabbed .tabs { min-width: 0; overflow-x: auto; scrollbar-width: none; }  /* one row: on the narrowest phone it scrolls, and fades */
 .tabbed .tabs::-webkit-scrollbar { display: none; }
 .tabbed [role="tabpanel"][hidden] { display: none; }
 .tabbed pre { font-size: .78rem; }
