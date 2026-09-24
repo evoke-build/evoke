@@ -7,13 +7,13 @@
   <meta name="description" content="Run your first reflex in about ten minutes: pick your terminal or your app, get a key, install, inspect one request, perform one action, then make it yours.">
   <!-- head -->
   <style>
-    .plan .needs { margin: .2rem 0 .9rem; max-width: 52rem; }
+    .plan .needs { margin: .2rem 0 .9rem; max-width: 44rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .plan .caption { margin-top: .4rem; }
-    .plan .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; max-width: 60rem; }
+    .plan .three { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; max-width: 44rem; }  /* one column: each command whole */
     .plan .three .way { padding: 1rem 1.1rem; }
     .plan .three .way h3 { font-size: .98rem; }
     .plan .three .way p { font-size: .92rem; }
-    @media (max-width: 960px) { .plan .three { grid-template-columns: minmax(0, 1fr); } }
+    @media (max-width: 560px) { .plan .needs { grid-template-columns: minmax(0, 1fr); } }
   </style>
 </head>
 <body>
