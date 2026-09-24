@@ -68,10 +68,19 @@
     .pair > * { min-width: 0; }
     @media (max-width: 960px) { .pair, .terms { grid-template-columns: minmax(0, 1fr); } .terms > div { grid-template-columns: minmax(0, 1fr); gap: .15rem; } }
     @media (max-width: 560px) {
-      /* the table's key column keeps its one line, and the meaning column takes the wrap */
-      p code, li code, dd code, td:not(:first-child) code { white-space: normal; overflow-wrap: anywhere; }
-      table { font-size: .9rem; }
-      th, td { padding-right: .6rem; }
+      p code, li code, dd code { white-space: normal; overflow-wrap: anywhere; }
+      /* a row stacks: its first cell leads, and every other cell carries its column's name */
+      .table { overflow: visible; }
+      .table table, .table tbody, .table tr, .table td { display: block; }
+      .table table, .table.wide table { min-width: 0; font-size: .92rem; }
+      .table thead { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); }
+      .table tr { padding: .8rem 0 .9rem; border-bottom: 1px solid var(--line); }
+      .table td { padding: 0; border: 0; }
+      .table td:first-child { white-space: normal; }
+      .table td + td { margin-top: .5rem; }
+      .table td[data-label]::before { content: attr(data-label); display: block; margin-bottom: .1rem; font: 560 .68rem/1.4 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+      .table td.y, .table td.n { display: inline-block; margin-right: 1.1rem; }
+      .table td.y::before, .table td.n::before { display: inline; margin-right: .45rem; }
     }
   </style>
 </head>

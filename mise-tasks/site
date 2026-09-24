@@ -405,6 +405,36 @@ def glue(parts, start, end):
         parts[i] = "".join(text)
 
 
+def labelled(page):
+    """A page whose table cells carry their column's name, so a narrow screen can stack each row and still say what
+    each value is, and whose tables name their roles, so a table laid out as blocks is still read as a table."""
+    text = page.read_text()
+
+    def table(found):
+        body = found[1]
+        heads = [
+            html_text.unescape(re.sub(r"<[^>]+>", "", head)).strip()
+            for head in re.findall(r"<th>(.*?)</th>", body, re.DOTALL)
+        ]
+
+        def row(found_row):
+            column = iter(range(len(heads)))
+
+            def cell(found_cell):
+                i = next(column, 0)
+                label = f' data-label="{html_text.escape(heads[i])}"' if 0 < i < len(heads) else ""
+                return f'<td role="cell"{label}{found_cell[1]}>'
+
+            return re.sub(r"<td([^>]*)>", cell, found_row[0])
+
+        body = re.sub(r"<tr>.*?</tr>", row, body, flags=re.DOTALL)
+        for tag, role in [("thead", "rowgroup"), ("tbody", "rowgroup"), ("tr", "row"), ("th", "columnheader")]:
+            body = body.replace(f"<{tag}>", f'<{tag} role="{role}">')
+        return f'<table role="table">{body}</table>'
+
+    page.write_text(re.sub(r"<table>(.*?)</table>", table, text, flags=re.DOTALL))
+
+
 def answered(page):
     """The FAQ's questions and answers, read from the page into its FAQPage entity, so the two never drift: what a
     search engine is told is what a reader sees."""
@@ -618,6 +648,7 @@ for page in site_pages:
     assembled(page)
     described(page)
     widowless(page)
+    labelled(page)
 manual_pages = sorted(OUT.glob("manual/**/*.html"))
 for page in manual_pages:
     furnished(page)
