@@ -68,10 +68,6 @@
     .hero:has(.walk[data-stage="2"])::before, .hero:has(.walk[data-stage="3"])::before { opacity: .5; }
     .hero:has(.walk[data-stage="4"])::before { opacity: .7; }
     .hero:has(.walk[data-stage="5"])::before { opacity: 1; }
-    /* Three sessions side by side */
-    .three .panel.term pre { font-size: .78rem; padding: .9rem 1rem 1rem; min-height: 9.4rem; }
-    .three p { margin: .7rem 0 0; color: var(--muted); font-size: .93rem; line-height: 1.5; }
-    .three p strong { color: var(--fg); font-weight: 560; }
     /* The manifest beside its legend */
     .legend dt { font: 500 .8rem/1.6 var(--mono); color: var(--accent-ink); margin: 0; }
     .legend dd { margin: .1rem 0 .95rem; color: var(--muted); font-size: .95rem; line-height: 1.5; }
@@ -450,17 +446,17 @@ To one address, with an optional subject; nothing goes out until you press send.
       <h2>See when it runs, and when it asks.</h2>
       <p class="sub">Every decision prints the call it chose and how sure it is. <strong>When something is missing or
         uncertain, it asks.</strong> An action that cannot be undone always asks.</p>
-      <div class="grid three">
-        <div>
+      <div class="stack">
+        <div class="split">
           <div class="panel term" role="figure" aria-label="A decision that ran">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>ran</div>
 <pre><span class="p">$</span> <span class="in">evoke "set the volume to 40 percent"</span>
 <span class="own">  <span class="name">volume</span> level="40 percent"  <span class="hi">0.93</span></span>
 <span class="out">volume 40%</span></pre>
           </div>
-          <p><strong>Sure enough, so it ran.</strong> The number is the confidence. evoke asks the classifier several questions, and this is its least sure answer.</p>
+          <p class="caption"><strong>Sure enough, so it ran.</strong> The number is the confidence. evoke asks the classifier several questions, and this is its least sure answer.</p>
         </div>
-        <div>
+        <div class="split">
           <div class="panel term" role="figure" aria-label="A decision that asked for a value">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>asked</div>
 <pre><span class="p">$</span> <span class="in">evoke "set the volume to 150 percent"</span>
@@ -468,9 +464,9 @@ To one address, with an optional subject; nothing goes out until you press send.
   <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span>
 <span class="out">volume 40%</span></pre>
           </div>
-          <p><strong>The value was out of range, so it asked.</strong> A sentence can choose a value. It can never invent one.</p>
+          <p class="caption"><strong>The value was out of range, so it asked.</strong> A sentence can choose a value. It can never invent one.</p>
         </div>
-        <div>
+        <div class="split">
           <div class="panel term" role="figure" aria-label="A decision that asked for confirmation">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>confirmed</div>
 <pre><span class="p">$</span> <span class="in">evoke "restart the computer"</span>
@@ -478,7 +474,7 @@ To one address, with an optional subject; nothing goes out until you press send.
   Really restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
 [2]</span></pre>
           </div>
-          <p><strong>Destructive, so it asked.</strong> Even at 0.97. There is no flag that skips the question. <code>[2]</code> is the exit code for declined. Here, you said no.</p>
+          <p class="caption"><strong>Destructive, so it asked.</strong> Even at 0.97. There is no flag that skips the question. <code>[2]</code> is the exit code for declined. Here, you said no.</p>
         </div>
       </div>
       <p class="caption">A reflex that only reads runs on its own from a confidence of <b>0.6</b>. One that writes needs <b>0.8</b>. You can change these
