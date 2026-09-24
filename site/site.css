@@ -194,11 +194,11 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
 .panel .head { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .6rem; padding: .6rem .95rem; background: var(--panel-head); border-bottom: 1px solid var(--line); font: 500 .76rem/1.4 var(--mono); color: var(--muted); }
 .panel .head i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
-.panel .head .who { margin-left: auto; white-space: nowrap; font-family: inherit; font-size: .64rem; letter-spacing: .07em; text-transform: uppercase; padding: .16rem .55rem; border-radius: 99px; border: 1px solid var(--line-strong); color: var(--muted); line-height: 1.4; }
+.panel .head .who { margin-left: auto; white-space: nowrap; font-family: inherit; font-size: .68rem; letter-spacing: .07em; text-transform: uppercase; padding: .16rem .55rem; border-radius: 99px; border: 1px solid var(--line-strong); color: var(--muted); line-height: 1.4; }
 .panel .head .who.you, .panel .file .who.you { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 45%, transparent); background: var(--accent-soft); }
 .panel .file { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .6rem; padding: .55rem 1.1rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--panel-head); font: 500 .74rem/1.4 var(--mono); color: var(--muted); }
 .panel .file:first-child { border-top: 0; }
-.panel .file .who { margin-left: auto; white-space: nowrap; font-size: .62rem; letter-spacing: .07em; text-transform: uppercase; padding: .14rem .5rem; border-radius: 99px; border: 1px solid var(--line-strong); }
+.panel .file .who { margin-left: auto; white-space: nowrap; font-size: .68rem; letter-spacing: .07em; text-transform: uppercase; padding: .14rem .5rem; border-radius: 99px; border: 1px solid var(--line-strong); }
 .panel pre { margin: 0; padding: 1.1rem 1.2rem 1.2rem; font-size: .84rem; line-height: 1.85; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; color: var(--fg); }
 .panel pre .k { color: var(--tk-key); }
 .panel pre .t { color: var(--tk-table); font-weight: 500; }
