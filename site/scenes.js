@@ -76,7 +76,7 @@
         { text: "[2]" },
       ], hold: 3200 },
     ] },
-    ops: { final: { checkout: "6", payments: "1", release: "41", bell: "quiet" }, scenes: [
+    ops: { final: { checkout: "6", payments: "1", release: "41", bell: "quiet" }, step: 0, scenes: [
       { step: 0, say: 'evoke "scale checkout to 6 in staging"', busy: "", lines: [
         { text: '  {n:scale} service="checkout" env="staging" replicas="6"  {hi:0.90}', set: { checkout: "6" } },
         { cls: "out", text: "deployment.apps/checkout-api scaled" },
