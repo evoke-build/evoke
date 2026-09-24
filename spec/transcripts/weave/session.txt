@@ -143,3 +143,53 @@ $ evoke teach timer duration="10 minute"
 $ evoke teach volume level=40
   the last input read as 2 steps: "kill the lights in the den", "start a 10 minute timer"; name the one to teach  →  evoke teach "<utterance>" volume level=40
 [3]
+# evoke show lists what is installed; try shows what the classifier answered for each step, and try --json the
+# splits and the binds: a handoff, a reference that takes nothing, a part that matches nothing.
+$ evoke show
+  lights   ./lights   write  runs lights.mts
+  timer    ./timer    write  runs timer.mts
+  volume   ./volume   write  runs volume.mts
+  contact  ./contact  read   runs contact.mts
+  mail     ./mail     write  runs mail.mts
+$ evoke try "look up dana's address and email them"
+  1  contact name="dana"  0.90
+  2  mail · takes email from 1
+  1  "look up dana's address"
+  contact 0.90 · none 0.06 · mail 0.03 · lights 0.01
+  name  dana 0.90 · unstated 0.08 · sam 0.02
+  fits  contact 0.80 · mail 0.10 · lights 0.02 · timer 0.02 · volume 0.02
+  run · weakest: route 0.90
+  2  "email them"
+  mail 0.88 · none 0.08 · contact 0.04
+  fits  mail 0.80 · contact 0.10 · lights 0.02 · timer 0.02 · volume 0.02
+  ask to · weakest: route 0.88
+$ evoke try --json "look up dana's address and email them"
+{"input":"look up dana's address and email them","splits":[{"start":22,"end":27,"word":"and","order":"and","p":0.9}],"steps":[{"n":1,"text":"look up dana's address","end":22,"decision":{"outcome":"run","reflex":"contact","args":{"name":{"type":"word","word":"dana"}},"call":"contact name=\"dana\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"contact","p":0.9},"judgments":[{"question":"route","top":"contact","p":0.9},{"question":"contact.name","top":"dana","p":0.9}],"runner_up":{"reflex":"mail","route":0.03,"fits":0.1},"contenders":[{"reflex":"contact","route":0.9,"fits":0.8},{"reflex":"mail","route":0.03,"fits":0.1},{"reflex":"lights","route":0.01,"fits":0.02},{"reflex":"timer","route":0.0,"fits":0.02},{"reflex":"volume","route":0.0,"fits":0.02}]},"reflex":"contact","effect":"read"},{"n":2,"text":"email them","end":37,"decision":{"outcome":"ask","reflex":"mail","args":{},"unconsumed":[],"confidence":0.88,"weakest":{"question":"route","top":"mail","p":0.88},"judgments":[{"question":"route","top":"mail","p":0.88}],"runner_up":{"reflex":"contact","route":0.04,"fits":0.1},"contenders":[{"reflex":"mail","route":0.88,"fits":0.8},{"reflex":"contact","route":0.04,"fits":0.1},{"reflex":"lights","route":0.0,"fits":0.02},{"reflex":"timer","route":0.0,"fits":0.02},{"reflex":"volume","route":0.0,"fits":0.02}],"missing":[{"arg":"to","ask":"To which address?","because":{"type":"unstated"},"choices":{"type":"pick","pick":"email"}}]},"reflex":"mail","effect":"write","refs":[{"span":{"start":6,"end":10,"text":"them"},"from":[0],"how":"pronoun","many":true}],"after":[1]}],"binds":[{"from":1,"to":2,"arg":"to","field":"email","kind":"email","via":"fill"}],"exclusive":true,"stages":[[1],[2]],"verdict":{"outcome":"run"},"trace":[]}
+$ evoke try "look up dana's address and start a 10 minute timer for them"
+  1  contact name="dana"  0.90
+  2  timer duration="10 minute"  0.88 · after 1
+  1  "look up dana's address"
+  contact 0.90 · none 0.06 · mail 0.03 · lights 0.01
+  name  dana 0.90 · unstated 0.08 · sam 0.02
+  fits  contact 0.80 · mail 0.10 · lights 0.02 · timer 0.02 · volume 0.02
+  run · weakest: route 0.90
+  2  "start a 10 minute timer for them"
+  timer 0.88 · none 0.08 · lights 0.02 · volume 0.02
+  duration  "10 minute" 0.90 · unstated 0.10
+  fits      timer 0.80 · lights 0.05 · volume 0.05 · contact 0.02 · mail 0.02
+  run · weakest: route 0.88
+$ evoke try "kill the lights in the den and feed the cat"
+  1  lights room="den" state="off"  0.85
+  2  "feed the cat" · no reflex
+  1  "kill the lights in the den"
+  lights 0.91 · none 0.06 · timer 0.02 · volume 0.01
+  room   den 0.85 · unstated 0.10 · office 0.05
+  state  off 0.88 · on 0.05 · dim 0.05 · unstated 0.02
+  fits   lights 0.70 · timer 0.05 · volume 0.05 · contact 0.02 · mail 0.02
+  run · weakest: room 0.85
+  2  "feed the cat"
+  none 0.95 · lights 0.05
+  fits  lights 0.05 · timer 0.02 · volume 0.02 · contact 0.02 · mail 0.02
+  abstain
+$ evoke try --json "kill the lights in the den and feed the cat"
+{"input":"kill the lights in the den and feed the cat","splits":[{"start":26,"end":31,"word":"and","order":"and","p":0.95}],"steps":[{"n":1,"text":"kill the lights in the den","end":26,"decision":{"outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","confidence":0.85,"weakest":{"question":"lights.room","top":"den","p":0.85},"judgments":[{"question":"route","top":"lights","p":0.91},{"question":"lights.room","top":"den","p":0.85},{"question":"lights.state","top":"off","p":0.88}],"runner_up":{"reflex":"timer","route":0.02,"fits":0.05},"contenders":[{"reflex":"lights","route":0.91,"fits":0.7},{"reflex":"timer","route":0.02,"fits":0.05},{"reflex":"volume","route":0.01,"fits":0.05},{"reflex":"contact","route":0.0,"fits":0.02},{"reflex":"mail","route":0.0,"fits":0.02}]},"reflex":"lights","effect":"write"},{"n":2,"text":"feed the cat","end":43,"decision":{"outcome":"abstain","contenders":[{"reflex":"lights","route":0.05,"fits":0.05},{"reflex":"timer","route":0.0,"fits":0.02},{"reflex":"volume","route":0.0,"fits":0.02},{"reflex":"contact","route":0.0,"fits":0.02},{"reflex":"mail","route":0.0,"fits":0.02}],"judgments":[{"question":"route","top":"none","p":0.95}]}}],"exclusive":true,"stages":[[1],[2]],"verdict":{"outcome":"refuse","because":[{"type":"no_reflex","step":2}]},"trace":[]}
