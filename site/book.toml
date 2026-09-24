@@ -18,4 +18,3 @@ no-section-label   = true
 default-theme      = "coal"
 smart-punctuation  = false
 additional-css     = ["manual.css"]
-additional-js      = ["manual.js"]

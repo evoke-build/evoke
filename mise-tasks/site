@@ -350,6 +350,7 @@ def furnished(page):
     )  # the title is the page's one heading
     # a table of pages shares one column split with the others on its page
     text = re.sub(r"<table>(\s*<thead>\s*<tr><th[^>]*>Page</th>)", r'<table class="pages">\1', text)
+    text = coloured(text)
     # a short piece of inline code stays whole on a line; a long one may still wrap at its spaces
     text = re.sub(
         r"<code>([^<]*)</code>",
@@ -357,6 +358,51 @@ def furnished(page):
         text,
     )
     page.write_text(text)
+
+
+def coloured(text):
+    """A manual page whose transcripts and commands wear the site's terminal colours from the first paint: a text block
+    with a `$ ` line is a transcript, a bash block a command. Each is coloured here, not in the browser, and marked
+    `nohighlight`, which mdBook's highlighter leaves alone."""
+
+    def span(kind, line):
+        return f'<span class="{kind}">{html_text.escape(line, quote=False)}</span>'
+
+    def score(found):
+        return f'<span class="{"hi" if float(found[1]) >= 0.8 else "mid"}">{found[1]}</span>'
+
+    def own(line):
+        out = html_text.escape(line, quote=False)
+        out = re.sub(r"^  ([a-z_][\w-]*)(?= (?:[a-z_]+=|·|\d\.\d\d))", r'  <span class="name">\1</span>', out)
+        out = re.sub(r"\b(\d\.\d\d)\b", score, out)
+        out = re.sub(r" (&gt;) ([^&<]+)$", r' \1 <span class="in">\2</span>', out)
+        return f'<span class="own">{out.replace("→", """<span class="arrow">→</span>""")}</span>'
+
+    def transcript(line):
+        if line.startswith("$ "):
+            return f'<span class="p">$</span> {span("in", line[2:])}'
+        for mark, kind in [("+ ", "add"), ("- ", "del"), ("#", "c")]:
+            if line.startswith(mark):
+                return span(kind, line)
+        return own(line) if line.startswith("  ") or re.fullmatch(r"\[\d\]", line) else span("out", line)
+
+    def command(line):
+        if not line.strip():
+            return ""
+        if line.lstrip().startswith("#"):
+            return span("c", line)
+        found = re.match(r"^(.*?)(\s+#.*)?$", line)
+        return f'<span class="p">$</span> {span("in", found[1])}{span("c", found[2]) if found[2] else ""}'
+
+    def block(found):
+        language, body = found[1], html_text.unescape(found[2]).removesuffix("\n")
+        if language == "text" and not re.search(r"^\$ ", body, re.MULTILINE):
+            return found[0]
+        paint = transcript if language == "text" else command
+        lines = "\n".join(paint(line) for line in body.split("\n"))
+        return f'<pre class="term"><code class="nohighlight">{lines}</code></pre>'
+
+    return re.sub(r'<pre><code class="language-(text|bash)">(.*?)</code></pre>', block, text, flags=re.DOTALL)
 
 
 BLOCKS = {"p", "li", "dd", "dt", "h1", "h2", "h3", "h4", "figcaption"}
