@@ -78,11 +78,11 @@ button { font: inherit; color: inherit; }
    The pill stands 1.5rem, the links' own gap, after the links or the menu. */
 header.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 72%, transparent); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5); border-bottom: 1px solid var(--line); }
 header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 3.5rem; }
-.brand { display: flex; align-items: center; gap: .6rem; color: var(--fg); font-weight: 600; letter-spacing: -.01em; font-size: 1.1rem; }
+.brand { display: flex; align-items: center; gap: .6rem; padding-block: .6rem; margin-block: -.6rem; color: var(--fg); font-weight: 600; letter-spacing: -.01em; font-size: 1.1rem; }
 .brand:hover { text-decoration: none; }
 .brand img { width: 26px; height: 26px; }
 .menu { display: none; }
-.menu summary { display: block; list-style: none; cursor: pointer; color: var(--muted); font-size: .95rem; font-weight: 500; padding: .4rem .2rem; }
+.menu summary { display: block; list-style: none; cursor: pointer; color: var(--muted); font-size: .95rem; font-weight: 500; padding: .75rem .2rem; margin: -.35rem 0; }
 .menu summary::-webkit-details-marker { display: none; }
 .menu summary::after { content: ""; display: inline-block; width: .38em; height: .38em; margin: 0 0 .18em .5em; border-right: 1.5px solid; border-bottom: 1.5px solid; transform: rotate(45deg); transition: transform .2s ease; }
 .menu[open] summary::after { transform: translateY(.2em) rotate(-135deg); }
@@ -120,6 +120,11 @@ a.quiet:hover { color: var(--fg); text-decoration: none; }
 .cmd button:hover { color: var(--fg); border-color: var(--muted); }
 .cmd button.done { color: var(--accent-ink); border-color: var(--accent-ink); }
 a.more { font-size: .95rem; font-weight: 560; }
+/* A small control keeps its look and takes a finger-sized target; side by side, it grows only up and down */
+.cmd button, .button.small, .tabs button, .walk .step { position: relative; }
+.button.small::after, .walk .step::after { content: ""; position: absolute; inset: -7px; }
+.cmd button::after, .tabs button::after { content: ""; position: absolute; inset: -9px 0; }
+a.more { display: inline-block; padding: .6rem 0; margin: -.6rem 0; }
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; margin-top: 1.6rem; }
 
 /* The opening of a page: the words, and beside them a scene, a sheet or an index */
@@ -409,6 +414,7 @@ p.after strong { color: var(--fg); font-weight: 560; }
   .walk .part { margin-bottom: .45rem; }
   .walk .none { min-height: 5rem; }
   .walk .rail { display: grid; grid-template-columns: repeat(var(--across, 3), auto); justify-content: space-evenly; }
+  .walk .rail button { padding-block: .45rem; }
 }
 @container walk (max-width: 420px) { .walk .panel.term .head .dots { display: none; } .walk .head .tabs { margin-left: -.35rem; } .walk .tty { font-size: .69rem; } }
 
