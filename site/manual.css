@@ -169,7 +169,25 @@ html {
   background: transparent;
   border: 0;
   padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
 }
+
+/* Code keeps its lines: one wider than the block scrolls, and the side it hides behind fades while there is more. A
+   transcript wraps like the site's terminal, each wrapped line hanging under its start. Short inline code stays whole. */
+@property --fade-l { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --fade-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@keyframes fades { from { --fade-r: 2.5em; } 10% { --fade-l: 2.5em; } 90% { --fade-r: 2.5em; } to { --fade-l: 2.5em; } }
+@supports (animation-timeline: scroll()) {
+  .content pre > code {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+    animation: fades linear both;
+    animation-timeline: scroll(self inline);
+  }
+}
+.content pre.term > code { white-space: pre-wrap; overflow-wrap: anywhere; text-indent: 4ch hanging each-line; }
+.content code.whole { white-space: nowrap; }
 
 .hljs {
   background: transparent;
