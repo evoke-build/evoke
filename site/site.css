@@ -270,7 +270,7 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 .walk .q2 { grid-area: q2; }
 .walk .seam { position: relative; grid-area: and; align-self: end; justify-self: center; margin-bottom: .6rem; }
 .walk .seam .word { color: var(--accent-ink); }
-.walk .seam small { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: .1rem; font-size: .6rem; line-height: 1.2; color: var(--term-dim); white-space: nowrap; }
+.walk .seam small { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: .1rem; font-size: .66rem; line-height: 1.2; color: var(--term-dim); white-space: nowrap; }
 .walk .word { padding: 0; border: 0; border-radius: 3px; background: none; font: inherit; color: inherit; cursor: pointer; text-decoration: underline dotted color-mix(in srgb, currentColor 50%, transparent); text-decoration-thickness: 1px; text-underline-offset: .3em; }
 .walk .word:hover, .walk .word.pointed { text-decoration-style: solid; text-decoration-color: currentColor; }
 .walk .ref.plan { color: var(--accent-ink); text-decoration: underline dashed var(--accent); }
@@ -313,7 +313,7 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 /* A slot wears its kind on a tab; a value is a chip laid exactly over it */
 .walk .slot { position: relative; display: inline-grid; align-items: center; min-width: 0; min-height: 1.5rem; padding: 0 .45rem; border: 1px dashed #45454d; border-radius: 6px; color: var(--term-in); }
 .walk .slot > * { grid-area: 1 / 1; }
-.walk .slot::before { content: attr(data-kind); position: absolute; z-index: 2; top: 0; left: .4rem; transform: translateY(-58%); padding: 0 .25rem; background: var(--card); font-size: .6rem; line-height: 1; letter-spacing: .02em; color: var(--term-dim); }
+.walk .slot::before { content: attr(data-kind); position: absolute; z-index: 2; top: 0; left: .4rem; transform: translateY(-58%); padding: 0 .25rem; background: var(--card); font-size: .66rem; line-height: 1; letter-spacing: .02em; color: var(--term-dim); }
 .walk .slot.plan::before { color: var(--accent-ink); }
 .walk .slot.bound::before { color: var(--term-ok); }
 .walk .slot.ask::before { color: var(--term-mid); }
