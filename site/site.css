@@ -436,13 +436,14 @@ p.after strong { color: var(--fg); font-weight: 560; }
 /* Cards: a door into an example, each with a small stage and a line */
 .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
 .cards.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cards > .card { display: grid; grid-row: span 2; grid-template-rows: subgrid; row-gap: 0; }  /* the stages of one row share a height */
 a.card { display: block; color: inherit; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; transition: border-color .2s, transform .2s, box-shadow .2s; }
 a.card:hover { text-decoration: none; border-color: var(--line-strong); transform: translateY(-2px); box-shadow: var(--shadow); }
-.card .room { position: relative; height: 9rem; background: var(--room); overflow: hidden; }
-.card .room svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.card .room { display: flex; flex-direction: column; background: var(--room); overflow: hidden; }
+.card .room svg { display: block; flex: none; width: 100%; height: 7rem; margin-top: .45rem; }  /* the drawing scales to fit, never cropped */
 .card .room :where(text) { font: 500 10px var(--mono); fill: #9a978f; }  /* a default each small stage's own colours override */
 .card .room :where(text.dim) { fill: #5f5f66; }
-.card .say { position: absolute; left: 1rem; right: 1rem; bottom: .72rem; font: .74rem/1.35 var(--mono); color: var(--term-dim); overflow-wrap: anywhere; }
+.card .say { padding: .3rem 1rem .8rem; font: .74rem/1.35 var(--mono); color: var(--term-dim); overflow-wrap: anywhere; }
 .card .say i { font-style: normal; color: var(--accent); }
 .card .text { padding: .9rem 1.05rem 1.05rem; }
 .card .text i { font: 600 .68rem/1 var(--mono); font-style: normal; color: var(--accent-ink); letter-spacing: .12em; }
@@ -481,10 +482,10 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 .card:is(.on, :hover, :focus-visible) .desk .maker .head { fill: #34343a; } .card:is(.on, :hover, :focus-visible) .desk .maker .body { stroke: #34343a; }
 .card:is(.on, :hover, :focus-visible) .desk .checker .head { fill: var(--lamp); } .card:is(.on, :hover, :focus-visible) .desk .checker .body { stroke: var(--lamp); }
 .desk .queue { fill: none; stroke: #36363d; stroke-dasharray: 4 5; }
-.desk .slip { transform: translate(24px, 72px); transition: transform .9s cubic-bezier(.2, .7, .2, 1); }
+.desk .slip { transform: translate(24px, 76px); transition: transform .9s cubic-bezier(.2, .7, .2, 1); }
 .desk .slip rect { fill: #1d1d22; stroke: #4a4a52; transition: stroke .5s; }
 .desk .slip text { fill: #ebe8e3; }
-.card:is(.on, :hover, :focus-visible) .desk .slip { transform: translate(236px, 72px); }
+.card:is(.on, :hover, :focus-visible) .desk .slip { transform: translate(236px, 76px); }
 .card:is(.on, :hover, :focus-visible) .desk .slip rect { stroke: var(--term-ok); }
 .desk .stamp { opacity: 0; transition: opacity .4s .5s; }
 .desk .stamp circle { fill: #101013; stroke: var(--term-ok); stroke-width: 2; }
