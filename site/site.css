@@ -36,8 +36,6 @@
   --tk-punct: #868686;
   --tk-kw: #a3a6ff;
   --tk-ph: #f0c060;
-  --plus-bg: rgba(143, 212, 138, .1);
-  --plus-fg: #9ad18f;
   --lamp: #ffd58e;
   --shadow: 0 30px 60px -30px rgba(0, 0, 0, .6);
   --radius: 14px;
@@ -180,7 +178,6 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 
 /* Layouts */
 .grid { display: grid; grid-template-columns: 1.12fr 1fr; gap: 1.1rem; align-items: start; }
-.grid.even { grid-template-columns: 1fr 1fr; }
 .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .side, .stack { display: grid; gap: 1.1rem; align-content: start; }
 .split { display: grid; grid-template-columns: minmax(0, 1fr) clamp(16rem, 32%, 25rem); gap: 3rem; align-items: start; }  /* code, and its notes at a reading width */
@@ -208,8 +205,6 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 .panel pre .o { color: var(--tk-punct); }
 .panel pre .w { color: var(--tk-kw); }
 .panel pre .ph { color: var(--tk-ph); font-weight: 500; }
-.panel pre .plus { display: inline-block; width: 100%; background: var(--plus-bg); color: var(--plus-fg); margin: 0 -1.2rem; padding: 0 1.2rem; }
-.panel pre mark { background: var(--accent-soft); color: inherit; border-radius: 4px; box-shadow: 0 0 0 2px var(--accent-soft); }
 /* Code and commands keep their lines. A line wider than its box scrolls, and the side it hides behind fades while there is more */
 @property --fade-l { syntax: "<length>"; inherits: false; initial-value: 0px; }
 @property --fade-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
@@ -445,7 +440,6 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 
 /* Cards: a door into an example, each with a small stage and a line */
 .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
-.cards.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .cards > .card { display: grid; grid-row: span 2; grid-template-rows: subgrid; row-gap: 0; }  /* the stages of one row share a height */
 a.card { display: block; color: inherit; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; transition: border-color .2s, transform .2s, box-shadow .2s; }
 a.card:hover { text-decoration: none; border-color: var(--line-strong); transform: translateY(-2px); box-shadow: var(--shadow); }
@@ -623,14 +617,12 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 .steps span { display: block; color: var(--muted); font-size: .96rem; line-height: 1.5; }
 .steps span strong { color: var(--fg); font-weight: 560; }
 .steps.column { grid-template-columns: minmax(0, 1fr); gap: 1.1rem; margin: 0 0 1.5rem; }
-.steps.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .steps .go { display: inline-block; margin-top: .55rem; font-size: .92rem; font-weight: 560; }
 .notes { list-style: none; margin: 1.4rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem 1.75rem; }
 .notes li { display: flex; gap: .7rem; align-items: flex-start; color: var(--muted); font-size: .96rem; line-height: 1.5; }
 .notes li strong { color: var(--fg); font-weight: 560; }
 .notes b { flex: none; width: 1.4rem; height: 1.4rem; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); font: 600 .7rem/1.4rem var(--mono); text-align: center; margin-top: .1rem; }
 .notes.column { grid-template-columns: minmax(0, 1fr); gap: 1rem; margin-top: 0; }
-.notes.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .ticks { list-style: none; margin: 0 0 1.4rem; padding: 0; display: grid; gap: .6rem; max-width: 44rem; }
 .ticks li { position: relative; padding-left: 1.4rem; color: var(--muted); font-size: 1rem; line-height: 1.5; }
 .ticks li::before { content: ""; position: absolute; left: 0; top: .72em; width: .8rem; height: 2px; background: var(--accent); border-radius: 1px; }
@@ -729,7 +721,7 @@ footer a:hover { color: var(--fg); }
   .hero, .grid, .split, .sheet, .ways, .promises, .compare, .routes, .closing, .qa { grid-template-columns: minmax(0, 1fr); }
   .hero { gap: 2.5rem; padding-top: 3.5rem; }
   .hero.solo { padding-top: 3rem; }
-  .steps, .notes, .steps.two, .notes.two { grid-template-columns: minmax(0, 1fr); }
+  .steps, .notes { grid-template-columns: minmax(0, 1fr); }
   .cards, .grid.three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .split { gap: 1.75rem; }
   .split:has(> .caption) { gap: 1.1rem; }
@@ -744,7 +736,7 @@ footer a:hover { color: var(--fg); }
   .walk-key { display: grid; grid-template-columns: repeat(2, max-content); }
   p.after .also { display: block; margin: .6rem 0 0; }
   .panel pre { padding: 1rem 1rem 1.05rem; font-size: .78rem; }
-  .cards, .cards.two, .grid.three { grid-template-columns: minmax(0, 1fr); }
+  .cards, .grid.three { grid-template-columns: minmax(0, 1fr); }
   .plan > li { grid-template-columns: minmax(0, 1fr); gap: .3rem; padding: 1.3rem 0; }
   .closing { padding: 1.6rem 1.4rem; }
 }
