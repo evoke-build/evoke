@@ -128,7 +128,7 @@ a.more { font-size: .95rem; font-weight: 560; }
 .hero h1 { font-size: clamp(2.8rem, 5.6vw, 4.1rem); font-weight: 600; letter-spacing: -.035em; line-height: .98; margin: 0 0 1.3rem; }
 .hero h1 em { display: block; font-style: normal; color: var(--accent); }  /* the second sentence on a line of its own */
 .hero.solo h1 { font-size: clamp(2.5rem, 4.8vw, 3.6rem); max-width: 22ch; }
-.hero.solo h1 em { display: inline; }
+.hero.solo h1 em, h1 .phrase, h2 .phrase { display: inline-block; }  /* a heading breaks between its phrases, never inside the orange one */
 .hero.solo .copy { max-width: 46rem; }
 .hero.solo .sheet { max-width: 46rem; margin: 2.2rem 0 0; }
 .hero .lede { font-size: 1.22rem; line-height: 1.5; color: var(--muted); max-width: 38rem; margin: 0 0 1.9rem; }

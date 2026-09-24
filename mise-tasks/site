@@ -34,6 +34,7 @@ PARTS = SITE / "parts"
 ID = re.compile(r'\sid="([^"]+)"')
 HREF = re.compile(r'\s(?:href|src)="([^"]+)"')
 SITE_URL = re.compile(r"https://evoke\.build/[^\s)\]<>\"'`]*")
+ARTICLE = re.compile(r"(?<![\w-])(a|an|the|A|An|The) (?=\w)")
 VERSION = re.search(r'^version\s*=\s*"([^"]+)"', (ROOT / "Cargo.toml").read_text(), re.MULTILINE)[1]
 
 
@@ -344,6 +345,29 @@ BLOCKS = {"p", "li", "dd", "dt", "h1", "h2", "h3", "h4", "figcaption"}
 VERBATIM = {"pre", "code", "script", "style", "textarea"}
 
 
+def phrased(page):
+    """A page whose headings break where a reader pauses: each sentence of an h1 or h2 of plain text, and each clause of
+    a sentence with a comma, becomes a span the stylesheet keeps whole while it fits, and an article stays with its
+    word."""
+
+    def clauses(sentence):
+        parts = re.split(r"(?<=,)[ \t\n]+", sentence)
+        return sentence if len(parts) < 2 else " ".join(f'<span class="phrase">{part}</span>' for part in parts)
+
+    def heading(found):
+        tag, attributes = found[1], found[2]
+        inner = re.sub(r"[^<>]+(?=<|$)", lambda text: ARTICLE.sub("\\1\u00a0", text[0]), found[3])
+        if "<" in inner:
+            return f"<{tag}{attributes}>{inner}</{tag}>"
+        sentences = re.split(r"(?<=[.?!;])[ \t\n]+", inner.strip())
+        if len(sentences) == 1:
+            return f"<{tag}{attributes}>{clauses(sentences[0])}</{tag}>"
+        spans = " ".join(f'<span class="phrase">{clauses(s)}</span>' for s in sentences)
+        return f"<{tag}{attributes}>{spans}</{tag}>"
+
+    page.write_text(re.sub(r"<(h1|h2)([^>]*)>(.*?)</\1>", heading, page.read_text(), flags=re.DOTALL))
+
+
 def widowless(page):
     """A page whose paragraphs, list items and headings never end in a lone word: the last two words of each are
     joined by a no-break space, whatever the width and whatever the browser. Text inside code is never touched."""
@@ -647,6 +671,7 @@ changed(OUT / "privacy.html", dated)
 for page in site_pages:
     assembled(page)
     described(page)
+    phrased(page)
     widowless(page)
     labelled(page)
 manual_pages = sorted(OUT.glob("manual/**/*.html"))
