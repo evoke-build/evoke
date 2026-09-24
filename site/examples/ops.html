@@ -115,17 +115,17 @@
 <span class="s">Scale a service to a number of replicas.</span>
 <span class="s">One deployment in one environment; the number is set, never added to."""</span>
 <span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span>
-  "restarting or rolling back a service",
-  "resizing a database or a disk",
-  "autoscaling rules",
-]
+  <span class="s">"restarting or rolling back a service"</span><span class="o">,</span>
+  <span class="s">"resizing a database or a disk"</span><span class="o">,</span>
+  <span class="s">"autoscaling rules"</span><span class="o">,</span>
+<span class="o">]</span>
 <span class="k">tags</span>    <span class="o">=</span> <span class="o">[</span><span class="s">"ops"</span><span class="o">]</span>
 <span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
 <span class="k">confirm</span> <span class="o">=</span> <span class="s">"Scale <span class="ph">{service}</span> in <span class="ph">{env}</span> to <span class="ph">{replicas}</span>?"</span>
 <span class="k">run</span>     <span class="o">=</span> <span class="o">[</span>
-  "kubectl", "-n", "{env}", "scale", "deployment", "{service}",
-  "--replicas", "{replicas}",
-]
+  <span class="s">"kubectl"</span><span class="o">,</span> <span class="s">"-n"</span><span class="o">,</span> <span class="s">"<span class="ph">{env}</span>"</span><span class="o">,</span> <span class="s">"scale"</span><span class="o">,</span> <span class="s">"deployment"</span><span class="o">,</span> <span class="s">"<span class="ph">{service}</span>"</span><span class="o">,</span>
+  <span class="s">"--replicas"</span><span class="o">,</span> <span class="s">"<span class="ph">{replicas}</span>"</span><span class="o">,</span>
+<span class="o">]</span>
 
 <span class="t">[args.service]</span>
 <span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which service?"</span>
