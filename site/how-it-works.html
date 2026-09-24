@@ -20,11 +20,10 @@
     .gate .band.mid { stroke: rgba(240, 192, 96, .22); }
     .gate .band.no { stroke: rgba(255, 123, 115, .2); }
     .gate .tick { stroke: #5f5f66; stroke-width: 1.5; }
-    .outcomes .steps b { display: flex; align-items: center; gap: .55rem; }
+    .outcomes .steps b { display: flex; align-items: center; gap: .55rem; margin-top: 0; }
     .outcomes .steps b i { width: .55rem; height: .55rem; border-radius: 50%; font-size: 0; }
     .outcomes .steps b i.ok { background: var(--term-ok); }
     .outcomes .steps b i.mid { background: var(--term-mid); }
-    .outcomes .steps b i.accent { background: var(--accent); }
     .outcomes .steps b i.no { background: var(--term-no); }
   </style>
 </head>
@@ -224,13 +223,13 @@ One person at a time; prints the address."""</span>
             file you own, and a read may never run at a higher bar than a write.</figcaption>
         </figure>
         <ol class="steps column">
-          <li><i>run</i><b><i class="ok"></i>Run</b><span>Over the bar, every required input stated. The call prints
+          <li><b><i class="ok"></i>Run</b><span>Over the bar, every required input stated. The call prints
             with its confidence, then the result.</span></li>
-          <li><i>ask</i><b><i class="accent"></i>Ask</b><span>A required input was not stated, or a value fell outside
+          <li><b><i class="mid"></i>Ask</b><span>A required input was not stated, or a value fell outside
             its range. evoke asks the input's own question and decides again.</span></li>
-          <li><i>confirm</i><b><i class="mid"></i>Confirm</b><span>Under the bar, or a second reflex fits well too, or a
+          <li><b><i class="mid"></i>Confirm</b><span>Under the bar, or a second reflex fits well too, or a
             piece of the sentence went unused. And always, for a destructive reflex.</span></li>
-          <li><i>stop</i><b><i class="no"></i>Stop</b><span>Nothing fits, and evoke abstains: the ranking prints and nothing runs. In a
+          <li><b><i class="no"></i>Stop</b><span>Nothing fits, and evoke abstains: the ranking prints and nothing runs. In a
             sentence of several steps, one part that fits nothing stops the whole sentence.</span></li>
         </ol>
       </div>
