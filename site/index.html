@@ -349,7 +349,7 @@ Turn the lights in one room on, off, or dim them.</span>
           </ul>
           <p class="walk-door"><a href="/examples/contact-to-draft.html">See this example →</a><a href="/start.html#install">Try the collection in a terminal →</a></p>
           <div class="walk-legend">
-            <p><b>A recorded session, replayed here.</b> The contact ability is a stand-in from the product's tests. In the collection, mail opens a real draft on a Mac.</p>
+            <p><b>A recorded session, replayed here.</b> The contact reflex is a stand-in from the product's tests. The mail reflex is one of thirteen you can install today, and opens a real draft on a Mac.</p>
           </div>
         </div>
       </div>
@@ -395,13 +395,15 @@ To one address, with an optional subject; nothing goes out until you press send.
             <dd><strong>What it does not do.</strong> Naming the near misses keeps a similar request from landing here.</dd>
             <dt>effect</dt>
             <dd><strong>How careful to be.</strong> A write changes something you can undo. It runs on its own only when evoke is sure enough.</dd>
+            <dt>confirm</dt>
+            <dd><strong>Its own question.</strong> The line you answer when evoke asks before it runs.</dd>
             <dt>[args.to] · [args.subject]</dt>
             <dd><strong>What it needs from you.</strong> An email address is taken from your sentence, word for word. The subject is optional.</dd>
             <dt>[examples]</dt>
             <dd><strong>Sentences that teach.</strong> You can add your own, and they stay in a file of yours.</dd>
           </dl>
-          <p>The <code>contact</code> reflex adds one more section, <code>[yields] email = "email"</code>. It declares what its
-            result holds. That is what the walkthrough connected.</p>
+          <p>The <code>contact</code> reflex adds one more section: <code>[yields] email = "email"</code>. It says its result
+            holds an email address, and that is how <code>mail</code> could take it.</p>
           <a class="more" href="/how-it-works.html">How it works →</a>
         </div>
       </div>
@@ -410,8 +412,8 @@ To one address, with an optional subject; nothing goes out until you press send.
     <section id="words">
       <div class="rule"><p class="label">Your words</p><span class="num">02</span></div>
       <h2>Your team's words belong here.</h2>
-      <p class="sub">A reflex ships its wording. You keep the last word. <strong>Your names and your phrases live in files
-        you own</strong>, and an update never touches them.</p>
+      <p class="sub">A reflex comes with its author's wording, and you can add your own. <strong>Your names and your
+        phrases live in files you own</strong>, and an update never touches them.</p>
       <div class="grid">
         <div class="stack">
           <div class="panel">
@@ -429,11 +431,11 @@ To one address, with an optional subject; nothing goes out until you press send.
           </div>
         </div>
         <ol class="notes column">
-          <li><b>1</b><span><strong>A word is a name you chose.</strong> The classifier reads its meaning. The program
-            receives the word, or a value you set beside it.</span></li>
-          <li><b>2</b><span><strong>A taught phrase is one line in your overlay.</strong> The next decision reads it.
+          <li><b>1</b><span><strong>A word is a name you chose, with a note on what it means.</strong> The classifier reads
+            the note. The program gets the word itself, or a value you set for it.</span></li>
+          <li><b>2</b><span><strong>Teaching adds your phrase as one line in a file of yours.</strong> The next decision reads it.
             Type <code>t</code> at any question to teach the same way.</span></li>
-          <li><b>3</b><span><strong>The shipped reflex stays as the author wrote it.</strong> Your files lay over it.
+          <li><b>3</b><span><strong>The shipped reflex stays as the author wrote it.</strong> Your files lie over it.
             An update brings new wording and keeps yours.</span></li>
         </ol>
       </div>
@@ -453,7 +455,7 @@ To one address, with an optional subject; nothing goes out until you press send.
 <span class="own">  <span class="name">volume</span> level="40 percent"  <span class="hi">0.93</span></span>
 <span class="out">volume 40%</span></pre>
           </div>
-          <p class="caption"><strong>Sure enough, so it ran.</strong> The number is the confidence. evoke asks the classifier several questions, and this is its least sure answer.</p>
+          <p class="caption"><strong>Sure enough, so it ran.</strong> The number is how sure it is. When a decision rests on several answers, it is the least sure one.</p>
         </div>
         <div class="split">
           <div class="panel term" role="figure" aria-label="A decision that asked for a value">
@@ -463,11 +465,11 @@ To one address, with an optional subject; nothing goes out until you press send.
   <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span>
 <span class="out">volume 40%</span></pre>
           </div>
-          <p class="caption"><strong>The value was out of range, so it asked.</strong> A sentence can choose a value. It can never invent one.</p>
+          <p class="caption"><strong>The value was out of range, so it asked.</strong> A value comes from your sentence or from you, never from a guess.</p>
         </div>
         <div class="split">
           <div class="panel term" role="figure" aria-label="A decision that asked for confirmation">
-            <div class="head"><span class="dots"><i></i><i></i><i></i></span>confirmed</div>
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>declined</div>
 <pre><span class="p">$</span> <span class="in">evoke "restart the computer"</span>
 <span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: action <span class="hi">0.97</span>
   Really restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
@@ -476,7 +478,7 @@ To one address, with an optional subject; nothing goes out until you press send.
           <p class="caption"><strong>Destructive, so it asked.</strong> Even at 0.97. There is no flag that skips the question. <code>[2]</code> is the exit code for declined. Here, you said no.</p>
         </div>
       </div>
-      <p class="caption">A reflex that only reads runs on its own from a confidence of <b>0.6</b>. One that writes needs <b>0.8</b>. You can change these
+      <p class="caption">A reflex that only reads things runs on its own at <b>0.6</b> or more. One that changes things needs <b>0.8</b>. You can change these
         numbers in a file you own. <a href="/how-it-works.html#decisions">Explore the decisions →</a></p>
     </section>
 
@@ -590,7 +592,7 @@ A greeting with the name given, printed back."""</span>
           <ul class="ticks">
             <li><strong>The body receives typed arguments.</strong> Here <code>who</code> is a string, taken from the quotes.</li>
             <li><strong>The effect is your claim about it.</strong> A read, a write, or something that cannot be undone.</li>
-            <li><strong><code>evoke check</code> points at any line to fix</strong> and keeps the types beside the body current.</li>
+            <li><strong><code>evoke check</code> names any line to fix</strong>, and keeps the types beside your code up to date.</li>
           </ul>
           <a class="more" href="/developers.html">Build a reflex →</a>
         </div>
@@ -604,18 +606,18 @@ A greeting with the name given, printed back."""</span>
       <div class="ways">
         <div class="way">
           <h3>In your terminal</h3>
-          <p>One small binary for macOS and Linux. Then the Mac collection, and one sentence.</p>
+          <p>One small binary for macOS and Linux, then the Mac collection. You need a classifier key first, and the
+            <a href="/start.html#needs">guide</a> says where to get one.</p>
           <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
           <div class="cmd"><code>evoke add evoke-build/reflexes</code><button type="button" data-copy aria-label="Copy the add command">Copy</button></div>
           <div class="cmd"><code>evoke "lock the screen"</code><button type="button" data-copy aria-label="Copy the first sentence">Copy</button></div>
-          <p class="after">The first result is one line: <code>locked</code>. You need a classifier key first, and the
-            <a href="/start.html">guide</a> says where it comes from.</p>
+          <p class="after">The first result is one line: <code>locked</code>.</p>
         </div>
         <div class="way">
           <h3>In your app</h3>
           <p>The same decisions inside a Node application, over the same core.</p>
           <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
-          <p class="after">One file holds a reflex written as code and the whole loop in one call. The SDK manual's first
+          <p class="after">One file can hold a reflex written as code, and run it in one call. The SDK manual's first
             hour is <a href="/start.html?mode=sdk">six things to learn</a>, in order.</p>
         </div>
       </div>
