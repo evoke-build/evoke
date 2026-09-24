@@ -165,7 +165,7 @@ p.after strong { color: var(--fg); font-weight: 560; }
 .prose p { margin: 0 0 1rem; }
 .prose strong { color: var(--fg); font-weight: 560; }
 .closing { margin-top: 5rem; padding: 2.4rem 2.6rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); display: grid; grid-template-columns: 1.4fr 1fr; gap: 2rem; align-items: center; }
-.closing h2 { margin-bottom: .5rem; }
+.closing h2 { margin: 0 0 .5rem; font-size: clamp(1.45rem, 2.4vw, 1.8rem); font-weight: 560; letter-spacing: -.022em; line-height: 1.15; }
 .closing p { margin: 0; color: var(--muted); font-size: 1.05rem; line-height: 1.5; }
 .closing .actions { margin: 0; justify-content: flex-end; }
 
