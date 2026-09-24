@@ -320,12 +320,15 @@ COLOPHON = """                    <p class="colophon"><a href="/faq.html">FAQ</a
 def furnished(page):
     """A manual page furnished: the browser's chrome takes the page's colour; the bar carries the wordmark as plain text,
     so the title stays the page's one heading, and it leads home; the site's pages join the bar; the examples' sentences
-    close the page, with the FAQ, the privacy policy and the repository in a line under them. The pages nobody lands on,
+    close the page after its previous and next, with the FAQ, the privacy policy and the repository in a line under
+    them; its edit link names the source, and a short piece of inline code is marked whole. The pages nobody lands on,
     print and 404, take only the colour and the wordmark."""
     text = page.read_text()
     text = text.replace(
         '<meta name="theme-color" content="#ffffff">', f'<meta name="theme-color" content="{palette["bg"]}">', 1
     )
+    # mdBook's edit link names the copy it built from; the page edits the source
+    text = text.replace("/docs/manual/../target/site-src/", "/docs/manual/")
     brand = "evoke"
     if page.name not in UNLISTED:
         brand = '<a href="/">evoke</a>'
@@ -334,7 +337,14 @@ def furnished(page):
             '<div class="right-buttons">\n                        <a class="site" href="/how-it-works.html">How it works</a>\n                        <a class="site" href="/examples.html">Examples</a>\n                        <a class="site start" href="/start.html">Get started</a>\n',
             1,
         )
-        text = text.replace("                    </main>", AT_WORK + COLOPHON + "                    </main>", 1)
+        # after the phone's previous and next, so the way on comes before the examples and the colophon
+        text = re.sub(
+            r'(<nav class="nav-wrapper".*?</nav>\n)',
+            lambda nav: nav[1] + AT_WORK + COLOPHON,
+            text,
+            count=1,
+            flags=re.DOTALL,
+        )
     text = text.replace(
         '<h1 class="menu-title">evoke</h1>', f'<p class="menu-title">{brand}</p>', 1
     )  # the title is the page's one heading
