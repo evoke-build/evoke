@@ -435,7 +435,7 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 .walk-legend { margin: 1.1rem 0 0; color: var(--faint); font-size: .8rem; line-height: 1.5; }
 .walk-legend p { margin: 0; }
 .walk-legend b { color: var(--muted); font-weight: 500; }
-.walk-key { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr)); gap: .35rem 1rem; margin: .75rem 0 0; padding: .6rem 0 0; border-top: 1px solid var(--line); color: var(--text); font-size: .86rem; }
+.walk-key { list-style: none; display: flex; flex-wrap: wrap; gap: .35rem 1.75rem; margin: .75rem 0 0; padding: .6rem 0 0; border-top: 1px solid var(--line); color: var(--text); font-size: .86rem; }
 .walk-key li { display: inline-flex; align-items: center; gap: .45rem; }
 .walk-key li::before { content: ""; flex: none; width: 1.3rem; border-top: 2px solid; }
 .walk-key .plan::before { border-top-style: dashed; border-color: var(--accent); }
@@ -740,6 +740,7 @@ footer a:hover { color: var(--fg); }
 @media (max-width: 560px) {
   .sheet dl > div { grid-template-columns: minmax(0, 1fr); gap: .15rem; }
   .cmd code { font-size: .8rem; }
+  .walk-key { display: grid; grid-template-columns: repeat(2, max-content); }
   p.after .also { display: block; margin: .6rem 0 0; }
   .panel pre { padding: 1rem 1rem 1.05rem; font-size: .78rem; }
   .cards, .cards.two, .grid.three { grid-template-columns: minmax(0, 1fr); }
