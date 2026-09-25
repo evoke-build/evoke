@@ -29,7 +29,7 @@ CARD_ALT = "evoke — Software, by reflex."
 LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)\)")
 TOKEN = re.compile(r"--([a-z-]+):\s*([^;]+);")
 UNLISTED = {"404.html", "print.html", "toc.html"}
-UNINDEXED = {"use-cases.html"}  # kept for the links that reach it; it sends the reader on
+UNINDEXED = {"404.html", "use-cases.html"}  # the page for an address that is not there, and one that sends readers on
 BRAND = re.compile(r"^evoke - |\s+-\s+evoke(?: manual)?$", re.IGNORECASE)
 SETTINGS = re.compile(r"\A(?:<!-- (?:title|description): .+? -->\n)+")
 PARTS = SITE / "parts"
@@ -767,7 +767,6 @@ for page in manual_pages:
     furnished(page)
     described(page)
     widowless(page)
-shutil.copy(OUT / "manual/404.html", OUT / "404.html")
 listed = (
     [OUT / "index.html"]
     + [p for p in site_pages if p.name not in UNINDEXED and p != OUT / "index.html"]
