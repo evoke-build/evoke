@@ -13,6 +13,8 @@ Six things to learn, in order: `reflex()` · `load()` · `handle()` · a `Decisi
 npm install @evoke-build/evoke
 ```
 
+The package is not on npm yet: its first release is on its way.
+
 You need Node 24.5 or newer, and ES modules: `"type": "module"` in your `package.json`, or `.mts` files. The
 package ships four entries, so the main one imports no engine:
 
