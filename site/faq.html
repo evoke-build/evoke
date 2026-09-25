@@ -233,9 +233,10 @@
       <div class="qa" id="contained">
         <h3>Does evoke sandbox the reflexes it runs?</h3>
         <div>
-          <p>Yes. A manifest declares what its program touches: the paths it reads and writes, whether it reaches the
-            network, the programs it runs. The kernel holds the reflex there, through Landlock on Linux and Seatbelt on
-            macOS, and a reflex that reaches past its declaration is stopped, with the path named. Inside that, it runs
+          <p>Yes, as far as the machine can hold it. A manifest declares what its program touches: the paths it reads
+            and writes, whether it reaches the network, the programs it runs. The kernel holds the reflex there, through
+            Landlock on Linux and Seatbelt on macOS, and a reflex that reaches past its declaration is stopped, with the
+            path named. A machine that holds only part of a declaration says so on every run. Inside that, it runs
             with your permissions and only five variables of your environment, such as <code>PATH</code> and
             <code>HOME</code>. It gets its settings, and any secret, only from evoke, for one run. A reflex your app
             hands the SDK as code runs inside your app, with all of its environment. Installing a reflex is still a

@@ -75,10 +75,15 @@ if (d.outcome === "run") await tenant.run(d)
 `decide`, `fill` and `run` on that project cannot disagree about the plan the decision was made under. So a
 multi-tenant server stays correct. A decision made on one tenant's project is refused by another's.
 
-## Running file bodies from the SDK
+## Running bodies from the SDK
 
-A reflex installed from git runs in a child process, through the SDK's own loader, under the SDK's Node. An argv
-reflex is spawned directly. Nothing is warmed at `decide`. The body's deadline is 30 seconds, less what the
-adapter call took.
+A reflex the project names, by a git ref or a directory, runs in a child process, through the SDK's own loader,
+under the SDK's Node, held to what its manifest declares under `[needs]` as far as the package can: under Node's
+permission model on both systems, and under Seatbelt on macOS. An argv reflex is spawned directly, under the same
+layers. On Linux the kernel's layer needs native code the package does not carry, so a file body runs partly held
+and an argv body unheld there, and the result's `contained` says which, in the shape
+[`--json`](../reference/json.md#shape-by-outcome) prints. A reach past the declaration ends the run with what was
+reached and the key, as it does in the CLI. Nothing starts before the decision. The body's deadline is 30
+seconds, less what the adapter call took.
 
 **Next:** [Decisions](decisions.md).

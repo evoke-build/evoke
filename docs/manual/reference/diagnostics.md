@@ -29,16 +29,20 @@ The set of fixing commands is closed. Each line ends in one of these:
 | `evoke show [<reflex>]`                    | Something answered by looking: an unknown argument, an option not offered, an undeclared key, a reflex not installed |
 | `evoke teach "<phrase>" not <reflex>`      | A newcomer steals a phrase an installed reflex claims                       |
 | `evoke update [<reflex>]`                  | A name is already locked, a tag moved or vanished, or a retired adapter     |
-| `evoke update --accept <reflex>`           | Upstream loosened an effect you had consented to                            |
+| `evoke update --accept <reflex>`           | An effect upstream loosened, or a declaration it widened, since you consented |
 | `evoke sync`                               | A reflex is not in the store, or no runtime is recorded                     |
 | `evoke trust`                              | The project is not trusted, or changed since it was                          |
-| `evoke remove <reflex>`                    | A local reflex's directory or manifest is missing                           |
+| `evoke remove <reflex>`                    | A local reflex's directory or manifest is missing; a fetched reflex reached past its declaration |
 | `evoke check`                              | A body does not exist, does not load, or exports no function                |
 | `evoke new <name>`                         | No `reflex.toml` here, or the directory already exists                      |
 | `evoke test`                               | The theft test at `add` did not finish; the install stands                  |
 | `evoke --help`                             | The arguments spell no command                                              |
-| `<file>:<line>:<column>`                   | A line of an owned file to edit: the schema, a contract key in an overlay, a loosening effect |
+| `<file>:<line>:<column>`                   | A line of an owned file to edit: the schema, a contract key in an overlay, a loosening effect, a local reflex's declaration to widen, or one naming a path that is not there |
 | the command you ran                        | Try again once the reason on the line is addressed: a prompt with no terminal, a value out of range |
+
+A body refused past its declaration, or a declared path the machine lacks, is a failure, exit 1, whose line
+still ends in its fix: the manifest's line for a local reflex, `evoke remove <reflex>` or
+`evoke update --accept <reflex>` for a fetched one, the value's source for a `{name}`.
 
 ## Why a reflex is inactive
 

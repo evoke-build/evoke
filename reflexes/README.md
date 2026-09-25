@@ -31,6 +31,8 @@ evoke add evoke-build/reflexes
 A reflex that needs your words or a setting for a required argument stays inactive until it has them. `evoke`
 says which line gives it what it needs. `places` names your folders, and each word's value is its full path.
 `sites` names your sites, and each value is its URL. `download` runs without `places`; with it, a place you name.
+`note`'s file is a path, under your home or absolute, and it must exist: the reflex declares it and writes nothing
+else.
 
 ```bash
 evoke vocab places add desktop "The desktop." --value "~/Desktop"

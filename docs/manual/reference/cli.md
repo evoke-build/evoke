@@ -84,7 +84,7 @@ manual  https://evoke.build/manual/
 | `evoke add <ref>… [--as <name>]`       | Fetches each ref at its pin or newest tag, once per repository; reads a local ref, `./dir`, where it is. Lints, tests for stolen phrases, writes `evoke.toml`, the lock and `evoke.d.ts`, and records the runtime. `--as` names a single ref |
 | `evoke remove <name>`                  | Drops the reflex from `evoke.toml` and the lock. Keeps your overlay, vocabularies, settings and the store's copy |
 | `evoke update [<name>]`                | Moves each unpinned remote reflex, or one, to its newest tag. A pinned one moves to its pin. Reports, or prints `up to date`. Never prompts or rewrites your files |
-| `evoke update --accept <name>`         | Takes on an effect upstream loosened, at the current tag                              |
+| `evoke update --accept <name>`         | Takes on an effect upstream loosened, or a declaration it widened, at the current tag |
 | `evoke sync`                           | Places every locked reflex in the store at its locked tag, and records the runtime, or prints `up to date`. Never changes the lock |
 | `evoke trust`                          | Trusts the project here, at the content of its four owned paths                       |
 

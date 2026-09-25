@@ -6,6 +6,19 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A manifest declares what its body touches, under `[needs]`: the paths it reads and writes, whether it reaches
+  the network, the programs it runs; leaving the table out is the tightest declaration. The kernel holds the body there, through
+  Landlock and seccomp on Linux and Seatbelt on macOS, with Node's permission model under both; a reach past the
+  declaration ends the run with the path and the key, and the manifest's line as the fix. `add` and `show` print
+  each declaration under its row, and say once when a machine holds only part of one. The lock records the
+  declaration you consented to; upstream may narrow it, and widening waits for `evoke update --accept`. A run's
+  line and `--json` say when the machine held less than the whole declaration.
+- A body starts once the decision is made, in its own directory, with a private `TMPDIR` removed after the run.
+  The runtime is recorded by its real path. A word's value or a plain setting that begins with `~/` reaches a
+  body as a path under your home.
+- The collection declares what each reflex touches; `note`'s file is a path, under your home or absolute.
+- In the SDK, a body runs held to its declaration as far as the package can, under Node's permission model on
+  both systems and Seatbelt on macOS, and a result carries `contained`.
 - A second adapter, `openjev`, reaches Jev through [OpenJEV](https://openjev.sh): `adapter = "openjev"` in
   `evoke.toml`, the key in `OPENJEV_API_KEY`, `[adapters.openjev]` for its gate, and `openjev()` from
   `@evoke-build/evoke/openjev` in the SDK.

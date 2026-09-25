@@ -74,8 +74,10 @@ A text that does not read is a `DiagnosticError` naming the argument and what it
 
 ## `run(d, { signal? })`
 
-Runs the chosen call's body and resolves to `{ text, data? }`. A reflex handed as code runs in-process. A file
-runs in a child. An argv is spawned. A body's failure is a `FailureError`. `signal` aborts the body, and `run`
+Runs the chosen call's body and resolves to `{ text, data? }`, with `contained` when a file or an argv ran:
+whether this machine held it to its declaration, in the shape [`--json`](../reference/json.md#shape-by-outcome)
+prints. A reflex handed as code runs in-process. A file runs in a
+child. An argv is spawned. A body's failure is a `FailureError`. `signal` aborts the body, and `run`
 rejects with the signal's reason. A decision made under another plan is refused as misuse, with a `TypeError`.
 
 ## `handle(input, { confirm?, ask?, tags?, signal? })`

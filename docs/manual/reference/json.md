@@ -28,6 +28,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because`, `choices`        |
 | `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call: `{ adapter, questions, ms }`. Empty when the answers came from the cache |
 | `result`     | ○   |         |     |         | `{ text, data? }` when the body ran                             |
+| `contained`  | ○   |         |     |         | Whenever the body ran, with `result` or `error`: whether this machine held it to its declaration, `{ "type": "full" }`, or `"partial"` or `"none"` with `why`, one sentence |
 | `error`      | ○   |         |     |         | The failure's message when it did not. The line is all that prints; the exit is 1 |
 
 A sentence read as several steps ([Weaving](../use/weaving.md)) prints one line per step, as each runs, the
