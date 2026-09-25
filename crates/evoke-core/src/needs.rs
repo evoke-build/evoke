@@ -1060,7 +1060,10 @@ mod tests {
             word: Word::new(word).unwrap(),
             value: value.map(str::to_owned),
         };
-        let config = IndexMap::from([(ConfigKey::new("file").unwrap(), "~/notes.txt".to_owned())]);
+        let config = IndexMap::from([(
+            ConfigKey::new("file").unwrap(),
+            "/Users/me/notes.txt".to_owned(),
+        )]);
         let policy = resolve(
             &active.needs,
             &call(&[("to", word("desk", Some("/Users/me/Desktop")))]),
@@ -1167,6 +1170,10 @@ mod tests {
         };
         let local = Origin::Local { at: at.clone() };
         let policy = Policy {
+            reads: vec![Place {
+                path: "/Users/me/docs".to_owned(),
+                from: Entry::parse("~/docs").unwrap(),
+            }],
             writes: vec![Place {
                 path: "/Users/me/notes".to_owned(),
                 from: Entry::parse("~/notes").unwrap(),
@@ -1205,17 +1212,36 @@ mod tests {
         );
         assert_eq!(line("mkdir", "/tmp/x"), "/tmp/x is not in [needs] writes");
         assert_eq!(
-            line("open", "/Users/me/notes/link"),
-            "~/notes/link is not in [needs] writes"
+            line("open", "/Users/me/docs/link"),
+            "~/docs/link is not in [needs] writes"
         );
         assert_eq!(
             line("open", "/etc/hosts"),
             "/etc/hosts is not in [needs] reads"
         );
         assert_eq!(
+            line("spawnSync plutil", "plutil"),
+            "plutil is not in [needs] runs"
+        );
+        assert_eq!(
             refusal(&policy, None, &note, &local, &refused("", ""), "/Users/me"),
             None
         );
+        // What the policy already allows was refused for another reason: the body's own error stands.
+        for (what, path) in [("open", "/Users/me/notes/link"), ("WorkerThreads", "")] {
+            assert_eq!(
+                refusal(
+                    &policy,
+                    None,
+                    &note,
+                    &local,
+                    &refused(what, path),
+                    "/Users/me"
+                ),
+                None,
+                "{what} {path}"
+            );
+        }
         assert_eq!(
             refusal(
                 &policy,

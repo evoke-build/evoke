@@ -2,10 +2,10 @@ reflex = 1
 
 description = """
 Whisper what the program was told.
-An argv body for the spec: printenv, the input and a setting from the environment."""
+An argv body for the spec: a script under the home's bin, the input and a setting from the environment."""
 effect = "read"
 confirm = "Whisper it?"
-run = ["printenv", "EVOKE_INPUT", "EVOKE_CONFIG_GREETING"]
+run = ["whisper"]
 
 [config]
 greeting = "How to whisper"

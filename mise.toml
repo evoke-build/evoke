@@ -21,8 +21,8 @@ description = "Lint everything: shell, TOML, the spec's shapes, the manual's lin
 env = { RUST_LOG = "warn" }
 run = [
   "shellcheck bin/* site/install.sh mise-tasks/formula mise-tasks/package mise-tasks/publish-reflexes mise-tasks/release",
-  "ruff check mise-tasks/changelog mise-tasks/lint-spec mise-tasks/site",
-  "ruff format --check mise-tasks/changelog mise-tasks/lint-spec mise-tasks/site",
+  "ruff check mise-tasks/changelog mise-tasks/lint-spec mise-tasks/site .github/annotate",
+  "ruff format --check mise-tasks/changelog mise-tasks/lint-spec mise-tasks/site .github/annotate",
   "taplo fmt --check",
   "taplo check",
   "mise run lint-spec",

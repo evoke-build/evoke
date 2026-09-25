@@ -72,10 +72,12 @@ pub fn run(mut command: Command, typed: &[String]) -> Result<(String, i32), Stri
         }
     }
     let status = child.wait().expect("the child is waited for");
-    Ok((
-        String::from_utf8_lossy(&output).replace('\r', ""),
-        status.code().unwrap_or(-1),
-    ))
+    let shown = String::from_utf8_lossy(&output).replace('\r', "");
+    // macOS's terminal echoes the end of input typed here as `^D` and rubs it out; Linux's echoes nothing, as
+    // the flows expect.
+    #[cfg(target_os = "macos")]
+    let shown = shown.replace("^D\x08\x08", "").replace("^D", "");
+    Ok((shown, status.code().unwrap_or(-1)))
 }
 
 /// SIGKILL to the child's process group — its own, made at spawn — and the child reaped.

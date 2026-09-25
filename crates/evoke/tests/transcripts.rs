@@ -170,10 +170,14 @@ fn spec() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../spec")
 }
 
-/// A fresh directory under `target/transcripts/`.
+/// A fresh directory under the build's own `target/transcripts/`, beside the binary under test, so two builds'
+/// runs never share a flow's home.
 fn throwaway(name: &str) -> PathBuf {
-    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../target/transcripts")
+    let dir = Path::new(env!("CARGO_BIN_EXE_evoke"))
+        .ancestors()
+        .nth(2)
+        .expect("the binary sits at target/<profile>/evoke")
+        .join("transcripts")
         .join(name);
     if dir.exists() {
         fs::remove_dir_all(&dir).expect("the last run's directory goes");
@@ -432,27 +436,54 @@ fn path(home: &Path) -> String {
         .expect("the binary has a directory");
     let rest = std::env::var("PATH").unwrap_or_default();
     let own = home.join("bin");
+    let runtime = runtime_dir();
     if own.is_dir() {
-        format!("{}:{}:{rest}", bin.display(), own.display())
+        format!(
+            "{}:{}:{}:{rest}",
+            bin.display(),
+            own.display(),
+            runtime.display()
+        )
     } else {
-        format!("{}:{rest}", bin.display())
+        format!("{}:{}:{rest}", bin.display(), runtime.display())
     }
 }
 
 /// The JavaScript runtime `node` names on `PATH`, as the binary it runs as, recorded in the home's state as
 /// `evoke sync` will record it: a version manager's shim cannot run contained.
 fn runtime(home: &Path) {
-    let found = Command::new("node")
-        .args(["-p", "process.execPath"])
-        .output()
-        .expect("node runs");
-    assert!(
-        found.status.success(),
-        "node is not on PATH; the transcripts run file bodies with it"
-    );
     let dir = home.join(".local/state/evoke");
     fs::create_dir_all(&dir).expect("the state directory is created");
-    fs::write(dir.join("runtime"), found.stdout).expect("the runtime is recorded");
+    fs::write(dir.join("runtime"), runtime_path()).expect("the runtime is recorded");
+}
+
+/// The runtime's real path, `node -p process.execPath`, asked once in the harness's own environment: a version
+/// manager's shim answers only in its owner's home, and a flow's home is its own.
+fn runtime_path() -> &'static str {
+    static PATH: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+    PATH.get_or_init(|| {
+        let found = Command::new("node")
+            .args(["-p", "process.execPath"])
+            .output()
+            .expect("node runs");
+        assert!(
+            found.status.success(),
+            "node is not on PATH; the transcripts run file bodies with it"
+        );
+        String::from_utf8(found.stdout)
+            .expect("a path")
+            .trim()
+            .to_owned()
+    })
+}
+
+/// The runtime's directory, first on every flow's `PATH` after the binary's and the home's own, so `add` and
+/// `sync` find the binary itself, never a shim.
+fn runtime_dir() -> PathBuf {
+    Path::new(runtime_path())
+        .parent()
+        .expect("the runtime has a directory")
+        .to_path_buf()
 }
 
 /// A path as text; everything under `target/` is UTF-8.

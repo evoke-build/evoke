@@ -213,11 +213,15 @@ pub fn seatbelt(policy: &Policy, facts: &Facts) -> String {
         .collect();
     for program in &policy.runs {
         match facts.programs.get(program.as_str()) {
-            Some(found) => execs.extend(
-                std::iter::once(&found.path)
-                    .chain(&found.interpreters)
-                    .cloned(),
-            ),
+            Some(found) => {
+                // A script is read by its interpreter, which `process-exec` alone does not allow.
+                reads.push(literal(&found.path));
+                execs.extend(
+                    std::iter::once(&found.path)
+                        .chain(&found.interpreters)
+                        .cloned(),
+                );
+            }
             None => {
                 execs.insert(program.as_str().to_owned());
             }

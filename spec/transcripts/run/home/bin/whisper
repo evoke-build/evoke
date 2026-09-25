@@ -1,0 +1,3 @@
+#!/bin/sh
+# A stand-in for the spec: what the program was told, the input then a setting, one line each.
+printf "%s\n%s\n" "$EVOKE_INPUT" "$EVOKE_CONFIG_GREETING"
