@@ -4,7 +4,7 @@ description = """
 Set the output volume.
 A percentage of the maximum; 0 is silent."""
 
-not_for = ["muting and unmuting", "screen brightness", "one app's volume"]
+not_for = ["muting and unmuting", "screen brightness", "one app's volume", "turning it up or down by an amount"]
 tags    = ["sound"]
 effect  = "write"
 confirm = "Set the volume to {level}?"
@@ -28,3 +28,4 @@ range = [0, 100]
 "turn the volume down a bit" = { level = false }
 "mute the sound"             = false
 "set the brightness to 50"   = false
+"lower the volume by 20"     = false
