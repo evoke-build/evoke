@@ -33,5 +33,5 @@ function fail(message) {
 function where(stack) {
   const lines = stack.split("\n");
   const first = lines.findIndex((line) => line.startsWith("    at "));
-  return (first < 0 ? [] : lines.slice(first)).filter((line) => !line.includes("node:internal")).join("\n");
+  return (first < 0 ? [] : lines.slice(first)).filter((line) => !/[( ]node:/.test(line)).join("\n");
 }

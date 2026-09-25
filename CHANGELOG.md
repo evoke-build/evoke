@@ -11,6 +11,7 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   that declares none off it.
 - A network reach past the declaration is named on every Node, a listening port and a datagram included. An error
   a body throws from a callback ends the run with its message.
+- A failing body's frames, and `evoke check`'s, no longer include a line from inside Node.
 
 ## [0.5.0] - 2026-09-25
 

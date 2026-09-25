@@ -117,7 +117,7 @@ function where(stack) {
   const lines = stack.split("\n");
   const first = lines.findIndex((line) => line.startsWith("    at "));
   return (first < 0 ? [] : lines.slice(first))
-    .filter((line) => !line.includes("node:internal") && !line.includes("[eval"))
+    .filter((line) => !/[( ]node:/.test(line) && !line.includes("[eval"))
     .join("\n");
 }
 
