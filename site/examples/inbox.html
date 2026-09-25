@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Process an inbox of requests - Evoke</title>
-  <meta name="description" content="A file of requests, one per line. What is sure runs. What needs a person is queued with its ranking. A pattern for your app, in eleven lines of code.">
+  <title>Triage typed requests: clear ones run, the rest wait - Evoke</title>
+  <meta name="description" content="Triage natural-language requests in a file. Clear ones run. The rest wait for a person with a note of what is missing, and one that fits nothing runs nothing.">
   <!-- head -->
 </head>
 <body>
@@ -14,23 +14,27 @@
     <div class="hero solo">
       <div class="copy">
         <p class="crumb"><a href="/examples.html">Examples</a> · 04 of 06</p>
-        <h1>Act on the clear requests. <em>Hold the rest for a person.</em></h1>
-        <p class="lede"><strong>A file of requests, one per line.</strong> What is sure runs. What needs a person is
-          queued with its ranking, and what is nobody's stays untouched. A pattern for your app, in eleven lines.</p>
+        <h1>Run the clear requests. <em>Hold the rest for a person.</em></h1>
+        <p class="lede"><strong>Triage a file of natural-language requests, one per line.</strong> A reflex is a small
+          program you install and ask for in your words. A request runs when it names everything and evoke is sure
+          enough for what it changes. The rest wait for a person, with a note of what is missing. A request that fits
+          nothing runs nothing.</p>
+        <div class="cta"><a class="button primary" href="#set-up">Adapt this pattern</a></div>
       </div>
       <ul class="index" aria-label="The sections">
         <li><a href="#request"><code>01</code>The request and the result</a></li>
         <li><a href="#files"><code>02</code>The operations</a></li>
         <li><a href="#boundary"><code>03</code>One boundary</a></li>
-        <li><a href="#needs"><code>04</code>Before you run it</a></li>
+        <li><a href="#set-up"><code>04</code>Set it up</a></li>
+        <li><a href="#app"><code>05</code>In your app</a></li>
       </ul>
     </div>
 
     <section id="request">
       <div class="rule"><p class="label">The request and the result</p><span class="num">01</span></div>
-      <h2>Lines in, decisions out.</h2>
-      <p class="sub">The same three ops reflexes, fed a file. <strong>One line ran. One waits for a person. One fits
-        nothing.</strong> Every line is what the terminal printed.</p>
+      <h2>One line ran, one waits, one fits nothing.</h2>
+      <p class="sub">A file of three requests, decided against the ops example's three reflexes. <strong>Recorded on 21 September 2026 against Jev, TypeSafe AI's model, which reads each
+        sentence.</strong></p>
       <div class="grid">
         <div class="panel term demo stream" role="figure" data-scene="stream" aria-label="Three lines sorted into three lanes">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/ops<span class="trail" aria-hidden="true"><b>ran</b><b>queued</b><b>nobody's</b></span></div>
@@ -57,12 +61,13 @@
         </div>
         <div class="side">
           <ol class="notes column">
-            <li><b>1</b><span><strong>A settled decision runs.</strong> The first line named everything and cleared the
-              bar, so <code>run()</code> ran it.</span></li>
-            <li><b>2</b><span><strong>An ask waits for a person.</strong> «silence db-3» named no duration. The decision
-              carries what is missing and why, so a person can answer later.</span></li>
-            <li><b>3</b><span><strong>Nothing was invented.</strong> A question about the weather fits no reflex. It is
-              queued as an abstain, with its ranking.</span></li>
+            <li><b>1</b><span><strong>A clear request runs.</strong> The first line named the service, the number and the
+              environment. It changes something, so every answer had to be 0.8 or more. It cleared that bar, so
+              <code>run()</code> ran it.</span></li>
+            <li><b>2</b><span><strong>A missing value waits for a person.</strong> «silence db-3» named no duration. The
+              decision holds what is missing and why, so a person can answer later.</span></li>
+            <li><b>3</b><span><strong>A request that fits nothing runs nothing.</strong> A question about the weather fits
+              no reflex, so nothing ran. The decision keeps the ranking for whoever reads the queue.</span></li>
           </ol>
         </div>
       </div>
@@ -70,9 +75,9 @@
 
     <section id="files">
       <div class="rule"><p class="label">The operations</p><span class="num">02</span></div>
-      <h2>Eleven lines around the same reflexes.</h2>
-      <p class="sub">The app reads a line, decides, and runs what is settled. <strong>The reflexes are the ones from the
-        <a href="/examples/ops.html">ops example</a></strong>, installed beside the app as files.</p>
+      <h2>An app of eleven lines decides each request.</h2>
+      <p class="sub">The app reads a line, decides, and runs only what is settled. <strong>The reflexes are the three
+        from the <a href="/examples/ops.html">ops example</a>, in the same project directory.</strong></p>
       <div class="split">
         <div class="panel tabbed">
           <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The inbox as a file, and the app">
@@ -104,10 +109,11 @@ what is the weather like</pre>
           <ol class="notes column">
             <li><b>1</b><span><strong><code>decide()</code> runs nothing.</strong> It returns a typed decision: run,
               confirm, ask or abstain. The app branches on it.</span></li>
-            <li><b>2</b><span><strong>Only <code>run</code> is acted on here.</strong> A confirm would also wait for a
-              person in this app, since nothing answers it. Your queue decides who.</span></li>
-            <li><b>3</b><span><strong>The decision is plain data.</strong> Keep it in any queue or table. A second process
-              can fill or confirm it later.</span></li>
+            <li><b>2</b><span><strong>Only <code>run</code> is acted on here.</strong> A confirm waits for a person too,
+              since nothing in this app answers it. Your queue decides which person answers it.</span></li>
+            <li><b>3</b><span><strong>A decision is plain data.</strong> Keep it in any queue or table. Later,
+              <code>fill()</code> answers an ask, and <code>run(d, { confirmed: true })</code> runs a confirm. Both need
+              a project built from the same reflexes and words.</span></li>
           </ol>
         </div>
       </div>
@@ -115,12 +121,13 @@ what is the weather like</pre>
 
     <section id="boundary">
       <div class="rule"><p class="label">One boundary</p><span class="num">03</span></div>
-      <h2>With no terminal, a question is an exit code.</h2>
-      <p class="sub">The CLI can take the same file. <strong>A line that needs an answer cannot get one from a pipe</strong>,
-        so it exits 3 and names the command to run yourself.</p>
+      <h2>With no terminal, a question becomes an exit code.</h2>
+      <p class="sub">The <code>evoke</code> command reads the same file, one request per line. <strong>With no terminal
+        attached, as in a cron job, evoke cannot ask.</strong> A line that needs an answer prints the command to run
+        yourself, and the run ends with exit code 3.</p>
       <div class="grid">
-        <div class="panel term" role="figure" aria-label="The CLI as a filter over the same file">
-          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+        <div class="panel term" role="figure" aria-label="The evoke command over the same file, with no terminal attached">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>no terminal</div>
 <pre><span class="p">$</span> <span class="in">evoke &lt; inbox.txt</span>
 <span class="own">  <span class="name">scale</span> service="checkout" env="staging" replicas="6"  <span class="hi">0.90</span></span>
 <span class="out">deployment.apps/checkout-api scaled</span>
@@ -128,26 +135,97 @@ what is the weather like</pre>
   <span class="name">none</span> <span class="hi">1.00</span> · 3 more under 0.01
 [3]</span></pre>
         </div>
-        <p class="caption">Every other line is still answered. The filter exits with the first non-zero code. There is no
-          flag that answers a question for you. <a href="/manual/use/saying-things.html#three-ways-in">Three ways in →</a></p>
+        <p class="caption">Every other line is still answered, and evoke exits with the first code that is not zero. The
+          weather line printed its ranking: <code>none</code> first, at 1.00. No flag answers a question for you. At your
+          own terminal, evoke asks the question there instead.
+          <a href="/manual/use/saying-things.html#three-ways-in">Piping requests into evoke, in the manual →</a></p>
       </div>
     </section>
 
-    <section id="needs">
-      <div class="rule"><p class="label">Before you run it</p><span class="num">04</span></div>
-      <h2>What this pattern needs.</h2>
+    <section id="set-up">
+      <div class="rule"><p class="label">Set it up</p><span class="num">04</span></div>
+      <h2>Feed a file of requests to the scale reflex.</h2>
+      <p class="sub">This uses the project from the ops example, with its <code>scale</code> reflex and your words.
+        <strong>The first request scales a real deployment, so point your words at one you may change.</strong></p>
       <ul class="needs">
-        <li class="ok"><b>Node 24.5 or newer</b>And the SDK, <code>@evoke-build/evoke</code>, next to the file.</li>
-        <li class="ok"><b>Reflexes beside the app</b>The three from the ops example, installed with
-          <code>evoke add</code> in the app's directory, and their vocabulary.</li>
-        <li class="ok"><b>A classifier key</b>One request per line. The provider bills the use.</li>
-        <li class="no"><b>Your queue</b>The app prints what it queued. Yours would store the decision and show it to
-          someone.</li>
+        <li class="ok"><b>The ops project</b><a href="/examples/ops.html#set-up">The ops example's Set it up</a> builds it:
+          the reflex, your words and your key.</li>
+        <li class="ok"><b>kubectl, with access</b>The first request scales a deployment, for real.</li>
+        <li class="ok"><b>A classifier key</b>One request per line, billed by the provider to your key. The
+          <code>evoke</code> command answers a line you repeat from a local cache.</li>
+        <li class="no"><b>Your queue</b>The app prints what it would queue. Yours would store each decision and show it
+          to someone.</li>
       </ul>
-      <p class="after">The files above are the whole example. Copy them from this page.</p>
+      <ol class="plan">
+        <li>
+          <div>
+            <h3>Write the requests</h3>
+            <p>Save three requests in <code>~/ops/inbox.txt</code>, one per line: one that names everything, one that
+              leaves out the environment, and one that fits no reflex.</p>
+            <div class="panel">
+              <div class="head"><i></i>~/ops/inbox.txt<span class="who you">yours</span></div>
+<pre>scale checkout to 6 in staging
+scale checkout to 3
+what is the weather like</pre>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Try the file</h3>
+            <p>Each line is decided, and nothing runs. The first would run, the second asks for its environment, and the
+              third fits nothing.</p>
+            <div class="cmd"><code>evoke try &lt; inbox.txt</code><button type="button" data-copy aria-label="Copy the try command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Run it at your terminal</h3>
+            <p>The first line scales for real. evoke asks at your terminal for the environment the second line lacks:
+              answer only if that scale may run, or press <code>Ctrl-D</code> to decline. The third line prints its
+              ranking.</p>
+            <div class="cmd"><code>evoke &lt; inbox.txt</code><button type="button" data-copy aria-label="Copy the run command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Or run it unattended, and keep every decision</h3>
+            <p>Where no terminal is attached, such as a cron job or CI, each request becomes one JSON line: what ran and
+              its result, what is missing, or the ranking. The first line scales here too, and the run ends with exit
+              code 3. A person works from the file.</p>
+            <div class="cmd"><code>evoke --json &lt; inbox.txt &gt; decided.jsonl</code><button type="button" data-copy aria-label="Copy the unattended command">Copy</button></div>
+          </div>
+        </li>
+      </ol>
+      <p class="after">Put your own requests in <code>inbox.txt</code>. Each one is decided against the reflexes in the
+        project, so add yours with <code>evoke add ./&lt;name&gt;</code>.</p>
+    </section>
+
+    <section id="app">
+      <div class="rule"><p class="label">In your app</p><span class="num">05</span></div>
+      <h2>The same file, from a Node application.</h2>
+      <p class="sub"><code>queue.ts</code> loads <code>~/ops</code> and decides each line. It runs only what is settled,
+        and queues the rest. <strong>It needs Node 24.5 or newer, and ES modules.</strong></p>
+      <div class="split">
+        <div class="stack">
+          <div class="cmd"><code>npm init -y &amp;&amp; npm pkg set type=module</code><button type="button" data-copy aria-label="Copy the package command">Copy</button></div>
+          <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
+          <div class="cmd"><code>node queue.ts &lt; inbox.txt</code><button type="button" data-copy aria-label="Copy the app command">Copy</button></div>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>The SDK's first release on npm is on its way.</strong> Until then, the terminal
+              route above runs today.</span></li>
+            <li><b>2</b><span><strong>Save <code>queue.ts</code> in <code>~/ops</code>.</strong> The first line scales for
+              real. The other two print what the app would queue: an ask and an abstain.</span></li>
+            <li><b>3</b><span><strong>Replace the <code>else</code> branch with your queue.</strong> Store the decision,
+              then show <code>d.missing</code> or <code>d.contenders</code> to a person.</span></li>
+          </ol>
+        </div>
+      </div>
       <div class="actions">
-        <a class="button primary" href="/start.html?example=inbox">Adapt this pattern</a>
-        <a class="quiet" href="/manual/sdk/decisions.html">Read the docs →</a>
+        <a class="button primary" href="/manual/reference/json.html">The JSON line, in the manual</a>
+        <a class="quiet" href="/manual/sdk/decisions.html">Decisions in the SDK, in the manual →</a>
       </div>
     </section>
   </main>

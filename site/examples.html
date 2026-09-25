@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Examples - Evoke</title>
-  <meta name="description" content="Six examples, from what a Mac does at a word to a runbook that names its next step. Each shows its request, its result, one boundary and what it needs.">
+  <title>Natural-language command examples - Evoke</title>
+  <meta name="description" content="Six natural-language command examples: everyday Mac tasks that run today, and patterns for passing a result along, kubectl, triage, a runbook and approvals.">
   <!-- head -->
 </head>
 <body>
@@ -13,17 +13,22 @@
   <main class="wrap">
     <div class="hero solo">
       <div class="copy">
-        <h1>Find the first thing <em>you want evoke to do.</em></h1>
-        <p class="lede"><strong>Six examples, each on a page of its own.</strong> One runs today on a Mac. Five are patterns
-          for an application, shown with the code that ran. Every page says what it needs before you run it or adapt it.</p>
+        <h1>Examples of natural-language commands <em>you can run or adapt.</em></h1>
+        <p class="lede"><strong>Type what you want, and a program you installed does it.</strong> A reflex is a small
+          program you install and ask for in your words. One example runs today on a Mac, and five are patterns to adapt
+          to your own programs.</p>
+        <div class="cta">
+          <a class="button primary" href="/start.html">Get started</a>
+          <a class="button" href="/how-it-works.html">How it works</a>
+        </div>
       </div>
     </div>
 
     <section id="all">
       <div class="rule"><p class="label">Examples</p><span class="num">01 to 06</span></div>
-      <h2>Pick one, and follow it to the end.</h2>
-      <p class="sub">Each page has the same shape: the request and the result, the operations behind it, one boundary
-        where evoke asked first, and what you need. <strong>Then the run, or the pattern to adapt.</strong></p>
+      <h2>Pick one, and follow it to its set-up.</h2>
+      <p class="sub">Each page shows a sentence, what the terminal printed, one case where evoke asked or stopped, and
+        what you need. <strong>Each ends with the steps to run it or adapt it.</strong></p>
       <div class="cards">
         <a class="card" href="/examples/desktop.html">
           <div class="room mac">
@@ -39,8 +44,8 @@
             </svg>
             <span class="say"><i>$</i> evoke "set the volume to 40 percent"</span>
           </div>
-          <div class="text"><i>01</i><b>Everyday Mac tasks</b><span>Thirteen reflexes for everyday things on a Mac:
-            lock, volume, a timer, a draft.</span><small><b>Runs today</b> on a Mac with the collection.</small></div>
+          <div class="text"><i>01</i><b>Everyday Mac tasks</b><span>Thirteen reflexes for everyday things on a Mac: lock
+            the screen, set the volume, start a timer or a draft.</span><small><b>Runs today</b> on a Mac with the collection.</small></div>
         </a>
         <a class="card" href="/examples/contact-to-draft.html">
           <div class="room duo">
@@ -61,8 +66,8 @@
             </svg>
             <span class="say"><i>$</i> evoke "look up dana's address and email them"</span>
           </div>
-          <div class="text"><i>02</i><b>Look up a contact, prepare a draft</b><span>Two reflexes connect. What one
-            finds, the next one takes.</span><small><b>A recorded session</b>, and a pattern for your app.</small></div>
+          <div class="text"><i>02</i><b>Pass a result to the next step</b><span>One sentence looks up an address, and the
+            next step starts an email to it.</span><small><b>A pattern to adapt.</b> You write the lookup. The mail reflex is in the collection.</small></div>
         </a>
         <a class="card" href="/examples/ops.html">
           <div class="room ops">
@@ -87,8 +92,8 @@
             </svg>
             <span class="say"><i>$</i> evoke "scale checkout to 6 in staging"</span>
           </div>
-          <div class="text"><i>03</i><b>Operate services in team language</b><span>Your names for services fill a
-            command's arguments. A scale runs at once, and a rollback always asks.</span><small><b>A pattern for your app.</b> Needs kubectl and its access.</small></div>
+          <div class="text"><i>03</i><b>kubectl operations in your team's words</b><span>Your names for services fill kubectl's
+            arguments. A scale runs when evoke is sure enough, and a rollback always asks.</span><small><b>A pattern to adapt.</b> Needs kubectl and access to your cluster.</small></div>
         </a>
         <a class="card" href="/examples/inbox.html">
           <div class="room inbox">
@@ -102,8 +107,8 @@
             </svg>
             <span class="say"><i>$</i> node queue.ts &lt; inbox.txt</span>
           </div>
-          <div class="text"><i>04</i><b>Process an inbox of requests</b><span>Requests from a file. Clear ones run.
-            Unclear ones wait for a person.</span><small><b>A pattern for your app</b>, in eleven lines.</small></div>
+          <div class="text"><i>04</i><b>Triage typed requests</b><span>A file of requests, one per line. The clear ones run,
+            and the rest wait for a person.</span><small><b>A pattern to adapt</b>, at a terminal or in eleven lines of your app.</small></div>
         </a>
         <a class="card" href="/examples/runbook.html">
           <div class="room chain">
@@ -116,8 +121,8 @@
             </svg>
             <span class="say"><i>$</i> node runbook.ts "drain the primary"</span>
           </div>
-          <div class="text"><i>05</i><b>Continue an operational procedure</b><span>Each step's program names the next.
-            Only the destructive one asks.</span><small><b>A pattern for your app.</b> The database bodies are stand-ins.</small></div>
+          <div class="text"><i>05</i><b>A runbook that asks before its destructive step</b><span>Each step's program names
+            the next. Only the destructive step asks.</span><small><b>A pattern for your app.</b> The database programs are stand-ins.</small></div>
         </a>
         <a class="card" href="/examples/approval.html">
           <div class="room desk">
@@ -132,7 +137,7 @@
             </svg>
             <span class="say"><i>$</i> node checker.ts</span>
           </div>
-          <div class="text"><i>06</i><b>Prepare an action for approval</b><span>One person types a payment. The decision
+          <div class="text"><i>06</i><b>Maker-checker approval</b><span>One person types a payment. The decision
             waits until another confirms it.</span><small><b>A pattern for your app.</b> Authorization stays yours.</small></div>
         </a>
       </div>
@@ -140,9 +145,10 @@
 
     <div class="closing">
       <div>
-        <h2>None of these is yours?</h2>
-        <p>A reflex is one file beside a program you already have. The developers page starts from an operation of
-          your own, and the format page is the whole standard.</p>
+        <h2>No example fits? Wrap a program of your own.</h2>
+        <p>evoke runs only reflexes that someone wrote and you installed. A reflex can wrap a script, a command or a
+          function you already have. To wrap a command, one file is enough: the manifest, which says what it does and
+          what to ask you.</p>
       </div>
       <div class="actions">
         <a class="button primary" href="/developers.html">Build a reflex</a>

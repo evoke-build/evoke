@@ -222,6 +222,7 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 .panel.term .head .dots i:nth-child(3) { background: #28c840; }
 .panel.term pre { white-space: pre-wrap; overflow-wrap: anywhere; text-indent: 4ch hanging each-line; }  /* a terminal wraps, and a wrapped line hangs under its start */
 .panel.term pre { color: var(--term-fg); }
+.panel.term pre.columns { white-space: pre; }  /* output laid out in columns scrolls instead, so its columns hold */
 .panel .p { color: var(--accent); }
 .panel .in { color: var(--term-in); }
 .panel .own { color: var(--term-dim); }
@@ -760,6 +761,12 @@ footer a:hover { color: var(--fg); }
   .table td[data-label]::before { content: attr(data-label); display: block; margin-bottom: .1rem; font: 560 .68rem/1.4 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
   .table td.y, .table td.n { display: inline-block; margin-right: 1.1rem; }
   .table td.y::before, .table td.n::before { display: inline; margin-right: .45rem; }
+  /* a table whose last column is a short tag: the tag sits beside the name, and the middle cell runs below them */
+  .table.tagged tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 1rem; }
+  .table.tagged td:nth-child(2) { grid-column: 1 / -1; margin-top: .3rem; }
+  .table.tagged td:nth-child(2)::before { content: none; }
+  .table.tagged td:last-child { grid-area: 1 / 2; margin: 0; }
+  .table.tagged td:last-child::before { display: inline; margin-right: .45rem; }
   .sheet dl > div { grid-template-columns: minmax(0, 1fr); gap: .15rem; }
   .cmd code { font-size: .8rem; }
   .jobs { flex-direction: column; gap: .5rem; }  /* the three jobs as a short list, not a 2 + 1 row */

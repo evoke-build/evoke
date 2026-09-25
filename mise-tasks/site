@@ -345,8 +345,8 @@ AT_WORK = """                    <aside class="at-work" aria-label="The examples
                         <div class="words">
                             <p class="label">Examples</p>
                             <h2>Find the first thing you want it to do.</h2>
-                            <p>Six examples, from what a Mac does at a word to a runbook that names its own next step.
-                                Each one shows its request, its result, and what it needs before you run it.</p>
+                            <p>Six natural-language command examples: one runs today on a Mac, and five are patterns
+                                to adapt. Each ends with the steps to run it or adapt it.</p>
                             <a class="go" href="/examples.html">Explore examples &rarr;</a>
                         </div>
                         <ul class="said">

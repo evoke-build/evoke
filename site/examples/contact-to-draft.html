@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Look up a contact and prepare a draft - Evoke</title>
-  <meta name="description" content="One sentence finds an address and starts a draft with it. What contact yields, mail takes. A recorded session from the product's own tests.">
+  <title>Pass a result to the next step in one sentence - Evoke</title>
+  <meta name="description" content="Pass one step's output to the next in a single typed sentence. A lookup finds an address, the email step takes it, and evoke shows the plan first.">
   <!-- head -->
 </head>
 <body>
@@ -14,27 +14,31 @@
     <div class="hero solo">
       <div class="copy">
         <p class="crumb"><a href="/examples.html">Examples</a> · 02 of 06</p>
-        <h1>One sentence finds an address <em>and starts a draft with it.</em></h1>
-        <p class="lede"><strong>Two reflexes connect.</strong> What <code>contact</code> finds, <code>mail</code> takes,
-          because one declares what its result holds and the other lacks a value of that kind. A recorded session from
-          the product's own tests, and a pattern for your app.</p>
+        <h1>One sentence looks up an address <em>and passes it to the next step.</em></h1>
+        <p class="lede"><strong>Type one sentence that asks for two things, and the result of the first fills an input of
+          the second.</strong> A reflex is a small program you install and ask for in your words. Here one reflex finds
+          Dana's address, and a second starts an email to it. The lookup on this page is a stand-in from evoke's tests.
+          You write your own, and the mail reflex comes from evoke's collection of Mac reflexes.</p>
+        <div class="cta"><a class="button primary" href="#set-up">Adapt this pattern</a></div>
       </div>
       <ul class="index" aria-label="The sections">
         <li><a href="#request"><code>01</code>The request and the result</a></li>
-        <li><a href="#files"><code>02</code>The operations</a></li>
+        <li><a href="#files"><code>02</code>How the address passes</a></li>
         <li><a href="#boundary"><code>03</code>One boundary</a></li>
-        <li><a href="#needs"><code>04</code>Before you run it</a></li>
+        <li><a href="#set-up"><code>04</code>Set it up</a></li>
+        <li><a href="#app"><code>05</code>In your app</a></li>
       </ul>
     </div>
 
     <section id="request">
       <div class="rule"><p class="label">The request and the result</p><span class="num">01</span></div>
-      <h2>Two steps, one sentence.</h2>
-      <p class="sub">Each part is decided on its own, in the order you typed it. <strong>The plan shows first.</strong>
-        The stage plays three sentences in turn: one that ran, one declined at its first step, one refused.</p>
+      <h2>A value passes, a step is declined, a sentence is refused.</h2>
+      <p class="sub">evoke splits your sentence into steps, in the order your words give. A classifier reads each step on
+        its own: Jev, TypeSafe AI's model. <strong>evoke prints the plan, one line per step, before anything
+        runs.</strong></p>
       <div class="grid">
-        <div class="panel term demo woven" role="figure" data-scene="woven" data-names="1" data-n1="ran" data-n2="ran" data-wire="on" style="--lines: 8" aria-label="Two steps in one sentence: run and bound, then declined, then refused">
-          <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/home<span class="trail" aria-hidden="true"><b class="on">ran</b><b>declined</b><b>refused</b></span></div>
+        <div class="panel term demo woven" role="figure" data-scene="woven" data-names="1" data-n1="ran" data-n2="ran" data-wire="on" style="--lines: 8" aria-label="Three sentences of two steps each: a value passed, a step declined, a sentence refused">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/home<span class="trail" aria-hidden="true"><b class="on">passed</b><b>declined</b><b>refused</b></span></div>
           <div class="room">
             <svg viewBox="0 0 560 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
               <g class="link"><line class="wire" x1="196" y1="104" x2="364" y2="104"/><line class="pulse" x1="196" y1="104" x2="364" y2="104"/><text class="bind" x="280" y="92" text-anchor="middle">email</text></g>
@@ -63,22 +67,38 @@
         </div>
         <div class="side">
           <ol class="notes column">
-            <li><b>1</b><span><strong>«them» names step 1.</strong> <code>mail</code> needed an address. <code>contact</code>
-              declares one under <code>[yields]</code>, and the plan takes it: <code>takes email from 1</code>.</span></li>
-            <li><b>2</b><span><strong>A no ends the sentence at that step.</strong> In the second sentence, a timer asked at its turn.
-              Declined, and the lights step after it was skipped. The exit code is the worst step's.</span></li>
-            <li><b>3</b><span><strong>A part that matches nothing refuses the whole sentence</strong>, before anything
-              runs. Nothing is left half done.</span></li>
+            <li><b>1</b><span><strong>«them» points at step 1.</strong> <code>mail</code> needs an address your words did
+              not give. <code>contact</code>'s result holds one, of the kind <code>mail</code> takes, so the plan prints
+              <code>takes email from 1</code>. Once <code>contact</code> runs, the address fills <code>to</code>.</span></li>
+            <li><b>2</b><span><strong>A no stops the sentence at that step.</strong> In the second sentence, evoke was less
+              sure of the timer, so it asked. The answer was no, and the lights step after it was skipped.</span></li>
+            <li><b>3</b><span><strong>«feed the cat» matches no reflex you installed.</strong> So evoke refuses the whole
+              sentence before anything runs, the lights included, rather than do half of it. The exit code is
+              <code>[2]</code>, as it is for a no.</span></li>
           </ol>
         </div>
       </div>
+      <p class="caption">A session from evoke's tests, replayed. The classifier's answers come from a file written for the
+        test. <code>contact</code> is a stand-in that makes the address from the name. <code>lights</code>, this
+        <code>timer</code> and this <code>mail</code> are stand-ins too, and each only prints a line. The collection's
+        <code>mail</code> opens a real draft on a Mac, and nothing is sent. <a href="#files">How the address passes ↓</a></p>
     </section>
 
     <section id="files">
-      <div class="rule"><p class="label">The operations</p><span class="num">02</span></div>
-      <h2>Two manifests, and the test that pins them.</h2>
-      <p class="sub">These files come from the product's own test home. <strong>The <code>contact</code> body is a
-        stand-in that makes an address from the name.</strong> In yours, it would ask your directory.</p>
+      <div class="rule"><p class="label">How the address passes</p><span class="num">02</span></div>
+      <h2>The address passes because both reflexes declare the same kind.</h2>
+      <p class="sub">Each reflex has a manifest, its <code>reflex.toml</code>, which says what it does and what it takes.
+        <code>contact</code>'s manifest also declares what its result holds. <strong>When that result and
+        <code>mail</code>'s input are of the same kind, evoke plans the pass and shows it before anything runs.</strong></p>
+      <div class="table"><table>
+        <thead><tr><th>Where</th><th>The line</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>contact/reflex.toml</code></td><td><code>[yields]</code> <code>email = "email"</code></td><td><code>contact</code>'s result holds a field named <code>email</code>, and its value is an email address.</td></tr>
+          <tr><td><code>contact/contact.mts</code></td><td><code>return { text, data: { email } }</code></td><td><code>text</code> is the line you read. <code>data.email</code> carries the value that passes.</td></tr>
+          <tr><td><code>mail/reflex.toml</code></td><td><code>[args.to]</code> <code>pick = "email"</code></td><td><code>mail</code>'s <code>to</code> takes an email address.</td></tr>
+          <tr><td>the plan</td><td><code>2  mail · takes email from 1</code></td><td>«them» points at step 1, and <code>email</code> is the kind <code>to</code> takes. So the plan says the address will fill <code>to</code>, and step 2 prints again with it once step 1 has run.</td></tr>
+        </tbody>
+      </table></div>
       <div class="split">
         <div class="panel tabbed">
           <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The two reflexes as files, and the SDK test">
@@ -87,7 +107,7 @@
             <button role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1">the SDK test</button>
           </div></div>
           <div role="tabpanel" id="p1" aria-labelledby="t1">
-            <div class="file">contact/reflex.toml<span class="who">the author's</span></div>
+            <div class="file">contact/reflex.toml<span class="who">the test's</span></div>
 <pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
 
 <span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
@@ -120,12 +140,12 @@
   <span class="w">const</span> email <span class="o">=</span> <span class="s">`${name}@example.com`</span>
   <span class="w">return</span> <span class="o">{</span> <span class="k">text</span><span class="o">:</span> <span class="s">`${name} &lt;${email}&gt;`</span><span class="o">,</span> <span class="k">data</span><span class="o">:</span> <span class="o">{</span> email <span class="o">}</span> <span class="o">}</span>
 <span class="o">}</span></pre>
-            <div class="file">vocab/people.toml<span class="who you">yours</span></div>
+            <div class="file">vocab/people.toml<span class="who">a vocabulary</span></div>
 <pre><span class="k">dana</span> <span class="o">=</span> <span class="s">"Dana Ortiz, operations."</span>
 <span class="k">sam</span>  <span class="o">=</span> <span class="s">"Sam Lee, sales."</span></pre>
           </div>
           <div role="tabpanel" id="p2" aria-labelledby="t2" hidden>
-            <div class="file">mail/reflex.toml<span class="who">the author's</span></div>
+            <div class="file">mail/reflex.toml<span class="who">the test's</span></div>
 <pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
 
 <span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
@@ -160,6 +180,9 @@
 <span class="t">[tests]</span>
 <span class="s">'mail dana@example.com "the minutes"'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"dana@example.com"</span><span class="o">,</span> <span class="k">subject</span> <span class="o">=</span> <span class="s">"the minutes"</span> <span class="o">}</span>
 <span class="s">"read my mail"</span>                        <span class="o">=</span> <span class="n">false</span></pre>
+            <div class="file">mail/mail.mts<span class="who">a stand-in</span></div>
+<pre><span class="w">export</span> <span class="w">default</span> <span class="w">async</span> <span class="o">({</span> to<span class="o">,</span> cc<span class="o">,</span> subject <span class="o">}:</span> <span class="o">{</span> <span class="k">to</span><span class="o">:</span> string<span class="o">;</span> cc<span class="o">?:</span> string<span class="o">;</span> subject<span class="o">?:</span> string <span class="o">})</span> <span class="o">=&gt;</span>
+  <span class="s">`drafted to ${to}${cc === undefined ? "" : `, copy ${cc}`</span><span class="o">}</span>$<span class="o">{</span>subject <span class="o">===</span> <span class="n">undefined</span> <span class="o">?</span> <span class="s">""</span> <span class="o">:</span> <span class="s">` about ${subject}`</span><span class="o">}</span>`</pre>
           </div>
           <div role="tabpanel" id="p3" aria-labelledby="t3" hidden>
             <div class="file">sdk/test/weave.test.mts<span class="who">runs in CI</span></div>
@@ -181,13 +204,18 @@
         </div>
         <div class="side">
           <ol class="notes column">
-            <li><b>1</b><span><strong>The handoff is in the manifests.</strong> <code>[yields] email = "email"</code> on one
-              side, <code>pick = "email"</code> for <code>to</code> on the other. Same kind, so it binds.</span></li>
-            <li><b>2</b><span><strong>The lookup data is a vocabulary.</strong> <code>dana</code> and <code>sam</code> are
-              words you filled. The body turns the word into an address. Yours would query a directory.</span></li>
-            <li><b>3</b><span><strong>The test replays a recording.</strong> No key, no network. It pins the bind, the ask
-              it fills, the call, and both results.</span></li>
+            <li><b>1</b><span><strong>Same kind, so it passes.</strong> A result can hold a number, a duration, an email
+              address, a URL or a quoted phrase. A later step takes a field only when your words point back to the earlier
+              step, the input is of the same kind, and your words left it empty.</span></li>
+            <li><b>2</b><span><strong>The lookup reads your list of people.</strong> <code>dana</code> and <code>sam</code>
+              are words in it, and evoke calls such a list a vocabulary. This stand-in turns the word into an address.
+              Yours would look it up.</span></li>
+            <li><b>3</b><span><strong>The SDK test reads the classifier's answers from the same file.</strong> It needs no
+              key and no network, and runs in evoke's own test suite. It checks the pass, the input it fills, the call and
+              both results.</span></li>
           </ol>
+          <p class="after">The collection's <code>mail</code> takes <code>to</code> the same way.
+            <a class="more" href="/how-it-works.html#handoff">When a result passes to the next step →</a></p>
         </div>
       </div>
     </section>
@@ -195,12 +223,12 @@
     <section id="boundary">
       <div class="rule"><p class="label">One boundary</p><span class="num">03</span></div>
       <h2>A reference that takes nothing asks before anything runs.</h2>
-      <p class="sub">«for them» points at step 1, but a timer needs no address. <strong>evoke says so, and asks whether
-        to run the plan as it stands.</strong> Nothing is guessed.</p>
+      <p class="sub">«for them» points at step 1, but a timer takes no address. <strong>evoke says so, and asks whether
+        to run the plan as it stands.</strong> Nothing runs until you answer.</p>
       <div class="grid">
         <div class="panel term" role="figure" aria-label="A step refers to another it takes nothing from">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre><span class="p">$</span> <span class="in">evoke "look up dana's address and start a 10 minute timer for them"</span>
+<pre data-flow="weave"><span class="p">$</span> <span class="in">evoke "look up dana's address and start a 10 minute timer for them"</span>
 <span class="own">  1  <span class="name">contact</span> name="dana"  <span class="hi">0.90</span>
   2  <span class="name">timer</span> duration="10 minute"  <span class="hi">0.88</span> · after 1
   step 2 refers to step 1, but takes nothing from it
@@ -208,27 +236,196 @@
 <span class="out">dana &lt;dana@example.com&gt;
 10 minute timer started</span></pre>
         </div>
-        <p class="caption">The same holds for a reference two fields could satisfy: it stops with a line naming them.
+        <p class="caption">A passed value fills a required input directly. For an optional one, evoke writes the value into
+          the step's words and decides the step again, under the same bar as any words. A reference that two fields could
+          satisfy stops with a line naming them.
           <a href="/manual/use/weaving.html#what-a-step-takes-from-another">What a step takes, in the manual →</a></p>
       </div>
     </section>
 
-    <section id="needs">
-      <div class="rule"><p class="label">Before you run it</p><span class="num">04</span></div>
-      <h2>What this pattern needs.</h2>
+    <section id="set-up">
+      <div class="rule"><p class="label">Set it up</p><span class="num">04</span></div>
+      <h2>Set it up on a Mac, with a lookup you write.</h2>
+      <p class="sub">No reflex in the collection passes on its result yet. So you write the lookup, and the collection's
+        <code>mail</code> takes its address. <strong>The draft opens in your mail app, and you send it yourself.</strong></p>
       <ul class="needs">
-        <li class="ok"><b>Node 24.5 or newer</b>And the SDK, <code>@evoke-build/evoke</code>. The weave runs in your
-          application.</li>
-        <li class="ok"><b>A classifier key</b>For a live sentence. The recorded test above needs none.</li>
-        <li class="no"><b>Your directory</b>The <code>contact</code> body shown makes an address from the name. Replace it
-          with a lookup in your own directory, and keep the yield.</li>
-        <li class="no"><b>Your mail</b>The collection's <code>mail</code> opens a draft in the Mac's mail app. The test's
-          stand-in only prints the line.</li>
+        <li class="ok"><b>A Mac</b>The collection's <code>mail</code> opens a draft in your mail app, and runs only on
+          macOS.</li>
+        <li class="ok"><b>evoke and a key</b><a href="/start.html?example=contact-to-draft">Install evoke and set your
+          key</a>, then come back here.</li>
+        <li class="ok"><b>Node 24 or newer</b>Both reflexes run a JavaScript file.</li>
+        <li class="ok"><b>git</b>To install <code>mail</code> from the collection.</li>
       </ul>
+      <ol class="plan">
+        <li>
+          <div>
+            <h3>Make a project for your own reflexes</h3>
+            <p>A folder with an <code>evoke.toml</code> file is a project. When you type inside it, evoke uses only the
+              reflexes installed there. The file's one line, <code>adapter = "jev"</code>, has Jev, TypeSafe AI's model,
+              read this project's sentences.</p>
+            <div class="cmd"><code>mkdir -p ~/dev &amp;&amp; cd ~/dev &amp;&amp; echo 'adapter = "jev"' &gt; evoke.toml</code><button type="button" data-copy aria-label="Copy the project command">Copy</button></div>
+            <p>A project's files decide what runs, so evoke decides in a new one only after you trust it once. It answers
+              <code>+ trusted ~/dev</code>.</p>
+            <div class="cmd"><code>evoke trust</code><button type="button" data-copy aria-label="Copy the trust command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Make the lookup reflex</h3>
+            <p><code>evoke new</code> writes a working reflex from a template: a manifest, a program and its types. It
+              prints one line for each file it wrote in <code>contact/</code>.</p>
+            <div class="cmd"><code>evoke new contact</code><button type="button" data-copy aria-label="Copy the new command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Write its manifest</h3>
+            <p>Replace <code>contact/reflex.toml</code> with the manifest of the session above. Its input,
+              <code>name</code>, takes a word from your list of people. <code>effect = "read"</code> declares that it only
+              looks something up. The two lines under <code>[yields]</code> declare that its result holds an email
+              address, and they are what lets <code>mail</code> take it.</p>
+            <div class="panel">
+              <div class="head"><i></i>contact/reflex.toml<span class="who">the test's</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
+<span class="s">Look up a person's email address in the team directory.</span>
+<span class="s">One person at a time; prints the address."""</span>
+
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span><span class="s">"writing to anyone"</span><span class="o">,</span> <span class="s">"phone numbers"</span><span class="o">,</span> <span class="s">"adding a person to the directory"</span><span class="o">]</span>
+<span class="k">tags</span>    <span class="o">=</span> <span class="o">[</span><span class="s">"people"</span><span class="o">]</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"read"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Look up <span class="ph">{name}</span>'s address?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="s">"contact.mts"</span>
+
+<span class="t">[args.name]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Whose address?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"people"</span>
+
+<span class="t">[yields]</span>
+<span class="k">email</span> <span class="o">=</span> <span class="s">"email"</span>
+
+<span class="t">[examples]</span>
+<span class="s">"look up dana's address"</span>    <span class="o">=</span> <span class="o">{</span><span class="o">}</span>
+<span class="s">"what is sam's email"</span>       <span class="o">=</span> <span class="o">{</span><span class="o">}</span>
+<span class="s">"find the address for dana"</span> <span class="o">=</span> <span class="o">{</span><span class="o">}</span>
+
+<span class="t">[tests]</span>
+<span class="s">"dana's email please"</span> <span class="o">=</span> <span class="o">{</span><span class="o">}</span>
+<span class="s">"email dana"</span>          <span class="o">=</span> <span class="n">false</span></pre>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Write its program</h3>
+            <p>Replace <code>contact/contact.mts</code>. Your list of people is the directory here: in step 6 you store
+              each person's address with their word, and evoke passes that address to the program. It returns the address
+              twice: as the line you read, and as data for the next step.</p>
+            <div class="panel">
+              <div class="head"><i></i>contact/contact.mts<span class="who you">yours</span></div>
+<pre><span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"./reflex.d.ts"</span>
+
+<span class="w">export</span> <span class="w">default</span> <span class="o">(</span><span class="w">async</span> <span class="o">({</span> name <span class="o">})</span> <span class="o">=&gt;</span> <span class="o">{</span>
+  <span class="c">// name is the word's value: the address you stored for that person.</span>
+  <span class="w">if</span> <span class="o">(!</span>name<span class="o">.</span>includes<span class="o">(</span><span class="s">"@"</span><span class="o">))</span> <span class="w">throw</span> <span class="w">new</span> Error<span class="o">(</span><span class="s">`no address for ${name}`</span><span class="o">)</span>
+  <span class="w">return</span> <span class="o">{</span> <span class="k">text</span><span class="o">:</span> <span class="s">`found ${name}`</span><span class="o">,</span> <span class="k">data</span><span class="o">:</span> <span class="o">{</span> <span class="k">email</span><span class="o">:</span> name <span class="o">}</span> <span class="o">}</span>
+<span class="o">})</span> <span class="w">satisfies</span> Reflex</pre>
+            </div>
+            <p>To use a company directory instead, look the word up there and return the same shape. Then check the
+              reflex: <code>evoke check</code> reads the manifest, loads the program, and rewrites
+              <code>reflex.d.ts</code> for the new input.</p>
+            <div class="cmd"><code>cd ~/dev/contact &amp;&amp; evoke check</code><button type="button" data-copy aria-label="Copy the check command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Install both reflexes</h3>
+            <p>Back in <code>~/dev</code>, add your lookup by its folder, and <code>mail</code> from the collection by its
+              path. Each prints one row for the reflex it installed. <code>contact</code> shows as inactive until your
+              list of people has a word.</p>
+            <div class="cmd"><code>cd ~/dev &amp;&amp; evoke add ./contact</code><button type="button" data-copy aria-label="Copy the first add command">Copy</button></div>
+            <div class="cmd"><code>evoke add evoke-build/reflexes/mail</code><button type="button" data-copy aria-label="Copy the second add command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Add the people you write to</h3>
+            <p>Add each person with a word, a meaning and their address, in place of the ones below. The meaning is what
+              the classifier reads. The address goes only to your program, and the classifier never sees it.</p>
+            <div class="cmd"><code>evoke vocab people add dana "Dana Ortiz, operations." --value dana@example.com</code><button type="button" data-copy aria-label="Copy the vocabulary command">Copy</button></div>
+            <p>To check the program without asking the classifier, call it by name. It prints the call, then
+              <code>found dana@example.com</code>.</p>
+            <div class="cmd"><code>evoke run contact name=dana</code><button type="button" data-copy aria-label="Copy the run command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Look at the plan</h3>
+            <p><code>evoke try</code> runs nothing. It prints the plan first: step 1, <code>contact</code> for dana, then
+              step 2, <code>mail</code>, which takes email from 1. Under each step come the classifier's answers for that
+              part.</p>
+            <div class="cmd"><code>evoke try "look up dana's address and email them"</code><button type="button" data-copy aria-label="Copy the try command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Type the sentence</h3>
+            <p>Type it inside <code>~/dev</code>. The plan prints first, then <code>contact</code> prints the address. The
+              address fills <code>mail</code>'s <code>to</code>, and step 2 prints again with it. Your mail app opens a
+              draft to Dana, and evoke prints <code>new mail to</code> with the address. Nothing is sent until you press
+              send. If evoke is less sure of the email step, it shows the call and asks first.</p>
+            <div class="cmd"><code>evoke "look up dana's address and email them"</code><button type="button" data-copy aria-label="Copy the sentence">Copy</button></div>
+            <p>A sentence with several steps makes one request to find its steps, then at least one for each step.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="app">
+      <div class="rule"><p class="label">In your app</p><span class="num">05</span></div>
+      <h2>The same sentence, from a Node application.</h2>
+      <p class="sub">The SDK loads <code>~/dev</code>, runs the sentence with <code>weave()</code>, and lets your code
+        answer its questions. <strong>It needs Node 24.5 or newer, and ES modules.</strong></p>
+      <div class="split">
+        <div class="stack">
+          <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
+          <div class="panel">
+            <div class="head"><i></i>~/dev/draft.mts<span class="who you">yours</span></div>
+<pre><span class="c">// node draft.mts "look up dana's address and email them"</span>
+<span class="w">import</span> <span class="o">{</span> createInterface <span class="o">}</span> <span class="w">from</span> <span class="s">"node:readline/promises"</span>
+<span class="w">import</span> <span class="o">{</span> load <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+
+<span class="w">const</span> project <span class="o">=</span> <span class="w">await</span> load<span class="o">({</span> root<span class="o">:</span> <span class="w">import</span><span class="o">.</span>meta<span class="o">.</span>dirname <span class="o">})</span>  <span class="c">// ~/dev, with contact and mail</span>
+<span class="w">const</span> rl <span class="o">=</span> createInterface<span class="o">({</span> input<span class="o">:</span> process<span class="o">.</span>stdin<span class="o">,</span> <span class="k">output</span><span class="o">:</span> process<span class="o">.</span>stdout <span class="o">})</span>
+<span class="w">const</span> yes <span class="o">=</span> <span class="w">async</span> <span class="o">(</span>question<span class="o">:</span> string<span class="o">)</span> <span class="o">=&gt;</span> <span class="o">(</span><span class="w">await</span> rl<span class="o">.</span>question<span class="o">(</span><span class="s">`${question} [y/n] `</span><span class="o">))</span> <span class="o">===</span> <span class="s">"y"</span>
+
+<span class="w">const</span> woven <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>weave<span class="o">(</span>process<span class="o">.</span>argv<span class="o">[</span><span class="n">2</span><span class="o">]</span> <span class="o">??</span> <span class="s">""</span><span class="o">,</span> <span class="o">{</span>
+  <span class="k">confirm</span><span class="o">:</span> d <span class="o">=&gt;</span> yes<span class="o">(</span>d<span class="o">.</span>prompt<span class="o">.</span>template<span class="o">),</span>
+  <span class="k">proceed</span><span class="o">:</span> <span class="o">()</span> <span class="o">=&gt;</span> yes<span class="o">(</span><span class="s">"Run the plan as it stands?"</span><span class="o">),</span>
+<span class="o">})</span>
+rl<span class="o">.</span>close<span class="o">()</span>
+console<span class="o">.</span>log<span class="o">(</span>woven<span class="o">.</span>status<span class="o">)</span>           <span class="c">// "ran", or the worst step's status</span>
+console<span class="o">.</span>log<span class="o">(</span>woven<span class="o">.</span>steps<span class="o">[</span><span class="n">1</span><span class="o">]?.</span>bound<span class="o">)</span>  <span class="c">// [{ arg: "to", from: 1, field: "email", value: "…" }]</span></pre>
+          </div>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>The SDK's first release on npm is on its way.</strong> Until then, the terminal
+              route above runs today.</span></li>
+            <li><b>2</b><span><strong><code>confirm</code> runs when a step needs your yes</strong>, for instance when
+              evoke is less sure than its bar. <code>proceed</code> runs when a step points at another it takes nothing
+              from.</span></li>
+            <li><b>3</b><span><strong><code>woven.status</code> is the worst step's.</strong> Each step's
+              <code>bound</code> says what it took: here <code>to</code>, from step 1's <code>email</code>.</span></li>
+          </ol>
+          <p class="after"><a class="more" href="/manual/sdk/decisions.html#stepsinput--tags-signal--and-weaveinput--confirm-ask-proceed-tags-signal-">steps() and weave(), in the manual →</a></p>
+        </div>
+      </div>
       <div class="actions">
-        <a class="button primary" href="/start.html?example=contact-to-draft">Adapt this pattern</a>
-        <a class="button" href="https://github.com/evoke-build/evoke/tree/main/spec/transcripts/weave/home/.config/evoke">View source</a>
-        <a class="quiet" href="/manual/use/weaving.html">Read the docs →</a>
+        <a class="button primary" href="https://github.com/evoke-build/evoke/tree/main/spec/transcripts/weave/home/.config/evoke">The example's files on GitHub</a>
+        <a class="quiet" href="/manual/author/first-reflex.html">Your first reflex, in the manual →</a>
+        <a class="quiet" href="/manual/use/weaving.html">Sentences with several steps, in the manual →</a>
       </div>
     </section>
   </main>
