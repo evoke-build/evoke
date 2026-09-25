@@ -54,10 +54,14 @@
     .future .opening h1 em { display: block; font-style: normal; color: var(--accent); }
     .future .opening .lede { max-width: 41rem; margin: 0 auto; color: var(--text); font-size: clamp(1.08rem, 1.6vw, 1.28rem); line-height: 1.55; text-shadow: 0 0 24px rgba(6, 6, 8, .95); }
     .future .opening .honest { margin: 1.1rem 0 0; color: var(--faint); font-size: .9rem; text-shadow: 0 0 18px rgba(6, 6, 8, .95); }
-    .future .onward { justify-self: center; display: inline-flex; align-items: center; gap: .6rem; margin-top: 3.2rem; padding: .65rem 1.1rem; border: 1px solid var(--line-strong); border-radius: 999px; background: rgba(6, 6, 8, .6); color: var(--muted); font-size: .92rem; font-weight: 500; transition: color .2s, border-color .2s; }
+    .future .onwards { display: flex; flex-wrap: wrap; justify-content: center; gap: .7rem; margin-top: 3.2rem; }
+    .future .onward { justify-self: center; display: inline-flex; align-items: center; gap: .6rem; padding: .65rem 1.1rem; border: 1px solid var(--line-strong); border-radius: 999px; background: rgba(6, 6, 8, .6); color: var(--muted); font-size: .92rem; font-weight: 500; transition: color .2s, border-color .2s; }
     .future .onward:hover { color: var(--fg); border-color: var(--muted); text-decoration: none; }
     .future .onward svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-    @media (prefers-reduced-motion: no-preference) { .future .onward svg { animation: nudge 2.4s ease-in-out infinite; } }
+    .future .onward.watch { border-color: color-mix(in srgb, var(--accent) 50%, transparent); background: rgba(229, 118, 29, .12); color: var(--fg); }
+    .future .onward.watch:hover { border-color: var(--accent); background: rgba(229, 118, 29, .2); }
+    .future .onward.watch svg { fill: var(--accent); stroke: none; }
+    @media (prefers-reduced-motion: no-preference) { .future .onward:not(.watch) svg { animation: nudge 2.4s ease-in-out infinite; } }
     @keyframes nudge { 50% { transform: translateY(3px); } }
 
     /* The beats: the story, one screen each, on the left while the sky plays on the right */
@@ -272,7 +276,10 @@
           <p class="lede">Where evoke is going: programs people write, a sentence that picks the plan, machines that each
             keep their own gate, and a person before anything that can't be undone.</p>
           <p class="honest">A picture of the future. The parts that run today say so.</p>
-          <a class="onward" href="#one"><span>Start with one reflex</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg></a>
+          <div class="onwards">
+            <a class="onward" href="#one"><span>Start with one reflex</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg></a>
+            <a class="onward watch" href="/film.html"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9l7.5-4.5z"/></svg><span>Watch it as a film</span></a>
+          </div>
         </div>
       </header>
 

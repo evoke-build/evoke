@@ -1,0 +1,1863 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Where evoke is going, the film - Evoke</title>
+  <meta name="description" content="A film about where evoke is going: one reflex, a sentence that lights a plan, machines that each keep their own gate, and a galaxy with no center.">
+  <!-- head -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": "https://evoke.build/film.html",
+    "url": "https://evoke.build/film.html",
+    "headline": "Where evoke is going, as a film.",
+    "name": "Where evoke is going, the film",
+    "description": "A film about where evoke is going: one reflex, a sentence that lights a plan, machines that each keep their own gate, and a galaxy with no center.",
+    "inLanguage": "en",
+    "isPartOf": {
+      "@id": "https://evoke.build/#website"
+    },
+    "about": {
+      "@id": "https://evoke.build/#software"
+    },
+    "author": {
+      "@id": "https://evoke.build/#organization"
+    },
+    "publisher": {
+      "@id": "https://evoke.build/#organization"
+    },
+    "image": "https://evoke.build/og.png"
+  }
+  </script>
+  <style>
+    /* The film: a theater under the bar, then the film's words. The screen holds one canvas for the galaxy and the
+       diagrams, a layer of labels placed from the camera, a deck of panels shown by the film's clock, the captions and
+       the player. The site's grammar holds on screen: dashed accent for a plan, green once a step ran, amber while a
+       person is asked, red for a stop. */
+    body:has(main.film) { background: #030305; }
+    .film { --space: #030305; --ink-dim: #b9b7b1; --gold: #f4e4bb; }
+
+    /* The screen */
+    .film .theater { position: relative; padding: 0; background: var(--space); }
+    .film .screen { position: relative; height: calc(100vh - 3.5rem); height: calc(100svh - 3.5rem); min-height: 32rem; overflow: hidden; background: radial-gradient(60% 55% at 50% 42%, rgba(229, 118, 29, .045), transparent 70%), var(--space); isolation: isolate; -webkit-user-select: none; user-select: none; touch-action: pan-y; }
+    .film .screen:fullscreen { height: 100vh; min-height: 0; }
+    .film .screen canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .film .screen::after { content: ""; position: absolute; inset: auto 0 0; height: 34%; background: linear-gradient(rgba(3, 3, 5, 0), rgba(3, 3, 5, .78)); pointer-events: none; z-index: 1; }
+    .film .labels, .film .deck { position: absolute; inset: 0; pointer-events: none; }
+    .film .deck > * { position: absolute; opacity: 0; visibility: hidden; }
+    @media (min-width: 901px) {  /* on a wide screen these panels hang in space beside what they describe; the film places them */
+      .film .deck > .hung { left: 0; top: 0; right: auto; bottom: auto; translate: none; transform-origin: 0 0; }
+    }
+    .film .no-gl-note { display: none; }
+    .film .screen.no-gl .title-card { opacity: 1; visibility: visible; }
+    .film .screen.no-gl .start-card, .film .screen.no-gl .controls { display: none; }
+    .film .screen.no-gl .no-gl-note { display: block; position: absolute; left: 50%; bottom: 14%; z-index: 4; width: min(30rem, calc(100% - 32px)); margin: 0; translate: -50% 0; color: var(--muted); text-align: center; }
+
+    /* Labels placed from the camera; the side says where a label sits from its point */
+    .film .lbl { position: absolute; left: 0; top: 0; white-space: nowrap; font: 12px/1.4 var(--mono); color: var(--ink-dim); opacity: 0; will-change: transform, opacity; text-shadow: 0 0 10px rgba(0, 0, 0, .95), 0 0 3px rgba(0, 0, 0, .95); }
+    .film .lbl.above { translate: -50% -100%; text-align: center; }
+    .film .lbl.below { translate: -50% 0; text-align: center; }
+    .film .lbl.left { translate: -100% -50%; text-align: right; }
+    .film .lbl.right { translate: 0 -50%; }
+    .film .lbl.mid { translate: -50% -50%; text-align: center; }
+    .film .lbl b { color: #ecebe8; font-weight: 500; }
+    .film .lbl i { margin-left: .6ch; font-style: normal; color: var(--term-ok); }
+    .film .lbl small { display: block; font-size: 11px; color: var(--muted); }
+    .film .lbl small.no { color: var(--term-no); }
+    .film .lbl.machine { font-size: 12.5px; color: #d8d6d0; }
+    .film .lbl.machine small { color: var(--faint); }
+    .film .lbl.machine.asking small { color: var(--term-mid); }
+    .film .lbl.note { font: 500 13.5px/1.45 var(--sans); color: #e8e5df; }
+    .film .lbl.note b { color: var(--fg); font-weight: 560; }
+    .film .lbl.prompt { white-space: normal; text-align: left; font: 13.5px/1.6 var(--mono); color: var(--term-dim); }
+    .film .lbl.prompt .p { color: var(--accent); }
+    .film .lbl.prompt .w { color: var(--term-in); }
+    .film .lbl.prompt .rest { visibility: hidden; }
+    .film .lbl.bubble { padding: .5rem .75rem; border: 1px solid color-mix(in srgb, var(--term-mid) 55%, transparent); border-radius: 9px; background: rgba(22, 18, 10, .94); color: var(--gold); font: 13px/1.4 var(--sans); text-align: left; }
+    .film .lbl.bubble .keys { display: block; font: 12px/1.5 var(--mono); color: var(--term-mid); }
+    .film .lbl.bubble .keys b { color: var(--term-in); }
+    .film .lbl.outcome { font: 560 16px/1.35 var(--sans); color: var(--fg); }
+    .film .lbl.outcome small { margin-top: .3rem; font: 12px/1.4 var(--sans); color: var(--muted); }
+    .film .lbl.problem { font: 560 14px/1.3 var(--sans); color: #efece6; }
+    .film .lbl.problem small { margin-top: .2rem; font: 12px/1.4 var(--mono); color: var(--term-dim); }
+    .film .lbl.plan-name { font: 500 12px/1.3 var(--sans); color: #e9e6df; }
+    .film .lbl.plan-name small { font: 10.5px/1.3 var(--mono); color: var(--faint); }
+    .film .lbl.said { max-width: 16rem; white-space: normal; font: 12px/1.35 var(--mono); color: var(--term-in); text-align: center; }
+    .film .lbl.void { font: 11px/1.3 var(--mono); color: var(--faint); }
+    .film .lbl.stop { font: 560 17px/1.3 var(--sans); color: var(--fg); text-shadow: 0 0 18px rgba(3, 3, 5, .95); }
+    .film .lbl.stop { font-size: 20px; letter-spacing: -.01em; }
+    .film .lbl.stop small { width: 19rem; margin: .4rem auto 0; white-space: normal; font: 14px/1.5 var(--sans); color: var(--text); letter-spacing: 0; }
+    .film .lbl.stop.now { color: var(--term-ok); }
+    .film .lbl.look { font: 500 12.5px/1.3 var(--mono); color: #ffd9a8; }
+    .film .lbl.tick { font: 500 10.5px/1 var(--mono); color: #d8d6d0; }
+
+    /* The title */
+    .film .title-card { inset: 0; display: grid; place-content: center; gap: 1.1rem; text-align: center; }
+    .film .title-card .big { margin: 0; font-size: clamp(3.2rem, 8.6vw, 8rem); font-weight: 600; line-height: .92; letter-spacing: -.055em; text-shadow: 0 0 70px rgba(3, 3, 5, .9); }
+    .film .title-card .big em { display: block; font-style: normal; color: var(--accent); }
+    .film .title-card .sub { margin: 0; color: var(--text); font-size: clamp(1.05rem, 1.6vw, 1.3rem); text-shadow: 0 0 24px rgba(3, 3, 5, .95); }
+
+    /* One reflex: its manifest */
+    .film .manifest { left: clamp(20px, 5vw, 88px); top: 50%; width: min(31.5rem, 40vw); margin: 0; translate: 0 -50%; border: 1px solid rgba(255, 255, 255, .09); border-radius: 14px; background: rgba(12, 12, 16, .9); box-shadow: 0 30px 70px -30px rgba(0, 0, 0, .95); overflow: hidden; }
+    .film .manifest figcaption { padding: .6rem .95rem; border-bottom: 1px solid rgba(255, 255, 255, .07); font: 500 12px/1.4 var(--mono); color: var(--muted); }
+    .film .manifest pre { margin: 0; padding: .9rem 1rem 1rem; overflow: hidden; font: 12px/1.62 var(--mono); color: var(--term-fg); background: none; border: 0; }
+    .film .manifest code { font: inherit; white-space: pre; background: none; border: 0; padding: 0; color: inherit; }
+    .film .manifest .k { color: #9fb4d9; }
+    .film .manifest .s { color: #cfe3b0; }
+    .film .manifest .s.d { color: var(--term-mid); }
+    .film .manifest .n { color: #e8b98a; }
+    .film .manifest .h { color: var(--accent-ink); }
+
+    /* Plans people can hold */
+    .film .plan-card { left: 0; top: 0; width: 20rem; padding: 1rem 1.1rem 1.05rem; translate: -50% -50%; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-radius: 14px; background: rgba(20, 13, 7, .92); box-shadow: 0 30px 70px -30px rgba(0, 0, 0, .95), 0 0 60px -24px rgba(229, 118, 29, .45); transition: border-color .4s, box-shadow .4s; }
+    .film .plan-card.matched { border-color: var(--accent); box-shadow: 0 30px 70px -30px rgba(0, 0, 0, .95), 0 0 70px -16px rgba(229, 118, 29, .7); }
+    .film .plan-card .name { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 .55rem; }
+    .film .plan-card .name b { font: 600 1.15rem/1.2 var(--sans); color: var(--fg); letter-spacing: -.01em; }
+    .film .plan-card .name span { font: 500 11.5px/1 var(--mono); color: var(--accent-ink); }
+    .film .plan-card .short { margin: 0 0 .85rem; font: 13px/1.5 var(--mono); color: var(--term-fg); }
+    .film .plan-card .slot { padding: .05em .35em; border: 1px dashed color-mix(in srgb, var(--accent) 60%, transparent); border-radius: 5px; color: var(--accent-ink); transition: background-color .3s, color .3s, border-color .3s; }
+    .film .plan-card .slot { display: inline-block; text-align: center; }
+    .film .plan-card .slot[data-slot="service"] { min-width: 9.4ch; }
+    .film .plan-card .slot[data-slot="region"] { min-width: 8.4ch; }
+    .film .plan-card .slot.filled { border-style: solid; border-color: rgba(143, 212, 138, .5); background: rgba(143, 212, 138, .1); color: var(--term-ok); }
+    .film .plan-card .shape { display: flex; gap: .9rem; margin: 0 0 .8rem; padding: 0; list-style: none; }
+    .film .plan-card .shape li { display: grid; align-content: center; gap: .3rem; }
+    .film .plan-card .shape i { display: block; width: 10px; height: 10px; border: 1.5px dashed var(--accent); border-radius: 50%; }
+    .film .plan-card .shape i.asks { border-color: var(--term-mid); }
+    .film .plan-card .meta { margin: 0; font: 12px/1.4 var(--sans); color: var(--muted); }
+
+    .film .clock { right: clamp(20px, 5vw, 80px); top: clamp(76px, 12vh, 120px); padding: .9rem 1.1rem 1rem; border: 1px solid rgba(240, 192, 96, .35); border-radius: 14px; background: rgba(16, 13, 8, .88); text-align: right; }
+    .film .clock .waits { display: flex; align-items: center; justify-content: flex-end; gap: .5rem; margin: 0 0 .35rem; font: 12.5px/1.4 var(--sans); color: var(--gold); }
+    .film .clock .waits i { width: 7px; height: 7px; border-radius: 50%; background: var(--term-mid); }
+    .film .clock .waits b { font-weight: 560; }
+    .film .clock .time { margin: 0; font: 600 2.4rem/1 var(--mono); color: var(--fg); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+    .film .clock .day { display: block; margin-top: .3rem; font: 12px/1.3 var(--sans); color: var(--muted); letter-spacing: 0; }
+    .film .clock.done { border-color: rgba(143, 212, 138, .45); }
+    .film .clock.done .waits { color: var(--term-ok); }
+    .film .clock.done .waits i { background: var(--term-ok); }
+
+    /* Across machines: the machine's own checks, and the reader on call */
+    .film .checks { left: 0; top: 0; width: 15.5rem; padding: .75rem .9rem .8rem; translate: 0 -50%; border: 1px solid rgba(255, 255, 255, .1); border-radius: 12px; background: rgba(10, 10, 13, .92); box-shadow: 0 24px 50px -24px rgba(0, 0, 0, .9); font: 12.5px/1.45 var(--sans); color: var(--text); }
+    .film .checks .t { margin: 0 0 .45rem; font: 500 11.5px/1.3 var(--mono); color: #d8d6d0; }
+    .film .checks ul { display: grid; gap: .28rem; margin: 0; padding: 0; list-style: none; }
+    .film .checks li { display: grid; grid-template-columns: 1.25em minmax(0, 1fr); opacity: 0; transition: opacity .35s; }
+    .film .checks li.shown { opacity: 1; }
+    .film .checks li::before { content: "✓"; color: var(--term-ok); }
+    .film .checks li.wait { color: var(--gold); }
+    .film .checks li.wait::before { content: "●"; color: var(--term-mid); font-size: .8em; line-height: 1.8; }
+    .film .checks li.no { color: #ffd2cd; }
+    .film .checks li.no::before { content: "✕"; color: var(--term-no); }
+    .film .checks li.then:empty { display: none; }
+
+    .film .oncall { position: absolute; right: clamp(16px, 4vw, 64px); top: 50%; z-index: 3; width: min(24rem, calc(100% - 32px)); translate: 0 -50%; padding: 1.1rem 1.2rem 1rem; border: 1px solid color-mix(in srgb, var(--term-mid) 55%, transparent); border-radius: 16px; background: rgba(24, 19, 9, .94); box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .95), 0 0 60px -20px rgba(240, 192, 96, .4); animation: rise .45s cubic-bezier(.2, .7, .2, 1) both; }
+    .film .oncall[hidden] { display: none; }
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+    .film .oncall .who { display: flex; align-items: center; gap: .55rem; margin: 0 0 .5rem; font: 500 .78rem/1.3 var(--mono); color: var(--term-mid); }
+    .film .oncall .who i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--term-mid); animation: call 1.6s ease-out infinite; }
+    @keyframes call { from { box-shadow: 0 0 0 0 rgba(240, 192, 96, .6); } to { box-shadow: 0 0 0 9px rgba(240, 192, 96, 0); } }
+    .film .oncall .ask { margin: 0 0 .35rem; color: var(--gold); font-size: 1.08rem; font-weight: 560; line-height: 1.4; }
+    .film .oncall .from { margin: 0 0 1rem; color: var(--muted); font-size: .86rem; line-height: 1.5; }
+    .film .oncall .choose { display: flex; align-items: center; gap: .55rem; }
+    .film .oncall .choose .button { margin-left: 0; }
+    .film .oncall .count { width: 22px; height: 22px; margin-left: auto; rotate: -90deg; }
+    .film .oncall .count circle { fill: none; stroke: rgba(240, 192, 96, .18); stroke-width: 2.4; }
+    .film .oncall .count .left { stroke: var(--term-mid); stroke-dasharray: 62.83; stroke-dashoffset: 0; stroke-linecap: round; }
+    .film .oncall .note { margin: .8rem 0 0; color: var(--faint); font-size: .8rem; line-height: 1.45; }
+
+    /* Receipts, and who sees what */
+    .film .ledger { left: clamp(20px, 5vw, 80px); top: 50%; width: min(24rem, 34vw); margin: 0; padding: .5rem .9rem; translate: 0 -50%; list-style: none; border: 1px solid rgba(255, 255, 255, .08); border-radius: 13px; background: rgba(8, 8, 11, .88); font: 12.5px/1.45 var(--mono); }
+    .film .ledger li { display: grid; grid-template-columns: 8.4ch minmax(0, 1fr) auto; column-gap: .9ch; align-items: baseline; padding: .34rem 0; border-top: 1px solid rgba(255, 255, 255, .05); opacity: 0; transition: opacity .4s; }
+    .film .ledger li:first-child { border-top: 0; }
+    .film .ledger li.shown { opacity: 1; }
+    .film .ledger b { color: #ecebe8; font-weight: 500; }
+    .film .ledger span { color: var(--muted); }
+    .film .ledger em { grid-column: 2; font-style: normal; color: var(--term-ok); }
+    .film .ledger code { grid-column: 3; grid-row: 1 / span 2; align-self: center; font-size: 11.5px; color: var(--faint); background: none; border: 0; padding: 0; }
+    .film .ledger li.gated em { color: var(--term-mid); }
+    .film .ledger li.gated.no em { color: var(--term-no); }
+    .film .ledger li.skip em { color: var(--faint); }
+
+    .film .envelope { right: clamp(20px, 5vw, 80px); top: 50%; width: min(25rem, 36vw); margin: 0; translate: 0 -50%; border: 1px solid rgba(255, 255, 255, .08); border-radius: 13px; background: rgba(14, 14, 18, .92); overflow: hidden; }
+    .film .envelope > div { display: grid; grid-template-columns: minmax(0, 10.5rem) minmax(0, 1fr); gap: .2rem 1rem; padding: .62rem .95rem; border-top: 1px solid rgba(255, 255, 255, .05); }
+    .film .envelope > div:first-child { border-top: 0; }
+    .film .envelope dt { color: var(--muted); font-size: .82rem; transition: color .3s; }
+    .film .envelope dd { position: relative; margin: 0; min-width: 0; font: .8rem/1.5 var(--mono); color: var(--term-fg); overflow-wrap: anywhere; }
+    .film .envelope dd::after { content: ""; position: absolute; inset: .12em 0; border-radius: 4px; background: repeating-linear-gradient(135deg, #1d1d22 0 6px, #232329 6px 12px); transform: scaleX(0); transform-origin: left; transition: transform .45s cubic-bezier(.3, .7, .2, 1); }
+    .film .envelope .hidden dd::after { transform: none; }
+    .film .envelope .hidden dt { color: var(--faint); }
+    .film .envelope .lens-note { margin: 0; padding: .75rem .95rem .85rem; border-top: 1px solid rgba(255, 255, 255, .07); color: var(--text); font-size: .86rem; line-height: 1.5; }
+
+    /* Everywhere people act: four places a sentence comes from */
+    .film .hosts { inset: 0; perspective: 1400px; }
+    .film .host { position: absolute; width: min(22rem, 27vw); padding: .85rem .95rem .95rem; border: 1px solid rgba(255, 255, 255, .1); border-radius: 14px; background: rgba(12, 12, 16, .9); box-shadow: 0 30px 70px -30px rgba(0, 0, 0, .95); font: 12.5px/1.45 var(--sans); color: var(--text); opacity: 0; transform-origin: center; transition: opacity .6s, transform .9s cubic-bezier(.2, .7, .2, 1); }
+    .film .host.on { opacity: 1; }
+    .film .host.chat { left: 6%; top: 15%; transform: rotateY(14deg) translateZ(-40px); }
+    .film .host.voice { right: 6%; top: 15%; transform: rotateY(-14deg) translateZ(-40px); }
+    .film .host.app { left: 6%; bottom: 21%; transform: rotateY(14deg) translateZ(-40px); }
+    .film .host.agent { right: 6%; bottom: 21%; transform: rotateY(-14deg) translateZ(-40px); }
+    .film .host .bar { display: flex; align-items: center; gap: .5rem; margin: 0 0 .6rem; padding-bottom: .5rem; border-bottom: 1px solid rgba(255, 255, 255, .07); font: 500 11.5px/1.3 var(--mono); color: var(--muted); }
+    .film .host .bar i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px rgba(229, 118, 29, .7); }
+    .film .host .msg { margin: 0 0 .45rem; }
+    .film .host .msg b { display: block; margin-bottom: .1rem; font-size: 12.5px; color: var(--fg); font-weight: 560; }
+    .film .host .msg.bot { display: grid; gap: .15rem; }
+    .film .host code, .film .host .line { display: block; margin: 0; padding: 0; border: 0; background: none; font: 12.5px/1.55 var(--mono); color: var(--term-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .film .host code.asks { color: var(--term-mid); }
+    .film .host code.ok, .film .host .msg.yes span { color: var(--term-ok); }
+    .film .host code.no { color: var(--term-no); }
+    .film .host .line .p { color: var(--accent); }
+    .film .host .type { color: var(--term-in); }
+    .film .host .type .rest { visibility: hidden; }
+    .film .host .said { margin: .5rem 0; font: 14px/1.4 var(--mono); color: var(--term-in); }
+    .film .host .wave { display: flex; align-items: center; gap: 3px; height: 34px; }
+    .film .host .wave i { flex: 1; height: 20%; border-radius: 2px; background: var(--accent); opacity: .8; transition: height .15s; }
+    .film .host .tree { margin: 0 0 .5rem; padding: 0; list-style: none; font: 12.5px/1.6 var(--mono); color: var(--term-fg); }
+    .film .host .tree li { padding-left: 1.2ch; }
+    .film .host .tree li.dir { padding-left: 0; color: var(--accent-ink); }
+    .film .host [data-step] { opacity: 0; transition: opacity .35s; }
+    .film .host [data-step].shown { opacity: 1; }
+
+    /* The last word */
+    .film .coda { inset: 0; display: grid; place-content: center; padding: 0 16px 9rem; text-align: center; }
+    .film .coda .lines { max-width: 70rem; margin: 0 auto; font-size: clamp(2rem, 4.2vw, 3.6rem); font-weight: 600; line-height: 1.08; letter-spacing: -.04em; }
+    .film .coda .lines span, .film .coda .lines em { display: block; opacity: 0; transform: translateY(8px); transition: opacity .8s, transform .8s cubic-bezier(.2, .7, .2, 1); }
+    .film .coda .lines em { font-style: normal; color: var(--accent); }
+    .film .coda .lines .shown { opacity: 1; transform: none; }
+    .film .coda-actions { position: absolute; left: 50%; bottom: 7.2rem; z-index: 3; display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; width: calc(100% - 32px); translate: -50% 0; opacity: 0; visibility: hidden; transition: opacity .6s, visibility .6s; }
+    .film .coda-actions.on { opacity: 1; visibility: visible; }
+
+    /* The chapter, the problems, the lenses */
+    .film .tag { position: absolute; left: clamp(16px, 3vw, 40px); top: clamp(16px, 3vh, 28px); z-index: 2; display: flex; align-items: baseline; gap: .7rem; font: 12px/1.4 var(--mono); color: #b8b6b0; opacity: 0; transition: opacity .6s; pointer-events: none; text-shadow: 0 0 12px rgba(0, 0, 0, .95), 0 0 3px rgba(0, 0, 0, .95); }
+    .film .tag.on { opacity: 1; }
+    .film .tag .n { color: var(--accent-ink); }
+    .film .tag b { font: 560 14px/1.3 var(--sans); color: var(--fg); }
+    .film .tag i { font-style: normal; color: var(--accent-ink); }
+    .film .tag i.today { color: var(--term-ok); }
+    .film .picker, .film .lenses { position: absolute; left: 50%; top: clamp(14px, 2.6vh, 24px); z-index: 3; display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem; width: max-content; max-width: calc(100% - 32px); translate: -50% 0; opacity: 0; visibility: hidden; transition: opacity .5s, visibility .5s, translate .5s cubic-bezier(.2, .7, .2, 1); }
+    .film .picker.on, .film .lenses.on { opacity: 1; visibility: visible; }
+    .film .picker button, .film .lenses button { padding: .42rem .8rem; border: 1px solid rgba(255, 255, 255, .12); border-radius: 999px; background: rgba(10, 10, 13, .72); color: var(--muted); font: 500 12.5px/1.2 var(--sans); cursor: pointer; transition: color .2s, border-color .2s, background-color .2s; }
+    .film .picker button:hover, .film .lenses button:hover { color: var(--fg); border-color: rgba(255, 255, 255, .28); }
+    .film .picker button[aria-current="true"], .film .lenses button[aria-pressed="true"] { color: var(--fg); border-color: color-mix(in srgb, var(--accent) 60%, transparent); background: rgba(229, 118, 29, .16); }
+    .film .has-tag .picker, .film .has-tag .lenses { translate: -50% clamp(38px, 5.4vh, 48px); }
+
+    /* Captions and the hint */
+    .film .caption { position: absolute; left: 50%; bottom: 5.6rem; z-index: 2; width: min(46rem, calc(100% - 32px)); margin: 0; translate: -50% 0; text-align: center; font-size: clamp(1rem, 1.45vw, 1.22rem); font-weight: 450; line-height: 1.5; color: #f3f1ec; text-shadow: 0 0 18px rgba(0, 0, 0, .95), 0 1px 2px rgba(0, 0, 0, .9); transition: opacity .3s, transform .35s; pointer-events: none; }
+    .film .caption.off { opacity: 0; }
+    .film .screen.idle .caption { transform: translateY(3rem); }
+    .film .hint { position: absolute; right: clamp(16px, 3vw, 40px); bottom: 5.6rem; z-index: 2; margin: 0; font: 12px/1.3 var(--mono); color: var(--muted); opacity: 0; transition: opacity .6s; pointer-events: none; }
+    .film .hint.on { opacity: 1; }
+
+    /* Before the film starts */
+    .film .start-card { position: absolute; left: 50%; bottom: 13%; z-index: 4; display: grid; justify-items: center; gap: .8rem; translate: -50% 0; transition: opacity .5s, visibility .5s; }
+    .film .screen.begun .start-card { opacity: 0; visibility: hidden; }
+    .film .start { display: inline-flex; align-items: center; gap: .7rem; padding: .85rem 1.35rem .85rem 1.05rem; border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent); border-radius: 999px; background: rgba(229, 118, 29, .14); color: var(--fg); font: 560 1.02rem/1 var(--sans); cursor: pointer; box-shadow: 0 0 60px -12px rgba(229, 118, 29, .6); transition: background-color .2s, border-color .2s; }
+    .film .start:hover { background: rgba(229, 118, 29, .24); border-color: var(--accent); }
+    .film .start svg { width: 20px; height: 20px; fill: var(--accent); }
+    .film .start small { display: inline-block; min-width: 4ch; font: 500 .8rem/1 var(--mono); color: var(--muted); text-align: left; }
+    .film .start-card p { margin: 0; color: var(--faint); font-size: .84rem; text-shadow: 0 0 18px rgba(0, 0, 0, .95); }
+
+    /* The player */
+    .film .controls { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: grid; gap: .35rem; padding: 0 clamp(12px, 2.2vw, 32px) 12px; transition: opacity .35s, transform .35s; }
+    .film .screen:not(.begun) .controls { opacity: 0; visibility: hidden; }
+    .film .screen.idle .controls { opacity: 0; transform: translateY(6px); }
+    .film .scrub { position: relative; height: 22px; }
+    .film .ticks { position: absolute; left: 0; right: 0; top: 50%; height: 0; }
+    .film .ticks i { position: absolute; top: -4px; width: 2px; height: 8px; margin-left: -1px; border-radius: 1px; background: rgba(255, 255, 255, .28); }
+    .film .ticks i.gate { background: var(--term-mid); }
+    .film .scrub input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; appearance: none; -webkit-appearance: none; background: transparent; cursor: pointer; --p: 0%; }
+    .film .scrub input::-webkit-slider-runnable-track { height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--accent) var(--p), rgba(255, 255, 255, .16) var(--p)); }
+    .film .scrub input::-moz-range-track { height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--accent) var(--p), rgba(255, 255, 255, .16) var(--p)); }
+    .film .scrub input::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; margin-top: -5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px rgba(229, 118, 29, .28); }
+    .film .scrub input::-moz-range-thumb { width: 13px; height: 13px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px rgba(229, 118, 29, .28); }
+    .film .scrub input:focus-visible { outline: none; }
+    .film .scrub input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--accent); }
+    .film .controls .row { display: flex; align-items: center; gap: .4rem; }
+    .film .ctl { display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: #e6e3dd; cursor: pointer; transition: background-color .15s, color .15s; }
+    .film .ctl:hover { background: rgba(255, 255, 255, .08); }
+    .film .ctl svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .film .ctl.play svg { fill: currentColor; stroke: none; }
+    .film .ctl.play .i-pause, .film .screen.playing .ctl.play .i-play { display: none; }
+    .film .screen.playing .ctl.play .i-pause { display: inline; }
+    .film .ctl.sound .i-on, .film .ctl.sound[aria-pressed="true"] .i-off { display: none; }
+    .film .ctl.sound[aria-pressed="true"] .i-on { display: inline; }
+    .film .ctl[aria-pressed="false"]:not(.sound) { color: var(--faint); }
+    .film .controls .time { margin: 0 .3rem; font: 500 12.5px/1 var(--mono); color: #d8d6d0; font-variant-numeric: tabular-nums; }
+    .film .controls .time .all { color: var(--faint); }
+    .film .controls .where { flex: 1; min-width: 0; margin: 0; overflow: hidden; font: 500 13px/1.3 var(--sans); color: var(--muted); white-space: nowrap; text-overflow: ellipsis; }
+    .film .controls .cc { margin-left: auto; }
+
+    /* The film's words */
+    .film .credits { padding-top: 5.5rem; }
+    .film .credits h1 { margin: 0 0 1.1rem; font-size: clamp(2.3rem, 5vw, 3.6rem); font-weight: 600; line-height: 1.02; letter-spacing: -.04em; }
+    .film .credits h1 em { font-style: normal; color: var(--accent); }
+    .film .credits .lede { max-width: 44rem; margin: 0 0 2.4rem; color: var(--text); font-size: 1.1rem; line-height: 1.6; }
+    .film .chapters { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: .5rem; margin: 0 0 2.6rem; padding: 0; list-style: none; }
+    .film .chapters button { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); align-items: baseline; gap: .2rem .6rem; width: 100%; padding: .8rem .95rem; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--fg); font: 560 .98rem/1.35 var(--sans); text-align: left; cursor: pointer; transition: border-color .15s, background-color .15s; }
+    .film .chapters button:hover { border-color: var(--line-strong); }
+    .film .chapters button[aria-current="true"] { border-color: color-mix(in srgb, var(--accent) 55%, transparent); background: var(--accent-soft); }
+    .film .chapters .t { font: 500 .8rem/1 var(--mono); color: var(--accent-ink); }
+    .film .chapters small { grid-column: 2; color: var(--faint); font: 500 .76rem/1.3 var(--mono); }
+    .film .chapters small.today { color: var(--term-ok); }
+    .film .words { max-width: 46rem; border-top: 1px solid var(--line); padding-top: 1.2rem; }
+    .film .words summary { cursor: pointer; color: var(--fg); font-weight: 560; }
+    .film .words h3 { margin: 1.6rem 0 .5rem; font-size: 1rem; font-weight: 560; color: var(--fg); }
+    .film .words p { margin: 0 0 .5rem; color: var(--text); line-height: 1.6; }
+    .film .words p[data-if]::before { content: attr(data-if-label); margin-right: .5ch; color: var(--faint); font: 500 .8rem/1 var(--mono); }
+    .film .credits .fine { margin: 2.6rem 0 0; color: var(--faint); font-size: .84rem; }
+
+    @media (max-width: 900px) {
+      .film .manifest, .film .ledger { left: 50%; top: auto; bottom: 9rem; width: min(24rem, calc(100% - 32px)); translate: -50% 0; }
+      .film .manifest pre { font-size: 11px; }
+      .film .manifest .more { display: none; }
+      .film .plan-card { left: 50%; top: 56%; translate: -50% -50%; }
+      .film .checks { left: 50%; top: auto; bottom: 9rem; translate: -50% 0; }
+      .film .manifest code { white-space: pre-wrap; }
+      .film .manifest { bottom: 10.5rem; }
+      .film .picker, .film .lenses { flex-wrap: nowrap; justify-content: flex-start; width: auto; max-width: calc(100% - 24px); overflow-x: auto; scrollbar-width: none; }
+      .film .picker::-webkit-scrollbar, .film .lenses::-webkit-scrollbar { display: none; }
+      .film .picker button, .film .lenses button { flex: none; }
+      .film .envelope { right: auto; left: 50%; top: auto; bottom: 9rem; width: min(24rem, calc(100% - 32px)); translate: -50% 0; }
+      .film .host { width: min(15rem, 44vw); padding: .6rem .7rem .7rem; font-size: 11.5px; }
+      .film .host.chat, .film .host.voice { top: 10%; }
+      .film .host.app, .film .host.agent { bottom: 24%; }
+      .film .clock { top: clamp(64px, 11vh, 96px); bottom: auto; right: 50%; translate: 50% 0; padding: .6rem .9rem .65rem; text-align: center; }
+      .film .clock .time { font-size: 1.7rem; }
+      .film .clock .waits { justify-content: center; }
+      .film .oncall { top: auto; bottom: 1rem; right: 50%; translate: 50% 0; }
+      .film .caption { bottom: 5rem; font-size: 1rem; }
+    }
+    @media (max-width: 560px) {
+      .film .tag b { font-size: 13px; }
+      .film .tag .n { display: none; }
+      .film .controls .where { display: none; }
+      .film .host { width: 44vw; }
+      .film .host code, .film .host .line { font-size: 10.5px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .film .oncall, .film .oncall .who i { animation: none; }
+      .film .host, .film .coda .lines span, .film .coda .lines em { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- bar -->
+
+  <main class="film">
+    <section class="theater" aria-label="The film">
+      <div class="screen">
+        <canvas aria-hidden="true"></canvas>
+        <div class="labels" aria-hidden="true"></div>
+
+        <div class="deck" aria-hidden="true">
+          <div class="title-card">
+            <p class="big">Software, <em>by reflex.</em></p>
+            <p class="sub">A film about where evoke is going.</p>
+          </div>
+
+          <figure class="manifest hung">
+            <figcaption>rollback/reflex.toml</figcaption>
+            <pre><code><span class="k">reflex</span> = <span class="n">1</span>
+
+<span class="k">description</span> = <span class="s">"""
+Roll a service back to its last good release.
+One region at a time."""</span>
+<span class="k">effect</span>  = <span class="s d">"destructive"</span>
+<span class="k">confirm</span> = <span class="s">"Roll {service} back from {release} in {region}?"</span>
+<span class="k">run</span>     = <span class="s">"rollback.mts"</span><span class="more">
+
+<span class="h">[args.release]</span>
+<span class="k">ask</span>  = <span class="s">"Back from which release?"</span>
+<span class="k">pick</span> = <span class="s">"quoted"</span>
+
+<span class="h">[args.region]</span>
+<span class="k">ask</span>             = <span class="s">"Which region?"</span>
+<span class="k">options.eu-west</span> = <span class="s">"Europe, west."</span>
+<span class="k">options.us-east</span> = <span class="s">"United States, east."</span></span></code></pre>
+          </figure>
+
+          <div class="plan-card hung">
+            <p class="name"><b>outage</b><span>a reviewed plan</span></p>
+            <p class="short">"<span class="slot" data-slot="service">service</span> is failing in <span class="slot" data-slot="region">region</span>"</p>
+            <ol class="shape" aria-hidden="true"><li><i></i><i></i><i></i></li><li><i></i></li><li><i class="asks"></i></li><li><i></i><i></i></li></ol>
+            <p class="meta">7 steps · 1 asks a person · reviewed by Priya</p>
+          </div>
+
+          <div class="clock hung">
+            <p class="waits"><i></i>post waits for a second person: <b>Omar, finance</b></p>
+            <p class="time"><span class="hh">18:42</span><small class="day">today</small></p>
+          </div>
+
+          <div class="checks hung">
+            <p class="t">deploy.acme checks the call</p>
+            <ul>
+              <li>Signed by Dana's laptop</li>
+              <li>Dana may roll back checkout</li>
+              <li>0.94 sure, past its own bar of 0.8</li>
+              <li class="wait">Can't be undone: asking its on-call</li>
+              <li class="then"></li>
+            </ul>
+          </div>
+
+          <ol class="ledger hung">
+            <li><b>errors</b><span>monitor.acme</span><em>ran</em><code>7f3a·e1</code></li>
+            <li><b>deploys</b><span>deploy.acme</span><em>ran</em><code>c2d9·04</code></li>
+            <li><b>logs</b><span>monitor.acme</span><em>ran</em><code>91be·7c</code></li>
+            <li><b>suspect</b><span>Dana's laptop</span><em>ran</em><code>3a05·d8</code></li>
+            <li class="gated"><b>rollback</b><span>deploy.acme</span><em>approved by its on-call</em><code>e6f1·2b</code></li>
+            <li><b>post</b><span>chat.acme</span><em>ran</em><code>58c0·9a</code></li>
+            <li><b>status</b><span>status.vendor</span><em>ran</em><code>b47d·31</code></li>
+          </ol>
+
+          <dl class="envelope">
+            <div data-field="sentence"><dt>The sentence typed</dt><dd>check checkout's errors, deploys and logs in eu-west, …</dd></div>
+            <div data-field="words"><dt>This step's words</dt><dd>roll it back</dd></div>
+            <div data-field="values"><dt>Its values</dt><dd>release 4.12.0 · region eu-west</dd></div>
+            <div data-field="sure"><dt>How sure</dt><dd>0.94</dd></div>
+            <div data-field="who"><dt>Who asked</dt><dd>Dana</dd></div>
+            <div data-field="inside"><dt>The program, its keys, its inner ids</dt><dd>deploy.acme's own</dd></div>
+            <p class="lens-note"></p>
+          </dl>
+
+          <div class="hosts">
+            <div class="host chat" data-host="chat">
+              <p class="bar"><i></i>#incident</p>
+              <p class="msg me"><b>Priya</b><span class="type" data-text="@evoke checkout is failing in eu-west"></span></p>
+              <div class="msg bot"><b>evoke</b><code>outage · 7 steps, read first</code><code>errors · deploys · logs, at once</code><code class="asks">rollback asks @priya</code></div>
+              <p class="msg me yes"><b>Priya</b><span>Approved</span></p>
+            </div>
+            <div class="host voice" data-host="voice">
+              <p class="bar"><i></i>Voice</p>
+              <div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <p class="said"><span class="type" data-text="close september"></span></p>
+              <code>close · 7 steps · post waits for Omar</code>
+            </div>
+            <div class="host app" data-host="app">
+              <p class="bar"><i></i>Acme Payments 2.4</p>
+              <ul class="tree"><li class="dir">reflexes/</li><li>refund/reflex.toml</li><li>invoice/reflex.toml</li><li>payout/reflex.toml</li></ul>
+              <code class="ok">3 reflexes installed with the app</code>
+            </div>
+            <div class="host agent" data-host="agent">
+              <p class="bar"><i></i>An agent</p>
+              <p class="line"><span class="p">agent ›</span> <span class="type" data-text="evoke &quot;sam's laptop was stolen&quot;"></span></p>
+              <code>device · sessions · keys, at once</code>
+              <code class="asks">wipe waits for Sam's manager</code>
+              <code class="no">the model can't answer this; a person does</code>
+            </div>
+          </div>
+
+          <div class="coda">
+            <p class="lines"><span>People write the programs.</span> <span>A sentence picks the plan.</span> <em>A person signs what can't be undone.</em></p>
+          </div>
+        </div>
+
+        <div class="tag" aria-hidden="true"><span class="n"></span><b></b><i></i></div>
+
+        <div class="picker" role="group" aria-label="The six problems">
+          <button type="button" data-problem="0">An outage</button>
+          <button type="button" data-problem="1">A stolen laptop</button>
+          <button type="button" data-problem="2">A late shipment</button>
+          <button type="button" data-problem="3">Closing the month</button>
+          <button type="button" data-problem="4">A cancelled flight</button>
+          <button type="button" data-problem="5">A new colleague</button>
+        </div>
+
+        <div class="lenses" role="group" aria-label="Who is looking">
+          <button type="button" data-lens="laptop">Dana's laptop</button>
+          <button type="button" data-lens="node">deploy.acme</button>
+          <button type="button" data-lens="oncall">Its on-call</button>
+          <button type="button" data-lens="makers">The makers of evoke</button>
+        </div>
+
+        <div class="oncall" role="group" aria-labelledby="film-oncall" hidden>
+          <p class="who" id="film-oncall"><i aria-hidden="true"></i>You're on call at deploy.acme</p>
+          <p class="ask">Roll checkout back from 4.12.0 in eu-west?</p>
+          <p class="from">From Dana's laptop · 0.94 sure · Dana said yes there</p>
+          <div class="choose">
+            <button class="button primary small" type="button" data-answer="yes">Approve</button>
+            <button class="button small" type="button" data-answer="no">Decline</button>
+            <svg class="count" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle class="left" cx="12" cy="12" r="10"/></svg>
+          </div>
+          <p class="note">The film waits for you. With no answer, its on-call approves.</p>
+        </div>
+
+        <div class="coda-actions">
+          <a class="button primary" href="/start.html">Try what runs today</a>
+          <a class="button" href="/future.html">Where evoke is going</a>
+          <button class="button again" type="button">Watch again</button>
+        </div>
+
+        <p class="caption" aria-hidden="true"></p>
+        <p class="hint" aria-hidden="true">Drag to turn the galaxy</p>
+
+        <p class="no-gl-note">This film is drawn with WebGL 2, which this browser does not offer. Its words are below.</p>
+
+        <div class="start-card">
+          <button class="start" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg><span>Play the film</span><small class="length"></small></button>
+          <p>Captions on. Sound off until you turn it on.</p>
+        </div>
+
+        <div class="controls">
+          <div class="scrub">
+            <div class="ticks" aria-hidden="true"></div>
+            <input type="range" min="0" max="1000" step="1" value="0" aria-label="Seek">
+          </div>
+          <div class="row">
+            <button class="ctl play" type="button" aria-label="Play"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-play" d="M8 5.5v13l10.5-6.5z"/><path class="i-pause" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg></button>
+            <p class="time"><span class="now">0:00</span> / <span class="all">0:00</span></p>
+            <p class="where"></p>
+            <button class="ctl cc" type="button" aria-label="Captions" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M10.2 10.4a2 2 0 1 0 0 3.2M16.4 10.4a2 2 0 1 0 0 3.2"/></svg></button>
+            <button class="ctl sound" type="button" aria-label="Sound" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="i-on" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="i-off" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button>
+            <button class="ctl full" type="button" aria-label="Full screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="credits wrap">
+      <h1>Where evoke is going, <em>as a film.</em></h1>
+      <p class="lede">From one reflex to a galaxy of machines, in about five minutes. You can pick a problem, answer the
+        on-call question, choose who is looking and turn the galaxy. The parts that run today say so. Space plays and
+        pauses; the arrows move between chapters.</p>
+      <ol class="chapters"></ol>
+
+      <details class="words">
+        <summary>The film, in words</summary>
+        <div class="script">
+          <section data-chapter="title" data-dur="11">
+            <h3>Title</h3>
+            <p data-at="1" data-to="10">Software, by reflex. A film about where evoke is going.</p>
+          </section>
+          <section data-chapter="reflex" data-dur="26" data-when="Runs today">
+            <h3>One reflex</h3>
+            <p data-at="3.8" data-to="9.8">It starts with one reflex: a small program someone wrote, and a manifest anyone can read.</p>
+            <p data-at="10.2" data-to="15.6">Its inputs come from a list, a word you taught it, or a piece of what you typed. Nothing is made up.</p>
+            <p data-at="16" data-to="21">It runs on its own only when evoke is sure enough: 0.6 to look something up, 0.8 to change something.</p>
+            <p data-at="21.4" data-to="25.8">A step that can't be undone asks a person, however sure evoke is.</p>
+          </section>
+          <section data-chapter="plan" data-dur="28" data-when="Runs today, for a few reflexes at a time">
+            <h3>A sentence lights a plan</h3>
+            <p data-at="2.8" data-to="6.4">You type one sentence.</p>
+            <p data-at="6.6" data-to="12.2">evoke reads it against every reflex you installed. The ones it needs light up as a plan, before anything runs.</p>
+            <p data-at="12.6" data-to="18.2">Lookups fire together. Changes wait their turn. The rollback stops and asks.</p>
+            <p data-at="18.6" data-to="27.4">Seven small programs in one plan, and you saw all of it before anything ran.</p>
+          </section>
+          <section data-chapter="hold" data-dur="30" data-when="Tomorrow">
+            <h3>Plans people can hold</h3>
+            <p data-at="2.8" data-to="6.2">A plan becomes something you can keep: saved, reviewed, and run again by someone else.</p>
+            <p data-at="6.4" data-to="10.8">Later, a short sentence brings back the whole reviewed plan.</p>
+            <p data-at="13.6" data-to="18">Closing the month takes a second person before the books change.</p>
+            <p data-at="18.4" data-to="24.2">A step can wait for its person, overnight if it has to.</p>
+            <p data-at="24.6" data-to="29.6">When they answer, the plan picks up where it stopped. Nothing that ran runs twice.</p>
+          </section>
+          <section data-chapter="six" data-dur="40" data-when="Tomorrow">
+            <h3>Six problems</h3>
+            <p data-at="0.2" data-to="3">The same shape answers real problems.</p>
+            <p data-at="3.4" data-to="9.2">An outage. Three lookups at once, a suspect found, a rollback that asks, two posts in turn.</p>
+            <p data-at="9.4" data-to="15.2">A stolen laptop. Three lookups at once, four changes in turn with the wipe asking first, then a post.</p>
+            <p data-at="15.4" data-to="21.2">A late shipment. Three lookups at once, the shortfall, then a reserve and a purchase that asks first.</p>
+            <p data-at="21.4" data-to="27.2">Closing the month. Four lookups at once, a reconciliation, a second person, then the report sent.</p>
+            <p data-at="27.4" data-to="33.2">A cancelled flight. Three lookups at once, three changes in turn with the booking asking first, then everyone told.</p>
+            <p data-at="33.4" data-to="39.4">A new colleague. Two lookups at once, two changes in turn with the order asking first, then a first day booked.</p>
+          </section>
+          <section data-chapter="machines" data-dur="34" data-when="Tomorrow">
+            <h3>Across machines</h3>
+            <p data-at="3.4" data-to="8.2">Real work lives on many machines: the deploys on one, the logs on another, the chat somewhere else.</p>
+            <p data-at="8.4" data-to="12.6">Your evoke decides the plan. Each step runs where its program, its keys and its person live.</p>
+            <p data-at="12.8" data-to="14.4">Every call is signed, and each machine checks it against its own rules.</p>
+            <p data-at="14.6" data-to="19" data-if="yes">The machine asked its own person, even after Dana said yes. It ran once and signed a receipt.</p>
+            <p data-at="14.6" data-to="19" data-if="no">The machine asked its own person, who declined. Nothing ran, and nothing after it.</p>
+            <p data-at="19.4" data-to="25">Decide here, run there, sign everything.</p>
+          </section>
+          <section data-chapter="receipts" data-dur="24" data-when="Tomorrow">
+            <h3>Receipts, and who sees what</h3>
+            <p data-at="0.6" data-to="6.4">Each machine answers with a signed receipt: what ran, which version, who said yes, and when.</p>
+            <p data-at="7.2" data-to="12.6">Each side sees only what it needs. deploy.acme sees its own step's words, never the whole sentence.</p>
+            <p data-at="14.6" data-to="21">The makers of evoke see nothing. Nothing we run sits between you and your machines.</p>
+          </section>
+          <section data-chapter="hosts" data-dur="30" data-when="Tomorrow">
+            <h3>Everywhere people act</h3>
+            <p data-at="0.8" data-to="6.8">People will ask from wherever they are. In a chat, the plan is posted and each gate is answered by its own person.</p>
+            <p data-at="7.2" data-to="13.4">By voice, the sentence changes place. The plan and its rules stay the same.</p>
+            <p data-at="13.8" data-to="20">An application ships its reflexes the way it ships a package.</p>
+            <p data-at="20.4" data-to="29.6">An agent can propose a sentence. evoke decides, and the confirm goes to a person, never back to the model.</p>
+          </section>
+          <section data-chapter="galaxy" data-dur="28" data-when="Tomorrow">
+            <h3>A galaxy with no center</h3>
+            <p data-at="3.6" data-to="9.4">Each team and each company publishes its reflexes, and you connect the ones you trust.</p>
+            <p data-at="9.8" data-to="15.6">Plans cross between them directly. Nothing in the middle routes, stores or approves. Not even us.</p>
+            <p data-at="16" data-to="27.4">A network of small programs that fires the way a trained reflex does: at once where it is sure, and stopping where it must.</p>
+          </section>
+          <section data-chapter="road" data-dur="20">
+            <h3>The road</h3>
+            <p data-at="3.2" data-to="7.6">The first step runs today.</p>
+            <p data-at="8" data-to="18.6">The rest is built in order, and each step is measured before the next one is promised.</p>
+          </section>
+          <section data-chapter="coda" data-dur="16">
+            <h3>The last word</h3>
+            <p data-at="1" data-to="16">People write the programs. A sentence picks the plan. A person signs what can't be undone.</p>
+          </section>
+        </div>
+      </details>
+
+      <p class="fine">Every example in this film is an illustration: the reflexes, machines, people and companies are made
+        up.</p>
+    </section>
+  </main>
+
+  <!-- footer -->
+  <script>
+    // The film's light: a WebGL 2 renderer for one galaxy. Everything on screen is light added to light: stars as
+    // points; nebulae, cells, membranes and signals as sprites facing the camera; fibres and paths as ribbons. The frame
+    // is drawn in high range, its brightest light spills into a bloom, and a filmic curve, a vignette and a little grain
+    // finish it. The film describes each frame with sprite() and ribbon(); draw() sends it in one go.
+    const FilmGL = (canvas, gl) => {
+      const floats = !!gl.getExtension("EXT_color_buffer_float")
+      const HDR = floats ? gl.RGBA16F : gl.RGBA8, TYPE = floats ? gl.HALF_FLOAT : gl.UNSIGNED_BYTE
+      const shader = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s }
+      const program = (vs, fs) => {
+        const p = gl.createProgram()
+        gl.attachShader(p, shader(gl.VERTEX_SHADER, vs)); gl.attachShader(p, shader(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(p)
+        if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p))
+        const u = {}
+        for (let i = 0, n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS); i < n; i++) { const name = gl.getActiveUniform(p, i).name; u[name.replace(/\[0\]$/, "")] = gl.getUniformLocation(p, name) }
+        return { p, u }
+      }
+      const HEAD = "#version 300 es\nprecision highp float;\n"
+      const NOISE = `
+        float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+        float noise(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f); return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y); }
+        float fbm(vec2 p) { float a = 0.5, s = 0.0; for (int i = 0; i < 5; i++) { s += a * noise(p); p = p * 2.03 + 17.1; a *= 0.5; } return s; }`
+
+      // Stars: points sized by distance; a star smaller than a pixel dims instead of shrinking
+      const STARS = program(`${HEAD}
+        layout(location = 0) in vec3 aPos; layout(location = 1) in vec3 aCol; layout(location = 2) in vec2 aSize;
+        uniform mat4 uVP; uniform vec3 uEye; uniform float uPx, uTime, uGain, uTwinkle;
+        out vec3 vCol; out float vA;
+        void main() {
+          float d = distance(aPos, uEye), px = aSize.x * uPx / d;
+          float tw = mix(1.0, 0.72 + 0.28 * sin(uTime * (0.6 + aSize.y * 1.7) + aSize.y * 71.0), uTwinkle);
+          vA = uGain * tw * clamp(px / 1.4, 0.05, 1.0) * smoothstep(18.0, 90.0, d);
+          vCol = aCol;
+          gl_Position = uVP * vec4(aPos, 1.0);
+          gl_PointSize = clamp(px * 3.2, 2.5, 11.0);
+        }`, `${HEAD}
+        in vec3 vCol; in float vA; out vec4 o;
+        void main() { vec2 p = gl_PointCoord * 2.0 - 1.0; float r2 = dot(p, p); if (r2 > 1.0) discard; o = vec4(vCol * (exp(-r2 * 26.0) + exp(-r2 * 6.0) * 0.18) * vA, 1.0); }`)
+      // Streaks: the same stars as lines from where they were a moment ago, while the camera flies
+      const STREAKS = program(`${HEAD}
+        layout(location = 0) in vec3 aPos; layout(location = 1) in vec3 aCol; layout(location = 2) in vec2 aSize;
+        uniform mat4 uVP, uPrevVP; uniform vec3 uEye; uniform float uPx, uGain; uniform vec2 uRes;
+        out vec3 vCol; out float vA;
+        void main() {
+          vec4 a = uPrevVP * vec4(aPos, 1.0), b = uVP * vec4(aPos, 1.0);
+          float len = (a.w > 0.0 && b.w > 0.0) ? length((a.xy / a.w - b.xy / b.w) * uRes * 0.5) : 0.0;
+          float d = distance(aPos, uEye), px = aSize.x * uPx / d;
+          vA = uGain * clamp(px, 0.2, 1.2) * smoothstep(2.0, 14.0, len) * smoothstep(40.0, 160.0, d) * min(1.0, 2.2 / max(len, 1.0));  // a star's light spread along its streak
+          vCol = aCol;
+          gl_Position = gl_VertexID == 0 ? a : b;
+        }`, `${HEAD}
+        in vec3 vCol; in float vA; out vec4 o;
+        void main() { o = vec4(vCol * vA, 1.0); }`)
+      // Sprites: quads facing the camera, each drawn as one of eight kinds of light
+      const SPRITES = program(`${HEAD}
+        layout(location = 0) in vec2 aCorner; layout(location = 1) in vec4 iPos; layout(location = 2) in vec4 iCol; layout(location = 3) in vec4 iPar;
+        uniform mat4 uView, uProj;
+        out vec2 vUv; out vec4 vCol; out vec4 vPar;
+        void main() {
+          vec4 v = uView * vec4(iPos.xyz, 1.0);
+          float soft = (iPar.x < 0.5 || (iPar.x > 3.5 && iPar.x < 4.5)) ? 1.0 : 0.0;
+          float fade = mix(1.0, smoothstep(iPos.w * 0.6, iPos.w * 3.5, -v.z), soft);
+          v.xy += aCorner * iPos.w; gl_Position = uProj * v; vUv = aCorner; vCol = vec4(iCol.rgb, iCol.a * fade); vPar = iPar;
+        }`, `${HEAD}
+        in vec2 vUv; in vec4 vCol; in vec4 vPar; out vec4 o;
+        uniform float uTime;
+        ${NOISE}
+        void main() {
+          vec2 p = vUv; float r2 = dot(p, p), r = sqrt(r2), k = vPar.x, a = 0.0; vec3 c = vCol.rgb;
+          if (r2 > 1.0) discard;
+          if (k < 0.5) {                                   // a soft glow
+            a = exp(-r2 * 5.5) * (1.0 - r2);
+          } else if (k < 1.5) {                            // a star or a cell's body: a white core, its colour around, soft spikes
+            float t = vPar.y; mat2 m = mat2(cos(t), -sin(t), sin(t), cos(t)); vec2 q = abs(m * p);
+            float spikes = (exp(-q.x * 70.0) * exp(-q.y * 4.0) + exp(-q.y * 70.0) * exp(-q.x * 4.0)) * vPar.z;
+            float core = exp(-r2 * 120.0) * 3.0, corona = exp(-r2 * 16.0) * 0.9 + exp(-r * 6.0) * 0.22;
+            o = vec4((c * (corona + spikes) + vec3(1.0, 0.95, 0.88) * core) * vCol.a * (1.0 - r2), 1.0); return;
+          } else if (k < 2.5) {                            // a ring, filled clockwise from the top to p1, thickness p2, p3 dashes
+            float d = abs(r - 0.8) / max(vPar.z, 0.004); a = exp(-d * d);
+            float ang = fract(atan(p.x, p.y) / 6.2831853 + 1.0);
+            if (ang > vPar.y) a *= 0.0;
+            if (vPar.w > 0.5) a *= step(0.45, fract(ang * vPar.w));
+          } else if (k < 3.5) {                            // a membrane: a sphere of light, bright at its rim, alive inside
+            float z = sqrt(max(0.0, 1.0 - r2)), rim = pow(1.0 - z, 3.5);
+            float cells = fbm(p * 3.2 + vec2(vPar.z * 7.0, uTime * 0.05)) ;
+            float bands = pow(abs(sin((p.y / max(z, 0.2)) * 9.0 + uTime * 0.3)), 24.0) * z * 0.25;
+            a = rim * 1.1 + z * 0.035 + cells * z * 0.05 + bands * 0.35 + vPar.y * (rim * 0.9 + 0.08) ;
+          } else if (k < 4.5) {                            // a nebula: a cloud of gas lit from within
+            float n = fbm(p * 1.7 + vPar.y * 13.0 + uTime * 0.004);
+            a = exp(-r2 * 2.6) * smoothstep(0.25, 0.85, n) * (1.0 - r2);
+          } else if (k < 5.5) {                            // a signal: a hot point of light
+            a = exp(-r2 * 34.0) * 2.4 + exp(-r2 * 5.0) * 0.35;
+          } else if (k < 6.5) {                            // a receipt: a small diamond of light
+            float dm = abs(p.x) + abs(p.y); a = smoothstep(0.42, 0.3, dm) * 1.8 + exp(-r2 * 5.0) * 0.35;
+          } else {                                         // a signed call: a sealed envelope of light
+            vec2 q = abs(p); float box = smoothstep(0.5, 0.42, q.x) * smoothstep(0.36, 0.28, q.y);
+            float fold = smoothstep(0.05, 0.0, abs(p.y + 0.3 - abs(p.x) * 0.7)) * step(q.x, 0.48);
+            a = box * (1.6 - fold * 1.2) + exp(-r2 * 4.5) * 0.35;
+          }
+          o = vec4(c * a * vCol.a, 1.0);
+        }`)
+      // Ribbons: triangles built on the CPU to face the camera, bright along their middle; some are strings of beads
+      const RIBBONS = program(`${HEAD}
+        layout(location = 0) in vec3 aPos; layout(location = 1) in vec4 aCol; layout(location = 2) in vec3 aUv;
+        uniform mat4 uVP; out vec4 vCol; out vec3 vUv;
+        void main() { gl_Position = uVP * vec4(aPos, 1.0); vCol = aCol; vUv = aUv; }`, `${HEAD}
+        in vec4 vCol; in vec3 vUv; out vec4 o;
+        void main() {
+          float a = exp(-vUv.x * vUv.x * 3.2);
+          if (vUv.z > 0.0) { float b = fract(vUv.y / vUv.z); a *= smoothstep(0.34, 0.08, abs(b - 0.5)) ; }
+          o = vec4(vCol.rgb * vCol.a * a, 1.0);
+        }`)
+      // The finish: bloom down and up a chain of halves, then the filmic curve
+      const FULL = `${HEAD} out vec2 vUv; void main() { vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2)); vUv = p; gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0); }`
+      const DOWN = program(FULL, `${HEAD}
+        in vec2 vUv; out vec4 o; uniform sampler2D uTex; uniform vec2 uTexel; uniform float uKnee; uniform int uFirst;
+        vec3 s(vec2 d) { return texture(uTex, vUv + d * uTexel).rgb; }
+        void main() {
+          vec3 c = (s(vec2(-1, -1)) + s(vec2(1, -1)) + s(vec2(-1, 1)) + s(vec2(1, 1))) * 0.125
+            + (s(vec2(-2, -2)) + s(vec2(2, -2)) + s(vec2(-2, 2)) + s(vec2(2, 2))) * 0.03125
+            + (s(vec2(0, -2)) + s(vec2(-2, 0)) + s(vec2(2, 0)) + s(vec2(0, 2))) * 0.0625 + s(vec2(0)) * 0.125;
+          if (uFirst == 1) { float b = max(c.r, max(c.g, c.b)); c *= max(b - uKnee, 0.0) / max(b, 1e-4); }
+          o = vec4(c, 1.0);
+        }`)
+      const UP = program(FULL, `${HEAD}
+        in vec2 vUv; out vec4 o; uniform sampler2D uTex; uniform vec2 uTexel;
+        void main() {
+          vec2 t = uTexel;
+          vec3 c = texture(uTex, vUv).rgb * 4.0
+            + (texture(uTex, vUv + vec2(t.x, 0)).rgb + texture(uTex, vUv - vec2(t.x, 0)).rgb + texture(uTex, vUv + vec2(0, t.y)).rgb + texture(uTex, vUv - vec2(0, t.y)).rgb) * 2.0
+            + texture(uTex, vUv + t).rgb + texture(uTex, vUv - t).rgb + texture(uTex, vUv + vec2(t.x, -t.y)).rgb + texture(uTex, vUv + vec2(-t.x, t.y)).rgb;
+          o = vec4(c / 16.0, 1.0);
+        }`)
+      const FINISH = program(FULL, `${HEAD}
+        in vec2 vUv; out vec4 o; uniform sampler2D uScene, uBloom; uniform float uBloomK, uNight, uTime, uExposure; uniform vec2 uRes;
+        vec3 aces(vec3 x) { return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0); }
+        void main() {
+          vec2 q = vUv - 0.5;
+          vec3 c = texture(uScene, vUv).rgb + texture(uBloom, vUv).rgb * uBloomK;
+          c += vec3(0.006, 0.005, 0.009) * (1.0 - dot(q, q) * 2.0);
+          c = mix(c, c * vec3(0.5, 0.64, 1.18), uNight);
+          c = aces(c * uExposure);
+          c *= 1.0 - dot(q, q) * 0.9;
+          c = pow(c, vec3(1.0 / 2.2));
+          float g = fract(sin(dot(gl_FragCoord.xy + fract(uTime) * 91.0, vec2(12.9898, 78.233))) * 43758.5453);
+          o = vec4(c + (g - 0.5) * 0.022, 1.0);
+        }`)
+
+      // Buffers: the stars and the still sprites once; the frame's sprites and ribbons every frame
+      const quad = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, quad); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW)
+      const spriteVAO = buf => {
+        const vao = gl.createVertexArray(); gl.bindVertexArray(vao)
+        gl.bindBuffer(gl.ARRAY_BUFFER, quad); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf)
+        for (let i = 0; i < 3; i++) { gl.enableVertexAttribArray(1 + i); gl.vertexAttribPointer(1 + i, 4, gl.FLOAT, false, 48, i * 16); gl.vertexAttribDivisor(1 + i, 1) }
+        gl.bindVertexArray(null); return vao
+      }
+      const starVAO = (buf, divisor) => {
+        const vao = gl.createVertexArray(); gl.bindVertexArray(vao); gl.bindBuffer(gl.ARRAY_BUFFER, buf)
+        ;[[0, 3, 0], [1, 3, 12], [2, 2, 24]].forEach(([loc, n, off]) => { gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, n, gl.FLOAT, false, 32, off); gl.vertexAttribDivisor(loc, divisor) })
+        gl.bindVertexArray(null); return vao
+      }
+      let starBuf = null, starVAOs = null, nStars = 0
+      const stills = []  // [{ vao, n, gain }] sprites that never change: nebulae, far constellations
+      const MAX_SPR = 24000, MAX_RIB = 240000
+      const spr = new Float32Array(MAX_SPR * 12), rib = new Float32Array(MAX_RIB * 10)
+      const sprBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, sprBuf); gl.bufferData(gl.ARRAY_BUFFER, spr.byteLength, gl.DYNAMIC_DRAW)
+      const sprVAO = spriteVAO(sprBuf)
+      const ribBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, ribBuf); gl.bufferData(gl.ARRAY_BUFFER, rib.byteLength, gl.DYNAMIC_DRAW)
+      const ribVAO = gl.createVertexArray(); gl.bindVertexArray(ribVAO)
+      ;[[0, 3, 0], [1, 4, 12], [2, 3, 28]].forEach(([loc, n, off]) => { gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, n, gl.FLOAT, false, 40, off) })
+      gl.bindVertexArray(null)
+      const emptyVAO = gl.createVertexArray()
+      let ns = 0, nr = 0
+
+      // Render targets: the frame in high range, and the bloom's chain of halves
+      let RW = 1, RH = 1, scene = null, mips = []
+      const target = (w, h) => {
+        const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t)
+        gl.texImage2D(gl.TEXTURE_2D, 0, HDR, w, h, 0, gl.RGBA, TYPE, null)
+        for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v)
+        const f = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, f); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0)
+        return { t, f, w, h }
+      }
+      const drop = x => { if (x) { gl.deleteTexture(x.t); gl.deleteFramebuffer(x.f) } }
+      const resize = (w, h) => {
+        RW = Math.max(1, w); RH = Math.max(1, h); canvas.width = RW; canvas.height = RH
+        drop(scene); mips.forEach(drop)
+        scene = target(RW, RH); mips = []
+        for (let i = 1, w2 = RW, h2 = RH; i <= 6; i++) { w2 = Math.max(1, w2 >> 1); h2 = Math.max(1, h2 >> 1); mips.push(target(w2, h2)) }
+      }
+
+      return {
+        floats,
+        stars(data) {  // x, y, z, r, g, b, size, seed per star
+          starBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, starBuf); gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW)
+          nStars = data.length / 8; starVAOs = { points: starVAO(starBuf, 0), lines: starVAO(starBuf, 1) }
+        },
+        still(data) {  // sprites that never change, 12 floats each; returns a handle whose gain the frame sets
+          const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW)
+          const s = { vao: spriteVAO(b), n: data.length / 12, gain: 1 }; stills.push(s); return s
+        },
+        resize,
+        begin() { ns = 0; nr = 0 },
+        sprite(x, y, z, size, r, g, b, a, kind, p1 = 0, p2 = 0, p3 = 0) {
+          if (ns >= MAX_SPR || a <= .002) return
+          const o = ns++ * 12
+          spr[o] = x; spr[o + 1] = y; spr[o + 2] = z; spr[o + 3] = size; spr[o + 4] = r; spr[o + 5] = g; spr[o + 6] = b; spr[o + 7] = a; spr[o + 8] = kind; spr[o + 9] = p1; spr[o + 10] = p2; spr[o + 11] = p3
+        },
+        vertex(x, y, z, r, g, b, a, u, v, w) {
+          if (nr >= MAX_RIB) return false
+          const o = nr++ * 10
+          rib[o] = x; rib[o + 1] = y; rib[o + 2] = z; rib[o + 3] = r; rib[o + 4] = g; rib[o + 5] = b; rib[o + 6] = a; rib[o + 7] = u; rib[o + 8] = v; rib[o + 9] = w
+          return true
+        },
+        room: n => nr + n <= MAX_RIB,
+        draw(f) {  // f: { view, proj, vp, prevVP, eye, px, time, starGain, twinkle, streak, bloom, night, exposure }
+          gl.bindFramebuffer(gl.FRAMEBUFFER, scene.f); gl.viewport(0, 0, RW, RH)
+          gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT)
+          gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE); gl.disable(gl.DEPTH_TEST)
+          const spritesWith = (vao, n, gain) => {
+            if (!n || gain <= .002) return
+            gl.useProgram(SPRITES.p); gl.uniformMatrix4fv(SPRITES.u.uView, false, f.view); gl.uniformMatrix4fv(SPRITES.u.uProj, false, f.proj); gl.uniform1f(SPRITES.u.uTime, f.time)
+            gl.bindVertexArray(vao); gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, n)
+          }
+          for (const s of stills) if (s.gain > .002) { gl.blendColor(s.gain, s.gain, s.gain, 1); gl.blendFunc(gl.CONSTANT_COLOR, gl.ONE); spritesWith(s.vao, s.n, s.gain) }
+          gl.blendFunc(gl.ONE, gl.ONE)
+          if (nStars && f.starGain > .002) {
+            gl.useProgram(STARS.p); const u = STARS.u
+            gl.uniformMatrix4fv(u.uVP, false, f.vp); gl.uniform3f(u.uEye, f.eye.x, f.eye.y, f.eye.z); gl.uniform1f(u.uPx, f.px); gl.uniform1f(u.uTime, f.time); gl.uniform1f(u.uGain, f.starGain); gl.uniform1f(u.uTwinkle, f.twinkle)
+            gl.bindVertexArray(starVAOs.points); gl.drawArrays(gl.POINTS, 0, nStars)
+            if (f.streak > .01 && f.prevVP) {
+              gl.useProgram(STREAKS.p); const s = STREAKS.u
+              gl.uniformMatrix4fv(s.uVP, false, f.vp); gl.uniformMatrix4fv(s.uPrevVP, false, f.prevVP); gl.uniform3f(s.uEye, f.eye.x, f.eye.y, f.eye.z); gl.uniform1f(s.uPx, f.px); gl.uniform1f(s.uGain, f.streak * f.starGain); gl.uniform2f(s.uRes, RW, RH)
+              gl.bindVertexArray(starVAOs.lines); gl.drawArraysInstanced(gl.LINES, 0, 2, nStars)
+            }
+          }
+          if (nr) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, ribBuf); gl.bufferSubData(gl.ARRAY_BUFFER, 0, rib, 0, nr * 10)
+            gl.useProgram(RIBBONS.p); gl.uniformMatrix4fv(RIBBONS.u.uVP, false, f.vp)
+            gl.bindVertexArray(ribVAO); gl.drawArrays(gl.TRIANGLES, 0, nr)
+          }
+          if (ns) { gl.bindBuffer(gl.ARRAY_BUFFER, sprBuf); gl.bufferSubData(gl.ARRAY_BUFFER, 0, spr, 0, ns * 12); spritesWith(sprVAO, ns, 1) }
+          // bloom: down the chain from the frame, then back up, each level added to the one above
+          gl.disable(gl.BLEND); gl.bindVertexArray(emptyVAO)
+          let src = scene
+          mips.forEach((m, i) => {
+            gl.bindFramebuffer(gl.FRAMEBUFFER, m.f); gl.viewport(0, 0, m.w, m.h)
+            gl.useProgram(DOWN.p); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, src.t)
+            gl.uniform1i(DOWN.u.uTex, 0); gl.uniform2f(DOWN.u.uTexel, 1 / src.w, 1 / src.h); gl.uniform1i(DOWN.u.uFirst, i === 0 ? 1 : 0); gl.uniform1f(DOWN.u.uKnee, .55)
+            gl.drawArrays(gl.TRIANGLES, 0, 3); src = m
+          })
+          gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE)
+          for (let i = mips.length - 1; i > 0; i--) {
+            const from = mips[i], to = mips[i - 1]
+            gl.bindFramebuffer(gl.FRAMEBUFFER, to.f); gl.viewport(0, 0, to.w, to.h)
+            gl.useProgram(UP.p); gl.bindTexture(gl.TEXTURE_2D, from.t); gl.uniform1i(UP.u.uTex, 0); gl.uniform2f(UP.u.uTexel, 1 / from.w, 1 / from.h)
+            gl.drawArrays(gl.TRIANGLES, 0, 3)
+          }
+          gl.disable(gl.BLEND)
+          gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, RW, RH)
+          gl.useProgram(FINISH.p); const u = FINISH.u
+          gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, scene.t); gl.uniform1i(u.uScene, 0)
+          gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, mips[0].t); gl.uniform1i(u.uBloom, 1)
+          gl.uniform1f(u.uBloomK, f.bloom); gl.uniform1f(u.uNight, f.night); gl.uniform1f(u.uTime, f.time); gl.uniform1f(u.uExposure, f.exposure); gl.uniform2f(u.uRes, RW, RH)
+          gl.drawArrays(gl.TRIANGLES, 0, 3)
+          gl.activeTexture(gl.TEXTURE0)
+        },
+      }
+    }
+    // The film: where evoke is going, rendered live in one galaxy. Every frame is a function of the film's clock, so the
+    // film pauses, scrubs and replays exactly, and one moment waits for the viewer's answer. Reflexes are cells of light
+    // with fibres; a plan is signals travelling between them; a machine is a membrane around its reflexes, and a signed
+    // call is a comet that crosses from one membrane to another. The captions are the transcript under the screen.
+    {
+      const film = document.querySelector("main.film"), screen = film?.querySelector(".screen")
+      const canvas = screen?.querySelector("canvas")
+      const gl = canvas?.getContext("webgl2", { antialias: false, alpha: false, depth: false, stencil: false, premultipliedAlpha: false, powerPreference: "high-performance" })
+      if (screen && !gl) screen.classList.add("no-gl")
+      if (screen && gl) {
+        const G = FilmGL(canvas, gl)
+        const layer = screen.querySelector(".labels"), q = sel => screen.querySelector(sel)
+        const still = matchMedia("(prefers-reduced-motion: reduce)").matches
+        const TAU = Math.PI * 2, DEG = Math.PI / 180
+        const rand = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296 }
+        const clamp = (v, a, b) => Math.min(b, Math.max(a, v))
+        const lerp = (a, b, t) => a + (b - a) * t
+        const ease = t => t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2
+        const seg = (t, a, b) => clamp((t - a) / (b - a), 0, 1)
+        const within = (t, a, b, e = .5) => Math.min(seg(t, a, a + e), 1 - seg(t, b - e, b))
+        const V = (x, y, z) => ({ x, y, z })
+        const add = (a, b) => V(a.x + b.x, a.y + b.y, a.z + b.z)
+        const sub = (a, b) => V(a.x - b.x, a.y - b.y, a.z - b.z)
+        const mul = (a, k) => V(a.x * k, a.y * k, a.z * k)
+        const dot3 = (a, b) => a.x * b.x + a.y * b.y + a.z * b.z
+        const cross = (a, b) => V(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x)
+        const len = a => Math.hypot(a.x, a.y, a.z)
+        const norm = a => mul(a, 1 / (len(a) || 1))
+        const mix = (a, b, t) => V(lerp(a.x, b.x, t), lerp(a.y, b.y, t), lerp(a.z, b.z, t))
+        const UP = V(0, 1, 0)
+        const clock = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`
+        const lin = hex => { const n = parseInt(hex.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255].map(c => c ** 2.2) }
+        const C = { acc: lin("#ff7a1a"), ok: lin("#8fe08a"), mid: lin("#ffc55a"), no: lin("#ff6a60"), white: lin("#fff3e6"), ice: lin("#c9dcff"), gold: lin("#ffcf8f"), rose: lin("#d0507a"), teal: lin("#3fbfa0"), grey: lin("#6a6a74"), violet: lin("#8a6cff") }
+
+        // The script: each chapter's length, its label and its captions, read from the transcript under the screen
+        const script = [...film.querySelectorAll(".script section[data-chapter]")].map((section, i) => ({
+          i, id: section.dataset.chapter, dur: +section.dataset.dur, when: section.dataset.when ?? "", title: section.querySelector("h3").textContent.trim(),
+          cues: [...section.querySelectorAll("p[data-at]")].map(p => ({ at: +p.dataset.at, to: +p.dataset.to, when: p.dataset.if ?? null, text: p.textContent.trim() })),
+        }))
+        let total = 0
+        for (const c of script) { c.start = total; total += c.dur }
+        const TOTAL = total, CH = Object.fromEntries(script.map(c => [c.id, c]))
+        const at = (id, t) => CH[id].start + t
+        for (const p of film.querySelectorAll(".script p[data-if]")) p.dataset.ifLabel = p.dataset.if === "yes" ? "If you approve:" : "If you decline:"
+
+        // The galaxy, in its own units: a disc of two arms around an empty middle, lit by stars and gas. Acme and the five
+        // other problems sit on one arm; other teams' and companies' machines are small constellations along both
+        const rnd = rand(11), small = matchMedia("(max-width: 700px)").matches
+        const R = 2000, O = V(0, 0, 0)
+        const arm = (t, side, j = 0) => { const a = t * 5.2 + side * Math.PI + j * .45, r = 230 + t * R, s = j * (70 + t * 240); return V(Math.cos(a) * r - Math.sin(a) * s, 0, Math.sin(a) * r + Math.cos(a) * s) }
+        const gauss = () => (rnd() + rnd() + rnd() + rnd() + rnd() + rnd() - 3) / 1.5
+        {
+          const n = small ? 46000 : 130000, data = new Float32Array(n * 8)
+          for (let i = 0; i < n; i++) {
+            const pop = rnd(); let t, p
+            if (pop < .7) { t = rnd() ** .78; p = arm(t, i % 2, gauss() * .34) }
+            else if (pop < .93) { t = rnd() ** .62; p = arm(t, i % 2, gauss() * 1.35) }
+            else { const a = rnd() * TAU, r = 238 + gauss() * 26; t = 0; p = V(Math.cos(a) * r, 0, Math.sin(a) * r) }  // the ring around the empty middle
+            p.y = gauss() * (7 + 26 * (1 - t))
+            const c = rnd(), col = c < .52 ? C.white : c < .74 ? C.ice : c < .92 ? C.gold : C.acc
+            data.set([p.x, p.y, p.z, col[0], col[1], col[2], .7 + rnd() ** 7 * 5, rnd()], i * 8)
+          }
+          G.stars(data)
+        }
+        const SP = 12, pack = (list, [x, y, z], size, col, a, kind, p1 = 0, p2 = 0, p3 = 0) => list.push(x, y, z, size, col[0], col[1], col[2], a, kind, p1, p2, p3)
+        const NEBULA = (() => {
+          const list = []
+          for (let i = 0; i < (small ? 800 : 1900); i++) {
+            const t = .03 + rnd() * .97, p = arm(t, i % 2, gauss() * .3), c = rnd()
+            const col = c < .48 ? C.acc : c < .7 ? C.gold : c < .87 ? C.rose : c < .97 ? C.teal : C.violet
+            pack(list, [p.x, gauss() * 12, p.z], 70 + rnd() ** 2 * 260, col, (.035 + rnd() * .05) * (1 - t * .45), 4, rnd() * 50)
+          }
+          return G.still(new Float32Array(list))
+        })()
+        const SITES = [.42, .49, .56, .63, .7, .77].map(t => arm(t, 1))
+        const A = SITES[0], FIN = SITES[3]
+        const others = []
+        for (let i = 0; others.length < 160 && i < 1600; i++) {
+          const c = arm(.04 + rnd() * .96, i % 2, (rnd() - .5) * 1.5)
+          c.y = gauss() * 18
+          if (SITES.some(s => Math.hypot(s.x - c.x, s.z - c.z) < 320) || others.some(o => Math.hypot(o.x - c.x, o.z - c.z) < 110)) continue
+          const r = 28 + rnd() * 16, members = Array.from({ length: 3 + Math.floor(rnd() * 5) }, () => { const a = rnd() * TAU, e = (rnd() - .5) * 1.4, d = r * (.25 + rnd() * .5); return V(c.x + Math.cos(a) * Math.cos(e) * d, c.y + Math.sin(e) * d, c.z + Math.sin(a) * Math.cos(e) * d) })
+          others.push({ ...c, r, members, tint: rnd() < .5 ? C.ice : rnd() < .5 ? C.gold : C.teal, seed: rnd() })
+        }
+        const CONSTELLATIONS = (() => {  // other machines: a membrane each, its reflexes inside
+          const list = []
+          for (const o of others) {
+            pack(list, [o.x, o.y, o.z], o.r, o.tint, .55, 3, 0, o.seed)
+            pack(list, [o.x, o.y, o.z], o.r * 2.2, o.tint, .05, 0)
+            for (const m of o.members) pack(list, [m.x, m.y, m.z], 7, o.tint, .9, 1, o.seed * 6, .5)
+          }
+          return G.still(new Float32Array(list))
+        })()
+        // The galaxy's own traffic: plans between constellations, each a caller and the machines it reaches
+        const WEB = []
+        for (let i = 0; i < 46; i++) {
+          const caller = others[Math.floor(rnd() * others.length)]
+          const near = others.filter(o => o !== caller).map(o => [o, Math.hypot(o.x - caller.x, o.z - caller.z)]).filter(([, d]) => d > 140 && d < 640).sort((a, b) => a[1] - b[1]).slice(0, 2 + Math.floor(rnd() * 3)).map(([o]) => o)
+          if (near.length) WEB.push({ caller, targets: near, phase: rnd() * 8, period: 7 + rnd() * 3 })
+        }
+        const SAID = [[1, "sam's laptop was stolen"], [2, "the rotterdam shipment is late"], [3, "close september"], [4, "our lisbon flight was cancelled"], [5, "maria starts monday"], [0, "checkout is failing in eu-west"]]
+
+        // Plans: stages of steps. Lookups in a stage run together; changes run in turn, each waiting for the one before
+        const step = (id, effect, p, chip = "") => ({ id, effect, p, chip })
+        const OUTAGE = { stages: [[step("errors", "read", .97, "8.4% at 14:02"), step("deploys", "read", .95, "3 today"), step("logs", "read", .92, "412 timeouts")], [step("suspect", "read", .91, "4.12.0")], [step("rollback", "destructive", .94, "now 4.11.3")], [step("post", "write", .96, "#incident"), step("status", "write", .93, "recovering")]] }
+        const CLOSE = { stages: [[step("bank", "read", .97), step("invoices", "read", .95), step("cards", "read", .96), step("payroll", "read", .94)], [step("reconcile", "read", .92, "3 to review")], [{ ...step("post", "write", .93, "posted"), person: "Omar" }], [step("send", "write", .95, "sent")]] }
+        const PROBLEMS = [
+          { name: "An outage", said: "checkout is failing in eu-west", plan: OUTAGE },
+          { name: "A stolen laptop", said: "sam's laptop was stolen", plan: { stages: [[step("device", "read", .96), step("sessions", "read", .94), step("keys", "read", .95)], [step("lock", "write", .93), step("wipe", "destructive", .92), step("revoke", "write", .94), step("rotate", "write", .9)], [step("post", "write", .95)]] } },
+          { name: "A late shipment", said: "the rotterdam shipment is late", plan: { stages: [[step("shipment", "read", .97), step("stock", "read", .94), step("quotes", "read", .9)], [step("shortfall", "read", .91)], [step("reserve", "write", .92), step("buy", "destructive", .9)], [step("email", "write", .94)]] } },
+          { name: "Closing the month", said: "close september", plan: CLOSE },
+          { name: "A cancelled flight", said: "our lisbon flight was cancelled", plan: { stages: [[step("flights", "read", .95), step("rooms", "read", .93), step("calendar", "read", .96)], [step("book", "destructive", .91), step("hotel", "write", .93), step("meeting", "write", .94)], [step("tell", "write", .96)]] } },
+          { name: "A new colleague", said: "maria starts monday", plan: { stages: [[step("hire", "read", .97), step("team", "read", .95)], [step("accounts", "write", .93), step("order", "destructive", .9)], [step("book", "write", .94)]] } },
+        ]
+        // A plan in space: stages along its way, a stage's steps around it, the sentence that lit it before them
+        const frame3 = (origin, along) => { const u = norm(V(along.x, 0, along.z)), w = norm(cross(u, UP)); return (x, y, z) => add(origin, add(mul(u, x), add(mul(UP, y), mul(w, z)))) }
+        const layout3 = (plan, place, sx) => {
+          const pos = {}, n = plan.stages.length
+          plan.stages.forEach((stage, s) => {
+            const m = stage.length, reads = stage.every(x => x.effect === "read")
+            stage.forEach((st, j) => {
+              if (m === 1) pos[st.id] = place((s - (n - 1) / 2) * sx, 0, 0)
+              else if (reads) { const a = j / m * TAU + .7, r = 38 + m * 13; pos[st.id] = place((s - (n - 1) / 2) * sx, Math.sin(a) * r, Math.cos(a) * r) }
+              else pos[st.id] = place((s - (n - 1) / 2) * sx + (j - (m - 1) / 2) * sx * .22, ((m - 1) / 2 - j) * 46, (j % 2 ? 1 : -1) * 16)  // changes in a column read down
+            })
+          })
+          pos.$ = place((-(n - 1) / 2 - 1.1) * sx, 12, 0)
+          return pos
+        }
+        const tangent = t => sub(arm(t + .004, 1), arm(t - .004, 1))
+        const OUT3 = (() => {  // the outage around A, the rollback at A itself
+          const p = layout3(OUTAGE, frame3(A, V(1, 0, .12)), 122), d = sub(A, p.rollback)
+          for (const k in p) p[k] = add(p[k], d)
+          return p
+        })()
+        const CLOSE3 = layout3(CLOSE, frame3(FIN, tangent(.63)), 124)
+        for (const [i, pr] of PROBLEMS.entries()) pr.pos = pr.plan === OUTAGE ? OUT3 : pr.plan === CLOSE ? CLOSE3 : layout3(pr.plan, frame3(SITES[i], tangent([.42, .49, .56, .63, .7, .77][i])), 104)
+        const centre = pos => { const v = Object.values(pos); return mul(v.reduce(add, O), 1 / v.length) }
+        const OUT_MID = centre(OUT3)
+        // Every other reflex installed, dim around the outage's plan
+        const INSTALLED = []
+        for (let i = 0; INSTALLED.length < 80 && i < 4000; i++) {
+          const p = add(OUT_MID, V((rnd() * 2 - 1) * 470, (rnd() * 2 - 1) * 190, (rnd() * 2 - 1) * 300))
+          if (Object.values(OUT3).some(c => len(sub(c, p)) < 64) || INSTALLED.some(c => len(sub(c, p)) < 44)) continue
+          INSTALLED.push({ p, seed: rnd() })
+        }
+        // Each reflex's fibres: directions, lengths and bends, fixed per reflex
+        const fibres = new Map()
+        const fibresOf = (key, toward) => {
+          if (!fibres.has(key)) {
+            const r = rand([...key].reduce((h, c) => h * 31 + c.charCodeAt(0) | 0, 7)), list = []
+            const away = toward ? mul(norm(toward), -1) : null
+            for (let i = 0; i < 8; i++) {
+              let d = norm(V(r() * 2 - 1, (r() * 2 - 1) * .8, r() * 2 - 1))
+              if (away && dot3(d, away) < -.2) d = norm(add(d, mul(away, 1.2)))
+              const b = norm(cross(d, V(r() - .5, r() - .5, r() - .5)))
+              list.push({ d, l: 2.6 + r() * 2.4, b, bend: (r() - .5) * 1.4, forks: [.45 + r() * .3, -(.4 + r() * .3)] })
+            }
+            fibres.set(key, list)
+          }
+          return fibres.get(key)
+        }
+
+        // When each step lights, sets off, is asked and runs
+        const schedule = (plan, lit, o = {}) => {
+          const travel = o.travel ?? .7, gap = o.gap ?? .35, turn = o.turn ?? .25, times = {}
+          let t = lit + (o.first ?? 1)
+          for (const stage of plan.stages) {
+            if (stage.every(s => s.effect === "read")) { for (const s of stage) times[s.id] = { go: t, arrive: t + travel, fire: t + travel }; t += travel }
+            else for (const s of stage) {
+              const asks = s.effect === "destructive" || s.person, arrive = t + travel, wait = asks ? (s.person ? o.person ?? 6.9 : o.ask ?? 2.4) : 0
+              times[s.id] = { go: t, arrive, ask: asks ? [arrive, arrive + wait] : null, fire: arrive + wait }
+              t = arrive + wait + turn
+            }
+            t += gap
+          }
+          return { lit, times, end: Math.max(...Object.values(times).map(x => x.fire)) }
+        }
+        const stateOf = (sched, id, T) => {
+          if (T < sched.lit) return "dim"
+          const x = sched.times[id]
+          return T < x.arrive ? "plan" : x.ask && T < x.ask[1] ? "asking" : "ran"
+        }
+        const PLAN_RUN = schedule(OUTAGE, at("plan", 6.2), { first: 1 })
+        const CLOSE_RUN = schedule(CLOSE, at("hold", 14.9), { first: .7, gap: .3 })
+        const SIX_RUN = PROBLEMS.map((p, i) => schedule(p.plan, at("six", 3.4 + 6 * i + .9), { first: .5, travel: .4, ask: 1.1, gap: .16, turn: .14, person: 1.3 }))
+
+        // Acme's machines around A, and where each of the outage's steps runs once the plan crosses them
+        const MACHINES = {
+          laptop: { name: "Dana's laptop", sub: "decides the plan", at: V(-380, 40, 70), tint: C.acc },
+          monitor: { name: "monitor.acme", sub: "errors · logs", at: V(-120, 70, -250), tint: C.ice },
+          deploy: { name: "deploy.acme", sub: "deploys · rollback", at: V(190, 20, -130), tint: C.ice },
+          chat: { name: "chat.acme", sub: "the incident channel", at: V(70, -30, 230), tint: C.ice },
+          status: { name: "status.vendor", sub: "another company", at: V(460, 50, 120), tint: C.teal },
+        }
+        for (const [key, m] of Object.entries(MACHINES)) {
+          Object.assign(m, { key, c: add(A, m.at), r: 74, seed: rnd(), extra: [] })
+          for (let i = 0; i < 6; i++) { const a = rnd() * TAU, b = (rnd() - .5) * 1.6, d = 26 + rnd() * 30; m.extra.push(V(Math.cos(a) * Math.cos(b) * d, Math.sin(b) * d, Math.sin(a) * Math.cos(b) * d)) }
+        }
+        const HOME = { errors: ["monitor", V(-30, 16, -12)], logs: ["monitor", V(28, -14, 16)], deploys: ["deploy", V(-32, -12, 14)], rollback: ["deploy", V(28, 16, -14)], suspect: ["laptop", V(34, -16, 16)], post: ["chat", V(0, 0, 0)], status: ["status", V(0, 0, 0)] }
+        const home = id => add(MACHINES[HOME[id][0]].c, HOME[id][1])
+        const deployC = MACHINES.deploy.c, lapC = MACHINES.laptop.c, PERSON = add(deployC, V(-129, 40, 33))  // outside the membrane, where the gate's camera sees the person apart
+        const ACME_MID = mul(Object.values(MACHINES).map(m => m.c).reduce(add, O), 1 / 5)
+        const ROAD = Array.from({ length: 6 }, (_, i) => add(arm(.42 + i * .085, 1), V(0, 120 + i * 34, 0)))
+        const HOSTS3 = [V(-980, 460, -420), V(980, 480, -380), V(-940, -380, 480), V(960, -360, 460)].map(v => add(ACME_MID, v))
+
+        // The camera: keyframed shots. The look depends on the angles alone; a shot may shift its target along the view
+        let W = 0, H = 0, F = 1000, rdpr = 1, portrait = false
+        const SHOTS = []
+        const S = (T, target, dist, az, el, o = {}) => SHOTS.push({ T, target, dist, az: az * DEG, el: el * DEG, ox: o.ox ?? 0, oy: o.oy ?? 0, cx: o.cx ?? .5, cy: o.cy ?? .5, glide: !!o.glide, p: o.p ?? null })
+        const view = (eye, target) => { const d = sub(target, eye), l = len(d); return { target, dist: l, az: Math.atan2(-d.x, -d.z) / DEG, el: Math.asin(-d.y / l) / DEG } }  // a shot from an eye to a point
+        const SV = (T, eye, target, o) => { const v = view(eye, target); S(T, v.target, v.dist, v.az, v.el, o) }
+        const tangentAz = i => { const a = ROAD[Math.max(0, i - 1)], b = ROAD[Math.min(5, i + 1)]; return Math.atan2(-(b.x - a.x), -(b.z - a.z)) / DEG }
+        const TALL = { d: 1.7, az: 90, el: 58 }
+        S(0, O, 5600, -30, 57, { p: { d: 1.6 } }); S(at("title", 11), O, 4700, -12, 51, { p: { d: 1.6 } })
+        const CLOSE_P = { d: 2.7, cx: .5, cy: .34, ox: 6 }
+        S(at("reflex", 3.6), A, 104, 20, 15, { cx: .66, ox: 6, p: CLOSE_P }); S(at("reflex", 10.4), A, 100, 24, 16, { cx: .66, ox: 6, p: CLOSE_P })
+        S(at("reflex", 12.8), A, 84, 28, 17, { ox: 6, p: CLOSE_P }); S(at("reflex", 26), A, 76, 34, 18, { ox: 6, p: CLOSE_P })
+        S(at("plan", 2.8), OUT_MID, 640, 16, 22, { p: TALL }); S(at("plan", 6.2), OUT_MID, 600, 10, 22, { p: TALL })
+        S(at("plan", 7.6), mix(OUT3.deploys, OUT_MID, .3), 360, 6, 18, { p: TALL }); S(at("plan", 8.8), OUT3.suspect, 300, 4, 16, { p: TALL })
+        S(at("plan", 10), OUT3.rollback, 230, 2, 14, { p: TALL }); S(at("plan", 12.6), OUT3.rollback, 240, -2, 14, { p: TALL })
+        S(at("plan", 14), mix(OUT3.post, OUT3.status, .5), 300, -6, 16, { p: TALL }); S(at("plan", 17), OUT_MID, 660, -10, 24, { p: TALL }); S(at("plan", 28), OUT_MID, 640, -16, 26, { p: TALL })
+        S(at("hold", 3), OUT_MID, 430, -12, 22, { p: TALL }); S(at("hold", 10.4), OUT_MID, 600, -18, 24, { p: TALL })
+        S(at("hold", 13.6), centre(CLOSE3), 600, 22, 26, { p: TALL }); S(at("hold", 30), centre(CLOSE3), 570, 32, 28, { p: TALL })
+        PROBLEMS.forEach((p, i) => { const c = centre(p.pos); S(at("six", i ? 6.4 + 6 * i : 3.2), c, 560, 26 + 4 * i, 24, { p: TALL }); if (!i) S(at("six", 6.4), c, 540, 26, 24, { p: TALL }) })
+        S(at("machines", 3.2), ACME_MID, 1180, 14, 28, { p: TALL }); S(at("machines", 11), ACME_MID, 1150, 8, 28, { p: TALL })
+        const GATE_P = { d: 1.45, ox: 0, cy: .3 }  // from above deploy.acme, where no other machine stands between
+        S(at("machines", 13.2), deployC, 450, 40, 55, { ox: 80, p: GATE_P }); S(at("machines", 15.4), deployC, 440, 45, 53, { ox: 80, p: GATE_P })
+        S(at("machines", 17.6), ACME_MID, 1180, 4, 28, { p: TALL }); S(at("machines", 34), ACME_MID, 1200, -10, 28, { p: TALL })
+        S(at("receipts", 1.2), ACME_MID, 1200, -10, 30, { cx: .62, p: TALL }); S(at("receipts", 6.8), ACME_MID, 1180, -12, 30, { cx: .62, p: TALL })
+        const LENS_SHOT = {  // who is looking, as where the camera stands
+          laptop: [add(lapC, V(-190, 90, 50)), ACME_MID],
+          node: [add(deployC, V(-30, 70, 170)), add(deployC, V(0, 0, -10))],
+          oncall: [add(PERSON, V(-70, 120, 250)), add(deployC, V(10, 0, 0))],
+          makers: [V(0, 7000, 12800), O],
+        }
+        const LENS_TIMES = [["laptop", 7.4, 11.1], ["node", 11.1, 14.6], ["oncall", 14.6, 18.1], ["makers", 18.1, 24]]
+        for (const [lens, a, b] of LENS_TIMES) { SV(at("receipts", a + 1.4), ...LENS_SHOT[lens], { cx: .38 }); SV(at("receipts", b - .1), ...LENS_SHOT[lens], { cx: .38 }) }
+        S(at("hosts", 2.8), ACME_MID, 2700, -16, 34, { p: { d: 1.5 } }); S(at("hosts", 30), ACME_MID, 2550, -26, 36, { p: { d: 1.5 } })
+        S(at("galaxy", 3.6), O, 5000, -8, 54, { p: { d: 1.6 } }); S(at("galaxy", 28), O, 4300, 22, 42, { p: { d: 1.6 } })
+        ROAD.forEach((p, i) => S(at("road", 3 + 2.9 * i), p, 380, tangentAz(i), 7, { p: { d: 1.3 } }))
+        S(at("coda", 2.4), ROAD[5], 1200, tangentAz(5), 34, { p: { d: 1.4 } }); S(at("coda", 14), O, 14000, 30, 70, { p: { d: 1.5 } })
+        SHOTS.sort((a, b) => a.T - b.T)
+        const orbit = { az: 0, el: 0 }  // the viewer's turn of the galaxy, eased back after
+        let lensPick = null, lensPickAt = 0
+        const framed = s => !portrait || !s.p ? s : { ...s, dist: s.dist * (s.p.d ?? 1), az: s.az + (s.p.az ?? 0) * DEG, el: s.p.el != null ? s.p.el * DEG : s.el, ox: s.p.ox ?? s.ox, oy: s.p.oy ?? s.oy, cx: s.p.cx ?? s.cx, cy: s.p.cy ?? s.cy }
+        const shotAt = T => {
+          let i = 0
+          while (i < SHOTS.length - 1 && SHOTS[i + 1].T <= T) i++
+          const a = framed(SHOTS[i]), b = framed(SHOTS[Math.min(i + 1, SHOTS.length - 1)])
+          if (i === SHOTS.length - 1 || T <= a.T) return a
+          let u = seg(T, a.T, b.T)
+          u = still ? (u > 0 ? 1 : 0) : b.glide ? u : ease(u)
+          const dist = Math.exp(lerp(Math.log(a.dist), Math.log(b.dist), u))
+          // flying in or out, the target moves with the distance, so the place flown to slides straight to its mark
+          const w = Math.abs(Math.log(a.dist / b.dist)) > .3 ? clamp((dist - b.dist) / (a.dist - b.dist), 0, 1) : 1 - u
+          let az = b.az; const d = ((b.az - a.az + Math.PI) % TAU + TAU) % TAU - Math.PI; az = a.az + d * u  // the short way round
+          return { target: mix(b.target, a.target, w), dist, az, el: lerp(a.el, b.el, u), ox: lerp(a.ox, b.ox, u), oy: lerp(a.oy, b.oy, u), cx: lerp(a.cx, b.cx, u), cy: lerp(a.cy, b.cy, u) }
+        }
+        const pickedShot = (s, T) => {  // the viewer chose who is looking: the camera goes there
+          const ch = chapterAt(T)
+          if (!lensPick || ch.id !== "receipts" || T - ch.start < 7.4) return s
+          const v = view(...LENS_SHOT[lensPick]), to = { target: v.target, dist: v.dist, az: v.az * DEG, el: v.el * DEG, ox: 0, oy: 0, cx: portrait ? .5 : .38, cy: .5 }
+          const u = still ? 1 : ease(clamp((performance.now() - lensPickAt) / 1600, 0, 1))
+          const d = ((to.az - s.az + Math.PI) % TAU + TAU) % TAU - Math.PI
+          return { target: mix(s.target, to.target, u), dist: Math.exp(lerp(Math.log(s.dist), Math.log(to.dist), u)), az: s.az + d * u, el: lerp(s.el, to.el, u), ox: lerp(s.ox, 0, u), oy: lerp(s.oy, 0, u), cx: lerp(s.cx, to.cx, u), cy: lerp(s.cy, to.cy, u) }
+        }
+        const cameraAt = T => {
+          const s = pickedShot(shotAt(T), T), az = s.az + orbit.az, el = clamp(s.el + orbit.el, -1.3, 1.5)
+          const fw = V(-Math.cos(el) * Math.sin(az), -Math.sin(el), -Math.cos(el) * Math.cos(az)), rt = norm(cross(fw, UP)), up = cross(rt, fw)
+          const target = add(s.target, add(mul(rt, s.ox), mul(up, -s.oy)))
+          return { eye: sub(target, mul(fw, s.dist)), fw, rt, up, dist: s.dist, cx: W * s.cx, cy: H * s.cy }
+        }
+        let cam = null
+        const project = (p, c = cam) => {
+          const d = sub(p, c.eye), z = dot3(d, c.fw)
+          if (z < 1) return null
+          const k = F / z
+          return { x: c.cx + dot3(d, c.rt) * k, y: c.cy - dot3(d, c.up) * k, z, k }
+        }
+        const matrices = c => {  // the camera as the GPU needs it: a view, and a projection whose centre sits at cx, cy
+          const { eye: e, rt, up, fw } = c, n = 1, f = 60000
+          const view = new Float32Array([rt.x, up.x, -fw.x, 0, rt.y, up.y, -fw.y, 0, rt.z, up.z, -fw.z, 0, -dot3(rt, e), -dot3(up, e), dot3(fw, e), 1])
+          const proj = new Float32Array([2 * F / W, 0, 0, 0, 0, 2 * F / H, 0, 0, 1 - 2 * c.cx / W, 2 * c.cy / H - 1, -(f + n) / (f - n), -1, 0, 0, -2 * f * n / (f - n), 0])
+          const vp = new Float32Array(16)
+          for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { let s = 0; for (let k = 0; k < 4; k++) s += proj[k * 4 + i] * view[j * 4 + k]; vp[j * 4 + i] = s }
+          return { view, proj, vp }
+        }
+
+        // Drawing in light: sprites face the camera, ribbons are built to face it
+        const sprite = (p, size, col, a, kind, p1 = 0, p2 = 0, p3 = 0) => G.sprite(p.x, p.y, p.z, size, col[0], col[1], col[2], a, kind, p1, p2, p3)
+        const ribbon = (pts, width, col, alpha, bead = 0) => {  // width and alpha: a number, or a function of the way along
+          const n = pts.length
+          if (n < 2 || !G.room((n - 1) * 6)) return
+          const side = [], wOf = typeof width === "function" ? width : () => width, aOf = typeof alpha === "function" ? alpha : () => alpha
+          let along = 0
+          const alongs = [0]
+          for (let i = 1; i < n; i++) { along += len(sub(pts[i], pts[i - 1])); alongs.push(along) }
+          for (let i = 0; i < n; i++) {
+            const p = pts[i], t = norm(sub(pts[Math.min(n - 1, i + 1)], pts[Math.max(0, i - 1)])), e = norm(sub(cam.eye, p))
+            side.push(mul(norm(cross(t, e)), wOf(i / (n - 1)) / 2))
+          }
+          const v = (i, s) => { const p = pts[i], d = side[i], a = aOf(i / (n - 1)); G.vertex(p.x + d.x * s, p.y + d.y * s, p.z + d.z * s, col[0], col[1], col[2], a, s, alongs[i], bead) }
+          for (let i = 0; i < n - 1; i++) { v(i, 1); v(i, -1); v(i + 1, 1); v(i, -1); v(i + 1, -1); v(i + 1, 1) }
+        }
+        const curve = (a, b, lift = .14, n = 24) => {  // a gentle arc between two points
+          const d = sub(b, a), l = len(d), c1 = add(a, add(mul(d, .33), mul(UP, l * lift))), c2 = add(a, add(mul(d, .67), mul(UP, l * lift)))
+          return Array.from({ length: n + 1 }, (_, i) => { const t = i / n, u = 1 - t; return add(add(mul(a, u * u * u), mul(c1, 3 * u * u * t)), add(mul(c2, 3 * u * t * t), mul(b, t * t * t))) })
+        }
+        const curve3 = (a, b, side, bend, n) => { const c = add(mix(a, b, .5), mul(side, len(sub(b, a)) * bend)); return Array.from({ length: n + 1 }, (_, i) => { const t = i / n, u = 1 - t; return add(add(mul(a, u * u), mul(c, 2 * u * t)), mul(b, t * t)) }) }
+        const at3 = (pts, u) => { const f = clamp(u, 0, 1) * (pts.length - 1), i = Math.min(pts.length - 2, Math.floor(f)); return mix(pts[i], pts[i + 1], f - i) }
+        const slice = (pts, u0, u1, n = 10) => Array.from({ length: n + 1 }, (_, i) => at3(pts, lerp(u0, u1, i / n)))
+        const comet = (pts, u, kind, col, size = 5, a = 1) => {  // a signal along a path, a tail of light behind it
+          if (u <= 0 || u >= 1 || a < .01) return
+          const e = ease(u), tail = slice(pts, Math.max(0, e - .16), e, 12)
+          ribbon(tail, t => size * .5 * t, col, t => .9 * t * a)
+          sprite(at3(pts, e), size * (kind === 5 ? 2.2 : 2.6), col, 1.4 * a, kind)
+          sprite(at3(pts, e), size * 7, col, .12 * a, 0)
+        }
+        const STATE = { plan: C.acc, ran: C.ok, asking: C.mid, declined: C.no, skipped: C.grey, dim: C.ice }
+        const cell = (key, p, r, state, T, fire = -1e9, o = {}) => {  // a reflex: a body of light, and fibres reaching out
+          const col = STATE[state], a = o.a ?? 1
+          if (a < .01) return
+          const spin = (key.length * 1.7 + T * .06) % TAU
+          if (state === "dim") { sprite(p, r * 2.2, C.ice, .38 * a, 1, spin, 0); return }
+          sprite(p, r * 11, col, .13 * a * (o.body ?? 1), 0)
+          sprite(p, r * (o.bodySize ?? 4.6), col, 1.2 * a * (o.body ?? 1) * (state === "skipped" ? .35 : 1), 1, spin, o.spikes ?? .55)
+          if (state === "asking") { const pulse = still ? 1 : .55 + .45 * Math.sin(T * 8); sprite(p, r * 3.1, C.mid, .9 * a * pulse, 2, 1, .05) }
+          const burst = (T - fire) / 1.2
+          if (burst >= 0 && burst < 1) { sprite(p, r * (2.5 + burst * 8), col, (1 - burst) ** 2 * a, 2, 1, .035); sprite(p, r * (6 + burst * 10), col, (1 - burst) * .25 * a, 0) }
+          if (o.fibres !== false) for (const f of fibresOf(key, o.toward)) {
+            const l = r * f.l * (o.reach ?? 1), s0 = add(p, mul(f.d, r * 1.05)), end = add(p, mul(f.d, l)), mid = add(mix(s0, end, .5), mul(f.b, l * .18 * f.bend))
+            const pts = Array.from({ length: 9 }, (_, i) => { const t = i / 8, u = 1 - t; return add(add(mul(s0, u * u), mul(mid, 2 * u * t)), mul(end, t * t)) })
+            const lit = (o.fibreLight ?? .55) * a * (state === "plan" ? .7 : 1), fw = o.fibreWidth ?? .2
+            ribbon(pts, t => r * (fw - t * fw * .75), col, t => lit * (1 - t * .75))
+            for (const k of f.forks) { const dd = norm(add(f.d, mul(f.b, k))), q = add(end, mul(dd, l * .38)); ribbon([end, mix(end, q, .5), q], t => r * (.07 - t * .05), col, t => lit * .5 * (1 - t)) }
+          }
+        }
+        const membrane = (c, r, col, a, pulse = 0, seed = 0) => { if (a < .01 || r < 1) return; sprite(c, r, col, .7 * a, 3, pulse, seed); sprite(c, r * 1.9, col, .05 * a * (1 + pulse * 2), 0) }
+        const ripple = (p, u, col, size = 34) => { if (u <= 0 || u >= 1) return; sprite(p, size * (.4 + u * 1.6), col, (1 - u) ** 1.5 * 1.1, 2, 1, .05) }
+        const synapse = (a, b, state, T, go, arrive, sig, o = {}) => {  // a fibre between two reflexes, and the signal crossing it
+          const pts = curve(a, b, o.lift ?? .12), col = STATE[state], alpha = (o.a ?? 1) * (state === "ran" ? .5 : state === "plan" ? .55 : .7)
+          ribbon(pts, o.w ?? 2.2, col, alpha, state === "plan" || state === "skipped" ? 9 : 0)
+          if (!still) comet(pts, seg(T, go, arrive), 5, sig ?? col, o.size ?? 4.5, o.a ?? 1)
+        }
+        const drawPlan3 = (plan, pos, sched, T, o = {}) => {  // a plan: the sentence, its fibres, the signals, the reflexes
+          const a = o.a ?? 1, exits = [], r = o.r ?? 4, stateAt = n => o.state?.(n) ?? stateOf(sched, n.id, T)
+          if (o.sentence && a > .01) cell(`${o.key}$`, pos.$, r * 1.15, "plan", T, -1e9, { a: a * o.sentence, fibres: false })
+          plan.stages.forEach((stage, s) => {
+            const reads = stage.every(x => x.effect === "read")
+            stage.forEach((n, i) => {
+              const st = stateAt(n); if (st === "dim") return
+              const from = reads || i === 0 ? (s === 0 ? (o.sentence ? [pos.$] : []) : exits[s - 1]) : [pos[stage[i - 1].id]], x = sched.times[n.id]
+              for (const f of from) synapse(f, pos[n.id], st, T, x.go, x.arrive, s === 0 ? C.acc : C.ok, { a })
+            })
+            exits[s] = reads ? stage.map(n => pos[n.id]) : [pos[stage[stage.length - 1].id]]
+          })
+          for (const stage of plan.stages) for (const n of stage) cell(`${o.key}${n.id}`, pos[n.id], r, stateAt(n), T, sched.times[n.id].fire, { a, reach: o.reach, fibreLight: o.fibreLight })
+        }
+        const web = (T, a, lines = true) => {  // plans crossing between constellations: calls out, receipts back
+          if (a < .01) return
+          for (const w of WEB) {
+            const u = ((T - w.phase) % w.period + w.period) % w.period
+            w.targets.forEach((t, j) => {
+              const pts = curve(w.caller, t, .22, 18)
+              if (lines) ribbon(pts, 3, C.acc, .1 * a, 14)
+              if (!still) { const go = j < 2 ? 0 : 1.4 * (j - 1); comet(pts, seg(u, go, go + 1.5), 7, C.acc, 7, a); comet([...pts].reverse(), seg(u, go + 1.5, go + 2.8), 6, C.ok, 7, a) }
+            })
+          }
+        }
+
+        // Labels: HTML placed each frame from the camera; a label not placed this frame fades out
+        const pool = new Map()
+        let frameNo = 0
+        const label = (key, html, x, y, cls = "", o = 1) => {
+          let l = pool.get(key)
+          if (!l) { l = { el: document.createElement("div"), o: 0 }; layer.append(l.el); pool.set(key, l) }
+          l.frame = frameNo
+          if (l.html !== html) { l.el.innerHTML = html; l.html = html }
+          if (l.cls !== cls) { l.el.className = `lbl ${cls}`; l.cls = cls }
+          const px = Math.round(x * 2) / 2, py = Math.round(y * 2) / 2, po = Math.round(clamp(o, 0, 1) * 100) / 100
+          if (px !== l.x || py !== l.y) { l.el.style.transform = `translate(${px}px, ${py}px)`; l.x = px; l.y = py }
+          if (po !== l.o) { l.el.style.opacity = po; l.o = po }
+          return l
+        }
+        const sweep = () => { for (const l of pool.values()) if (l.frame !== frameNo && l.o !== 0) { l.el.style.opacity = 0; l.o = 0 } }
+        const tag3 = (key, html, p, cls, o, dy = 0) => { const s = project(p); if (s && s.z > 2) label(key, html, s.x, s.y + dy, cls, o) }  // a label at a point in space
+        const typed = (text, n) => `<span class="w">${text.slice(0, n)}</span><span class="rest">${text.slice(n)}</span>`
+        const prompt = (words, t, a, b) => `<span class="p">$</span> evoke "${typed(`${words}"`, t >= b ? words.length + 1 : Math.floor(seg(t, a, b) * words.length))}`
+        const nameTags = (key, plan, pos, sched, T, o = {}) => {  // each reflex's name, how sure, and what it gave back
+          for (const stage of plan.stages) for (const n of stage) {
+            const st = o.state?.(n) ?? stateOf(sched, n.id, T), s = project(pos[n.id]); if (!s || st === "dim") continue
+            const small = st === "ran" && n.chip && o.chips !== false ? `<small>${n.chip}</small>` : st === "asking" && n.person ? `<small>waits for ${n.person}</small>` : st === "declined" ? `<small class="no">declined</small>` : st === "skipped" ? "<small>skipped</small>" : ""
+            label(`${key}-${n.id}`, `<b>${n.id}</b>${o.numbers === false ? "" : `<i>${n.p.toFixed(2)}</i>`}${small}`, s.x, s.y + Math.max(14, 4 * 4.6 * s.k * .5) + 6, "below", (o.a ?? 1) * clamp(s.k * 2.2, 0, 1))
+          }
+        }
+        const outline = pos => { const pts = Object.values(pos).map(p => project(p)).filter(Boolean); if (!pts.length) return null; return { x0: Math.min(...pts.map(p => p.x)), x1: Math.max(...pts.map(p => p.x)), y0: Math.min(...pts.map(p => p.y)), y1: Math.max(...pts.map(p => p.y)) } }
+        // Panels on the deck: shown by the clock; some hang in space beside what they describe
+        const panel = (el, o) => { const v = o > .01; el.style.opacity = o.toFixed(3); el.style.visibility = v ? "visible" : "hidden" }
+        const WIDE = matchMedia("(min-width: 901px)")
+        const hang = (el, p, ax, ay, dx = 0, dy = 0, kRef = 0) => {  // a panel held at a point in space, scaled a little with its distance
+          if (!WIDE.matches) { el.style.transform = ""; return }
+          const s = project(p); if (!s) return
+          const k = kRef ? clamp(s.k / kRef, .86, 1.12) : 1, w = el.offsetWidth * k, h = el.offsetHeight * k
+          const x = clamp(s.x + dx + ax * w, 20, W - 20 - w), y = clamp(s.y + dy + ay * h, 70, H - 120 - h)
+          el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px) scale(${k.toFixed(3)})`
+        }
+
+        // The captions, the chapter's name, the deck's panels
+        const caption = q(".caption"), tag = q(".tag"), deck = {
+          title: q(".title-card"), manifest: q(".manifest"), card: q(".plan-card"), clock: q(".clock"), checks: q(".checks"), ledger: q(".ledger"),
+          envelope: q(".envelope"), hosts: q(".hosts"), coda: q(".coda"),
+        }
+        const slots = [...deck.card.querySelectorAll(".slot")], clockTime = deck.clock.querySelector(".hh"), clockDay = deck.clock.querySelector(".day"), clockWaits = deck.clock.querySelector(".waits")
+        const checkRows = [...deck.checks.querySelectorAll("li")], ledgerRows = [...deck.ledger.children], envRows = [...deck.envelope.querySelectorAll("[data-field]")]
+        const hosts = [...deck.hosts.children], codaLines = [...deck.coda.querySelectorAll(".lines > *")]
+        const picker = q(".picker"), pickerButtons = [...picker.querySelectorAll("button")], lensBox = q(".lenses"), lensButtons = [...lensBox.querySelectorAll("button")]
+        const codaActions = q(".coda-actions"), hint = q(".hint")
+        let captionsOn = true, shownCue = null, shownTag = null
+        for (const h of hosts) { h.steps = [...h.querySelectorAll(".msg.bot code, .msg.yes, code, .tree li")]; for (const el of h.steps) el.dataset.step = "" }
+        const LENS = { laptop: ["inside"], node: ["sentence"], oncall: ["sentence", "inside"], makers: ["sentence", "words", "values", "sure", "who", "inside"] }
+        const LENS_NOTE = {
+          laptop: "Dana's laptop sees everything typed there, and every answer that came back. Never a machine's programs, keys or inner ids.",
+          node: "deploy.acme sees its own step's words and values, who asked, and how sure the laptop was. Never the whole sentence.",
+          oncall: "Its on-call sees the call it is asked about, and as much of the plan as Dana chose to share.",
+          makers: "The makers of evoke see nothing. Nothing they run sits between you and your machines.",
+        }
+        const lensNote = deck.envelope.querySelector(".lens-note")
+        const lensAt = t => lensPick ?? LENS_TIMES.find(([, a, b]) => t >= a && t < b)?.[0] ?? "makers"
+
+        // The outage across Acme's machines: each step at home on its machine, reached by a signed call from the laptop
+        const GATE = at("machines", 14.4)
+        let answer = null  // "yes", "no", or "auto" when the on-call answered for the viewer
+        const said = () => answer === "no" ? "no" : "yes"
+        const RUN = (() => {  // the calls, in the machines chapter's own time
+          const m = at("machines", 0), x = {}
+          for (const id of ["errors", "deploys", "logs"]) x[id] = { go: m + 8, arrive: m + 9.1, fire: m + 9.1, back: m + 10.1 }
+          x.suspect = { go: m + 10.5, arrive: m + 10.5, fire: m + 10.5 }
+          x.rollback = { go: m + 11, arrive: m + 12.1, ask: [m + 12.1, m + 15], fire: m + 15, back: m + 16.3 }
+          x.post = { go: m + 16.6, arrive: m + 17.7, fire: m + 17.7, back: m + 18.7 }
+          x.status = { go: m + 18, arrive: m + 19.1, fire: m + 19.1, back: m + 20.1 }
+          return x
+        })()
+        const runState = (id, T) => {
+          const x = RUN[id]
+          if (T < x.arrive) return "plan"
+          if (x.ask && T < x.ask[1]) return "asking"
+          if (said() === "no" && id === "rollback") return "declined"
+          if (said() === "no" && (id === "post" || id === "status")) return T >= RUN.rollback.fire + .4 ? "skipped" : "plan"
+          return "ran"
+        }
+        const callPath = id => curve(lapC, home(id), .2, 28)  // from the laptop that decided, across the space between
+        const crossing = (pts, c, r) => { for (let i = pts.length - 1; i > 0; i--) if (len(sub(pts[i], c)) > r) return [pts[i], i / (pts.length - 1)]; return [pts[0], 0] }
+        const machines = (T, o) => {  // membranes, the steps in them, the calls from the laptop and the receipts back
+          const { a = 1, lay = 1, solo = 0, lens = null, calls = true, names = true, grow = 1 } = o
+          const pos = {}
+          for (const id of Object.keys(HOME)) pos[id] = lay >= 1 ? home(id) : mix(OUT3[id], home(id), lay)
+          const dec = mix(OUT3.$, lapC, lay)
+          for (const m of Object.values(MACHINES)) {
+            const al = a * (m.key === "deploy" ? 1 : 1 - solo), asking = m.key === "deploy" && T >= RUN.rollback.arrive && T < RUN.rollback.fire
+            const lit = lens === m.key ? 1 : 0, pulse = asking ? (still ? .7 : .45 + .35 * Math.sin(T * 7)) : lit * .5
+            membrane(m.c, m.r * grow, asking ? C.mid : lit ? C.acc : m.tint, al * clamp(grow * 1.4, 0, 1), pulse, m.seed)
+            for (const e of m.extra) sprite(add(m.c, mul(e, grow)), 4, m.tint, .45 * al * grow, 1, m.seed * 5, .3)
+            const mc = names && grow > .6 ? project(m.c) : null
+            if (mc) label(`m-${m.key}`, `${m.name}<small>${asking ? "asking its on-call" : m.sub}</small>`, mc.x, mc.y + m.r * grow * mc.k + 10, `machine below${asking ? " asking" : ""}`, al * seg(grow, .6, 1))
+          }
+          if (calls && lay > .9) for (const [id, x] of Object.entries(RUN)) {
+            if (id === "suspect") continue
+            const st = runState(id, T), al = a * (1 - solo), pts = callPath(id), mc = MACHINES[HOME[id][0]]
+            const [col, l, bead] = st === "ran" ? [C.ok, .28, 0] : st === "asking" ? [C.mid, .45, 0] : st === "declined" ? [C.no, .35, 0] : st === "skipped" ? [C.grey, .2, 10] : [C.ice, .16, 10]
+            ribbon(pts, 2.6, col, al * l, bead)
+            if (!still && st !== "skipped" && !(said() === "no" && (id === "post" || id === "status"))) {
+              comet(pts, seg(T, x.go, x.arrive), 7, C.acc, 6, al)
+              const [exit] = crossing([...pts].reverse(), lapC, MACHINES.laptop.r), [entry] = crossing(pts, mc.c, mc.r)
+              ripple(exit, seg(T, x.go, x.go + .9), C.acc, 40)  // sealed and signed as it leaves
+              ripple(entry, seg(T, x.arrive - .12, x.arrive + .8), C.gold, 46)  // checked as it enters
+            }
+            if (!still && x.back && st !== "skipped") { comet([...pts].reverse(), seg(T, x.fire, x.back), 6, st === "declined" ? C.no : C.ok, 6, al); const [back] = crossing([...pts].reverse(), lapC, MACHINES.laptop.r); ripple(back, seg(T, x.back - .1, x.back + .7), st === "declined" ? C.no : C.ok, 38) }
+          }
+          for (const id of Object.keys(HOME)) {
+            const al = a * (HOME[id][0] === "deploy" ? 1 : 1 - solo), st = runState(id, T)
+            cell(`m${id}`, pos[id], 4, st, T, RUN[id].fire, { a: al, reach: .8 })
+            if (names && !portrait) tag3(`mr-${id}`, `<b>${id}</b>`, pos[id], "below", al * seg(lay, .7, 1), 16)
+          }
+          cell("m$", dec, 4.6, "plan", T, -1e9, { a: a * (1 - solo), fibres: false })
+          return { pos, dec }
+        }
+
+        // Chapters: each describes what it shows at its own time t; T is the film's clock
+        const WORDS = "check checkout's errors, deploys and logs in eu-west, find the deploy they point to, roll it back, then post to #incident and update the status page"
+        const SHORT = "checkout is failing in eu-west"
+        // The rollback up close: a cell with a body, a nucleus, dendrites that bring its inputs, an axon that carries its
+        // result; around it, the ring of how sure it is with the bars to look and to change, and the person it asks
+        const NEAR = (() => { const az = 27 * DEG, el = 16 * DEG, fw = V(-Math.cos(el) * Math.sin(az), -Math.sin(el), -Math.cos(el) * Math.cos(az)), rt = norm(cross(fw, UP)); return { fw, rt, up: cross(rt, fw) } })()
+        const RS = 5.5  // the body's radius
+        const DENDRITES = (() => {  // fanned in the plane the camera faces, so they reach across the frame, never at it
+          const r = rand(99), list = []
+          for (let i = 0; i < 7; i++) {
+            const th = (-64 + i * 128 / 6 + (r() - .5) * 12) * DEG
+            const d = norm(add(add(mul(NEAR.rt, -Math.cos(th)), mul(NEAR.up, Math.sin(th))), mul(NEAR.fw, (r() - .5) * .45)))
+            const b = norm(cross(d, NEAR.fw)), l = 17 + r() * 10
+            const pts = curve3(add(A, mul(d, RS * .9)), add(A, mul(d, l)), b, (r() - .5) * .5, 14)
+            const forks = [[.5 + r() * .2, .45 + r() * .2, .3], [.7 + r() * .15, -(.4 + r() * .25), .24]].map(([at, turn, k]) => {
+              const o = at3(pts, at), dd = norm(add(d, mul(b, turn))), tip = add(o, mul(dd, l * k))
+              return { pts: curve3(o, tip, b, .1, 6), tip }
+            })
+            list.push({ pts, tip: pts[pts.length - 1], forks })
+          }
+          return list
+        })()
+        const AXON = (() => {
+          const s0 = add(A, mul(NEAR.rt, RS * .95)), e = add(A, add(mul(NEAR.rt, 36), mul(NEAR.up, -3.5)))
+          const pts = curve3(s0, e, NEAR.up, .22, 22)
+          const ends = [[.55, .9], [.95, .05], [.6, -.85]].map(([f, u]) => add(e, add(mul(NEAR.rt, 5 * f + 2), mul(NEAR.up, 5 * u))))
+          return { pts, e, ends }
+        })()
+        const neuron = (T, ph, a) => {
+          if (a < .01) return
+          const p = A, ran = ph >= 4.7 && ph < 7, ask = ph >= 2.8 && ph < 4.7, yes = ph >= 4.7 && ph < 5.6
+          const col = ran ? C.ok : C.mid, fired = ph >= 4.7 ? T - (ph - 4.7) : -1e9
+          for (const d of DENDRITES) {  // its inputs
+            ribbon(d.pts, t => RS * (.34 - t * .27), C.ice, t => .5 * a * (1 - t * .45))
+            for (const f of d.forks) ribbon(f.pts, t => RS * (.11 - t * .08), C.ice, t => .38 * a * (1 - t * .6))
+            sprite(d.tip, 3.2, C.ice, .45 * a, 1, 0, 0)
+            for (const f of d.forks) sprite(f.tip, 2.2, C.ice, .3 * a, 1, 0, 0)
+          }
+          if (ph >= 0 && ph < 1.8) for (const [k, i] of [[0, 1], [1, 3], [2, 5]]) comet([...DENDRITES[i].pts].reverse(), seg(ph - k * .22, 0, 1.1), 5, C.acc, 1.3, a)  // values arriving
+          const burst = (T - fired) / 1.2
+          membrane(p, RS, col, a * .95, ask ? (still ? .6 : .35 + .3 * Math.sin(T * 8)) : ran ? .5 : .15, .37)
+          sprite(p, RS * .95, col, a * 1.1, 1, 0, 0)  // the nucleus
+          sprite(p, RS * 7, col, a * .1, 0)
+          if (burst >= 0 && burst < 1) { sprite(p, RS * (1.3 + burst * 4), C.ok, (1 - burst) ** 2 * a, 2, 1, .02); sprite(p, RS * (3 + burst * 6), C.ok, (1 - burst) * .2 * a, 0) }
+          const g = ph < 1.2 ? 0 : ph < 2.8 ? .94 * ease((ph - 1.2) / 1.6) : ph < 7 ? .94 : .94 * (1 - (ph - 7) / .6)
+          const GR = RS * 1.62, gs = GR / .8  // the ring of how sure it is
+          sprite(p, gs, C.white, .09 * a, 2, 1, .012)
+          if (g > .002) sprite(p, gs, C.ok, 1.25 * a, 2, g, .014)
+          const tick = v => add(p, add(mul(cam.rt, Math.sin(v * TAU) * GR), mul(cam.up, Math.cos(v * TAU) * GR)))
+          for (const v of [.6, .8]) sprite(tick(v), 1.3, g >= v ? C.white : C.grey, a * (g >= v ? 1.5 : .7), 5)
+          const PR = RS * 2.35  // the person it asks, because a rollback can't be undone
+          sprite(p, PR / .8, yes ? C.ok : C.mid, a * (yes ? 1 - (ph - 4.7) / .9 : ask ? (still ? .85 : .45 + .4 * Math.sin(T * 9)) : .3), 2, 1, .007, yes ? 0 : 64)
+          const lit = ph >= 4.7 && ph < 7.3  // what it gives back
+          ribbon(AXON.pts, t => RS * (.3 - t * .16), C.ok, t => a * (lit ? .95 : .42) * (1 - t * .3))
+          for (const e of AXON.ends) { ribbon(curve3(AXON.e, e, NEAR.up, .1, 5), RS * .09, C.ok, a * .55); sprite(e, 2.6, C.ok, a * (ph >= 5.5 && ph < 7.2 ? 1.5 : .5), 1, 0, 0) }
+          if (ph >= 4.7) comet(AXON.pts, seg(ph, 4.7, 5.5), 5, C.ok, 1.6, a)
+          const notes = (ph < 0 ? 0 : 1) * a, at2 = q3 => project(q3)
+          const tips = DENDRITES.map(d => at2(d.tip)).filter(Boolean), ring = v => at2(add(p, add(mul(cam.rt, Math.sin(v * TAU) * PR * 1.1), mul(cam.up, Math.cos(v * TAU) * PR * 1.1))))
+          if (tips.length) { const x = Math.min(...tips.map(q => q.x)), y = tips.reduce((m, q) => m + q.y, 0) / tips.length; label("n-in", "its inputs", x - 28, y, "note left", notes) }
+          const sure = ring(.14); if (sure) label("n-sure", "0.94 sure", sure.x + 6, sure.y - 4, "note right", notes * seg(ph, 2.4, 3))
+          const low = ring(.4); if (low) label("n-ask", "a person, asked first", low.x + 6, low.y + 4, "note right", notes)
+          const out = at2(add(AXON.e, mul(cam.up, 9))); if (out) label("n-out", "its result", out.x + 14, out.y - 6, "note above", notes)
+        }
+        const DRAW = {
+          title(t, T) {
+            web(T, .7 * seg(t, 1, 4), false)
+            panel(deck.title, screen.classList.contains("begun") ? within(t, .6, 10.4, 1.4) + (t < .6 ? 1 : 0) : 1)
+            return { others: 1 }
+          },
+          reflex(t, T) {
+            web(T, .7 * (1 - seg(t, 0, 1.4)), false)
+            neuron(T, t - 4.2 < 0 ? -1 : (t - 4.2) % 7.6, seg(t, 2, 3.6))
+            hang(deck.manifest, add(A, mul(cam.rt, -31)), -1, -.5, 0, 0, F / 104)
+            panel(deck.manifest, within(t, 5.2, 10.8, .8))
+            return { others: 1 - seg(t, 0, 3), stars: .55, nebula: .5 }
+          },
+          plan(t, T) {
+            const shrink = 1 - seg(t, 0, 1.6)
+            neuron(T, 3.6, shrink * .9)
+            const field = seg(t, .8, 2.6)
+            for (const c of INSTALLED) cell(`i${c.seed}`, c.p, 3.4, "dim", T, -1e9, { a: field })
+            const sentence = seg(t, 5.8, 6.3)
+            drawPlan3(OUTAGE, OUT3, PLAN_RUN, T, { key: "p", sentence, a: 1 - shrink * .85 })
+            nameTags("p", OUTAGE, OUT3, PLAN_RUN, T)
+            const box = outline(OUT3)
+            if (box) {
+              const pl = label("prompt", prompt(WORDS, t, 3, 5.6), (box.x0 + box.x1) / 2, Math.max(box.y0 - 30, 110), "prompt above", within(t, 2.8, 27.6, .4) * (1 - within(t, 7.2, 16.9, .6)))
+              pl.el.style.width = `${Math.round(Math.min(700, portrait ? W - 32 : W * .56))}px`
+              const x = PLAN_RUN.times.rollback, rb = project(OUT3.rollback), below = box.y1 + 64
+              if (rb) label("bubble", `Roll checkout back from 4.12.0 in eu-west?<span class="keys">[y]es [n]o › <b>${T >= x.ask[1] - .6 ? "y" : ""}</b></span>`, rb.x, rb.y - 42 * clamp(rb.k, .6, 2), "bubble above", within(T, x.ask[0], x.ask[1] + .1, .25))
+              label("outcome", `Errors back to normal at 14:31.<small>7 reflexes · 3 at once · 1 asked first</small>`, (box.x0 + box.x1) / 2, below, "outcome below", seg(T, PLAN_RUN.end + .6, PLAN_RUN.end + 1.2))
+            }
+            return { others: .25, stars: .6, nebula: .55 }
+          },
+          hold(t, T) {
+            if (t < 11.6) {  // the plan kept: it folds into something you can hold, and a short sentence opens it again
+              const fold = ease(seg(t, 1, 2.6)), unfold = ease(seg(t, 8.8, 10.4)), gather = fold * (1 - unfold), a = clamp(1 - seg(t, 10.6, 11.6), 0, 1)
+              const pos = {}; for (const [k, p] of Object.entries(OUT3)) pos[k] = mix(p, OUT_MID, gather)
+              const unfolded = t >= 8.8, alive = clamp((1 - seg(t, 2, 2.6)) + seg(t, 8.8, 9.4), 0, 1) * a
+              drawPlan3(OUTAGE, pos, PLAN_RUN, T, { key: "h", sentence: 1, a: alive, state: () => unfolded ? "plan" : "ran", reach: 1 - gather * .7 })
+              const kept = seg(t, 1.9, 2.6) * (1 - seg(t, 8.8, 9.6))
+              if (kept > .01) {  // the plan as an object: a crystal of light, its seven steps circling it
+                const matched = t >= 8
+                sprite(OUT_MID, 26, matched ? C.gold : C.acc, 1.3 * kept, 1, T * .3, .9)
+                sprite(OUT_MID, 90, C.acc, .22 * kept * (matched ? 1.6 : 1), 0)
+                sprite(OUT_MID, 44, C.acc, .7 * kept, 2, 1, .02)
+                for (let i = 0; i < 7; i++) { const ang = T * (.5 + i * .04) + i * TAU / 7, tilt = i * .9; sprite(add(OUT_MID, V(Math.cos(ang) * 30, Math.sin(ang) * Math.sin(tilt) * 30, Math.sin(ang) * Math.cos(tilt) * 30)), 6, i === 4 ? C.mid : C.acc, kept, 1, 0, .3) }
+              }
+              hang(deck.card, add(OUT_MID, mul(cam.rt, 46)), 0, -.5, 0, 0, F / 430)
+              panel(deck.card, kept)
+              deck.card.classList.toggle("matched", t >= 8)
+              slots.forEach((s, i) => { const on = t >= 8.2 + i * .25; s.classList.toggle("filled", on); s.textContent = on ? ["checkout", "eu-west"][i] : s.dataset.slot })
+              const c = project(OUT_MID)
+              if (c) label("short", prompt(SHORT, t, 6.2, 7.8), c.x, c.y - 70, "prompt above", within(t, 6, 10.4, .4)).el.style.width = ""
+              if (unfolded) nameTags("h", OUTAGE, pos, PLAN_RUN, T, { numbers: false, state: () => "plan", a: seg(t, 9.8, 10.4) * (1 - seg(t, 10.6, 11.2)) })
+            } else panel(deck.card, 0)
+            let night = 0
+            if (t > 11) {  // closing the month waits overnight for its second person
+              const a = seg(t, 12.6, 13.4), post = CLOSE_RUN.times.post, done = CLOSE_RUN.end
+              drawPlan3(CLOSE, CLOSE3, CLOSE_RUN, T, { key: "c", sentence: seg(t, 14.7, 15), a })
+              nameTags("c", CLOSE, CLOSE3, CLOSE_RUN, T, { a })
+              const box = outline(CLOSE3)
+              if (box) {
+                label("close", prompt("close september", t, 13.8, 14.6), (box.x0 + box.x1) / 2, box.y0 - 30, "prompt above", within(t, 13.4, 29.8, .4)).el.style.width = ""
+                label("closed", `September closed at 09:14.<small>7 reflexes · 4 at once · 1 waited for Omar</small>`, (box.x0 + box.x1) / 2, box.y1 + 60, "outcome below", seg(T, done + .6, done + 1.2))
+              }
+              const lapse = seg(T, post.ask[0] + 1.1, post.ask[1] - 1.4), minutes = 18 * 60 + 42 + lapse * (14 * 60 + 30)
+              clockTime.textContent = `${String(Math.floor(minutes / 60) % 24).padStart(2, "0")}:${String(Math.floor(minutes % 60)).padStart(2, "0")}`
+              clockDay.textContent = minutes >= 24 * 60 ? "the next morning" : "the evening before"
+              const okd = T >= post.ask[1] - .8
+              deck.clock.classList.toggle("done", okd)
+              clockWaits.childNodes[1].textContent = okd ? "post approved by " : "post waits for a second person: "
+              hang(deck.clock, add(CLOSE3.post, add(mul(cam.rt, 60), mul(cam.up, 90))), 0, -1, 0, 0, F / 570)
+              panel(deck.clock, within(T, post.ask[0], done + 2.4, .5))
+              night = within(T, post.ask[0] + .9, post.ask[1] - .9, 1.2)
+            }
+            return { others: .35 + .4 * seg(t, 10.6, 13), night }
+          },
+          six(t, T) {
+            PROBLEMS.forEach((p, i) => {
+              const w0 = 3.4 + 6 * i, sched = SIX_RUN[i], active = within(t, w0 - .4, w0 + 5.9, .6)
+              const a = t < w0 - .4 ? .35 * seg(t, 0, 2) : .32 + .68 * active
+              drawPlan3(p.plan, p.pos, sched, T, { key: `s${i}`, sentence: T >= sched.lit - .2 ? 1 : 0, a, fibreLight: .4 })
+              nameTags(`s${i}`, p.plan, p.pos, sched, T, { numbers: false, chips: false, a: active })
+              const box = outline(p.pos)
+              if (box && active > .01) {
+                label(`said${i}`, prompt(p.said, t, w0, w0 + .9), (box.x0 + box.x1) / 2, box.y0 - 28, "prompt above", active).el.style.width = ""
+                label(`name${i}`, p.name, (box.x0 + box.x1) / 2, box.y1 + 50, "problem below", active)
+              }
+            })
+            const now = clamp(Math.floor((t - 3.4) / 6), 0, 5)
+            pickerButtons.forEach((b, i) => b.setAttribute("aria-current", t >= 3 && i === now))
+            return { others: .8 }
+          },
+          machines(t, T) {
+            const lay = ease(seg(t, 3.4, 6.4)), shown = seg(t, 1.6, 2.6), grow = ease(seg(t, 3.8, 6.8))
+            if (lay < .01) { drawPlan3(OUTAGE, OUT3, PLAN_RUN, T, { key: "mp", sentence: shown, a: shown, state: () => "plan" }); nameTags("mp", OUTAGE, OUT3, PLAN_RUN, T, { numbers: false, state: () => "plan", a: shown }) }
+            else machines(T, { lay, grow, solo: seg(t, 11.4, 13) * (1 - seg(t, 15.4, 17)) })
+            const asking = T >= RUN.rollback.arrive && T < RUN.rollback.fire, decided = T >= GATE && answer
+            if (t > 11.6) {  // the person deploy.acme asks, and the answer running into the rollback
+              const col = decided ? (said() === "no" ? C.no : C.ok) : C.mid, a = within(t, 11.8, 19, .6)
+              sprite(PERSON, 9, col, 1.4 * a, 1, T * .2, .6); sprite(PERSON, 60, col, .14 * a * (asking && !still ? .7 + .3 * Math.sin(T * 7) : 1), 0)
+              ribbon(curve(PERSON, home("rollback"), -.1, 12), 1.6, col, .35 * a, asking ? 8 : 0)
+              if (!still && decided) comet(curve(PERSON, home("rollback"), -.1, 12), seg(T, GATE + .15, RUN.rollback.fire), 5, col, 3, a)
+              tag3("person", decided ? (said() === "no" ? "its on-call declined" : answer === "auto" ? "its on-call approved" : "you approved") : "its on-call", PERSON, `look above${decided ? "" : ""}`, a, -18)
+            }
+            hang(deck.checks, add(deployC, mul(cam.rt, MACHINES.deploy.r * 1.18)), 0, -.5, 0, 0, F / 410)
+            panel(deck.checks, within(t, 12.2, 17.2, .5))
+            checkRows.slice(0, 4).forEach((li, i) => li.classList.toggle("shown", t >= 12.4 + i * .5))
+            checkRows[3].className = decided ? `shown${said() === "no" ? " no" : ""}` : t >= 13.9 ? "wait shown" : "wait"
+            checkRows[3].textContent = decided ? (answer === "no" ? "Declined by you, on call" : answer === "auto" ? "Approved by its on-call" : "Approved by you, on call") : "Can't be undone: asking its on-call"
+            checkRows[4].className = decided ? `then shown${said() === "no" ? " no" : ""}` : "then"
+            checkRows[4].textContent = decided ? (said() === "no" ? "Nothing ran." : "Ran once. The receipt went back signed.") : ""
+            return { others: .45 }
+          },
+          receipts(t, T) {
+            const lens = t >= 7.4 ? lensAt(t) : null
+            const m = machines(T, { a: 1, lay: 1, lens: lens === "oncall" || lens === "node" ? "deploy" : lens === "laptop" ? "laptop" : null, solo: lens === "node" ? .75 : 0 })
+            ;["errors", "deploys", "logs", "suspect", "rollback", "post", "status"].forEach((id, i) => {  // every receipt home, each leaving its thread
+              if (id === "suspect") return
+              const st = runState(id, T); if (st === "skipped") return
+              const pts = [...callPath(id)].reverse(), go = .8 + i * .45, col = st === "declined" ? C.no : C.ok
+              if (!still) comet(pts, seg(t, go, go + 1.1), 6, col, 6)
+              ribbon(pts, 2, col, .32 * seg(t, go + .9, go + 1.6) * (1 - seg(t, 6.8, 7.6) * .6))
+            })
+            hang(deck.ledger, add(lapC, mul(cam.rt, -MACHINES.laptop.r * 1.3)), -1, -.5, 0, 0, F / 1200)
+            ledgerRows.forEach((li, i) => li.classList.toggle("shown", t >= 1.2 + i * .45))
+            panel(deck.ledger, within(t, .4, 7, .6))
+            panel(deck.envelope, within(t, 7.4, 23.6, .6))
+            if (lens) {
+              for (const row of envRows) row.classList.toggle("hidden", LENS[lens].includes(row.dataset.field))
+              lensButtons.forEach(b => b.setAttribute("aria-pressed", b.dataset.lens === lens))
+              if (lensNote.dataset.lens !== lens) { lensNote.dataset.lens = lens; lensNote.textContent = LENS_NOTE[lens] }
+              if (lens === "oncall") { sprite(PERSON, 9, C.gold, 1.3, 1, T * .2, .6); sprite(PERSON, 50, C.gold, .16, 0); tag3("person2", "its on-call", PERSON, "look above", 1, -18) }
+            }
+            return { others: .5 + (lens === "makers" ? .5 : 0) }
+          },
+          hosts(t, T) {
+            web(T, .4 * seg(t, 4, 12), false)
+            const m = machines(T, { a: 1 - seg(t, 0, 2.4) * .4, lay: 1, calls: false, names: t < 1.6 })
+            const starts = [1, 7.4, 13.8, 20.4]
+            hosts.forEach((h, i) => {
+              const s = starts[i], on = t >= s
+              h.classList.toggle("on", on)
+              for (const el of h.querySelectorAll(".type")) { const text = el.dataset.text, n = Math.floor(seg(t, s + .5, s + 1.6) * text.length); if (el.dataset.n != n) { el.innerHTML = typed(text, n); el.dataset.n = n } }  // the whole line laid out, revealed
+              h.steps.forEach((el, j) => el.classList.toggle("shown", t >= s + 1.9 + j * .55))
+              if (h.dataset.host === "voice") for (const [j, bar] of [...h.querySelectorAll(".wave i")].entries()) bar.style.height = `${Math.round(14 + 70 * Math.abs(Math.sin(T * 7 + j * 1.3)) * within(t, s + .3, s + 1.8, .3) + 10 * Math.abs(Math.sin(T * 2.2 + j * .7)))}%`
+              if (on) {  // the stream from where the sentence was typed to the laptop that decides
+                const pts = curve(HOSTS3[i], m.dec, .1, 40), a = seg(t, s, s + 1.2)
+                ribbon(pts, 5, C.acc, .22 * a, 18)
+                if (!still) for (let k = 0; k < 3; k++) comet(pts, ((t - s - 1.2 + k * 1.1) % 3.3) / 2.4, 7, C.acc, 9, a)
+                sprite(HOSTS3[i], 60, C.acc, .3 * a, 0)
+              }
+            })
+            panel(deck.hosts, 1 - seg(t, 29, 30))
+            return { others: .7 + .3 * seg(t, 0, 3) }
+          },
+          galaxy(t, T) {
+            web(T, seg(t, 1.5, 5))
+            for (const [i, text] of SAID) {  // sentences typed across the galaxy, each lighting its plan
+              const s = SITES[i], w = 4 + i * 3.7, a = within(t, w, w + 3.5, .5)
+              sprite(s, 60, C.ok, .5 * seg(t, 1, 3), 0); sprite(s, 16, C.ok, 1.2 * seg(t, 1, 3), 1, i, .8)
+              const p = project(s); if (p) label(`gsaid${i}`, `"${text}"`, clamp(p.x, 140, W - 140), p.y - 18, "said above", a)
+            }
+            const ring = Array.from({ length: 97 }, (_, i) => V(Math.cos(i / 96 * TAU) * 238, 0, Math.sin(i / 96 * TAU) * 238))
+            ribbon(ring, 7, C.white, .25 * seg(t, 8, 10), 40)
+            tag3("void", "Nothing in the middle", V(0, 0, 250), "void below", seg(t, 9, 11))
+            hint.classList.toggle("on", t > 4 && t < 12)
+            return { others: 1 }
+          },
+          road(t, T) {  // the steps to the vision as rings of light the camera flies through, the first one green: it runs today
+            web(T, .3, false)
+            const path = []
+            for (let i = 0; i < 5; i++) for (const p of curve(ROAD[i], ROAD[i + 1], .02, 12).slice(i ? 1 : 0)) path.push(p)
+            ribbon(path.slice(0, 13), 1.6, C.ok, .35, 12); ribbon(path.slice(12), 1.6, C.acc, .25, 16)
+            const pts = ROAD.map(p => project(p))
+            const next = pts.reduce((best, p, i) => p && p.z > 240 && (best < 0 || p.z < pts[best].z) ? i : best, -1)
+            ROAD.forEach((c, i) => {
+              const n = norm(sub(ROAD[Math.min(5, i + 1)], ROAD[Math.max(0, i - 1)])), u = norm(cross(n, UP)), v = cross(u, n), r = 88, col = i === 0 ? C.ok : C.acc
+              const loop = Array.from({ length: 65 }, (_, k) => add(c, add(mul(u, Math.cos(k / 64 * TAU) * r), mul(v, Math.sin(k / 64 * TAU) * r))))
+              ribbon(loop, i === 0 ? 5 : 4, col, i === 0 ? 1 : .8, i === 0 ? 0 : 22)
+              ribbon(loop, 26, col, .08)
+              sprite(c, r * 2.6, col, .08, 0)
+              if (i === 0) sprite(c, 10, C.ok, 1.2, 1, 0, .6)
+              const p = pts[i], top = project(add(c, mul(v, r * 1.2)))
+              if (p && top && i === next) label(`stop${i}`, `${ROAD_STOPS[i][0]}<small>${ROAD_STOPS[i][1]}</small>`, top.x, Math.max(top.y - 6, 150), `stop above${i === 0 ? " now" : ""}`, seg(p.z, 240, 460) * (1 - seg(p.z, 1400, 2000)))
+            })
+            return { others: .85 }
+          },
+          coda(t, T) {
+            web(T, .45 * seg(t, 2, 6), false)
+            panel(deck.coda, seg(t, .6, 1.2))
+            codaLines.forEach((el, i) => el.classList.toggle("shown", t >= 1 + i * 1.2))
+            codaActions.classList.toggle("on", t >= 5)
+            return { others: 1 }
+          },
+        }
+        const ROAD_STOPS = [
+          ["Today", "One sentence, a few reflexes. The plan first, lookups together, a person before what can't be undone."],
+          ["Trust at today's size", "A sandbox around every reflex. The numbers measured. Six real problems pinned as tests."],
+          ["Plans people can hold", "Plans saved, reviewed and run later by someone else. Plans that wait overnight for a yes."],
+          ["Many reflexes, many authors", "Hundreds installed at once. A second engine on your machine. Reflexes from people you've never met."],
+          ["Everywhere people act", "Apps that ship their reflexes. Chat and voice. Agents that propose while evoke decides."],
+          ["Across machines", "Plans that cross machines and companies, every step signed and every gate kept."],
+        ]
+
+        // One frame of the film at T
+        let T = 0
+        const chapterAt = T => script.findLast(c => c.start <= T) ?? script[0]
+        const chapterPanels = { title: ["title"], reflex: ["manifest"], hold: ["card", "clock"], machines: ["checks"], receipts: ["ledger", "envelope"], hosts: ["hosts"], coda: ["coda"] }
+        let prevVP = null
+        const render = () => {
+          frameNo++
+          cam = cameraAt(T)
+          const m = matrices(cam)
+          const moving = !still && playing && !waiting
+          let streak = 0, before = null
+          if (moving) {  // a moment ago, for the streaks while the camera flies
+            before = matrices(cameraAt(Math.max(0, T - .05)))
+            const b = cameraAt(Math.max(0, T - .05)), speed = len(sub(b.eye, cam.eye)) / cam.dist
+            streak = clamp((speed - .01) * 14, 0, 1)
+          }
+          G.begin()
+          const ch = chapterAt(T), t = T - ch.start
+          for (const [key, el] of Object.entries(deck)) if (!chapterPanels[ch.id]?.includes(key)) panel(el, 0)
+          const look = DRAW[ch.id](t, T) ?? {}
+          CONSTELLATIONS.gain = look.others ?? 1
+          NEBULA.gain = look.nebula ?? 1
+          G.draw({ ...m, prevVP: before?.vp, eye: cam.eye, px: F * rdpr, time: T, starGain: look.stars ?? 1, twinkle: still ? 0 : 1, streak, bloom: .8, night: (look.night ?? 0) * .85, exposure: 1 })
+          if (ch.id !== "hosts") hosts.forEach(h => h.classList.remove("on"))
+          if (ch.id !== "coda") { codaActions.classList.remove("on"); codaLines.forEach(el => el.classList.remove("shown")) }
+          if (ch.id !== "galaxy") hint.classList.remove("on")
+          picker.classList.toggle("on", ch.id === "six" && t < ch.dur - .6)
+          lensBox.classList.toggle("on", ch.id === "receipts" && t >= 7.4 && t < ch.dur - .4)
+          screen.classList.toggle("has-tag", tag.classList.contains("on"))
+          sweep()
+          // the caption and the chapter's name
+          const cue = captionsOn && ch.id !== "title" && ch.id !== "coda" ? ch.cues.find(c => t >= c.at && t < c.to && (!c.when || c.when === said())) : null
+          if (cue !== shownCue) { shownCue = cue; caption.classList.add("off"); clearTimeout(caption.timer); caption.timer = setTimeout(() => { caption.textContent = shownCue?.text ?? ""; caption.classList.toggle("off", !shownCue) }, 180) }
+          const named = ch.id !== "title" && ch.id !== "coda" && t < 5.2 ? ch : null
+          if (named !== shownTag) {
+            shownTag = named
+            if (named) { tag.querySelector(".n").textContent = `${String(named.i).padStart(2, "0")} / ${String(script.length - 2).padStart(2, "0")}`; tag.querySelector("b").textContent = named.title; const w = tag.querySelector("i"); w.textContent = named.when; w.className = named.when.startsWith("Runs today") ? "today" : "" }
+            tag.classList.toggle("on", !!named)
+          }
+          player()
+        }
+
+        // The player: play, pause, seek, the chapters, the captions, the sound, full screen
+        const range = q(".scrub input"), nowEl = q(".time .now"), allEl = q(".time .all"), whereEl = q(".where"), playBtn = q(".ctl.play")
+        const chaptersList = film.querySelector(".chapters")
+        let playing = false, waiting = false, visible = true, raf = 0, last = 0
+        allEl.textContent = clock(TOTAL); q(".start .length").textContent = clock(TOTAL)
+        const ticks = q(".ticks")
+        for (const c of script.slice(1)) { const i = document.createElement("i"); i.style.left = `${(c.start / TOTAL) * 100}%`; ticks.append(i) }
+        { const i = document.createElement("i"); i.className = "gate"; i.style.left = `${(GATE / TOTAL) * 100}%`; ticks.append(i) }
+        const chapterButtons = script.filter(c => c.id !== "title").map(c => {
+          const li = document.createElement("li"), b = document.createElement("button")
+          b.type = "button"; b.innerHTML = `<span class="t">${clock(c.start)}</span>${c.title}${c.when ? `<small class="${c.when.startsWith("Runs today") ? "today" : ""}">${c.when.split(",")[0]}</small>` : ""}`
+          b.addEventListener("click", () => { seek(c.start + .01); screen.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "end" }); play() })
+          li.append(b); chaptersList.append(li); return [c, b]
+        })
+        let lastChapter = null
+        const player = () => {
+          const p = T / TOTAL
+          if (document.activeElement !== range || !range.matches(":active")) range.value = Math.round(p * 1000)
+          range.style.setProperty("--p", `${(p * 100).toFixed(2)}%`)
+          range.setAttribute("aria-valuetext", `${clock(T)} of ${clock(TOTAL)}`)
+          nowEl.textContent = clock(T)
+          const ch = chapterAt(T)
+          if (ch !== lastChapter) { lastChapter = ch; whereEl.textContent = ch.id === "title" ? "" : ch.title; for (const [c, b] of chapterButtons) b.setAttribute("aria-current", c === ch); sound.chapter(ch.i); if (ch.id !== "receipts") lensPick = null }
+          screen.classList.toggle("playing", playing)
+          playBtn.setAttribute("aria-label", playing ? "Pause" : "Play")
+        }
+        const loop = now => {
+          raf = 0
+          const dt = last ? Math.min(.1, (now - last) / 1000) : 0
+          last = now
+          if (playing && !waiting) {
+            let next = Math.min(TOTAL, T + dt)
+            if (T < GATE && next >= GATE && answer === null) { next = GATE; ask() }
+            events(T, next); T = next
+            if (T >= TOTAL) { playing = false; screen.classList.remove("idle") }
+          }
+          if (waiting) countdown(now)
+          if (!screen.classList.contains("begun") && !still) orbit.az -= dt * .02
+          render()
+          const lensMoving = lensPick && performance.now() - lensPickAt < 1700
+          if (visible && !document.hidden && (playing || waiting || dragging || orbit.az || orbit.el || lensMoving || !screen.classList.contains("begun"))) raf = requestAnimationFrame(loop)
+          else last = 0
+        }
+        const kick = () => { if (!raf) raf = requestAnimationFrame(loop) }
+        const play = () => {
+          if (!screen.classList.contains("begun")) screen.classList.add("begun")
+          if (T >= TOTAL - .05) seek(0)
+          playing = true; last = 0; sound.playing(true); wake(); kick()
+        }
+        const pause = () => { playing = false; sound.playing(false); screen.classList.remove("idle"); kick() }
+        const seek = to => {
+          T = clamp(to, 0, TOTAL)
+          if (T < GATE) { answer = null; waiting = false; oncall.hidden = true; syncAnswer() }
+          else if (answer === null) { answer = "auto"; waiting = false; oncall.hidden = true; syncAnswer() }
+          kick(); if (!raf) render()
+        }
+
+        // The on-call question: the film waits for the viewer, and with no answer its on-call approves
+        const oncall = q(".oncall"), countRing = oncall.querySelector(".count .left"), WAIT = 16
+        let waitedFrom = 0, waitedFor = 0
+        const ask = () => { waiting = true; waitedFor = 0; waitedFrom = 0; oncall.hidden = false; screen.classList.remove("idle"); oncall.querySelector("[data-answer]").focus({ preventScroll: true }); sound.cue("ask") }
+        const countdown = now => {
+          if (!playing) { waitedFrom = 0; return }
+          if (waitedFrom) waitedFor += (now - waitedFrom) / 1000
+          waitedFrom = now
+          countRing.style.strokeDashoffset = (62.83 * clamp(waitedFor / WAIT, 0, 1)).toFixed(2)
+          if (waitedFor >= WAIT) decide("auto")
+        }
+        const decide = said => {
+          answer = said; waiting = false; oncall.hidden = true; syncAnswer(); sound.cue(said === "no" ? "no" : "yes")
+          playBtn.focus({ preventScroll: true }); kick()
+        }
+        for (const b of oncall.querySelectorAll("[data-answer]")) b.addEventListener("click", () => decide(b.dataset.answer))
+        const syncAnswer = () => {  // the ledger says what happened at the gate
+          const gated = ledgerRows[4]
+          gated.querySelector("em").textContent = answer === "no" ? "declined by you, on call" : answer === "yes" ? "approved by you, on call" : "approved by its on-call"
+          gated.classList.toggle("no", answer === "no")
+          for (const li of ledgerRows.slice(5)) { li.classList.toggle("skip", answer === "no"); li.querySelector("em").textContent = answer === "no" ? "skipped" : "ran" }
+        }
+
+        // Sound, off until asked for: a low pad that changes with the chapter, and a soft note for each event
+        const sound = (() => {
+          let ac = null, master = null, verb = null, pads = [], on = false
+          const ROOTS = [110, 110, 87.31, 130.81, 146.83, 110, 87.31, 98, 110, 130.81, 110]
+          const NOTES = [220, 261.63, 293.66, 329.63, 392, 440, 523.25, 587.33, 659.25]
+          const start = () => {
+            ac = new AudioContext(); master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination)
+            const n = ac.sampleRate * 2.6, buf = ac.createBuffer(2, n, ac.sampleRate)
+            for (let c = 0; c < 2; c++) { const d = buf.getChannelData(c); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n) ** 2.6 }
+            verb = ac.createConvolver(); verb.buffer = buf; const wet = ac.createGain(); wet.gain.value = .5; verb.connect(wet).connect(master)
+            const low = ac.createBiquadFilter(); low.type = "lowpass"; low.frequency.value = 520; low.Q.value = .6
+            const padGain = ac.createGain(); padGain.gain.value = .06; low.connect(padGain).connect(master); padGain.connect(verb)
+            pads = [1, 1.5, 2.005].map((k, i) => { const o = ac.createOscillator(); o.type = i === 1 ? "triangle" : "sine"; o.frequency.value = ROOTS[0] * k; const g = ac.createGain(); g.gain.value = i === 1 ? .35 : .5; o.connect(g).connect(low); o.start(); return { o, k } })
+            const lfo = ac.createOscillator(), depth = ac.createGain(); lfo.frequency.value = .07; depth.gain.value = 180; lfo.connect(depth).connect(low.frequency); lfo.start()
+          }
+          const tone = (freq, dur, gain, type = "sine", delay = 0) => {
+            const t0 = ac.currentTime + delay, o = ac.createOscillator(), g = ac.createGain()
+            o.type = type; o.frequency.value = freq; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(gain, t0 + .012); g.gain.exponentialRampToValueAtTime(.0001, t0 + dur)
+            o.connect(g); g.connect(master); g.connect(verb); o.start(t0); o.stop(t0 + dur + .05)
+          }
+          return {
+            toggle(v) { on = v; if (on && !ac) start(); if (ac) { ac.resume?.(); master.gain.setTargetAtTime(on && playing ? .8 : 0, ac.currentTime, .35) } },
+            playing(p) { if (ac) master.gain.setTargetAtTime(on && p ? .8 : 0, ac.currentTime, .3) },
+            chapter(i) { if (ac) for (const p of pads) p.o.frequency.setTargetAtTime(ROOTS[i % ROOTS.length] * p.k, ac.currentTime, 1.2) },
+            cue(kind, n = 0) {
+              if (!on || !ac) return
+              if (kind === "fire") tone(NOTES[n % NOTES.length], .9, .05)
+              else if (kind === "call") tone(1760, .07, .012)
+              else if (kind === "receipt") tone(1318.5, .35, .02)
+              else if (kind === "ask") { tone(659.25, .5, .035); tone(783.99, .7, .03, "sine", .16) }
+              else if (kind === "yes") { tone(440, 1.4, .04); tone(554.37, 1.4, .03, "sine", .05); tone(659.25, 1.6, .03, "sine", .1) }
+              else if (kind === "no") { tone(110, 1.2, .05, "triangle"); tone(155.56, 1.2, .03, "triangle", .06) }
+            },
+          }
+        })()
+        const EVENTS = (() => {  // every step that runs, every call and receipt, in the film's time, for the sound
+          const list = [], fires = (sched, base) => Object.values(sched.times).forEach((x, i) => { list.push([x.fire, "fire", base + i]); if (x.ask) list.push([x.ask[0], "ask"]) })
+          fires(PLAN_RUN, 0); fires(CLOSE_RUN, 2); SIX_RUN.forEach((s, i) => fires(s, i))
+          for (const x of Object.values(RUN)) { if (x.go !== x.arrive) list.push([x.go, "call"]); list.push([x.fire, "fire", 3]); if (x.back) list.push([x.back, "receipt"]) }
+          return list.sort((a, b) => a[0] - b[0])
+        })()
+        const events = (from, to) => { if (to - from > .5) return; for (const [t, kind, n] of EVENTS) if (t > from && t <= to && !(kind === "ask" && Math.abs(t - GATE) < .01)) sound.cue(kind, n) }
+
+        // Controls
+        const toggle = () => (playing ? pause() : play())
+        q(".start").addEventListener("click", play)
+        playBtn.addEventListener("click", toggle)
+        range.addEventListener("input", () => seek((+range.value / 1000) * TOTAL))
+        q(".ctl.cc").addEventListener("click", e => { captionsOn = !captionsOn; e.currentTarget.setAttribute("aria-pressed", captionsOn); shownCue = undefined; kick() })
+        q(".ctl.sound").addEventListener("click", e => { const on = e.currentTarget.getAttribute("aria-pressed") !== "true"; e.currentTarget.setAttribute("aria-pressed", on); sound.toggle(on) })
+        q(".ctl.full").addEventListener("click", () => { if (document.fullscreenElement) document.exitFullscreen(); else screen.requestFullscreen?.() })
+        q(".coda-actions .again").addEventListener("click", () => { seek(0); play() })
+        for (const b of pickerButtons) b.addEventListener("click", () => { seek(at("six", 3.4 + 6 * +b.dataset.problem - .2)); play() })
+        for (const b of lensButtons) b.addEventListener("click", () => { lensPick = b.dataset.lens; lensPickAt = performance.now(); kick(); if (!playing) render() })
+        const moveBy = dir => { const i = chapterAt(T).i + dir; seek(script[clamp(i, 0, script.length - 1)].start + .01) }
+        addEventListener("keydown", e => {
+          if (e.altKey || e.ctrlKey || e.metaKey) return
+          const inField = e.target.closest?.("input, textarea, select, [contenteditable]"), onButton = e.target.closest?.("button, a, summary")
+          if (e.key === " " && !inField && !onButton && screen.getBoundingClientRect().bottom > 0) { e.preventDefault(); toggle() }
+          else if (e.key === "ArrowRight" && !inField) moveBy(1)
+          else if (e.key === "ArrowLeft" && !inField) moveBy(-1)
+          else if ((e.key === "f" || e.key === "F") && !inField) q(".ctl.full").click()
+          else if ((e.key === "c" || e.key === "C") && !inField) q(".ctl.cc").click()
+          else if ((e.key === "m" || e.key === "M") && !inField) q(".ctl.sound").click()
+          else return
+          wake()
+        })
+        // The controls rest out of sight while the film plays and nothing moves
+        let idleTimer = 0
+        const wake = () => { screen.classList.remove("idle"); clearTimeout(idleTimer); idleTimer = setTimeout(() => { if (playing && !waiting && !screen.querySelector(":focus-visible")) screen.classList.add("idle") }, 2600) }
+        screen.addEventListener("pointermove", wake); screen.addEventListener("focusin", wake)
+        // Turning the galaxy by hand
+        let dragging = false, dragX = 0, dragY = 0
+        screen.addEventListener("pointerdown", e => {
+          if (e.target !== canvas && !e.target.classList.contains("labels")) return
+          dragging = true; dragX = e.clientX; dragY = e.clientY; canvas.setPointerCapture?.(e.pointerId); kick()
+        })
+        addEventListener("pointermove", e => { if (!dragging) return; orbit.az -= (e.clientX - dragX) * .004; orbit.el = clamp(orbit.el + (e.clientY - dragY) * .003, -.5, .5); dragX = e.clientX; dragY = e.clientY; if (!playing) render() })
+        addEventListener("pointerup", () => { dragging = false })
+        setInterval(() => { if (dragging || (!orbit.az && !orbit.el) || !screen.classList.contains("begun")) return; orbit.az *= .96; orbit.el *= .96; if (Math.abs(orbit.az) < .001 && Math.abs(orbit.el) < .001) orbit.az = orbit.el = 0; kick() }, 50)
+        canvas.addEventListener("click", e => { if (Math.abs(orbit.az) < .01 && e.detail === 1 && screen.classList.contains("begun")) toggle() })
+
+        // Size, visibility
+        const size = () => {
+          const r = screen.getBoundingClientRect()
+          W = r.width; H = r.height; portrait = W < H * .9
+          rdpr = Math.min(devicePixelRatio || 1, W * H > 1.6e6 ? 1.25 : 1.5)
+          G.resize(Math.round(W * rdpr), Math.round(H * rdpr))
+          F = portrait ? H / (2 * Math.tan(22 * DEG)) : Math.min(H / (2 * Math.tan(22 * DEG)), W / (2 * Math.tan(34 * DEG)))
+          render()
+        }
+        new ResizeObserver(size).observe(screen)
+        let resume = false
+        new IntersectionObserver(([e]) => {
+          visible = e.isIntersecting
+          if (!visible && playing) { resume = true; pause() }
+          else if (visible) { if (resume) { resume = false; play() } else kick() }
+        }, { threshold: .35 }).observe(screen)
+        document.addEventListener("visibilitychange", () => { if (document.hidden && playing) pause() })
+        document.fonts?.ready.then(() => { if (!raf) render() })
+        size()
+
+        // For the page's own checks, served locally: seek, play and pause from outside
+        if (/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) window.__film = { seek: t => { seek(t); render() }, play, pause, answer: a => decide(a), get T() { return T }, TOTAL, at }
+      }
+    }
+  </script>
+</body>
+</html>
