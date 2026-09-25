@@ -17,6 +17,7 @@ publish    = false
 #   indexmap               file order for options, examples and words — prompts and the classifier see it
 #   libc                   killpg: the process group, not the child alone; Landlock, no_new_privs and seccomp in the child
 #   proptest               dev only: the merge's and the declaration's invariants over generated inputs, shrunk
+#   proptest-state-machine dev only: the weave's schedule as a state machine over the core's own planner and runner
 #   rustyline              the REPL's line editing and history; it opens /dev/tty itself
 #   serde, serde_json      every boundary type is JSON-shaped; the wire keeps a JSON document's order, and a number read back is the number written
 #   sha2                   h1, the trust digest, the plan digest, the cache's file names
@@ -24,18 +25,19 @@ publish    = false
 #   unicode-normalization  NFC for utterance identity
 #   ureq                   blocking HTTP over a kept-alive agent; rustls, so a static binary
 [workspace.dependencies]
-evoke-core            = { path = "crates/evoke-core" }
-evoke-adapters        = { path = "crates/evoke-adapters" }
-indexmap              = { version = "2.14.2", features = ["serde"] }
-libc                  = "0.2.189"
-proptest              = { version = "1.11.0", default-features = false, features = ["std"] }
-rustyline             = { version = "18.0.1", default-features = false, features = ["with-file-history"] }
-serde                 = { version = "1.0.229", features = ["derive"] }
-serde_json            = { version = "1.0.151", features = ["preserve_order", "float_roundtrip"] }
-sha2                  = "0.11.0"
-toml_edit             = { version = "0.25.15", default-features = false, features = ["parse"] }
-unicode-normalization = "0.1.25"
-ureq                  = { version = "3.4.2", default-features = false, features = ["rustls"] }
+evoke-core             = { path = "crates/evoke-core" }
+evoke-adapters         = { path = "crates/evoke-adapters" }
+indexmap               = { version = "2.14.2", features = ["serde"] }
+libc                   = "0.2.189"
+proptest               = { version = "1.11.0", default-features = false, features = ["std"] }
+proptest-state-machine = "0.8.0"
+rustyline              = { version = "18.0.1", default-features = false, features = ["with-file-history"] }
+serde                  = { version = "1.0.229", features = ["derive"] }
+serde_json             = { version = "1.0.151", features = ["preserve_order", "float_roundtrip"] }
+sha2                   = "0.11.0"
+toml_edit              = { version = "0.25.15", default-features = false, features = ["parse"] }
+unicode-normalization  = "0.1.25"
+ureq                   = { version = "3.4.2", default-features = false, features = ["rustls"] }
 
 # The CLI as released: one unit, link-time optimised, stripped. A panic still unwinds — `main` catches it once.
 # A wrap is a bug and panics, caught once, rather than a wrong number shipped: the checks cost a little size.
