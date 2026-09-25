@@ -25,7 +25,7 @@ What holds, in any description of `evoke`:
 - `evoke` is a project of its own, not affiliated with TypeSafe AI. Jev is TypeSafe AI's model.
 - Apache-2.0. The collection is MIT. The name and the logo are trademarks: except for displaying the licence details and identifying us as the origin of the software, there is no right under the licence to use them.
 
-Install the CLI with `curl -fsSL https://evoke.build/install.sh | sh` on macOS or Linux. Reflexes written in JavaScript need Node 24 or newer. Deciding needs a key from https://typesafe.ai in `TYPESAFE_API_KEY`. The SDK is `@evoke-build/evoke`, for Node 24.5 or newer. Its first release on npm is on its way. Until then, the terminal route runs today.
+Install the CLI with `curl -fsSL https://evoke.build/install.sh | sh` on macOS or Linux. Reflexes written in JavaScript need Node 24 or newer. Deciding needs a key from https://typesafe.ai in `TYPESAFE_API_KEY`. Install the SDK with `npm install @evoke-build/evoke`, for Node 24.5 or newer.
 
 ## The site
 
@@ -46,4 +46,5 @@ Install the CLI with `curl -fsSL https://evoke.build/install.sh | sh` on macOS o
 - [The whole manual in one file](https://evoke.build/llms-full.txt): every page above in reading order, each under its address, every link absolute.
 - [Repository](https://github.com/evoke-build/evoke): the source, the executable spec, the changelog and the releases.
 - [The collection](https://github.com/evoke-build/reflexes): the first-party reflexes, what a Mac does at a word.
+- [The SDK on npm](https://www.npmjs.com/package/@evoke-build/evoke): `@evoke-build/evoke`, Node 24.5 or newer, ES modules, no dependencies.
 - [Jev](https://typesafe.ai): TypeSafe AI's classifier, reached through the `jev` adapter.
