@@ -3,100 +3,125 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Get started - Evoke</title>
-  <meta name="description" content="Run your first reflex in about ten minutes: pick your terminal or your app, get a key, install, inspect one request, perform one action, then make it yours.">
+  <title>Install evoke and run your first command - Evoke</title>
+  <meta name="description" content="Install the evoke CLI on macOS or Linux and run your first natural-language command. A reflex is a small program you install and ask for in your words.">
   <!-- head -->
   <style>
+    .choose .routes { margin-bottom: .75rem; }
+    .choose > p { margin: 0 0 2.5rem; color: var(--muted); font-size: .92rem; }
+    .interim { margin: 0 0 2rem; padding: .9rem 1.2rem; border: 1px solid var(--line); border-radius: var(--radius-s); background: var(--panel); font-size: .95rem; color: var(--text); }
+    .interim strong { color: var(--fg); font-weight: 560; }
     .plan .needs { margin: .2rem 0 .9rem; max-width: 44rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .plan .caption { margin-top: .4rem; }
+    .plan p.small { color: var(--muted); font-size: .92rem; }
     .plan .three { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; max-width: 44rem; }  /* one column: each command whole */
     .plan .three .way { padding: 1rem 1.1rem; }
     .plan .three .way h3 { font-size: .98rem; }
     .plan .three .way p { font-size: .92rem; }
+    .plan .three .way .after a { display: block; width: fit-content; }
+    .qa .panel { margin: 0 0 .9rem; }
     @media (max-width: 560px) { .plan .needs { grid-template-columns: minmax(0, 1fr); } }
   </style>
 </head>
 <body>
   <!-- bar -->
 
-  <main class="wrap">
+  <main class="wrap" data-shown="terminal">
     <div class="hero solo">
       <div class="copy">
-        <h1>Run your <em>first reflex.</em></h1>
-        <p class="lede"><strong>Two routes, each ending in one real result.</strong> Your terminal on a Mac or Linux
-          machine, or a Node application. About ten minutes either way.</p>
+        <h1>Install evoke and <em>run your first command.</em></h1>
+        <p class="lede"><strong>Natural-language commands for small programs you install.</strong> A reflex is a small
+          program you install and ask for in your words. Pick a route below: the evoke CLI on macOS or Linux, or the SDK
+          in a Node app. Each ends when a sentence you type runs a reflex.</p>
       </div>
     </div>
 
-    <div class="routes" role="group" aria-label="Choose the route">
-      <button class="route" type="button" data-route="terminal" aria-pressed="true"><b>Try in my terminal</b><span>One small binary. The collection of Mac reflexes, and one sentence typed at a prompt.</span></button>
-      <button class="route" type="button" data-route="sdk" aria-pressed="false"><b>Use in my app</b><span>The same decisions inside a Node application, over the same core. One file to start.</span></button>
+    <div class="choose" id="route">
+      <div class="routes" role="group" aria-label="Choose the route">
+        <button class="route" type="button" data-route="terminal" aria-pressed="true"><b>Try in my terminal</b><span>The evoke CLI on macOS or Linux, then thirteen ready-made reflexes on a Mac. Five lines to type, once you have git, Node and a TypeSafe AI key.</span></button>
+        <button class="route" type="button" data-route="sdk" aria-pressed="false"><b>Use in my app</b><span>The TypeScript SDK in a Node app, reading sentences by the same rules as the CLI. One install line and one file.</span></button>
+      </div>
+      <p>Each button switches every step below.</p>
     </div>
+
+    <p class="interim only sdk"><strong>The SDK's first release on npm is on its way.</strong> Until then,
+      <a href="/start.html?mode=terminal">the terminal route</a> runs today.</p>
 
     <p class="kept" data-kept><b data-kept-title></b><span data-kept-note></span><a data-kept-link href="/examples.html">Change the example →</a></p>
 
-    <ol class="plan terminal" data-plan>
-      <li id="route">
-        <div>
-          <h3>Choose the route</h3>
-          <p class="only terminal">The binary runs on macOS and Linux, and on Windows through WSL. The first-party
-            collection, the thirteen reflexes this route installs, is for macOS. On Linux, write a reflex of your own
-            first, or take the app route.</p>
-          <p class="only sdk">The SDK needs Node 24.5 or newer and ES modules. It carries the core as WebAssembly, so
-            it has no build step and no dependencies.</p>
-          <p>The two buttons above switch every step below.</p>
-        </div>
-      </li>
+    <ol class="plan">
       <li id="needs">
         <div>
-          <h3>Know what you need</h3>
-          <ul class="needs">
-            <li class="only terminal"><b>The binary</b>The install script fetches the release for your machine and
-              checks its digest.</li>
-            <li class="only sdk"><b>Node 24.5 or newer</b>And <code>"type": "module"</code> in your package, or
-              <code>.mts</code> files.</li>
-            <li><b>git</b><span class="only terminal inline">For <code>evoke add</code>, which fetches reflexes from a
-              repository. Your own git credentials apply.</span><span class="only sdk inline">Only when you install
-              reflexes from a repository beside your app.</span></li>
-            <li class="only terminal"><b>Node 24 or newer</b>For reflexes written in JavaScript, which most of the
-              collection is. A reflex that runs a program directly needs none.</li>
-            <li><b>A classifier key</b>From TypeSafe AI, in <code>TYPESAFE_API_KEY</code>. Or from OpenJEV, an
-              independent service, in <code>OPENJEV_API_KEY</code>.</li>
+          <h2>What you need before you start</h2>
+          <ul class="needs general">
+            <li class="only terminal"><b>macOS or Linux</b>evoke runs on both. The collection, thirteen ready-made reflexes
+              this route adds, is for a Mac. On Linux, install evoke in step 2, skip the collection, and start with
+              <a href="/manual/author/body.html#an-argv-body">a command you already run</a>. Wrapping it takes one short
+              file, with no code and no Node.</li>
+            <li class="only terminal"><b>Node 24 or newer</b>Eleven of the thirteen run a JavaScript file, so install Node
+              before you add them. The other two run a command the Mac already has, and need no Node. Neither does a
+              reflex you write around a command.</li>
+            <li class="only terminal"><b>git</b><code>evoke add</code> fetches reflexes from a git repository. Your own git
+              settings and credentials apply.</li>
+            <li class="only sdk"><b>Node 24.5 or newer</b>Your project also needs ES modules: <code>"type": "module"</code>
+              in <code>package.json</code>, or <code>.mts</code> files.</li>
+            <li class="only sdk"><b>git, for reflexes from a repository</b>Only when you install reflexes from a git
+              repository into your app's folder. The file in step 2 defines its reflex in code, so it needs no git.</li>
+            <li><b>A classifier key</b>A classifier reads each sentence you type: Jev, TypeSafe AI's model. It answers which
+              reflex you mean and which value fills each input, with a probability for each. It needs an API key from
+              TypeSafe AI, set as <code>TYPESAFE_API_KEY</code>. TypeSafe AI says Jev is most accurate in English.</li>
           </ul>
-          <p><strong>The key's provider bills its use, under its own terms.</strong> evoke is free. A sentence you repeat
-            is answered from a cache and costs nothing. Nothing else is billed and there is no account to make.</p>
+          <p><strong>Get a key from TypeSafe AI, at typesafe.ai.</strong> A TypeSafe AI key you already hold works here.
+            Copy it: the next step puts it in your shell.</p>
+          <p><strong>evoke is free and open source.</strong> Each time evoke decides what a sentence asks for, it sends
+            one request to the classifier. The classifier's provider bills that request to the account your key belongs
+            to. In the terminal, a sentence you repeat is answered from a local cache, with no request. evoke never
+            contacts evoke.build, and there is no evoke account. <a href="/faq.html#cost">What a decision costs →</a></p>
           <div class="actions">
-            <a class="button small" href="https://typesafe.ai">Get a classifier key</a>
-            <a class="quiet" href="/manual/start/install.html">Read the requirements →</a>
+            <a class="button small" href="https://typesafe.ai">Get a key at typesafe.ai</a>
+            <a class="quiet" href="/manual/start/install.html">All requirements, in the manual →</a>
           </div>
         </div>
       </li>
       <li id="install">
         <div>
-          <h3>Install and configure</h3>
-          <p class="only terminal"><strong>Two lines install software.</strong> The script puts <code>evoke</code> in
-            <code>~/.local/bin</code>. The add line fetches the collection from git and pins it.</p>
+          <h2>Set your key and install evoke</h2>
           <div class="only terminal">
+            <p><strong>Set the key.</strong> Put your key in place of <code>&lt;value&gt;</code>. evoke reads it only when
+              it sends a sentence to the classifier, and never writes it to a file. The line lasts until you close this
+              terminal. To keep it, add it to your shell's startup file, such as <code>~/.zshrc</code>.</p>
+            <div class="cmd"><code>export TYPESAFE_API_KEY=&lt;value&gt;</code><button type="button" data-copy aria-label="Copy the key command">Copy</button></div>
+            <p><strong>Install the CLI.</strong> The script fetches the release built for your machine, checks it against
+              the release's checksums, and puts <code>evoke</code> in <code>~/.local/bin</code>. If that folder is not on
+              your <code>PATH</code>, the script's last lines print the command that adds it.</p>
             <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
-            <div class="cmd"><code>evoke add evoke-build/reflexes</code><button type="button" data-copy aria-label="Copy the add command">Copy</button></div>
+            <div class="general">
+              <p><strong>Add the collection.</strong> This line fetches thirteen reflexes for a Mac from git, and pins each
+                one to its version. Install Node first, because <code>evoke add</code> records where it is.</p>
+              <div class="cmd"><code>evoke add evoke-build/reflexes</code><button type="button" data-copy aria-label="Copy the add command">Copy</button></div>
+              <p>It prints one row per reflex. <code>note</code>, <code>open</code> and <code>visit</code> stay inactive
+                until you give them a notes file, a folder and a site. Until then, no sentence reaches them. A line under
+                the rows names the command that gives each one what it needs. The other ten work at once. A reflex runs as
+                you, with no sandbox yet, so read what you add:
+                <a href="https://github.com/evoke-build/reflexes">every file of the collection is public</a>.</p>
+              <p class="small"><strong>On Linux, skip this line.</strong> The collection is for a Mac. Wrap a command you
+                already run instead, then use steps 3 and 4 with a sentence that asks for it.
+                <a href="/manual/author/body.html#an-argv-body">A reflex around a command, in the manual →</a></p>
+            </div>
           </div>
-          <p class="only terminal"><strong>Two lines configure.</strong> The key is read from your shell, only at the
-            moment of a decision, and never written to a file. The reflexes that open your folders wait for a word
-            from you, and the second line gives them one.</p>
-          <div class="only terminal">
-            <div class="cmd"><code>export TYPESAFE_API_KEY=&lt;value&gt;</code><button type="button" data-copy aria-label="Copy the export line">Copy</button></div>
-            <div class="cmd"><code>evoke vocab places add desktop "The desktop." --value ~/Desktop</code><button type="button" data-copy aria-label="Copy the vocabulary line">Copy</button></div>
-          </div>
-          <p class="only sdk"><strong>One line installs.</strong> The key is read from the environment at the moment
-            of a decision.</p>
           <div class="only sdk">
+            <p><strong>Set the key.</strong> Put your key in place of <code>&lt;value&gt;</code>. The SDK reads it from
+              the environment only when it sends a sentence to the classifier. The line lasts until you close this
+              terminal.</p>
+            <div class="cmd"><code>export TYPESAFE_API_KEY=&lt;value&gt;</code><button type="button" data-copy aria-label="Copy the key command">Copy</button></div>
+            <p><strong>Install the SDK.</strong> It carries evoke's core as WebAssembly, so it has no build step and no
+              dependencies.</p>
             <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
-            <div class="cmd"><code>export TYPESAFE_API_KEY=&lt;value&gt;</code><button type="button" data-copy aria-label="Copy the export line">Copy</button></div>
-          </div>
-          <p class="only sdk"><strong>One file holds the whole loop.</strong> A reflex handed as code, nothing on disk, and
-            one call that decides, asks, confirms and runs.</p>
-          <div class="panel only sdk">
-            <div class="head"><i></i>app.ts</div>
+            <div class="general">
+              <p><strong>Write one file.</strong> It defines a reflex in code, so no reflex files are needed. One call then
+                decides, asks, confirms and runs.</p>
+              <div class="panel">
+                <div class="head"><i></i>app.ts</div>
 <pre><span class="w">import</span> <span class="o">{</span> load<span class="o">,</span> reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
 <span class="w">import</span> <span class="o">{</span> jev <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke/jev"</span>
 
@@ -117,93 +142,215 @@
   <span class="k">ask</span><span class="o">:</span> <span class="w">async</span> d <span class="o">=&gt;</span> <span class="o">({</span> <span class="k">duration</span><span class="o">:</span> <span class="s">"10 minutes"</span> <span class="o">}),</span>
 <span class="o">})</span>
 console<span class="o">.</span>log<span class="o">(</span>handled<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"ran"</span> <span class="o">?</span> handled<span class="o">.</span>result<span class="o">.</span>text <span class="o">:</span> handled<span class="o">.</span>outcome<span class="o">)</span></pre>
+              </div>
+              <p>To stay short, this file answers evoke's questions itself. Your app would ask the person using it.</p>
+            </div>
           </div>
         </div>
       </li>
-      <li id="inspect">
+      <li id="inspect" class="general">
         <div>
-          <h3>Inspect the request</h3>
-          <p class="only terminal"><code>evoke try</code> decides and runs nothing. It prints every answer: the ranking,
-            each input, how well each reflex fits, and what would happen.</p>
+          <h2>See the decision before anything runs</h2>
           <div class="only terminal">
-            <div class="cmd"><code data-preview>evoke try "kill the wifi"</code><button type="button" data-copy aria-label="Copy the preview command">Copy</button></div>
+            <p><code>evoke try</code> decides and runs nothing. It prints the classifier's answers: which reflex, each
+              input, how well each reflex fits, and what would happen.</p>
+            <div class="cmd"><code>evoke try "kill the wifi"</code><button type="button" data-copy aria-label="Copy the try command">Copy</button></div>
             <div class="panel term quiet" role="figure" aria-label="What evoke try prints">
               <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke try</div>
-<pre><span class="own">  <span class="name">wifi</span> <span class="hi">0.90</span> · none 0.06 · power 0.02 · lock 0.02
+<pre data-flow="first-ten"><span class="own">  <span class="name">wifi</span> <span class="hi">0.90</span> · none 0.06 · power 0.02 · lock 0.02
   state  <span class="name">off</span> <span class="mid">0.72</span> · on 0.20 · unstated 0.08
   fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · timer 0.02 · trash 0.02 · volume 0.02
   <span class="name">confirm</span> · wifi state="off" · write · weakest: state <span class="mid">0.72</span></span></pre>
             </div>
-            <p class="caption">The weakest answer, 0.72, sits under the write bar of 0.8. So this sentence would ask
-              before it runs.</p>
+            <p class="caption">Turning Wi-Fi off changes something, so <code>wifi</code> is a <code>write</code> reflex. A
+              <code>write</code> runs without a question only when evoke is at least 0.8 sure of every answer. That is its
+              bar. Here the least sure answer is 0.72, so this sentence would ask you first. Try a sentence of your own
+              the same way. Nothing runs.</p>
+            <p class="small">evoke printed these lines in one of its own tests, from answers written for it, after
+              <code>note</code> and <code>open</code> were set up. The numbers the classifier gives you will differ.</p>
           </div>
-          <p class="only sdk"><code>decide()</code> makes a decision and runs nothing. It is a typed union: narrow it by
-            outcome, then by reflex.</p>
-          <div class="panel only sdk">
-            <div class="head"><i></i>decide only</div>
+          <div class="only sdk">
+            <p><code>decide()</code> makes a decision and runs nothing. It is the first thing <code>handle()</code> does.
+              To see one on its own, add these lines to <code>app.ts</code> after <code>load()</code>. The result is a
+              typed union: narrow it by <code>outcome</code>, then by <code>reflex</code>. When the decision is to run,
+              these lines print the call and how sure evoke is.</p>
+            <div class="panel">
+              <div class="head"><i></i>decide only</div>
 <pre><span class="w">const</span> d <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>decide<span class="o">(</span><span class="s">"timer for 10 minutes"</span><span class="o">)</span>
-<span class="w">if</span> <span class="o">(</span>d<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"run"</span><span class="o">)</span> console<span class="o">.</span>log<span class="o">(</span>d<span class="o">.</span>call<span class="o">,</span> d<span class="o">.</span>confidence<span class="o">)</span>
-<span class="c">// timer duration="10 minutes" 0.9…</span></pre>
+<span class="w">if</span> <span class="o">(</span>d<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"run"</span><span class="o">)</span> console<span class="o">.</span>log<span class="o">(</span>d<span class="o">.</span>call<span class="o">,</span> d<span class="o">.</span>confidence<span class="o">)</span></pre>
+            </div>
           </div>
         </div>
       </li>
-      <li id="run">
+      <li id="run" class="general">
         <div>
-          <h3>Perform the action</h3>
-          <p class="only terminal">Type the sentence. The call and its confidence print, then the reflex's one line.
-            A less certain decision asks first, with <code>[y]es [n]o [t]each</code>. Teach records your phrase and runs.</p>
+          <h2>Run your first command</h2>
           <div class="only terminal">
-            <div class="cmd"><code data-run>evoke "set the volume to 40 percent"</code><button type="button" data-copy aria-label="Copy the run command">Copy</button></div>
+            <p>Type what you want, in quotes after <code>evoke</code>. It prints the call it chose and how sure it is. Then
+              the reflex prints what it did.</p>
+            <div class="cmd"><code>evoke "set the volume to 40 percent"</code><button type="button" data-copy aria-label="Copy the sentence">Copy</button></div>
             <div class="panel term quiet" role="figure" aria-label="The first result">
               <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre><span class="own">  <span class="name">volume</span> level="40 percent"  <span class="hi">0.93</span></span>
+<pre data-flow="first-ten"><span class="own">  <span class="name">volume</span> level="40 percent"  <span class="hi">0.93</span></span>
 <span class="out">volume 40%</span></pre>
             </div>
+            <p class="caption">In this test run, 0.93 cleared the bar of 0.8, so it ran without asking. The last line,
+              <code>volume 40%</code>, is your first result. Your number may differ. Under 0.8, evoke asks first, with
+              <code>[y]es [n]o [t]each</code>. Typing <code>t</code> saves your sentence as an example in your own file,
+              then runs it.</p>
           </div>
-          <p class="only sdk">Run the file with a sentence. <code>handle()</code> decides, asks for what is missing,
-            confirms, and runs. Here it prints <code>ringing in 600 s</code>, and rings ten minutes later.</p>
           <div class="only sdk">
+            <p>Run the file with a sentence. <code>handle()</code> decides, asks for anything missing, confirms, and runs.
+              The file prints what the timer returned, and the timer rings ten minutes later. The program stays open until
+              then, so press Ctrl-C to end it sooner.</p>
             <div class="cmd"><code>node app.ts "timer for 10 minutes"</code><button type="button" data-copy aria-label="Copy the run command">Copy</button></div>
           </div>
         </div>
       </li>
-      <li id="next">
+      <li id="next" class="general">
         <div>
-          <h3>Make the next useful change</h3>
-          <p>One continuation, whichever fits what you want to do next.</p>
-          <div class="three">
+          <h2>Choose your next step</h2>
+          <p>Each card stands alone. Pick the one that fits what you want next.</p>
+          <div class="three only terminal">
             <div class="way">
-              <h3>Teach a phrase</h3>
-              <p>One line in your overlay. The next decision reads it.</p>
+              <h3>Teach it a phrase of yours</h3>
+              <p>This line saves «go dark» as a way to ask for Wi-Fi off. It goes in your overlay, the file that holds your
+                own wording for a reflex. Your next sentence uses it, and no update of the reflex touches it.</p>
               <div class="cmd"><code>evoke teach "go dark" wifi state=off</code><button type="button" data-copy aria-label="Copy the teach command">Copy</button></div>
-              <p class="after"><a class="more" href="/manual/use/tuning.html">Tuning →</a></p>
+              <p class="after"><a class="more" href="/manual/use/tuning.html#teach-one-line-in-your-overlay">Teaching, in the manual →</a></p>
             </div>
             <div class="way">
-              <h3>Write your own reflex</h3>
-              <p>Three files that already work, then your code in the body.</p>
+              <h3>Name a folder of yours</h3>
+              <p><code>open</code>, <code>note</code> and <code>visit</code> need something only you can supply: a folder, a
+                notes file or a site. This line names your desktop folder. Put your own path in place of
+                <code>/Users/you/Desktop</code>. Then <code>evoke "open my desktop folder"</code> opens it.</p>
+              <div class="cmd"><code>evoke vocab places add desktop "The desktop." --value /Users/you/Desktop</code><button type="button" data-copy aria-label="Copy the vocabulary command">Copy</button></div>
+              <p class="after"><a class="more" href="/manual/use/tuning.html#vocabularies">Your own word lists, in the manual →</a></p>
+            </div>
+            <div class="way">
+              <h3>Write your first reflex</h3>
+              <p><code>evoke new</code> writes three files that already work: a manifest, a program and its types. The
+                manifest says what the reflex does and which inputs it takes. Put your own code in the program. To wrap a
+                command you already run, the manifest alone is enough.</p>
               <div class="cmd"><code>evoke new hello</code><button type="button" data-copy aria-label="Copy the new command">Copy</button></div>
-              <p class="after"><a class="more" href="/developers.html">For developers →</a></p>
+              <p class="after"><a class="more" href="/manual/author/first-reflex.html">Your first reflex, in the manual →</a>
+                <a class="more" href="/manual/author/body.html#an-argv-body">A reflex around a command, in the manual →</a></p>
             </div>
             <div class="way">
-              <h3>Connect a second step</h3>
-              <p>Two reflexes in one sentence. The plan shows before anything runs.</p>
-              <div class="cmd"><code>evoke "lock the screen and set a 25 minute timer"</code><button type="button" data-copy aria-label="Copy the two-step sentence">Copy</button></div>
-              <p class="after"><a class="more" href="/how-it-works.html#handoff">How a handoff works →</a></p>
+              <h3>Ask for two things in one sentence</h3>
+              <p>Join two requests with «and» or «then». evoke shows the plan first, one numbered line per step. Then each
+                step runs when it clears its own bar, or asks you first. A no at one step skips the steps after it. A
+                sentence with several steps makes one request to find the steps, then at least one for each step.</p>
+              <p class="after"><a class="more" href="/manual/use/weaving.html">Several steps in one sentence, in the manual →</a></p>
             </div>
+          </div>
+          <div class="three only sdk">
+            <div class="way">
+              <h3>Load reflexes from files</h3>
+              <p>In your app's folder, <code>evoke add</code> writes <code>evoke.toml</code>, its lock file
+                <code>evoke.lock</code>, and <code>evoke.d.ts</code>, with a type for each reflex. <code>load()</code> reads
+                them. This needs the evoke CLI from the terminal route.</p>
+              <p class="after"><a class="more" href="/manual/sdk/getting-started.html#with-files">Reflexes from files, in the SDK manual →</a></p>
+            </div>
+            <div class="way">
+              <h3>Test offline, after one recording</h3>
+              <p><code>replay()</code> answers from a recording. Record once with your key. Every run after that is offline,
+                with the same answers.</p>
+              <p class="after"><a class="more" href="/manual/sdk/testing.html">Offline tests, in the SDK manual →</a></p>
+            </div>
+            <div class="way">
+              <h3>Plan several steps from one sentence</h3>
+              <p><code>steps()</code> returns the plan and runs nothing. <code>weave()</code> runs it, and your handlers
+                answer each step's questions.</p>
+              <p class="after"><a class="more" href="/manual/sdk/decisions.html">Several steps from one sentence, in the SDK manual →</a></p>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li id="example" class="kept-step">
+        <div>
+          <h2>Set up your example</h2>
+          <p data-kept-set-up></p>
+          <div class="actions">
+            <a class="button primary" data-kept-open href="/examples.html">Open the example's setup</a>
           </div>
         </div>
       </li>
     </ol>
 
-    <div class="closing">
+    <section id="help">
+      <h2>When a step stops, evoke prints the fix.</h2>
+      <p class="sub">When evoke stops because it needs something from you, it prints one line. The line ends with the
+        command that fixes it, and evoke exits with code 3. These are the cases a first run meets. In the SDK, the same
+        line is the message of a <code>DiagnosticError</code>.</p>
+      <div class="qa">
+        <h3>Your shell cannot find <code>evoke</code>.</h3>
+        <div>
+          <p>The script put evoke in <code>~/.local/bin</code>, and that folder is not on your <code>PATH</code> yet. The
+            script's last lines print the <code>export PATH=…</code> line that adds it. Run that line, and add it to your
+            shell's startup file to keep it.</p>
+        </div>
+      </div>
+      <div class="qa">
+        <h3>evoke prints that it needs <code>TYPESAFE_API_KEY</code>.</h3>
+        <div>
+          <div class="panel term quiet" role="figure" aria-label="A sentence typed with no key set">
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre data-flow="first-run"><span class="p">$</span> <span class="in">evoke "lock the screen"</span>
+<span class="own">  jev needs TYPESAFE_API_KEY, a key from typesafe.ai  →  export TYPESAFE_API_KEY=&lt;value&gt;
+[3]</span></pre>
+          </div>
+          <p>The key is not set in this terminal. An exported variable lasts only in the terminal where you set it, so
+            export it again. To keep it, add the line to your shell's startup file. The <code>[3]</code> in the panel is
+            the exit code: evoke needs something from you.</p>
+        </div>
+      </div>
+      <div class="qa">
+        <h3>evoke prints that no reflexes are installed.</h3>
+        <div>
+          <p>Nothing is installed yet. Add the collection with <code>evoke add evoke-build/reflexes</code>, the command the
+            line ends with. On Linux, add a reflex of your own instead.</p>
+        </div>
+      </div>
+      <div class="qa">
+        <h3><code>evoke add</code> reports that Node is missing.</h3>
+        <div>
+          <p>Eleven of the collection's reflexes run JavaScript files, and <code>evoke add</code> records where Node is.
+            Install Node 24 or newer, then run <code>evoke sync</code>. It records Node, and the reflexes can run.</p>
+          <a class="go" href="/manual/use/installing.html#the-runtime">How evoke finds Node, in the manual →</a>
+        </div>
+      </div>
+      <div class="qa">
+        <h3>A reflex is listed as inactive.</h3>
+        <div>
+          <p>This line is a notice, not a stop. The add still succeeds. The reflex needs a word or a setting of yours, such
+            as a folder or a notes file. Until it has one, it stays out of every decision. Its line ends with the command
+            that gives it what it lacks.</p>
+        </div>
+      </div>
+      <div class="qa">
+        <h3>You have no key yet.</h3>
+        <div>
+          <p>Installing needs no key. <code>evoke run</code> runs a reflex by name, with no classifier, so no key is read:
+            <code>evoke run volume level=40</code>. Typing a sentence needs the key. Meanwhile,
+            <a href="/examples.html">every example page</a> shows a session evoke printed, and needs no key.</p>
+          <a class="go" href="/manual/use/outcomes.html#run-by-name-no-classifier">Run by name, in the manual →</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="closing general">
       <div>
-        <h2>A successful install is preparation.</h2>
-        <p>The first completed action is the outcome. When it works, the manual's first ten minutes take you the rest
-          of the way, from your first lesson to looking inside a decision.</p>
+        <h2>Once your first command runs, the manual goes further.</h2>
+        <p class="only terminal">It takes the same first run further. It adds settings for a reflex, a look inside any
+          decision, and where your files live.</p>
+        <p class="only sdk">It starts from the same file. Then it adds reflexes from files, what each outcome of a
+          decision means, and tests that run offline after one recording.</p>
       </div>
       <div class="actions">
-        <a class="button primary" href="/manual/start/first-run.html">The first ten minutes</a>
-        <a class="quiet" href="/examples.html">Explore examples →</a>
+        <a class="button primary only terminal" href="/manual/start/first-run.html">Continue your first run in the manual</a>
+        <a class="button primary only sdk" href="/manual/sdk/getting-started.html">Continue in the SDK manual</a>
+        <a class="quiet" href="/examples.html">Natural-language command examples →</a>
       </div>
     </div>
   </main>
@@ -225,36 +372,44 @@ console<span class="o">.</span>log<span class="o">(</span>handled<span class="o"
       })
     }
 
-    // The route: terminal or app, from the buttons or from the address; the example, kept from the page that sent
-    // the reader here, with what it needs and what they will build.
+    // The route, terminal or app, from the buttons or from the address; and the example kept from the page that sent
+    // the reader here. On its own route, a pattern with a setup of its own keeps the first two steps, the key and the
+    // install, then leads back to that setup.
     {
-      const plan = document.querySelector("[data-plan]"), routes = [...document.querySelectorAll("[data-route]")]
+      const main = document.querySelector("main"), routes = [...document.querySelectorAll("button[data-route]")]
       const kept = document.querySelector("[data-kept]"), title = kept.querySelector("[data-kept-title]"), note = kept.querySelector("[data-kept-note]"), link = kept.querySelector("[data-kept-link]")
       const examples = {
-        desktop: { title: "Everyday Mac tasks", route: "terminal", note: "Runs on a Mac with the collection installed. The steps below install it.", preview: 'evoke try "lock the screen"', run: 'evoke "lock the screen"', page: "/examples/desktop.html" },
-        "contact-to-draft": { title: "Look up a contact, prepare a draft", route: "sdk", note: "A pattern for your app: two reflexes as code, one of them yielding an address, and one weave() call.", page: "/examples/contact-to-draft.html" },
-        ops: { title: "Operate services in team language", route: "sdk", note: "A pattern for your app: your service names as a vocabulary, a manifest around kubectl, and the credentials it already uses.", page: "/examples/ops.html" },
-        inbox: { title: "Process an inbox of requests", route: "sdk", note: "A pattern for your app: decide() on each line, run what is settled, queue the rest for a person.", page: "/examples/inbox.html" },
-        runbook: { title: "Continue an operational procedure", route: "sdk", note: "A pattern for your app: three reflexes as code and a six-line loop that submits each next step.", page: "/examples/runbook.html" },
-        approval: { title: "Prepare an action for approval", route: "sdk", note: "A pattern for your app: decide() in one process, the decision held as plain data, run() with confirmed: true in another.", page: "/examples/approval.html" },
+        desktop: { title: "Everyday Mac tasks", route: "terminal", note: "The steps below install the thirteen reflexes it shows. Then you try one of its sentences and run another.", link: "See the example →" },
+        "contact-to-draft": { title: "Pass a result to the next step", route: "terminal", note: "These steps install evoke and set your key. The example's setup then has you write the contact reflex and add the collection's mail beside it.", setUp: "The setup makes a project in <code>~/dev</code>, has you write a contact reflex whose result holds an email address, and adds the collection's <code>mail</code> beside it. It ends with the sentence that passes the address along." },
+        ops: { title: "kubectl operations in your team's words", route: "terminal", note: "These steps install evoke and set your key. The example needs no Mac collection, and its scale reflex runs kubectl with no Node.", setUp: "The setup builds the <code>scale</code> reflex from its page: a manifest around kubectl, and word lists for your services and environments. It ends with one sentence to try, then run." },
+        inbox: { title: "Triage typed requests", route: "terminal", note: "These steps install evoke and set your key. The example's setup feeds a file of requests to the ops example's scale reflex.", setUp: "The setup feeds a file of three requests to the ops example's <code>scale</code> reflex: at your terminal, with no terminal attached, and from a Node app." },
+        runbook: { title: "A runbook that asks before its destructive step", route: "sdk", note: "These steps install the SDK and set your key. The runbook's three reflexes and its loop are one file on the example's page.", setUp: "The setup saves <code>runbook.ts</code> and its two handlers, then starts the runbook with one sentence. Its programs are stand-ins that change nothing." },
+        approval: { title: "Maker-checker approval", route: "sdk", note: "These steps install the SDK and set your key. The payment reflex, the maker and the checker are one file on the example's page.", setUp: "The setup saves <code>code.ts</code>, points it at your payments API, and passes one payment from the maker to the checker. Use a test instance: the transfer is real." },
       }
-      const params = new URLSearchParams(location.search)
+      const params = new URLSearchParams(location.search), name = params.get("example"), example = examples[name]
+      const away = document.createElement("span")
       const select = route => {
-        plan.classList.remove("terminal", "sdk"); plan.classList.add(route)
+        main.dataset.shown = route
         for (const b of routes) b.setAttribute("aria-pressed", String(b.dataset.route === route))
+        if (example?.setUp && route === example.route) main.dataset.setup = ""
+        else delete main.dataset.setup
+        away.textContent = example && route !== example.route ? ` Its own steps are on the ${example.route === "sdk" ? "app" : "terminal"} route.` : ""
       }
       for (const b of routes) b.addEventListener("click", () => select(b.dataset.route))
-      const example = examples[params.get("example")]
+      if (example) {
+        const setUp = `/examples/${name}.html#set-up`
+        title.textContent = `Your example: ${example.title}.`
+        note.textContent = ` ${example.note}`
+        note.after(away)
+        link.href = setUp; link.textContent = example.link ?? "Set it up →"
+        kept.classList.add("on")
+        if (example.setUp) {
+          document.querySelector("[data-kept-set-up]").innerHTML = example.setUp
+          document.querySelector("[data-kept-open]").href = setUp
+        }
+      }
       const asked = params.get("mode") ?? params.get("route")
       select(asked === "sdk" || asked === "terminal" ? asked : example?.route ?? "terminal")
-      if (example) {
-        title.textContent = `Example kept: ${example.title}.`
-        note.textContent = ` ${example.note}`
-        link.href = example.page; link.textContent = "See the example →"
-        kept.classList.add("on")
-        if (example.preview) document.querySelector("[data-preview]").textContent = example.preview
-        if (example.run) document.querySelector("[data-run]").textContent = example.run
-      }
     }
   </script>
 </body>

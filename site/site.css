@@ -695,17 +695,16 @@ td.n { color: var(--faint); font-family: var(--mono); font-size: .86em; white-sp
 .plan { list-style: none; margin: 0; padding: 0; counter-reset: step; }
 .plan > li { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 1.25rem; padding: 1.6rem 0; border-top: 1px solid var(--line); counter-increment: step; }
 .plan > li::before { content: counter(step, decimal-leading-zero); font: 600 .78rem/2.2 var(--mono); color: var(--accent-ink); letter-spacing: .12em; }
-.plan h3 { margin: 0 0 .4rem; font-size: 1.25rem; font-weight: 560; letter-spacing: -.012em; }
+.plan h2, .plan h3 { margin: 0 0 .4rem; font-size: 1.25rem; font-weight: 560; letter-spacing: -.012em; }
 .plan p { margin: 0 0 .9rem; color: var(--text); font-size: 1rem; line-height: 1.55; max-width: 44rem; }
 .plan p strong { color: var(--fg); font-weight: 560; }
 .plan .cmd { max-width: 44rem; margin: 0 0 .6rem; }
 .plan .panel { max-width: 44rem; margin: .2rem 0 .8rem; }
 .plan .panel pre { font-size: .8rem; }
 .plan .actions { margin-top: .4rem; }
-.plan .only { display: none; }
-.plan.terminal .only.terminal, .plan.sdk .only.sdk { display: block; }
-.plan .only.inline { display: none; }
-.plan.terminal .only.terminal.inline, .plan.sdk .only.sdk.inline { display: inline; }
+/* A page of two routes shows the chosen one's parts; with a kept example of its own setup, the general steps give way */
+[data-shown="terminal"] .only.sdk, [data-shown="sdk"] .only.terminal { display: none; }
+[data-setup] .general, [data-shown]:not([data-setup]) .kept-step { display: none; }
 
 /* Questions and answers */
 .qa { border-top: 1px solid var(--line); padding: 1.5rem 0 1.6rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 1rem 3rem; }
