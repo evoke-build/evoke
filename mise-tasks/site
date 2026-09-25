@@ -153,8 +153,9 @@ def pinned():
 
 
 def pages():
-    """The site's own pages: every page under site/ and site/examples/, but the social card's source."""
-    return [p for p in sorted(SITE.glob("*.html")) + sorted(SITE.glob("examples/*.html")) if p.name != "og.html"]
+    """The site's own pages: every page under site/, site/examples/ and site/guides/, but the social card's source."""
+    found = [*sorted(SITE.glob("*.html")), *sorted(SITE.glob("examples/*.html")), *sorted(SITE.glob("guides/*.html"))]
+    return [p for p in found if p.name != "og.html"]
 
 
 def assembled(page):
@@ -767,10 +768,10 @@ shutil.copytree(MANUAL, SRC)
 front = SRC / "README.md"
 front.write_text(front.read_text().replace('src="../../assets/logo.png"', 'src="/logo-512.png"', 1))
 subprocess.run(["mdbook", "build", str(SITE)], check=True)
-(OUT / "examples").mkdir()
 site_pages = []
 for source_page in pages():
     target = OUT / source_page.relative_to(SITE)
+    target.parent.mkdir(exist_ok=True)
     shutil.copy(source_page, target)
     site_pages.append(target)
 for name in ["site.css", "scenes.js", "install.sh", "og.png", "logo.png", "logo-512.png", "apple-touch-icon.png"]:
