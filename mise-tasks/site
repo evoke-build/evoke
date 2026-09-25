@@ -453,6 +453,7 @@ def coloured(text):
 
 
 BLOCKS = {"p", "li", "dd", "dt", "h1", "h2", "h3", "h4", "figcaption"}
+BREAKS = BLOCKS | {"br", "div", "pre", "ul", "ol", "dl", "table", "tr", "td", "th", "figure", "blockquote", "hr"}
 VERBATIM = {"pre", "code", "script", "style", "textarea"}
 
 
@@ -505,15 +506,20 @@ def widowless(page):
 def glue(parts, start, end):
     """The last two words between two indices of a split page joined by a no-break space, unless the break before the
     last word sits inside code, the words are joined already, or they are the only two: a two-word heading glued whole
-    cannot wrap, and overflowed a phone."""
-    chars, code = [], 0
+    cannot wrap, and overflowed a phone. Only the last run of text counts, a run ending at a br or a block tag: glued
+    across a block, the space before a terminal showed as a blank line."""
+    runs, code = [[]], 0
     for i in range(start + 1, end):
         if i % 2:
             tag = re.match(r"</?\s*([a-zA-Z][a-zA-Z0-9]*)", parts[i])
-            if tag and tag[1].lower() in VERBATIM:
+            name = tag[1].lower() if tag else ""
+            if name in VERBATIM:
                 code += -1 if parts[i].startswith("</") else 1
+            if name in BREAKS:
+                runs.append([])
         else:
-            chars.extend((i, j, c, code > 0) for j, c in enumerate(parts[i]))
+            runs[-1].extend((i, j, c, code > 0) for j, c in enumerate(parts[i]))
+    chars = next((run for run in reversed(runs) if any(not c.isspace() for _, _, c, _ in run)), [])
     space = lambda c: c in " \t\n\r"
     last = next((k for k in range(len(chars) - 1, -1, -1) if not space(chars[k][2])), None)
     if last is None:
