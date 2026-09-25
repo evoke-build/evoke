@@ -216,3 +216,32 @@ route            = { timer = 0.9, lights = 0.02, volume = 0.02, none = 0.06 }
 "lights.state"   = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "contact.name"   = { unstated = 0.96, dana = 0.02, sam = 0.02 }
 "timer.duration" = { "8-16" = 0.9, unstated = 0.1 }
+
+[answers."kill the lights in the den, then be quick"]
+"weave.split_0" = { yes = 0.59 }
+route           = { lights = 0.91, timer = 0.02, volume = 0.01, none = 0.06 }
+"fits.lights"   = { yes = 0.7 }
+"fits.timer"    = { yes = 0.05 }
+"fits.volume"   = { yes = 0.05 }
+"fits.contact"  = { yes = 0.02 }
+"fits.mail"     = { yes = 0.02 }
+"lights.room"   = { den = 0.85, office = 0.05, unstated = 0.1 }
+"lights.state"  = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
+"contact.name"  = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+
+[answers."be quick"]
+route          = { none = 0.95, lights = 0.05 }
+"fits.lights"  = { yes = 0.05 }
+"fits.timer"   = { yes = 0.02 }
+"fits.volume"  = { yes = 0.02 }
+"fits.contact" = { yes = 0.02 }
+"fits.mail"    = { yes = 0.02 }
+"lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"contact.name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+
+[answers."kill the lights in the be quick"]
+route          = { none = 0.95, lights = 0.05 }
+"fits.lights"  = { yes = 0.05 }
+"lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }

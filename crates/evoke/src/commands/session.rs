@@ -118,11 +118,15 @@ impl Woven {
     }
 
     /// The one decision a request read as: one step, and so nothing bound — what the foundation alone would have
-    /// made of it. A part left out beside it changes nothing: what was said not to do is no step.
+    /// made of it, under the cap the plan put on the step: merged back, it confirms here too. A part left out
+    /// beside it changes nothing: what was said not to do is no step.
     #[must_use]
-    pub fn single(&self, tags: &[Tag]) -> Option<&Decided> {
+    pub fn single(&self, tags: &[Tag]) -> Option<Decided> {
         match self.weave.steps.as_slice() {
-            [step] => self.decided_for(step, tags),
+            [step] => self.decided_for(step, tags).map(|decided| Decided {
+                decision: step.decision.clone(),
+                ..decided.clone()
+            }),
             _ => None,
         }
     }

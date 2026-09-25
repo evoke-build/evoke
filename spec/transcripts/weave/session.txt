@@ -63,6 +63,12 @@ $ evoke "kill the lights in the den and feed the cat"
   1  lights room="den" state="off"  0.85
   2  "feed the cat" · no reflex
 [2]
+# A part that matches nothing on its own, under a split the engine is not firm about, is read with its neighbour
+# as one request: it confirms before it runs, merged on its line.
+$ evoke "kill the lights in the den, then be quick"
+  lights room="den" state="off" · write · weakest: room 0.85 · merged
+  Set the den lights off?  [y]es [n]o [t]each > y
+den lights off
 # A part that says what not to do is no step; one step beside it is decided as one input. Only such parts is
 # nothing to do.
 $ evoke "kill the lights in the den but don't start a timer"

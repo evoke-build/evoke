@@ -42,9 +42,9 @@ fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, in
     let floor = adapter.declared().gate.as_ref().map(Gate::route);
     if let Some(decided) = woven.single(&arguments.tags) {
         if arguments.json {
-            terminal::result(&report::Line::of(decided).json());
+            terminal::result(&report::Line::of(&decided).json());
         } else {
-            terminal::answer(&report::tried(decided, floor));
+            terminal::answer(&report::tried(&decided, floor));
             if matches!(decided.decision, Decision::Abstain { .. })
                 && let Some(hint) = report::left_out(session.plan.inactive().keys())
             {

@@ -111,7 +111,7 @@ impl Using<'_> {
                 Ok(woven) => woven,
                 Err(exit) => return self.session.reporter.exit(input, exit),
             };
-        let exit = match woven.single(&self.arguments.tags).cloned() {
+        let exit = match woven.single(&self.arguments.tags) {
             Some(decided) => {
                 let decision = decided.decision.clone();
                 self.round(input, None, &decided, decision, &[]).exit
