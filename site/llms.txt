@@ -1,8 +1,10 @@
 # evoke
 
-> Software, by reflex. `evoke` turns a sentence into a call of a small program. That program is a reflex: a recipe anyone can write, share and improve. A classifier chooses it, and a confidence gate decides whether it runs. A sentence can choose a program. It can never invent a value.
+> Software, by reflex. Natural-language commands for small programs you install. A reflex is a small program you install and ask for in your words. `evoke` reads your sentence against the reflexes you installed, picks one, and fills its inputs from your words or your own lists. It runs when it is sure enough for what the program does, asks when something is missing or unclear, and always asks before anything that cannot be undone.
 
-One tool, three ways in: a CLI you talk to, a package manager that installs reflexes from git, and a TypeScript SDK that puts the same decisions inside an application. The classifier is Jev, TypeSafe AI's System One model, which answers closed questions with calibrated probabilities, reached through two built-in adapters: `jev`, TypeSafe AI's own API, and `openjev`, the same model through OpenJEV, an independent service. The questions, and the gate, are `evoke`'s, and the core names no engine. The current release is {version}. Every page of the manual below is linked as the markdown it was made from, and the whole manual is one file at https://evoke.build/llms-full.txt.
+One tool, three ways in: a CLI where you type what you want, a package manager that installs reflexes from git, and a TypeScript SDK that puts the same decisions inside an application. A classifier reads the sentence: Jev, TypeSafe AI's model, reached through the built-in `jev` adapter. It answers closed questions, such as which reflex or none, and which value for each input, and gives each answer a probability. The questions and the gate are `evoke`'s, and the core names no engine. The current release is {version}. Every page of the manual below is linked as the markdown it was made from, and the whole manual is one file at https://evoke.build/llms-full.txt.
+
+The session below uses `lights`, an illustration from `evoke`'s tests. It is not in the collection, and it cannot be installed.
 
 ```text
 $ evoke "kill the lights in the den"
@@ -12,27 +14,29 @@ den lights off
 
 What holds, in any description of `evoke`:
 
-- Every argument has one source: an option the author listed, a word from the user's own vocabulary, or a piece of the sentence read by code and checked against its range. Injected text can choose a call. It can never mint a value.
-- The confidence is the weakest answer, and every answer is a calibrated probability. A `read` reflex runs at 0.6, a `write` at 0.8, and a `destructive` reflex always asks. There is no `--yes`. The bars are lines in a file the user owns.
-- When it is not sure, it asks. When nothing fits, it abstains and shows the ranking. The user teaches it with one line in an overlay, which no update touches.
+- Every argument has one source: an option the author listed, a word from the user's own vocabulary, or a piece of the sentence read by code and checked against its range. Injected text can steer which call is chosen, and it can supply the words of an argument that takes a piece of the sentence, such as a URL or a quote. It cannot produce a value outside what the reflex allows.
+- `evoke` guarantees that every value is one the reflex allows. It cannot guarantee that it read the user right. That is why a bar, set by what the program changes, decides what runs without a question.
+- The confidence is the weakest answer. The classifier's provider trains its probabilities to be calibrated: across many answers, those given 0.85 should be right about 85 times in 100. A `read` reflex runs at 0.6, a `write` at 0.8, and a `destructive` reflex always asks. There is no `--yes`. The user can move each bar with one line in a file they own, and `evoke test` checks the user's own sentences.
+- When it is not sure enough, it asks. When nothing fits, it abstains and shows the ranking. The user teaches it with one line in an overlay, which no update touches.
 - Git is the registry. A reflex is pinned by tag, commit and content hash. No code runs at install time. A fetched reflex runs as the user, and there is no sandbox yet.
-- One request per decision leaves the machine, to the classifier, with the user's own key: the sentence, and the questions built from the installed manifests. Nothing reaches evoke.build, which sets no cookie and runs no analytics.
-- The reflex format is frozen at version 1, and every promise in the manual is a transcript that runs in CI.
-- `evoke` is a project of its own, affiliated with neither TypeSafe AI nor OpenJEV, and vouches for neither: Jev is TypeSafe AI's model, and OpenJEV is an independent service that forwards requests to it. Whether a service may offer Jev is a matter between that service and TypeSafe AI.
-- Apache-2.0; the collection is MIT. The name and the logo are trademarks: except for displaying the licence details and identifying us as the origin of the software, there is no right under the licence to use them.
+- Each decision is one request to the classifier, with the user's own key: the sentence, and the questions built from the installed manifests. A sentence with several steps makes one request to find its steps, then at least one for each step. At the terminal, a repeated sentence is answered from a local cache, with no request, as long as the installed reflexes and the user's own words for them have not changed. Nothing reaches evoke.build, which sets no cookie and runs no analytics.
+- The first-party collection's thirteen reflexes are for macOS. The classifier's provider says it is most accurate in English. Every live decision needs a network request and a key.
+- The reflex format is frozen at version 1. The manual's sessions are transcripts the test suite replays against the built binary on every change.
+- `evoke` is a project of its own, not affiliated with TypeSafe AI. Jev is TypeSafe AI's model.
+- Apache-2.0. The collection is MIT. The name and the logo are trademarks: except for displaying the licence details and identifying us as the origin of the software, there is no right under the licence to use them.
 
-Install with `curl -fsSL https://evoke.build/install.sh | sh` on macOS or Linux, and `npm install @evoke-build/evoke` for the SDK. Reflexes written in JavaScript need Node 24 or newer. Deciding needs a key: from https://typesafe.ai in `TYPESAFE_API_KEY` for the `jev` adapter, or from https://openjev.sh in `OPENJEV_API_KEY` for `openjev`.
+Install the CLI with `curl -fsSL https://evoke.build/install.sh | sh` on macOS or Linux. Reflexes written in JavaScript need Node 24 or newer. Deciding needs a key from https://typesafe.ai in `TYPESAFE_API_KEY`. The SDK is `@evoke-build/evoke`, for Node 24.5 or newer. Its first release on npm is on its way. Until then, the terminal route runs today.
 
 ## The site
 
-- [How it works](https://evoke.build/how-it-works.html): one sentence followed to an action: what an installed ability contains, what the sentence contributes, why a decision runs, asks, confirms or stops, how one result reaches the next step, how a program continues a workflow, the team's vocabulary, and what the application owns.
-- [Examples](https://evoke.build/examples.html): six examples, each on a page of its own with its request, its result, one boundary and what it needs: [everyday Mac tasks](https://evoke.build/examples/desktop.html), [a contact looked up and a draft prepared](https://evoke.build/examples/contact-to-draft.html), [services operated in team language](https://evoke.build/examples/ops.html), [an inbox of requests](https://evoke.build/examples/inbox.html), [a runbook](https://evoke.build/examples/runbook.html) and [an action prepared for approval](https://evoke.build/examples/approval.html).
-- [For developers](https://evoke.build/developers.html): an operation you have becomes a reflex, the boundary described, decisions inside your app, chaining, team names kept separate, testing both halves, sharing with a git tag, and where evoke fits beside an LLM.
-- [Get started](https://evoke.build/start.html): the terminal route or the app route, what each needs, install and configure, inspect one request, perform one action, then the next useful change.
-- [The idea](https://evoke.build/idea.html): why reflexes, in ten minutes: the problem trust poses, the move, the number, real sessions where nothing ran on a guess, the recipe, your words, a weave, and where it goes.
+- [How a typed sentence becomes a program call](https://evoke.build/how-it-works.html): what a reflex contains, how the classifier reads a sentence, how sure evoke must be to run, how one step's result passes to the next, how a program chooses what runs next, your names and phrases, and what stays yours to decide.
+- [Natural-language command examples](https://evoke.build/examples.html): six examples, each on a page of its own with its sentence, what the terminal printed, one boundary, what it needs and how to set it up: [everyday Mac tasks from the terminal](https://evoke.build/examples/desktop.html), [a result passed to the next step in one sentence](https://evoke.build/examples/contact-to-draft.html), [kubectl operations in your team's words](https://evoke.build/examples/ops.html), [triage of typed requests](https://evoke.build/examples/inbox.html), [a runbook that asks before its destructive step](https://evoke.build/examples/runbook.html) and [maker-checker approval](https://evoke.build/examples/approval.html).
+- [Turn your code into natural-language commands](https://evoke.build/developers.html): a command or a function you already have becomes a reflex, the manifest that describes it, decisions inside a Node app, several steps from one sentence, each team's own words, three kinds of test, sharing with a git tag, and how evoke relates to scripts, workflow tools and LLM tool calling.
+- [Install evoke and run your first command](https://evoke.build/start.html): the terminal route or the app route, what each needs, the key and the install, a decision seen before it runs, a first command, the next step, and the fix for each stop.
+- [The idea](https://evoke.build/idea.html): why reflexes. The problem of trust, why every value comes from the user's words or lists, a probability beside every answer and a bar for each effect, three sessions where `evoke` asked or stopped instead of running, the recipe, the user's words, a weave, and where it goes. The mechanism is on How it works.
 - [The reflex format](https://evoke.build/format.html): the format as a specification, version 1, frozen, with its schemas served at https://evoke.build/schemas/reflex.json and beside it.
-- [Frequently asked questions](https://evoke.build/faq.html): what you install, what can go wrong, what leaves your machine and what it costs, in ten short answers.
-- [Privacy policy](https://evoke.build/privacy.html): no cookie, no analytics, no account, nothing held by us; what one request carries and what never travels; what stays on the machine, and how to forget it.
+- [Questions about evoke](https://evoke.build/faq.html): what evoke is, what it costs and needs, what leaves your machine, what can go wrong, and how it compares with scripts, workflow tools and LLM tool calling, in short answers.
+- [Privacy policy](https://evoke.build/privacy.html): no cookie, no analytics, no account, nothing held by us; what each request carries and what never travels; what stays on the machine, and how to forget it.
 
 {manual}
 
@@ -41,6 +45,4 @@ Install with `curl -fsSL https://evoke.build/install.sh | sh` on macOS or Linux,
 - [The whole manual in one file](https://evoke.build/llms-full.txt): every page above in reading order, each under its address, every link absolute.
 - [Repository](https://github.com/evoke-build/evoke): the source, the executable spec, the changelog and the releases.
 - [The collection](https://github.com/evoke-build/reflexes): the first-party reflexes, what a Mac does at a word.
-- [The SDK on npm](https://www.npmjs.com/package/@evoke-build/evoke): `@evoke-build/evoke`, Node 24.5 or newer, ES modules, no dependencies.
-- [Jev](https://typesafe.ai): TypeSafe AI's classifier, the first adapter.
-- [OpenJEV](https://openjev.sh): an independent service that forwards requests to Jev; the `openjev` adapter.
+- [Jev](https://typesafe.ai): TypeSafe AI's classifier, reached through the `jev` adapter.
