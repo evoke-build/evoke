@@ -1,6 +1,7 @@
 //! The hosts: everything that touches a file, a socket, a clock or the terminal, so the core never does. In: values
 //! from the core and the process. Out: facts, or a `Failure` with its fix. A host never constructs a `Diagnostic`.
 
+pub mod contain;
 pub mod files;
 pub mod git;
 pub mod network;

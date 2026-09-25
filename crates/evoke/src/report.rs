@@ -18,9 +18,9 @@ use evoke_core::test::{Claim, Expected, Mismatch};
 use evoke_core::vocabulary::Vocabulary;
 use evoke_core::weave::{Because, Bound, Status, Step, Why as Stopped};
 use evoke_core::{
-    At, Call, Case, Chosen, Clean, Contender, ContractDiff, Decision, Diagnostic, Effective, File,
-    Finding, Fix, Gate, Input, Json, KeyPath, Level, Prompt, Proposed, Raw, Regression, Verdict,
-    Version, Weave, render,
+    At, Call, Case, Chosen, Clean, Contained, Contender, ContractDiff, Decision, Diagnostic,
+    Effective, File, Finding, Fix, Gate, Input, Json, KeyPath, Level, Needs, Prompt, Proposed, Raw,
+    Regression, Verdict, Version, Weave, render,
 };
 
 use crate::adapter::Trace;
@@ -220,6 +220,8 @@ pub struct Line {
     pub proposed: Vec<Proposed>,
     pub result: Option<Returned>,
     pub error: Option<String>,
+    /// Whether the machine held the body's declaration, when a body was run.
+    pub contained: Option<Contained>,
     /// A weave's step: which of how many, what became of it, the values bound into it. None for one decision.
     pub step: Option<StepLine>,
 }
@@ -245,6 +247,7 @@ impl Line {
             proposed: decided.request.proposed.clone(),
             result: None,
             error: None,
+            contained: None,
             step: None,
         }
     }
@@ -260,6 +263,7 @@ impl Line {
             proposed: Vec::new(),
             result: None,
             error: None,
+            contained: None,
             step: None,
         }
     }
@@ -298,6 +302,12 @@ impl Line {
             line.insert(
                 "bound".to_owned(),
                 serde_json::to_value(&step.bound).expect("bound values serialize"),
+            );
+        }
+        if let Some(contained) = &self.contained {
+            line.insert(
+                "contained".to_owned(),
+                serde_json::to_value(contained).expect("a status serializes"),
             );
         }
         if let Some(result) = &self.result {
@@ -348,6 +358,7 @@ impl Line {
         let proposed = field("proposed", take("proposed"))?;
         let result = field("result", take("result"))?;
         let error = field("error", take("error"))?;
+        let contained = field("contained", take("contained"))?;
         let step = match (take("step"), take("steps")) {
             (Json::Null, _) => None,
             (n, of) => Some(StepLine {
@@ -367,6 +378,7 @@ impl Line {
             proposed,
             result,
             error,
+            contained,
             step,
         })
     }
@@ -461,6 +473,11 @@ fn became(line: &Line) -> Text {
         calls.join(" · ")
     };
     what.push(" · ").push(&calls);
+    if let Some(contained) = &line.contained
+        && !contained.is_full()
+    {
+        what.push(" · ").push(&contained.to_string());
+    }
     what
 }
 
@@ -566,12 +583,37 @@ pub fn left_out<'n>(inactive: impl IntoIterator<Item = &'n LocalName>) -> Option
     Some(diagnostic(&problem, "", None))
 }
 
-/// The run line: the call, then its confidence.
+/// The run line: the call, then its confidence, then the machine's status when it does not hold the whole
+/// declaration.
 #[must_use]
-pub fn running(chosen: &Chosen) -> Text {
+pub fn running(chosen: &Chosen, contained: &Contained) -> Text {
     let mut text = Text::from("  ");
     text.append(run_line(chosen));
+    held(&mut text, contained);
     text
+}
+
+/// ` · partly contained` or ` · not contained` on the end of a run's own line; nothing when the machine holds it.
+fn held(text: &mut Text, contained: &Contained) {
+    let word = match contained {
+        Contained::Full => return,
+        Contained::Partial { .. } => "partly contained",
+        Contained::None { .. } => "not contained",
+    };
+    text.push(" · ").roled(Role::Warning, word);
+}
+
+/// The machine's status, once, where it does not hold a whole declaration: `  not contained  <why>`.
+#[must_use]
+pub fn status(contained: &Contained) -> Option<Text> {
+    let (word, why) = match contained {
+        Contained::Full => return None,
+        Contained::Partial { why } => ("partly contained", why),
+        Contained::None { why } => ("not contained", why),
+    };
+    let mut text = Text::from("  ");
+    text.roled(Role::Warning, word).push("  ").push(&plain(why));
+    Some(text)
 }
 
 /// The call, then its confidence.
@@ -607,16 +649,20 @@ pub fn step(n: usize, of: usize, body: Text) -> Text {
     text
 }
 
-/// A step's call at its turn, with its confidence.
+/// A step's call at its turn, with its confidence and the machine's status.
 #[must_use]
-pub fn step_running(chosen: &Chosen) -> Text {
-    run_line(chosen)
+pub fn step_running(chosen: &Chosen, contained: &Contained) -> Text {
+    let mut text = run_line(chosen);
+    held(&mut text, contained);
+    text
 }
 
 /// A step's own line ahead of its confirm prompt.
 #[must_use]
-pub fn step_confirming(chosen: &Chosen, prompt: &Prompt) -> Text {
-    own(chosen, &prompt.own)
+pub fn step_confirming(chosen: &Chosen, prompt: &Prompt, contained: &Contained) -> Text {
+    let mut text = own(chosen, &prompt.own);
+    held(&mut text, contained);
+    text
 }
 
 /// A step refused at its turn, its bound values in its words: `"<words>" · no reflex`.
@@ -760,11 +806,12 @@ pub fn verdict(because: &Because) -> String {
     }
 }
 
-/// `evoke`'s own line before a confirm.
+/// `evoke`'s own line before a confirm, the machine's status on its end when it does not hold the declaration.
 #[must_use]
-pub fn confirming(chosen: &Chosen, prompt: &Prompt) -> Text {
+pub fn confirming(chosen: &Chosen, prompt: &Prompt, contained: &Contained) -> Text {
     let mut text = Text::from("  ");
     text.append(own(chosen, &prompt.own));
+    held(&mut text, contained);
     text
 }
 
@@ -1008,13 +1055,15 @@ pub fn written(edited: &Edited) -> Text {
 }
 
 /// One installed reflex as `show`, `add`, `remove` and `sync` list it: its name, where it comes from with its
-/// locked version, the effect it runs under — none when its manifest does not read — what it runs.
+/// locked version, the effect it runs under — none when its manifest does not read — what it runs, and what it
+/// may touch, on a second line when it declares anything.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Row {
     pub name: String,
     pub from: String,
     pub effect: Option<Effect>,
     pub runs: String,
+    pub needs: Needs,
 }
 
 /// What stands before a row: two spaces listed, `+` added, `-` removed.
@@ -1039,7 +1088,7 @@ pub fn rows(rows: &[Row], gutter: Gutter) -> Text {
         width(&|row| chars(&row.from)),
         width(&|row| chars(&effect(row))),
     );
-    Text::lines(rows.iter().map(|row| {
+    Text::lines(rows.iter().flat_map(|row| {
         let mut line = Text::new();
         match gutter {
             Gutter::Listed => line.push("  "),
@@ -1054,7 +1103,16 @@ pub fn rows(rows: &[Row], gutter: Gutter) -> Text {
         line.push(&" ".repeat(effects - chars(&shown)))
             .push("  ")
             .push(&row.runs);
-        line.trim_end()
+        let mut lines = vec![line.trim_end()];
+        if !row.needs.is_none() {
+            let mut needs = Text::from(format!("  {:<names$}  ", ""));
+            needs
+                .roled(Role::Weak, "needs")
+                .push(" ")
+                .push(&row.needs.to_string());
+            lines.push(needs);
+        }
+        lines
     }))
 }
 
@@ -1141,6 +1199,10 @@ pub fn change(change: &Change) -> (String, String) {
         Change::SourceChanged { arg } => (format!("args.{arg}"), "source changed".to_owned()),
         Change::RangeChanged { arg } => (format!("args.{arg}"), "range changed".to_owned()),
         Change::RunChanged => ("run".to_owned(), "changed".to_owned()),
+        Change::NeedsWidened { added } => ("needs".to_owned(), format!("widened: {added}")),
+        Change::NeedsNarrowed { removed } => {
+            ("needs".to_owned(), format!("narrowed: {removed} dropped"))
+        }
         Change::Required { arg } => (format!("args.{arg}"), "now required".to_owned()),
         Change::ConfigSecret { key, secret: true } => (
             format!("config.{key}"),
@@ -1344,6 +1406,15 @@ pub fn manifest(effective: &Effective) -> Text {
         let empty = value.as_array().is_some_and(Vec::is_empty);
         if !empty || yours(&[key]) {
             lines.push((yours(&[key]), pair(key, value)));
+        }
+    }
+    if let Some(Json::Object(needs)) = manifest.get("needs")
+        && !needs.is_empty()
+    {
+        lines.push((false, String::new()));
+        lines.push((false, "[needs]".to_owned()));
+        for (key, value) in needs {
+            lines.push((false, pair(key, value)));
         }
     }
     if let Some(Json::Object(config)) = manifest.get("config")
@@ -1888,7 +1959,7 @@ mod tests {
 
     #[test]
     fn the_run_line_weights_the_name_and_greys_the_confidence() {
-        let line = running(&chosen());
+        let line = running(&chosen(), &Contained::Full);
         assert_eq!(
             line.to_string(),
             "  lights room=\"den\" state=\"off\"  0.85"
@@ -1896,6 +1967,26 @@ mod tests {
         assert_eq!(
             line.roles(),
             vec![(Role::Call, "lights"), (Role::Weak, "0.85")]
+        );
+        let partial = Contained::Partial {
+            why: "Landlock ABI 2: truncation is not held (ABI 3)".to_owned(),
+        };
+        assert_eq!(
+            running(&chosen(), &partial).to_string(),
+            "  lights room=\"den\" state=\"off\"  0.85 · partly contained"
+        );
+        assert_eq!(
+            status(&partial).unwrap().to_string(),
+            "  partly contained  Landlock ABI 2: truncation is not held (ABI 3)"
+        );
+        assert_eq!(status(&Contained::Full), None);
+        let none = Contained::None {
+            why: "this kernel has no Landlock".to_owned(),
+        };
+        assert!(
+            running(&chosen(), &none)
+                .roles()
+                .contains(&(Role::Warning, "not contained"))
         );
     }
 
@@ -1909,7 +2000,7 @@ mod tests {
         let judged = own(
             "lights room=\"den\" state=\"off\" · write · weakest: room 0.85 · unused \"now · later\"",
         );
-        let line = confirming(&chosen, &judged);
+        let line = confirming(&chosen, &judged, &Contained::Full);
         assert_eq!(line.to_string(), format!("  {}", judged.own));
         assert_eq!(
             line.roles(),
@@ -1920,15 +2011,19 @@ mod tests {
             ]
         );
         let capped = own("lights room=\"den\" state=\"off\" · write · also timer (fits 0.40)");
-        let line = confirming(&chosen, &capped);
+        let line = confirming(&chosen, &capped, &Contained::Full);
         assert_eq!(line.to_string(), format!("  {}", capped.own));
         assert_eq!(line.roles().len(), 2);
         let other = own("something else entirely");
         assert_eq!(
-            confirming(&chosen, &other).to_string(),
+            confirming(&chosen, &other, &Contained::Full).to_string(),
             "  something else entirely"
         );
-        assert!(confirming(&chosen, &other).roles().is_empty());
+        assert!(
+            confirming(&chosen, &other, &Contained::Full)
+                .roles()
+                .is_empty()
+        );
     }
 
     #[test]
@@ -1940,31 +2035,38 @@ mod tests {
                     from: "radhi/home/lights 1.2.0".to_owned(),
                     effect: Some(Effect::Write),
                     runs: "runs lights.mts".to_owned(),
+                    needs: serde_json::from_value(
+                        serde_json::json!({ "hosts": ["*"], "runs": ["hue"] }),
+                    )
+                    .unwrap(),
                 },
                 Row {
                     name: "power".to_owned(),
                     from: "./power".to_owned(),
                     effect: Some(Effect::Destructive),
                     runs: "runs power.mts".to_owned(),
+                    needs: Needs::default(),
                 },
                 Row {
                     name: "broken".to_owned(),
                     from: "./broken".to_owned(),
                     effect: None,
                     runs: String::new(),
+                    needs: Needs::default(),
                 },
             ],
             Gutter::Added,
         );
         assert_eq!(
             rows.to_string(),
-            "+ lights  radhi/home/lights 1.2.0  write        runs lights.mts\n+ power   ./power                  destructive  runs power.mts\n+ broken  ./broken"
+            "+ lights  radhi/home/lights 1.2.0  write        runs lights.mts\n          needs hosts * · runs hue\n+ power   ./power                  destructive  runs power.mts\n+ broken  ./broken"
         );
         assert_eq!(
             rows.roles(),
             vec![
                 (Role::Added, "+"),
                 (Role::Effect(Effect::Write), "write"),
+                (Role::Weak, "needs"),
                 (Role::Added, "+"),
                 (Role::Effect(Effect::Destructive), "destructive"),
                 (Role::Added, "+"),

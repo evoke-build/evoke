@@ -10,6 +10,9 @@ effect  = "write"
 confirm = "Set the volume to {level}?"
 run     = "volume.mts"
 
+[needs]
+runs = ["osascript"]
+
 [args.level]
 ask   = "How loud, in percent?"
 pick  = "number"

@@ -105,6 +105,9 @@
 <span class="k">confirm</span> <span class="o">=</span> <span class="s">"Pay <span class="ph">{payee}</span> <span class="ph">{amount}</span> from <span class="ph">{account}</span>?"</span>
 <span class="k">run</span>     <span class="o">=</span> <span class="s">"pay.mts"</span>
 
+<span class="t">[needs]</span>
+<span class="k">hosts</span> <span class="o">=</span> <span class="o">[</span><span class="s">"*"</span><span class="o">]</span>                          <span class="c"># the payments API</span>
+
 <span class="t">[config]</span>
 <span class="k">api</span>   <span class="o">=</span> <span class="s">"The payments API address"</span>
 <span class="k">token</span> <span class="o">=</span> <span class="o">{</span> <span class="k">about</span> <span class="o">=</span> <span class="s">"The payments API token"</span><span class="o">,</span> <span class="k">secret</span> <span class="o">=</span> <span class="n">true</span> <span class="o">}</span>

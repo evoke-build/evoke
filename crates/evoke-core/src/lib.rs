@@ -8,6 +8,7 @@
 
 pub mod adapter;
 pub mod call;
+pub mod contain;
 pub mod contract;
 pub mod decide;
 pub mod diagnostic;
@@ -17,6 +18,7 @@ pub mod dts;
 pub mod edit;
 pub mod manifest;
 pub mod name;
+pub mod needs;
 pub mod overlay;
 pub mod plan;
 pub mod project;
@@ -29,6 +31,7 @@ pub mod weave;
 
 pub use adapter::{Declared, Fault, Gate, Key, Limits, Prob, Question, QuestionId, Raw, Request};
 pub use call::{Call, Value, Written, call, render};
+pub use contain::{Contained, Facts, landlock, node_flags, seatbelt};
 pub use contract::{
     Change, Consent, ContractDiff, Finding, Level, LintRule, WasViolation, consent, diff, lint,
 };
@@ -44,6 +47,7 @@ pub use edit::{
     Edit, Lesson, Owned, VocabChange, add_entry, remove_entry, set_config, teach, vocab_edit,
 };
 pub use manifest::{Manifest, manifest};
+pub use needs::{Needs, Policy, resolve, widens};
 pub use overlay::{Effective, Overlay, Report, effective, overlay, report};
 pub use plan::{Active, Held, Installed, Item, Millis, Plan, Slot, compile};
 pub use project::{Lock, Project, Reference, Version, lock, project, reference, render_lock};

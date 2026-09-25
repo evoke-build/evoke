@@ -1,0 +1,10 @@
+{
+  "input": {
+    "policy": { "hosts": ["*"] },
+    "reflex": "download",
+    "origin": { "type": "fetched" },
+    "refused": { "what": "resolve", "path": "example.com" },
+    "home": "/Users/me"
+  },
+  "expect": null
+}

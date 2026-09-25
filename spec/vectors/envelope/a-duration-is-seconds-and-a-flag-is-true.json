@@ -64,7 +64,8 @@
       ]
     },
     "input": "timer for 10 minutes called \"eggs\", loud",
-    "deadline": 30000
+    "deadline": 30000,
+    "home": "/Users/me"
   },
   "expect": {
     "reflex": "timer",

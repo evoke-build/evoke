@@ -1,0 +1,10 @@
+{
+  "input": {
+    "locked": { "writes": ["{to}", "~/Downloads"], "hosts": ["*"] },
+    "upstream": { "writes": ["{to}", "~/Downloads"], "hosts": ["*"] }
+  },
+  "expect": {
+    "type": "kept",
+    "needs": { "writes": ["{to}", "~/Downloads"], "hosts": ["*"] }
+  }
+}

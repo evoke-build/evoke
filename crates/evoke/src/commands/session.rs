@@ -2,33 +2,35 @@
 //! its trust, parsed by the core with its lock, its remote reflexes read from the store, its adapter's declaration
 //! read, its plan compiled; the state and the store; the terminal, opened on first need. On it, each input is
 //! decided — asked, answered from the cache or the adapter, or fresh for `test`, read and gated — a chosen call is
-//! run, an edit lands in an owned file, the lock and `evoke.d.ts` are written whole, each write of an owned file
-//! re-blessing the trust. In: the environment and the command. Out: a `Session`, then a `Decided` per input, a
-//! body's `Returned`, an `Edited` file. `open` prints every problem with its fix; every other method leaves its
-//! `Exit` to the command to report, once.
+//! run under its declaration, the layers around it, an edit lands in an owned file, the lock and `evoke.d.ts` are
+//! written whole, each write of an owned file re-blessing the trust. In: the environment and the command. Out: a
+//! `Session`, then a `Decided` per input, a body's `Returned`, an `Edited` file. `open` prints every problem with
+//! its fix; every other method leaves its `Exit` to the command to report, once.
 
 use std::path::{Path, PathBuf};
 
 use evoke_core::document::Text;
 use evoke_core::manifest::{Effect, Run};
 use evoke_core::name::{AdapterId, ConfigKey, LocalName, Tag};
+use evoke_core::needs::{self, Origin};
 use evoke_core::plan::{Held, Millis};
 use evoke_core::project::{Location, Locked, LockedAdapter, Setting};
 use evoke_core::text::NonEmpty;
 use evoke_core::weave::{self, Asked, Need, Step};
 use evoke_core::{
-    Chosen, Decision, Declared, Diagnostic, Document, Edit, Effective, File, Fix, Input, Installed,
-    Item, Lock, Manifest, Owned, Plan, Planning, Project, Prompt, Raw, Reading, Request, Scope,
-    Version, Weave, argv, compile, effective, envelope, gate, lock, manifest, overlay, project,
-    project_dts, read, render_lock, request, validated, vocabulary,
+    Chosen, Contained, Decision, Declared, Diagnostic, Document, Edit, Effective, File, Fix, Input,
+    Installed, Item, Lock, Manifest, Needs, Owned, Plan, Planning, Project, Prompt, Raw, Reading,
+    Request, Scope, Version, Weave, argv, compile, effective, envelope, gate, lock, manifest,
+    overlay, project, project_dts, read, render_lock, request, resolve, validated, vocabulary,
 };
 use indexmap::IndexMap;
 
 use super::{Exit, Reporter};
 use crate::adapter::{self, Adapter, Trace};
 use crate::args::Command;
+use crate::hosts::contain;
 use crate::hosts::files::{self, Edited, Root, Snapshot};
-use crate::hosts::processes::{self, Returned, Warm};
+use crate::hosts::processes::{self, Body, Ended, Returned};
 use crate::hosts::state::State;
 use crate::hosts::store::Store;
 use crate::hosts::terminal::{self, Tty};
@@ -48,6 +50,8 @@ pub struct Session<'a> {
     /// Each reflex's shipped manifest and directory — a local one's as written, a remote one's in the store: what
     /// an overlay re-parses against, where a body lives.
     pub shipped: IndexMap<LocalName, (Manifest, PathBuf)>,
+    /// Whether this machine holds a whole declaration, probed once.
+    pub contained: Contained,
     environment: &'a Environment,
     tty: Option<Tty>,
 }
@@ -203,6 +207,7 @@ pub fn open<'a>(
         store,
         reporter,
         shipped: prepared.shipped,
+        contained: contain::status(),
         environment,
         tty: None,
     })
@@ -350,14 +355,17 @@ fn local(
         ),
         Some(text) => worded(name, &text, snapshot),
     };
-    // A local reflex consents to its own effect; one without a manifest is inactive, and the tightest is as good.
-    let consented = wording
-        .as_ref()
-        .map_or(Effect::Destructive, |effective| effective.manifest.effect);
+    // A local reflex consents to its own effect and needs; one without a manifest is inactive, and the tightest
+    // is as good.
+    let (consented, needs) = wording.as_ref().map_or_else(
+        |_| (Effect::Destructive, Needs::default()),
+        |effective| (effective.manifest.effect, effective.manifest.needs.clone()),
+    );
     Ok((
         Item {
             wording,
             consented,
+            needs,
             configured,
         },
         shipped,
@@ -415,6 +423,7 @@ fn remote(
         Item {
             wording,
             consented: locked.effect,
+            needs: locked.needs.clone(),
             configured,
         },
         shipped.map(|manifest| (manifest, entry.dir)),
@@ -433,6 +442,7 @@ fn unplaced(
             Item {
                 wording: Err(vec![problem]),
                 consented: Effect::Destructive,
+                needs: Needs::default(),
                 configured,
             },
             None,
@@ -585,7 +595,7 @@ impl Session<'_> {
                         }
                     }
                 };
-                let (effect, runs) = self
+                let (effect, runs, needs) = self
                     .installed
                     .reflexes
                     .get(name)
@@ -594,6 +604,7 @@ impl Session<'_> {
                             (
                                 Some(effective.manifest.effect.max(item.consented)),
                                 report::runs(&effective.manifest.run),
+                                needs::narrowed(&effective.manifest.needs, &item.needs),
                             )
                         })
                     })
@@ -603,6 +614,7 @@ impl Session<'_> {
                     from,
                     effect,
                     runs,
+                    needs,
                 })
             })
             .collect()
@@ -625,8 +637,8 @@ impl Session<'_> {
         files::read(&self.root.path.join(format!("overlays/{name}.toml"))).map_err(Exit::Failed)
     }
 
-    /// The runtime found on `PATH` and recorded, when an installed reflex runs a file; none found and none
-    /// recorded is returned as the problem to end on.
+    /// The runtime found on `PATH` and recorded as the binary it runs as, when an installed reflex runs a file;
+    /// none found and none recorded is returned as the problem to end on.
     pub fn record_runtime(&self) -> Result<Option<Diagnostic>, Exit> {
         let files = self.installed.reflexes.values().any(|item| {
             item.wording
@@ -637,7 +649,8 @@ impl Session<'_> {
             return Ok(None);
         }
         if let Some(found) = processes::find_runtime(self.environment) {
-            self.state.set_runtime(&found).map_err(Exit::Failed)?;
+            let real = processes::real_runtime(&found, self.environment).map_err(Exit::Failed)?;
+            self.state.set_runtime(&real).map_err(Exit::Failed)?;
             return Ok(None);
         }
         if self.state.runtime().map_err(Exit::Failed)?.is_some() {
@@ -908,61 +921,132 @@ impl Session<'_> {
         Ok(edited)
     }
 
-    /// The loader, when an active reflex runs a file: started before the request, so it is ready with the
-    /// decision. No runtime recorded on this machine is `evoke sync`.
-    pub fn warm(&self) -> Result<Option<Warm>, Exit> {
-        let files = self
-            .plan
-            .active()
-            .values()
-            .any(|active| matches!(active.run, Run::File(_)));
-        if !files {
-            return Ok(None);
-        }
-        let runtime = self.state.runtime().map_err(Exit::Failed)?;
-        let Some(runtime) = runtime else {
-            return Err(Exit::Human(Diagnostic {
-                reflex: None,
-                at: None,
-                message: "no JavaScript runtime is recorded on this machine".to_owned(),
-                fix: Fix::Sync,
-            }));
-        };
-        processes::warm(&runtime, self.environment)
-            .map(Some)
-            .map_err(Exit::Failed)
-    }
-
-    /// The body: the envelope into the warm loader, or the argv spawned; the loader is dismissed when unused.
-    /// Timed from now — the plan's deadline less what the adapter spent of it — so a prompt in between never
-    /// counts.
-    pub fn run(
-        &self,
-        chosen: &Chosen,
-        input: &Input,
-        spent: Millis,
-        warm: Option<Warm>,
-    ) -> Result<Returned, Failure> {
+    /// The body, under its declaration: the policy resolved with the call's values; the machine's facts about it
+    /// gathered — a declared path or program it lacks is the failure, before anything runs — then the loader
+    /// started with the envelope, or the argv spawned, in the body's directory with a private temporary folder,
+    /// the layers around it. Timed from now — the plan's deadline less what the adapter spent of it — so a
+    /// prompt in between never counts. A refusal past the declaration names the path and the key, and its fix.
+    pub fn run(&self, chosen: &Chosen, input: &Input, spent: Millis) -> Result<Returned, Failure> {
         let reflex = &chosen.call.reflex;
         let what = format!("running {reflex}");
         let active = &self.plan.active()[reflex];
+        let home = self.environment.get("HOME").unwrap_or_default();
         let deadline = Deadline::after(self.plan.deadline()).less(spent);
-        let envelope = envelope(chosen, active, input, deadline.left());
-        let (_, dir) = &self.shipped[reflex];
-        match &active.run {
-            Run::Argv { .. } => {
-                dismiss(warm);
-                let argv = argv(chosen, active).map_err(|refused| Failure {
-                    what: what.clone(),
-                    cause: Some(refused.message),
-                    fix: refused.fix,
-                })?;
-                processes::program(&what, &argv, &envelope, self.environment, deadline)
+        let envelope = envelope(chosen, active, input, deadline.left(), home);
+        let (shipped, dir) = &self.shipped[reflex];
+        let dir = std::fs::canonicalize(dir).map_err(|error| Failure {
+            what: what.clone(),
+            cause: Some(format!(
+                "finding {}: {}",
+                dir.display(),
+                crate::hosts::cause(&error)
+            )),
+            fix: Fix::Sync,
+        })?;
+        let config = processes::config_values(&what, &envelope, self.environment)?;
+        let values: IndexMap<ConfigKey, String> = config
+            .iter()
+            .map(|(key, value)| ((*key).clone(), value.clone()))
+            .collect();
+        let refused = |refused: Diagnostic| Failure {
+            what: what.clone(),
+            cause: Some(refused.message),
+            fix: refused.fix,
+        };
+        let policy =
+            resolve(&active.needs, &chosen.call, active, &values, home).map_err(refused)?;
+        let argv = match &active.run {
+            Run::Argv { .. } => Some(argv(chosen, active, home).map_err(refused)?),
+            Run::File(_) | Run::Inline => None,
+        };
+        let runtime = match argv {
+            Some(_) => None,
+            None => Some(self.runtime(&what)?),
+        };
+        let scratch = files::scratch(self.environment)?;
+        let facts = match contain::facts(
+            &policy,
+            runtime.as_deref(),
+            &dir,
+            &scratch.path,
+            self.environment,
+        )? {
+            Ok(facts) => facts,
+            Err(lacking) => {
+                let origin = self.origin(reflex, &dir);
+                return Err(refused(needs::lacking(
+                    &lacking, reflex, active, &origin, home,
+                )));
             }
-            Run::File(_) | Run::Inline => {
-                let warm = warm.expect("a file body warmed the loader");
-                warm.feed(&what, &envelope, dir, self.environment, deadline)
+        };
+        let body = Body {
+            what: &what,
+            envelope: &envelope,
+            config: &config,
+            policy: &policy,
+            facts: &facts,
+            environment: self.environment,
+            deadline,
+        };
+        let ran = match (&argv, &runtime) {
+            (Some(argv), _) => processes::program(&body, argv, &dir),
+            (None, Some(runtime)) => processes::file(&body, runtime, &dir),
+            (None, None) => unreachable!("a file body has its runtime"),
+        };
+        ran.map_err(|ended| match ended {
+            Ended::Failed(failure) => failure,
+            Ended::Refused { error, refused } => {
+                let origin = self.origin(reflex, &dir);
+                // A fetched reflex's own declaration, resolved: `--accept` is the fix when it reaches what was refused.
+                let upstream = matches!(origin, Origin::Fetched)
+                    .then(|| resolve(&shipped.needs, &chosen.call, active, &values, home).ok())
+                    .flatten();
+                match needs::refusal(&policy, upstream.as_ref(), reflex, &origin, &refused, home) {
+                    Some(named) => Failure {
+                        what: what.clone(),
+                        cause: Some(named.message),
+                        fix: named.fix,
+                    },
+                    None => Failure {
+                        what: what.clone(),
+                        cause: Some(error),
+                        fix: Fix::Rerun,
+                    },
+                }
             }
+        })
+    }
+
+    /// The runtime recorded on this machine, for a file body; none recorded is `evoke sync`.
+    fn runtime(&self, what: &str) -> Result<PathBuf, Failure> {
+        self.state.runtime()?.ok_or_else(|| Failure {
+            what: what.to_owned(),
+            cause: Some("no JavaScript runtime is recorded on this machine".to_owned()),
+            fix: Fix::Sync,
+        })
+    }
+
+    /// Where a reflex's declaration is written: a local one's manifest, at its `[needs]` line; a fetched one's is
+    /// upstream's.
+    fn origin(&self, reflex: &LocalName, dir: &Path) -> Origin {
+        if !matches!(
+            self.project.reflexes.get(reflex),
+            Some(Location::Local { .. })
+        ) {
+            return Origin::Fetched;
+        }
+        let file = File::Manifest {
+            name: reflex.clone(),
+        };
+        let text = files::read(&dir.join("reflex.toml"))
+            .ok()
+            .flatten()
+            .unwrap_or_default();
+        Origin::Local {
+            at: needs::declared_at(Document {
+                file,
+                text: Text::Toml(&text),
+            }),
         }
     }
 
@@ -1053,11 +1137,4 @@ fn still_trusted(state: &State, root: &Root, snapshot: &Snapshot, shown: &str) -
         message: format!("{shown} {because}"),
         fix: Fix::Trust,
     }))
-}
-
-/// A loader that has nothing to run.
-pub fn dismiss(warm: Option<Warm>) {
-    if let Some(warm) = warm {
-        warm.dismiss();
-    }
 }

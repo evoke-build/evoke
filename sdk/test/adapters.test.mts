@@ -10,7 +10,7 @@ import { test } from "node:test"
 import type { Adapter } from "../src/adapter.ts"
 import { answered } from "../src/adapter.ts"
 import { DiagnosticError, FaultError } from "../src/errors.ts"
-import { type Response, Transport, describe, pause } from "../src/https.ts"
+import { type Response, Unanswered, describe, pause } from "../src/https.ts"
 import { type Post, over } from "../src/systemone.ts"
 import { replay } from "../src/testing.ts"
 import type { Request } from "../src/types.ts"
@@ -106,16 +106,16 @@ test("a question of evoke's own, weave.<name>, travels through jev and replay li
 
 test("the policy loop: once more after a connect error or a 5xx, never after a 4xx", async () => {
   const calls: string[] = []
-  const sequence = (...replies: (Response | Transport)[]): Post => async (_url, bearer, body, _signal, timeout) => {
+  const sequence = (...replies: (Response | Unanswered)[]): Post => async (_url, bearer, body, _signal, timeout) => {
     calls.push(`${bearer}:${timeout}`)
     ok(body.includes('"model":"jev-1.13.0"'))
     const next = replies.shift()
     if (next === undefined) throw new Error("asked once too often")
-    if (next instanceof Transport) throw next
+    if (next instanceof Unanswered) throw next
     return next
   }
   const answer = { status: 200, body: answers }
-  const { raw, trace } = await answered(over("jev", { key: "k" }, sequence(new Transport("connect refused", false), answer)), request, 30_000, undefined, "decide()")
+  const { raw, trace } = await answered(over("jev", { key: "k" }, sequence(new Unanswered("connect refused", false), answer)), request, 30_000, undefined, "decide()")
   deepStrictEqual(calls, ["k:1500", "k:1500"])
   deepStrictEqual(raw["fits.lights"], { yes: 0.7 })
   equal(trace.adapter, "jev-1.13.0")
@@ -136,7 +136,7 @@ test("the policy loop: once more after a connect error or a 5xx, never after a 4
     (error: FaultError) => error.message === "the key in TYPESAFE_API_KEY was refused  →  export TYPESAFE_API_KEY=<value>" && error.fault.type === "refused",
   )
   await rejects(
-    answered(over("jev", { key: "k" }, async () => { throw new Transport("reset", true) }), request, 30_000, undefined, "decide()"),
+    answered(over("jev", { key: "k" }, async () => { throw new Unanswered("reset", true) }), request, 30_000, undefined, "decide()"),
     (error: FaultError) => error.message === "reset  →  decide()",
   )
 })

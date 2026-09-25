@@ -1,0 +1,7 @@
+{
+  "input": {
+    "from": {},
+    "to": { "hosts": ["*"] }
+  },
+  "expect": true
+}

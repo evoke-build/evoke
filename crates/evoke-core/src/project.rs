@@ -11,6 +11,7 @@ use crate::digest::Digest;
 use crate::document::{self, Diagnostics, Document, Json, Node, Table, Value};
 use crate::manifest::{self, Effect};
 use crate::name::{AdapterId, AdapterName, ConfigKey, LocalName, Owner, RelPath, Segment, VarName};
+use crate::needs::{self, Hosts, Needs};
 use crate::text::Clean;
 
 /// What you wrote: the adapter that decides, the reflexes you installed, their settings, the adapters' own tables.
@@ -183,8 +184,8 @@ pub enum Setting {
 }
 
 /// What `add`, `update` and `remove` write whole and `sync` realises: the tool's version, the adapter that decided,
-/// and every remote reflex at a tag, a commit and a digest, with the effect consented to. A local reflex is never in
-/// it.
+/// and every remote reflex at a tag, a commit and a digest, with the effect and the needs consented to. A local
+/// reflex is never in it.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Lock {
     pub evoke: Version,
@@ -199,7 +200,7 @@ pub struct LockedAdapter {
     pub id: AdapterId,
 }
 
-/// One remote reflex as pinned.
+/// One remote reflex as pinned; `needs` absent means none consented to.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Locked {
     pub reference: Reference,
@@ -207,6 +208,8 @@ pub struct Locked {
     pub commit: Commit,
     pub h1: Digest,
     pub effect: Effect,
+    #[serde(default, skip_serializing_if = "Needs::is_none")]
+    pub needs: Needs,
 }
 
 /// A commit as git printed it: 40 or 64 lowercase hex; compared, never parsed.
@@ -712,11 +715,23 @@ fn locked(d: &mut Diagnostics, node: Node) -> Option<Locked> {
         }
     });
     let effect = required(d, &mut table, "effect").and_then(|node| manifest::effect(d, &node));
+    let needs = table.take("needs").map_or_else(Needs::default, |node| {
+        let mut unknown = Vec::new();
+        let at = node.at.clone();
+        let needs = needs::read(d, node, &mut unknown, None);
+        for key in unknown {
+            d.fail(
+                at.as_ref(),
+                format!("{key} is not a key of {path}.needs: reads, writes, hosts, runs"),
+            );
+        }
+        needs
+    });
     for (_, node) in table.entries() {
         d.fail(
             node.at.as_ref(),
             format!(
-                "{} is not a key of {path}: ref, tag, commit, h1, effect",
+                "{} is not a key of {path}: ref, tag, commit, h1, effect, needs",
                 node.path
             ),
         );
@@ -727,6 +742,7 @@ fn locked(d: &mut Diagnostics, node: Node) -> Option<Locked> {
         commit: commit?,
         h1: h1?,
         effect: effect?,
+        needs,
     })
 }
 
@@ -747,15 +763,56 @@ pub fn render_lock(lock: &Lock) -> String {
     ]));
     for (name, locked) in &lock.reflexes {
         let _ = write!(text, "\n[reflexes.{name}]\n");
-        text.push_str(&aligned(&[
+        let mut pairs = vec![
             ("ref", quoted(&locked.reference.to_string())),
             ("tag", quoted(&locked.tag.to_string())),
             ("commit", quoted(locked.commit.as_str())),
             ("h1", quoted(&locked.h1.to_string())),
             ("effect", quoted(&locked.effect.to_string())),
-        ]));
+        ];
+        if !locked.needs.is_none() {
+            pairs.push(("needs", inline_needs(&locked.needs)));
+        }
+        text.push_str(&aligned(&pairs));
     }
     text
+}
+
+/// `{ writes = ["{to}", "~/Downloads"], hosts = ["*"] }`: the declaration as one inline table, empty lists left out.
+fn inline_needs(needs: &Needs) -> String {
+    let list = |items: Vec<String>| {
+        format!(
+            "[{}]",
+            items
+                .iter()
+                .map(|item| quoted(item))
+                .collect::<Vec<_>>()
+                .join(", ")
+        )
+    };
+    let mut pairs = Vec::new();
+    if !needs.reads.is_empty() {
+        pairs.push(format!(
+            "reads = {}",
+            list(needs.reads.iter().map(ToString::to_string).collect())
+        ));
+    }
+    if !needs.writes.is_empty() {
+        pairs.push(format!(
+            "writes = {}",
+            list(needs.writes.iter().map(ToString::to_string).collect())
+        ));
+    }
+    if needs.hosts == Hosts::Any {
+        pairs.push("hosts = [\"*\"]".to_owned());
+    }
+    if !needs.runs.is_empty() {
+        pairs.push(format!(
+            "runs = {}",
+            list(needs.runs.iter().map(ToString::to_string).collect())
+        ));
+    }
+    format!("{{ {} }}", pairs.join(", "))
 }
 
 /// `key = value` lines with the `=` aligned.

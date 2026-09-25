@@ -1,0 +1,17 @@
+{
+  "input": {
+    "doc": {
+      "file": { "type": "lock" },
+      "toml": "lock  = 1\nevoke = \"0.5.0\"\n\n[adapter]\nname = \"jev\"\nid   = \"jev-1.13.0\"\n\n[reflexes.download]\nref    = \"evoke-build/reflexes/download\"\ntag    = \"0.5.0\"\ncommit = \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"\nh1     = \"h1:0000000000000000000000000000000000000000000000000000000000000000\"\neffect = \"write\"\nneeds  = { listens = [\"*\"] }\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "at": { "file": { "type": "lock" }, "line": 14, "column": 1 },
+        "message": "reflexes.download.needs.listens is not a key of reflexes.download.needs: reads, writes, hosts, runs",
+        "fix": { "type": "edit_line", "at": { "file": { "type": "lock" }, "line": 14, "column": 1 } }
+      }
+    ]
+  }
+}

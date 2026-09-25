@@ -10,6 +10,9 @@ effect  = "destructive"
 confirm = "Really {action} now?"
 run     = "power.mts"
 
+[needs]
+runs = ["pmset", "osascript"]
+
 [args.action]
 ask              = "Sleep, restart or shut down?"
 options.sleep    = "Suspend; wakes on the lid or a key."

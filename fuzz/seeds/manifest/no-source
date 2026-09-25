@@ -1,0 +1,8 @@
+reflex = 1
+
+description = "Turn the lights in one room on, off, or dim them."
+confirm = "Set the lights {state}?"
+run = "lights.mts"
+
+[args.state]
+ask = "What should the lights do?"

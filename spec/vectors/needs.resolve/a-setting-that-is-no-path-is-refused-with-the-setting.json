@@ -1,0 +1,48 @@
+{
+  "input": {
+    "needs": {
+      "writes": [
+        "{file}"
+      ]
+    },
+    "call": {
+      "reflex": "note",
+      "args": {},
+      "call": "note"
+    },
+    "active": {
+      "effect": "write",
+      "run": "note.mts",
+      "needs": {
+        "writes": [
+          "{file}"
+        ]
+      },
+      "confirm": "Note?",
+      "args": {},
+      "yields": {},
+      "config": {
+        "file": {
+          "type": "plain",
+          "value": "notes.txt"
+        }
+      },
+      "tags": []
+    },
+    "config": {
+      "file": "notes.txt"
+    },
+    "home": "/Users/me"
+  },
+  "expect": {
+    "err": {
+      "reflex": "note",
+      "message": "[needs] writes names {file}, whose value \"notes.txt\" is not a path",
+      "fix": {
+        "type": "config_set",
+        "reflex": "note",
+        "key": "file"
+      }
+    }
+  }
+}

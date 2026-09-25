@@ -1,0 +1,38 @@
+reflex = 1                                   # schema version
+
+description = """
+Turn the lights in one room on, off, or dim them.
+Ceiling and lamp lights only."""
+not_for = ["colour scenes and schedules", "asking whether a light is on"]
+tags    = ["home", "lighting"]
+effect  = "write"                            # absent means destructive
+confirm = "Set the {room} lights {state}?"
+run     = "lights.mts"                       # or argv: ["hue", "set", "{room}", "{state}"]
+
+[config]
+bridge = "Hue bridge address"
+token  = { about = "Hue API key", secret = true }
+
+[args.room]
+ask   = "Which room?"
+vocab = "rooms"                              # options come from the user
+
+[args.state]
+ask = "What should the lights do?"
+options.on  = "Switch on."                   # options come from the author
+options.off = "Switch off."
+options.dim = "Lower the brightness without switching off."
+
+[args.brightness]
+ask      = "How bright, in percent?"
+pick     = "number"                          # options come from the input
+range    = [1, 100]
+optional = true
+
+[examples]                                   # sent to the classifier
+"turn on the kitchen lights"   = { state = "on" }
+"dim the office to 30 percent" = { state = "dim", brightness = "30 percent" }
+
+[tests]                                      # held out, never sent
+"make it darker in here" = { state = "dim" }
+"light a candle"         = false

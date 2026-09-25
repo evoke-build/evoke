@@ -28,11 +28,19 @@ run = [
   "mise run lint-spec",
   "mise run site",
   "cargo fmt --all --check",
+  "cargo fmt --manifest-path fuzz/Cargo.toml --check",
   "cargo clippy --workspace --all-targets -- -D warnings",
   "cargo clippy -p evoke-wasm --target wasm32-unknown-unknown -- -D warnings",
   "cargo deny check",
   "npm --prefix sdk run check",
   "npm --prefix reflexes run check",
+]
+
+[tasks.fuzz]
+description = "Fuzz the manifest reader from its seeds, ten minutes unless FUZZ_SECONDS says otherwise: libFuzzer through cargo-fuzz on the pinned toolchain, no sanitizer, what it finds kept under fuzz/corpus; outside CI"
+tools = { "cargo:cargo-fuzz" = "0.13.2" }
+run = [
+  "cargo fuzz run --sanitizer none manifest fuzz/corpus/manifest fuzz/seeds/manifest -- -max_total_time=${FUZZ_SECONDS:-600}",
 ]
 
 [tasks.reflexes]

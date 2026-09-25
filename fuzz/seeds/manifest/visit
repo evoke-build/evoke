@@ -1,0 +1,30 @@
+reflex = 1
+
+description = """
+Open one of your sites in the browser.
+The sites named in your vocabulary; in a private window on request."""
+
+not_for = ["folders and files on this machine", "downloading a file", "searching the web"]
+tags    = ["web"]
+effect  = "read"
+confirm = "Open {site} in the browser?"
+run     = "visit.mts"
+
+[args.site]
+ask   = "Which site?"
+vocab = "sites"
+
+[args.incognito]
+ask  = "In a private window?"
+flag = true
+
+[examples]
+"open github"                        = {}
+"go to the docs in a private window" = { incognito = true }
+"take me to my mail"                 = {}
+
+[tests]
+"visit the bank site incognito" = { incognito = true }
+"pull up the calendar"          = {}
+"open my downloads folder"      = false
+"search the web for laptops"    = false

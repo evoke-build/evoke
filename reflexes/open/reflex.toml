@@ -10,6 +10,9 @@ effect  = "read"
 confirm = "Open {place}?"
 run     = ["open", "{place}"]
 
+[needs]
+reads = ["{place}"]
+
 [args.place]
 ask   = "Which folder?"
 vocab = "places"

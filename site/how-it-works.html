@@ -93,6 +93,8 @@ One person at a time; prints the address."""</span>
             <dd><strong>Its own question.</strong> The line you answer when evoke wants your yes first.</dd>
             <dt>run</dt>
             <dd><strong>The program that runs.</strong> A file its author wrote, or a command you already use. Your sentence fills its inputs and never changes what runs.</dd>
+            <dt>[needs]</dt>
+            <dd><strong>What it touches.</strong> The paths, the network and the programs the author declares. The kernel holds the program there, and nothing past the declaration is reached.</dd>
             <dt>[args.name]</dt>
             <dd><strong>The input it takes.</strong> A word from <code>people</code>, a list you keep. Every input has one source: options the author listed, a word list you keep, a piece of what you typed, or a yes/no switch.</dd>
             <dt>[yields]</dt>
@@ -488,8 +490,9 @@ writes landing on the new primary</span></pre>
         <li><b>Who may ask for what.</b><span>A decision is plain data your code holds before anything runs. Check the
           person, the account or the time of day first. The <a href="/examples/approval.html">approval example</a> waits
           for a second person.</span></li>
-        <li><b>What the programs do.</b><span>A reflex runs with your permissions, and there is no sandbox yet. Read what
-          you install. Its effect is the author's claim, and you can make it stricter, never looser.</span></li>
+        <li><b>What the programs do.</b><span>A reflex runs with your permissions, held by the kernel to what its manifest
+          declares. Read what you install. Its effect is the author's claim, and you can make it stricter, never
+          looser.</span></li>
         <li><b>What happens after a partial run.</b><span>A step that fails stops the steps after it. evoke undoes
           nothing that already ran, and your application decides what happens next.</span></li>
         <li><b>Where your sentence and key go.</b><span>Each decision is one request to the classifier, with your own

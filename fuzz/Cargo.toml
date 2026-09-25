@@ -1,0 +1,21 @@
+# The fuzz targets, outside the workspace: libFuzzer through cargo-fuzz, run by `mise run fuzz`, never by CI.
+[package]
+name    = "evoke-fuzz"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+evoke-core    = { path = "../crates/evoke-core" }
+libfuzzer-sys = "0.4.10"
+
+# The manifest reader on raw bytes: every manifest the vectors and the collection hold seeds the corpus.
+[[bin]]
+name  = "manifest"
+path  = "fuzz_targets/manifest.rs"
+test  = false
+doc   = false
+bench = false

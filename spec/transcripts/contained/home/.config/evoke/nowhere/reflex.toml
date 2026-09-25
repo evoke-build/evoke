@@ -1,0 +1,11 @@
+reflex = 1
+
+description = """
+Read a folder that is not there.
+For the spec: a declared path the machine lacks is refused before the body runs."""
+effect = "read"
+confirm = "Look?"
+run = "nowhere.mts"
+
+[needs]
+reads = ["~/nowhere"]

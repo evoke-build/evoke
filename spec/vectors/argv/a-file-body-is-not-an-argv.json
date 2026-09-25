@@ -17,7 +17,8 @@
     },
     "active": {
       "$ref": "fixtures/active-lights.json"
-    }
+    },
+    "home": "/Users/me"
   },
   "expect": {
     "err": {

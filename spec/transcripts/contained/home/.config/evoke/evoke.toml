@@ -1,0 +1,10 @@
+adapter = "replay"
+
+[reflexes]
+notes   = "./notes"
+nowhere = "./nowhere"
+list    = "./list"
+tools   = "./tools"
+
+[config.notes]
+file = "~/notes/today.txt"

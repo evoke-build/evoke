@@ -102,7 +102,7 @@
               <p>It prints one row per reflex. <code>note</code>, <code>open</code> and <code>visit</code> stay inactive
                 until you give them a notes file, a folder and a site. Until then, no sentence reaches them. A line under
                 the rows names the command that gives each one what it needs. The other ten work at once. A reflex runs as
-                you, with no sandbox yet, so read what you add:
+                you, held by the kernel to what its manifest declares, so read what you add:
                 <a href="https://github.com/evoke-build/reflexes">every file of the collection is public</a>.</p>
               <p class="small"><strong>On Linux, skip this line.</strong> The collection is for a Mac. Wrap a command you
                 already run instead, then use steps 3 and 4 with a sentence that asks for it.
@@ -223,8 +223,8 @@ console<span class="o">.</span>log<span class="o">(</span>handled<span class="o"
               <h3>Name a folder of yours</h3>
               <p><code>open</code>, <code>note</code> and <code>visit</code> need something only you can supply: a folder, a
                 notes file or a site. This line names your desktop folder. Put your own path in place of
-                <code>/Users/you/Desktop</code>. Then <code>evoke "open my desktop folder"</code> opens it.</p>
-              <div class="cmd"><code>evoke vocab places add desktop "The desktop." --value /Users/you/Desktop</code><button type="button" data-copy aria-label="Copy the vocabulary command">Copy</button></div>
+                <code>~/Desktop</code>. Then <code>evoke "open my desktop folder"</code> opens it.</p>
+              <div class="cmd"><code>evoke vocab places add desktop "The desktop." --value "~/Desktop"</code><button type="button" data-copy aria-label="Copy the vocabulary command">Copy</button></div>
               <p class="after"><a class="more" href="/manual/use/tuning.html#vocabularies">Your own word lists, in the manual →</a></p>
             </div>
             <div class="way">

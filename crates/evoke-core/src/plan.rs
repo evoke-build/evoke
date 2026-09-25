@@ -17,6 +17,7 @@ use crate::manifest::{
 use crate::name::{
     AdapterId, ArgName, ConfigKey, FieldName, LocalName, Tag, VarName, VocabName, Word,
 };
+use crate::needs::{self, Needs};
 use crate::overlay::Effective;
 use crate::project::{Setting, Version};
 use crate::text::{Clean, NonEmpty};
@@ -31,12 +32,15 @@ pub struct Installed {
     pub evoke: Version,
 }
 
-/// One installed reflex as found: its wording or why it has none, the effect consented to, how its config is held.
+/// One installed reflex as found: its wording or why it has none, the effect and the needs consented to — the
+/// lock's for a remote reflex, its own for a local one — and how its config is held.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Item {
     #[serde(with = "wording")]
     pub wording: Result<Effective, Vec<Diagnostic>>,
     pub consented: Effect,
+    #[serde(default, skip_serializing_if = "Needs::is_none")]
+    pub needs: Needs,
     pub configured: IndexMap<ConfigKey, Held>,
 }
 
@@ -222,12 +226,15 @@ impl TryFrom<RawPlan> for Plan {
     }
 }
 
-/// An active reflex as the decision needs it; `effect` is the tighter of the manifest's and the consented one.
+/// An active reflex as the decision needs it; `effect` is the tighter of the manifest's and the consented one,
+/// `needs` the manifest's declaration narrowed to what was consented to.
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Active {
     pub effect: Effect,
     #[serde(skip_serializing_if = "Run::is_inline")]
     pub run: Run,
+    #[serde(default, skip_serializing_if = "Needs::is_none")]
+    pub needs: Needs,
     pub confirm: Template,
     pub args: IndexMap<ArgName, Argument>,
     /// What the body's `data` yields for a later step to take, per field.
@@ -237,6 +244,22 @@ pub struct Active {
 }
 
 impl Active {
+    /// A manifest as it runs with nothing narrowed: what `check` resolves a declaration against, and what a plan's
+    /// item starts from.
+    #[must_use]
+    pub fn of(manifest: &Manifest, config: IndexMap<ConfigKey, Setting>) -> Self {
+        Self {
+            effect: manifest.effect,
+            run: manifest.run.clone(),
+            needs: manifest.needs.clone(),
+            confirm: manifest.confirm.clone(),
+            args: manifest.args.clone(),
+            yields: manifest.yields.clone(),
+            config,
+            tags: manifest.tags.clone(),
+        }
+    }
+
     /// The argument a written name reaches, under its current name: a former one is followed through `was`; none
     /// is the manifest to look at. `reflex` names the diagnostic.
     pub fn argument(
@@ -300,7 +323,7 @@ fn read_active(d: &mut Diagnostics, json: &Json) -> Option<Active> {
         None
     };
     let run = manifest::run_of(d, top.take("run"), Form::Wire, &known, None);
-    let config = match top.take("config") {
+    let config: Option<IndexMap<ConfigKey, Setting>> = match top.take("config") {
         Some(node) => match serde_json::from_value(node.json()) {
             Ok(config) => Some(config),
             Err(error) => {
@@ -310,6 +333,19 @@ fn read_active(d: &mut Diagnostics, json: &Json) -> Option<Active> {
         },
         None => Some(IndexMap::new()),
     };
+    let needs = top.take("needs").map_or_else(Needs::default, |node| {
+        let is_config = |name: &str| {
+            config
+                .as_ref()
+                .is_some_and(|config| config.contains_key(name))
+        };
+        needs::read(
+            d,
+            node,
+            &mut unknown,
+            Some(&manifest::named(&known, is_config)),
+        )
+    });
     let tags = top
         .take("tags")
         .map_or_else(Vec::new, |node| manifest::tags(d, node));
@@ -323,6 +359,7 @@ fn read_active(d: &mut Diagnostics, json: &Json) -> Option<Active> {
     Some(Active {
         effect: effect?,
         run: run?,
+        needs,
         confirm: confirm?,
         args: args?,
         yields,
@@ -553,12 +590,8 @@ fn judge<'a>(
             manifest,
             Active {
                 effect: manifest.effect.max(item.consented),
-                run: manifest.run.clone(),
-                confirm: manifest.confirm.clone(),
-                args: manifest.args.clone(),
-                yields: manifest.yields.clone(),
-                config,
-                tags: manifest.tags.clone(),
+                needs: needs::narrowed(&manifest.needs, &item.needs),
+                ..Active::of(manifest, config)
             },
         )),
     }

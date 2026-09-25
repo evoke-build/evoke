@@ -1,0 +1,50 @@
+{
+  "input": {
+    "needs": {
+      "writes": [
+        "{to}",
+        "~/Downloads"
+      ],
+      "hosts": [
+        "*"
+      ]
+    },
+    "call": {
+      "reflex": "download",
+      "args": {
+        "url": {
+          "type": "pick",
+          "span": {
+            "start": 9,
+            "end": 39,
+            "text": "https://example.com/report.pdf"
+          },
+          "value": {
+            "type": "url",
+            "value": "https://example.com/report.pdf"
+          }
+        },
+        "to": {
+          "type": "word",
+          "word": "desktop"
+        }
+      },
+      "call": "download url=\"https://example.com/report.pdf\" to=\"desktop\""
+    },
+    "active": {
+      "$ref": "fixtures/active-download.json"
+    },
+    "config": {},
+    "home": "/Users/me"
+  },
+  "expect": {
+    "err": {
+      "reflex": "download",
+      "message": "[needs] writes names {to}, whose value \"desktop\" is not a path",
+      "fix": {
+        "type": "vocab_add",
+        "vocab": "places"
+      }
+    }
+  }
+}

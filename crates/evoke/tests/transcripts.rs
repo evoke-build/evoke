@@ -148,6 +148,11 @@ fn cache() {
     flow("cache");
 }
 
+#[test]
+fn contained() {
+    flow("contained");
+}
+
 /// The recipe yields the commit `spec/transcripts/update/home/.config/evoke/evoke.lock` records.
 #[test]
 fn the_recipe_reproduces_the_locked_commit() {
@@ -224,7 +229,7 @@ fn prepared(name: &str, dir: &Path) -> (PathBuf, Vec<(String, String)>) {
     runtime(&home);
     remotes(dir, &home, &work);
     let mut environment = vec![
-        ("PATH".to_owned(), path()),
+        ("PATH".to_owned(), path(&home)),
         ("HOME".to_owned(), utf8(&home)),
         ("XDG_CONFIG_HOME".to_owned(), utf8(&home.join(".config"))),
         (
@@ -419,21 +424,28 @@ fn normalized(value: Json) -> Json {
     }
 }
 
-/// The binary's directory first, then whatever `sh`, `git` and the rest are found on.
-fn path() -> String {
+/// The binary's directory first, then the flow's own `bin/` under its home when it has one — stand-ins for the
+/// programs its reflexes declare and run — then whatever `sh`, `git` and the rest are found on.
+fn path(home: &Path) -> String {
     let bin = Path::new(env!("CARGO_BIN_EXE_evoke"))
         .parent()
         .expect("the binary has a directory");
     let rest = std::env::var("PATH").unwrap_or_default();
-    format!("{}:{rest}", bin.display())
+    let own = home.join("bin");
+    if own.is_dir() {
+        format!("{}:{}:{rest}", bin.display(), own.display())
+    } else {
+        format!("{}:{rest}", bin.display())
+    }
 }
 
-/// The JavaScript runtime `node` names on `PATH`, recorded in the home's state as `evoke sync` will record it.
+/// The JavaScript runtime `node` names on `PATH`, as the binary it runs as, recorded in the home's state as
+/// `evoke sync` will record it: a version manager's shim cannot run contained.
 fn runtime(home: &Path) {
-    let found = Command::new("sh")
-        .args(["-c", "command -v node"])
+    let found = Command::new("node")
+        .args(["-p", "process.execPath"])
         .output()
-        .expect("sh runs");
+        .expect("node runs");
     assert!(
         found.status.success(),
         "node is not on PATH; the transcripts run file bodies with it"

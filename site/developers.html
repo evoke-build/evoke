@@ -158,9 +158,10 @@
             <code>signal</code> that fires at the deadline. When it fires, the program must stop.</li>
           <li><strong>Its platform.</strong> A program that runs on one system checks that first, and fails with a plain
             message elsewhere.</li>
-          <li><strong>What it may do.</strong> A reflex runs with the permissions of whoever runs it, and there is no
-            sandbox yet. The effect you declare states whether the program only reads, makes a change that can be undone,
-            or makes one that cannot. It is a promise to everyone who installs it.</li>
+          <li><strong>What it may do.</strong> A reflex runs with the permissions of whoever runs it, held by the kernel
+            to what its manifest declares under <code>[needs]</code>: the paths it reads and writes, whether it reaches
+            the network, the programs it runs. The effect you declare states whether the program only reads, makes a
+            change that can be undone, or makes one that cannot. It is a promise to everyone who installs it.</li>
         </ul>
         <p><code>evoke run</code> calls a reflex you added, by name. Reading a typed sentence takes a network request and an
           API key. <code>evoke run</code> reads none, so you can build and try a reflex offline, without a key.
@@ -494,8 +495,8 @@ assert<span class="o">.</span>equal<span class="o">(</span><span class="w">await
               <code>was</code>, and every overlay follows. An update reports what changed and never rewrites their
               files.</span></li>
             <li><b>3</b><span><strong>Installing is a trust decision.</strong> No code runs at install, and a lock file pins
-              exactly what was read. After that, a reflex runs with its user's permissions, and there is no sandbox
-              yet.</span></li>
+              exactly what was read, the declaration included. After that, a reflex runs with its user's permissions,
+              held by the kernel to what it declared.</span></li>
           </ol>
         </div>
       </div>

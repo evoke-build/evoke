@@ -10,6 +10,9 @@ effect  = "write"
 confirm = "Keep the laptop awake?"
 run     = "awake.mts"
 
+[needs]
+runs = ["caffeinate"]
+
 [args.duration]
 ask      = "For how long?"
 pick     = "duration"

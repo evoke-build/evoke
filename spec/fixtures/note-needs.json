@@ -1,0 +1,23 @@
+{
+  "description": "Append a line to your notes file.\nPlain text, dated, one note per line.",
+  "not_for": ["reading notes back"],
+  "tags": ["text"],
+  "effect": "write",
+  "confirm": "Note \"{text}\"?",
+  "run": "note.mts",
+  "needs": {
+    "writes": ["{file}"]
+  },
+  "config": {
+    "file": { "about": "Path of the notes file", "secret": false }
+  },
+  "args": {
+    "text": { "ask": "What should the note say?", "pick": "quoted", "optional": false, "was": [] }
+  },
+  "yields": {},
+  "examples": {
+    "note \"buy milk\"": { "text": "buy milk" }
+  },
+  "tests": {},
+  "unknown": []
+}

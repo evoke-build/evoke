@@ -1,6 +1,6 @@
 //! `evoke "<input>"`: read into steps, decide, gate, run. In: the parsed command and the environment. Out: `Exit`.
-//! Each input is read for its steps on the session; one step is decided as it always was — a run feeds the loader
-//! warmed at t=0 or spawns the argv; a confirm and an ask prompt on the terminal, `[t]each` writing the overlay
+//! Each input is read for its steps on the session; one step is decided as it always was — a run starts the body
+//! under its declaration; a confirm and an ask prompt on the terminal, `[t]each` writing the overlay
 //! first, `[+]` adding a word to the vocabulary and reloading the plan; an abstain shows the ranking. More than
 //! one is a weave: the plan's own questions first, the plan shown, then each step at its turn through the same
 //! loop, a result threaded into a later step, and the worst step's exit. Every decision is logged, a step's with
@@ -10,7 +10,7 @@
 
 use evoke_core::call::Value;
 use evoke_core::decide::{Choices, Missing, Why};
-use evoke_core::manifest::{Kind, Run, Source};
+use evoke_core::manifest::{Kind, Source};
 use evoke_core::name::{ArgName, LocalName, OptionKey, VocabName, Word};
 use evoke_core::text::NonEmpty;
 use evoke_core::vocabulary::Meaning;
@@ -24,12 +24,12 @@ use evoke_core::{
 };
 use indexmap::IndexMap;
 
-use super::session::{self, Confirmed, Decided, Opening, Session, Woven, dismiss};
+use super::session::{self, Confirmed, Decided, Opening, Session, Woven};
 use super::{Decline, Exit};
 use super::{each_line, needs_terminal};
 use crate::adapter::Adapter;
 use crate::args::{Arguments, Command, Inputs};
-use crate::hosts::processes::{Returned, Warm};
+use crate::hosts::processes::Returned;
 use crate::hosts::terminal::Text;
 use crate::hosts::{Environment, Failure, terminal};
 use crate::report::{self, Line, StepLine};
@@ -100,27 +100,20 @@ impl Using<'_> {
     /// One input, end to end, its exit reported: read into its steps; one step is the foundation's own loop,
     /// more are a weave.
     fn act(&mut self, input: &str) -> Exit {
-        let warm = match self.session.warm() {
-            Ok(warm) => warm,
-            Err(exit) => return self.session.reporter.exit(input, exit),
-        };
         let woven =
             match self
                 .session
                 .weave(&*self.adapter, input, &self.arguments.tags, Vec::new())
             {
                 Ok(woven) => woven,
-                Err(exit) => {
-                    dismiss(warm);
-                    return self.session.reporter.exit(input, exit);
-                }
+                Err(exit) => return self.session.reporter.exit(input, exit),
             };
         match woven.single(&self.arguments.tags).cloned() {
             Some(decided) => {
                 let decision = decided.decision.clone();
-                self.round(input, None, &decided, decision, &[], warm).exit
+                self.round(input, None, &decided, decision, &[]).exit
             }
-            None => self.many(input, woven, warm),
+            None => self.many(input, woven),
         }
     }
 
@@ -134,7 +127,6 @@ impl Using<'_> {
         decided: &Decided,
         decision: Decision,
         bound: &[Bound],
-        warm: Option<Warm>,
     ) -> Rounded {
         let json = self.arguments.json;
         let mut line = Line::of(decided);
@@ -146,17 +138,14 @@ impl Using<'_> {
             why: None,
             bound: bound.to_vec(),
         });
-        let mut warm = warm;
-        let chosen = match self.readied(input, at, decided, decision, bound, &mut line, &mut warm) {
+        let chosen = match self.readied(input, at, decided, decision, bound, &mut line) {
             Ok(chosen) => chosen,
             Err(rounded) => return rounded,
         };
-        let ran = self.session.run(
-            &chosen,
-            &decided.request.state.request,
-            decided.spent(),
-            warm,
-        );
+        line.contained = Some(self.session.contained.clone());
+        let ran = self
+            .session
+            .run(&chosen, &decided.request.state.request, decided.spent());
         match ran {
             Ok(returned) => {
                 if !json && !returned.text.is_empty() {
@@ -175,8 +164,7 @@ impl Using<'_> {
     }
 
     /// The loop up to the run: an abstain stops; an ask is answered and filled until nothing is missing; a
-    /// confirm is put. The call ready to run, or what became of the round instead, the loader dismissed.
-    #[expect(clippy::too_many_arguments)]
+    /// confirm is put. The call ready to run, or what became of the round instead.
     fn readied(
         &mut self,
         input: &str,
@@ -185,14 +173,13 @@ impl Using<'_> {
         decision: Decision,
         bound: &[Bound],
         line: &mut Line,
-        warm: &mut Option<Warm>,
     ) -> Result<Chosen, Rounded> {
         let json = self.arguments.json;
+        let contained = self.session.contained.clone();
         let mut decision = decision;
         loop {
             match decision {
                 Decision::Abstain { .. } => {
-                    dismiss(warm.take());
                     if !json && at.is_none() {
                         terminal::note(&report::abstained(decided, self.floors()));
                         if let Some(hint) = report::left_out(self.session.plan.inactive().keys()) {
@@ -204,35 +191,31 @@ impl Using<'_> {
                 }
                 Decision::Ask { asking, missing } => {
                     if !self.session.has_tty() {
-                        dismiss(warm.take());
                         return Err(self.no_terminal(input, line, "an ask"));
                     }
                     let given = match self.answers(input, &asking.reflex, &missing) {
                         Ok(Answered::Given(given)) => given,
                         Ok(Answered::Declined { ask }) => {
-                            dismiss(warm.take());
                             let exit = Exit::Declined(Decline::Refused);
                             let why = Stopped::Said { message: ask };
                             return Err(self.stopped(input, line, exit, Some(why)));
                         }
-                        Err(exit) => {
-                            dismiss(warm.take());
-                            return Err(self.stopped(input, line, exit, None));
-                        }
+                        Err(exit) => return Err(self.stopped(input, line, exit, None)),
                     };
                     decision = fill(&self.session.plan, asking, given, self.floors());
                     line.decision = decision.clone();
                 }
                 Decision::Confirm { chosen, prompt, .. } => {
                     if !self.session.has_tty() {
-                        dismiss(warm.take());
                         return Err(self.no_terminal(input, line, "a confirm"));
                     }
                     let own = match at {
-                        Some((n, of)) => {
-                            report::step(n, of, report::step_confirming(&chosen, &prompt))
-                        }
-                        None => report::confirming(&chosen, &prompt),
+                        Some((n, of)) => report::step(
+                            n,
+                            of,
+                            report::step_confirming(&chosen, &prompt, &contained),
+                        ),
+                        None => report::confirming(&chosen, &prompt, &contained),
                     };
                     match self.session.confirmed(&own, &prompt, true) {
                         Ok(Some(Confirmed::Yes)) => return Ok(chosen),
@@ -242,27 +225,27 @@ impl Using<'_> {
                             return Ok(chosen);
                         }
                         Ok(Some(Confirmed::No) | None) => {
-                            dismiss(warm.take());
                             let exit = Exit::Declined(Decline::Refused);
                             let why = Stopped::Said {
                                 message: prompt.own.clone(),
                             };
                             return Err(self.stopped(input, line, exit, Some(why)));
                         }
-                        Err(exit) => {
-                            dismiss(warm.take());
-                            return Err(self.stopped(input, line, exit, None));
-                        }
+                        Err(exit) => return Err(self.stopped(input, line, exit, None)),
                     }
                 }
                 Decision::Run { chosen } => {
                     if !json {
                         match at {
-                            None => terminal::note(&report::running(&chosen)),
+                            None => terminal::note(&report::running(&chosen, &contained)),
                             // The plan showed the step; at its turn, only what the plan could not: a bound value
-                            // in its place.
-                            Some((n, of)) if !bound.is_empty() => {
-                                terminal::note(&report::step(n, of, report::step_running(&chosen)));
+                            // in its place, or a machine that does not hold the declaration.
+                            Some((n, of)) if !bound.is_empty() || !contained.is_full() => {
+                                terminal::note(&report::step(
+                                    n,
+                                    of,
+                                    report::step_running(&chosen, &contained),
+                                ));
                             }
                             Some(_) => {}
                         }
@@ -301,10 +284,9 @@ impl Using<'_> {
     /// and each step at its turn through the foundation's own loop; the worst step's exit. A request that is
     /// only what not to do is nothing to do. A plan stopped before any step ran logs every step's line with what
     /// stopped it.
-    fn many(&mut self, input: &str, woven: Woven, warm: Option<Warm>) -> Exit {
+    fn many(&mut self, input: &str, woven: Woven) -> Exit {
         let json = self.arguments.json;
         if woven.weave.steps.is_empty() {
-            dismiss(warm);
             if json {
                 // One line per input holds under --json: an abstain that judged nothing.
                 terminal::result(&report::nothing_to_do_json(input));
@@ -315,21 +297,16 @@ impl Using<'_> {
         }
         let woven = match self.settled(input, woven) {
             Ok(woven) => woven,
-            Err(exit) => {
-                dismiss(warm);
-                return exit;
-            }
+            Err(exit) => return exit,
         };
         if !json {
             terminal::note(&report::planned(&woven.weave));
         }
         if woven.weave.verdict.outcome == Outcome::Refuse {
-            dismiss(warm);
             return self.refused(input, &woven);
         }
         if woven.weave.verdict.outcome == Outcome::Confirm {
             if !self.session.has_tty() {
-                dismiss(warm);
                 return self.unanswered(input, &woven, needs_terminal("a confirm"));
             }
             let reasons: Vec<String> = woven
@@ -347,20 +324,16 @@ impl Using<'_> {
             match self.session.confirmed(&own, &prompt, false) {
                 Ok(Some(Confirmed::Yes)) => {}
                 Ok(_) => {
-                    dismiss(warm);
                     let exit = Exit::Declined(Decline::Refused);
                     return self.stopped_whole(input, &woven, exit, |_| {
                         let message = prompt.own.clone();
                         (Status::Declined, Stopped::Said { message })
                     });
                 }
-                Err(exit) => {
-                    dismiss(warm);
-                    return self.session.reporter.exit(input, exit);
-                }
+                Err(exit) => return self.session.reporter.exit(input, exit),
             }
         }
-        self.executed(input, &woven, warm)
+        self.executed(input, &woven)
     }
 
     /// The plan settled: asked up front while it asks, each answer standing in for the planner's own decision
@@ -569,19 +542,17 @@ impl Using<'_> {
 
     /// The plan run: stage by stage, each round through the foundation's loop; a step decided again with its
     /// bound values in its words when the run asks for it; what did not run, said so at the end.
-    fn executed(&mut self, input: &str, woven: &Woven, warm: Option<Warm>) -> Exit {
+    fn executed(&mut self, input: &str, woven: &Woven) -> Exit {
         let tags = self.arguments.tags.clone();
         let of = woven.weave.steps.len();
         let mut progress = Progress::default();
         let mut rewritten: Vec<(Asked, Decided)> = Vec::new();
-        let mut warm = warm;
         let mut exits: Vec<Exit> = Vec::new();
         loop {
             let running =
                 weave::running::execute(&self.session.plan, self.floors(), &woven.weave, &progress);
             let todo = match running {
                 Running::Done { executed } => {
-                    dismiss(warm);
                     return self.ended(input, woven, &executed, &rewritten, exits);
                 }
                 Running::Todo { todo } => todo,
@@ -596,10 +567,7 @@ impl Using<'_> {
                     );
                     let decided = match decided {
                         Ok(decided) => decided,
-                        Err(exit) => {
-                            dismiss(warm);
-                            return self.session.reporter.exit(input, exit);
-                        }
+                        Err(exit) => return self.session.reporter.exit(input, exit),
                     };
                     progress
                         .decided
@@ -624,27 +592,12 @@ impl Using<'_> {
                             .or_else(|| woven.decided_for(step, &tags))
                             .expect("every round has its decision")
                             .clone();
-                        let loader = match warm.take() {
-                            Some(loader) => Some(loader),
-                            None => match self.session.warm() {
-                                Ok(loader) => loader,
-                                Err(exit) => return self.session.reporter.exit(input, exit),
-                            },
-                        };
-                        // The next file step's loader, started now, is warm at its turn.
-                        if self.file_step_after(&woven.weave, handling.step) {
-                            warm = match self.session.warm() {
-                                Ok(next) => next,
-                                Err(exit) => return self.session.reporter.exit(input, exit),
-                            };
-                        }
                         let rounded = self.round(
                             input,
                             Some((handling.step, of)),
                             &decided,
                             handling.decision.clone(),
                             &handling.bound,
-                            loader,
                         );
                         progress.handled.push(Handled {
                             step: handling.step,
@@ -957,16 +910,6 @@ impl Using<'_> {
             .apply(input, &vocab_edit(vocabulary.clone(), change))?;
         self.session.reload(input)?;
         Ok(Some(word))
-    }
-
-    /// Whether a step after `n` runs a file: what a loader started ahead of its turn is for.
-    fn file_step_after(&self, weave: &Weave, n: usize) -> bool {
-        weave.steps.iter().filter(|step| step.n > n).any(|step| {
-            step.reflex
-                .as_ref()
-                .and_then(|reflex| self.session.plan.active().get(reflex))
-                .is_some_and(|active| matches!(active.run, Run::File(_)))
-        })
     }
 
     /// The vocabulary an argument draws from, when it draws from one.

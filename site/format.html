@@ -140,7 +140,7 @@
         <div><dt>Manifest</dt><dd><code>reflex.toml</code>: what the classifier reads and what the body receives.</dd></div>
         <div><dt>Body</dt><dd>What <code>run</code> names: a JavaScript file exporting a function, or a program with its arguments.</dd></div>
         <div><dt>Wording</dt><dd>What a user may override: descriptions, questions, option meanings, records.</dd></div>
-        <div><dt>Contract</dt><dd>What a user cannot override: <code>run</code>, argument names and sources, option keys, ranges, config keys, yields.</dd></div>
+        <div><dt>Contract</dt><dd>What a user cannot override: <code>run</code>, needs, argument names and sources, option keys, ranges, config keys, yields.</dd></div>
         <div><dt>Argument</dt><dd>A question about the input and a value for the body, from exactly one source.</dd></div>
         <div><dt>Source</dt><dd>Where an argument's values come from: <code>options</code>, <code>vocab</code>, <code>pick</code> or <code>flag</code>.</dd></div>
         <div><dt>Span</dt><dd>An exact piece of the input, by character offsets.</dd></div>
@@ -151,6 +151,7 @@
         <div><dt>Decision</dt><dd>One input decided: an outcome, the call, the confidence, every judgment.</dd></div>
         <div><dt>Call</dt><dd>A reflex with its arguments filled in, on one line: <code>lights room="den" state="off"</code>.</dd></div>
         <div><dt>Effect</dt><dd>What running a reflex does to the world: <code>read</code>, <code>write</code> or <code>destructive</code>.</dd></div>
+        <div><dt>Needs</dt><dd>What a body touches, declared under <code>[needs]</code> and held by the kernel: the paths it reads and writes, the network, the programs it runs.</dd></div>
         <div><dt>Bar</dt><dd>The probability a decision must clear for its effect. The adapter ships it. Also called the floor.</dd></div>
         <div><dt>Confidence</dt><dd>The lowest top probability among the route and every argument question of the winner.</dd></div>
         <div><dt>Weave</dt><dd>A sentence read as several steps, each decided on its own, the plan shown before anything runs.</dd></div>
@@ -177,6 +178,9 @@ Ceiling and lamp lights only."""</span>
 <span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>                            <span class="c"># absent means destructive</span>
 <span class="k">confirm</span> <span class="o">=</span> <span class="s">"Set the <span class="ph">{room}</span> lights <span class="ph">{state}</span>?"</span>
 <span class="k">run</span>     <span class="o">=</span> <span class="s">"lights.mts"</span>                       <span class="c"># or an argv, as in 08</span>
+
+<span class="t">[needs]</span>                                      <span class="c"># what the body touches; absent means its own directory only</span>
+<span class="k">hosts</span> <span class="o">=</span> <span class="o">[</span><span class="s">"*"</span><span class="o">]</span>                                <span class="c"># the bridge is on the network</span>
 
 <span class="t">[config]</span>
 <span class="k">bridge</span> <span class="o">=</span> <span class="s">"Hue bridge address"</span>
@@ -239,6 +243,7 @@ Ceiling and lamp lights only."""</span>
             <tr><td><code>effect</code></td><td class="n">no</td><td><code>read</code>, <code>write</code> or <code>destructive</code>. Absent means destructive. A reflex has one effect; grouped actions take the worst case.</td></tr>
             <tr><td><code>confirm</code></td><td class="y">yes</td><td>The one-line question a person answers. A <code>{placeholder}</code> names a required argument.</td></tr>
             <tr><td><code>run</code></td><td class="y">yes</td><td>The body: a path ending in <code>.mts</code> or <code>.mjs</code> inside the directory, or an argv.</td></tr>
+            <tr><td><code>[needs]</code></td><td class="n">no</td><td>What the body touches, held by the kernel: <code>reads</code> and <code>writes</code>, paths as <code>~/…</code>, absolute, or <code>{name}</code> for the value of an argument or a config key; <code>hosts</code>, <code>["*"]</code> for the network; <code>runs</code>, programs by name on <code>PATH</code> or by absolute path. Absent means the tightest declaration: its own directory and a private <code>TMPDIR</code>.</td></tr>
             <tr><td><code>[config]</code></td><td class="n">no</td><td>Settings the user provides: <code>key = "about"</code>, or <code>{ about, secret = true }</code>. A secret is only ever set from an environment variable.</td></tr>
             <tr><td><code>[args.&lt;name&gt;]</code></td><td class="n">no</td><td>The arguments. Each has <code>ask</code> and exactly one source.</td></tr>
             <tr><td><code>[yields]</code></td><td class="n">no</td><td>What the body's <code>data</code> holds for a later step: per field, the kind that reads it, or <code>{ each = { … } }</code> for a list of records.</td></tr>
@@ -266,7 +271,7 @@ Ceiling and lamp lights only."""</span>
         <div class="table"><table>
           <thead><tr><th>Contract</th><th>Wording</th></tr></thead>
           <tbody>
-            <tr><td><code>run</code></td><td><code>description</code>, <code>not_for</code>, <code>tags</code>, <code>confirm</code></td></tr>
+            <tr><td><code>run</code>, <code>[needs]</code></td><td><code>description</code>, <code>not_for</code>, <code>tags</code>, <code>confirm</code></td></tr>
             <tr><td>argument names and their sources</td><td>every <code>ask</code></td></tr>
             <tr><td>option keys, <code>range</code></td><td>the meaning of each option</td></tr>
             <tr><td><code>config</code> keys, <code>yields</code></td><td>examples and tests</td></tr>
@@ -516,10 +521,12 @@ Ceiling and lamp lights only."""</span>
       <div class="clause">
         <h3><i>8.2</i>The run</h3>
         <ul class="ticks">
-          <li><strong>The environment is scrubbed.</strong> <code>PATH</code>, <code>HOME</code>, <code>TMPDIR</code>, <code>LANG</code> and <code>TERM</code>, nothing else. Secrets reach a body through <code>config</code>, never the environment.</li>
+          <li><strong>The environment is scrubbed.</strong> <code>PATH</code>, <code>HOME</code>, <code>TMPDIR</code>, <code>LANG</code> and <code>TERM</code>, nothing else. <code>TMPDIR</code> is a private folder made for the run and removed after it. Secrets reach a body through <code>config</code>, never the environment.</li>
+          <li><strong>The body is held to its declaration.</strong> It touches what <code>[needs]</code> names, its own directory and <code>TMPDIR</code>, and nothing else: on Linux through Landlock, <code>no_new_privs</code> and a seccomp filter, on macOS through Seatbelt, with Node's permission model under both. A reach past the declaration ends the run with the path and the key. A program named in <code>runs</code> runs held to the same declaration. A machine that holds only part of a declaration, or none, says so, and the status is never assumed.</li>
+          <li><strong>A word's value or a plain setting that begins with <code>~/</code></strong> reaches the body as a path under the home, so the value, the argv and the declaration name one path.</li>
           <li><strong>The deadline is 30 seconds per decision</strong>, shared with the classifier's answer. Anything that must outlive the run detaches and returns at once.</li>
           <li><strong>A body's own stdout goes to stderr</strong>, so a stray line never corrupts a result. The result is what the function returns.</li>
-          <li><strong>The process group is ended</strong> on timeout or decline: <code>SIGTERM</code>, a second's grace, then <code>SIGKILL</code>. A body's life is bounded by its caller's.</li>
+          <li><strong>The runtime starts once the decision is made</strong>, in the body's directory. <strong>The process group is ended</strong> on timeout or decline: <code>SIGTERM</code>, a second's grace, then <code>SIGKILL</code>. A body's life is bounded by its caller's.</li>
           <li><strong>An argv runs directly, never through a shell.</strong> The program is a name on <code>PATH</code> or an absolute path, never a path relative to wherever the tool runs.</li>
         </ul>
       </div>
@@ -608,7 +615,9 @@ Ceiling and lamp lights only."""</span>
       <div class="clause">
         <h3><i>9.3</i>The lock and the store</h3>
         <p>The lock records, for each remote reflex, the ref, the tag, the commit, the content hash <code>h1</code> of
-          the reflex directory, and the effect the user consented to. It records the adapter by name and id. Fetched
+          the reflex directory, the effect the user consented to, and the declaration they consented to. Upstream may
+          narrow a declaration at any tag; widening waits for <code>evoke update --accept</code>. It records the
+          adapter by name and id. Fetched
           code lives in a store keyed by <code>h1</code>, and an implementation <span class="kw">MUST</span> re-hash it
           against the lock at every start. A copy that does not match is a miss. Local reflexes are never locked.</p>
       </div>
@@ -846,7 +855,8 @@ Ceiling and lamp lights only."""</span>
           <li><strong>A value is a closed choice or an exact span.</strong> Injected text can choose a call. It can never mint a value.</li>
           <li><strong>The effect gate covers what it chooses.</strong> A destructive reflex always confirms, and there is no <code>--yes</code>.</li>
           <li><strong>Prompts cannot be repainted.</strong> Control characters and bidi overrides are refused in every manifest, overlay and vocabulary string, and in every span. The tool's own line prints before the reflex's template.</li>
-          <li><strong>Wording is linted and conflict-tested at install.</strong> Effect only tightens. The contract cannot be overridden. Tags carry no meaning but <code>--tag</code>.</li>
+          <li><strong>Wording is linted and conflict-tested at install.</strong> Effect and needs only tighten. The contract cannot be overridden. Tags carry no meaning but <code>--tag</code>.</li>
+          <li><strong>A body is held to its declaration.</strong> What <code>[needs]</code> names, its own directory and a private <code>TMPDIR</code>, and nothing else, by the kernel. A machine that holds less says so.</li>
           <li><strong>Trust and the lock bind to content.</strong> A changed project stops. A tag that moved is refused. The store is re-hashed at every start.</li>
           <li><strong>Fetching is narrow.</strong> A strict ref grammar, <code>https</code> and <code>ssh</code> only, no symlinks, no submodules, no checkout, no hook, no install-time script.</li>
           <li><strong>Secrets are referenced, never stored.</strong> A project names a variable. The value reaches a body for the length of one run.</li>
@@ -854,10 +864,10 @@ Ceiling and lamp lights only."""</span>
       </div>
       <div class="clause">
         <h3><i>14.2</i>Not guaranteed</h3>
-        <p><strong>Containment.</strong> A body runs with the user's rights under a scrubbed environment. The scrubbing
-          prevents leaks. It does not contain malice. A <code>read</code> or <code>write</code> reflex over its bar runs
-          without asking, and whatever it does with a span it is handed, an injected sentence can make it do. So its
-          effect is the author's promise about exactly that. Read what you install. The manual's
+        <p><strong>What a body does within its declaration.</strong> The kernel bounds what a body touches, not what it
+          does with it. A <code>read</code> or <code>write</code> reflex over its bar runs without asking, and whatever
+          it does with a span it is handed, an injected sentence can make it do. So its effect is the author's promise
+          about exactly that, and a declaration is read with the effect. Read what you install. The manual's
           <a href="/manual/security.html">security page</a> holds every claim, and how to try each without a key.</p>
       </div>
     </section>

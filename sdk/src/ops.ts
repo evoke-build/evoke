@@ -36,8 +36,27 @@ export interface Ops {
   values: { input: { args: Record<T.ArgName, T.Value> }; output: Record<T.ArgName, string | number | true> }
   // run
   call: { input: { text: string }; output: T.Result<T.Written, T.Diagnostic> }
-  envelope: { input: { chosen: T.Chosen; active: T.Active; input: T.Input; deadline: T.Millis }; output: T.Envelope }
-  argv: { input: { chosen: T.Chosen; active: T.Active }; output: T.Result<string[], T.Diagnostic> }
+  envelope: { input: { chosen: T.Chosen; active: T.Active; input: T.Input; deadline: T.Millis; home: string }; output: T.Envelope }
+  argv: { input: { chosen: T.Chosen; active: T.Active; home: string }; output: T.Result<string[], T.Diagnostic> }
+  // needs, contain
+  "needs.resolve": {
+    input: { needs: T.Needs; call: T.Call; active: T.Active; config: Record<T.ConfigKey, string>; home: string }
+    output: T.Result<T.Policy, T.Diagnostic>
+  }
+  "needs.widens": { input: { from: T.Needs; to: T.Needs }; output: boolean }
+  "needs.consent": { input: { locked: T.Needs; upstream: T.Needs }; output: T.NeedsConsent }
+  "contain.seatbelt": { input: { policy: T.Policy; facts: T.Facts }; output: string }
+  "contain.node_flags": { input: { policy: T.Policy; facts: T.Facts }; output: string[] }
+  "contain.landlock": { input: { policy: T.Policy; facts: T.Facts }; output: T.Rule[] }
+  "needs.declared_at": { input: { doc: T.Document }; output: T.At }
+  "needs.lacking": {
+    input: { lacking: T.Lacking; reflex: T.LocalName; active: T.Active; origin: T.Origin; home: string }
+    output: T.Diagnostic
+  }
+  "needs.refusal": {
+    input: { policy: T.Policy; upstream?: T.Policy; reflex: T.LocalName; origin: T.Origin; refused: T.Refused; home: string }
+    output: T.Diagnostic | null
+  }
   // tune, install, author, test
   teach: { input: { plan: T.Plan; utterance: T.Utterance; lesson: T.Lesson }; output: T.Result<T.Edit, T.Diagnostic> }
   set_config: {

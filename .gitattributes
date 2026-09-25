@@ -1,2 +1,4 @@
 * text=auto eol=lf
 mise.lock linguist-generated
+# The fuzz seeds are bytes as written, a carriage return among them.
+fuzz/seeds/** -text

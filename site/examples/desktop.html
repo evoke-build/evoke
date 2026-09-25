@@ -146,6 +146,9 @@
 <span class="k">confirm</span> <span class="o">=</span> <span class="s">"Set the volume to <span class="ph">{level}</span>?"</span>
 <span class="k">run</span>     <span class="o">=</span> <span class="s">"volume.mts"</span>
 
+<span class="t">[needs]</span>
+<span class="k">runs</span> <span class="o">=</span> <span class="o">[</span><span class="s">"osascript"</span><span class="o">]</span>
+
 <span class="t">[args.level]</span>
 <span class="k">ask</span>   <span class="o">=</span> <span class="s">"How loud, in percent?"</span>
 <span class="k">pick</span>  <span class="o">=</span> <span class="s">"number"</span>
@@ -300,8 +303,8 @@
 <span class="own">  inactive  open: vocabulary &quot;places&quot; is empty  →  evoke vocab places add &lt;word&gt; &quot;&lt;meaning&gt;&quot;</span>
 <span class="own">  inactive  visit: vocabulary &quot;sites&quot; is empty  →  evoke vocab sites add &lt;word&gt; &quot;&lt;meaning&gt;&quot;</span></pre>
             </div>
-            <p>A reflex runs as you, with your permissions, and there is no sandbox yet. Read what you install: every file
-              is on <a href="https://github.com/evoke-build/reflexes">GitHub</a>.</p>
+            <p>A reflex runs as you, held by the kernel to what its manifest declares, the line under each row. Read what
+              you install: every file is on <a href="https://github.com/evoke-build/reflexes">GitHub</a>.</p>
           </div>
         </li>
         <li>
@@ -309,13 +312,13 @@
             <h3>Give three reflexes your words</h3>
             <p>The inactive lines above each end with the command that fixes them. In the first line,
               <code>desktop</code> is your word and «The desktop.» its meaning, which the classifier reads. The path goes
-              only to the reflex. A bare file name for <code>note</code> lands in your home folder.</p>
+              only to the reflex. The notes file is a path under your home.</p>
             <div class="panel term">
               <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke vocab places add desktop &quot;The desktop.&quot; --value /Users/you/Desktop</span>
-<span class="add">+ vocab/places.toml  desktop = { what = &quot;The desktop.&quot;, value = &quot;/Users/you/Desktop&quot; }</span>
-<span class="p">$</span> <span class="in">evoke config note file notes.txt</span>
-<span class="add">+ evoke.toml  [config.note] file = &quot;notes.txt&quot;</span></pre>
+<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke vocab places add desktop &quot;The desktop.&quot; --value &quot;~/Desktop&quot;</span>
+<span class="add">+ vocab/places.toml  desktop = { what = &quot;The desktop.&quot;, value = &quot;~/Desktop&quot; }</span>
+<span class="p">$</span> <span class="in">evoke config note file &quot;~/notes.txt&quot;</span>
+<span class="add">+ evoke.toml  [config.note] file = &quot;~/notes.txt&quot;</span></pre>
             </div>
             <p>For <code>visit</code>, add a site the same way:</p>
             <div class="cmd"><code>evoke vocab sites add github &quot;GitHub.&quot; --value https://github.com</code><button type="button" data-copy aria-label="Copy the site command">Copy</button></div>

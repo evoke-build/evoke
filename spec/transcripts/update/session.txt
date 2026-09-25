@@ -11,6 +11,7 @@ $ evoke update
   lights 1.2.0 → 2.0.0  major · code changed
     description  rewritten, taken (you have no override)
     args.state   renamed power; your 1 example follows
+    needs        narrowed: hosts * dropped
 $ HUE_TOKEN=hue-example evoke "kill the lights in the den"
   lights room="den" power="off"  0.93
 den lights off
@@ -20,7 +21,7 @@ $ evoke sync
   up to date
 # A reflex whose new manifest does not read is reported at the new tree and skipped; the rest move. Upstream
 # dropped an argument your overlay rewords and changed a description you override: orphaned, stale. It loosened
-# the effect: yours is kept until you accept.
+# the effect and widened the needs: yours are kept until you accept, and accepted together.
 $ evoke add radhi/tools@1.0.0
 + clock  radhi/tools/clock@1.0.0  read         runs clock.mts
 + note   radhi/tools/note@1.0.0   destructive  runs note.mts
@@ -33,12 +34,15 @@ $ evoke update
     args.tag     removed
     args.tag     addresses nothing, skipped
     effect       write upstream; destructive kept until you accept
+    needs        widened: writes ~/notes upstream; none kept until you accept
   note: upstream loosened the effect to write; destructive kept  →  evoke update --accept note
+  note: upstream widened the needs to writes ~/notes; none kept  →  evoke update --accept note
   clock: effect must be read, write or destructive  →  ~/.cache/evoke/store/8416c7959e55e8f74c0dd96ca8396d1980acc68ccfa7ac32fd650be96f658703/reflex.toml:8:1
 [3]
 $ evoke update note --accept note
   note 1.1.0 → 1.1.0  same
     effect  write accepted; was destructive
+    needs   writes ~/notes accepted; was none
 # What the overlay addresses that the reflex no longer has is listed whenever the reflex is shown.
 $ evoke show note
 + description = "Keep a note.\nOne line, kept where I keep them."
@@ -47,6 +51,9 @@ $ evoke show note
   effect = "write"
   confirm = "Note {text}?"
   run = "note.mts"
+
+  [needs]
+  writes = ["~/notes"]
 
   [args.text]
   ask = "What should the note say?"

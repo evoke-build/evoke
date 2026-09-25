@@ -6,7 +6,7 @@ export interface Args {
 }
 
 export interface Config {
-  /** Path of the notes file */
+  /** Path of the notes file, which exists */
   file: string
 }
 

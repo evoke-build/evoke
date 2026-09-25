@@ -1,0 +1,99 @@
+{
+  "input": {
+    "set": {
+      "reflexes": {
+        "note": {
+          "wording": {
+            "ok": {
+              "manifest": {
+                "description": "Append a line to your notes file.\nPlain text, dated, one note per line.",
+                "not_for": ["reading notes back"],
+                "tags": ["text"],
+                "effect": "write",
+                "confirm": "Note \"{text}\"?",
+                "run": "note.mts",
+                "needs": {
+                  "writes": ["{file}", "~/notes"],
+                  "hosts": ["*"],
+                  "runs": ["open"]
+                },
+                "config": {
+                  "file": { "about": "Path of the notes file", "secret": false }
+                },
+                "args": {
+                  "text": { "ask": "What should the note say?", "pick": "quoted", "optional": false, "was": [] }
+                },
+                "yields": {},
+                "examples": {
+                  "note \"buy milk\"": { "text": "buy milk" }
+                },
+                "tests": {},
+                "unknown": []
+              },
+              "yours": []
+            }
+          },
+          "consented": "write",
+          "needs": { "writes": ["{file}"], "runs": ["open", "plutil"] },
+          "configured": {
+            "file": { "type": "plain", "value": "~/notes.txt" }
+          }
+        }
+      },
+      "vocab": {},
+      "adapter": "replay",
+      "evoke": "0.1.0"
+    }
+  },
+  "expect": {
+    "ok": {
+      "digest": "h1:0fc814d591f9e210e6b4f5546a9ddf464c59e9b133e73bbf4f87c949b5ba4c13",
+      "active": {
+        "note": {
+          "effect": "write",
+          "run": "note.mts",
+          "needs": { "writes": ["{file}"], "runs": ["open"] },
+          "confirm": "Note \"{text}\"?",
+          "args": {
+            "text": { "ask": "What should the note say?", "pick": "quoted", "optional": false, "was": [] }
+          },
+          "yields": {},
+          "config": {
+            "file": { "type": "plain", "value": "~/notes.txt" }
+          },
+          "tags": ["text"]
+        }
+      },
+      "inactive": {},
+      "slots": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "note": {
+              "what": "Append a line to your notes file.\nPlain text, dated, one note per line.",
+              "not_for": ["reading notes back"],
+              "examples": ["note \"buy milk\""]
+            },
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        },
+        "fits.note": {
+          "type": "yesno",
+          "ask": "Does `note` do the specific thing the request asks for?",
+          "yes": "Append a line to your notes file.\nPlain text, dated, one note per line.",
+          "no": "Something else, such as: reading notes back."
+        },
+        "note.text": {
+          "type": "pick",
+          "ask": "What should the note say?",
+          "pick": "quoted",
+          "optional": false
+        }
+      },
+      "values": {},
+      "deadline": 30000
+    }
+  }
+}

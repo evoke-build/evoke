@@ -1,0 +1,18 @@
+reflex = 1
+
+description = """
+Shout a word, in a tone.
+An argv body for the spec: printf, no runtime."""
+effect = "read"
+confirm = "Shout {word}?"
+run = ["printf", "%s! %s", "{word}", "{tone}"]
+
+[args.word]
+ask  = "Which word?"
+pick = "quoted"
+
+[args.tone]
+ask          = "In which tone?"
+options.loud = "Louder than the room."
+options.soft = "Under one's breath."
+optional     = true

@@ -10,6 +10,9 @@ effect  = "write"
 confirm = "Lock the screen?"
 run     = "lock.mts"
 
+[needs]
+runs = ["open"]
+
 [examples]
 "lock the screen"            = {}
 "lock my laptop"             = {}

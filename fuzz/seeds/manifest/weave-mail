@@ -1,0 +1,34 @@
+reflex = 1
+
+description = """
+Start an email in your mail app.
+To one address, a copy to another, with an optional subject; nothing goes out until you press send."""
+
+not_for = ["reading or searching mail", "chat and text messages", "looking up an address"]
+tags    = ["mail"]
+effect  = "write"
+confirm = "Write to {to}?"
+run     = "mail.mts"
+
+[args.to]
+ask  = "To which address?"
+pick = "email"
+
+[args.cc]
+ask      = "Copy whom?"
+pick     = "email"
+optional = true
+
+[args.subject]
+ask      = "What is the subject?"
+pick     = "quoted"
+optional = true
+
+[examples]
+"email ana@example.com"                   = { to = "ana@example.com" }
+'write to sam@example.com about "friday"' = { to = "sam@example.com", subject = "friday" }
+"send a note to team@example.com"         = { to = "team@example.com" }
+
+[tests]
+'mail dana@example.com "the minutes"' = { to = "dana@example.com", subject = "the minutes" }
+"read my mail"                        = false

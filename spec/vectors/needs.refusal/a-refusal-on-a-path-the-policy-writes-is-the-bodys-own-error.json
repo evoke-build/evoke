@@ -1,0 +1,10 @@
+{
+  "input": {
+    "policy": { "writes": [{ "path": "/Users/me/notes", "from": "~/notes" }] },
+    "reflex": "note",
+    "origin": { "type": "local", "at": { "file": { "type": "manifest", "name": "note" }, "line": 10, "column": 1 } },
+    "refused": { "what": "open", "path": "/Users/me/notes/today.txt" },
+    "home": "/Users/me"
+  },
+  "expect": null
+}

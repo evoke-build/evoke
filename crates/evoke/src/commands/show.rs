@@ -1,7 +1,8 @@
 //! `evoke show [name]`: what is installed, or one reflex as it is used. In: a name or none, the environment. Out:
-//! `Exit`. Without a name, every reflex on a line — the answer, on stdout — and each inactive one's problems
-//! with their fixes, on stderr; with one, the effective manifest, each line marked shipped or yours, the lines of
-//! the overlay that address nothing the reflex has, then that reflex's problems.
+//! `Exit`. Without a name, every reflex on a line with what it may touch under it — the answer, on stdout — the
+//! machine's status once when it does not hold a declaration whole, and each inactive one's problems with their
+//! fixes, on stderr; with one, the effective manifest, each line marked shipped or yours, the lines of the overlay
+//! that address nothing the reflex has, then that reflex's problems.
 
 use evoke_core::document::Text as Source;
 use evoke_core::name::LocalName;
@@ -42,6 +43,9 @@ fn shown(session: &Session<'_>, name: Option<&LocalName>) -> Exit {
             &session.rows(session.project.reflexes.keys()),
             Gutter::Listed,
         ));
+        if let Some(status) = report::status(&session.contained) {
+            terminal::note(&status);
+        }
         let problems: Vec<Diagnostic> = session
             .plan
             .inactive()

@@ -33,9 +33,20 @@ says which line gives it what it needs. `places` names your folders, and each wo
 `sites` names your sites, and each value is its URL. `download` runs without `places`; with it, a place you name.
 
 ```bash
-evoke vocab places add desktop "The desktop." --value /Users/you/Desktop
+evoke vocab places add desktop "The desktop." --value "~/Desktop"
 evoke vocab sites add github "GitHub." --value https://github.com
-evoke config note file ~/notes.txt
+evoke config note file "~/notes.txt"
+```
+
+## What each one touches
+
+A manifest declares what its body touches, under `[needs]`, and evoke holds the body there. `evoke add` prints
+each declaration under its row. `screenshot`'s:
+
+```toml
+[needs]
+writes = ["~/Desktop"]
+runs   = ["screencapture"]
 ```
 
 ## Writing one

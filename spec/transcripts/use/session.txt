@@ -21,8 +21,10 @@ $ evoke "dim the office"
   Set the office lights dim?  [y]es [n]o [t]each > x
   Set the office lights dim?  "x" is not one of them  [y]es [n]o [t]each > y
 group-7 lights dim
-# A runtime recorded on this machine and gone since is recorded again by sync.
+# A runtime recorded on this machine and gone since is recorded again by sync; the body starts after the
+# decision, so the call prints first.
 $ printf '/nowhere/node\n' > .local/state/evoke/runtime
 $ evoke "kill the lights in the den"
+  lights room="den" state="off"  0.85
   starting /nowhere/node: it is gone  →  evoke sync
 [1]

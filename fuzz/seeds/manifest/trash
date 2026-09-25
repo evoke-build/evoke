@@ -1,0 +1,22 @@
+reflex = 1
+
+description = """
+Empty the trash.
+Everything in it is gone for good."""
+
+not_for = ["deleting one file", "clearing downloads or caches"]
+tags    = ["files"]
+effect  = "destructive"
+confirm = "Empty the trash?"
+run     = ["osascript", "-e", 'tell application "Finder" to empty the trash']
+
+[examples]
+"empty the trash"           = {}
+"empty the bin"             = {}
+"clear out the recycle bin" = {}
+
+[tests]
+"empty the trash can"  = {}
+"purge the trash"      = {}
+"delete the old draft" = false
+"clear my downloads"   = false

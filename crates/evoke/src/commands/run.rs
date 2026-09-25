@@ -8,7 +8,7 @@ use evoke_core::plan::Millis;
 use evoke_core::{Decision, Input, Written, by_name};
 
 use super::needs_terminal;
-use super::session::{self, Confirmed, Opening, Session, dismiss};
+use super::session::{self, Confirmed, Opening, Session};
 use super::{Decline, Exit};
 use crate::args::Command;
 use crate::hosts::{Environment, terminal};
@@ -31,20 +31,16 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
         Err(refused) => return session.reporter.exit(&input, Exit::Human(refused)),
     };
     let mut line = Line::unjudged(&decision);
-    let warm = match session.warm() {
-        Ok(warm) => warm,
-        Err(exit) => return session.reporter.exit(&input, exit),
-    };
+    let contained = session.contained.clone();
     let chosen = match decision {
         Decision::Run { chosen } => {
             if !json {
-                terminal::note(&report::running(&chosen));
+                terminal::note(&report::running(&chosen, &contained));
             }
             chosen
         }
         Decision::Confirm { chosen, prompt, .. } => {
             if !session.has_tty() {
-                dismiss(warm);
                 let human = Exit::Human(needs_terminal("a confirm"));
                 if json {
                     terminal::result(&line.json());
@@ -52,10 +48,9 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
                 }
                 return session.reporter.exit(&input, human);
             }
-            let own = report::confirming(&chosen, &prompt);
+            let own = report::confirming(&chosen, &prompt, &contained);
             match session.confirmed(&own, &prompt, false) {
                 Ok(Some(Confirmed::No) | None) => {
-                    dismiss(warm);
                     if json {
                         terminal::result(&line.json());
                     }
@@ -64,10 +59,7 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
                         .exit(&input, Exit::Declined(Decline::Refused));
                 }
                 Ok(Some(_)) => chosen,
-                Err(exit) => {
-                    dismiss(warm);
-                    return session.reporter.exit(&input, exit);
-                }
+                Err(exit) => return session.reporter.exit(&input, exit),
             }
         }
         Decision::Ask { .. } | Decision::Abstain { .. } => {
@@ -75,7 +67,8 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
         }
     };
     let empty = Input::new("").expect("nothing is under the cap");
-    let exit = match session.run(&chosen, &empty, Millis(0), warm) {
+    line.contained = Some(contained);
+    let exit = match session.run(&chosen, &empty, Millis(0)) {
         Ok(returned) => {
             if !json && !returned.text.is_empty() {
                 terminal::result(&returned.text);

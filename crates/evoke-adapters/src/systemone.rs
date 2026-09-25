@@ -141,19 +141,19 @@ pub struct Settings {
     /// Where a key comes from, as the line that asks for one says it.
     pub issuer: String,
     pub url: String,
-    pub policy: Policy,
+    pub policy: Transport,
 }
 
 /// The transport policy as a value, executed by each host: the wait after connect, how many times a connect error
 /// or a retried status is tried again, and which statuses those are.
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Policy {
+pub struct Transport {
     pub timeout: Millis,
     pub retries: u32,
     pub retry_statuses: Range<u16>,
 }
 
-impl Policy {
+impl Transport {
     /// Whether a response's status is tried again.
     #[must_use]
     pub fn retried(&self, status: u16) -> bool {
@@ -246,8 +246,8 @@ fn overrides(name: &str, table: &Json, floors: &mut Floors) -> Vec<String> {
 }
 
 /// The door's wait after connect; one retry on connect errors and server errors, never on a client error.
-fn policy(timeout: Millis) -> Policy {
-    Policy {
+fn policy(timeout: Millis) -> Transport {
+    Transport {
         timeout,
         retries: 1,
         retry_statuses: Range::new(500, 599).expect("500 is below 599"),

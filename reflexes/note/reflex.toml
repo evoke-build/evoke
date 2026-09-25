@@ -10,8 +10,11 @@ effect  = "write"
 confirm = 'Note "{text}"?'
 run     = "note.mts"
 
+[needs]
+writes = ["{file}"]
+
 [config]
-file = "Path of the notes file"
+file = "Path of the notes file, which exists"
 
 [args.text]
 ask  = "What should the note say?"

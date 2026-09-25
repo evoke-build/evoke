@@ -136,6 +136,10 @@
   <span class="s">"--replicas"</span><span class="o">,</span> <span class="s">"<span class="ph">{replicas}</span>"</span><span class="o">,</span>
 <span class="o">]</span>
 
+<span class="t">[needs]</span>
+<span class="k">writes</span> <span class="o">=</span> <span class="o">[</span><span class="s">"~/.kube"</span><span class="o">]</span>                   <span class="c"># the kubeconfig, and kubectl's cache beside it</span>
+<span class="k">hosts</span>  <span class="o">=</span> <span class="o">[</span><span class="s">"*"</span><span class="o">]</span>
+
 <span class="t">[args.service]</span>
 <span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which service?"</span>
 <span class="k">vocab</span> <span class="o">=</span> <span class="s">"services"</span>
@@ -311,8 +315,8 @@ done<span class="o">()</span></pre>
         Node. <strong>kubectl changes your cluster for real, so point your words at a deployment you may
         scale.</strong></p>
       <ul class="needs">
-        <li class="ok"><b>kubectl, with access</b>On the machine where you type. A reflex runs as you, and there is no
-          sandbox yet.</li>
+        <li class="ok"><b>kubectl, with access</b>On the machine where you type. A reflex runs as you, held to what its
+          manifest declares: your kubeconfig, and the network.</li>
         <li class="ok"><b>Your kubeconfig</b>kubectl reads <code>~/.kube/config</code>, and its current context picks the
           cluster. The program gets only <code>PATH</code>, <code>HOME</code>, <code>TMPDIR</code>, <code>LANG</code>
           and <code>TERM</code>, so an exported <code>KUBECONFIG</code> does not reach it.</li>

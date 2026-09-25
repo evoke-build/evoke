@@ -1,11 +1,12 @@
 //! The project's owned files: where the project is, what it holds, and how an `Edit` lands in one keeping its
-//! shape — comments and order survive. In: the environment and the working directory; a path; an `Edit`. Out: the
-//! `Root`, a `Snapshot` of the owned texts, a file's text or its absence, an `Edited` file to verify and write;
-//! `Failure`.
+//! shape — comments and order survive; and the private temporary folder a body runs with. In: the environment
+//! and the working directory; a path; an `Edit`. Out: the `Root`, a `Snapshot` of the owned texts, a file's text
+//! or its absence, an `Edited` file to verify and write, a `Scratch` folder; `Failure`.
 
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicU32, Ordering};
 
 use evoke_core::name::{LocalName, RelPath, VocabName};
 use evoke_core::{Digest, Edit, Fix, Json, Owned, digest};
@@ -270,6 +271,37 @@ pub fn relative(root: &Path, typed: &str) -> Result<Option<String>, Failure> {
     Ok(Some(path))
 }
 
+/// A private temporary folder for one run, made under the system's — `TMPDIR`, else `/tmp` — readable by its
+/// owner alone and named by its real path, which is what a body sees as `TMPDIR`; removed when dropped.
+pub struct Scratch {
+    pub path: PathBuf,
+}
+
+impl Drop for Scratch {
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.path);
+    }
+}
+
+/// The next private folder: `evoke-<pid>-<n>` under the system's temporary directory.
+pub fn scratch(environment: &Environment) -> Result<Scratch, Failure> {
+    use std::os::unix::fs::DirBuilderExt as _;
+    static COUNT: AtomicU32 = AtomicU32::new(0);
+    let base = environment
+        .get("TMPDIR")
+        .filter(|dir| !dir.is_empty())
+        .map_or_else(|| PathBuf::from("/tmp"), PathBuf::from);
+    let n = COUNT.fetch_add(1, Ordering::Relaxed);
+    let dir = base.join(format!("evoke-{}-{n}", std::process::id()));
+    let what = format!("making {}", dir.display());
+    fs::DirBuilder::new()
+        .mode(0o700)
+        .create(&dir)
+        .map_err(|error| failed(&what, &error))?;
+    let path = fs::canonicalize(&dir).map_err(|error| failed(&what, &error))?;
+    Ok(Scratch { path })
+}
+
 /// A path made absolute: its parent canonical, its last name as typed, so a symlink keeps the name it is known
 /// by; `.` and `..` themselves canonical. What is named must be there.
 fn resolved(path: &Path) -> io::Result<PathBuf> {
@@ -358,9 +390,9 @@ mod tests {
     }
 
     /// A fresh directory under the system's temporary one, removed with the guard.
-    struct Scratch(PathBuf);
+    struct Fresh(PathBuf);
 
-    impl Scratch {
+    impl Fresh {
         fn new(name: &str) -> Self {
             let dir =
                 std::env::temp_dir().join(format!("evoke-files-{name}-{}", std::process::id()));
@@ -370,7 +402,7 @@ mod tests {
         }
     }
 
-    impl Drop for Scratch {
+    impl Drop for Fresh {
         fn drop(&mut self) {
             let _ = fs::remove_dir_all(&self.0);
         }
@@ -378,7 +410,7 @@ mod tests {
 
     #[test]
     fn a_write_follows_a_symlink_and_leaves_it_standing() {
-        let scratch = Scratch::new("link");
+        let scratch = Fresh::new("link");
         let real = scratch.0.join("real.toml");
         let link = scratch.0.join("link.toml");
         fs::write(&real, "before").unwrap();
@@ -395,7 +427,7 @@ mod tests {
 
     #[test]
     fn a_symlinked_directory_keeps_the_name_it_was_typed_by() {
-        let scratch = Scratch::new("dir");
+        let scratch = Fresh::new("dir");
         let root = scratch.0.join("project");
         fs::create_dir_all(root.join("real")).unwrap();
         std::os::unix::fs::symlink(root.join("real"), root.join("link")).unwrap();
@@ -469,6 +501,25 @@ mod tests {
             .unwrap(),
             None
         );
+    }
+
+    #[test]
+    fn a_scratch_folder_is_private_and_goes_with_its_guard() {
+        use std::os::unix::fs::PermissionsExt as _;
+        let base = Fresh::new("tmp-base");
+        let env = environment(&[("TMPDIR", base.0.to_str().unwrap())]);
+        let path = {
+            let first = scratch(&env).unwrap();
+            assert!(first.path.starts_with(fs::canonicalize(&base.0).unwrap()));
+            assert_eq!(
+                fs::metadata(&first.path).unwrap().permissions().mode() & 0o777,
+                0o700
+            );
+            let other = scratch(&env).unwrap();
+            assert_ne!(first.path, other.path);
+            first.path.clone()
+        };
+        assert!(!path.exists());
     }
 
     #[test]

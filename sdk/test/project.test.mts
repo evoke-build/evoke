@@ -10,6 +10,7 @@ import { test } from "node:test"
 import { fileURLToPath } from "node:url"
 
 import type { Adapter } from "../src/adapter.ts"
+import { status } from "../src/contain.ts"
 import { DiagnosticError, FaultError } from "../src/errors.ts"
 import { load, reflex } from "../src/index.ts"
 import { replay } from "../src/testing.ts"
@@ -48,7 +49,7 @@ test("the spec's home decides and runs as the CLI does", async () => {
   equal(d.plan, project.plan)
   equal(d.trace.length, 1)
   equal(d.trace[0]?.adapter, "replay")
-  deepStrictEqual(await project.run(d), { text: "den lights off" })
+  deepStrictEqual(await project.run(d), { text: "den lights off", contained: status() })
 })
 
 test("an ask is filled with what a person typed, then confirmed", async () => {
@@ -68,7 +69,7 @@ test("an ask is filled with what a person typed, then confirmed", async () => {
   equal(filled.prompt.template, "Set the den lights off?")
   equal(filled.prompt.own, 'lights room="den" state="off" · write · weakest: state 0.58')
   await rejects(project.run(filled as never), (error: TypeError) => error.message === "a confirm decision runs only with { confirmed: true }")
-  deepStrictEqual(await project.run(filled, { confirmed: true }), { text: "den lights off" })
+  deepStrictEqual(await project.run(filled, { confirmed: true }), { text: "den lights off", contained: status() })
 })
 
 test("handle does the whole loop and returns every expected outcome", async () => {
@@ -77,7 +78,7 @@ test("handle does the whole loop and returns every expected outcome", async () =
   equal(declined.outcome, "declined")
   const ran = await project.handle("dim the office", { confirm: d => d.prompt.template === "Set the office lights dim?" })
   equal(ran.outcome, "ran")
-  if (ran.outcome === "ran") deepStrictEqual(ran.result, { text: "group-7 lights dim" }) // the word's value reaches the body
+  if (ran.outcome === "ran") deepStrictEqual(ran.result, { text: "group-7 lights dim", contained: status() }) // the word's value reaches the body
   const unanswered = await project.handle("kill the lights")
   equal(unanswered.outcome, "unanswered")
   if (unanswered.outcome === "unanswered") equal(unanswered.decision.outcome, "ask")
@@ -87,7 +88,7 @@ test("handle does the whole loop and returns every expected outcome", async () =
   equal(stuck.outcome, "declined")
   const whole = await project.handle("kill the lights", { ask: () => ({ room: "den" }), confirm: () => true })
   equal(whole.outcome, "ran")
-  if (whole.outcome === "ran") deepStrictEqual(whole.result, { text: "den lights off" })
+  if (whole.outcome === "ran") deepStrictEqual(whole.result, { text: "den lights off", contained: status() })
 })
 
 test("a tenant's project has its own plan, and refuses another project's decision", async () => {
@@ -228,7 +229,7 @@ test("a reflex that runs a program runs it with the call's values", async () => 
   const d = await project.decide("kill the lights in the den")
   equal(d.outcome, "run")
   if (d.outcome !== "run") return
-  deepStrictEqual(await project.run(d), { text: "den off" })
+  deepStrictEqual(await project.run(d), { text: "den off", contained: status() })
 })
 
 test("a root that is not a directory, a project with no root and no adapter, and an unasked argument", async () => {

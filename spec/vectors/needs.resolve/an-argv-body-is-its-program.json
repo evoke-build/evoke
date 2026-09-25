@@ -1,0 +1,28 @@
+{
+  "input": {
+    "needs": { "reads": ["{place}"] },
+    "call": {
+      "reflex": "list",
+      "args": { "place": { "type": "word", "word": "desktop", "value": "~/Desktop" } },
+      "call": "list place=\"desktop\""
+    },
+    "active": {
+      "effect": "read",
+      "run": ["ls", "{place}"],
+      "needs": { "reads": ["{place}"] },
+      "confirm": "List {place}?",
+      "args": { "place": { "ask": "Which one?", "vocab": "places", "optional": false, "was": [] } },
+      "yields": {},
+      "config": {},
+      "tags": []
+    },
+    "config": {},
+    "home": "/Users/me"
+  },
+  "expect": {
+    "ok": {
+      "reads": [{ "path": "/Users/me/Desktop", "from": "{place}" }],
+      "runs": ["ls"]
+    }
+  }
+}

@@ -604,8 +604,8 @@ One deployment in one environment; the number is set, never added to."""</span>
           </div>
           <div class="panel term quiet">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke vocab places add desktop "The desktop." --value /Users/you/Desktop</span>
-<span class="add">+ vocab/places.toml  desktop = { what = "The desktop.", value = "/Users/you/Desktop" }</span>
+<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke vocab places add desktop "The desktop." --value "~/Desktop"</span>
+<span class="add">+ vocab/places.toml  desktop = { what = "The desktop.", value = "~/Desktop" }</span>
 <span class="p">$</span> <span class="in">evoke teach "go dark" wifi state=off</span>
 <span class="add">+ overlays/wifi.toml  [examples] "go dark" = { state = "off" }</span></pre>
           </div>
@@ -654,8 +654,8 @@ One deployment in one environment; the number is set, never added to."""</span>
         <li><strong>What leaves your machine?</strong> Your sentence goes to the classifier, with questions built from the
           reflexes you installed and your own names for things. Nothing goes to evoke.build.
           <a href="/faq.html#what-leaves">What is sent, and what stays →</a></li>
-        <li><strong>What does a reflex run as?</strong> As you, with no sandbox yet. What a reflex changes is its author's
-          claim, which you can make stricter, never looser. <a href="/faq.html#contained">What is contained, and what is not →</a></li>
+        <li><strong>What does a reflex run as?</strong> As you, held by the kernel to what its manifest declares. What a
+          reflex changes is its author's claim, which you can make stricter, never looser. <a href="/faq.html#contained">What is contained, and what is not →</a></li>
       </ul>
       <p class="after"><a class="more" href="/start.html">Get started →</a></p>
     </section>

@@ -1,0 +1,26 @@
+reflex = 1
+
+description = """
+Open one of your folders.
+The places named in your vocabulary, in the file manager."""
+
+not_for = ["websites", "applications", "files by name"]
+tags    = ["files"]
+effect  = "read"
+confirm = "Open {place}?"
+run     = ["open", "{place}"]
+
+[args.place]
+ask   = "Which folder?"
+vocab = "places"
+
+[examples]
+"open my downloads folder"   = {}
+"show me the desktop folder" = {}
+"open the projects folder"   = {}
+
+[tests]
+"go to my downloads"              = {}
+"open the folder with the photos" = {}
+"open github"                     = false
+"open the terminal"               = false

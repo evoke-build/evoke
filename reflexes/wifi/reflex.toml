@@ -10,6 +10,9 @@ effect  = "write"
 confirm = "Turn Wi-Fi {state}?"
 run     = "wifi.mts"
 
+[needs]
+runs = ["networksetup"]
+
 [args.state]
 ask         = "On or off?"
 options.on  = "Switch the radio on."

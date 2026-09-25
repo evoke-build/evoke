@@ -9,6 +9,9 @@ effect = "write"
 confirm = "Note {text}?"
 run = "note.mts"
 
+[needs]
+writes = ["~/notes"]
+
 [args.text]
 ask  = "What should the note say?"
 pick = "quoted"

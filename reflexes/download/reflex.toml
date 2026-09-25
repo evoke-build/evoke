@@ -10,6 +10,10 @@ effect  = "write"
 confirm = "Download {url}?"
 run     = "download.mts"
 
+[needs]
+writes = ["{to}", "~/Downloads"]
+hosts  = ["*"]
+
 [args.url]
 ask  = "Which URL?"
 pick = "url"

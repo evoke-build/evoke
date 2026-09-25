@@ -11,6 +11,7 @@ use serde::Serialize;
 use crate::document::KeyPath;
 use crate::manifest::{Effect, Element, Kind, Manifest, Run, Source, renames};
 use crate::name::{ArgName, ConfigKey, FieldName, OptionKey};
+use crate::needs::{self, Needs};
 
 /// What changed in the contract from one version to the next, and how much it matters.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -20,9 +21,10 @@ pub struct ContractDiff {
     pub violations: Vec<WasViolation>,
 }
 
-/// `Same`: nothing but wording. `Minor`: additions, and a config key gone, which leaves a setting orphaned and skipped.
-/// `Major`: something a person's files or calls may not survive.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
+/// `Same`: nothing but wording, or a declaration narrowed. `Minor`: additions, a declaration widened, and a config
+/// key gone, which leaves a setting orphaned and skipped. `Major`: something a person's files or calls may not
+/// survive.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Level {
     Same,
@@ -31,7 +33,7 @@ pub enum Level {
 }
 
 /// One change to the contract, in the order the diff walks: the previous arguments, the added ones, the body,
-/// config, then what the result yields.
+/// what it may touch, config, then what the result yields.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Change {
@@ -53,6 +55,14 @@ pub enum Change {
         arg: ArgName,
     },
     RunChanged,
+    /// The declaration reaches more: what was added, which a person's lock keeps out until they accept it.
+    NeedsWidened {
+        added: Needs,
+    },
+    /// The declaration reaches less: what was dropped, which applies at once.
+    NeedsNarrowed {
+        removed: Needs,
+    },
     /// An optional argument made required: a call or an example without it no longer stands.
     Required {
         arg: ArgName,
@@ -91,9 +101,10 @@ pub enum Change {
 }
 
 impl Change {
-    /// Whether the change can break what a person wrote: an overlay, a call, an example, a request that takes a
-    /// yield into a later step. Additions cannot; neither can a config key gone.
-    fn breaks(&self) -> bool {
+    /// How much the change matters: major when it can break what a person wrote — an overlay, a call, an example,
+    /// a request that takes a yield into a later step; minor for an addition, a config key gone, a declaration
+    /// widened; a declaration narrowed changes nothing a person holds.
+    fn level(&self) -> Level {
         match self {
             Self::ArgRemoved { .. }
             | Self::OptionRemoved { .. }
@@ -104,14 +115,16 @@ impl Change {
             | Self::Required { .. }
             | Self::ConfigSecret { secret: true, .. }
             | Self::YieldRemoved { .. }
-            | Self::YieldChanged { .. } => true,
+            | Self::YieldChanged { .. } => Level::Major,
             Self::ConfigSecret { secret: false, .. }
             | Self::ArgAdded { .. }
             | Self::Optional { .. }
             | Self::OptionAdded { .. }
             | Self::ConfigAdded { .. }
             | Self::ConfigRemoved { .. }
-            | Self::YieldAdded { .. } => false,
+            | Self::YieldAdded { .. }
+            | Self::NeedsWidened { .. } => Level::Minor,
+            Self::NeedsNarrowed { .. } => Level::Same,
         }
     }
 }
@@ -134,7 +147,8 @@ pub enum Consent {
     NeedsAccept { locked: Effect, upstream: Effect },
 }
 
-/// The contract diff: every argument of `previous` followed through `was`, then what `next` adds, the body, config.
+/// The contract diff: every argument of `previous` followed through `was`, then what `next` adds, the body, what
+/// it may touch, config, what it yields.
 #[must_use]
 pub fn diff(previous: &Manifest, next: &Manifest) -> ContractDiff {
     let renamed = renames(previous, next);
@@ -161,6 +175,14 @@ pub fn diff(previous: &Manifest, next: &Manifest) -> ContractDiff {
     }
     if followed(&previous.run, &renamed) != next.run {
         changes.push(Change::RunChanged);
+    }
+    let added = needs::added(&next.needs, &previous.needs);
+    if !added.is_none() {
+        changes.push(Change::NeedsWidened { added });
+    }
+    let removed = needs::added(&previous.needs, &next.needs);
+    if !removed.is_none() {
+        changes.push(Change::NeedsNarrowed { removed });
     }
     for (key, before) in &previous.config {
         match next.config.get(key) {
@@ -195,13 +217,11 @@ pub fn diff(previous: &Manifest, next: &Manifest) -> ContractDiff {
             });
         }
     }
-    let level = if changes.is_empty() {
-        Level::Same
-    } else if changes.iter().any(Change::breaks) {
-        Level::Major
-    } else {
-        Level::Minor
-    };
+    let level = changes
+        .iter()
+        .map(Change::level)
+        .max()
+        .unwrap_or(Level::Same);
     ContractDiff {
         level,
         changes,

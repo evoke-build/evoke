@@ -1,0 +1,10 @@
+{
+  "input": {
+    "policy": {},
+    "reflex": "note",
+    "origin": { "type": "fetched" },
+    "refused": { "what": "", "path": "" },
+    "home": "/Users/me"
+  },
+  "expect": null
+}

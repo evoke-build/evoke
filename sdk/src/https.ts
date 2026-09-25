@@ -1,6 +1,6 @@
 // One HTTPS POST, one attempt, over a kept-alive agent: the signal bounds the whole attempt, the timeout each
 // step after connect; never retries. In: the url, a bearer, a JSON body, an agent, a signal, the step timeout.
-// Out: the status and body, or a Transport saying in plain words what went wrong and whether a connection had
+// Out: the status and body, or a Unanswered saying in plain words what went wrong and whether a connection had
 // been made — an attempt that never connected, or a pooled socket the server had already closed, is safe to
 // repeat.
 
@@ -27,12 +27,12 @@ export function pause(header: string | string[] | undefined): number | undefined
 }
 
 /** Why nothing was answered, and whether a connection was made first. */
-export class Transport extends Error {
+export class Unanswered extends Error {
   readonly connected: boolean
 
   constructor(message: string, connected: boolean) {
     super(message)
-    this.name = "Transport"
+    this.name = "Unanswered"
     this.connected = connected
   }
 }
@@ -77,7 +77,7 @@ export function post(
           const retryAfter = status === 429 ? pause(response.headers["retry-after"]) : undefined
           resolve({ status, body: text, ...(retryAfter === undefined ? {} : { retryAfter }) })
         })
-        response.on("error", error => reject(new Transport(`reading the response from ${host}: ${reason(error)}`, true)))
+        response.on("error", error => reject(new Unanswered(`reading the response from ${host}: ${reason(error)}`, true)))
       },
     )
     // The step timeout is armed once the socket is connected; Node removes it when the socket returns to the pool.
@@ -90,7 +90,7 @@ export function post(
       // A pooled socket the server closed while idle: nothing was received, so the attempt is safe to repeat.
       const stale = sent.reusedSocket && error.code === "ECONNRESET"
       const made = connected && !stale
-      reject(new Transport(describe(error, host, made, via), made))
+      reject(new Unanswered(describe(error, host, made, via), made))
     })
     sent.end(body)
   })

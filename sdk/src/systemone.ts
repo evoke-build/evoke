@@ -11,7 +11,7 @@ import { Agent } from "node:https"
 import type { Adapter } from "./adapter.ts"
 import { call, command, fromCode, reply } from "./core.ts"
 import { DiagnosticError, FailureError } from "./errors.ts"
-import { type Response, Transport, post } from "./https.ts"
+import { type Response, Unanswered, post } from "./https.ts"
 import type { Diagnostic, Door, Gate, Question, Raw, Settings, State } from "./types.ts"
 
 export interface DoorOptions {
@@ -84,7 +84,7 @@ export function over(door: Door, options: DoorOptions, send: Post): Adapter {
         try {
           response = await send(url, key, body, signal, policy.timeout)
         } catch (error) {
-          if (error instanceof Transport && again && !error.connected && !signal.aborted) {
+          if (error instanceof Unanswered && again && !error.connected && !signal.aborted) {
             retried += 1
             continue
           }

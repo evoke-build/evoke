@@ -3,6 +3,7 @@
 [workspace]
 resolver = "3"
 members  = ["crates/evoke-core", "crates/evoke-adapters", "crates/evoke-wasm", "crates/evoke"]
+exclude  = ["fuzz"]
 
 [workspace.package]
 version    = "0.4.0"
@@ -14,7 +15,8 @@ publish    = false
 # Every dependency is pinned once here; Cargo.lock holds the exact versions. Adding one is an owner decision: it
 # replaces code that would be worse hand-written, and is pure where the core is pure. Why each:
 #   indexmap               file order for options, examples and words — prompts and the classifier see it
-#   libc                   killpg: the process group, not the child alone
+#   libc                   killpg: the process group, not the child alone; Landlock, no_new_privs and seccomp in the child
+#   proptest               dev only: the merge's and the declaration's invariants over generated inputs, shrunk
 #   rustyline              the REPL's line editing and history; it opens /dev/tty itself
 #   serde, serde_json      every boundary type is JSON-shaped; the wire keeps a JSON document's order
 #   sha2                   h1, the trust digest, the plan digest, the cache's file names
@@ -26,6 +28,7 @@ evoke-core            = { path = "crates/evoke-core" }
 evoke-adapters        = { path = "crates/evoke-adapters" }
 indexmap              = { version = "2.14.2", features = ["serde"] }
 libc                  = "0.2.189"
+proptest              = { version = "1.11.0", default-features = false, features = ["std"] }
 rustyline             = { version = "18.0.1", default-features = false, features = ["with-file-history"] }
 serde                 = { version = "1.0.229", features = ["derive"] }
 serde_json            = { version = "1.0.151", features = ["preserve_order"] }

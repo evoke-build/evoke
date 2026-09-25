@@ -1,9 +1,11 @@
 // The loader: one envelope line on stdin — { run, args, input, config, deadline } — the body `run` names imported
 // and its default export called with (args, { input, config, signal }), then one result line on stdout:
-// { text, data? } or { error }. It exits when stdin closes, before or during a body, so its life is bounded by its
-// parent's. The body's console and stdout go to stderr, as do the frames of an error it throws — the frames alone,
-// without the message the host reports, and without the frames inside Node itself. SIGTERM and the deadline abort
-// `signal`; a body that has not settled a second later is abandoned. The SDK ships this same file.
+// { text, data? } or { error, refused? } — `refused` when the error is a refusal by Node's permission model or the
+// kernel: what was refused, a permission or a syscall, and the path, so the host names the declaration's key. It
+// exits when stdin closes, before or during a body, so its life is bounded by its parent's. The body's console
+// and stdout go to stderr, as do the frames of an error it throws — the frames alone, without the message the
+// host reports, and without the frames inside Node itself. SIGTERM and the deadline abort `signal`; a body that
+// has not settled a second later is abandoned. The SDK ships this same file.
 import { writeSync } from "node:fs";
 import module from "node:module";
 import { pathToFileURL } from "node:url";
@@ -31,8 +33,8 @@ const out = (value) => {
     }
   }
 };
-const fail = (message) => {
-  out({ error: message });
+const fail = (message, refused) => {
+  out(refused === undefined ? { error: message } : { error: message, refused });
   process.exit(1);
 };
 
@@ -82,8 +84,25 @@ async function run(line) {
   } catch (error) {
     const frames = error instanceof Error && error.stack ? where(error.stack) : "";
     if (frames) process.stderr.write(`${frames}\n`);
-    fail(error instanceof Error ? error.message : String(error));
+    fail(error instanceof Error ? error.message : String(error), refusal(error));
   }
+}
+
+// What refused the body, when something did: Node's permission model names the permission and the resource; the
+// kernel's error names the syscall and the path, or the address; the resolver, refused its socket, names the host.
+// A fetch wraps what refused it in its cause.
+function refusal(error) {
+  const cause = error?.cause;
+  const e = cause !== null && typeof cause === "object" && "code" in cause ? cause : error;
+  if (e === null || typeof e !== "object" || typeof e.code !== "string") return undefined;
+  const text = (value) => (value === undefined || value === null ? "" : String(value));
+  if (e.code === "ERR_ACCESS_DENIED") return { what: text(e.permission), path: text(e.resource) };
+  if (e.code === "EACCES" || e.code === "EPERM") {
+    const address = e.address === undefined ? "" : `${e.address}:${text(e.port)}`;
+    return { what: text(e.syscall), path: text(e.path) || address };
+  }
+  if (e.code === "EAI_AGAIN" || e.code === "ENOTFOUND") return { what: "resolve", path: text(e.hostname) };
+  return undefined;
 }
 
 function where(stack) {

@@ -1,0 +1,16 @@
+reflex = 1
+
+description = """
+Run a program by name.
+For the spec: the declaration names one program; the kernel refuses another."""
+effect = "read"
+confirm = "Run {program}?"
+run = "tools.mts"
+
+[needs]
+runs = ["true"]
+
+[args.program]
+ask          = "Which program?"
+options.true = "The program the declaration names."
+options.env  = "A program it does not name."

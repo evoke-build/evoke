@@ -1,0 +1,18 @@
+{
+  "platform": "macos",
+  "runtime": {
+    "path": "/Users/me/.local/share/mise/installs/node/24.20.0/bin/node"
+  },
+  "body_dir": "/Users/me/.cache/evoke/store/8416c7959e55e8f74c0dd96ca8396d1980acc68ccfa7ac32fd650be96f658703",
+  "tmp": "/private/var/folders/1j/rwfvrrld5wd4__9gt0wvlc0m0000gn/T/evoke-4242-1",
+  "home": "/Users/me",
+  "found": {
+    "/Users/me/Desktop": { "real": "/Users/me/Desktop", "dir": true },
+    "/Users/me/Downloads": { "real": "/Users/me/Downloads", "dir": true },
+    "/Users/me/notes.txt": { "real": "/Users/me/notes.txt", "dir": false },
+    "/var/tmp/out": { "real": "/private/var/tmp/out", "dir": true }
+  },
+  "programs": {
+    "open": { "path": "/usr/bin/open" }
+  }
+}

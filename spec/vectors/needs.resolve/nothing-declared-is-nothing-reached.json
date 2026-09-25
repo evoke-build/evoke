@@ -1,0 +1,24 @@
+{
+  "input": {
+    "needs": {},
+    "call": {
+      "reflex": "lock",
+      "args": {},
+      "call": "lock"
+    },
+    "active": {
+      "effect": "write",
+      "run": "lock.mts",
+      "confirm": "Lock the screen?",
+      "args": {},
+      "yields": {},
+      "config": {},
+      "tags": []
+    },
+    "config": {},
+    "home": "/Users/me"
+  },
+  "expect": {
+    "ok": {}
+  }
+}

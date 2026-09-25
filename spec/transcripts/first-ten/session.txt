@@ -1,20 +1,33 @@
 # The first ten minutes over the collection, as the manual's page shows them; the recording answers as Jev would.
-# In the remote, volume.mts and wifi.mts stand in for the collection's bodies and say what those say on a Mac, and
-# ~/bin/open stands in for the Mac's open, which says nothing: the flow changes nothing on the machine it runs on.
+# In the remote, volume.mts and wifi.mts stand in for the collection's bodies and say what those say on a Mac;
+# under ~/bin, open, osascript and networksetup stand in for the Mac's programs the declarations name, and say
+# nothing: the flow changes nothing on the machine it runs on.
 $ evoke add evoke-build/reflexes
 + awake       evoke-build/reflexes/awake 0.1.0       write        runs awake.mts
+              needs runs caffeinate
 + download    evoke-build/reflexes/download 0.1.0    write        runs download.mts
+              needs writes {to} ~/Downloads · hosts *
 + lock        evoke-build/reflexes/lock 0.1.0        write        runs lock.mts
+              needs runs open
 + mail        evoke-build/reflexes/mail 0.1.0        write        runs mail.mts
+              needs runs open
 + note        evoke-build/reflexes/note 0.1.0        write        runs note.mts
+              needs writes {file}
 + open        evoke-build/reflexes/open 0.1.0        read         runs open
+              needs reads {place}
 + power       evoke-build/reflexes/power 0.1.0       destructive  runs power.mts
+              needs runs pmset osascript
 + screenshot  evoke-build/reflexes/screenshot 0.1.0  write        runs screenshot.mts
+              needs writes ~/Desktop · runs screencapture
 + timer       evoke-build/reflexes/timer 0.1.0       write        runs timer.mts
+              needs runs osascript
 + trash       evoke-build/reflexes/trash 0.1.0       destructive  runs osascript
 + visit       evoke-build/reflexes/visit 0.1.0       read         runs visit.mts
+              needs reads ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist · runs open plutil
 + volume      evoke-build/reflexes/volume 0.1.0      write        runs volume.mts
+              needs runs osascript
 + wifi        evoke-build/reflexes/wifi 0.1.0        write        runs wifi.mts
+              needs runs networksetup
   inactive  note: config "file" is not set      →  evoke config note file <value>
   inactive  open: vocabulary "places" is empty  →  evoke vocab places add <word> "<meaning>"
   inactive  visit: vocabulary "sites" is empty  →  evoke vocab sites add <word> "<meaning>"
@@ -34,12 +47,12 @@ $ evoke "what time is it"
   none 0.70 · timer 0.20 · awake 0.05 · lock 0.05
   note, open and visit are inactive  →  evoke show
 [2]
-$ evoke vocab places add desktop "The desktop." --value /Users/you/Desktop
-+ vocab/places.toml  desktop = { what = "The desktop.", value = "/Users/you/Desktop" }
-$ PATH=~/bin:$PATH evoke "open my desktop folder"
+$ evoke vocab places add desktop "The desktop." --value "~/Desktop"
++ vocab/places.toml  desktop = { what = "The desktop.", value = "~/Desktop" }
+$ evoke "open my desktop folder"
   open place="desktop"  0.91
-$ evoke config note file notes.txt
-+ evoke.toml  [config.note] file = "notes.txt"
+$ evoke config note file "~/notes.txt"
++ evoke.toml  [config.note] file = "~/notes.txt"
 $ evoke teach "go dark" wifi state=off
 + overlays/wifi.toml  [examples] "go dark" = { state = "off" }
 $ evoke teach "what time is it" not timer

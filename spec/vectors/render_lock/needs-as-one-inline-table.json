@@ -1,0 +1,26 @@
+{
+  "input": {
+    "lock": {
+      "evoke": "0.5.0",
+      "adapter": { "name": "jev", "id": "jev-1.13.0" },
+      "reflexes": {
+        "download": {
+          "reference": { "repo": { "type": "github", "owner": "evoke-build", "name": "reflexes" }, "dir": "download" },
+          "tag": "0.5.0",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "h1": "h1:0000000000000000000000000000000000000000000000000000000000000000",
+          "effect": "write",
+          "needs": { "reads": ["/etc/hosts"], "writes": ["{to}", "~/Downloads"], "hosts": ["*"], "runs": ["open"] }
+        },
+        "lock": {
+          "reference": { "repo": { "type": "github", "owner": "evoke-build", "name": "reflexes" }, "dir": "lock" },
+          "tag": "0.5.0",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "h1": "h1:1111111111111111111111111111111111111111111111111111111111111111",
+          "effect": "write"
+        }
+      }
+    }
+  },
+  "expect": "# Written by evoke; evoke sync realises it on another machine and never changes it.\nlock  = 1\nevoke = \"0.5.0\"\n\n[adapter]\nname = \"jev\"\nid   = \"jev-1.13.0\"\n\n[reflexes.download]\nref    = \"evoke-build/reflexes/download\"\ntag    = \"0.5.0\"\ncommit = \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"\nh1     = \"h1:0000000000000000000000000000000000000000000000000000000000000000\"\neffect = \"write\"\nneeds  = { reads = [\"/etc/hosts\"], writes = [\"{to}\", \"~/Downloads\"], hosts = [\"*\"], runs = [\"open\"] }\n\n[reflexes.lock]\nref    = \"evoke-build/reflexes/lock\"\ntag    = \"0.5.0\"\ncommit = \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"\nh1     = \"h1:1111111111111111111111111111111111111111111111111111111111111111\"\neffect = \"write\"\n"
+}

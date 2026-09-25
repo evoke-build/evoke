@@ -23,9 +23,14 @@ pub fn run(mut command: Command, typed: &[String]) -> Result<(String, i32), Stri
     let (mut master, slave) = open();
     let (stdout, stderr) = (slave.try_clone().unwrap(), slave.try_clone().unwrap());
     command.stdin(slave).stdout(stdout).stderr(stderr);
+    // The request's type follows the libc: a `c_ulong` on Linux, a `u32` on macOS.
+    #[cfg(target_os = "macos")]
+    let tiocsctty = libc::c_ulong::from(libc::TIOCSCTTY);
+    #[cfg(not(target_os = "macos"))]
+    let tiocsctty = libc::TIOCSCTTY;
     unsafe {
-        command.pre_exec(|| {
-            if libc::setsid() == -1 || libc::ioctl(0, libc::TIOCSCTTY, 0) == -1 {
+        command.pre_exec(move || {
+            if libc::setsid() == -1 || libc::ioctl(0, tiocsctty, 0) == -1 {
                 return Err(std::io::Error::last_os_error());
             }
             Ok(())

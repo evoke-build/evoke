@@ -1,0 +1,8 @@
+reflex = 1
+
+description = """
+Return a result larger than a pipe's buffer.
+For the spec: the text is short, the data is not."""
+effect = "read"
+confirm = "Return the big result?"
+run = "big.mts"

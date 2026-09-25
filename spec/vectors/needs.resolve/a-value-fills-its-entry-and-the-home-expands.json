@@ -1,0 +1,58 @@
+{
+  "input": {
+    "needs": {
+      "writes": [
+        "{to}",
+        "~/Downloads"
+      ],
+      "hosts": [
+        "*"
+      ]
+    },
+    "call": {
+      "reflex": "download",
+      "args": {
+        "url": {
+          "type": "pick",
+          "span": {
+            "start": 9,
+            "end": 39,
+            "text": "https://example.com/report.pdf"
+          },
+          "value": {
+            "type": "url",
+            "value": "https://example.com/report.pdf"
+          }
+        },
+        "to": {
+          "type": "word",
+          "word": "desktop",
+          "value": "/Users/me/Desktop"
+        }
+      },
+      "call": "download url=\"https://example.com/report.pdf\" to=\"desktop\""
+    },
+    "active": {
+      "$ref": "fixtures/active-download.json"
+    },
+    "config": {},
+    "home": "/Users/me"
+  },
+  "expect": {
+    "ok": {
+      "writes": [
+        {
+          "path": "/Users/me/Desktop",
+          "from": "{to}"
+        },
+        {
+          "path": "/Users/me/Downloads",
+          "from": "~/Downloads"
+        }
+      ],
+      "hosts": [
+        "*"
+      ]
+    }
+  }
+}

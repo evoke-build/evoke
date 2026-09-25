@@ -1,0 +1,10 @@
+{
+  "input": {
+    "policy": { "runs": ["open"] },
+    "reflex": "visit",
+    "origin": { "type": "fetched" },
+    "refused": { "what": "WorkerThreads", "path": "" },
+    "home": "/Users/me"
+  },
+  "expect": null
+}
