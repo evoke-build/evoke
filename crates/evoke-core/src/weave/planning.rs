@@ -11,7 +11,7 @@ use super::{
 };
 use crate::adapter::{Fault, Prob};
 use crate::call::Value;
-use crate::decide::{Cap, Decision};
+use crate::decide::{Cap, Decision, merged};
 use crate::manifest::{Effect, Kind, Recognizer, Source, Yield};
 use crate::name::{ArgName, FieldName, LocalName, Tag};
 use crate::plan::Plan;
@@ -341,12 +341,14 @@ impl Planner<'_> {
     /// Repair. A segment that matches nothing on its own is one of three things. A second item of its
     /// neighbour's task — «gadgets» after «check stock for widgets» — is decided again narrowed to the
     /// neighbour's reflex, or spliced into the neighbour's own words in place of the value it stands for: a
-    /// fan-out. Failing that, a fragment of its neighbour's words is merged back and decided again, unless the
-    /// engine was firm that the request asks for two things there, or the fragment carries a pronoun: then it is
-    /// an action nothing matches, and the request is refused rather than half done. A part that decided on its
-    /// own as another reflex, under a split the engine called one thing, is tried as a fan-out too and stays its
-    /// own step when that fails: a bare item routes to the reflex whose example begins with it, weak evidence
-    /// against the engine's doubt.
+    /// fan-out. Failing that, a fragment of its neighbour's words is merged back and decided again — and never
+    /// runs unasked then, since the part it absorbed may have been a second task after all — unless the engine
+    /// was firm that the request asks for two things there, or the fragment carries a pronoun: then it is an
+    /// action nothing matches, and the request is refused rather than half done. A part that decided on its own
+    /// as another reflex is tried as a fan-out too, and stays its own step when that fails, under a split the
+    /// engine called one thing, or when it is a bare item — a determiner and one word, «the logo» — whatever the
+    /// engine made of the split: such a part routes to the reflex whose example begins with it, weak evidence
+    /// against the words' own shape.
     fn repair(&self, draft: &mut Draft) -> Result<(), Need> {
         let mut k = 0;
         while k < draft.segs.len() && draft.segs.len() >= 2 {
@@ -357,9 +359,10 @@ impl Planner<'_> {
                 .as_ref()
                 .is_some_and(|s| s.p.map_or(0.0, Prob::get) < DOUBT)
                 && sibling_reflex.is_some();
+            let bare = sibling_reflex.is_some() && bare(&draft.segs[k].text);
             let abstains = matches!(draft.decisions[k], Decision::Abstain { .. });
             let other = reflex_of(&draft.decisions[k]) != sibling_reflex.as_ref();
-            if !(abstains || doubted && other) {
+            if !(abstains || (doubted || bare) && other) {
                 k += 1;
                 continue;
             }
@@ -390,7 +393,7 @@ impl Planner<'_> {
                 continue;
             }
             let (a, b) = if k > 0 { (k - 1, k) } else { (k, k + 1) };
-            let merged = Segment {
+            let whole = Segment {
                 text: draft.chars[draft.segs[a].start..draft.segs[b].end.min(draft.chars.len())]
                     .iter()
                     .collect::<String>()
@@ -400,13 +403,15 @@ impl Planner<'_> {
                 end: draft.segs[b].end,
                 excluded: false,
             };
-            let decision = self.decide(self.segment(&merged.text))?;
+            let decision = self.decide(self.segment(&whole.text))?;
             if matches!(decision, Decision::Abstain { .. }) {
                 k += 1;
                 continue;
             }
-            draft.repaired.push((merged.text.clone(), Repair::Merged));
-            draft.segs.splice(a..=b, [merged]);
+            // Merged back, the step confirms at its turn, as one with an unconsumed span does.
+            let decision = merged(self.plan, decision);
+            draft.repaired.push((whole.text.clone(), Repair::Merged));
+            draft.segs.splice(a..=b, [whole]);
             draft.decisions.splice(a..=b, [decision]);
             if let Some(split) = split {
                 draft.taken.retain(|s| *s != split);
@@ -474,18 +479,8 @@ impl Planner<'_> {
         let fragment_chars: Vec<char> = fragment.chars().collect();
         let fragment_lowered = fragment.to_lowercase();
         // A determiner the fragment carries replaces the one before the value: «the poster» over «the logo».
-        let determiner = ["the", "a", "an"].into_iter().find_map(|det| {
-            let head: String = fragment_chars
-                .iter()
-                .take(det.len())
-                .collect::<String>()
-                .to_lowercase();
-            let mut end = det.len();
-            while end < fragment_chars.len() && fragment_chars[end].is_whitespace() {
-                end += 1;
-            }
-            (head == det && end > det.len()).then_some(end)
-        });
+        let determiner = determined(&fragment_chars);
+        let item = item_of(&fragment_chars);
         for (name, value) in args {
             let Some(text) = stated(value) else {
                 continue;
@@ -516,14 +511,15 @@ impl Planner<'_> {
             {
                 continue;
             }
-            // The new value must be the fragment's own words: a spliced sentence that reads as nonsense still
-            // decides.
+            // The value put in place must be the fragment itself, its determiner aside — «the poster» is
+            // «poster» — never a word the fragment happens to hold: a clause spliced where a value should stand
+            // reads as nonsense, and may still decide.
             let after = args_of(&decision)
                 .and_then(|args| args.get(name))
                 .and_then(stated);
             if let Some(after) = after
                 && Some(&after) != stated(value).as_ref()
-                && fragment_lowered.contains(&after.to_lowercase())
+                && after.to_lowercase() == item
             {
                 return Ok(Some(Fan {
                     decision,
@@ -952,6 +948,44 @@ pub(crate) fn args_of(decision: &Decision) -> Option<&IndexMap<ArgName, Value>> 
         Decision::Abstain { .. } => None,
         Decision::Run { chosen } | Decision::Confirm { chosen, .. } => Some(&chosen.call.args),
         Decision::Ask { asking, .. } => Some(&asking.args),
+    }
+}
+
+/// A determiner — `the`, `a`, `an` — at the head of the words, and the whitespace after it: where the item begins.
+fn determined(chars: &[char]) -> Option<usize> {
+    ["the", "a", "an"].into_iter().find_map(|det| {
+        let head: String = chars
+            .iter()
+            .take(det.len())
+            .collect::<String>()
+            .to_lowercase();
+        let mut end = det.len();
+        while end < chars.len() && chars[end].is_whitespace() {
+            end += 1;
+        }
+        (head == det && end > det.len()).then_some(end)
+    })
+}
+
+/// The item the words name: what follows the determiner, lowered, the sentence's end mark aside.
+fn item_of(chars: &[char]) -> String {
+    let from = determined(chars).unwrap_or(0);
+    chars[from..]
+        .iter()
+        .collect::<String>()
+        .to_lowercase()
+        .trim_end_matches(['.', '!', '?'])
+        .trim()
+        .to_owned()
+}
+
+/// A bare item: a determiner and one word — «the logo» — the shape of a second item of the neighbour's task by the
+/// words alone.
+fn bare(text: &str) -> bool {
+    let chars: Vec<char> = text.chars().collect();
+    determined(&chars).is_some() && {
+        let item = item_of(&chars);
+        !item.is_empty() && item.chars().all(|c| c.is_ascii_alphabetic())
     }
 }
 

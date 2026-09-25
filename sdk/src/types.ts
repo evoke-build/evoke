@@ -762,6 +762,8 @@ export type Cap =
   | { type: "under_floor"; judgment: Judgment; floor: Prob }
   | { type: "unconsumed_span"; span: Span }
   | { type: "two_things"; contender: Contender }
+  /** A weave merged a part that matched nothing on its own back into these words: never run unasked. */
+  | { type: "merged" }
 
 /** The confirm prompt: `evoke`'s own line, then the manifest's template filled in. */
 export interface Prompt {

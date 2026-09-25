@@ -21,7 +21,12 @@ den lights off
   list, is decided as one input.
 - Each part is decided as one input is: routed, gated, its arguments read. A part that matches nothing on its own
   is tried as another item of its neighbour's task first: "check stock for widgets and gadgets" is two stock
-  checks. Failing that, the whole request is refused rather than half done.
+  checks. So is a part that is only a determiner and one word, "the office" in "kill the lights in the den and
+  the office", whatever it would mean on its own: it stays a step of its own only when it fits no item of its
+  neighbour's task. A part read as an item must be the value it stands in for, "gadgets" for "widgets", never a
+  longer phrase that holds one. When the classifier was sure the two parts were separate things and one still
+  matches nothing, the whole request is refused rather than half done. When it was not sure, the part is read
+  with its neighbour as one request, and that step confirms before it runs: its line ends in `merged`.
 - A part that begins with `not`, `don't`, `never` or `without` is left out, however the apostrophe is typed. What
   you ask evoke not to do is no step. One step beside such a part is decided as one input. A sentence that is only
   such parts is nothing to do, and one line says so.

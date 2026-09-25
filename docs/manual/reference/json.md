@@ -23,7 +23,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `contenders` | ●   | ●       | ●   | ●       | The ranking: `{ reflex, route, fits? }`                         |
 | `runner_up`  | ○   | ○       | ○   |         | The second reflex, when there is one                            |
 | `prompt`     |     | ●       |     |         | `{ own, template }`: `evoke`'s line and the reflex's question   |
-| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `unconsumed_span`, `two_things` |
+| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `unconsumed_span`, `two_things`, `merged` |
 | `unconsumed` |     |         | ●   |         | Typed spans no argument took                                    |
 | `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because`, `choices`        |
 | `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call: `{ adapter, questions, ms }`. Empty when the answers came from the cache |

@@ -6,6 +6,10 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A part that is a determiner and one word, "the office", is read as another item of its neighbour's task first.
+  A part read with its neighbour as one request confirms before it runs, `merged` on its line. A part put in
+  place of a value must be that value.
+
 ## [0.6.0] - 2026-09-25
 
 - `evoke calibrate` reports what the numbers meant on your own records: the whole call right by confidence,
