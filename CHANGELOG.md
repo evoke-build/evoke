@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-09-25
+
 - A manifest declares what its body touches, under `[needs]`: the paths it reads and writes, whether it reaches
   the network, the programs it runs; leaving the table out is the tightest declaration. The kernel holds the body there, through
   Landlock and seccomp on Linux and Seatbelt on macOS, with Node's permission model under both; a reach past the

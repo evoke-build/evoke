@@ -1,5 +1,5 @@
 $ evoke --help
-evoke 0.4.0 · you invoke a function; you evoke a reflex
+evoke 0.5.0 · you invoke a function; you evoke a reflex
 
 use
   evoke "<input>"                         decide, gate, run
@@ -39,10 +39,10 @@ author
 exit    0 ran · 1 failed · 2 declined · 3 needs a human · 4 adapter failed
 manual  https://evoke.build/manual/
 $ evoke --version
-evoke 0.4.0
+evoke 0.5.0
 $ evoke help | head -1
-evoke 0.4.0 · you invoke a function; you evoke a reflex
+evoke 0.5.0 · you invoke a function; you evoke a reflex
 $ evoke add -h | head -1
-evoke 0.4.0 · you invoke a function; you evoke a reflex
+evoke 0.5.0 · you invoke a function; you evoke a reflex
 $ evoke -V
-evoke 0.4.0
+evoke 0.5.0
