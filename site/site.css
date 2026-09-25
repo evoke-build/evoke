@@ -630,6 +630,18 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 .ticks li { position: relative; padding-left: 1.4rem; color: var(--muted); font-size: 1rem; line-height: 1.5; }
 .ticks li::before { content: ""; position: absolute; left: 0; top: .72em; width: .8rem; height: 2px; background: var(--accent); border-radius: 1px; }
 .ticks li strong { color: var(--fg); font-weight: 560; }
+/* Tables: a head in small capitals, rows ruled, the first column leading; on a phone each row stacks */
+td code, th code { font-size: .86em; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: .05em .35em; color: inherit; white-space: nowrap; }
+.table { max-width: 60rem; margin: 0 0 1.2rem; overflow-x: auto; border-top: 1px solid var(--line-strong); }
+.table.wide table { min-width: 36rem; }   /* a table whose first column cannot wrap scrolls in its box on a phone */
+table { width: 100%; border-collapse: collapse; font-size: .94rem; line-height: 1.5; }
+th { text-align: left; font-weight: 560; color: var(--fg); font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; padding: .8rem .9rem .6rem 0; border-bottom: 1px solid var(--line-strong); white-space: nowrap; }
+td { vertical-align: top; padding: .7rem .9rem .7rem 0; border-bottom: 1px solid var(--line); color: var(--text); }
+td:first-child { color: var(--fg); white-space: nowrap; }
+td:first-child code { background: none; border: 0; padding: 0; font-size: .9em; color: var(--tk-key); }
+td strong { color: var(--fg); font-weight: 560; }
+td.y { color: var(--term-ok); font-family: var(--mono); font-size: .86em; white-space: nowrap; }
+td.n { color: var(--faint); font-family: var(--mono); font-size: .86em; white-space: nowrap; }
 .sheet { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.25rem; align-items: start; }
 .sheet.solo { grid-template-columns: minmax(0, 1fr); }
 .sheet dl { margin: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--bg); }
@@ -736,6 +748,18 @@ footer a:hover { color: var(--fg); }
 }
 @media (max-width: 1200px) { .hero .lede { font-size: 1.12rem; } }
 @media (max-width: 560px) {
+  /* a row stacks: its first cell leads, and every other cell carries its column's name */
+  .table { overflow: visible; }
+  .table table, .table tbody, .table tr, .table td { display: block; }
+  .table table, .table.wide table { min-width: 0; font-size: .92rem; }
+  .table thead { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .table tr { padding: .8rem 0 .9rem; border-bottom: 1px solid var(--line); }
+  .table td { padding: 0; border: 0; }
+  .table td:first-child { white-space: normal; }
+  .table td + td { margin-top: .5rem; }
+  .table td[data-label]::before { content: attr(data-label); display: block; margin-bottom: .1rem; font: 560 .68rem/1.4 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .table td.y, .table td.n { display: inline-block; margin-right: 1.1rem; }
+  .table td.y::before, .table td.n::before { display: inline; margin-right: .45rem; }
   .sheet dl > div { grid-template-columns: minmax(0, 1fr); gap: .15rem; }
   .cmd code { font-size: .8rem; }
   .jobs { flex-direction: column; gap: .5rem; }  /* the three jobs as a short list, not a 2 + 1 row */

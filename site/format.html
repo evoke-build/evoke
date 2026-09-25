@@ -33,7 +33,6 @@
   </script>
   <style>
     p, li, dd, td { text-wrap: pretty; }
-    td code, th code { font-size: .86em; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: .05em .35em; color: inherit; white-space: nowrap; }
     .sheet dd code { background: var(--bg); }
     .hero.solo .index { margin-top: 1.9rem; }
     .status { max-width: 46rem; margin: 1.5rem 0 0; color: var(--muted); font-size: .97rem; line-height: 1.55; }
@@ -54,33 +53,11 @@
     .terms > div { display: grid; grid-template-columns: 8rem 1fr; gap: .6rem; padding: .75rem 0; border-top: 1px solid var(--line); }
     .terms dt { font-weight: 560; color: var(--fg); font-size: .98rem; }
     .terms dd { margin: 0; color: var(--text); font-size: .95rem; line-height: 1.5; }
-    .table { max-width: 60rem; margin: 0 0 1.2rem; overflow-x: auto; border-top: 1px solid var(--line-strong); }
-    .table.wide table { min-width: 36rem; }   /* a table whose first column cannot wrap scrolls in its box on a phone */
-    table { width: 100%; border-collapse: collapse; font-size: .94rem; line-height: 1.5; }
-    th { text-align: left; font-weight: 560; color: var(--fg); font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; padding: .8rem .9rem .6rem 0; border-bottom: 1px solid var(--line-strong); white-space: nowrap; }
-    td { vertical-align: top; padding: .7rem .9rem .7rem 0; border-bottom: 1px solid var(--line); color: var(--text); }
-    td:first-child { color: var(--fg); white-space: nowrap; }
-    td:first-child code { background: none; border: 0; padding: 0; font-size: .9em; color: var(--tk-key); }
-    td strong { color: var(--fg); font-weight: 560; }
-    td.y { color: var(--term-ok); font-family: var(--mono); font-size: .86em; white-space: nowrap; }
-    td.n { color: var(--faint); font-family: var(--mono); font-size: .86em; white-space: nowrap; }
     .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: stretch; margin: 1.1rem 0 1.2rem; }  /* two files, one height */
     .pair > * { min-width: 0; }
     @media (max-width: 960px) { .pair, .terms { grid-template-columns: minmax(0, 1fr); } .terms > div { grid-template-columns: minmax(0, 1fr); gap: .15rem; } }
     @media (max-width: 560px) {
       p code, li code, dd code { white-space: normal; overflow-wrap: anywhere; }
-      /* a row stacks: its first cell leads, and every other cell carries its column's name */
-      .table { overflow: visible; }
-      .table table, .table tbody, .table tr, .table td { display: block; }
-      .table table, .table.wide table { min-width: 0; font-size: .92rem; }
-      .table thead { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); }
-      .table tr { padding: .8rem 0 .9rem; border-bottom: 1px solid var(--line); }
-      .table td { padding: 0; border: 0; }
-      .table td:first-child { white-space: normal; }
-      .table td + td { margin-top: .5rem; }
-      .table td[data-label]::before { content: attr(data-label); display: block; margin-bottom: .1rem; font: 560 .68rem/1.4 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-      .table td.y, .table td.n { display: inline-block; margin-right: 1.1rem; }
-      .table td.y::before, .table td.n::before { display: inline; margin-right: .45rem; }
     }
   </style>
 </head>
