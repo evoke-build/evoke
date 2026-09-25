@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "Fifty percent, Half an hour"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 0,
+        "end": 13,
+        "text": "Fifty percent"
+      },
+      "value": {
+        "type": "number",
+        "value": 50
+      }
+    },
+    {
+      "span": {
+        "start": 15,
+        "end": 27,
+        "text": "Half an hour"
+      },
+      "value": {
+        "type": "duration",
+        "value": 1800
+      }
+    }
+  ]
+}

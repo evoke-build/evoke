@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "google set my alarm to go off in an hour"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 33,
+        "end": 40,
+        "text": "an hour"
+      },
+      "value": {
+        "type": "duration",
+        "value": 3600
+      }
+    }
+  ]
+}

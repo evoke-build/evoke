@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "set it to a hundred percent"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 10,
+        "end": 27,
+        "text": "a hundred percent"
+      },
+      "value": {
+        "type": "number",
+        "value": 100
+      }
+    }
+  ]
+}

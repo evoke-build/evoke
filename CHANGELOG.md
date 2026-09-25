@@ -6,6 +6,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A number or a duration spelled out is a candidate, as one in digits is: `fifty percent`, `twenty-five`,
+  `an hour`, `half an hour`, `an hour and a half`.
+
 ## [0.7.0] - 2026-09-25
 
 - `Ctrl-C` while a body runs ends the body with everything it started, then `evoke`, as an interrupted program.

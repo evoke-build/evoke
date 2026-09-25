@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "timer for twenty five mins please"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 10,
+        "end": 26,
+        "text": "twenty five mins"
+      },
+      "value": {
+        "type": "duration",
+        "value": 1500
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "raise the volume to fifty, or to zero"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 20,
+        "end": 25,
+        "text": "fifty"
+      },
+      "value": {
+        "type": "number",
+        "value": 50
+      }
+    },
+    {
+      "span": {
+        "start": 33,
+        "end": 37,
+        "text": "zero"
+      },
+      "value": {
+        "type": "number",
+        "value": 0
+      }
+    }
+  ]
+}

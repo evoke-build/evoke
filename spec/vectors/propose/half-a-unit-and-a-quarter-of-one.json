@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "wait half an hour, or a quarter of an hour"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 5,
+        "end": 17,
+        "text": "half an hour"
+      },
+      "value": {
+        "type": "duration",
+        "value": 1800
+      }
+    },
+    {
+      "span": {
+        "start": 22,
+        "end": 42,
+        "text": "a quarter of an hour"
+      },
+      "value": {
+        "type": "duration",
+        "value": 900
+      }
+    }
+  ]
+}
