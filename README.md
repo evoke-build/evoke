@@ -25,8 +25,6 @@ curl -fsSL https://evoke.build/install.sh | sh    # the CLI, on macOS and Linux
 npm install @evoke-build/evoke                    # the SDK, for Node 24.5 or newer
 ```
 
-The SDK's first release on npm is on its way. Until then, the terminal route runs today.
-
 One core, three ways in: a CLI where you type what you want, a package manager that installs reflexes from git,
 and a TypeScript SDK that puts the same decisions inside your app.
 
