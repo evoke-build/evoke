@@ -1,5 +1,5 @@
 <!-- description: How a request gets into evoke and what comes out: a sentence as the argument, the REPL or a pipe, and --json, --tag, exit codes and limits. -->
-# Saying things
+# Typing a request
 
 `evoke` takes one sentence and does three things with it: decide, gate, run. This page is about how the sentence
 gets in and how the answer comes out.

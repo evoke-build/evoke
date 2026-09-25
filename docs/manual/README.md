@@ -15,14 +15,14 @@ $ evoke "kill the lights in the den"
 den lights off
 ```
 
-One tool does three jobs. A **CLI** you talk to. A **package manager** that installs reflexes from git. A
-**TypeScript SDK** that puts the same decisions inside your app. You invoke a function; you evoke a reflex.
+One tool does three jobs. A **CLI** where you type what you want. A **package manager** that installs reflexes from
+git. A **TypeScript SDK** that puts the same decisions inside your app. You invoke a function; you evoke a reflex.
 
 ## Where to start
 
 | You want to…                                        | Read                                                          |
 | :-------------------------------------------------- | :------------------------------------------------------------ |
-| Say something to your laptop and see it happen      | [Install](start/install.md), then [The first ten minutes](start/first-run.md) |
+| Type what you want and see it happen                | [Install](start/install.md), then [The first ten minutes](start/first-run.md) |
 | Learn the words this manual uses                    | [Concepts](start/concepts.md)                                 |
 | Write a reflex of your own                          | [Your first reflex](author/first-reflex.md)                   |
 | Decide and run reflexes inside your application     | [The SDK](sdk/getting-started.md)                             |
@@ -42,7 +42,7 @@ One tool does three jobs. A **CLI** you talk to. A **package manager** that inst
 
 | Page                                         | Read it when                                                     |
 | :------------------------------------------- | :--------------------------------------------------------------- |
-| [Saying things](use/saying-things.md)        | Bare input, the REPL, a pipe, `--json`, `--tag`, exit codes       |
+| [Typing a request](use/saying-things.md)     | Bare input, the REPL, a pipe, `--json`, `--tag`, exit codes       |
 | [Outcomes](use/outcomes.md)                  | Run, confirm, ask and abstain; `try`, `why`, `run`                |
 | [Weaving](use/weaving.md)                    | Several things in one sentence: the plan, what a step takes from another |
 | [Installing reflexes](use/installing.md)     | `add`, `remove`, `update`, `sync`, `trust`; refs, the lock, the store |

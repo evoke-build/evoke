@@ -155,4 +155,4 @@ weakest answer is the confidence. It sits under the write bar, so this one would
 Your project holds only what you wrote, the lock, and generated types. Put it in your dotfiles. Everything else
 is a cache, and `evoke sync` rebuilds it on a new machine.
 
-**Next:** [Concepts](concepts.md), or straight to [Saying things](../use/saying-things.md).
+**Next:** [Concepts](concepts.md), or straight to [Typing a request](../use/saying-things.md).
