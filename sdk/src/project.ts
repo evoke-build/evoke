@@ -692,7 +692,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
         if (diagnostic === null) throw new FailureError(what, error.message, { type: "rerun" }, command({ type: "rerun" }, "run(d)"))
         throw named(diagnostic)
       }
-      return { ...result, contained: status() }
+      return { ...result, contained: status(argv === undefined ? "file" : "argv") }
     } finally {
       tmp.remove()
     }

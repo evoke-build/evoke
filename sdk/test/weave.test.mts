@@ -53,8 +53,8 @@ test("a pronoun takes the address the step before yielded, into the ask it fills
   equal(round?.decision.outcome, "run")
   if (round?.decision.outcome !== "run") return
   equal(round.decision.call, 'mail to="dana@example.com"')
-  deepStrictEqual(round.result, { text: "drafted to dana@example.com", contained: status() })
-  deepStrictEqual(woven.steps[0]?.rounds[0]?.result, { text: "dana <dana@example.com>", data: { email: "dana@example.com" }, contained: status() })
+  deepStrictEqual(round.result, { text: "drafted to dana@example.com", contained: status("file") })
+  deepStrictEqual(woven.steps[0]?.rounds[0]?.result, { text: "dana <dana@example.com>", data: { email: "dana@example.com" }, contained: status("file") })
 })
 
 test("a required argument no binding covers is asked before anything runs", async () => {

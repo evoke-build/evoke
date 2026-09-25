@@ -25,9 +25,11 @@ export interface Layers {
 }
 
 /** Whether this machine holds a whole declaration: macOS through Seatbelt, when `sandbox-exec` is there; Linux
- *  through Node's layer alone, which holds files and programs, not the network and not what a program reaches. */
-export function status(): Contained {
+ *  through Node's layer alone, which holds a file body's files and programs, not the network and not what a
+ *  program reaches, and holds nothing of an argv body. */
+export function status(body: "file" | "argv"): Contained {
   if (PLATFORM === "linux") {
+    if (body === "argv") return { type: "none", why: "an argv body runs under no layer here; the kernel's needs native code the package does not carry" }
     return { type: "partial", why: "Node holds files and programs; the network and what a program reaches are not held" }
   }
   return runs(SANDBOX_EXEC) ? { type: "full" } : { type: "none", why: "sandbox-exec is missing" }
