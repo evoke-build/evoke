@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-09-25
+
 - `Ctrl-C` while a body runs ends the body with everything it started, then `evoke`, as an interrupted program.
   In a weave, every step that did not finish reads `skipped · cancelled`, on the terminal, under `--json` and in
   the log. The SDK's `weave` rejects with the signal's reason and puts its record on it.
