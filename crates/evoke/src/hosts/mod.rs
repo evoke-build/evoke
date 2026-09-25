@@ -4,6 +4,7 @@
 pub mod contain;
 pub mod files;
 pub mod git;
+pub mod interrupt;
 pub mod network;
 pub mod processes;
 pub mod state;

@@ -43,7 +43,7 @@ call the plan took.
 | Field    | Holds                                                                                                   |
 | :------- | :------------------------------------------------------------------------------------------------------ |
 | `status` | `"ran"`, `"failed"`, `"declined"`, `"refused"`, `"skipped"`, `"unanswered"`                              |
-| `why`    | `{ "type": "earlier_step" }`, `nothing_to_take`, `found_nothing`, `no_reflex`, `{ "type": "read_as", "reflex" }`, or `{ "type": "said", "message" }`: a prompt's own line, a failure, a question no one answered |
+| `why`    | `{ "type": "earlier_step" }`, `nothing_to_take`, `found_nothing`, `no_reflex`, `cancelled`, `{ "type": "read_as", "reflex" }`, or `{ "type": "said", "message" }`: a prompt's own line, a failure, a question no one answered |
 
 In the plan `evoke try --json` prints, a step's `refs` count the steps they may name from 0; `step`, `after`,
 `stages` and `binds` count from 1.

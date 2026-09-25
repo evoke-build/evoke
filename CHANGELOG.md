@@ -6,6 +6,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- `Ctrl-C` while a body runs ends the body with everything it started, then `evoke`, as an interrupted program.
+  In a weave, every step that did not finish reads `skipped · cancelled`, on the terminal, under `--json` and in
+  the log. The SDK's `weave` rejects with the signal's reason and puts its record on it.
 - A part that is a determiner and one word, "the office", is read as another item of its neighbour's task first.
   A part read with its neighbour as one request confirms before it runs, `merged` on its line. A part put in
   place of a value must be that value.

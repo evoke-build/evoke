@@ -308,6 +308,8 @@ pub enum Why {
     NoReflex,
     /// Once the values were in place, the words read as another reflex.
     ReadAs { reflex: LocalName },
+    /// The weave was cancelled: the round the host ended, and every step that had not finished by then.
+    Cancelled,
     /// What the host said: a body's failure, a prompt declined, a question no one answered.
     Said { message: String },
 }
@@ -337,8 +339,13 @@ pub struct Progress {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Todo {
-    /// Decide a step again with its bound values written into its words, narrowed to its reflex.
-    Decide { asked: Asked },
+    /// Decide a step again with its bound values written into its words, narrowed to its reflex: which step,
+    /// which of its rounds, and the text.
+    Decide {
+        step: usize,
+        round: usize,
+        asked: Asked,
+    },
     /// Take these rounds through the foundation's loop — a stage's steps together where the host can.
     Handle { handling: Vec<Handling> },
 }

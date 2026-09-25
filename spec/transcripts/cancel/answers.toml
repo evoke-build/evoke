@@ -1,0 +1,34 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md): two sentences of two steps each,
+# a body that sleeps before a timer, and the parts alone.
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.6
+write = 0.8
+
+[answers."wait a while and start a 10 minute timer"]
+"weave.split_0" = { yes = 0.95 }
+
+[answers."pause a moment and start a 10 minute timer"]
+"weave.split_0" = { yes = 0.95 }
+
+[answers."wait a while"]
+route        = { wait = 0.9, pause = 0.04, timer = 0.01, none = 0.05 }
+"fits.wait"  = { yes = 0.8 }
+"fits.pause" = { yes = 0.1 }
+"fits.timer" = { yes = 0.02 }
+
+[answers."pause a moment"]
+route        = { pause = 0.9, wait = 0.04, timer = 0.01, none = 0.05 }
+"fits.wait"  = { yes = 0.1 }
+"fits.pause" = { yes = 0.8 }
+"fits.timer" = { yes = 0.02 }
+
+[answers."start a 10 minute timer"]
+route            = { timer = 0.9, wait = 0.02, pause = 0.02, none = 0.06 }
+"fits.wait"      = { yes = 0.02 }
+"fits.pause"     = { yes = 0.02 }
+"fits.timer"     = { yes = 0.8 }
+"timer.duration" = { "8-17" = 0.9, unstated = 0.1 }

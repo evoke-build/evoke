@@ -2,11 +2,12 @@
 // and its default export called with (args, { input, config, signal }), then one result line on stdout:
 // { text, data? } or { error, refused? } — `refused` when the error is a refusal by Node's permission model or the
 // kernel: what was refused, a permission or a syscall, and the path, so the host names the declaration's key. It
-// exits when stdin closes, before or during a body, so its life is bounded by its parent's. The body's console
-// and stdout go to stderr, as do the frames of an error it throws — the frames alone, without the message the
-// host reports, and without the frames inside Node itself; an error thrown from a callback ends the body as a
-// rejection does. SIGTERM and the deadline abort `signal`; a body that has not settled a second later is
-// abandoned. The SDK ships this same file.
+// exits when stdin closes before a body, and during one aborts the body's `signal` first, so its life is bounded
+// by its parent's and the body still hears the end. The body's console and stdout go to stderr, as do the frames
+// of an error it throws — the frames alone, without the message the host reports, and without the frames inside
+// Node itself; an error thrown from a callback ends the body as a rejection does. SIGTERM, the deadline and
+// stdin's end abort `signal`; a body that has not settled a second later is abandoned. The SDK ships this same
+// file.
 import { writeSync } from "node:fs";
 import module from "node:module";
 import { pathToFileURL } from "node:url";
@@ -23,6 +24,12 @@ try {
   // Nothing to warm.
 }
 const controller = new AbortController();
+// The body's signal aborted with the reason, and the loader gone a grace later whatever the body does: with a
+// line for the host when it is still there to read one, silently when it is not.
+const stop = (why, report) => {
+  if (!controller.signal.aborted) controller.abort(new Error(why));
+  setTimeout(() => (report ? fail(why) : process.exit(1)), GRACE);
+};
 // The whole line, however long: `process.stdout` below puts the pipe in non-blocking mode, so one write may take
 // part of it, and the next may be told to wait a moment.
 const out = (value) => {
@@ -56,7 +63,8 @@ process.stdin.on("data", (chunk) => {
     run(buffered.slice(0, end));
   }
 });
-process.stdin.on("end", () => process.exit(started ? 1 : 0));
+// The host is gone: before a body, nothing to do; during one, the body hears it and the loader follows.
+process.stdin.on("end", () => (started ? stop("the host is gone", false) : process.exit(0)));
 
 async function run(line) {
   let envelope;
@@ -66,13 +74,9 @@ async function run(line) {
     return fail(`the envelope is not JSON: ${error.message}`);
   }
   const { run, args, input, config, deadline } = envelope;
-  const stop = (why) => {
-    if (!controller.signal.aborted) controller.abort(new Error(why));
-    setTimeout(() => fail(why), GRACE);
-  };
-  process.on("SIGTERM", () => stop("terminated"));
+  process.on("SIGTERM", () => stop("terminated", true));
   process.on("uncaughtException", thrown);
-  const timer = setTimeout(() => stop(`timed out after ${deadline} ms`), deadline);
+  const timer = setTimeout(() => stop(`timed out after ${deadline} ms`, true), deadline);
   try {
     const module = await import(pathToFileURL(run).href);
     if (module.default === undefined) throw new Error(`${run} has no default export`);

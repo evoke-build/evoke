@@ -1,7 +1,8 @@
 //! Children: the loader started at the decision, under the layers, in the body's directory, fed an envelope, its
 //! stdin kept open until it exits; a program spawned with an argv under the same layers; a body imported by the
 //! probe for `check`, never called; all under a scrubbed environment with a private `TMPDIR`, in their own process
-//! group, killed as a group on timeout. And the runtime itself, under no layer, asked where it is and whether it
+//! group, killed as a group on timeout and on Ctrl-C — SIGTERM, a grace, SIGKILL — the wait polling the
+//! interrupt. And the runtime itself, under no layer, asked where it is and whether it
 //! holds the network. In: a `Body` — what it is called, its envelope with the config resolved, the policy and the
 //! facts the layers take, the deadline — with the runtime and the body's directory or an argv. Out: what the body
 //! returned, whether it loads, or why it ended: a `Failure`, what refused it, a profile `sandbox-exec` refused.
@@ -13,7 +14,7 @@ use std::io::{self, Read, Write};
 use std::os::unix::process::CommandExt;
 use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdout, Command, ExitStatus, Output, Stdio};
-use std::sync::mpsc;
+use std::sync::mpsc::{self, RecvTimeoutError};
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -27,7 +28,7 @@ use evoke_core::{Envelope, Fix, Json, node_flags};
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
-use super::{Deadline, Environment, Failure, contain};
+use super::{Deadline, Environment, Failure, contain, interrupt};
 
 /// The `node` on `PATH`, when one is there: what `add` and `sync` ask for the runtime's real path, and record.
 #[must_use]
@@ -103,8 +104,13 @@ const PROBE: &str = include_str!("../../runtime/check.mjs");
 const KEPT: [&str; 5] = ["PATH", "HOME", "TMPDIR", "LANG", "TERM"];
 
 /// What a group gets after SIGTERM before SIGKILL; the loader gives a body the same to settle after an abort, so the
-/// host waits twice that past the deadline for the loader's own report before ending the group.
+/// host waits twice that past the deadline for the loader's own report before ending the group, and twice that
+/// after its own SIGTERM on Ctrl-C, so the body hears its signal and the loader ends on its own.
 const GRACE: Duration = Duration::from_secs(1);
+/// How often a wait looks at the child, and at the interrupt.
+const POLL: Duration = Duration::from_millis(5);
+/// Why a body gave no result when Ctrl-C ended it.
+const INTERRUPTED: &str = "interrupted";
 
 /// What a body returned: its text, and data when it gave some.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -205,6 +211,10 @@ pub fn file(body: &Body<'_>, runtime: &Path, dir: &Path) -> Result<Returned, End
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::inherit());
+    // Ctrl-C already noted: nothing starts after it.
+    if interrupt::interrupted() {
+        return Err(Ended::Failed(failed(body.what, INTERRUPTED)));
+    }
     let mut child = command
         .spawn()
         .map_err(|error| Ended::Failed(not_started(runtime, &error)))?;
@@ -216,7 +226,7 @@ pub fn file(body: &Body<'_>, runtime: &Path, dir: &Path) -> Result<Returned, End
         .and_then(|()| stdin.flush());
     if let Err(error) = fed {
         drop(stdin);
-        end(&mut child);
+        end(&mut child, GRACE);
         return Err(Ended::Failed(failed(
             body.what,
             &format!("feeding the envelope: {error}"),
@@ -311,6 +321,9 @@ pub fn program(body: &Body<'_>, argv: &[String], dir: &Path) -> Result<Returned,
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::inherit());
+    if interrupt::interrupted() {
+        return Err(Ended::Failed(failed(body.what, INTERRUPTED)));
+    }
     let mut child = command.spawn().map_err(|error| {
         Ended::Failed(failed(
             body.what,
@@ -390,7 +403,8 @@ fn scrubbed(program: &Path, environment: &Environment) -> Command {
 
 /// Everything the child writes until it closes stdout, then its status; past the deadline and the loader's grace
 /// — for the output, and again for the exit, so a child that closes stdout and lingers is ended too — the group
-/// is ended and the wait is the failure.
+/// is ended and the wait is the failure. Ctrl-C noted meanwhile ends the group too, with the longer grace, and
+/// is the failure's cause.
 fn collect(
     mut stdout: ChildStdout,
     child: &mut Child,
@@ -402,20 +416,37 @@ fn collect(
         let read = stdout.read_to_end(&mut output).map(|_| output);
         let _ = sender.send(read);
     });
-    match receiver.recv_timeout(deadline.remaining() + 2 * GRACE) {
-        Ok(Ok(output)) => {
-            let Some(status) = exited(child, deadline.remaining() + 2 * GRACE) else {
-                end(child);
-                return Err("did not finish before the deadline".to_owned());
-            };
-            Ok((String::from_utf8_lossy(&output).into_owned(), status))
+    let until = Instant::now() + deadline.remaining() + 2 * GRACE;
+    let read = loop {
+        match receiver.recv_timeout(POLL) {
+            Ok(read) => break read,
+            Err(RecvTimeoutError::Timeout | RecvTimeoutError::Disconnected) => {
+                if interrupt::interrupted() {
+                    end(child, 2 * GRACE);
+                    return Err(INTERRUPTED.to_owned());
+                }
+                if Instant::now() >= until {
+                    end(child, GRACE);
+                    return Err("did not finish before the deadline".to_owned());
+                }
+            }
         }
-        Ok(Err(error)) => {
-            end(child);
-            Err(format!("reading the result: {error}"))
+    };
+    let output = match read {
+        Ok(output) => output,
+        Err(error) => {
+            end(child, GRACE);
+            return Err(format!("reading the result: {error}"));
         }
-        Err(_) => {
-            end(child);
+    };
+    match waited(child, until.saturating_duration_since(Instant::now()), true) {
+        Waited::Exited(status) => Ok((String::from_utf8_lossy(&output).into_owned(), status)),
+        Waited::Interrupted => {
+            end(child, 2 * GRACE);
+            Err(INTERRUPTED.to_owned())
+        }
+        Waited::Still => {
+            end(child, GRACE);
             Err("did not finish before the deadline".to_owned())
         }
     }
@@ -442,7 +473,7 @@ pub(super) fn output_within(mut child: Child, within: Duration) -> Option<Output
     let stdout = child.stdout.take().map(drained);
     let stderr = child.stderr.take().map(drained);
     let Some(status) = exited(&mut child, within) else {
-        end(&mut child);
+        end(&mut child, GRACE);
         return None;
     };
     let bytes = |reader: Option<thread::JoinHandle<Vec<u8>>>| {
@@ -466,14 +497,14 @@ fn drained<R: Read + Send + 'static>(mut reader: R) -> thread::JoinHandle<Vec<u8
     })
 }
 
-/// SIGTERM to the group, a grace, SIGKILL; the child reaped.
-fn end(child: &mut Child) {
+/// SIGTERM to the group, the grace given, SIGKILL; the child reaped.
+fn end(child: &mut Child, grace: Duration) {
     let group = i32::try_from(child.id()).expect("a pid fits");
     // SAFETY: killpg takes a group id and a signal; the group is the child's own, made at spawn.
     unsafe {
         libc::killpg(group, libc::SIGTERM);
     }
-    if exited(child, GRACE).is_none() {
+    if exited(child, grace).is_none() {
         unsafe {
             libc::killpg(group, libc::SIGKILL);
         }
@@ -481,16 +512,33 @@ fn end(child: &mut Child) {
     }
 }
 
-/// The child's status when it exits within the duration, polled; none when it is still there.
-fn exited(child: &mut Child, within: Duration) -> Option<ExitStatus> {
+/// How a wait for the child ended: it exited, Ctrl-C was noted, or it is still there.
+enum Waited {
+    Exited(ExitStatus),
+    Interrupted,
+    Still,
+}
+
+/// The child's status when it exits within the duration, polled; `interruptible`, the wait ends as soon as
+/// Ctrl-C is noted — what a body's wait is, and what the wait after a SIGTERM is not.
+fn waited(child: &mut Child, within: Duration, interruptible: bool) -> Waited {
     let until = Instant::now() + within;
     loop {
         match child.try_wait() {
-            Ok(Some(status)) => return Some(status),
-            Ok(None) if Instant::now() >= until => return None,
-            Ok(None) => thread::sleep(Duration::from_millis(5)),
-            Err(_) => return None,
+            Ok(Some(status)) => return Waited::Exited(status),
+            Ok(None) if interruptible && interrupt::interrupted() => return Waited::Interrupted,
+            Ok(None) if Instant::now() >= until => return Waited::Still,
+            Ok(None) => thread::sleep(POLL),
+            Err(_) => return Waited::Still,
         }
+    }
+}
+
+/// The child's status when it exits within the duration, whatever else happens; none when it is still there.
+fn exited(child: &mut Child, within: Duration) -> Option<ExitStatus> {
+    match waited(child, within, false) {
+        Waited::Exited(status) => Some(status),
+        Waited::Interrupted | Waited::Still => None,
     }
 }
 

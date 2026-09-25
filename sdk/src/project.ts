@@ -33,7 +33,8 @@ export interface DecideOptions {
   tags?: string[] | undefined
   /** This reflex alone is offered: how a weave decides a fragment, or a step with a value written into its words. */
   only?: string | undefined
-  /** Aborts the adapter call; `decide` rejects with the signal's reason. */
+  /** Aborts the adapter call; `decide` rejects with the signal's reason. A weave's run it cancels: every body
+   *  ended, every step that did not finish `skipped · cancelled`, the rejection's reason carrying the record. */
   signal?: AbortSignal | undefined
 }
 
@@ -93,7 +94,8 @@ export interface WovenStep<R = AnyReflexes> {
 
 /** A request planned and run: the plan; the whole's status — the worst step's, as the exit codes rank them, or
  *  why nothing ran: refused by the verdict, declined or unanswered at what the plan asked first; per step what
- *  became of it, none when nothing ran. */
+ *  became of it, none when nothing ran. A weave the signal cancelled rejects with the signal's reason and carries
+ *  this record on it as `woven`: the steps that finished as they ended, every other one `skipped · cancelled`. */
 export interface Woven<R = AnyReflexes> {
   plan: W.Weave
   status: W.Status
@@ -519,9 +521,13 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   }
 
   /** The plan run: stage by stage, a stage's rounds each taken to the point of running in the words' order, then
-   *  their bodies together; a step decided again with its bound values in its words when the run asks for it. */
+   *  their bodies together; a step decided again with its bound values in its words when the run asks for it. The
+   *  signal aborted mid-run is a cancel: every body's group ended, the rounds under way and every round after
+   *  reported `skipped · cancelled`, and the rejection — the signal's reason — carrying the record once it is
+   *  whole. */
   async function executed(woven: W.Weave, options: WeaveOptions<AnyReflexes>, traces: Map<string, Trace[]>): Promise<Woven<AnyReflexes>> {
     const invoked = `weave(${JSON.stringify(shown(woven.input))})`
+    const { signal } = options
     const progress: Required<W.Progress> = { decided: [], handled: [] }
     const rounds = new Map<number, WovenRound<AnyReflexes>[]>()
     const record = (handling: W.Handling, decision: Decision<AnyReflexes>, became: Became) => {
@@ -536,7 +542,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
       const running = call("weave.execute", { plan, ...gate, weave: woven, progress }, invoked)
       if (running.type === "done") {
         const { executed } = running
-        return {
+        const whole: Woven<AnyReflexes> = {
           plan: woven,
           status: executed.worst,
           steps: executed.steps.map(step => ({
@@ -547,10 +553,18 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
             rounds: rounds.get(step.step) ?? [],
           })),
         }
+        if (signal?.aborted) throw carrying(signal.reason, whole)
+        return whole
       }
       const { todo } = running
       if (todo.type === "decide") {
-        progress.decided.push([todo.asked, await decided(todo.asked, options, traces)])
+        try {
+          progress.decided.push([todo.asked, await decided(todo.asked, options, traces)])
+        } catch (error) {
+          // The signal aborted the decision's call: the round it was for never starts.
+          if (!signal?.aborted || error !== signal.reason) throw error
+          progress.handled.push({ step: todo.step, round: todo.round, ...CANCELLED })
+        }
         continue
       }
       const bodies: Promise<void>[] = []
@@ -560,12 +574,17 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
         const own = step?.reflex === undefined || !handling.bound?.length ? undefined : traces.get(key({ text: handling.input, only: step.reflex }))
         const trace = own ?? (step === undefined ? undefined : traces.get(key(askedFor(step, options.tags ?? [])))) ?? []
         const decision = lined(handling.decision, { input: handling.input, plan: plan.digest, trace })
+        // Nothing starts after the signal: a round handed after it is cancelled without a question asked.
+        if (signal?.aborted) {
+          record(handling, decision, CANCELLED)
+          continue
+        }
         const readied = await ready(decision, told(options, { step: handling.step, round: handling.round }))
         if (!readied.ready) {
           record(handling, readied.decision, { status: readied.status, why: readied.why })
           continue
         }
-        bodies.push(ran(readied.decision, options.signal).then(became => record(handling, readied.decision, became)))
+        bodies.push(ran(readied.decision, signal).then(became => record(handling, readied.decision, became)))
       }
       await Promise.all(bodies)
     }
@@ -626,11 +645,13 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     return decision.outcome === "confirm" ? project.run(decision, { ...options, confirmed: true }) : project.run(decision, options)
   }
 
-  /** One body run for a weave: what it returned, or its failure as the step's own outcome, never the weave's. */
+  /** One body run for a weave: what it returned, or its failure as the step's own outcome, never the weave's; a
+   *  body the signal ended is the round cancelled. */
   async function ran(decision: Run<AnyReflexes> | Confirm<AnyReflexes>, signal: AbortSignal | undefined): Promise<Became> {
     try {
       return { status: "ran", result: await bodied(decision, signal) }
     } catch (error) {
+      if (signal?.aborted && error === signal.reason) return CANCELLED
       if (error instanceof FailureError) {
         return { status: "failed", why: { type: "said", message: error.why === undefined ? error.what : `${error.what}: ${error.why}` } }
       }
@@ -708,6 +729,18 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   }
 
   return project
+}
+
+/** A round the signal cancelled, as its step and the record read it. */
+const CANCELLED = { status: "skipped", why: { type: "cancelled" } } as const satisfies Became
+
+/** The signal's reason with the record on it as `woven`, when the reason is something that can carry one: what
+ *  a cancelled `weave` rejects with, so the caller's own test for a cancel holds and the steps are there to read. */
+function carrying(reason: unknown, woven: Woven<AnyReflexes>): unknown {
+  if (reason !== null && (typeof reason === "object" || typeof reason === "function") && Object.isExtensible(reason)) {
+    Object.assign(reason, { woven })
+  }
+  return reason
 }
 
 /** Whether two asks want the same things for the same reasons. */

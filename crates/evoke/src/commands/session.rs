@@ -28,13 +28,13 @@ use indexmap::IndexMap;
 use super::{Exit, Reporter};
 use crate::adapter::{self, Adapter, Trace};
 use crate::args::Command;
-use crate::hosts::contain;
 use crate::hosts::files::{self, Edited, Root, Snapshot};
 use crate::hosts::processes::{self, Body, Ended, Returned};
 use crate::hosts::state::State;
 use crate::hosts::store::Store;
 use crate::hosts::terminal::{self, Tty};
 use crate::hosts::{Deadline, Environment, Failure};
+use crate::hosts::{contain, interrupt};
 use crate::report::{self, Paths, Row};
 
 pub struct Session<'a> {
@@ -926,7 +926,10 @@ impl Session<'_> {
     /// started with the envelope, or the argv spawned, in the body's directory with a private temporary folder,
     /// the layers around it. Timed from now — the plan's deadline less what the adapter spent of it — so a
     /// prompt in between never counts. A refusal past the declaration names the path and the key, and its fix.
+    /// Ctrl-C while the body runs ends its group and is the failure's cause, `interrupted`, for the command to
+    /// act on.
     pub fn run(&self, chosen: &Chosen, input: &Input, spent: Millis) -> Result<Returned, Failure> {
+        let _armed = interrupt::arm();
         let reflex = &chosen.call.reflex;
         let what = format!("running {reflex}");
         let active = &self.plan.active()[reflex];

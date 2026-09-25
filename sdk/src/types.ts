@@ -972,6 +972,8 @@ export type WeaveWhy =
   | { type: "found_nothing" }
   | { type: "no_reflex" }
   | { type: "read_as"; reflex: LocalName }
+  /** The weave was cancelled: the round the host ended, and every step that had not finished by then. */
+  | { type: "cancelled" }
   | { type: "said"; message: string }
 
 /** What a host made of one round. */
@@ -990,7 +992,7 @@ export interface Progress {
 }
 
 /** What the run needs a host to do next. */
-export type Todo = { type: "decide"; asked: Asked } | { type: "handle"; handling: Handling[] }
+export type Todo = { type: "decide"; step: number; round: number; asked: Asked } | { type: "handle"; handling: Handling[] }
 
 /** The run, or what it needs first. */
 export type Running = { type: "done"; executed: Executed } | { type: "todo"; todo: Todo }

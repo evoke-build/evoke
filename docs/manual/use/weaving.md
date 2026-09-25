@@ -123,6 +123,26 @@ The exit code is the worst step's. `0` every step ran. `1` a body failed, or a s
 could take. `2` a step was declined, or a part matched nothing. `3` a step needed a terminal, or a question only
 you can answer.
 
+## Stopping it
+
+`Ctrl-C` while a step runs stops the weave. The body running at that moment is told to stop and ended with
+everything it started: a JavaScript body sees its `signal` abort and has a second to finish. That step and
+every step after it read `skipped · cancelled`, on the terminal and in the log, so `why` and `teach` still see
+the whole plan:
+
+```text
+$ evoke "wait a while and start a 10 minute timer"
+  1  wait  0.90
+  2  timer duration="10 minute"  0.90
+waiting
+^C
+  1  wait  0.90 · skipped · cancelled
+  2  timer duration="10 minute"  0.90 · skipped · cancelled
+```
+
+Then `evoke` ends as an interrupted program does, and the shell reports exit 130. Under `--json` every step's
+line prints first, its `why` `{ "type": "cancelled" }`.
+
 ## `try` and `--json`
 
 `evoke try` shows the plan, then every step's judgments under its number. `evoke try --json` prints the plan
@@ -135,7 +155,7 @@ once, with what stopped it.
 ## Afterwards
 
 Every step is logged under its number. `evoke why` shows each step of the last sentence with what became of it:
-`ran`, `failed`, `declined`, `refused`, `skipped` or `unanswered`, and why. `evoke teach <call>` with no
+`ran`, `failed`, `declined`, `refused`, `skipped` or `unanswered`, and why, `cancelled` among the reasons. `evoke teach <call>` with no
 utterance takes the step the lesson's reflex decided; when none or several did, it names the steps and asks you
 to say which ([Tuning](tuning.md)).
 

@@ -2,8 +2,9 @@
 //! `target/`, the JavaScript runtime found on `PATH` recorded in its state, each `$ ` line run by `sh -c` under a
 //! pseudo-terminal unless the flow says `# no tty`, with `TERM=dumb` and `NO_COLOR=1` so the terminal shows plain
 //! text, `replay` answering from `EVOKE_ANSWERS`, remotes rebuilt from their trees by the recipe. Every line must
-//! match, trailing spaces aside, JSON as JSON with `ms` aside; `[N]` is the exit code. One test per flow; each is
-//! turned on by the step that makes it pass.
+//! match, trailing spaces aside, JSON as JSON with `ms` aside; `[N]` is the exit code; a line `^C` is Ctrl-C typed
+//! once the line before it has shown, and the terminal's echo of it. One test per flow; each is turned on by the
+//! step that makes it pass.
 
 #[path = "transcripts/pty.rs"]
 mod pty;
@@ -156,6 +157,11 @@ fn cache() {
 #[test]
 fn contained() {
     flow("contained");
+}
+
+#[test]
+fn cancel() {
+    flow("cancel");
 }
 
 /// The recipe yields the commit `spec/transcripts/update/home/.config/evoke/evoke.lock` records.
@@ -322,12 +328,19 @@ fn exit_code(line: &str) -> Option<i32> {
     line.strip_prefix('[')?.strip_suffix(']')?.parse().ok()
 }
 
-/// What each prompt line had typed after its `> `, in order.
-fn typed(expected: &[String]) -> Vec<String> {
-    expected
-        .iter()
-        .filter_map(|line| prompt(line).map(str::to_owned))
-        .collect()
+/// What the harness types, in order: each prompt line's answer after its `> `, and Ctrl-C where a line reads
+/// `^C`, once the terminal has shown the line before it.
+fn typed(expected: &[String]) -> Vec<pty::Typed> {
+    let mut typed = Vec::new();
+    for (i, line) in expected.iter().enumerate() {
+        if line == "^C" {
+            let after = expected[..i].last().cloned().unwrap_or_default();
+            typed.push(pty::Typed::Interrupt { after });
+        } else if let Some(answer) = prompt(line) {
+            typed.push(pty::Typed::Answer(answer.to_owned()));
+        }
+    }
+    typed
 }
 
 /// What a line typed at a prompt, when the line is one: the REPL's `> ` at its start, or a question — two spaces
@@ -379,7 +392,7 @@ fn piped(mut command: Command) -> Result<(String, i32), String> {
     let output = drained.join().unwrap_or_default();
     Ok((
         String::from_utf8_lossy(&output).into_owned(),
-        status.code().unwrap_or(-1),
+        pty::code(status),
     ))
 }
 

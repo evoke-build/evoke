@@ -2,19 +2,21 @@
 //! the steps it follows — answering its own ask through `fill`, or decided again with the values written into its
 //! words — then the foundation's own loop, which a host takes it through. A step bound to a list of records runs
 //! once per record, one at a time. A failure, a refusal or a decline ends the weave after the stage; what never
-//! ran is reported so. Over the progress a host has gathered, stopping at the first thing it lacks. In: a
-//! `Plan`, the adapter's gate, the `Weave`, the `Progress` so far. Out: the `Executed`, or what is needed next.
+//! ran is reported so. A round the host ended — the weave cancelled — ends it too: nothing more is handed, and
+//! every step that had not finished reads `skipped · cancelled`. Over the progress a host has gathered, stopping
+//! at the first thing it lacks. In: a `Plan`, the adapter's gate, the `Weave`, the `Progress` so far. Out: the
+//! `Executed`, or what is needed next.
 
 use indexmap::IndexMap;
 
 use super::planning::reflex_of;
 use super::{
-    Asked, Binding, Bound, Executed, Handled, Handling, Progress, Returned, Running, Status, Step,
-    StepOutcome, Todo, Via, Weave, Why,
+    Asked, Binding, Bound, Executed, Handled, Handling, Progress, Repair, Returned, Running,
+    Status, Step, StepOutcome, Todo, Via, Weave, Why,
 };
 use crate::adapter::Gate;
 use crate::call::Value;
-use crate::decide::{Decision, fill, picked};
+use crate::decide::{Decision, fill, merged, picked};
 use crate::document::Json;
 use crate::manifest::Recognizer;
 use crate::name::ArgName;
@@ -67,11 +69,18 @@ impl Runner<'_> {
                 result: None,
             })
             .collect();
-        let mut stopped = false;
+        // A round the host ended: the weave is cancelled from here on — nothing more is handed, and every step
+        // that had not finished reads skipped · cancelled.
+        let cancelled = self
+            .progress
+            .handled
+            .iter()
+            .any(|h| h.why == Some(Why::Cancelled));
+        let mut stopped: Option<Why> = None;
         for stage in &self.weave.stages {
-            if stopped {
+            if let Some(why) = &stopped {
                 for &n in stage {
-                    walks[n - 1].status = Some((Status::Skipped, Some(Why::EarlierStep)));
+                    walks[n - 1].status = Some((Status::Skipped, Some(why.clone())));
                 }
                 continue;
             }
@@ -106,6 +115,10 @@ impl Runner<'_> {
                         walk.status = Some((handled.status, handled.why.clone()));
                         break;
                     }
+                    if cancelled {
+                        walk.status = Some((Status::Skipped, Some(Why::Cancelled)));
+                        break;
+                    }
                     match self.round(step, i, values)? {
                         Prepared::Refused(why) => {
                             walk.bound.extend(bound_of(values));
@@ -127,16 +140,7 @@ impl Runner<'_> {
             if !handling.is_empty() {
                 return Err(Todo::Handle { handling });
             }
-            // A step that found nothing to do skipped clean and stops nothing; anything else that did not run
-            // ends the weave after its stage.
-            if stage.iter().any(|&n| {
-                !matches!(
-                    &walks[n - 1].status,
-                    Some((Status::Ran, _) | (Status::Skipped, Some(Why::FoundNothing)))
-                )
-            }) {
-                stopped = true;
-            }
+            stopped = stopped_after(stage, &walks);
         }
         Ok(Executed::of(
             walks
@@ -186,7 +190,7 @@ impl Runner<'_> {
                 .iter()
                 .filter_map(|(b, text)| picked(text, b.kind).map(|value| (b.arg.clone(), value)))
                 .collect();
-            let decision = fill(self.plan, asking.clone(), given, self.gate);
+            let decision = self.merged(step, fill(self.plan, asking.clone(), given, self.gate));
             return Ok(Prepared::Handle(Box::new(Handling {
                 step: step.n,
                 round: i,
@@ -205,7 +209,11 @@ impl Runner<'_> {
             only: Some(reflex.clone()),
         };
         let Some((_, decision)) = self.progress.decided.iter().find(|(a, _)| *a == asked) else {
-            return Err(Todo::Decide { asked });
+            return Err(Todo::Decide {
+                step: step.n,
+                round: i,
+                asked,
+            });
         };
         if matches!(decision, Decision::Abstain { .. }) {
             return Ok(Prepared::Refused(Why::NoReflex));
@@ -220,11 +228,39 @@ impl Runner<'_> {
         Ok(Prepared::Handle(Box::new(Handling {
             step: step.n,
             round: i,
-            decision: decision.clone(),
+            decision: self.merged(step, decision.clone()),
             input: text,
             bound,
         })))
     }
+
+    /// A step merged back never runs unasked: its decision at its turn confirms, as the planner's did.
+    fn merged(&self, step: &Step, decision: Decision) -> Decision {
+        if step.repair == Some(Repair::Merged) {
+            merged(self.plan, decision)
+        } else {
+            decision
+        }
+    }
+}
+
+/// Why the weave ends after this stage, if it does: a cancelled round, with its own reason; else a step that
+/// did not run — a step that found nothing to do skipped clean and stops nothing.
+fn stopped_after(stage: &[usize], walks: &[Walk]) -> Option<Why> {
+    let status = |n: &usize| walks[n - 1].status.as_ref();
+    if stage
+        .iter()
+        .any(|n| matches!(status(n), Some((Status::Skipped, Some(Why::Cancelled)))))
+    {
+        return Some(Why::Cancelled);
+    }
+    let ran = |n: &usize| {
+        matches!(
+            status(n),
+            Some((Status::Ran, _) | (Status::Skipped, Some(Why::FoundNothing)))
+        )
+    };
+    (!stage.iter().all(ran)).then_some(Why::EarlierStep)
 }
 
 /// A round ready: for the host to take through the loop, or refused once the values were in place.
@@ -246,19 +282,23 @@ fn bound_of(values: &Values) -> Vec<Bound> {
 }
 
 /// The rounds a step runs: one, with the bound values from the results of the steps it follows; one per record
-/// when a binding takes a field of a list's records; none when a source yielded no such field.
+/// when a binding takes a field of a list's records; none when a source yielded no such field, whatever another
+/// source found; an empty list of rounds when a source found nothing to take.
 fn rounds_for(binds: &[&Binding], walks: &[Walk]) -> Option<Vec<Values>> {
     let mut plain: Values = Vec::new();
     let mut lists: Vec<(Binding, Vec<String>)> = Vec::new();
+    let mut found_nothing = false;
     for binding in binds {
-        // A source that found nothing skipped clean; so does what takes from it.
+        // A source that found nothing skipped clean; so does what takes from it — once every other source is
+        // known to have yielded its field, so the bindings' order decides nothing.
         if walks.get(binding.from - 1).is_some_and(|walk| {
             matches!(
                 walk.status,
                 Some((Status::Skipped, Some(Why::FoundNothing)))
             )
         }) {
-            return Some(Vec::new());
+            found_nothing = true;
+            continue;
         }
         let data = walks
             .get(binding.from - 1)
@@ -280,6 +320,9 @@ fn rounds_for(binds: &[&Binding], walks: &[Walk]) -> Option<Vec<Values>> {
             .map(|record| record.get(binding.field.as_str()).and_then(scalar))
             .collect();
         lists.push(((*binding).clone(), values?));
+    }
+    if found_nothing {
+        return Some(Vec::new());
     }
     if lists.is_empty() {
         return Some(vec![plain]);

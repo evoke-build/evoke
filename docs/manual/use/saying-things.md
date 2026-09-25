@@ -95,8 +95,10 @@ with.
 | 3    | Needs a human: a missing key, an untrusted project, a prompt with no terminal, a line to fix |
 | 4    | The adapter failed                                                         |
 
-Outside the REPL, `Ctrl-C` ends `evoke` at once. A JavaScript body ends with it; a program run as an argv
-finishes on its own. The shell reports the interrupt as exit 130.
+`Ctrl-C` while a body runs ends the body and everything it started, a JavaScript body's `signal` aborting first;
+then `evoke` ends as an interrupted program does, and the shell reports exit 130. In a weave, every step that
+did not finish reads `skipped · cancelled` ([Weaving](weaving.md#stopping-it)). Anywhere else, `Ctrl-C` ends
+`evoke` at once.
 
 ## Limits and time
 

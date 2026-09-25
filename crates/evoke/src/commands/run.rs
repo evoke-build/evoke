@@ -2,7 +2,8 @@
 //! environment. Out: `Exit`. The call is typed by name against the plan; a read or write call runs at once, a
 //! destructive one confirms with `[y]es [n]o` — there is no utterance to teach — and the body runs with an empty
 //! input. Under `--json` the decision's line goes to stdout, the result or the error on it, and with no terminal
-//! the line stands for the confirm that could not be shown. Nothing is logged: nothing was decided.
+//! the line stands for the confirm that could not be shown. Nothing is logged: nothing was decided. Ctrl-C while
+//! the body runs ends its group, and `evoke` ends as an interrupted process, the line's `error` saying so.
 
 use evoke_core::plan::Millis;
 use evoke_core::{Decision, Input, Written, by_name};
@@ -11,7 +12,7 @@ use super::needs_terminal;
 use super::session::{self, Confirmed, Opening, Session};
 use super::{Decline, Exit};
 use crate::args::Command;
-use crate::hosts::{Environment, terminal};
+use crate::hosts::{Environment, interrupt, terminal};
 use crate::report::{self, Line};
 
 pub fn run(command: &Command, written: &Written, json: bool, environment: &Environment) -> Exit {
@@ -83,10 +84,13 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
     };
     if json {
         terminal::result(&line.json());
-        // A body's failure is the line's own `error`: nothing more prints, so a line stays one object.
-        if line.error.is_some() {
-            return exit;
-        }
+    }
+    if interrupt::interrupted() {
+        interrupt::end();
+    }
+    // A body's failure is the line's own `error`: nothing more prints, so a line stays one object.
+    if json && line.error.is_some() {
+        return exit;
     }
     session.reporter.exit(&input, exit)
 }

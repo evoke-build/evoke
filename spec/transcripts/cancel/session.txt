@@ -1,0 +1,31 @@
+# Ctrl-C while a step runs: the body's group is ended — a file body hears its signal first, a program is ended with
+# its group — every step that did not finish reads skipped · cancelled, every line is logged, and evoke ends as an
+# interrupted process, which the shell reports as 130.
+$ evoke "wait a while and start a 10 minute timer"
+  1  wait  0.90
+  2  timer duration="10 minute"  0.90
+waiting
+^C
+  1  wait  0.90 · skipped · cancelled
+  2  timer duration="10 minute"  0.90 · skipped · cancelled
+[130]
+$ pgrep -g "$(cat wait.pid)" || echo none
+none
+$ evoke why
+  1  "wait a while"
+  wait 0.90 · none 0.05 · pause 0.04 · timer 0.01
+  fits  wait 0.80 · pause 0.10 · timer 0.02
+  skipped wait · weakest: route 0.90 · cancelled · replay, 4 questions
+  2  "start a 10 minute timer"
+  timer 0.90 · none 0.06 · wait 0.02 · pause 0.02
+  duration  "10 minute" 0.90 · unstated 0.10
+  fits      timer 0.80 · wait 0.02 · pause 0.02
+  skipped timer duration="10 minute" · weakest: route 0.90 · cancelled · replay, 5 questions
+$ evoke --json "pause a moment and start a 10 minute timer"
+waiting
+^C
+{"step":1,"steps":2,"input":"pause a moment","outcome":"run","reflex":"pause","args":{},"call":"pause","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"pause","p":0.9},"judgments":[{"question":"route","top":"pause","p":0.9}],"runner_up":{"reflex":"wait","route":0.04,"fits":0.1},"contenders":[{"reflex":"pause","route":0.9,"fits":0.8},{"reflex":"wait","route":0.04,"fits":0.1},{"reflex":"timer","route":0.01,"fits":0.02}],"trace":[{"adapter":"replay","questions":4,"ms":0}],"contained":{"type":"full"},"status":"skipped","why":{"type":"cancelled"}}
+{"step":2,"steps":2,"input":"start a 10 minute timer","outcome":"run","reflex":"timer","args":{"duration":{"type":"pick","span":{"start":8,"end":17,"text":"10 minute"},"value":{"type":"duration","value":600}}},"call":"timer duration=\"10 minute\"","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"timer","p":0.9},"judgments":[{"question":"route","top":"timer","p":0.9},{"question":"timer.duration","top":"8-17","p":0.9}],"runner_up":{"reflex":"wait","route":0.02,"fits":0.02},"contenders":[{"reflex":"timer","route":0.9,"fits":0.8},{"reflex":"wait","route":0.02,"fits":0.02},{"reflex":"pause","route":0.02,"fits":0.02}],"trace":[],"status":"skipped","why":{"type":"cancelled"}}
+[130]
+$ pgrep -f 'sleep 4242$' || echo none
+none

@@ -132,4 +132,18 @@ A body's failure is the step's, with `status: "failed"`, never a throw. A step a
 `skipped`, with `why: { type: "earlier_step" }`. A step bound to a list of records runs once per record, one
 round each.
 
+`signal` aborts the adapter's call while the plan is made, as it does in `decide`, and cancels the run once it
+is under way: every body is ended, its own `signal` aborted first, nothing starts after, and every step that did
+not finish reads `skipped` with `why: { type: "cancelled" }`. `weave` then rejects with the signal's reason, the
+record on it as `woven`:
+
+```ts
+try {
+  await project.weave(input, { signal: controller.signal })
+} catch (error) {
+  if (error === controller.signal.reason) console.log(error.woven.steps) // what ran, and what was cancelled
+  else throw error
+}
+```
+
 **Next:** [Adapters](adapters.md).

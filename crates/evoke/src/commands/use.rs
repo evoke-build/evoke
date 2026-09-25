@@ -4,9 +4,11 @@
 //! first, `[+]` adding a word to the vocabulary and reloading the plan; an abstain shows the ranking. More than
 //! one is a weave: the plan's own questions first, the plan shown, then each step at its turn through the same
 //! loop, a result threaded into a later step, and the worst step's exit. Every decision is logged, a step's with
-//! its number and what became of it, a plan stopped before any step ran included. The stdin filter answers every
-//! line and exits with the first non-zero code; the REPL reads lines from the terminal — edited, with its history
-//! under XDG — until the end of input, then exits 0.
+//! its number and what became of it, a plan stopped before any step ran included. Ctrl-C while a body runs, or
+//! while a weave's steps take their turns, ends the body's group, marks every step that did not finish `skipped ·
+//! cancelled`, logs every line, and ends the process as an interrupted one. The stdin filter answers every line
+//! and exits with the first non-zero code; the REPL reads lines from the terminal — edited, with its history under
+//! XDG — until the end of input, then exits 0.
 
 use evoke_core::call::Value;
 use evoke_core::decide::{Choices, Missing, Why};
@@ -15,8 +17,8 @@ use evoke_core::name::{ArgName, LocalName, OptionKey, VocabName, Word};
 use evoke_core::text::NonEmpty;
 use evoke_core::vocabulary::Meaning;
 use evoke_core::weave::{
-    self, Asked, Because, Binding, Bound, Handled, Outcome, Progress, Returned as Yielded, Status,
-    Step, Todo, Why as Stopped,
+    self, Asked, Because, Binding, Bound, Handled, Handling, Outcome, Progress,
+    Returned as Yielded, Status, Step, Todo, Why as Stopped,
 };
 use evoke_core::{
     Chosen, Clean, Decision, Diagnostic, Executed, Fix, Gate, Lesson, Prompt, Running, Utterance,
@@ -31,7 +33,7 @@ use crate::adapter::Adapter;
 use crate::args::{Arguments, Command, Inputs};
 use crate::hosts::processes::Returned;
 use crate::hosts::terminal::Text;
-use crate::hosts::{Environment, Failure, terminal};
+use crate::hosts::{Environment, Failure, interrupt, terminal};
 use crate::report::{self, Line, StepLine};
 
 pub fn run(command: &Command, arguments: &Arguments, environment: &Environment) -> Exit {
@@ -98,7 +100,8 @@ impl Using<'_> {
     }
 
     /// One input, end to end, its exit reported: read into its steps; one step is the foundation's own loop,
-    /// more are a weave.
+    /// more are a weave. Ctrl-C noted on the way — while a body ran, or a weave took its turns — has been acted
+    /// on by then, every body ended and every line logged: the process ends as an interrupted one.
     fn act(&mut self, input: &str) -> Exit {
         let woven =
             match self
@@ -108,13 +111,17 @@ impl Using<'_> {
                 Ok(woven) => woven,
                 Err(exit) => return self.session.reporter.exit(input, exit),
             };
-        match woven.single(&self.arguments.tags).cloned() {
+        let exit = match woven.single(&self.arguments.tags).cloned() {
             Some(decided) => {
                 let decision = decided.decision.clone();
                 self.round(input, None, &decided, decision, &[]).exit
             }
             None => self.many(input, woven),
+        };
+        if interrupt::interrupted() {
+            interrupt::end();
         }
+        exit
     }
 
     /// One decision through the foundation's loop — abstain, ask, confirm, run — as one input takes it, or as one
@@ -257,23 +264,36 @@ impl Using<'_> {
     }
 
     /// A round at its end: the line's status and reason from the exit, the line printed under `--json` and
-    /// logged, the exit reported.
+    /// logged, the exit reported. Ctrl-C noted while the round was under way is what stopped it: a step reads
+    /// `skipped · cancelled`, one decision keeps the body's failure as its `error`, and nothing more prints — the
+    /// process ends once every line is logged.
     fn stopped(&self, input: &str, line: &mut Line, exit: Exit, why: Option<Stopped>) -> Rounded {
-        let why = why.or_else(|| why_of(&exit));
+        let cancelled = exit != Exit::Ran && interrupt::interrupted();
+        let (status, why) = if cancelled {
+            (Status::Skipped, Some(Stopped::Cancelled))
+        } else {
+            (status_of(&exit), why.or_else(|| why_of(&exit)))
+        };
         if let Some(step) = &mut line.step {
-            step.status = status_of(&exit);
+            step.status = status;
             step.why.clone_from(&why);
+            if cancelled {
+                line.error = None;
+            }
         }
         // A failure after the line was built — a file that would not take a word — is the line's own `error`,
         // so under `--json` one object stands for the input.
         if let Exit::Failed(failure) = &exit
             && line.error.is_none()
+            && line.step.is_none()
         {
             line.error = Some(report::failure(failure));
         }
+        let exit = if cancelled { Exit::Ran } else { exit };
         let exit = self.logged(input, line, exit);
         Rounded {
             exit,
+            status,
             why,
             result: None,
         }
@@ -541,8 +561,11 @@ impl Using<'_> {
     }
 
     /// The plan run: stage by stage, each round through the foundation's loop; a step decided again with its
-    /// bound values in its words when the run asks for it; what did not run, said so at the end.
+    /// bound values in its words when the run asks for it; what did not run, said so at the end. Armed: Ctrl-C
+    /// from here on is a cancel the run acts on — the round under way ended and reported `skipped · cancelled`,
+    /// no round started after it — not the end of the process.
     fn executed(&mut self, input: &str, woven: &Woven) -> Exit {
+        let _armed = interrupt::arm();
         let tags = self.arguments.tags.clone();
         let of = woven.weave.steps.len();
         let mut progress = Progress::default();
@@ -558,13 +581,18 @@ impl Using<'_> {
                 Running::Todo { todo } => todo,
             };
             match todo {
-                Todo::Decide { asked } => {
-                    let decided = self.session.decide(
-                        &*self.adapter,
-                        &asked.text,
-                        &asked.tags,
-                        asked.only.as_ref(),
-                    );
+                Todo::Decide { asked, .. } => {
+                    // The adapter's call cannot be cut short: unarmed for it, Ctrl-C ends the process at once, as
+                    // it does while the plan is made — nothing is running then.
+                    let decided = {
+                        let _paused = interrupt::pause();
+                        self.session.decide(
+                            &*self.adapter,
+                            &asked.text,
+                            &asked.tags,
+                            asked.only.as_ref(),
+                        )
+                    };
                     let decided = match decided {
                         Ok(decided) => decided,
                         Err(exit) => return self.session.reporter.exit(input, exit),
@@ -592,6 +620,13 @@ impl Using<'_> {
                             .or_else(|| woven.decided_for(step, &tags))
                             .expect("every round has its decision")
                             .clone();
+                        // Ctrl-C noted: a round handed after it never starts, and reads skipped · cancelled.
+                        if interrupt::interrupted() {
+                            progress
+                                .handled
+                                .push(self.cancelled(input, of, &handling, &decided));
+                            continue;
+                        }
                         let rounded = self.round(
                             input,
                             Some((handling.step, of)),
@@ -602,7 +637,7 @@ impl Using<'_> {
                         progress.handled.push(Handled {
                             step: handling.step,
                             round: handling.round,
-                            status: status_of(&rounded.exit),
+                            status: rounded.status,
                             why: rounded.why,
                             result: rounded.result.map(|returned| Yielded {
                                 text: returned.text,
@@ -616,9 +651,31 @@ impl Using<'_> {
         }
     }
 
+    /// A round handed after Ctrl-C was noted: it never starts, and its line — logged, printed under `--json` —
+    /// reads `skipped · cancelled`.
+    fn cancelled(&self, input: &str, of: usize, handling: &Handling, decided: &Decided) -> Handled {
+        let mut line = Line::of(decided);
+        line.decision = handling.decision.clone();
+        line.step = Some(StepLine {
+            n: handling.step,
+            of,
+            status: Status::Skipped,
+            why: Some(Stopped::Cancelled),
+            bound: handling.bound.clone(),
+        });
+        self.logged(input, &line, Exit::Ran);
+        Handled {
+            step: handling.step,
+            round: handling.round,
+            status: Status::Skipped,
+            why: Some(Stopped::Cancelled),
+            result: None,
+        }
+    }
+
     /// The run over: every step that never ran said so — refused once its bound values were in its words, or
-    /// skipped — its line logged; then the worst step's exit — the one already reported at its turn, or a source
-    /// that yielded nothing its taker could use.
+    /// skipped, cancelled — its line logged unless its round was; then the worst step's exit — the one already
+    /// reported at its turn, or a source that yielded nothing its taker could use.
     fn ended(
         &self,
         input: &str,
@@ -662,9 +719,21 @@ impl Using<'_> {
                 } else {
                     let mut body = report::step_body(step, &woven.weave);
                     body.push(" · skipped");
+                    if outcome.why == Some(Stopped::Cancelled) {
+                        body.push(" · cancelled");
+                    }
                     body
                 };
                 terminal::note(&report::step(outcome.step, of, body));
+            }
+            // A round the host reported so — the one Ctrl-C ended, or one handed after it — was logged at its
+            // turn: the step's line is not logged twice.
+            if outcome
+                .rounds
+                .last()
+                .is_some_and(|round| round.status == outcome.status)
+            {
+                continue;
             }
             let mut line = Line::of(decided);
             if refused.is_none() {
@@ -750,6 +819,7 @@ impl Using<'_> {
             let _ = self.session.state.log(&line.log());
             return Rounded {
                 exit: human,
+                status: Status::Unanswered,
                 why,
                 result: None,
             };
@@ -757,6 +827,7 @@ impl Using<'_> {
         let exit = self.logged(input, line, human);
         Rounded {
             exit,
+            status: Status::Unanswered,
             why,
             result: None,
         }
@@ -925,9 +996,11 @@ impl Using<'_> {
     }
 }
 
-/// What became of one round of a step: its exit, already reported; why it stopped; what its body returned.
+/// What became of one round of a step: its exit, already reported; its status and why it stopped; what its body
+/// returned.
 struct Rounded {
     exit: Exit,
+    status: Status,
     why: Option<Stopped>,
     result: Option<Returned>,
 }

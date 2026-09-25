@@ -553,6 +553,7 @@ pub fn stopped(why: &Stopped) -> String {
         Stopped::FoundNothing => "its source found nothing".to_owned(),
         Stopped::NoReflex => "no reflex".to_owned(),
         Stopped::ReadAs { reflex } => format!("read as {reflex}"),
+        Stopped::Cancelled => "cancelled".to_owned(),
         Stopped::Said { message } => message.clone(),
     }
 }

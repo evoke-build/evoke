@@ -1,0 +1,162 @@
+{
+  "input": "look up dana's address and sam's address",
+  "splits": [
+    {
+      "start": 22,
+      "end": 27,
+      "word": "and",
+      "order": "and",
+      "p": 0.9
+    }
+  ],
+  "steps": [
+    {
+      "n": 1,
+      "text": "look up dana's address",
+      "end": 22,
+      "decision": {
+        "outcome": "run",
+        "reflex": "contact",
+        "args": {
+          "name": {
+            "type": "word",
+            "word": "dana"
+          }
+        },
+        "call": "contact name=\"dana\"",
+        "effect": "read",
+        "confidence": 0.9,
+        "weakest": {
+          "question": "route",
+          "top": "contact",
+          "p": 0.9
+        },
+        "judgments": [
+          {
+            "question": "route",
+            "top": "contact",
+            "p": 0.9
+          },
+          {
+            "question": "contact.name",
+            "top": "dana",
+            "p": 0.9
+          }
+        ],
+        "runner_up": {
+          "reflex": "mail",
+          "route": 0.03,
+          "fits": 0.1
+        },
+        "contenders": [
+          {
+            "reflex": "contact",
+            "route": 0.9,
+            "fits": 0.8
+          },
+          {
+            "reflex": "mail",
+            "route": 0.03,
+            "fits": 0.1
+          },
+          {
+            "reflex": "lights",
+            "route": 0.01,
+            "fits": 0.02
+          },
+          {
+            "reflex": "timer",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "volume",
+            "route": 0,
+            "fits": 0.02
+          }
+        ]
+      },
+      "reflex": "contact",
+      "effect": "read"
+    },
+    {
+      "n": 2,
+      "text": "sam's address",
+      "end": 40,
+      "decision": {
+        "outcome": "run",
+        "reflex": "contact",
+        "args": {
+          "name": {
+            "type": "word",
+            "word": "sam"
+          }
+        },
+        "call": "contact name=\"sam\"",
+        "effect": "read",
+        "confidence": 0.9,
+        "weakest": {
+          "question": "route",
+          "top": "contact",
+          "p": 0.9
+        },
+        "judgments": [
+          {
+            "question": "route",
+            "top": "contact",
+            "p": 0.9
+          },
+          {
+            "question": "contact.name",
+            "top": "sam",
+            "p": 0.9
+          }
+        ],
+        "runner_up": {
+          "reflex": "mail",
+          "route": 0.03,
+          "fits": 0.1
+        },
+        "contenders": [
+          {
+            "reflex": "contact",
+            "route": 0.9,
+            "fits": 0.8
+          },
+          {
+            "reflex": "mail",
+            "route": 0.03,
+            "fits": 0.1
+          },
+          {
+            "reflex": "lights",
+            "route": 0.01,
+            "fits": 0.02
+          },
+          {
+            "reflex": "timer",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "volume",
+            "route": 0,
+            "fits": 0.02
+          }
+        ]
+      },
+      "reflex": "contact",
+      "effect": "read"
+    }
+  ],
+  "exclusive": false,
+  "stages": [
+    [
+      1,
+      2
+    ]
+  ],
+  "verdict": {
+    "outcome": "run"
+  }
+}
