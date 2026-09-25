@@ -37,6 +37,9 @@ tune
   evoke vocab <name> remove <word>
   evoke config <name> <key> <value>       a setting; a secret as --env <VAR>
   evoke test [<name>]                     every example and test, judged
+  evoke calibrate [<name>]                the confidence measured on the records
+    --repeat <k>                          each input decided k times: the spread
+    --json                                one JSON object, for a script
 
 author
   evoke new <name>                        a working reflex from the template
@@ -57,7 +60,7 @@ manual  https://evoke.build/manual/
   `why`, `try`, `test` and `check`. What `evoke` says about a run goes to stderr: the call and its confidence,
   prompts, the line of a write, the ranking after an abstain, and every diagnostic.
 - Commands validate every argument before acting. Arguments that spell no command end in `evoke --help`. The
-  reserved words `edit`, `search`, `publish`, `adapter` and `calibrate` are refused by name until they exist.
+  reserved words `edit`, `search`, `publish` and `adapter` are refused by name until they exist.
 - A **call** is `name arg=value…`. A value is bare or a JSON string, like `duration="10 minutes"`. A flag is its
   bare name. `run` and `teach` take a call as one argument or as separate words.
 
@@ -106,8 +109,9 @@ local reflex: [Installing reflexes](../use/installing.md#refs).
 | `evoke config <name> <key> <value>`                       | Sets a declared setting under `[config.<name>]`                             |
 | `evoke config <name> <key> --env <VAR>`                   | Names the variable a setting is read from. The only way to set a secret     |
 | `evoke test [<name>]`                                     | Decides every example and test of every active reflex, or of one, without the cache. Exits 1 when a case failed; nothing to test says so |
+| `evoke calibrate [<name>] [--repeat <k>] [--json]`        | Decides every record once more, each distinct input once or `k` times, and reports what the confidence meant: the whole call right by bins with their counts and intervals, the wrong calls at or over each bar per thousand, the spread over repeats, the log's lines apart. `--json` prints one object. Exits 1 on a call wrong at or over its bar, or a bin of a hundred calls over-confident: [Calibrating](../use/calibrating.md) |
 
-None of these needs the classifier's key.
+None of these needs the classifier's key but `test` and `calibrate`, which ask it, or a recording.
 
 ## Author
 
@@ -121,7 +125,7 @@ None of these needs the classifier's key.
 | Code | Meaning                                                                                  |
 | :--- | :--------------------------------------------------------------------------------------- |
 | 0    | Ran, or the command did what it said                                                     |
-| 1    | A body or the machine failed. Also `evoke test` with a failing case                       |
+| 1    | A body or the machine failed. Also `evoke test` with a failing case, and `evoke calibrate` with a call wrong at or over its bar |
 | 2    | Abstained, or declined at a prompt                                                       |
 | 3    | Needs a human: a missing key, nothing installed, an untrusted project, a prompt without a terminal, a line to fix |
 | 4    | The adapter failed                                                                       |

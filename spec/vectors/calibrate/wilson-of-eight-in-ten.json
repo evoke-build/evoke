@@ -1,0 +1,763 @@
+{
+  "input": {
+    "adapter": "replay",
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "judged": [
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights 0",
+            "id": "lights 0"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "on"
+              }
+            },
+            "call": "lights room=\"den\" state=\"on\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "lights.state",
+              "top": "on",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.95
+              },
+              {
+                "question": "lights.state",
+                "top": "on",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights 1",
+            "id": "lights 1"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "on"
+              }
+            },
+            "call": "lights room=\"den\" state=\"on\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "lights.state",
+              "top": "on",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.95
+              },
+              {
+                "question": "lights.state",
+                "top": "on",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights 2",
+            "id": "lights 2"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "lights.state",
+              "top": "off",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.95
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights 3",
+            "id": "lights 3"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "lights.state",
+              "top": "off",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.95
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights 4",
+            "id": "lights 4"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "lights.state",
+              "top": "off",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.95
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights 5",
+            "id": "lights 5"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "lights.state",
+              "top": "off",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.95
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights 6",
+            "id": "lights 6"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "lights.state",
+              "top": "off",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.95
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights 7",
+            "id": "lights 7"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "lights.state",
+              "top": "off",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.95
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights 8",
+            "id": "lights 8"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "lights.state",
+              "top": "off",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.95
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights 9",
+            "id": "lights 9"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "lights.state",
+              "top": "off",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.95
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ]
+    ],
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "adapter": "replay",
+    "records": 10,
+    "reflexes": 1,
+    "inputs": 10,
+    "repeats": 1,
+    "outcomes": {
+      "run": 10,
+      "confirm": 0,
+      "ask": 0,
+      "abstain": 0
+    },
+    "bins": [
+      {
+        "lo": 0.8,
+        "hi": 1.0,
+        "calls": 10,
+        "right": 8,
+        "interval": [
+          0.4901624691221323,
+          0.9433178490622331
+        ],
+        "claimed": 0.9000000000000001,
+        "thin": true,
+        "over_confident": false
+      }
+    ],
+    "unknown": 0,
+    "abstained": {
+      "count": 0,
+      "right": 0,
+      "interval": [
+        0.0,
+        0.0
+      ]
+    },
+    "bars": {
+      "write": {
+        "bar": 0.8,
+        "wrong": 2,
+        "calls": 10,
+        "per_thousand": 200.0,
+        "at_most": 506.9013010632024,
+        "near": [
+          {
+            "at": 0.7,
+            "run": 10,
+            "wrong": 2
+          },
+          {
+            "at": 0.75,
+            "run": 10,
+            "wrong": 2
+          },
+          {
+            "at": 0.8,
+            "run": 10,
+            "wrong": 2
+          },
+          {
+            "at": 0.85,
+            "run": 10,
+            "wrong": 2
+          },
+          {
+            "at": 0.9,
+            "run": 10,
+            "wrong": 2
+          }
+        ]
+      }
+    },
+    "questions": [
+      {
+        "kind": "route",
+        "judgments": 10,
+        "right": 10,
+        "interval": [
+          0.7224671969739421,
+          0.9999999999999999
+        ],
+        "claimed": 0.95
+      },
+      {
+        "kind": "options",
+        "judgments": 10,
+        "right": 8,
+        "interval": [
+          0.4901624691221323,
+          0.9433178490622331
+        ],
+        "claimed": 0.9000000000000001
+      }
+    ],
+    "brier": {
+      "brier": 0.17,
+      "reliability": 0.010000000000000018,
+      "resolution": 0.0,
+      "uncertainty": 0.15999999999999998
+    },
+    "misses": [
+      {
+        "case": {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights 0",
+            "id": "lights 0"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "tests"
+        },
+        "outcome": "run",
+        "reflex": "lights",
+        "confidence": 0.9,
+        "mismatch": {
+          "type": "arg",
+          "arg": "state",
+          "read": "on"
+        },
+        "wrong": 1
+      },
+      {
+        "case": {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights 1",
+            "id": "lights 1"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "tests"
+        },
+        "outcome": "run",
+        "reflex": "lights",
+        "confidence": 0.9,
+        "mismatch": {
+          "type": "arg",
+          "arg": "state",
+          "read": "on"
+        },
+        "wrong": 1
+      }
+    ]
+  }
+}

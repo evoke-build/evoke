@@ -78,10 +78,10 @@ names the command and how to write it. Nothing runs by accident.
 The first argument selects a command only when it is *exactly* one of these words:
 
 ```text
-help  try  why  run  add  remove  update  sync  trust  show  teach  vocab  config  test  new  check
+help  try  why  run  add  remove  update  sync  trust  show  teach  vocab  config  test  calibrate  new  check
 ```
 
-Five more words are reserved for later: `edit`, `search`, `publish`, `adapter`, `calibrate`. Reserving them now
+Four more words are reserved for later: `edit`, `search`, `publish`, `adapter`. Reserving them now
 means adding one later never changes what a sentence means. Lines from stdin are always input, whatever they begin
 with.
 
@@ -90,7 +90,7 @@ with.
 | Code | Meaning                                                                   |
 | :--- | :------------------------------------------------------------------------ |
 | 0    | Ran. Also `--help`, `--version`, and every command that did what it said |
-| 1    | The program, or the machine, failed. Also `evoke test` with a failing case |
+| 1    | The program, or the machine, failed. Also `evoke test` with a failing case, and `evoke calibrate` with a call wrong at or over its bar |
 | 2    | Abstained, or you declined                                                 |
 | 3    | Needs a human: a missing key, an untrusted project, a prompt with no terminal, a line to fix |
 | 4    | The adapter failed                                                         |

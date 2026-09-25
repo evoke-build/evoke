@@ -160,6 +160,18 @@ impl State {
             .map_err(|error| failed(&format!("appending to {}", path.display()), &error))
     }
 
+    /// The whole log, one line per decision in the order they were written; nothing decided yet is empty.
+    pub fn lines(&self) -> Result<Vec<String>, Failure> {
+        Ok(read(&self.state.join("log.jsonl"))?
+            .map(|text| {
+                text.lines()
+                    .filter(|line| !line.trim().is_empty())
+                    .map(str::to_owned)
+                    .collect()
+            })
+            .unwrap_or_default())
+    }
+
     /// The log's last input, as its lines: one decision's, or every line of the last weave — the trailing lines
     /// of one plan, a step's rounds each under its number — in the order they were written; nothing decided yet
     /// is empty. Read backwards, one weave's step numbers never rise, and a number repeated is a round of the

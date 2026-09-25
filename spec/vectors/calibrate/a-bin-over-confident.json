@@ -1,0 +1,375 @@
+{
+  "input": {
+    "adapter": "replay",
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "judged": [
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights a",
+            "id": "lights a"
+          },
+          "expect": {
+            "state": "on"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "ask",
+            "reflex": "lights",
+            "args": {
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "unconsumed": [],
+            "confidence": 0.6,
+            "weakest": {
+              "question": "lights.state",
+              "top": "off",
+              "p": 0.6
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.9
+              },
+              {
+                "question": "lights.room",
+                "top": "unstated",
+                "p": 0.9
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.6
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.9
+              }
+            ],
+            "missing": [
+              {
+                "arg": "room",
+                "ask": "Which room?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "den": "The TV room downstairs; also 'the snug'.",
+                    "office": "The upstairs study."
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights b",
+            "id": "lights b"
+          },
+          "expect": {
+            "state": "on"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "ask",
+            "reflex": "lights",
+            "args": {
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "unconsumed": [],
+            "confidence": 0.75,
+            "weakest": {
+              "question": "lights.state",
+              "top": "off",
+              "p": 0.75
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.9
+              },
+              {
+                "question": "lights.room",
+                "top": "unstated",
+                "p": 0.9
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.75
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.9
+              }
+            ],
+            "missing": [
+              {
+                "arg": "room",
+                "ask": "Which room?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "den": "The TV room downstairs; also 'the snug'.",
+                    "office": "The upstairs study."
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "timer",
+          "utterance": {
+            "text": "timer c",
+            "id": "timer c"
+          },
+          "expect": {},
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "timer",
+            "args": {
+              "duration": {
+                "type": "pick",
+                "span": {
+                  "start": 16,
+                  "end": 26,
+                  "text": "10 minutes"
+                },
+                "value": {
+                  "type": "duration",
+                  "value": 600
+                }
+              }
+            },
+            "call": "timer duration=\"10 minutes\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "timer.duration",
+              "top": "16-26",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "timer",
+                "p": 0.95
+              },
+              {
+                "question": "timer.duration",
+                "top": "16-26",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ]
+    ],
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "adapter": "replay",
+    "records": 3,
+    "reflexes": 2,
+    "inputs": 3,
+    "repeats": 1,
+    "outcomes": {
+      "run": 1,
+      "confirm": 0,
+      "ask": 2,
+      "abstain": 0
+    },
+    "bins": [
+      {
+        "lo": 0.6,
+        "hi": 0.8,
+        "calls": 2,
+        "right": 0,
+        "interval": [
+          0.0,
+          0.6576197760453506
+        ],
+        "claimed": 0.675,
+        "thin": true,
+        "over_confident": true
+      },
+      {
+        "lo": 0.8,
+        "hi": 1.0,
+        "calls": 1,
+        "right": 1,
+        "interval": [
+          0.2065493117918027,
+          1.0
+        ],
+        "claimed": 0.9,
+        "thin": true,
+        "over_confident": false
+      }
+    ],
+    "unknown": 0,
+    "abstained": {
+      "count": 0,
+      "right": 0,
+      "interval": [
+        0.0,
+        0.0
+      ]
+    },
+    "bars": {
+      "write": {
+        "bar": 0.8,
+        "wrong": 0,
+        "calls": 1,
+        "per_thousand": 0.0,
+        "at_most": 950.0000000000001,
+        "near": [
+          {
+            "at": 0.7,
+            "run": 2,
+            "wrong": 1
+          },
+          {
+            "at": 0.75,
+            "run": 2,
+            "wrong": 1
+          },
+          {
+            "at": 0.8,
+            "run": 1,
+            "wrong": 0
+          },
+          {
+            "at": 0.85,
+            "run": 1,
+            "wrong": 0
+          },
+          {
+            "at": 0.9,
+            "run": 1,
+            "wrong": 0
+          }
+        ]
+      }
+    },
+    "questions": [
+      {
+        "kind": "route",
+        "judgments": 3,
+        "right": 3,
+        "interval": [
+          0.43850296436068037,
+          1.0
+        ],
+        "claimed": 0.9166666666666666
+      },
+      {
+        "kind": "options",
+        "judgments": 2,
+        "right": 0,
+        "interval": [
+          0.0,
+          0.6576197760453506
+        ],
+        "claimed": 0.675
+      }
+    ],
+    "brier": {
+      "brier": 0.31083333333333335,
+      "reliability": 0.3070833333333334,
+      "resolution": 0.22222222222222224,
+      "uncertainty": 0.22222222222222224
+    },
+    "misses": [
+      {
+        "case": {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights a",
+            "id": "lights a"
+          },
+          "expect": {
+            "state": "on"
+          },
+          "from": "tests"
+        },
+        "outcome": "ask",
+        "reflex": "lights",
+        "confidence": 0.6,
+        "mismatch": {
+          "type": "arg",
+          "arg": "state",
+          "read": "off"
+        },
+        "wrong": 1
+      },
+      {
+        "case": {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights b",
+            "id": "lights b"
+          },
+          "expect": {
+            "state": "on"
+          },
+          "from": "tests"
+        },
+        "outcome": "ask",
+        "reflex": "lights",
+        "confidence": 0.75,
+        "mismatch": {
+          "type": "arg",
+          "arg": "state",
+          "read": "off"
+        },
+        "wrong": 1
+      }
+    ]
+  }
+}

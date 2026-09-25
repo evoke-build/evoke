@@ -47,6 +47,7 @@ git. A **TypeScript SDK** that puts the same decisions inside your app. You invo
 | [Weaving](use/weaving.md)                    | Several things in one sentence: the plan, what a step takes from another |
 | [Installing reflexes](use/installing.md)     | `add`, `remove`, `update`, `sync`, `trust`; refs, the lock, the store |
 | [Tuning](use/tuning.md)                      | `teach`, overlays, vocabularies, `config`, `show`, `test`          |
+| [Calibrating](use/calibrating.md)            | `calibrate`: what the confidence meant on your records, and over repeats |
 | [Projects](use/projects.md)                  | Your home project, an app's project, `evoke.toml`, trust           |
 
 ### Author: writing reflexes

@@ -6,19 +6,20 @@ use evoke_adapters::replay;
 use evoke_adapters::systemone::{self, Door};
 use evoke_core::document::Text;
 use evoke_core::manifest::{ConfigSpec, Effect, Recognizer};
+use evoke_core::name::AdapterId;
 use evoke_core::name::{ArgName, ConfigKey, LocalName, RelPath, Tag, VarName, VocabName};
 use evoke_core::plan::Millis;
 use evoke_core::project::Location;
 use evoke_core::text::NonEmpty;
 use evoke_core::{
     Active, Baseline, Call, Case, Chosen, Decision, Digest, Document, Facts, Fault, Fix, Gate,
-    Input, Installed, Lesson, Limits, Lock, Manifest, Needs, Overlay, Plan, Policy, Raw, Request,
-    Scope, Utterance, Value, Verdict, Weave, Written, add_entry, argv, baseline, by_name,
-    call as call_grammar, cases, compile, compose, consent, diff, effective, envelope, fill, gate,
-    identity, judge, landlock, lint, lock, manifest, needs, node_flags, overlay, picked, project,
-    project_dts, propose, read, reference, reflex_dts, regressions, remove_entry, render_lock,
-    report, request, resolve, seatbelt, set_config, teach, thieves, vocab_edit, vocabulary, weave,
-    widens,
+    Input, Installed, Lesson, Limits, Lock, Logged, Manifest, Needs, Overlay, Plan, Policy, Raw,
+    Request, Scope, Utterance, Value, Verdict, Weave, Written, add_entry, argv, baseline, by_name,
+    calibrate, call as call_grammar, cases, compile, compose, consent, diff, effective, envelope,
+    fill, gate, identity, judge, landlock, lint, lock, log_block, manifest, needs, node_flags,
+    overlay, picked, project, project_dts, propose, read, reference, reflex_dts, regressions,
+    remove_entry, render_lock, report, request, resolve, seatbelt, set_config, teach, thieves,
+    vocab_edit, vocabulary, weave, widens,
 };
 use indexmap::IndexMap;
 use serde::Serialize;
@@ -252,6 +253,19 @@ fn tune(op: &str, input: &Json) -> Answer {
         "thieves" => ok(thieves(
             &arg::<Vec<LocalName>>(input, "newcomers")?,
             &arg::<Vec<(Case, Option<LocalName>)>>(input, "routed")?,
+        )),
+        "calibrate" => ok(calibrate(
+            &arg::<AdapterId>(input, "adapter")?,
+            opt::<Gate>(input, "gate")?.as_ref(),
+            &arg::<Plan>(input, "plan")?,
+            &arg::<Vec<(Case, NonEmpty<Decision>)>>(input, "judged")?,
+        )),
+        "calibrate.log" => ok(log_block(
+            &arg::<AdapterId>(input, "adapter")?,
+            opt::<Gate>(input, "gate")?.as_ref(),
+            &arg::<Vec<Logged>>(input, "lines")?,
+            &arg::<Vec<Case>>(input, "cases")?,
+            arg::<usize>(input, "unread")?,
         )),
         _ => return adapters(op, input),
     })

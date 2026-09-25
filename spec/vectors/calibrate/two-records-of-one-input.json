@@ -1,0 +1,236 @@
+{
+  "input": {
+    "adapter": "replay",
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "judged": [
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "Lock the screen",
+            "id": "lock the screen"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "examples"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.85,
+            "weakest": {
+              "question": "lights.room",
+              "top": "den",
+              "p": 0.85
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.9
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.85
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.88
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.9
+              }
+            ]
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "timer",
+          "utterance": {
+            "text": "lock the screen",
+            "id": "lock the screen"
+          },
+          "expect": false,
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.85,
+            "weakest": {
+              "question": "lights.room",
+              "top": "den",
+              "p": 0.85
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.9
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.85
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.88
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.9
+              }
+            ]
+          }
+        ]
+      ]
+    ],
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "adapter": "replay",
+    "records": 2,
+    "reflexes": 2,
+    "inputs": 1,
+    "repeats": 1,
+    "outcomes": {
+      "run": 1,
+      "confirm": 0,
+      "ask": 0,
+      "abstain": 0
+    },
+    "bins": [
+      {
+        "lo": 0.8,
+        "hi": 1.0,
+        "calls": 1,
+        "right": 1,
+        "interval": [
+          0.2065493117918027,
+          1.0
+        ],
+        "claimed": 0.85,
+        "thin": true,
+        "over_confident": false
+      }
+    ],
+    "unknown": 0,
+    "abstained": {
+      "count": 0,
+      "right": 0,
+      "interval": [
+        0.0,
+        0.0
+      ]
+    },
+    "bars": {
+      "write": {
+        "bar": 0.8,
+        "wrong": 0,
+        "calls": 1,
+        "per_thousand": 0.0,
+        "at_most": 950.0000000000001,
+        "near": [
+          {
+            "at": 0.7,
+            "run": 1,
+            "wrong": 0
+          },
+          {
+            "at": 0.75,
+            "run": 1,
+            "wrong": 0
+          },
+          {
+            "at": 0.8,
+            "run": 1,
+            "wrong": 0
+          },
+          {
+            "at": 0.85,
+            "run": 1,
+            "wrong": 0
+          },
+          {
+            "at": 0.9,
+            "run": 0,
+            "wrong": 0
+          }
+        ]
+      }
+    },
+    "questions": [
+      {
+        "kind": "route",
+        "judgments": 1,
+        "right": 1,
+        "interval": [
+          0.2065493117918027,
+          1.0
+        ],
+        "claimed": 0.9
+      },
+      {
+        "kind": "options",
+        "judgments": 1,
+        "right": 1,
+        "interval": [
+          0.2065493117918027,
+          1.0
+        ],
+        "claimed": 0.88
+      }
+    ],
+    "brier": {
+      "brier": 0.022500000000000006,
+      "reliability": 0.022500000000000006,
+      "resolution": 0.0,
+      "uncertainty": 0.0
+    },
+    "misses": []
+  }
+}

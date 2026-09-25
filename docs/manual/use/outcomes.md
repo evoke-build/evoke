@@ -97,7 +97,8 @@ For each decision, the adapter answers one question per reflex and one per argum
 top probability among the route and every argument question of the winner.** Unstated arguments and flags count
 too, until you answer for them: an argument you typed at a prompt is settled, and its judgment leaves the gate.
 The bars come from the adapter. Both built-in adapters reach Jev and ship the same numbers. They are calibrated,
-so each number means *the probability this is right*:
+so each number means *the probability this is right*, as `evoke calibrate` measures it on your own records
+([Calibrating](calibrating.md)):
 
 | Floor         | Default | Gates                                                       |
 | :------------ | :--- | :------------------------------------------------------------- |

@@ -31,6 +31,9 @@ tune
   evoke vocab <name> remove <word>
   evoke config <name> <key> <value>       a setting; a secret as --env <VAR>
   evoke test [<name>]                     every example and test, judged
+  evoke calibrate [<name>]                the confidence measured on the records
+    --repeat <k>                          each input decided k times: the spread
+    --json                                one JSON object, for a script
 
 author
   evoke new <name>                        a working reflex from the template

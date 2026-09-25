@@ -1,0 +1,41 @@
+{
+  "input": {
+    "adapter": "replay",
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "judged": [],
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "adapter": "replay",
+    "records": 0,
+    "reflexes": 0,
+    "inputs": 0,
+    "repeats": 0,
+    "outcomes": {
+      "run": 0,
+      "confirm": 0,
+      "ask": 0,
+      "abstain": 0
+    },
+    "bins": [],
+    "unknown": 0,
+    "abstained": {
+      "count": 0,
+      "right": 0,
+      "interval": [
+        0.0,
+        0.0
+      ]
+    },
+    "bars": {},
+    "questions": [],
+    "misses": []
+  }
+}

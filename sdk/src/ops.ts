@@ -76,6 +76,14 @@ export interface Ops {
   regressions: { input: { before: T.Baseline; judged: [T.Case, T.NonEmpty<T.CaseVerdict>][] }; output: T.Regression[] }
   baseline: { input: { before: T.Baseline; judged: [T.Case, T.NonEmpty<T.CaseVerdict>][] }; output: T.Baseline }
   thieves: { input: { newcomers: T.LocalName[]; routed: [T.Case, T.LocalName | null][] }; output: T.Theft[] }
+  calibrate: {
+    input: { adapter: T.AdapterId; gate?: T.Gate; plan: T.Plan; judged: [T.Case, T.NonEmpty<T.Decision>][] }
+    output: T.Calibration
+  }
+  "calibrate.log": {
+    input: { adapter: T.AdapterId; gate?: T.Gate; lines: T.Logged[]; cases: T.Case[]; unread: number }
+    output: T.LogBlock
+  }
   // weave
   "weave.plan": { input: { plan: T.Plan; input: string; tags: T.Tag[]; answers: T.Answers }; output: T.Result<T.Planning, T.Fault> }
   "weave.execute": { input: { plan: T.Plan; gate?: T.Gate; weave: T.Weave; progress: T.Progress }; output: T.Running }

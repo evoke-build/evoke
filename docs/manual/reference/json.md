@@ -85,6 +85,21 @@ its own account, beside a reflex's, and no reflex is named `weave`. A choice's k
 words, `<start>-<end>` for a pick's candidates, `yes` and `no` for a flag, local names for the route, and the
 sentinels `none` and `unstated`.
 
+## `evoke calibrate --json`
+
+One object, the report of [Calibrating](../use/calibrating.md): `adapter`; `records`, `reflexes`, `inputs`,
+`repeats`; `outcomes` with `run`, `confirm`, `ask`, `abstain`; `bins`, each `{ lo, hi, calls, right, interval,
+claimed, thin, over_confident }`, a bin with no call left out; `unknown`; `abstained` as `{ count, right,
+interval }`; `bars` with `read` and `write` where the effect has a call, each `{ bar, wrong, calls,
+per_thousand, at_most, near }` and `near` a list of `{ at, run, wrong }`; `questions`, each `{ kind, judgments,
+right, interval, claimed }` with `kind` one of `route`, `options`, `vocab`, `pick`, `flag`; `brier` with
+`brier`, `reliability`, `resolution`, `uncertainty`, absent without a call; `misses`, each `{ case, outcome,
+reflex?, confidence?, mismatch, wrong }`; under `--repeat`, `variance` with `flips`, `verdict_flips`, `spread`
+as `{ median, p90, max }`, `straddling`, `wrong_at_bar`, and `moved`, each `{ utterance, confidence?, route,
+winners, outcomes, wrong }`; and `log` with `adapter`, `decisions`, `ran`, `confirmed_ran`,
+`confirmed_stopped`, `asked`, `abstained`, `failed`, `skipped`, `stopped_by_confidence` as `[{ lo, hi, count }]`,
+`records` as `{ count, right, interval }`, and `unread`. An interval is `[low, high]`; a rate is per thousand.
+
 ## Rules of the wire
 
 Keys are `snake_case`. An absent optional is omitted, never `null`. A tagged value carries `type`. A decision

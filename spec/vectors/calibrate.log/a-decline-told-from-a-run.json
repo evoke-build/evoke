@@ -1,0 +1,265 @@
+{
+  "input": {
+    "adapter": "replay",
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "lines": [
+      {
+        "input": "set a timer for 10 minutes",
+        "decision": {
+          "outcome": "run",
+          "reflex": "timer",
+          "args": {
+            "duration": {
+              "type": "pick",
+              "span": {
+                "start": 16,
+                "end": 26,
+                "text": "10 minutes"
+              },
+              "value": {
+                "type": "duration",
+                "value": 600
+              }
+            }
+          },
+          "call": "timer duration=\"10 minutes\"",
+          "effect": "write",
+          "confidence": 0.93,
+          "weakest": {
+            "question": "route",
+            "top": "timer",
+            "p": 0.93
+          },
+          "judgments": [
+            {
+              "question": "route",
+              "top": "timer",
+              "p": 0.93
+            },
+            {
+              "question": "timer.duration",
+              "top": "16-26",
+              "p": 0.95
+            }
+          ],
+          "contenders": [
+            {
+              "reflex": "timer",
+              "route": 0.93
+            }
+          ]
+        },
+        "adapters": [
+          "replay"
+        ],
+        "ran": true
+      },
+      {
+        "input": "make it darker in here",
+        "decision": {
+          "outcome": "confirm",
+          "reflex": "lights",
+          "args": {
+            "room": {
+              "type": "word",
+              "word": "den"
+            },
+            "state": {
+              "type": "option",
+              "key": "off"
+            }
+          },
+          "call": "lights room=\"den\" state=\"off\"",
+          "effect": "write",
+          "confidence": 0.6,
+          "weakest": {
+            "question": "lights.state",
+            "top": "off",
+            "p": 0.6
+          },
+          "judgments": [
+            {
+              "question": "route",
+              "top": "lights",
+              "p": 0.85
+            },
+            {
+              "question": "lights.room",
+              "top": "den",
+              "p": 0.85
+            },
+            {
+              "question": "lights.state",
+              "top": "off",
+              "p": 0.6
+            }
+          ],
+          "contenders": [
+            {
+              "reflex": "lights",
+              "route": 0.85
+            }
+          ],
+          "prompt": {
+            "own": "lights room=\"den\" state=\"off\" · write · weakest: state 0.60",
+            "template": "Start a 10 minutes timer?"
+          },
+          "because": [
+            {
+              "type": "under_floor",
+              "judgment": {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.6
+              },
+              "floor": 0.8
+            }
+          ]
+        },
+        "adapters": [
+          "replay"
+        ]
+      },
+      {
+        "input": "what time is it",
+        "decision": {
+          "outcome": "abstain",
+          "contenders": [
+            {
+              "reflex": "timer",
+              "route": 0.1
+            },
+            {
+              "reflex": "lights",
+              "route": 0.05
+            }
+          ],
+          "judgments": [
+            {
+              "question": "route",
+              "top": "none",
+              "p": 0.85
+            }
+          ]
+        }
+      },
+      {
+        "input": "lock it",
+        "decision": {
+          "outcome": "run",
+          "reflex": "timer",
+          "args": {
+            "duration": {
+              "type": "pick",
+              "span": {
+                "start": 16,
+                "end": 26,
+                "text": "10 minutes"
+              },
+              "value": {
+                "type": "duration",
+                "value": 600
+              }
+            }
+          },
+          "call": "timer duration=\"10 minutes\"",
+          "effect": "write",
+          "confidence": 0.9,
+          "weakest": {
+            "question": "route",
+            "top": "timer",
+            "p": 0.9
+          },
+          "judgments": [
+            {
+              "question": "route",
+              "top": "timer",
+              "p": 0.9
+            },
+            {
+              "question": "timer.duration",
+              "top": "16-26",
+              "p": 0.9
+            }
+          ],
+          "contenders": [
+            {
+              "reflex": "timer",
+              "route": 0.9
+            }
+          ]
+        },
+        "adapters": [
+          "jev-1.13.0"
+        ],
+        "ran": true
+      }
+    ],
+    "cases": [
+      {
+        "reflex": "timer",
+        "utterance": {
+          "text": "set a timer for 10 minutes",
+          "id": "set a timer for 10 minutes"
+        },
+        "expect": {
+          "duration": "10 minutes"
+        },
+        "from": "examples"
+      },
+      {
+        "reflex": "lights",
+        "utterance": {
+          "text": "make it darker in here",
+          "id": "make it darker in here"
+        },
+        "expect": {
+          "state": "dim"
+        },
+        "from": "tests"
+      },
+      {
+        "reflex": "timer",
+        "utterance": {
+          "text": "what time is it",
+          "id": "what time is it"
+        },
+        "expect": false,
+        "from": "tests"
+      }
+    ],
+    "unread": 1
+  },
+  "expect": {
+    "adapter": "replay",
+    "decisions": 3,
+    "ran": 1,
+    "confirmed_ran": 0,
+    "confirmed_stopped": 1,
+    "asked": 0,
+    "abstained": 1,
+    "failed": 0,
+    "skipped": 0,
+    "stopped_by_confidence": [
+      {
+        "lo": 0.6,
+        "hi": 0.8,
+        "count": 1
+      }
+    ],
+    "records": {
+      "count": 3,
+      "right": 2,
+      "interval": [
+        0.2076595988078242,
+        0.9385080559790691
+      ]
+    },
+    "unread": 1
+  }
+}

@@ -7,6 +7,7 @@
 #![allow(clippy::result_large_err)]
 
 pub mod adapter;
+pub mod calibrate;
 pub mod call;
 pub mod contain;
 pub mod contract;
@@ -30,6 +31,7 @@ pub mod vocabulary;
 pub mod weave;
 
 pub use adapter::{Declared, Fault, Gate, Key, Limits, Prob, Question, QuestionId, Raw, Request};
+pub use calibrate::{Calibration, LogBlock, Logged, calibrate, log_block};
 pub use call::{Call, Value, Written, call, render};
 pub use contain::{Contained, Facts, landlock, node_flags, seatbelt};
 pub use contract::{

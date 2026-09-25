@@ -1,0 +1,189 @@
+{
+  "input": {
+    "adapter": "replay",
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "judged": [
+      [
+        {
+          "reflex": "lights",
+          "utterance": {
+            "text": "lights a",
+            "id": "lights a"
+          },
+          "expect": {
+            "room": "den",
+            "state": "off"
+          },
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.7,
+            "weakest": {
+              "question": "lights.room",
+              "top": "den",
+              "p": 0.7
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.7
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ]
+    ],
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "adapter": "replay",
+    "records": 1,
+    "reflexes": 1,
+    "inputs": 1,
+    "repeats": 1,
+    "outcomes": {
+      "run": 1,
+      "confirm": 0,
+      "ask": 0,
+      "abstain": 0
+    },
+    "bins": [
+      {
+        "lo": 0.6,
+        "hi": 0.8,
+        "calls": 1,
+        "right": 1,
+        "interval": [
+          0.2065493117918027,
+          1.0
+        ],
+        "claimed": 0.7,
+        "thin": true,
+        "over_confident": false
+      }
+    ],
+    "unknown": 0,
+    "abstained": {
+      "count": 0,
+      "right": 0,
+      "interval": [
+        0.0,
+        0.0
+      ]
+    },
+    "bars": {
+      "write": {
+        "bar": 0.8,
+        "wrong": 0,
+        "calls": 0,
+        "per_thousand": 0.0,
+        "at_most": 1000.0,
+        "near": [
+          {
+            "at": 0.7,
+            "run": 1,
+            "wrong": 0
+          },
+          {
+            "at": 0.75,
+            "run": 0,
+            "wrong": 0
+          },
+          {
+            "at": 0.8,
+            "run": 0,
+            "wrong": 0
+          },
+          {
+            "at": 0.85,
+            "run": 0,
+            "wrong": 0
+          },
+          {
+            "at": 0.9,
+            "run": 0,
+            "wrong": 0
+          }
+        ]
+      }
+    },
+    "questions": [
+      {
+        "kind": "route",
+        "judgments": 1,
+        "right": 1,
+        "interval": [
+          0.2065493117918027,
+          1.0
+        ],
+        "claimed": 0.95
+      },
+      {
+        "kind": "options",
+        "judgments": 1,
+        "right": 1,
+        "interval": [
+          0.2065493117918027,
+          1.0
+        ],
+        "claimed": 0.9
+      },
+      {
+        "kind": "vocab",
+        "judgments": 1,
+        "right": 1,
+        "interval": [
+          0.2065493117918027,
+          1.0
+        ],
+        "claimed": 0.7
+      }
+    ],
+    "brier": {
+      "brier": 0.09000000000000002,
+      "reliability": 0.09000000000000002,
+      "resolution": 0.0,
+      "uncertainty": 0.0
+    },
+    "misses": []
+  }
+}

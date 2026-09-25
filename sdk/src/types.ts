@@ -1140,6 +1140,166 @@ export interface Theft {
   thief: LocalName
 }
 
+// calibrate
+
+/** The report `evoke calibrate` prints: every record of the active reflexes decided once, or `repeats` times, and judged; each input counts once, by its first decision, the repeats measuring stability. */
+export interface Calibration {
+  adapter: AdapterId
+  records: number
+  reflexes: number
+  inputs: number
+  repeats: number
+  outcomes: Outcomes
+  /** The whole call right, by the confidence claimed; a bin with no call is left out. */
+  bins: BinRow[]
+  /** Calls no record can judge: a `false` record routed to a reflex no record names. */
+  unknown: number
+  abstained: Share
+  bars: Bars
+  questions: QuestionRow[]
+  brier?: Brier
+  misses: Miss[]
+  variance?: Variance
+}
+
+/** How many inputs ended in each outcome. */
+export interface Outcomes {
+  run: number
+  confirm: number
+  ask: number
+  abstain: number
+}
+
+/** One bin: the calls whose confidence lies in `lo..hi` — `hi` inside the last bin — how many were right, the Wilson interval of that share, the mean confidence claimed; `over_confident` when the claim is above the interval, `thin` under a hundred calls. */
+export interface BinRow {
+  lo: Prob
+  hi: Prob
+  calls: number
+  right: number
+  interval: [Prob, Prob]
+  claimed: Prob
+  thin: boolean
+  over_confident: boolean
+}
+
+/** A count with how many were right, and the Wilson interval of the share. */
+export interface Share {
+  count: number
+  right: number
+  interval: [Prob, Prob]
+}
+
+/** Each effect's bar, for an effect with a judged call under a gate. */
+export interface Bars {
+  read?: BarRow
+  write?: BarRow
+}
+
+/** The calls of one effect at or over its bar: how many were wrong, per thousand, the one-sided bound at 95 % per thousand, and the neighbourhood at the bar and a step either side. */
+export interface BarRow {
+  bar: Prob
+  wrong: number
+  calls: number
+  per_thousand: number
+  at_most: number
+  near: NearRow[]
+}
+
+/** At a threshold: how many calls would run, and how many of those are wrong. */
+export interface NearRow {
+  at: Prob
+  run: number
+  wrong: number
+}
+
+/** One kind of judgment on its own: the route, or the arguments by source; right when the record names the argument and the decision read it as claimed. */
+export interface QuestionRow {
+  kind: QuestionKind
+  judgments: number
+  right: number
+  interval: [Prob, Prob]
+  claimed: Prob
+}
+
+export type QuestionKind = "route" | "options" | "vocab" | "pick" | "flag"
+
+/** The Brier score over the calls, and Murphy's parts over the bins. */
+export interface Brier {
+  brier: number
+  reliability: number
+  resolution: number
+  uncertainty: number
+}
+
+/** A decision a record proved wrong: the record, what was decided, where it missed; `wrong` counts the repeats that missed the same way. */
+export interface Miss {
+  case: Case
+  outcome: "run" | "confirm" | "ask" | "abstain"
+  reflex?: LocalName
+  confidence?: Prob
+  mismatch: Mismatch
+  wrong: number
+}
+
+/** Over repeats: the inputs whose winner or verdict flipped, the spread of the confidence per input, the inputs straddling the bar of their effect, the calls wrong at or over their bar in any repeat, and what moved most. */
+export interface Variance {
+  flips: number
+  verdict_flips: number
+  spread: Spread
+  straddling: number
+  wrong_at_bar: number
+  moved: Moved[]
+}
+
+export interface Spread {
+  median: number
+  p90: number
+  max: number
+}
+
+/** One input whose repeats moved: the confidence's range, the route's, each winner and outcome with its count, and how many repeats were wrong. */
+export interface Moved {
+  utterance: string
+  confidence?: [Prob, Prob]
+  route: [Prob, Prob]
+  winners: Record<string, number>
+  outcomes: Record<string, number>
+  wrong: number
+}
+
+/** One line of the log as the block reads it: what was decided, which adapters answered — none when the cache did — whether the body ran or failed, and a weave step's status. */
+export interface Logged {
+  input: Input
+  decision: Decision
+  adapters?: AdapterId[]
+  ran?: boolean
+  failed?: boolean
+  status?: Status
+}
+
+/** The log's lines under one adapter, counted by what became of each; the confidence of what stopped at a confirm by segment; the lines whose input is a record, judged; and the lines that did not read. */
+export interface LogBlock {
+  adapter: AdapterId
+  decisions: number
+  ran: number
+  confirmed_ran: number
+  confirmed_stopped: number
+  asked: number
+  abstained: number
+  failed: number
+  skipped: number
+  stopped_by_confidence: Counted[]
+  records: Share
+  unread: number
+}
+
+/** A count of confidences in `lo..hi`. */
+export interface Counted {
+  lo: Prob
+  hi: Prob
+  count: number
+}
+
 // systemone
 
 /** A door on the System One wire: which address, under which key, naming which model. Its adapter name. */

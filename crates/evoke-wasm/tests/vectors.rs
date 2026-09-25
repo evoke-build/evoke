@@ -170,6 +170,8 @@ families! {
     thieves_vectors => "thieves",
     judge_vectors => "judge",
     regressions_vectors => "regressions",
+    calibrate_vectors => "calibrate",
+    calibrate_log_vectors => "calibrate.log",
     weave_plan_vectors => "weave.plan",
     weave_execute_vectors => "weave.execute",
     baseline_vectors => "baseline",

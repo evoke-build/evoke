@@ -134,6 +134,11 @@ fn test() {
 }
 
 #[test]
+fn calibrate() {
+    flow("calibrate");
+}
+
+#[test]
 fn help() {
     flow("help");
 }

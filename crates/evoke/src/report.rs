@@ -10,6 +10,7 @@ use std::collections::BTreeMap;
 use std::fmt::Write as _;
 
 use evoke_core::adapter::QuestionId;
+use evoke_core::calibrate::{self, BarRow, BinRow, Calibration, LogBlock, Miss, QuestionRow};
 use evoke_core::contract::Change;
 use evoke_core::decide::{Missing, Why};
 use evoke_core::manifest::{Effect, Manifest, Run};
@@ -1028,6 +1029,12 @@ const COMMANDS: [(&str, &[(&str, &str)]); 4] = [
                 "a setting; a secret as --env <VAR>",
             ),
             ("evoke test [<name>]", "every example and test, judged"),
+            (
+                "evoke calibrate [<name>]",
+                "the confidence measured on the records",
+            ),
+            ("  --repeat <k>", "each input decided k times: the spread"),
+            ("  --json", "one JSON object, for a script"),
         ],
     ),
     (
@@ -1126,6 +1133,456 @@ pub fn nothing_to_test(name: Option<&LocalName>) -> Text {
     indented(vec![Text::from(format!(
         "nothing to test: {who} examples or tests"
     ))])
+}
+
+/// `evoke calibrate` with no record to decide: the reflex named has no examples and no tests, or no active reflex
+/// has.
+#[must_use]
+pub fn nothing_to_calibrate(name: Option<&LocalName>) -> Text {
+    let who = name.map_or_else(
+        || "no active reflex has".to_owned(),
+        |name| format!("{name} has no"),
+    );
+    indented(vec![Text::from(format!(
+        "nothing to calibrate: {who} examples or tests"
+    ))])
+}
+
+/// `calibrate`'s block: the head, the outcomes, the whole call right by bins with `unknown` and `abstained`
+/// apart, each bar with its bound and its neighbourhood, each judgment on its own, Brier, the misses, the repeats,
+/// the log's block, and the closing line. A claimed confidence is weak; a wrong count and `over-confident` are
+/// failures; `thin` and `unknown` warn. Nothing is said by colour alone.
+#[must_use]
+pub fn calibrated(calibration: &Calibration, log: &LogBlock) -> Text {
+    let c = calibration;
+    let mut lines = vec![
+        heading(c),
+        outcomes(c),
+        Text::from("whole call right, by confidence"),
+    ];
+    lines.extend(binned(c));
+    lines.extend(bars(c));
+    if !c.questions.is_empty() {
+        lines.push(Text::from("each judgment on its own"));
+        lines.extend(questions(&c.questions));
+    }
+    if let Some(brier) = &c.brier {
+        lines.push(Text::from(format!(
+            "Brier {:.3} · reliability {:.3} · resolution {:.3}",
+            brier.brier, brier.reliability, brier.resolution
+        )));
+    }
+    if !c.misses.is_empty() {
+        lines.push(Text::from("misses"));
+        lines.extend(misses(&c.misses, c.repeats));
+    }
+    if let Some(variance) = &c.variance {
+        lines.push(Text::from(format!(
+            "repeats {} · winner flips {} of {} · verdict flips {} · spread median {:.2}, 90th {:.2}, max {:.2} · straddling a bar {} · wrong at or over a bar {}",
+            c.repeats,
+            variance.flips,
+            c.inputs,
+            variance.verdict_flips,
+            variance.spread.median,
+            variance.spread.p90,
+            variance.spread.max,
+            variance.straddling,
+            variance.wrong_at_bar
+        )));
+        for moved in &variance.moved {
+            let confidence = moved.confidence.map_or_else(
+                || "no call".to_owned(),
+                |(lo, hi)| format!("confidence {}", ranged(lo.get(), hi.get())),
+            );
+            let counted = |counts: &indexmap::IndexMap<String, usize>| -> String {
+                counts
+                    .iter()
+                    .map(|(key, n)| format!("{key} ×{n}"))
+                    .collect::<Vec<_>>()
+                    .join(" ")
+            };
+            let mut line = Text::from(format!(
+                "  {}  {confidence} · route {} · {} · {}",
+                plain(&quoted(&moved.utterance)),
+                ranged(moved.route.0.get(), moved.route.1.get()),
+                counted(&moved.winners),
+                counted(&moved.outcomes)
+            ));
+            if moved.wrong > 0 {
+                line.push(" · ")
+                    .roled(Role::Failed, &format!("wrong ×{}", moved.wrong));
+            }
+            lines.push(line);
+        }
+    }
+    lines.extend(logged(log));
+    lines.push(closing(c));
+    indented(lines)
+}
+
+/// `<adapter> · 93 records over 13 reflexes · 88 inputs, decided once`.
+fn heading(c: &Calibration) -> Text {
+    let reflexes = if c.reflexes == 1 {
+        "reflex"
+    } else {
+        "reflexes"
+    };
+    let decided = match c.repeats {
+        1 => "once".to_owned(),
+        k => format!("{k} times"),
+    };
+    Text::from(format!(
+        "{} · {} records over {} {reflexes} · {} inputs, decided {decided}",
+        c.adapter, c.records, c.reflexes, c.inputs
+    ))
+}
+
+fn outcomes(c: &Calibration) -> Text {
+    let counts = [
+        (c.outcomes.run, "run"),
+        (c.outcomes.confirm, "confirm"),
+        (c.outcomes.ask, "ask"),
+        (c.outcomes.abstain, "abstain"),
+    ];
+    let shown: Vec<String> = counts
+        .iter()
+        .filter(|(n, _)| *n > 0)
+        .map(|(n, word)| format!("{n} {word}"))
+        .collect();
+    Text::from(shown.join(" · "))
+}
+
+/// `lo–hi`, or one number when both are the same.
+fn ranged(lo: f64, hi: f64) -> String {
+    let (lo, hi) = (format!("{lo:.2}"), format!("{hi:.2}"));
+    if lo == hi { lo } else { format!("{lo}–{hi}") }
+}
+
+/// `(34–100)`: the interval in whole percents.
+fn interval(interval: (evoke_core::Prob, evoke_core::Prob)) -> String {
+    format!(
+        "({:.0}–{:.0})",
+        100.0 * interval.0.get(),
+        100.0 * interval.1.get()
+    )
+}
+
+/// `100%`.
+fn percent(right: usize, of: usize) -> String {
+    #[expect(clippy::cast_precision_loss)]
+    let share = if of == 0 {
+        0.0
+    } else {
+        100.0 * right as f64 / of as f64
+    };
+    format!("{share:.0}%")
+}
+
+/// A bin's range, `0.60–0.80`; the first from zero is `under 0.50`.
+fn range_of(bin: &BinRow) -> String {
+    if bin.lo.get() == 0.0 {
+        format!("under {:.2}", bin.hi.get())
+    } else {
+        format!("{:.2}–{:.2}", bin.lo.get(), bin.hi.get())
+    }
+}
+
+/// The bins' rows, then `unknown` and `abstained` apart, their columns aligned: the range, the count and its
+/// unit, then the share with its interval and the claim.
+fn binned(c: &Calibration) -> Vec<Text> {
+    let share = |right: usize, count: usize, interval: (evoke_core::Prob, evoke_core::Prob)| {
+        Text::from(format!(
+            "right {right} · {:>4} {}",
+            percent(right, count),
+            self::interval(interval)
+        ))
+    };
+    let mut rows: Vec<(Text, usize, &str, Text)> = c
+        .bins
+        .iter()
+        .map(|bin| {
+            let mut rest = share(bin.right, bin.calls, bin.interval);
+            rest.push(" · ")
+                .roled(Role::Weak, &format!("claimed {:.2}", bin.claimed.get()));
+            if bin.over_confident {
+                rest.push(" · ").roled(Role::Failed, "over-confident");
+            }
+            if bin.thin {
+                rest.push(" · ").roled(Role::Warning, "thin");
+            }
+            (Text::from(range_of(bin)), bin.calls, "calls", rest)
+        })
+        .collect();
+    if c.unknown > 0 {
+        let mut label = Text::new();
+        label.roled(Role::Warning, "unknown");
+        rows.push((
+            label,
+            c.unknown,
+            "calls",
+            Text::from("a false record routed to a reflex no record names"),
+        ));
+    }
+    if c.abstained.count > 0 {
+        let a = &c.abstained;
+        rows.push((
+            Text::from("abstained"),
+            a.count,
+            "inputs",
+            share(a.right, a.count, a.interval),
+        ));
+    }
+    let labels = rows
+        .iter()
+        .map(|(label, ..)| chars(&label.to_string()))
+        .max()
+        .unwrap_or(0);
+    let counts = rows
+        .iter()
+        .map(|(_, count, ..)| count.to_string().len())
+        .max()
+        .unwrap_or(0);
+    rows.into_iter()
+        .map(|(label, count, unit, rest)| {
+            let unit = if count == 1 {
+                unit.trim_end_matches('s')
+            } else {
+                unit
+            };
+            let padding = labels - chars(&label.to_string());
+            let mut line = Text::from("  ");
+            line.append(label)
+                .push(&format!("{:padding$}  {count:>counts$} {unit:<6}  ", ""))
+                .append(rest);
+            line
+        })
+        .collect()
+}
+
+/// Each bar's line under a gate — `no read calls` without one of its effect — and its neighbourhood.
+fn bars(c: &Calibration) -> Vec<Text> {
+    let bars: [(&str, Option<&BarRow>); 2] = [
+        ("read", c.bars.read.as_ref()),
+        ("write", c.bars.write.as_ref()),
+    ];
+    let width = bars
+        .iter()
+        .filter_map(|(_, bar)| bar.map(|bar| bar.calls.max(bar.wrong).to_string().len()))
+        .max()
+        .unwrap_or(1);
+    let labels = bars
+        .iter()
+        .filter(|(_, bar)| bar.is_some())
+        .map(|(effect, _)| chars(effect))
+        .max()
+        .unwrap_or(0);
+    let mut lines = Vec::new();
+    for (effect, bar) in bars {
+        let Some(bar) = bar else {
+            continue;
+        };
+        let label = format!("wrong at or over {effect} {:.2}", bar.bar.get());
+        let padding = labels - chars(effect);
+        let mut line = Text::from(format!("{label}{:padding$}   ", ""));
+        if bar.wrong > 0 {
+            line.roled(Role::Failed, &format!("{:>width$}", bar.wrong));
+        } else {
+            line.push(&format!("{:>width$}", bar.wrong));
+        }
+        line.push(&format!(" of {:>width$}", bar.calls));
+        if bar.calls > 0 {
+            line.push(&format!(
+                " · {:.0} per thousand, at most {:.0}",
+                bar.per_thousand, bar.at_most
+            ));
+        }
+        if bar.calls < calibrate::THIN {
+            line.push(" · ").roled(Role::Warning, "thin");
+        }
+        lines.push(line);
+        let cells: Vec<String> = bar
+            .near
+            .iter()
+            .enumerate()
+            .map(|(i, near)| {
+                if i == 0 {
+                    format!(
+                        "at {:.2} {} run, {} wrong",
+                        near.at.get(),
+                        near.run,
+                        near.wrong
+                    )
+                } else {
+                    format!("at {:.2} {}, {}", near.at.get(), near.run, near.wrong)
+                }
+            })
+            .collect();
+        lines.push(Text::from(format!(
+            "near {effect} {:.2}   {}",
+            bar.bar.get(),
+            cells.join(" · ")
+        )));
+    }
+    lines
+}
+
+fn questions(rows: &[QuestionRow]) -> Vec<Text> {
+    let width = rows
+        .iter()
+        .map(|row| row.judgments.to_string().len())
+        .max()
+        .unwrap_or(0);
+    rows.iter()
+        .map(|row| {
+            let kind = match row.kind {
+                calibrate::QuestionKind::Route => "route",
+                calibrate::QuestionKind::Options => "options",
+                calibrate::QuestionKind::Vocab => "vocab",
+                calibrate::QuestionKind::Pick => "pick",
+                calibrate::QuestionKind::Flag => "flag",
+            };
+            let mut line = Text::from(format!(
+                "  {kind:<7} {:>width$} judgments  right {:>4} {}",
+                row.judgments,
+                percent(row.right, row.judgments),
+                interval(row.interval)
+            ));
+            line.push(" · ")
+                .roled(Role::Weak, &format!("claimed {:.2}", row.claimed.get()));
+            line
+        })
+        .collect()
+}
+
+/// One line per miss: the record, what was decided, where it missed, and over repeats how many missed so.
+fn misses(misses: &[Miss], repeats: usize) -> Vec<Text> {
+    let utterances: Vec<String> = misses
+        .iter()
+        .map(|miss| plain(&quoted(miss.case.utterance.text().as_str())))
+        .collect();
+    let width = utterances.iter().map(|u| chars(u)).max().unwrap_or(0);
+    misses
+        .iter()
+        .zip(&utterances)
+        .map(|(miss, utterance)| {
+            let mut line = Text::from(format!(
+                "  {utterance:<width$}  {}",
+                calibrate::word(miss.outcome)
+            ));
+            if let Some(reflex) = &miss.reflex {
+                line.push(" ").roled(Role::Call, reflex.as_str());
+            }
+            if let Some(confidence) = miss.confidence {
+                line.push(" ")
+                    .roled(Role::Weak, &format!("{:.2}", confidence.get()));
+            }
+            line.push(" · ").push(&missed(&miss.case, &miss.mismatch));
+            if repeats > 1 {
+                line.push(&format!(" · {} of {repeats} repeats", miss.wrong));
+            }
+            line
+        })
+        .collect()
+}
+
+/// The log's block: the lines under the adapter by what became of each, the confidence of what stopped at a
+/// confirm, the lines that were records judged; `no decisions` when none.
+fn logged(log: &LogBlock) -> Vec<Text> {
+    let mut head = if log.decisions == 0 {
+        Text::from(format!("the log · no decisions under {}", log.adapter))
+    } else {
+        let counts = [
+            (log.ran, "ran"),
+            (log.confirmed_ran, "confirmed and ran"),
+            (log.confirmed_stopped, "confirmed and stopped"),
+            (log.asked, "asked and stopped"),
+            (log.abstained, "abstained"),
+            (log.failed, "failed"),
+            (log.skipped, "never ran"),
+        ];
+        let decisions = if log.decisions == 1 {
+            "decision"
+        } else {
+            "decisions"
+        };
+        let mut text = Text::from(format!(
+            "the log · {} {decisions} under {}",
+            log.decisions, log.adapter
+        ));
+        for (n, word) in counts {
+            if n > 0 {
+                text.push(&format!(" · {n} {word}"));
+            }
+        }
+        text
+    };
+    if log.unread > 0 {
+        let lines = if log.unread == 1 {
+            "line does"
+        } else {
+            "lines do"
+        };
+        head.push(" · ")
+            .roled(Role::Warning, &format!("{} {lines} not read", log.unread));
+    }
+    let mut lines = vec![head];
+    if !log.stopped_by_confidence.is_empty() {
+        let cells: Vec<String> = log
+            .stopped_by_confidence
+            .iter()
+            .map(|counted| {
+                format!(
+                    "{:.2}–{:.2} {}",
+                    counted.lo.get(),
+                    counted.hi.get(),
+                    counted.count
+                )
+            })
+            .collect();
+        lines.push(Text::from(format!(
+            "  stopped at confirm, by confidence   {}",
+            cells.join(" · ")
+        )));
+    }
+    if log.records.count > 0 {
+        let r = &log.records;
+        let were = if r.count == 1 {
+            "was a record"
+        } else {
+            "were records"
+        };
+        lines.push(Text::from(format!(
+            "  {} {were} · right {} · {} {}",
+            r.count,
+            r.right,
+            percent(r.right, r.count),
+            interval(r.interval)
+        )));
+    }
+    lines
+}
+
+/// The last line: `thin` while every bin is under a hundred calls; else whether a bin of a hundred is
+/// over-confident at 95 %.
+fn closing(c: &Calibration) -> Text {
+    let over: Vec<String> = c
+        .bins
+        .iter()
+        .filter(|bin| !bin.thin && bin.over_confident)
+        .map(range_of)
+        .collect();
+    let mut line = Text::new();
+    if c.bins.iter().all(|bin| bin.thin) {
+        line.roled(Role::Warning, "thin")
+            .push(": under 100 calls in every bin, nothing proven at any bar");
+    } else if over.is_empty() {
+        line.push("at 95 %: no bin of 100 calls is over-confident");
+    } else {
+        line.push("at 95 %: ")
+            .roled(Role::Failed, "over-confident")
+            .push(&format!(" at {}", over.join(", ")));
+    }
+    line
 }
 
 /// `evoke update` with nothing to move, `evoke sync` with nothing to place: every remote reflex is where the lock
@@ -2104,7 +2561,7 @@ mod tests {
         assert!(narrow.contains("\n  evoke \"<input>\"\n      decide, gate, run\n"));
         assert!(narrow.contains("\n    --json\n      one JSON line per input, for a filter\n"));
         // One more line per described command or flag, and the exit codes on two.
-        assert_eq!(narrow.lines().count(), wide.lines().count() + 23);
+        assert_eq!(narrow.lines().count(), wide.lines().count() + 26);
         let widest = narrow.lines().map(chars).max().unwrap_or(0);
         assert!(widest <= 60, "a line is {widest} columns wide");
     }

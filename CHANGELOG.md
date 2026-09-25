@@ -6,6 +6,11 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- `evoke calibrate` reports what the numbers meant on your own records: the whole call right by confidence,
+  each bin with its count and interval, the wrong calls at or over each bar per thousand, and with `--repeat`
+  the spread over repeats; the log's confirms and declines apart. `--json` prints one object; a call wrong at
+  or over its bar exits 1.
+
 ## [0.5.1] - 2026-09-25
 
 - A body that runs a program no longer prints Node's warning about `--allow-child-process`.

@@ -1,0 +1,458 @@
+{
+  "input": {
+    "adapter": "replay",
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "judged": [
+      [
+        {
+          "reflex": "timer",
+          "utterance": {
+            "text": "timer a",
+            "id": "timer a"
+          },
+          "expect": {},
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "confirm",
+            "reflex": "timer",
+            "args": {
+              "duration": {
+                "type": "pick",
+                "span": {
+                  "start": 16,
+                  "end": 26,
+                  "text": "10 minutes"
+                },
+                "value": {
+                  "type": "duration",
+                  "value": 600
+                }
+              }
+            },
+            "call": "timer duration=\"10 minutes\"",
+            "effect": "write",
+            "confidence": 0.78,
+            "weakest": {
+              "question": "timer.duration",
+              "top": "16-26",
+              "p": 0.78
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "timer",
+                "p": 0.9
+              },
+              {
+                "question": "timer.duration",
+                "top": "16-26",
+                "p": 0.78
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.9
+              }
+            ],
+            "prompt": {
+              "own": "timer duration=\"10 minutes\" · write · weakest: duration 0.78",
+              "template": "Start a 10 minutes timer?"
+            },
+            "because": [
+              {
+                "type": "under_floor",
+                "judgment": {
+                  "question": "timer.duration",
+                  "top": "16-26",
+                  "p": 0.78
+                },
+                "floor": 0.8
+              }
+            ]
+          },
+          {
+            "outcome": "run",
+            "reflex": "timer",
+            "args": {
+              "duration": {
+                "type": "pick",
+                "span": {
+                  "start": 16,
+                  "end": 26,
+                  "text": "10 minutes"
+                },
+                "value": {
+                  "type": "duration",
+                  "value": 600
+                }
+              }
+            },
+            "call": "timer duration=\"10 minutes\"",
+            "effect": "write",
+            "confidence": 0.82,
+            "weakest": {
+              "question": "timer.duration",
+              "top": "16-26",
+              "p": 0.82
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "timer",
+                "p": 0.9
+              },
+              {
+                "question": "timer.duration",
+                "top": "16-26",
+                "p": 0.82
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.9
+              }
+            ]
+          },
+          {
+            "outcome": "run",
+            "reflex": "timer",
+            "args": {
+              "duration": {
+                "type": "pick",
+                "span": {
+                  "start": 16,
+                  "end": 26,
+                  "text": "10 minutes"
+                },
+                "value": {
+                  "type": "duration",
+                  "value": 600
+                }
+              }
+            },
+            "call": "timer duration=\"10 minutes\"",
+            "effect": "write",
+            "confidence": 0.85,
+            "weakest": {
+              "question": "timer.duration",
+              "top": "16-26",
+              "p": 0.85
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "timer",
+                "p": 0.9
+              },
+              {
+                "question": "timer.duration",
+                "top": "16-26",
+                "p": 0.85
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.9
+              }
+            ]
+          }
+        ]
+      ],
+      [
+        {
+          "reflex": "timer",
+          "utterance": {
+            "text": "timer b",
+            "id": "timer b"
+          },
+          "expect": {},
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "run",
+            "reflex": "timer",
+            "args": {
+              "duration": {
+                "type": "pick",
+                "span": {
+                  "start": 16,
+                  "end": 26,
+                  "text": "10 minutes"
+                },
+                "value": {
+                  "type": "duration",
+                  "value": 600
+                }
+              }
+            },
+            "call": "timer duration=\"10 minutes\"",
+            "effect": "write",
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "timer",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "timer",
+                "p": 0.95
+              },
+              {
+                "question": "timer.duration",
+                "top": "16-26",
+                "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.95
+              }
+            ]
+          },
+          {
+            "outcome": "run",
+            "reflex": "timer",
+            "args": {
+              "duration": {
+                "type": "pick",
+                "span": {
+                  "start": 16,
+                  "end": 26,
+                  "text": "10 minutes"
+                },
+                "value": {
+                  "type": "duration",
+                  "value": 600
+                }
+              }
+            },
+            "call": "timer duration=\"10 minutes\"",
+            "effect": "write",
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "timer",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "timer",
+                "p": 0.95
+              },
+              {
+                "question": "timer.duration",
+                "top": "16-26",
+                "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.95
+              }
+            ]
+          },
+          {
+            "outcome": "run",
+            "reflex": "timer",
+            "args": {
+              "duration": {
+                "type": "pick",
+                "span": {
+                  "start": 16,
+                  "end": 26,
+                  "text": "10 minutes"
+                },
+                "value": {
+                  "type": "duration",
+                  "value": 600
+                }
+              }
+            },
+            "call": "timer duration=\"10 minutes\"",
+            "effect": "write",
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "timer",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "timer",
+                "p": 0.95
+              },
+              {
+                "question": "timer.duration",
+                "top": "16-26",
+                "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ]
+    ],
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "adapter": "replay",
+    "records": 2,
+    "reflexes": 1,
+    "inputs": 2,
+    "repeats": 3,
+    "outcomes": {
+      "run": 1,
+      "confirm": 1,
+      "ask": 0,
+      "abstain": 0
+    },
+    "bins": [
+      {
+        "lo": 0.6,
+        "hi": 0.8,
+        "calls": 1,
+        "right": 1,
+        "interval": [
+          0.2065493117918027,
+          1.0
+        ],
+        "claimed": 0.78,
+        "thin": true,
+        "over_confident": false
+      },
+      {
+        "lo": 0.8,
+        "hi": 1.0,
+        "calls": 1,
+        "right": 1,
+        "interval": [
+          0.2065493117918027,
+          1.0
+        ],
+        "claimed": 0.95,
+        "thin": true,
+        "over_confident": false
+      }
+    ],
+    "unknown": 0,
+    "abstained": {
+      "count": 0,
+      "right": 0,
+      "interval": [
+        0.0,
+        0.0
+      ]
+    },
+    "bars": {
+      "write": {
+        "bar": 0.8,
+        "wrong": 0,
+        "calls": 1,
+        "per_thousand": 0.0,
+        "at_most": 950.0000000000001,
+        "near": [
+          {
+            "at": 0.7,
+            "run": 2,
+            "wrong": 0
+          },
+          {
+            "at": 0.75,
+            "run": 2,
+            "wrong": 0
+          },
+          {
+            "at": 0.8,
+            "run": 1,
+            "wrong": 0
+          },
+          {
+            "at": 0.85,
+            "run": 1,
+            "wrong": 0
+          },
+          {
+            "at": 0.9,
+            "run": 1,
+            "wrong": 0
+          }
+        ]
+      }
+    },
+    "questions": [
+      {
+        "kind": "route",
+        "judgments": 2,
+        "right": 2,
+        "interval": [
+          0.3423802239546494,
+          1.0
+        ],
+        "claimed": 0.925
+      }
+    ],
+    "brier": {
+      "brier": 0.025449999999999997,
+      "reliability": 0.025449999999999997,
+      "resolution": 0.0,
+      "uncertainty": 0.0
+    },
+    "misses": [],
+    "variance": {
+      "flips": 0,
+      "verdict_flips": 0,
+      "spread": {
+        "median": 0.034999999999999976,
+        "p90": 0.0,
+        "max": 0.06999999999999995
+      },
+      "straddling": 1,
+      "wrong_at_bar": 0,
+      "moved": [
+        {
+          "utterance": "timer a",
+          "confidence": [
+            0.78,
+            0.85
+          ],
+          "route": [
+            0.9,
+            0.9
+          ],
+          "winners": {
+            "timer": 3
+          },
+          "outcomes": {
+            "confirm": 1,
+            "run": 2
+          },
+          "wrong": 0
+        }
+      ]
+    }
+  }
+}
