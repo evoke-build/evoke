@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Frequently asked questions - Evoke</title>
-  <meta name="description" content="What you install, what can go wrong, what leaves your machine and what it costs. Ten short answers, each with the page that holds the long one.">
+  <title>FAQ: cost, API keys, safety and your data - Evoke</title>
+  <meta name="description" content="evoke gives you natural-language commands for small programs you install. Short answers on cost, API keys, Linux, your data, and what can go wrong.">
   <!-- head -->
   <script type="application/ld+json">
   {
@@ -12,9 +12,9 @@
     "@type": "FAQPage",
     "@id": "https://evoke.build/faq.html",
     "url": "https://evoke.build/faq.html",
-    "name": "Frequently asked questions",
-    "headline": "Frequently asked questions",
-    "description": "What you install, what can go wrong, what leaves your machine and what it costs. Ten short answers, each with the page that holds the long one.",
+    "name": "Questions about evoke",
+    "headline": "Questions about evoke",
+    "description": "evoke gives you natural-language commands for small programs you install. Short answers on cost, API keys, Linux, your data, and what can go wrong.",
     "inLanguage": "en",
     "isPartOf": { "@id": "https://evoke.build/#website" },
     "about": { "@id": "https://evoke.build/#software" },
@@ -31,123 +31,249 @@
   <main class="wrap">
     <div class="hero solo">
       <div class="copy">
-        <h1>Questions, <em>answered.</em></h1>
-        <p class="lede"><strong>Ten questions to ask before you install.</strong> Each answer is short, and links to
-          the page of the manual that holds the long one.</p>
+        <h1>Questions about evoke, <em>answered.</em></h1>
+        <p class="lede"><strong>evoke gives you natural-language commands for small programs you install.</strong> Here
+          are the questions to ask before you install it, each with a short answer and a link to the page that holds the
+          long one.</p>
       </div>
       <ul class="index" aria-label="The groups">
-        <li><a href="#install"><code>01</code>What you install</a></li>
-        <li><a href="#wrong"><code>02</code>What can go wrong</a></li>
-        <li><a href="#machine"><code>03</code>What leaves your machine</a></li>
+        <li><a href="#what"><code>01</code>What evoke is</a></li>
+        <li><a href="#machine"><code>02</code>AI and your data</a></li>
+        <li><a href="#needs"><code>03</code>What you need</a></li>
+        <li><a href="#install"><code>04</code>What you install</a></li>
+        <li><a href="#wrong"><code>05</code>What can go wrong</a></li>
+        <li><a href="#beside"><code>06</code>Compared with what you use</a></li>
       </ul>
     </div>
 
-    <section id="install">
-      <div class="rule"><p class="label">What you install</p><span class="num">01</span></div>
-      <h2>A program, and the words to ask for it.</h2>
-      <div class="qa" id="what-am-i-installing">
-        <h3>What exactly am I installing?</h3>
+    <section id="what">
+      <div class="rule"><p class="label">What evoke is</p><span class="num">01</span></div>
+      <h2>You type what you want. A program you installed does it.</h2>
+      <div class="qa" id="what-is-evoke">
+        <h3>What is evoke?</h3>
         <div>
-          <p>A <strong>reflex</strong>: a directory with a manifest, <code>reflex.toml</code>, and the program it names.
-            The manifest says what the program does, what it is not for, and what to ask. The CLI and the SDK read
-            that manifest to decide, and run the program.</p>
-          <p><code>evoke add owner/repo</code> fetches a reflex from git at a version tag and pins it by content. No code
-            runs at install time.</p>
-          <a class="go" href="/manual/use/installing.html">Installing reflexes →</a>
+          <p>evoke is a free, open-source tool for natural-language commands. A reflex is a small program you install and
+            ask for in your words. You type what you want, and evoke runs the reflex your sentence asks for. It asks you
+            first when it is unsure, and always before anything that cannot be undone. It does three jobs: a CLI for your
+            terminal, a package manager that installs reflexes from git, and a TypeScript SDK for your own app.</p>
+          <a class="go" href="/how-it-works.html">How a typed sentence becomes a program call →</a>
         </div>
       </div>
-      <div class="qa" id="software-i-have">
-        <h3>Can it use software I already have?</h3>
+      <div class="qa" id="shell-commands">
+        <h3>Does evoke turn my words into a shell command?</h3>
         <div>
-          <p>Yes, through a reflex you write. Its body can be a function, a script, a command with arguments, or a
-            call to an API you use. <code>evoke new</code> writes a working one to start from.</p>
-          <p>An application you already have does not gain this on its own. Someone wraps one of its operations, and
-            describes it.</p>
-          <a class="go" href="/manual/author/first-reflex.html">Your first reflex →</a>
+          <p>No. evoke runs only the reflexes you installed, and fills in the inputs each one declares. Each value is one
+            the reflex allows: an option it lists, a word from your own list of names, or a yes or no. It can also be a
+            piece of what you typed, such as a number or an email address. evoke checks that piece against what the
+            reflex accepts. A reflex that names a command and its arguments in its manifest runs that program directly,
+            never through a shell. There, evoke refuses a value that starts with a dash, so no value can act as one of
+            the command's flags. When no reflex fits what you typed, nothing runs.</p>
+          <a class="go" href="/how-it-works.html#sentence">How your sentence picks a reflex and fills its inputs →</a>
         </div>
       </div>
-      <div class="qa" id="my-own-words">
-        <h3>Can it understand my own names and phrasing?</h3>
+      <div class="qa" id="work-together">
+        <h3>Can one sentence run several reflexes, and pass a result between them?</h3>
         <div>
-          <p>Yes. Your names go in a <strong>vocabulary</strong>: one word per room, service or person, with a meaning
-            the classifier reads and a value the program receives. Your phrases go in an <strong>overlay</strong>, one
-            line each. Both are files you own, and an update never touches them.</p>
-          <a class="go" href="/manual/use/tuning.html">Tuning →</a>
-        </div>
-      </div>
-    </section>
-
-    <section id="wrong">
-      <div class="rule"><p class="label">What can go wrong</p><span class="num">02</span></div>
-      <h2>A wrong reading is possible. A made-up value is not.</h2>
-      <div class="qa" id="wrong-choice">
-        <h3>Can it make a wrong choice?</h3>
-        <div>
-          <p>Yes. The classifier can misread a sentence and pick the wrong reflex, or the wrong option. What holds is
-            the shape of every value: an option the author listed, a word from your vocabulary, a piece of what you
-            typed checked against its range, or a yes/no switch.</p>
-          <p>What it chooses still passes the gate. A read runs at 0.6, a write at 0.8, and a destructive reflex always
-            asks. Raise the bars for what matters, in a file you own.</p>
-          <a class="go" href="/manual/use/outcomes.html">Outcomes →</a>
-        </div>
-      </div>
-      <div class="qa" id="later-step-fails">
-        <h3>What happens when a later step fails?</h3>
-        <div>
-          <p>The steps after it are skipped, and each says so. Steps already done are not undone. The exit code is
-            the worst step's. Before anything runs, the plan is shown, and a part that matches nothing refuses the
-            whole sentence.</p>
-          <a class="go" href="/manual/use/weaving.html">Weaving →</a>
-        </div>
-      </div>
-      <div class="qa" id="contained">
-        <h3>How are installed programs contained?</h3>
-        <div>
-          <p>They are not, yet. There is no sandbox. A reflex runs with your permissions, in an environment scrubbed to
-            five variables, and receives secrets only through its settings. Installing one is a trust decision.
-            <strong>Read what you install.</strong></p>
-          <a class="go" href="/manual/security.html">Security →</a>
+          <p>Yes. One sentence can ask for several reflexes you installed, and evoke shows the plan before any step runs.
+            A result can pass to a later step when the first reflex declares what its result holds, such as an email
+            address. It passes only if the next one takes that kind of value, and your words point back to it, with a
+            word like «them». None of the ready-made reflexes that evoke publishes declares its result yet, so passing a
+            value today needs a reflex you write. The <a href="/examples/contact-to-draft.html">contact example</a> shows
+            the pattern with two stand-in reflexes written for evoke's tests.</p>
+          <a class="go" href="/how-it-works.html#handoff">How a result passes to the next step →</a>
         </div>
       </div>
     </section>
 
     <section id="machine">
-      <div class="rule"><p class="label">What leaves your machine</p><span class="num">03</span></div>
-      <h2>One request, to the classifier you chose, with your key.</h2>
-      <div class="qa" id="what-leaves">
-        <h3>What runs locally, and what leaves the machine?</h3>
+      <div class="rule"><p class="label">AI and your data</p><span class="num">02</span></div>
+      <h2>A classifier reads your sentence. Nothing goes to evoke.build.</h2>
+      <div class="qa" id="ai-tool">
+        <h3>Is evoke an AI tool?</h3>
         <div>
-          <p>evoke runs on your machine. For each decision it sends one request to the classifier you chose, with your
-            own key: your sentence, and the questions built from the installed manifests. Nothing goes to evoke.build.</p>
-          <p>A reflex is a program. It may contact its own service, and its description says what it does. The privacy
-            policy names every party that sees something.</p>
-          <a class="go" href="/privacy.html">Privacy policy →</a>
+          <p>Yes, for one job. A classifier reads your sentence, and that classifier is Jev, TypeSafe AI's model. Jev
+            answers closed questions about the reflexes you installed: which one you asked for, or none, and which value
+            fills each input. It gives each answer a probability. evoke's own code then checks every value, and decides
+            from those numbers whether to run, ask or stop. evoke is an open-source project of its own, not affiliated
+            with TypeSafe AI.</p>
+          <a class="go" href="/manual/start/concepts.html#the-three-steps">The three steps from sentence to run →</a>
+        </div>
+      </div>
+      <div class="qa" id="what-leaves">
+        <h3>Does my text leave my machine?</h3>
+        <div>
+          <p>Yes. Your sentence goes to the classifier, at TypeSafe AI, and nothing goes to evoke.build. Each request
+            carries your key, your sentence, and questions built from the reflexes you installed. Those questions include
+            your own words: your names for rooms, services or people, what each one means, and any wording you added. A
+            name can stand for something on your machine, such as a folder's path, and that value never travels. Neither
+            do a reflex's settings, its secrets, or any file. A reflex is a program, so it may also contact a service of
+            its own.</p>
+          <a class="go" href="/privacy.html#tool">Everything that leaves your machine, in the privacy policy →</a>
+        </div>
+      </div>
+      <div class="qa" id="offline">
+        <h3>Does evoke work offline, or without an API key?</h3>
+        <div>
+          <p>Only in part. Reading a new sentence needs the classifier, over the network, with your key. Without the key,
+            evoke stops at the first sentence and prints the name of the key it needs. <code>evoke run</code> runs a
+            reflex you name, with values you write, and needs no classifier and no key. For tests, a file of answers you
+            write can stand in for the classifier.</p>
+          <a class="go" href="/manual/use/outcomes.html#run-by-name-no-classifier">Run a reflex by name, without a key →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="needs">
+      <div class="rule"><p class="label">What you need</p><span class="num">03</span></div>
+      <h2>One small binary, a key, and reflexes from git.</h2>
+      <div class="qa" id="platforms">
+        <h3>Does evoke run on Linux or Windows?</h3>
+        <div>
+          <p>evoke runs on macOS and Linux, on ARM and x86-64 processors, and has no Windows build yet. Installing reflexes
+            needs git, and a reflex that runs a JavaScript file needs Node 24 or newer. The thirteen ready-made reflexes
+            evoke publishes are for macOS. On Linux, you start with reflexes of your own. Wrapping a command you already
+            run takes one short file, with no code and no Node.</p>
+          <a class="go" href="/start.html#install">Install evoke on macOS or Linux →</a>
+        </div>
+      </div>
+      <div class="qa" id="node-app">
+        <h3>Can my Node app use the same reflexes?</h3>
+        <div>
+          <p>Yes. The TypeScript SDK loads the same reflexes, and turns each sentence into a typed decision, which your
+            code checks before anything runs. It needs Node 24.5 or newer. The SDK's first release on npm is on its way.
+            Until then, <a href="/start.html?mode=terminal">the terminal route</a> runs today.</p>
+          <a class="go" href="/developers.html#decisions">Decisions inside your app →</a>
         </div>
       </div>
       <div class="qa" id="cost">
-        <h3>What does it cost?</h3>
+        <h3>What does evoke cost, and where do I get an API key?</h3>
         <div>
-          <p>evoke is free and open source, under Apache-2.0. Live decisions are billed by the classifier's provider
-            under its own terms, with the key you bring. A sentence you repeat is answered from a cache and costs
-            nothing.</p>
-          <a class="go" href="/manual/start/install.html#the-key">The key →</a>
+          <p>evoke is free and open source, under Apache-2.0, and needs no account of its own. The classifier that reads
+            your sentences needs an API key from TypeSafe AI, at <a href="https://typesafe.ai">typesafe.ai</a>. TypeSafe
+            AI bills each request to that key, under its own terms. A sentence is one request, unless it has a word like
+            «and» or «then». Then evoke makes one request to find its steps, and at least one more for each step.
+            <code>evoke add</code> and <code>evoke test</code> also send requests, to check examples. At the terminal, a
+            sentence you repeat is answered from a local cache and costs nothing.</p>
+          <a class="go" href="/manual/start/install.html#the-key">Get your key and set it →</a>
         </div>
       </div>
       <div class="qa" id="without-setup">
-        <h3>What can I explore without setup?</h3>
+        <h3>Can I try evoke without installing it?</h3>
         <div>
-          <p>The walkthrough on the home page and every example page. They replay recorded sessions, so nothing runs
-            and no key is needed. Typing a sentence of your own needs the binary, a key, and reflexes installed.</p>
+          <p>You can watch evoke at work, not type into it. <a href="/#walk-a">The walkthrough on the home page</a> and
+            every example page show sessions evoke printed, so nothing runs and no key is needed. Typing a sentence of
+            your own needs the binary, an API key and reflexes installed.</p>
           <a class="go" href="/start.html">Get started →</a>
         </div>
       </div>
-      <div class="qa" id="tool-calling">
-        <h3>How is this related to LLM tool calling?</h3>
+    </section>
+
+    <section id="install">
+      <div class="rule"><p class="label">What you install</p><span class="num">04</span></div>
+      <h2>A program, and the words to ask for it.</h2>
+      <div class="qa" id="what-am-i-installing">
+        <h3>What am I installing when I add a reflex?</h3>
         <div>
-          <p>The pattern overlaps. A model picks an operation and fills its arguments. evoke packages what sits around
-            that: a reflex you install and share, a vocabulary of your own names, a decision your code can inspect
-            before it runs, and a plan that runs several steps in order.</p>
-          <a class="go" href="/developers.html#llm">Where evoke fits →</a>
+          <p>A reflex is a directory: <a href="/format.html#manifest">a manifest named <code>reflex.toml</code></a>, and
+            the program it names. The manifest says in plain words what the program does, what it is not for, and which
+            inputs it takes. The classifier reads those words, so installing a reflex also gives you a way to ask for it.
+            <code>evoke add owner/repo</code> fetches reflexes from git at a version tag, and runs no code while it
+            installs. It records a hash of each one, and runs it only while its content is unchanged.</p>
+          <a class="go" href="/manual/use/installing.html">Installing reflexes →</a>
+        </div>
+      </div>
+      <div class="qa" id="software-i-have">
+        <h3>Can evoke run software I already have?</h3>
+        <div>
+          <p>Yes, through a reflex you write around it. The program it runs can be a JavaScript function, a script, a
+            command with its arguments, or a call to an API you use. An application does not answer to sentences on its
+            own. Someone has to wrap one of its operations in a reflex, and describe it in plain words.
+            <code>evoke new</code> writes a working reflex to start from.</p>
+          <a class="go" href="/developers.html#operation">Turn your code into natural-language commands →</a>
+        </div>
+      </div>
+      <div class="qa" id="my-own-words">
+        <h3>Can evoke understand my own names and phrasing?</h3>
+        <div>
+          <p>Yes. Your names go in a vocabulary, one word per room, service or person. Each word has a meaning the
+            classifier reads, and can carry a value the program receives instead. Your own phrasings go in an overlay, a
+            file of your wording for one reflex. <code>evoke teach</code> adds a line to it for you. Both are files you
+            own, and <code>evoke update</code> never rewrites them. The classifier's provider says it is most accurate in
+            English.</p>
+          <a class="go" href="/manual/use/tuning.html">Teach evoke your own words →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="wrong">
+      <div class="rule"><p class="label">What can go wrong</p><span class="num">05</span></div>
+      <h2>A wrong reading is possible. A made-up value is not.</h2>
+      <div class="qa" id="wrong-choice">
+        <h3>Can evoke pick the wrong reflex?</h3>
+        <div>
+          <p>Yes. The classifier that reads your sentence can misread it and pick the wrong reflex or option. evoke
+            guarantees that every value is one the reflex allows, but it cannot guarantee that it read you right. So a
+            bar, set by what the program changes, decides what runs without a question. A reflex that only reads needs
+            every answer at a probability of 0.6 or more, and one that writes needs 0.8. Under its bar, evoke asks you
+            first or runs nothing, and a reflex that cannot be undone always asks. You can raise these bars in a file you
+            own.</p>
+          <a class="go" href="/how-it-works.html#decisions">How evoke decides what runs →</a>
+        </div>
+      </div>
+      <div class="qa" id="later-step-fails">
+        <h3>What happens when one step of a sentence fails?</h3>
+        <div>
+          <p>evoke shows the plan before anything runs, and a part that matches no reflex refuses the whole sentence.
+            Once steps run, a step that fails, that you decline, or that evoke refuses stops the steps after it. Each of
+            those is skipped, and says so. Steps that already ran are not undone, and evoke's exit code reports the worst
+            step, for scripts.</p>
+          <a class="go" href="/manual/use/weaving.html#at-each-steps-turn">When a step stops →</a>
+        </div>
+      </div>
+      <div class="qa" id="contained">
+        <h3>Does evoke sandbox the reflexes it runs?</h3>
+        <div>
+          <p>Not yet. evoke has no sandbox, so a reflex runs with your permissions. It runs with only five variables of
+            your environment, such as <code>PATH</code> and <code>HOME</code>. It gets its settings, and any secret, only
+            from evoke, for one run. A reflex your app hands the SDK as code runs inside your app, with all of its
+            environment. Installing a reflex is a trust decision. <strong>Read what you install.</strong></p>
+          <a class="go" href="/manual/security.html">What evoke guarantees, and what it does not →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="beside">
+      <div class="rule"><p class="label">Compared with what you use</p><span class="num">06</span></div>
+      <h2>How evoke relates to scripts, workflow tools and tool calling.</h2>
+      <div class="qa" id="alias-or-script">
+        <h3>How is a reflex different from an alias or a script?</h3>
+        <div>
+          <p>A reflex can wrap a script or command you already have, so the program you trust stays the same. You type
+            what you want in your words, instead of remembering its name and flags. When a value it needs is missing,
+            evoke asks for it. The reflex also says what the program changes, so evoke asks before anything that cannot
+            be undone. A command you already run needs only a manifest, a short file that describes it, with no code.</p>
+          <a class="go" href="/manual/author/body.html#an-argv-body">A command as a reflex, with no code →</a>
+        </div>
+      </div>
+      <div class="qa" id="workflow-tool">
+        <h3>Is evoke a workflow tool?</h3>
+        <div>
+          <p>No. A workflow tool runs a flow you build ahead of time, often on a trigger or a schedule. evoke runs what
+            one typed sentence asks for, now, from the reflexes you installed. It has no triggers, no schedules and no
+            hosted runs. One sentence can still ask for several steps, and evoke shows the plan before any of them
+            runs.</p>
+          <a class="go" href="/manual/use/weaving.html">How one sentence runs several steps →</a>
+        </div>
+      </div>
+      <div class="qa" id="tool-calling">
+        <h3>How does evoke relate to LLM tool calling?</h3>
+        <div>
+          <p>LLM tool calling, also called function calling, turns what a person asks for into a call of your code. evoke
+            does that same step, and packages what sits around it. Every value is one the reflex allows, and each answer
+            carries a probability. A bar set by what the program changes decides what runs, and your code can check each
+            decision before it runs. Use a model instead when a value has to be composed, for a conversation, or for an
+            open-ended task.</p>
+          <a class="go" href="/developers.html#llm">evoke beside LLM tool calling →</a>
         </div>
       </div>
     </section>
@@ -160,6 +286,7 @@
       <div class="actions">
         <a class="button primary" href="https://github.com/evoke-build/evoke/issues">Ask on GitHub</a>
         <a class="button" href="https://github.com/evoke-build/evoke/security/advisories/new">Report a vulnerability</a>
+        <a class="quiet" href="/start.html">Install evoke and run your first command →</a>
       </div>
     </div>
   </main>
