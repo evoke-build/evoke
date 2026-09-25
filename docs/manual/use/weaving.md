@@ -23,10 +23,11 @@ den lights off
   is tried as another item of its neighbour's task first: "check stock for widgets and gadgets" is two stock
   checks. Failing that, the whole request is refused rather than half done.
 - A part that begins with `not`, `don't`, `never` or `without` is left out, however the apostrophe is typed. What
-  you said not to do is no step. One step beside such a part is decided as one input. A sentence that is only
+  you ask evoke not to do is no step. One step beside such a part is decided as one input. A sentence that is only
   such parts is nothing to do, and one line says so.
-- `then`, `after that` and `next` order the steps. `before you X, Y` and `Y after you X` both read as `X, then Y`.
-  When a write is among the steps, every step runs alone. A plan of reads may run them side by side.
+- `then`, `after that` and `next` order the steps. `after you X, Y` and `Y after you X` read as `X, then Y`.
+  `before you X, Y` and `Y before you X` read as `Y, then X`. When a write is among the steps, every step runs
+  alone. A plan of reads may run them side by side.
 
 ## What a step takes from another
 
