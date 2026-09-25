@@ -41,7 +41,7 @@ Every way ends the same:
 
 ```text
 $ evoke --version
-evoke 0.5.0
+evoke 0.5.1
 ```
 
 The archives are on [GitHub releases](https://github.com/evoke-build/evoke/releases). Each is named
