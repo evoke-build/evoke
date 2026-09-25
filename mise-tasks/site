@@ -32,6 +32,7 @@ UNLISTED = {"404.html", "print.html", "toc.html"}
 UNINDEXED = {"404.html", "use-cases.html"}  # the page for an address that is not there, and one that sends readers on
 BRAND = re.compile(r"^evoke - |\s+-\s+evoke(?: manual)?$", re.IGNORECASE)
 SETTINGS = re.compile(r"\A(?:<!-- (?:title|description): .+? -->\n)+")
+FLOW = re.compile(r'<pre[^>]*\sdata-flow="([\w-]+)"[^>]*>(.*?)</pre>', re.DOTALL)
 PARTS = SITE / "parts"
 ID = re.compile(r'\sid="([^"]+)"')
 HREF = re.compile(r'\s(?:href|src)="([^"]+)"')
@@ -126,6 +127,27 @@ def recorded():
     ]
     if not quoted.found:
         problems.append("site/index.html: the walkthrough shows no printed line")
+    if problems:
+        sys.exit("\n".join(problems))
+
+
+def pinned():
+    """Every terminal a site page pins to a flow, `<pre data-flow="<flow>">`, shows only lines that flow printed in
+    spec/transcripts/<flow>/session.txt, the transcript the tests replay: a page quotes the binary, never a memory of
+    it. A line of … stands for the lines a panel leaves out."""
+    problems = []
+    for page in pages():
+        for flow, pre in FLOW.findall(page.read_text()):
+            session = ROOT / "spec/transcripts" / flow / "session.txt"
+            if not session.is_file():
+                problems.append(f"{page.relative_to(ROOT)}: data-flow names {flow!r}, a flow with no transcript")
+                continue
+            printed = {line.rstrip() for line in session.read_text().splitlines()}
+            for line in html_text.unescape(re.sub(r"<[^>]+>", "", pre)).splitlines():
+                if line.strip() not in ("", "…") and line.rstrip() not in printed:
+                    problems.append(
+                        f"{page.relative_to(ROOT)}: {line.rstrip()!r} is not a line the {flow} flow printed"
+                    )
     if problems:
         sys.exit("\n".join(problems))
 
@@ -730,6 +752,7 @@ def sitemap(pages, dated):
 links_resolve()
 palette = site_palette()
 recorded()
+pinned()
 shutil.rmtree(OUT, ignore_errors=True)
 shutil.rmtree(SRC, ignore_errors=True)
 shutil.copytree(MANUAL, SRC)
