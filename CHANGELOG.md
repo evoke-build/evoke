@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A body that runs a program no longer prints Node's warning about `--allow-child-process`.
+
 ## [0.5.0] - 2026-09-25
 
 - A manifest declares what its body touches, under `[needs]`: the paths it reads and writes, whether it reaches

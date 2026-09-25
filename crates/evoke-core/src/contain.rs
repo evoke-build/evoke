@@ -275,7 +275,7 @@ pub fn seatbelt(policy: &Policy, facts: &Facts) -> String {
 
 /// Node's permission flags: the body's directory and the temporary folder, each declared path as spelled and
 /// again as its real path when that differs, since Node compares strings; a child process only with a program
-/// to run. The network is Node's to allow, and the kernel's to hold.
+/// to run, without the warning Node prints for it. The network is Node's to allow, and the kernel's to hold.
 #[must_use]
 pub fn node_flags(policy: &Policy, facts: &Facts) -> Vec<String> {
     let spellings = |place: &Place| -> Vec<String> {
@@ -289,7 +289,6 @@ pub fn node_flags(policy: &Policy, facts: &Facts) -> Vec<String> {
     };
     let mut flags = vec![
         "--permission".to_owned(),
-        "--disable-warning=PERM0002".to_owned(),
         format!("--allow-fs-read={}", facts.body_dir),
         format!("--allow-fs-read={}", facts.tmp),
         format!("--allow-fs-write={}", facts.tmp),
@@ -309,7 +308,10 @@ pub fn node_flags(policy: &Policy, facts: &Facts) -> Vec<String> {
         );
     }
     if !policy.runs.is_empty() {
-        flags.push("--allow-child-process".to_owned());
+        // By its type, which every release gives the warning; few give it a code.
+        flags.extend(
+            ["--allow-child-process", "--disable-warning=SecurityWarning"].map(str::to_owned),
+        );
     }
     flags
 }
