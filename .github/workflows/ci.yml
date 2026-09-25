@@ -1,7 +1,8 @@
 # The two tasks every change must pass, run as on a laptop: mise installs the pinned tools, then lint and test;
-# and on macOS the flows and the collection's check, since a body's containment is the kernel's — Landlock on
-# Linux, Seatbelt on macOS. A failed test step's last lines become an annotation, which the run shows without a
-# login. A release calls it first (release.yml), so a tag is built only from a tree that passes.
+# the tests again on the oldest Node the manual names and on the newest, since what Node's permission model holds
+# moves between its releases; and on macOS the flows and the collection's check, since a body's containment is the
+# kernel's — Landlock on Linux, Seatbelt on macOS. A failed test step's last lines become an annotation, which the
+# run shows without a login. A release calls it first (release.yml), so a tag is built only from a tree that passes.
 name: CI
 
 on:
@@ -24,6 +25,24 @@ jobs:
           cache: true
       - uses: Swatinem/rust-cache@v2
       - run: mise run lint
+      - run: mise run test 2>&1 | tee test.log; exit "${PIPESTATUS[0]}"
+      - if: failure()
+        run: python3 .github/annotate test.log
+
+  node:
+    strategy:
+      matrix:
+        node: ["24.5.0", "26.10.0"]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      MISE_NODE_VERSION: ${{ matrix.node }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v4
+        with:
+          cache: true
+      - uses: Swatinem/rust-cache@v2
       - run: mise run test 2>&1 | tee test.log; exit "${PIPESTATUS[0]}"
       - if: failure()
         run: python3 .github/annotate test.log
