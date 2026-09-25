@@ -3,8 +3,8 @@
 # publishing step is skipped when its result already exists, so a run can be repeated after a failure.
 #
 # Needs, once, from the owner: the repository evoke-build/homebrew-tap and the secret HOMEBREW_TAP_TOKEN, a token
-# that may write its contents; on npm, the first publish of @evoke-build/evoke by hand, since a trusted publisher
-# is configured on a package that exists. Until that package does, the npm job says so and passes.
+# that may write its contents; on npm, this workflow as the trusted publisher of @evoke-build/evoke, so the npm job
+# needs no token.
 name: Release
 
 on:
@@ -118,19 +118,13 @@ jobs:
         with:
           cache: true
       - run: mise run sdk
-      - name: The package, once npm has one and unless it has this version
+      - name: The package, unless npm has this version
         working-directory: sdk
         run: |
           version=${GITHUB_REF_NAME#v}
           test "$(node --print 'require("./package.json").version')" = "$version"
-          # npm's own answer, as JSON: a package npm has never seen is E404; anything else that fails is npm out of
-          # reach, and the job says so instead of taking silence for absence.
-          if ! published=$(npm view @evoke-build/evoke versions --json 2>&1); then
-            case $published in
-              *E404*) echo "@evoke-build/evoke is not on npm; its first publish is the owner's, by hand, and is what a trusted publisher is configured on"; exit 0 ;;
-              *) echo "npm could not be asked: $published" >&2; exit 1 ;;
-            esac
-          fi
+          # npm's own answer, as JSON; when npm cannot be asked, the step fails instead of taking silence for absence.
+          published=$(npm view @evoke-build/evoke versions --json)
           if printf '%s' "$published" | node --input-type=module -e 'import { readFileSync } from "node:fs"; const v = JSON.parse(readFileSync(0, "utf8")); process.exit([v].flat().includes(process.argv[1]) ? 0 : 1)' -- "$version"; then
             echo "@evoke-build/evoke@$version is already on npm"
           else
