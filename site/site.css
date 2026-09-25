@@ -431,6 +431,7 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 .walk-door a { font-size: .93rem; font-weight: 560; }
 .walk-legend { margin: 1.1rem 0 0; color: var(--faint); font-size: .86rem; line-height: 1.5; }
 .walk-legend p { margin: 0; }
+.walk-legend p + p { margin-top: .4rem; }
 .walk-legend b { color: var(--muted); font-weight: 500; }
 .walk-key { list-style: none; display: flex; flex-wrap: wrap; gap: .35rem 1.75rem; margin: .75rem 0 0; padding: .6rem 0 0; border-top: 1px solid var(--line); color: var(--text); font-size: .86rem; }
 .walk-key li { display: inline-flex; align-items: center; gap: .45rem; }
@@ -661,6 +662,8 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 .way .cmd { background: var(--bg); }
 .way .cmd + .cmd { margin-top: .5rem; }
 .way .after { margin: .85rem 0 0; color: var(--muted); font-size: .92rem; }
+.ways + .ticks { margin: 1.6rem 0 0; }  /* the questions a reader has before installing, under both ways in */
+.answers a { display: block; width: fit-content; }  /* each answer ends on its way on, a line of its own */
 
 /* Get started: a route, and the steps of it */
 .routes { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin: 0 0 2.5rem; }
