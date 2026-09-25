@@ -1,0 +1,24 @@
+{
+  "input": {
+    "policy": {
+      "hosts": ["*"]
+    },
+    "facts": {
+      "platform": "linux",
+      "runtime": {
+        "path": "/home/me/.local/share/mise/installs/node/26.10.0/bin/node",
+        "holds_network": true
+      },
+      "body_dir": "/home/me/.cache/evoke/store/8416c7959e55e8f74c0dd96ca8396d1980acc68ccfa7ac32fd650be96f658703",
+      "tmp": "/tmp/evoke-4242-2",
+      "home": "/home/me"
+    }
+  },
+  "expect": [
+    "--permission",
+    "--allow-fs-read=/home/me/.cache/evoke/store/8416c7959e55e8f74c0dd96ca8396d1980acc68ccfa7ac32fd650be96f658703",
+    "--allow-fs-read=/tmp/evoke-4242-2",
+    "--allow-fs-write=/tmp/evoke-4242-2",
+    "--allow-net"
+  ]
+}

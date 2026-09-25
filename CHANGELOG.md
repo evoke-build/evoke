@@ -7,6 +7,10 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 ## [Unreleased]
 
 - A body that runs a program no longer prints Node's warning about `--allow-child-process`.
+- Under Node 25 and later, a body that declares a host reaches the network, and Node's own layer keeps a body
+  that declares none off it.
+- A network reach past the declaration is named on every Node, a listening port and a datagram included. An error
+  a body throws from a callback ends the run with its message.
 
 ## [0.5.0] - 2026-09-25
 

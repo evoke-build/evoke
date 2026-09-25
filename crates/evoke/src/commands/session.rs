@@ -969,6 +969,7 @@ impl Session<'_> {
             runtime.as_deref(),
             &dir,
             &scratch.path,
+            &self.state,
             self.environment,
         )? {
             Ok(facts) => facts,

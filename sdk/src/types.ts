@@ -294,8 +294,8 @@ export type NeedsConsent =
 /** What the host knows that the policy does not: where things are. */
 export interface Facts {
   platform: Platform
-  /** The runtime a file body runs under, as `process.execPath` names it; absent for an argv body. */
-  runtime?: Executable
+  /** The runtime a file body runs under; absent for an argv body. */
+  runtime?: Runtime
   /** The body's directory: readable, and its working directory. */
   body_dir: string
   /** The private temporary folder made for the run, by its real path. */
@@ -311,6 +311,12 @@ export interface Facts {
 }
 
 export type Platform = "linux" | "macos"
+
+/** The runtime a file body runs under: its program, as `process.execPath` names it, and whether its permission
+ *  model holds the network, which it does from Node 25, the first to know `--allow-net`. */
+export interface Runtime extends Executable {
+  holds_network?: boolean
+}
 
 /** A program as the kernel runs it: its path, and the interpreters the kernel executes to run it. */
 export interface Executable {

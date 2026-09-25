@@ -1,0 +1,14 @@
+{
+  "input": {
+    "policy": {},
+    "reflex": "download",
+    "origin": { "type": "fetched" },
+    "refused": { "what": "Net", "path": "" },
+    "home": "/Users/me"
+  },
+  "expect": {
+    "reflex": "download",
+    "message": "[needs] hosts names no host",
+    "fix": { "type": "remove", "reflex": "download" }
+  }
+}

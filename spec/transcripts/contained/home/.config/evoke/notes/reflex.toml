@@ -18,9 +18,10 @@ ask  = "What should the note say?"
 pick = "quoted"
 
 [args.also]
-ask           = "What else should it try?"
-options.read  = "Read a file it did not declare."
-options.write = "Write a file it did not declare."
-options.spawn = "Run a program it did not declare."
-options.fetch = "Reach a host it did not declare."
-optional      = true
+ask             = "What else should it try?"
+options.read    = "Read a file it did not declare."
+options.write   = "Write a file it did not declare."
+options.spawn   = "Run a program it did not declare."
+options.fetch   = "Reach a host it did not declare."
+options.connect = "Connect to an address it did not declare."
+optional        = true

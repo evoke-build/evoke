@@ -5,6 +5,7 @@ notes   = "./notes"
 nowhere = "./nowhere"
 list    = "./list"
 tools   = "./tools"
+reach   = "./reach"
 
 [config.notes]
 file = "~/notes/today.txt"

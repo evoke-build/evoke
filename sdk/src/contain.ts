@@ -1,19 +1,21 @@
 // The layers around a body in the SDK: Node's permission flags on both systems, and on macOS `sandbox-exec -p`
 // with the core's profile in front of the command; on Linux the kernel layer needs native code the SDK does not
-// carry, so the status says so. The facts the core's rules take, gathered here: the runtime as it runs, each
-// declared path's real form and kind, each program's place on PATH and the interpreters it runs through, a private
-// temporary folder for the run. In: a policy, the body's directory. Out: the facts or what is missing, the
-// command that runs a program under the layers, the status.
+// carry, so the status says so. The facts the core's rules take, gathered here: this process's runtime as it runs
+// and whether it holds the network, each declared path's real form and kind, each program's place on PATH and the
+// interpreters it runs through, a private temporary folder for the run. In: a policy, the body's directory. Out:
+// the facts or what is missing, the command that runs a program under the layers, the status.
 
 import { accessSync, closeSync, constants, mkdtempSync, openSync, readSync, realpathSync, rmSync, statSync } from "node:fs"
 import { homedir, tmpdir } from "node:os"
 import { join } from "node:path"
 
 import { call } from "./core.ts"
-import type { Contained, Executable, Facts, Found, NeedsKey, Place, Platform, Policy, Program } from "./types.ts"
+import type { Contained, Executable, Facts, Found, NeedsKey, Place, Platform, Policy, Program, Runtime } from "./types.ts"
 
 const PLATFORM: Platform = process.platform === "linux" ? "linux" : "macos"
 const SANDBOX_EXEC = "/usr/bin/sandbox-exec"
+/** Whether this runtime's permission model holds the network: from Node 25, the first to know `--allow-net`. */
+const HOLDS_NETWORK = process.allowedNodeEnvironmentFlags.has("--allow-net")
 
 /** What the machine lacks that the declaration names: a path, or a program `PATH` does not hold. */
 export type Missing = { place: Place; key: NeedsKey } | { program: Program }
@@ -25,11 +27,12 @@ export interface Layers {
 }
 
 /** Whether this machine holds a whole declaration: macOS through Seatbelt, when `sandbox-exec` is there; Linux
- *  through Node's layer alone, which holds a file body's files and programs, not the network and not what a
- *  program reaches, and holds nothing of an argv body. */
+ *  through Node's layer alone, which holds a file body's files and programs, and the network from Node 25, never
+ *  what a program reaches, and holds nothing of an argv body. */
 export function status(body: "file" | "argv"): Contained {
   if (PLATFORM === "linux") {
     if (body === "argv") return { type: "none", why: "an argv body runs under no layer here; the kernel's needs native code the package does not carry" }
+    if (HOLDS_NETWORK) return { type: "partial", why: "Node holds files, programs and the network; what a program reaches is not held" }
     return { type: "partial", why: "Node holds files and programs; the network and what a program reaches are not held" }
   }
   return runs(SANDBOX_EXEC) ? { type: "full" } : { type: "none", why: "sandbox-exec is missing" }
@@ -42,9 +45,9 @@ export function scratch(): { path: string; remove(): void } {
   return { path, remove: () => rmSync(path, { recursive: true, force: true }) }
 }
 
-/** The facts the core's rules need: each declared path's real form and kind, each program's place, the runtime
- *  for a file body; a path or a program the machine lacks is the miss, before anything runs. */
-export function facts(policy: Policy, runtime: string | undefined, bodyDir: string, tmp: string): Facts | Missing {
+/** The facts the core's rules need: each declared path's real form and kind, each program's place, and for a
+ *  file body this process's own runtime; a path or a program the machine lacks is the miss, before anything runs. */
+export function facts(policy: Policy, body: "file" | "argv", bodyDir: string, tmp: string): Facts | Missing {
   const found: Record<string, Found> = {}
   for (const [key, places] of [
     ["reads", policy.reads ?? []],
@@ -68,7 +71,7 @@ export function facts(policy: Policy, runtime: string | undefined, bodyDir: stri
   }
   return {
     platform: PLATFORM,
-    ...(runtime === undefined ? {} : { runtime: executable(runtime) }),
+    ...(body === "argv" ? {} : { runtime: own() }),
     body_dir: bodyDir,
     tmp,
     home: homedir(),
@@ -87,6 +90,11 @@ export function flags(layers: Layers): string[] {
 export function under(program: string, args: string[], layers: Layers): { file: string; args: string[] } {
   if (PLATFORM === "macos") return { file: SANDBOX_EXEC, args: ["-p", call("contain.seatbelt", layers), program, ...args] }
   return { file: program, args }
+}
+
+/** This process's runtime, which runs every file body: its program, and whether it holds the network. */
+function own(): Runtime {
+  return { ...executable(process.execPath), ...(HOLDS_NETWORK ? { holds_network: true } : {}) }
 }
 
 /** A program by its absolute path, or the first executable of its name on `PATH`. */

@@ -1,10 +1,10 @@
 //! Children: the loader started at the decision, under the layers, in the body's directory, fed an envelope, its
 //! stdin kept open until it exits; a program spawned with an argv under the same layers; a body imported by the
 //! probe for `check`, never called; all under a scrubbed environment with a private `TMPDIR`, in their own process
-//! group, killed as a group on timeout. In: a `Body` — what it is called, its envelope with the config resolved,
-//! the policy and the facts the layers take, the deadline — with the runtime and the body's directory or an
-//! argv. Out: what the body returned, whether it loads, or why it ended: a `Failure`, what refused it, a profile
-//! `sandbox-exec` refused.
+//! group, killed as a group on timeout. And the runtime itself, under no layer, asked where it is and whether it
+//! holds the network. In: a `Body` — what it is called, its envelope with the config resolved, the policy and the
+//! facts the layers take, the deadline — with the runtime and the body's directory or an argv. Out: what the body
+//! returned, whether it loads, or why it ended: a `Failure`, what refused it, a profile `sandbox-exec` refused.
 
 // killpg signals the group, which `std` can create but not signal.
 #![expect(unsafe_code)]
@@ -49,25 +49,48 @@ pub fn find_runtime(environment: &Environment) -> Option<PathBuf> {
 /// and a shim cannot run contained, so the binary is what is recorded and run.
 pub fn real_runtime(found: &Path, environment: &Environment) -> Result<PathBuf, Failure> {
     let what = format!("asking {} where it is", found.display());
-    let mut command = scrubbed(found, environment);
+    let path = ask(found, "process.execPath", &what, environment)?;
+    if !path.starts_with('/') {
+        return Err(failed(&what, &format!("it answered {}", shortened(&path))));
+    }
+    Ok(PathBuf::from(path))
+}
+
+/// Whether the runtime's permission model holds the network: it does from Node 25, the first to know
+/// `--allow-net`, which a Node before it refuses.
+pub fn holds_network(runtime: &Path, environment: &Environment) -> Result<bool, Failure> {
+    let what = format!("asking {} whether it holds the network", runtime.display());
+    let flag = "process.allowedNodeEnvironmentFlags.has('--allow-net')";
+    match ask(runtime, flag, &what, environment)?.as_str() {
+        "true" => Ok(true),
+        "false" => Ok(false),
+        other => Err(failed(&what, &format!("it answered {}", shortened(other)))),
+    }
+}
+
+/// What the runtime prints for an expression, `node -p`, under the scrubbed environment and no layer, within ten
+/// seconds; a runtime that will not start is the failure its start would be.
+fn ask(
+    runtime: &Path,
+    expression: &str,
+    what: &str,
+    environment: &Environment,
+) -> Result<String, Failure> {
+    let mut command = scrubbed(runtime, environment);
     command
-        .args(["-p", "process.execPath"])
+        .args(["-p", expression])
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
     let child = command
         .spawn()
-        .map_err(|error| not_started(found, &error))?;
+        .map_err(|error| not_started(runtime, &error))?;
     let output = output_within(child, Duration::from_secs(10))
-        .ok_or_else(|| failed(&what, "it did not answer within 10 s"))?;
+        .ok_or_else(|| failed(what, "it did not answer within 10 s"))?;
     if !output.status.success() {
-        return Err(failed(&what, &ended(output.status, "")));
+        return Err(failed(what, &ended(output.status, "")));
     }
-    let path = String::from_utf8_lossy(&output.stdout).trim().to_owned();
-    if !path.starts_with('/') {
-        return Err(failed(&what, &format!("it answered {}", shortened(&path))));
-    }
-    Ok(PathBuf::from(path))
+    Ok(String::from_utf8_lossy(&output.stdout).trim().to_owned())
 }
 
 /// The loader, embedded: the same file the SDK ships.

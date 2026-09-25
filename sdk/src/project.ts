@@ -665,9 +665,10 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
       return { type: "local", at: call("needs.declared_at", { doc: { file, toml } }) }
     }
     const named = (diagnostic: W.Diagnostic) => new FailureError(what, diagnostic.message, diagnostic.fix, command(diagnostic.fix, "run(d)"))
+    const kind = argv === undefined ? "file" : "argv"
     const tmp = scratch()
     try {
-      const gathered = facts(policy, argv === undefined ? process.execPath : undefined, body, tmp.path)
+      const gathered = facts(policy, kind, body, tmp.path)
       if ("place" in gathered || "program" in gathered) {
         const lacking: W.Lacking = "place" in gathered ? { type: "place", place: gathered.place, key: gathered.key } : { type: "program", program: gathered.program }
         throw named(call("needs.lacking", { lacking, reflex, active, origin: origin(), home }))
@@ -692,7 +693,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
         if (diagnostic === null) throw new FailureError(what, error.message, { type: "rerun" }, command({ type: "rerun" }, "run(d)"))
         throw named(diagnostic)
       }
-      return { ...result, contained: status(argv === undefined ? "file" : "argv") }
+      return { ...result, contained: status(kind) }
     } finally {
       tmp.remove()
     }

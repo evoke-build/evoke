@@ -2,9 +2,9 @@
 //! `no_new_privs`, `landlock_restrict_self` and a seccomp filter that closes the network, all in the forked child
 //! before `exec`, over `libc`. On macOS: `sandbox-exec -p` with the core's profile in front of the command. The
 //! machine's status, probed once per process; the facts the core's rules need — where the runtime, the programs
-//! and the declared paths are, the resolver's file, the interpreters a program runs through. In: a `Policy`, the
-//! runtime, the body's directory, the temporary folder, the environment. Out: `Facts` or what is missing, a
-//! `Command` armed, `Contained`.
+//! and the declared paths are, whether the runtime holds the network, the resolver's file, the interpreters a
+//! program runs through. In: a `Policy`, the runtime, the body's directory, the temporary folder, the state, the
+//! environment. Out: `Facts` or what is missing, a `Command` armed, `Contained`.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -12,22 +12,24 @@ use std::process::Command;
 use std::sync::OnceLock;
 
 use evoke_core::Contained;
-use evoke_core::contain::{Executable, Facts, Found, Platform};
+use evoke_core::contain::{Executable, Facts, Found, Platform, Runtime};
 use evoke_core::needs::{Key, Lacking, Policy};
 #[cfg(not(target_os = "linux"))]
 use evoke_core::seatbelt;
 use indexmap::IndexMap;
 
+use super::state::State;
 use super::{Environment, Failure, failed};
 
-/// The facts the core's rules need, gathered: the runtime as the kernel runs it, each declared path's real form
-/// and kind, each program's place on `PATH`, the home; a path or a program the machine lacks is what is lacking,
-/// before anything runs.
+/// The facts the core's rules need, gathered: the runtime as the kernel runs it and whether it holds the network,
+/// each declared path's real form and kind, each program's place on `PATH`, the home; a path or a program the
+/// machine lacks is what is lacking, before anything runs.
 pub fn facts(
     policy: &Policy,
     runtime: Option<&Path>,
     body_dir: &Path,
     tmp: &Path,
+    state: &State,
     environment: &Environment,
 ) -> Result<Result<Facts, Lacking>, Failure> {
     let mut found = IndexMap::new();
@@ -65,12 +67,7 @@ pub fn facts(
         programs.insert(program.as_str().to_owned(), executable(&path, environment)?);
     }
     let runtime = runtime
-        .map(|runtime| {
-            // A runtime gone since it was recorded is the failure `evoke sync` answers, as its start would be.
-            fs::metadata(runtime)
-                .map_err(|error| super::processes::not_started(runtime, &error))
-                .and_then(|_| executable(runtime, environment))
-        })
+        .map(|runtime| runtime_of(runtime, state, environment))
         .transpose()?;
     Ok(Ok(Facts {
         platform: PLATFORM,
@@ -107,6 +104,25 @@ fn locate(program: &str, environment: &Environment) -> Option<PathBuf> {
         .filter(|dir| !dir.is_empty())
         .map(|dir| Path::new(dir).join(program))
         .find(|candidate| runs(candidate))
+}
+
+/// The runtime as the kernel runs it, and whether it holds the network: asked of it once per binary, the answer
+/// kept in the cache. A runtime gone since it was recorded is the failure `evoke sync` answers, as its start
+/// would be.
+fn runtime_of(path: &Path, state: &State, environment: &Environment) -> Result<Runtime, Failure> {
+    let binary = fs::metadata(path).map_err(|error| super::processes::not_started(path, &error))?;
+    let program = executable(path, environment)?;
+    let holds_network = if let Some(kept) = state.holds_network(&program.path, &binary)? {
+        kept
+    } else {
+        let asked = super::processes::holds_network(path, environment)?;
+        state.keep_holds_network(&program.path, &binary, asked)?;
+        asked
+    };
+    Ok(Runtime {
+        program,
+        holds_network,
+    })
 }
 
 /// A program as the kernel runs it: its real path, and the interpreters it runs through.

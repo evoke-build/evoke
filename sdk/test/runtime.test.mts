@@ -1,20 +1,23 @@
-// The runtime box: a function body in-process, a file body through the loader, a program by argv; a body that
-// does not settle is a failure that names the wait; config comes from the environment and a missing variable is
-// the failure it names.
+// The runtime box: a function body in-process, a file body through the loader, a program by argv; a file body
+// reaches the network only with a host declared; a body that does not settle is a failure that names the wait;
+// config comes from the environment and a missing variable is the failure it names.
 
 import { deepStrictEqual, ok, rejects } from "node:assert/strict"
+import { mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs"
 import { test } from "node:test"
 import { tmpdir } from "node:os"
+import { join } from "node:path"
+import { isDeepStrictEqual } from "node:util"
 import { fileURLToPath } from "node:url"
 
 import { type Layers, facts, scratch } from "../src/contain.ts"
 import { FailureError } from "../src/errors.ts"
-import { child, inline, program } from "../src/runtime.ts"
+import { Refusal, child, inline, program } from "../src/runtime.ts"
 import type { Envelope, Policy } from "../src/types.ts"
 
-/** The layers a body runs under here: the policy over the body's directory, a runtime for a file body. */
-function layers(policy: Policy, dir: string, runtime?: string): Layers {
-  const gathered = facts(policy, runtime, dir, scratch().path)
+/** The layers a body runs under here: the policy over the body's directory, as a file or an argv body. */
+function layers(policy: Policy, dir: string, body: "file" | "argv" = "argv"): Layers {
+  const gathered = facts(policy, body, dir, scratch().path)
   if ("place" in gathered || "program" in gathered) throw new Error(`the test's declaration lacks ${JSON.stringify(gathered)}`)
   return { policy, facts: gathered }
 }
@@ -69,8 +72,32 @@ test("an unset variable is the failure it names", async () => {
 
 test("a file body runs in a child through the loader", async () => {
   const dir = fileURLToPath(new URL("../../spec/transcripts/home/.config/evoke/timer/", import.meta.url)).slice(0, -1)
-  const result = await child("running timer", dir, { ...envelope(), run: "timer.mts" }, layers({}, dir, process.execPath), undefined)
+  const result = await child("running timer", dir, { ...envelope(), run: "timer.mts" }, layers({}, dir, "file"), undefined)
   deepStrictEqual(result, { text: "10 minute timer started" })
+})
+
+test("a file body reaches the network only when it declares a host, wherever something holds the network", async () => {
+  const dir = realpathSync(mkdtempSync(join(tmpdir(), "evoke-reach-")))
+  // A closed port refuses the connection: the network was open to the body.
+  writeFileSync(
+    join(dir, "reach.mts"),
+    `import { connect } from "node:net"
+export default () => new Promise((resolve, reject) => {
+  const socket = connect(1, "127.0.0.1")
+  socket.once("connect", () => resolve("connected"))
+  socket.once("error", (error) => (error.code === "ECONNREFUSED" ? resolve("reached") : reject(error)))
+})
+`,
+  )
+  try {
+    const reach = (policy: Policy) => child("running reach", dir, { ...envelope(), run: "reach.mts" }, layers(policy, dir, "file"), undefined)
+    deepStrictEqual(await reach({ hosts: ["*"] }), { text: "reached" })
+    if (process.platform !== "linux" || process.allowedNodeEnvironmentFlags.has("--allow-net")) {
+      await rejects(reach({}), (error: Error) => error instanceof Refusal && isDeepStrictEqual(error.refused, { what: "connect", path: "127.0.0.1:1" }))
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
 })
 
 test("a program runs by argv with the input in its environment", async () => {

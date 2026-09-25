@@ -638,9 +638,10 @@ pub fn lacking(
 }
 
 /// What a body reached past its declaration, from what the loader reported: Node's permission names the key
-/// outright; the kernel's syscall says what was tried — a program spawned, a write, the resolver — and the path
-/// the rest, a write's key by whether the policy reads there already. The line names the path and the key,
-/// `~/secret.txt is not in [needs] reads`; the fix is the declaration, or `--accept` when `upstream` — the
+/// outright; a refused call — the kernel's, or Node's on the network — says what was tried, a program spawned, a
+/// write, the resolver, a socket, and the path the rest, a write's key by whether the policy reads there already.
+/// The line names the path and the key, `~/secret.txt is not in [needs] reads`, or without a path the key that
+/// names nothing, `[needs] hosts names no host`; the fix is the declaration, or `--accept` when `upstream` — the
 /// shipped declaration of a fetched reflex, resolved — already allows it. None when the loader could not name
 /// what refused the body, and none when the policy allows what was refused: that refusal was not the
 /// declaration's, and the body's own error stands.
@@ -674,7 +675,7 @@ pub fn refusal(
         ("FileSystemRead", _) => (Key::Reads, path),
         ("FileSystemWrite", _) => (Key::Writes, path),
         ("ChildProcess", _) => (Key::Runs, String::new()),
-        ("resolve" | "connect" | "bind" | "socket", _) => (Key::Hosts, path),
+        ("Net" | "resolve" | "connect" | "bind" | "listen" | "socket", _) => (Key::Hosts, path),
         (_, Some(("spawn" | "spawnSync", program))) => (Key::Runs, program.to_owned()),
         ("", _) => return None,
         (syscall, _) if WRITES.contains(&syscall) => (Key::Writes, path),
@@ -682,18 +683,20 @@ pub fn refusal(
         _ if policy.allows(Key::Reads, &path) => (Key::Writes, path),
         _ => (Key::Reads, path),
     };
-    let named = if path.is_empty() {
-        key == Key::Runs && policy.runs.is_empty()
-    } else {
-        !policy.allows(key, &path)
+    // Without a path, a refusal is the declaration's only when the key names nothing: no program, no host.
+    let named = match (key, path.is_empty()) {
+        (_, false) => !policy.allows(key, &path),
+        (Key::Runs, true) => policy.runs.is_empty(),
+        (Key::Hosts, true) => policy.hosts.is_none(),
+        (Key::Reads | Key::Writes, true) => false,
     };
     if !named {
         return None;
     }
-    let message = if path.is_empty() {
-        format!("[needs] {key} names no program")
-    } else {
-        format!("{} is not in [needs] {key}", shown(&path, home))
+    let message = match (key, path.is_empty()) {
+        (_, false) => format!("{} is not in [needs] {key}", shown(&path, home)),
+        (Key::Hosts, true) => "[needs] hosts names no host".to_owned(),
+        (_, true) => "[needs] runs names no program".to_owned(),
     };
     let fix = if upstream.is_some_and(|upstream| !path.is_empty() && upstream.allows(key, &path)) {
         Fix::Accept {
@@ -1210,6 +1213,11 @@ mod tests {
             line("resolve", "example.com"),
             "example.com is not in [needs] hosts"
         );
+        assert_eq!(
+            line("listen", "127.0.0.1"),
+            "127.0.0.1 is not in [needs] hosts"
+        );
+        assert_eq!(line("Net", ""), "[needs] hosts names no host");
         assert_eq!(line("mkdir", "/tmp/x"), "/tmp/x is not in [needs] writes");
         assert_eq!(
             line("open", "/Users/me/docs/link"),

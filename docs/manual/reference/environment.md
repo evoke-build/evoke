@@ -27,6 +27,7 @@ nothing is sent anywhere but the adapter you chose.
 | `$XDG_CACHE_HOME/evoke/store/<h1>/`              | Fetched reflex directories, by content hash                   | `add`, `sync`         |
 | `$XDG_CACHE_HOME/evoke/answers/<plan>/`          | The adapter's answers, per installed set, utterance and questions asked | every decision, `try` |
 | `$XDG_CACHE_HOME/evoke/baselines/<plan>.json`    | `evoke test`'s last verdicts per installed set                | `test`                |
+| `$XDG_CACHE_HOME/evoke/runtime.json`             | Whether the `node` a file body runs under can keep it off the network, as Node 25 and later can; asked once per `node` binary | a file body's run, `check` |
 | `$XDG_STATE_HOME/evoke/log.jsonl`                | One JSON line per decision; `why` reads the last              | every decision        |
 | `$XDG_STATE_HOME/evoke/trust.toml`               | Trusted project roots and their content digests                | `trust`, every write  |
 | `$XDG_STATE_HOME/evoke/runtime`                  | The real path of `node` a file body runs under                 | `add`, `sync`         |

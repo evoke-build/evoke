@@ -24,6 +24,7 @@ use super::{Exit, about, human};
 use crate::args::Command;
 use crate::hosts::contain;
 use crate::hosts::processes::{self, Body, Probed};
+use crate::hosts::state::State;
 use crate::hosts::{Deadline, Environment, Failure, files, git, terminal};
 use crate::report::{self, Paths};
 
@@ -154,11 +155,13 @@ impl Checking<'_> {
         let policy =
             resolve(&checked.needs, &call, &active, &IndexMap::new(), home).map_err(Exit::Human)?;
         let scratch = files::scratch(self.environment).map_err(Exit::Failed)?;
+        let state = State::of(self.environment).map_err(Exit::Failed)?;
         let facts = match contain::facts(
             &policy,
             Some(&runtime),
             &dir,
             &scratch.path,
+            &state,
             self.environment,
         )
         .map_err(Exit::Failed)?

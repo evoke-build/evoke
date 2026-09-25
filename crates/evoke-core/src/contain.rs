@@ -1,9 +1,9 @@
 //! The layers that hold a body to its policy, as the text and the rules a host applies: on macOS a Seatbelt
 //! profile for `sandbox-exec -p`; on Linux the Landlock rules, one per path; on both Node's permission flags, the
-//! inner layer whose errors name a path. In: a `Policy` and the host's `Facts` — the platform, the runtime, the
-//! body's directory, the private temporary folder, what the host found at each path and program. Out: the
-//! profile, the flags, the rules; and `Contained`, whether a machine holds the whole declaration. Pinned by
-//! vectors, so neither host writes a line of it.
+//! inner layer whose errors name a path. In: a `Policy` and the host's `Facts` — the platform, the runtime and
+//! whether it holds the network, the body's directory, the private temporary folder, what the host found at each
+//! path and program. Out: the profile, the flags, the rules; and `Contained`, whether a machine holds the whole
+//! declaration. Pinned by vectors, so neither host writes a line of it.
 
 use std::fmt;
 
@@ -16,9 +16,9 @@ use crate::needs::{Hosts, Place, Policy};
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Facts {
     pub platform: Platform,
-    /// The runtime a file body runs under, as `process.execPath` names it; none for an argv body.
+    /// The runtime a file body runs under; none for an argv body.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub runtime: Option<Executable>,
+    pub runtime: Option<Runtime>,
     /// The body's directory: readable, and its working directory.
     pub body_dir: String,
     /// The private temporary folder made for the run, by its real path: `TMPDIR`, readable and writable.
@@ -34,6 +34,16 @@ pub struct Facts {
     /// Where each program the policy names is, by the name as the policy spells it.
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub programs: IndexMap<String, Executable>,
+}
+
+/// The runtime a file body runs under: its program, as `process.execPath` names it, and whether its permission
+/// model holds the network, which it does from Node 25, the first to know `--allow-net`.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Runtime {
+    #[serde(flatten)]
+    pub program: Executable,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub holds_network: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -191,7 +201,7 @@ pub fn seatbelt(policy: &Policy, facts: &Facts) -> String {
     if let Some(prefix) = facts
         .runtime
         .as_ref()
-        .and_then(|runtime| prefix(&runtime.path, &facts.home))
+        .and_then(|runtime| prefix(&runtime.program.path, &facts.home))
     {
         reads.push(subpath(&prefix));
     }
@@ -209,7 +219,7 @@ pub fn seatbelt(policy: &Policy, facts: &Facts) -> String {
     let mut execs: IndexSet<String> = facts
         .runtime
         .iter()
-        .map(|runtime| runtime.path.clone())
+        .map(|runtime| runtime.program.path.clone())
         .collect();
     for program in &policy.runs {
         match facts.programs.get(program.as_str()) {
@@ -274,8 +284,9 @@ pub fn seatbelt(policy: &Policy, facts: &Facts) -> String {
 }
 
 /// Node's permission flags: the body's directory and the temporary folder, each declared path as spelled and
-/// again as its real path when that differs, since Node compares strings; a child process only with a program
-/// to run, without the warning Node prints for it. The network is Node's to allow, and the kernel's to hold.
+/// again as its real path when that differs, since Node compares strings; the network only with a host to reach;
+/// a child process only with a program to run, without the warning Node prints for it. A runtime that does not
+/// hold the network, before Node 25, leaves it to the kernel, and would refuse the flag that opens it.
 #[must_use]
 pub fn node_flags(policy: &Policy, facts: &Facts) -> Vec<String> {
     let spellings = |place: &Place| -> Vec<String> {
@@ -306,6 +317,14 @@ pub fn node_flags(policy: &Policy, facts: &Facts) -> Vec<String> {
                 .into_iter()
                 .map(|path| format!("--allow-fs-write={path}")),
         );
+    }
+    if policy.hosts == Hosts::Any
+        && facts
+            .runtime
+            .as_ref()
+            .is_some_and(|runtime| runtime.holds_network)
+    {
+        flags.push("--allow-net".to_owned());
     }
     if !policy.runs.is_empty() {
         // By its type, which every release gives the warning; few give it a code.
@@ -339,10 +358,10 @@ pub fn landlock(policy: &Policy, facts: &Facts) -> Vec<Rule> {
     }
     rules.push(rule(&facts.tmp, &WRITE_DIR));
     if let Some(runtime) = &facts.runtime {
-        if let Some(prefix) = prefix(&runtime.path, &facts.home) {
+        if let Some(prefix) = prefix(&runtime.program.path, &facts.home) {
             rules.push(rule(&prefix, &READ_DIR));
         }
-        rules.extend(executable(runtime));
+        rules.extend(executable(&runtime.program));
     }
     rules.push(rule(&facts.body_dir, &READ_DIR));
     for place in &policy.reads {

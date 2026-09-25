@@ -1,0 +1,11 @@
+reflex = 1
+
+description = """
+Reach a port on this machine.
+For the spec: the declaration names any host, so the network is open to the body."""
+effect = "read"
+confirm = "Reach it?"
+run = "reach.mts"
+
+[needs]
+hosts = ["*"]
