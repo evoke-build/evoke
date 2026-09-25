@@ -1,3 +1,4 @@
+<!-- description: What a reflex can do when it runs as you, what evoke guarantees around installing and deciding, and what it does not guarantee. There is no sandbox yet. -->
 # Security
 
 A fetched reflex runs as you. `evoke add` and `evoke update` are the trust decisions. Everything below is what

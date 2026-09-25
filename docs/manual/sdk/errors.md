@@ -1,3 +1,5 @@
+<!-- title: SDK errors -->
+<!-- description: The three errors the SDK raises, DiagnosticError, FaultError and FailureError: what each means, its CLI exit code, and the command that fixes it. -->
 # Errors
 
 Every error `evoke` raises is data with a fix attached. Its message is the CLI's own line:

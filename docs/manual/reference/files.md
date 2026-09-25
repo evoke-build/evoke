@@ -1,3 +1,5 @@
+<!-- title: Project files -->
+<!-- description: Every file evoke reads or writes in a project, from evoke.toml and evoke.lock to overlays, vocabularies and generated types, and who owns each one. -->
 # Files
 
 Everything `evoke` reads or writes in a project, and who owns each file.

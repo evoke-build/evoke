@@ -1,3 +1,4 @@
+<!-- title: Decisions in the SDK -->
 # Decisions
 
 One input decided is a `Decision`. It is a union, narrowed by `outcome` and then by `reflex`. `decide` makes one.

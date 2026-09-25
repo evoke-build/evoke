@@ -1,3 +1,4 @@
+<!-- description: One sentence can ask for several reflexes. evoke shows the numbered plan before anything runs, and a step can take a value from an earlier step's result. -->
 # Weaving
 
 `evoke` reads every sentence for its steps. One step is decided as always. More than one is a *weave*: each

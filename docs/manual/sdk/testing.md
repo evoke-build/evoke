@@ -1,3 +1,4 @@
+<!-- title: Testing with replay -->
 # Testing
 
 `replay()` is an adapter over a recording. The recording is the CLI's own `answers.toml`, read and written through

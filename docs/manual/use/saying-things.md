@@ -1,3 +1,4 @@
+<!-- description: How a request gets into evoke and what comes out: a sentence as the argument, the REPL or a pipe, and --json, --tag, exit codes and limits. -->
 # Saying things
 
 `evoke` takes one sentence and does three things with it: decide, gate, run. This page is about how the sentence

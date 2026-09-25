@@ -1,3 +1,4 @@
+<!-- title: Environment variables and paths -->
 # Environment
 
 The variables `evoke` reads, and the paths it writes under. Nothing is read from a file it does not own, and

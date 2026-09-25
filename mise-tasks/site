@@ -30,6 +30,8 @@ LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)\)")
 TOKEN = re.compile(r"--([a-z-]+):\s*([^;]+);")
 UNLISTED = {"404.html", "print.html", "toc.html"}
 UNINDEXED = {"use-cases.html"}  # kept for the links that reach it; it sends the reader on
+BRAND = re.compile(r"^evoke - |\s+-\s+evoke(?: manual)?$", re.IGNORECASE)
+SETTINGS = re.compile(r"\A(?:<!-- (?:title|description): .+? -->\n)+")
 PARTS = SITE / "parts"
 ID = re.compile(r'\sid="([^"]+)"')
 HREF = re.compile(r'\s(?:href|src)="([^"]+)"')
@@ -230,24 +232,36 @@ def description(page_html):
 
 
 def trail(page, name):
-    """The page's place, for a search engine: evoke, then the manual or the examples where the page is one of
-    them, then the page. The last step needs no address."""
+    """The page's place, for a search engine: evoke, then the manual, the examples or the guides where the page is
+    one of them, then the page, named without the brand. The last step needs no address."""
     steps = [{"@type": "ListItem", "position": 1, "name": "evoke", "item": URL}]
     rel = page.relative_to(OUT).as_posix()
-    if rel.startswith("manual/") and page != OUT / "manual/index.html":
-        steps.append({"@type": "ListItem", "position": 2, "name": "Manual", "item": URL + "manual/"})
-    elif rel.startswith("examples/"):
-        steps.append({"@type": "ListItem", "position": 2, "name": "Examples", "item": URL + "examples.html"})
+    folders = [
+        ("manual/", "Manual", "manual/"),
+        ("examples/", "Examples", "examples.html"),
+        ("guides/", "Guides", "guides.html"),
+    ]
+    for folder, label, item in folders:
+        if rel.startswith(folder) and address(page) != URL + item:
+            steps.append({"@type": "ListItem", "position": 2, "name": label, "item": URL + item})
     steps.append({"@type": "ListItem", "position": len(steps) + 1, "name": name})
     return json.dumps(
         {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": steps}, ensure_ascii=False
     )
 
 
+def settings(markdown_page):
+    """What a manual page sets for its search result on its first lines: `<!-- title: … -->`, the name its title
+    shows where the index's would read badly in a result, and `<!-- description: … -->`, the line under it where the
+    first paragraph would. The comments are the page's own, stripped wherever its markdown is published."""
+    head = SETTINGS.match(markdown_page.read_text())
+    return dict(re.findall(r"<!-- (title|description): (.+?) -->", head[0])) if head else {}
+
+
 def described(page):
-    """A page with what a search engine and a shared link read: canonical, description, the card, the trail. A
-    manual page is described by its first paragraph; a site page by the description it carries. The pages nobody
-    should land on from a search are marked so."""
+    """A page with what a search engine and a shared link read: title, canonical, description, the card, the trail. A
+    manual page is titled by its name in the index and described by its first paragraph, unless it sets either; a
+    site page by what it carries. The pages nobody should land on from a search are marked so."""
     text = page.read_text()
     titled = re.search(r"<title>(.*?)</title>", text)
     manual = page.relative_to(OUT).parts[0] == "manual"
@@ -255,9 +269,16 @@ def described(page):
         page.write_text(text.replace("</head>", '<meta name="robots" content="noindex">\n</head>', 1))
         return
     title = html_text.unescape(titled[1])
-    name = title.removesuffix(" - evoke").removeprefix("Evoke - ")
-    own = re.search(r'<meta name="description" content="([^"]*)">', text)
-    summary_line = description(text) if manual else (html_text.unescape(own[1]) if own else None)
+    own = settings(source(page)) if manual else {}
+    name = own.get("title", BRAND.sub("", title))
+    front = page == OUT / "manual/index.html"
+    if manual:
+        title = f"{name} - Evoke" if front else f"{name} - Evoke manual"
+        text = text.replace(titled[0], f"<title>{html_text.escape(title, quote=False)}</title>", 1)
+    carried = re.search(r'<meta name="description" content="([^"]*)">', text)
+    summary_line = (
+        own.get("description", description(text)) if manual else (html_text.unescape(carried[1]) if carried else None)
+    )
     if summary_line is None:
         sys.exit(f"{page.relative_to(OUT)}: nothing to describe the page by")
     quoted = html_text.escape(summary_line, quote=True)
@@ -283,7 +304,11 @@ def described(page):
             f'<meta name="twitter:description" content="{quoted}">',
             f'<meta name="twitter:image" content="{CARD}">',
             f'<meta name="twitter:image:alt" content="{CARD_ALT}">',
-            *([] if home else [f'<script type="application/ld+json">{trail(page, name)}</script>']),
+            *(
+                []
+                if home
+                else [f'<script type="application/ld+json">{trail(page, "Manual" if front else name)}</script>']
+            ),
             "</head>",
         ]
     )
@@ -569,10 +594,11 @@ def versioned(landing, format_page):
 
 def twinned():
     """Every page of the manual served beside its markdown source, README.md as index.md, so a reader that wants text
-    gets the file the page was made from, its relative links resolving to the twins beside it."""
+    gets the file the page was made from, its relative links resolving to the twins beside it; what a page sets for
+    its search result stays out of it."""
     for page in MANUAL.rglob("*.md"):
         rel = page.relative_to(MANUAL).as_posix()
-        shutil.copy(page, OUT / "manual" / ("index.md" if rel == "README.md" else rel))
+        (OUT / "manual" / ("index.md" if rel == "README.md" else rel)).write_text(SETTINGS.sub("", page.read_text(), 1))
 
 
 def absolute(page):
@@ -587,7 +613,7 @@ def absolute(page):
         url = published(target) if target.is_relative_to(MANUAL) else URL + target.relative_to(ROOT).as_posix()
         return f"[{found[1]}]({url}{'#' + fragment if fragment else ''})"
 
-    return LINK.sub(link, page.read_text())
+    return LINK.sub(link, SETTINGS.sub("", page.read_text(), 1))
 
 
 def llms():

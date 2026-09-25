@@ -1,3 +1,4 @@
+<!-- title: CLI commands and exit codes -->
 # Commands
 
 Every command, flag and exit code, as `evoke --help` prints them and with what each one does. The three groups

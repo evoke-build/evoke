@@ -1,3 +1,4 @@
+<!-- description: Make evoke read your phrasing: teach it a sentence, add your own words, fill in a reflex's settings, test your cases and move the confidence bars. -->
 # Tuning
 
 A reflex ships its wording. You own the last word. Every change lands in a file under your project. `evoke`

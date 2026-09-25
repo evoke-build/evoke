@@ -1,3 +1,4 @@
+<!-- title: Projects and trust -->
 # Projects
 
 A project is a directory of files you own. `evoke` reads the nearest one and writes only inside it.

@@ -1,3 +1,4 @@
+<!-- description: The first-party collection: thirteen reflexes for everyday Mac tasks, such as the volume, Wi-Fi, a timer or a screenshot, and what each one needs. -->
 # The collection
 
 `evoke-build/reflexes` is the first-party collection: thirteen reflexes for what a Mac does at a word. Each

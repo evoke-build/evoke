@@ -1,3 +1,5 @@
+<!-- title: JSON output -->
+<!-- description: What --json prints: one line per input, with the decision, every judgment, each call to the classifier, and the result or the error, field by field. -->
 # The JSON line
 
 `--json` prints one line per input. The line holds the input, the decision's fields flattened next to it, the

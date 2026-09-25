@@ -1,3 +1,5 @@
+<!-- title: The manual: CLI, package manager and SDK -->
+<!-- description: The evoke manual. Natural-language commands for small programs you install: set up the CLI, run your first reflex, write your own, or use the SDK. -->
 <p align="center"><img src="../../assets/logo.png" alt="" width="200" height="200"></p>
 
 # The evoke manual

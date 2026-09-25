@@ -1,3 +1,4 @@
+<!-- description: Write your first reflex: evoke new makes a working one, evoke check validates it, and a local project lets you try it before anyone installs it. -->
 # Your first reflex
 
 A reflex is a directory: a manifest and the file it runs. `evoke new` writes a working one. `evoke check` keeps it

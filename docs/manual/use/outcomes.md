@@ -1,3 +1,5 @@
+<!-- title: Outcomes: run, confirm, ask or abstain -->
+<!-- description: Every decision ends in run, confirm, ask or abstain. What decides each one, the confidence bars, and the try, why and run commands that show the work. -->
 # Outcomes
 
 Every input ends in one of four outcomes. This page shows each one and what decides it. It also covers the three

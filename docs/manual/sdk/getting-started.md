@@ -1,3 +1,4 @@
+<!-- title: Getting started with the SDK -->
 # Getting started with the SDK
 
 `@evoke-build/evoke` loads a project of reflexes, decides what an input asks for, and runs it. It does this inside
