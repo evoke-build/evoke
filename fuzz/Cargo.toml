@@ -19,3 +19,11 @@ path  = "fuzz_targets/manifest.rs"
 test  = false
 doc   = false
 bench = false
+
+# The weave's reading on raw bytes: every weave vector's and fixture's request and the weave flows' sentences seed it.
+[[bin]]
+name  = "reading"
+path  = "fuzz_targets/reading.rs"
+test  = false
+doc   = false
+bench = false

@@ -37,10 +37,12 @@ run = [
 ]
 
 [tasks.fuzz]
-description = "Fuzz the manifest reader from its seeds, ten minutes unless FUZZ_SECONDS says otherwise: libFuzzer through cargo-fuzz on the pinned toolchain, no sanitizer, what it finds kept under fuzz/corpus; outside CI"
+description = "Fuzz the manifest reader and the weave's reading from their seeds, ten minutes each unless FUZZ_SECONDS says otherwise: libFuzzer through cargo-fuzz on the pinned toolchain, no sanitizer, what it finds kept under fuzz/corpus; outside CI"
 tools = { "cargo:cargo-fuzz" = "0.13.2" }
 run = [
+  "mkdir -p fuzz/corpus/manifest fuzz/corpus/reading",
   "cargo fuzz run --sanitizer none manifest fuzz/corpus/manifest fuzz/seeds/manifest -- -max_total_time=${FUZZ_SECONDS:-600}",
+  "cargo fuzz run --sanitizer none reading fuzz/corpus/reading fuzz/seeds/reading -- -max_total_time=${FUZZ_SECONDS:-600} -max_len=8192 -timeout=10",
 ]
 
 [tasks.reflexes]
