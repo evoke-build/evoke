@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The reflex format - Evoke</title>
-  <meta name="description" content="The reflex format, version 1, frozen: the manifest a classifier reads and a program receives, the decision, the gate, the files around it and the wire.">
+  <title>The reflex format: reflex.toml spec and JSON Schema - Evoke</title>
+  <meta name="description" content="Version 1 of the reflex format, frozen: reflex.toml and its JSON Schema, the decision and gate built from it, the project files, the adapter and the wire.">
   <!-- head -->
   <script type="application/ld+json">
   {
@@ -14,7 +14,7 @@
     "url": "https://evoke.build/format.html",
     "headline": "The reflex format",
     "name": "The reflex format",
-    "description": "The reflex format, version 1, frozen: the manifest a classifier reads and a program receives, the decision, the gate, the files around it and the wire.",
+    "description": "Version 1 of the reflex format, frozen: reflex.toml and its JSON Schema, the decision and gate built from it, the project files, the adapter and the wire.",
     "inLanguage": "en",
     "isPartOf": {
       "@id": "https://evoke.build/#website"
@@ -68,9 +68,9 @@
     <div class="hero solo">
       <div class="copy">
         <h1>The reflex <em>format.</em></h1>
-        <p class="lede"><strong>One file that a classifier reads and a program receives.</strong> This page is the
-          standard: the format of that file, the decision made from it, the gate that runs it, the files around it,
-          the adapter contract and the wire.</p>
+        <p class="lede"><strong>A reflex is a small program you install and ask for in your words.</strong> Its manifest
+          is one file that a classifier reads and a program receives. This page is the standard: the format of that file,
+          the decision made from it, the gate that runs it, the files around it, the adapter contract and the wire.</p>
       </div>
       <div class="sheet solo">
         <dl>
@@ -223,6 +223,9 @@ Ceiling and lamp lights only."""</span>
           </ul>
         </div>
       </div>
+
+      <p class="caption">The <code>lights</code> reflex on this page is an illustration from evoke's tests. It is not in
+        the collection. <code>radhi/home/lights</code> and the other addresses in §09 are examples.</p>
 
       <div class="clause">
         <h3><i>3.1</i>Keys</h3>
@@ -431,7 +434,7 @@ Ceiling and lamp lights only."""</span>
   <span class="name">ask room</span> · weakest: state <span class="mid">0.58</span></span></pre>
         </div>
         <p class="caption">The route, each argument with <b>unstated</b> as a choice, the fit per reflex, then the
-          outcome and the weakest judgment. The room was not said, so the outcome is an ask.</p>
+          outcome and the weakest judgment. The room was not in the sentence, so the outcome is an ask.</p>
       </div>
     </section>
 
@@ -439,8 +442,9 @@ Ceiling and lamp lights only."""</span>
       <div class="rule"><p class="label">The gate</p><span class="num">07</span></div>
       <h2>The weakest answer, against the bar of the effect.</h2>
       <p class="sub">Confidence is the lowest top probability among the route and every argument question of the winner.
-        Unstated arguments and flags count too. Each effect has a bar, and the bars come from the adapter. Each number
-        means the probability this is right.</p>
+        Unstated arguments and flags count too. Each effect has a bar, and the bars come from the adapter. The bars
+        assume that the adapter's probabilities are calibrated: across many answers, those given 0.85 should be right
+        about 85 times in 100.</p>
       <div class="clause">
         <h3><i>7.1</i>The bars</h3>
         <div class="table"><table>
@@ -610,9 +614,10 @@ Ceiling and lamp lights only."""</span>
       <div class="clause">
         <h3><i>9.4</i>Trust</h3>
         <p>A project outside the home project <span class="kw">MUST</span> be trusted before an implementation decides
-          in it. Trust binds to the content of the four owned paths: <code>evoke.toml</code>, <code>evoke.lock</code>,
-          <code>overlays/</code>, <code>vocab/</code>. The implementation's own writes renew it. Any other change stops
-          the next run until the project is trusted again. Adapter names resolve only against the tool's built-ins,
+          in it. Trust is recorded against the content of the four owned paths: <code>evoke.toml</code>,
+          <code>evoke.lock</code>, <code>overlays/</code> and <code>vocab/</code>. When the implementation writes one of
+          them itself, it records the new content as trusted. Any other change to them stops the next run until the
+          project is trusted again. Adapter names resolve only against the tool's built-ins,
           never from a project directory, so a cloned repository cannot choose the classifier.</p>
       </div>
     </section>
@@ -795,8 +800,8 @@ Ceiling and lamp lights only."""</span>
         <ul class="ticks">
           <li><strong>A connective is a question.</strong> Where <code>and</code>, <code>then</code>, <code>but</code>, a comma, <code>after</code> or <code>before</code> could separate two things, the classifier is asked whether it does.</li>
           <li><strong>Each part is decided as one input is.</strong> Routed, gated, its arguments read. A part that matches nothing is tried as another item of its neighbour's task first. Failing that, the whole request <span class="kw">MUST</span> be refused rather than half done.</li>
-          <li><strong>A part that begins with a negation is left out.</strong> <code>not</code>, <code>don't</code>, <code>never</code>, <code>without</code>: what was said not to do is no step.</li>
-          <li><strong>Order words order.</strong> <code>then</code>, <code>after that</code>, <code>next</code>; <code>before you X, Y</code> and <code>Y after you X</code> both read as <code>X, then Y</code>. Two writes never run side by side. Reads may.</li>
+          <li><strong>A part that begins with a negation is left out.</strong> <code>not</code>, <code>don't</code>, <code>never</code>, <code>without</code>: a part that names what not to do is no step.</li>
+          <li><strong>Order comes from the words.</strong> <code>then</code>, <code>after that</code> and <code>next</code> order the steps. <code>before you X, Y</code> runs Y first, and <code>Y after you X</code> runs X first. Two writes never run side by side. Reads may.</li>
         </ul>
       </div>
       <div class="clause">
@@ -808,13 +813,15 @@ Ceiling and lamp lights only."""</span>
           could satisfy <span class="kw">MUST</span> be asked, never guessed.</p>
         <div class="panel term">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre><span class="p">$</span> <span class="in">evoke "look up dana's address and email them"</span>
+<pre data-flow="weave"><span class="p">$</span> <span class="in">evoke "look up dana's address and email them"</span>
 <span class="own">  1  <span class="name">contact</span> name="dana"  <span class="hi">0.90</span>
   2  <span class="name">mail</span> · takes email from 1</span>
 <span class="out">dana &lt;dana@example.com&gt;</span>
 <span class="own">  2  <span class="name">mail</span> to="dana@example.com"  <span class="hi">0.88</span></span>
 <span class="out">drafted to dana@example.com</span></pre>
         </div>
+        <p class="caption"><code>contact</code> and this <code>mail</code> are stand-ins from evoke's tests. They print a
+          line and change nothing.</p>
       </div>
       <div class="clause">
         <h3><i>13.3</i>Before anything runs</h3>
@@ -909,8 +916,9 @@ Ceiling and lamp lights only."""</span>
       <p class="after">A reflex directory's <b>h1</b> skips the five names a project keeps: <code>evoke.toml</code>,
         <code>evoke.lock</code>, <code>overlays/</code>, <code>vocab/</code>, <code>evoke.d.ts</code>. So an author may
         keep a project beside their reflex, and none of it ships.</p>
-      <p class="after">Next: <a href="/manual/author/first-reflex.html">write a reflex</a> in ten minutes, or read
-        <a href="/manual/author/manifest.html">the manifest, key by key</a> in the manual.</p>
+      <p class="after">To see the format at work, <a href="/start.html">install evoke and run your first command</a>,
+        then <a href="/manual/author/first-reflex.html">write your first reflex</a>. The manual has
+        <a href="/manual/author/manifest.html">the manifest, key by key</a>.</p>
     </section>
   </main>
 
