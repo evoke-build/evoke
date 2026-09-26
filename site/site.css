@@ -89,6 +89,10 @@ nav.links { display: flex; align-items: center; gap: 1.5rem; margin-left: auto; 
 nav.links a { color: var(--muted); font-size: .95rem; font-weight: 450; white-space: nowrap; transition: color .15s; }
 nav.links a:hover { color: var(--fg); text-decoration: none; }
 nav.links a[aria-current] { color: var(--fg); }
+/* The repository, a mark among the links on a desk and a word in the menu on a phone */
+nav.links .repo { display: inline-flex; padding: .5rem; margin: -.5rem -.25rem; }
+nav.links .repo svg { display: block; width: 20px; height: 20px; fill: currentColor; }
+nav.links .repo span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 header.top .button.small { flex: none; margin-left: .5rem; }
 @media (max-width: 760px) {
   .menu { display: block; margin-left: auto; }
@@ -96,6 +100,9 @@ header.top .button.small { flex: none; margin-left: .5rem; }
   .menu[open] + nav.links { display: flex; }
   nav.links a { padding: .65rem 0; border-top: 1px solid var(--line); font-size: 1rem; }
   nav.links a:first-child { border-top: 0; }
+  nav.links .repo { display: block; padding: .65rem 0; margin: 0; }
+  nav.links .repo svg { display: none; }
+  nav.links .repo span { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
 }
 
 /* Buttons and commands: actions are pills, surfaces keep their corners */
