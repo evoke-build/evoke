@@ -1,4 +1,5 @@
-# Saying things
+<!-- description: How a request gets into evoke and what comes out: a sentence as the argument, the REPL or a pipe, and --json, --tag, exit codes and limits. -->
+# Typing a request
 
 `evoke` takes one sentence and does three things with it: decide, gate, run. This page is about how the sentence
 gets in and how the answer comes out.
@@ -77,10 +78,10 @@ names the command and how to write it. Nothing runs by accident.
 The first argument selects a command only when it is *exactly* one of these words:
 
 ```text
-help  try  why  run  add  remove  update  sync  trust  show  teach  vocab  config  test  new  check
+help  try  why  run  add  remove  update  sync  trust  show  teach  vocab  config  test  calibrate  new  check
 ```
 
-Five more words are reserved for later: `edit`, `search`, `publish`, `adapter`, `calibrate`. Reserving them now
+Four more words are reserved for later: `edit`, `search`, `publish`, `adapter`. Reserving them now
 means adding one later never changes what a sentence means. Lines from stdin are always input, whatever they begin
 with.
 
@@ -89,13 +90,15 @@ with.
 | Code | Meaning                                                                   |
 | :--- | :------------------------------------------------------------------------ |
 | 0    | Ran. Also `--help`, `--version`, and every command that did what it said |
-| 1    | The program, or the machine, failed. Also `evoke test` with a failing case |
+| 1    | The program, or the machine, failed. Also `evoke test` with a failing case, and `evoke calibrate` with a call wrong at or over its bar |
 | 2    | Abstained, or you declined                                                 |
 | 3    | Needs a human: a missing key, an untrusted project, a prompt with no terminal, a line to fix |
 | 4    | The adapter failed                                                         |
 
-Outside the REPL, `Ctrl-C` ends `evoke` at once. A JavaScript body ends with it; a program run as an argv
-finishes on its own. The shell reports the interrupt as exit 130.
+`Ctrl-C` while a body runs ends the body and everything it started, a JavaScript body's `signal` aborting first;
+then `evoke` ends as an interrupted program does, and the shell reports exit 130. In a weave, every step that
+did not finish reads `skipped · cancelled` ([Weaving](weaving.md#stopping-it)). Anywhere else, `Ctrl-C` ends
+`evoke` at once.
 
 ## Limits and time
 

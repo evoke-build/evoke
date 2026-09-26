@@ -1,0 +1,11 @@
+reflex = 1
+
+description = "Look up a job by its number."
+effect  = "read"
+confirm = "Look up a job?"
+run     = "job.mts"
+
+[yields]
+path   = "file"
+Client = "email"
+jobs   = { every = { number = "number" } }

@@ -47,8 +47,8 @@ $ evoke check
 
 | Level   | When                                                                                             |
 | :------ | :----------------------------------------------------------------------------------------------- |
-| `same`  | Wording only: description, `not_for`, `tags`, `confirm`, any `ask`, option meanings, records     |
-| `minor` | Additions, like an argument, an option or a config key. Also a config key removed, an argument made optional, or a secret made plain |
+| `same`  | Wording only: description, `not_for`, `tags`, `confirm`, any `ask`, option meanings, records. Also a declaration narrowed |
+| `minor` | Additions, like an argument, an option or a config key. Also a config key removed, an argument made optional, a secret made plain, or a declaration widened |
 | `major` | Something a user's files or calls may not survive: an argument or option removed or renamed, a source or range changed, `run` changed, an argument made required, a config key made secret |
 
 A `was` violation is refused outright. That means a retired name returning, or a name dropped from the list.

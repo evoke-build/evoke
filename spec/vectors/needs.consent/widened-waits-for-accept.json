@@ -1,0 +1,11 @@
+{
+  "input": {
+    "locked": { "writes": ["{file}"] },
+    "upstream": { "writes": ["{file}"], "hosts": ["*"], "runs": ["open"] }
+  },
+  "expect": {
+    "type": "needs_accept",
+    "locked": { "writes": ["{file}"] },
+    "upstream": { "writes": ["{file}"], "hosts": ["*"], "runs": ["open"] }
+  }
+}

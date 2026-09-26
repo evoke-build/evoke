@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "please turn down the lights to fifty percent in the den"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 31,
+        "end": 44,
+        "text": "fifty percent"
+      },
+      "value": {
+        "type": "number",
+        "value": 50
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+reflex = 1
+description = "Download a file."
+confirm = "Download?"
+run = "download.mts"
+
+[needs]
+reads  = ["{nowhere}", "{quiet}", "{place}", "Downloads", "*"]
+writes = ["~/a", "~/a"]
+hosts  = ["example.com"]
+runs   = ["bin/open", "{tool}"]
+
+[config]
+place = "A folder"
+
+[args.place]
+ask   = "Which?"
+vocab = "places"
+
+[args.quiet]
+ask  = "Quietly?"
+flag = true

@@ -1,0 +1,35 @@
+{
+  "input": {
+    "doc": {
+      "file": { "type": "manifest", "name": "download" },
+      "toml": "reflex = 1\ndescription = \"Download a file.\"\neffect = \"write\"\nconfirm = \"Download {url}?\"\nrun = \"download.mts\"\n\n[needs]\nreads  = [\"{place}\", \"/etc/hosts\"]\nwrites = [\"{to}\", \"~/Downloads\"]\nhosts  = [\"*\"]\nruns   = [\"open\", \"/usr/bin/plutil\"]\n\n[config]\nplace = \"A folder to read\"\n\n[args.url]\nask  = \"Which URL?\"\npick = \"url\"\n\n[args.to]\nask      = \"Into which folder?\"\nvocab    = \"places\"\noptional = true\n"
+    }
+  },
+  "expect": {
+    "ok": {
+      "description": "Download a file.",
+      "not_for": [],
+      "tags": [],
+      "effect": "write",
+      "confirm": "Download {url}?",
+      "run": "download.mts",
+      "needs": {
+        "reads": ["{place}", "/etc/hosts"],
+        "writes": ["{to}", "~/Downloads"],
+        "hosts": ["*"],
+        "runs": ["open", "/usr/bin/plutil"]
+      },
+      "config": {
+        "place": { "about": "A folder to read", "secret": false }
+      },
+      "args": {
+        "url": { "ask": "Which URL?", "pick": "url", "optional": false, "was": [] },
+        "to": { "ask": "Into which folder?", "vocab": "places", "optional": true, "was": [] }
+      },
+      "yields": {},
+      "examples": {},
+      "tests": {},
+      "unknown": []
+    }
+  }
+}

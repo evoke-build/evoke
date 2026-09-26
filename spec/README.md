@@ -56,7 +56,9 @@ and the seeds test read those directory names as owned files:
   finished within a minute fails, named, and its process group is ended.
 - `home/` — the throwaway `$HOME`: the project under `.config/evoke/`, local reflexes, XDG state as the flow needs it.
   A flow without one uses [`transcripts/home/`](home/.config/evoke/evoke.toml). Paths under it print as `~/…`. The
-  runner records the `node` on its `PATH` in the home's state, as `evoke sync` will on a machine.
+  runner records the `node` on its `PATH`, as the binary it runs as, in the home's state, as `evoke sync` will on
+  a machine. A `bin/` under the home goes on `PATH` after the binary's own directory: stand-ins for the programs
+  the flow's reflexes declare and run.
 - `answers.toml` — what the `replay` adapter answers, keyed by utterance identity, with the gate it declares; the
   runner names it in `EVOKE_ANSWERS`. A flow without one makes no decision.
 - `remote/<owner>/<repo>/<tag>/` — a remote's tree at that tag; a link inside it is copied as what it points at, so

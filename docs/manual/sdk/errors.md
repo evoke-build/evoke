@@ -1,3 +1,5 @@
+<!-- title: SDK errors -->
+<!-- description: The three errors the SDK raises, DiagnosticError, FaultError and FailureError: what each means, its CLI exit code, and the command that fixes it. -->
 # Errors
 
 Every error `evoke` raises is data with a fix attached. Its message is the CLI's own line:
@@ -30,7 +32,8 @@ try {
 
 - **Misuse is a plain `TypeError`.** That means running a decision that is not `run` or `confirm`, running a
   confirm without `{ confirmed: true }`, or handing a decision to a project other than the one that made it.
-- **Aborts reject with the signal's own reason**, never wrapped.
+- **Aborts reject with the signal's own reason**, never wrapped; a cancelled `weave` puts its record on it as
+  `woven`.
 - **A bug in `evoke`**, a trap in the core, is a plain `Error` naming it.
 
 **Next:** the [Reference](../reference/cli.md).

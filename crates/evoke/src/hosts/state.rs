@@ -1,5 +1,6 @@
 //! Machine-local state under XDG, never in the project. Cache, `$XDG_CACHE_HOME/evoke/`: the adapter's answers per
-//! plan digest, utterance identity and question set, and `test`'s baseline per plan digest. State,
+//! plan digest, utterance identity and question set, `test`'s baseline per plan digest, and whether the runtime
+//! holds the network, for the binary that answered. State,
 //! `$XDG_STATE_HOME/evoke/`: the log, one JSON line per decision; the JavaScript runtime's path, as `add` and
 //! `sync` record it; trust, `trust.toml`, a digest per blessed root; the REPL's history, one line each. In: keys
 //! and values. Out: hits or misses; `Failure`.
@@ -11,6 +12,7 @@ use std::os::unix::fs::OpenOptionsExt as _;
 use std::path::{Path, PathBuf};
 
 use evoke_core::{Baseline, Digest, Fix, Raw, Request, identity};
+use serde::{Deserialize, Serialize};
 use sha2::{Digest as _, Sha256};
 use toml_edit::{DocumentMut, Item, value};
 
@@ -113,6 +115,36 @@ impl State {
         write(&self.baseline_path(plan), &text)
     }
 
+    /// Whether the runtime at `path` holds the network, as the binary there now answered it; none when another
+    /// answered, or none did — a Node replaced in place is another binary.
+    pub fn holds_network(
+        &self,
+        path: &str,
+        binary: &fs::Metadata,
+    ) -> Result<Option<bool>, Failure> {
+        let kept: Option<Held> = read(&self.cache.join("runtime.json"))?
+            .and_then(|text| serde_json::from_str(&text).ok());
+        Ok(kept
+            .filter(|kept| kept.path == path && kept.stamp == stamp(binary))
+            .map(|kept| kept.holds_network))
+    }
+
+    /// Keeps what the binary now at `path` answered, in place of any other runtime's answer.
+    pub fn keep_holds_network(
+        &self,
+        path: &str,
+        binary: &fs::Metadata,
+        holds_network: bool,
+    ) -> Result<(), Failure> {
+        let held = Held {
+            path: path.to_owned(),
+            stamp: stamp(binary),
+            holds_network,
+        };
+        let text = serde_json::to_string(&held).expect("an answer serializes");
+        write(&self.cache.join("runtime.json"), &text)
+    }
+
     /// `baselines/<plan>.json`.
     fn baseline_path(&self, plan: &Digest) -> PathBuf {
         self.cache
@@ -126,6 +158,18 @@ impl State {
         own(&path)?
             .and_then(|mut log| writeln!(log, "{line}"))
             .map_err(|error| failed(&format!("appending to {}", path.display()), &error))
+    }
+
+    /// The whole log, one line per decision in the order they were written; nothing decided yet is empty.
+    pub fn lines(&self) -> Result<Vec<String>, Failure> {
+        Ok(read(&self.state.join("log.jsonl"))?
+            .map(|text| {
+                text.lines()
+                    .filter(|line| !line.trim().is_empty())
+                    .map(str::to_owned)
+                    .collect()
+            })
+            .unwrap_or_default())
     }
 
     /// The log's last input, as its lines: one decision's, or every line of the last weave — the trailing lines
@@ -199,6 +243,25 @@ fn step_of(line: &str) -> Option<StepLine> {
         of: number("steps")?,
         input: fields.get("input")?.as_str()?.to_owned(),
     })
+}
+
+/// What a runtime answered, and the binary that answered: its path, and its stamp.
+#[derive(Serialize, Deserialize)]
+struct Held {
+    path: String,
+    stamp: String,
+    holds_network: bool,
+}
+
+/// A binary as the cache tells it from the one it replaced: its size and its modification time, to the nanosecond.
+fn stamp(binary: &fs::Metadata) -> String {
+    use std::os::unix::fs::MetadataExt as _;
+    format!(
+        "{} {}.{:09}",
+        binary.len(),
+        binary.mtime(),
+        binary.mtime_nsec()
+    )
 }
 
 /// A digest's hex, without its `h1:`: a directory or file name.

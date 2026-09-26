@@ -3,15 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>For developers - Evoke</title>
-  <meta name="description" content="Turn a function, a script or a command into a reflex. Put typed decisions inside your app, connect operations, test both halves, and share with a git tag.">
+  <title>Turn your code into natural-language commands - Evoke</title>
+  <meta name="description" content="Run your scripts and commands by typing what you want, with one short file and no code. Add natural-language commands to your Node app, with typed values.">
   <!-- head -->
   <style>
+    .hero .lede:has(+ .lede) { margin-bottom: 1rem; }  /* two paragraphs of lede read as one */
     .legend dt { font: 500 .8rem/1.6 var(--mono); color: var(--accent-ink); margin: 0; }
     .legend dd { margin: .1rem 0 .95rem; color: var(--muted); font-size: .95rem; line-height: 1.5; }
     .legend dd strong { color: var(--fg); font-weight: 560; }
     .legend dl { margin: 0; }
     .shapes dd code { background: var(--bg); }
+    .duty { max-width: 44rem; margin-top: 2.6rem; }
+    .duty h3 { margin: 0 0 .9rem; font-size: 1.25rem; font-weight: 560; letter-spacing: -.012em; }
+    .duty > p { margin: 1.1rem 0 0; color: var(--muted); font-size: 1rem; line-height: 1.55; }
+    .setup p.small { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -20,36 +25,92 @@
   <main class="wrap">
     <div class="hero solo">
       <div class="copy">
-        <h1>Give your software <em>a way to be asked.</em></h1>
-        <p class="lede"><strong>A function, a script or a command becomes a reflex with one file beside it.</strong>
-          Decisions run inside your app, typed, before anything happens. Eight parts, from the operation you already
-          have to where evoke fits beside an LLM.</p>
+        <h1>Give your scripts and your app <em>a way to be asked.</em></h1>
+        <p class="lede"><strong>Turn the scripts and commands you already run, and the functions in your app, into
+          natural-language commands.</strong> Each one becomes a reflex. A reflex is a small program you install and ask
+          for in your words. Here, the program is your own script, command or function. Its manifest, a short file named
+          <code>reflex.toml</code>, describes in plain words what it does and what it needs. For a command you already
+          run, that file is all you write.</p>
+        <p class="lede">In a Node app, the TypeScript SDK turns a person's sentence into a decision: a typed value that
+          names the reflex and its values. Your code inspects it before anything runs.</p>
+        <p class="note">Wrapping a script or a command? Read <a href="#operation">01</a>, <a href="#boundary">02</a>,
+          <a href="#testing">06</a> and <a href="#share">07</a>. Adding natural-language commands to a Node app? Read
+          <a href="#decisions">03</a> to <a href="#vocabulary">05</a> as well. <a href="#beside">08</a> shows how evoke
+          relates to scripts, workflow tools and LLM tool calling.</p>
       </div>
       <ul class="index" aria-label="The sections">
-        <li><a href="#operation"><code>01</code>An operation you have</a></li>
-        <li><a href="#boundary"><code>02</code>Describe the boundary</a></li>
-        <li><a href="#decisions"><code>03</code>Decisions inside your app</a></li>
-        <li><a href="#chaining"><code>04</code>Connect operations</a></li>
-        <li><a href="#vocabulary"><code>05</code>Team names, separate</a></li>
-        <li><a href="#testing"><code>06</code>Test both halves</a></li>
-        <li><a href="#share"><code>07</code>Share what you built</a></li>
-        <li><a href="#llm"><code>08</code>Beside an LLM</a></li>
+        <li><a href="#operation"><code>01</code>Your command or function</a></li>
+        <li><a href="#boundary"><code>02</code>The manifest</a></li>
+        <li><a href="#decisions"><code>03</code>Decisions in your app</a></li>
+        <li><a href="#chaining"><code>04</code>Several steps</a></li>
+        <li><a href="#vocabulary"><code>05</code>Each team's words</a></li>
+        <li><a href="#testing"><code>06</code>Three kinds of test</a></li>
+        <li><a href="#share"><code>07</code>Share with a git tag</a></li>
+        <li><a href="#beside"><code>08</code>Beside what you use</a></li>
       </ul>
     </div>
 
     <section id="operation">
-      <div class="rule"><p class="label">Your operation</p><span class="num">01</span></div>
-      <h2>Start with an operation you already have.</h2>
-      <p class="sub"><code>evoke new</code> writes a reflex that already works. <strong>The body is your code.</strong>
-        It receives typed arguments, returns one line, and can call anything you already have.</p>
+      <div class="rule"><p class="label">Your command or function</p><span class="num">01</span></div>
+      <h2>Start with a command or a function you already have.</h2>
+      <p class="sub"><strong>A command you already run needs only a manifest, and no code.</strong> A function needs the
+        same manifest and a file whose default export is your function.</p>
       <div class="split">
-        <div class="panel">
-          <div class="head"><i></i>hello/hello.mts<span class="who you">your code</span></div>
+        <div class="panel tabbed">
+          <div class="head"><i></i><div class="tabs" role="tablist" aria-label="A reflex around a command, and around a function">
+            <button role="tab" id="t1" aria-controls="p1" aria-selected="true">a command</button>
+            <button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1">a function</button>
+          </div></div>
+          <div role="tabpanel" id="p1" aria-labelledby="t1">
+            <div class="file">scale/reflex.toml<span class="who">a manifest, no code</span></div>
+<pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
+
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
+<span class="s">Scale a service to a number of replicas.</span>
+<span class="s">One deployment in one environment; the number is set, never added to."""</span>
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span>
+  <span class="s">"restarting or rolling back a service"</span><span class="o">,</span>
+  <span class="s">"resizing a database or a disk"</span><span class="o">,</span>
+  <span class="s">"autoscaling rules"</span><span class="o">,</span>
+<span class="o">]</span>
+<span class="k">tags</span>    <span class="o">=</span> <span class="o">[</span><span class="s">"ops"</span><span class="o">]</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Scale <span class="ph">{service}</span> in <span class="ph">{env}</span> to <span class="ph">{replicas}</span>?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="o">[</span>
+  <span class="s">"kubectl"</span><span class="o">,</span> <span class="s">"-n"</span><span class="o">,</span> <span class="s">"<span class="ph">{env}</span>"</span><span class="o">,</span> <span class="s">"scale"</span><span class="o">,</span> <span class="s">"deployment"</span><span class="o">,</span> <span class="s">"<span class="ph">{service}</span>"</span><span class="o">,</span>
+  <span class="s">"--replicas"</span><span class="o">,</span> <span class="s">"<span class="ph">{replicas}</span>"</span><span class="o">,</span>
+<span class="o">]</span>
+
+<span class="t">[args.service]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which service?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"services"</span>
+
+<span class="t">[args.env]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which environment?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"envs"</span>
+
+<span class="t">[args.replicas]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"How many replicas?"</span>
+<span class="k">pick</span>  <span class="o">=</span> <span class="s">"number"</span>
+<span class="k">range</span> <span class="o">=</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">20</span><span class="o">]</span>
+
+<span class="t">[examples]</span>
+<span class="s">"scale checkout to 6 in staging"</span>   <span class="o">=</span> <span class="o">{</span> <span class="k">replicas</span> <span class="o">=</span> <span class="s">"6"</span> <span class="o">}</span>
+<span class="s">"run 3 replicas of search in prod"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">replicas</span> <span class="o">=</span> <span class="s">"3"</span> <span class="o">}</span>
+<span class="s">"take payments down to 1 replica"</span>  <span class="o">=</span> <span class="o">{</span> <span class="k">replicas</span> <span class="o">=</span> <span class="s">"1"</span> <span class="o">}</span>
+
+<span class="t">[tests]</span>
+<span class="s">"bring checkout up to 12 in prod"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">replicas</span> <span class="o">=</span> <span class="s">"12"</span> <span class="o">}</span>
+<span class="s">"scale checkout"</span>                  <span class="o">=</span> <span class="o">{</span> <span class="k">replicas</span> <span class="o">=</span> <span class="n">false</span> <span class="o">}</span>
+<span class="s">"restart checkout"</span>                <span class="o">=</span> <span class="n">false</span></pre>
+          </div>
+          <div role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+            <div class="file">hello/hello.mts<span class="who you">your code</span></div>
 <pre><span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"./reflex.d.ts"</span>
 
 <span class="w">export</span> <span class="w">default</span> <span class="o">(</span><span class="w">async</span> <span class="o">({</span> who <span class="o">})</span> <span class="o">=&gt;</span> <span class="s">`Hello, ${who}!`</span><span class="o">)</span> <span class="w">satisfies</span> Reflex</pre>
-          <div class="file">a terminal</div>
-<pre><span class="p">$</span> <span class="in">evoke new hello</span>
+            <div class="file">a terminal</div>
+<pre data-flow="new"><span class="p">$</span> <span class="in">evoke new hello</span>
 <span class="add">+ hello/reflex.toml
 + hello/hello.mts
 + hello/reflex.d.ts</span>
@@ -58,52 +119,90 @@
 <span class="p">$</span> <span class="in">evoke run hello who=Ada</span>
 <span class="own">  <span class="name">hello</span> who="Ada"</span>
 <span class="out">Hello, Ada!</span></pre>
+          </div>
         </div>
-        <div class="text">
-          <h3>What stays your responsibility</h3>
-          <ul class="ticks">
-            <li><strong>The body.</strong> A JavaScript file with a default export, or a program with its arguments.
-              Everything it needs is bundled into its directory.</li>
-            <li><strong>Its result.</strong> One lowercase line a person reads, or <code>{ text, data }</code> when an app
-              needs more. Throwing is failure.</li>
-            <li><strong>Its deadline.</strong> Thirty seconds per decision, for the classifier's answer and the body together. The body gets a
-              <code>signal</code> and stops when it fires.</li>
-            <li><strong>Its platform.</strong> A body that runs on one system only checks that first, and throws a plain error elsewhere.</li>
-          </ul>
-          <p><code>evoke run</code> calls the body by name and asks no classifier, so you can develop offline.
-            <code>reflex.d.ts</code> is generated from the manifest and types the arguments.</p>
-          <a class="more" href="/manual/author/first-reflex.html">Build your first reflex →</a>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>The program runs directly.</strong> <code>run</code> lists a program and its
+              arguments. evoke starts <code>kubectl</code> with those arguments directly, never through a shell. No Node
+              or other runtime is involved.</span></li>
+            <li><b>2</b><span><strong>Each placeholder is one whole argument.</strong> <code>{service}</code> becomes a
+              word from your own list of service names, or that word's value when you gave it one. You fill the list
+              once, with <code>evoke vocab services add</code>. <code>{replicas}</code> becomes the number read from the
+              sentence. A value that would start with <code>-</code> is refused, so nothing typed can become an option of
+              the command.</span></li>
+            <li><b>3</b><span><strong>What it prints is the result.</strong> A non-zero exit is a failure. Settings, which
+              a manifest lists under <code>[config]</code>, reach the program as environment variables named
+              <code>EVOKE_CONFIG_&lt;KEY&gt;</code>. The typed sentence arrives as <code>EVOKE_INPUT</code>.</span></li>
+            <li><b>4</b><span><strong>Your own script works the same way.</strong> Name it by its absolute path, or put it
+              on your <code>PATH</code>. A yes/no switch, or an argument with literal braces, needs a program written as
+              a <code>.mts</code> or <code>.mjs</code> file instead.</span></li>
+          </ol>
         </div>
+      </div>
+      <p class="caption">The first tab is the <code>scale</code> reflex of the <a href="/examples/ops.html">kubectl
+        example</a>, where a team asks for it by its own service names. In the second, <code>evoke new</code> writes a
+        reflex that already works, and the program is your function: before <code>evoke run</code>, add it with
+        <code>evoke add ./hello</code>, from the directory that holds <code>hello</code>.
+        <a href="/manual/author/body.html#an-argv-body">How evoke runs a command, without a shell →</a></p>
+      <div class="duty">
+        <h3>What stays your responsibility</h3>
+        <ul class="ticks">
+          <li><strong>The program.</strong> A command with its arguments, or a <code>.mts</code> or <code>.mjs</code> file
+            whose default export is a function. A file must carry everything it needs. Bundle anything beyond Node's
+            built-in modules and Web APIs into it before you commit it.</li>
+          <li><strong>Its result.</strong> One lowercase line a person reads. A file may return <code>{ text, data }</code>
+            when an app needs more. A thrown error or a non-zero exit is a failure.</li>
+          <li><strong>Its deadline.</strong> One decision has 30 seconds, from reading the sentence to the program's
+            result. Time spent waiting for a person's answer does not count. A program in a file receives a
+            <code>signal</code> that fires at the deadline. When it fires, the program must stop.</li>
+          <li><strong>Its platform.</strong> A program that runs on one system checks that first, and fails with a plain
+            message elsewhere.</li>
+          <li><strong>What it may do.</strong> A reflex runs with the permissions of whoever runs it, held by the kernel
+            to what its manifest declares under <code>[needs]</code>: the paths it reads and writes, whether it reaches
+            the network, the programs it runs. The effect you declare states whether the program only reads, makes a
+            change that can be undone, or makes one that cannot. It is a promise to everyone who installs it.</li>
+        </ul>
+        <p><code>evoke run</code> calls a reflex you added, by name. Reading a typed sentence takes a network request and an
+          API key. <code>evoke run</code> reads none, so you can build and try a reflex offline, without a key.
+          <code>evoke check</code> names each line of the manifest to fix, and rewrites <code>reflex.d.ts</code>, which
+          types a file's arguments. A reflex that runs a command needs no Node, only the evoke binary, on macOS or
+          Linux.</p>
+        <p class="after"><a class="more" href="/start.html?mode=terminal">Install evoke in your terminal →</a>
+          <span class="also"><a href="/manual/author/first-reflex.html">Write your first reflex →</a></span></p>
       </div>
     </section>
 
     <section id="boundary">
       <div class="rule"><p class="label">The manifest</p><span class="num">02</span></div>
-      <h2>Describe the boundary.</h2>
-      <p class="sub">The manifest is what the classifier reads and what the body receives. <strong>Its wording decides
-        accuracy.</strong> Every input has exactly one source, so a sentence can never invent a value.</p>
+      <h2>Describe what it does, and where it stops.</h2>
+      <p class="sub">A classifier reads each sentence against your manifest. The classifier is Jev, TypeSafe AI's model.
+        <strong>It answers closed questions, such as which reflex and which value, and gives each answer a
+        probability.</strong></p>
       <div class="split">
         <div class="panel">
-          <div class="head"><i></i>lights/reflex.toml<span class="who">the whole shape</span></div>
+          <div class="head"><i></i>lights/reflex.toml<span class="who">the whole shape, an illustration</span></div>
 <pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
 
-<span class="k">description</span> <span class="o">=</span> <span class="s">"""
-Turn the lights in one room on, off, or dim them.
-Ceiling and lamp lights only."""</span>
+<span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
+<span class="s">Turn the lights in one room on, off, or dim them.</span>
+<span class="s">Ceiling and lamp lights only."""</span>
 <span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span><span class="s">"colour scenes and schedules"</span><span class="o">,</span> <span class="s">"asking whether a light is on"</span><span class="o">]</span>
+<span class="k">tags</span>    <span class="o">=</span> <span class="o">[</span><span class="s">"home"</span><span class="o">,</span> <span class="s">"lighting"</span><span class="o">]</span>
 <span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
 <span class="k">confirm</span> <span class="o">=</span> <span class="s">"Set the <span class="ph">{room}</span> lights <span class="ph">{state}</span>?"</span>
 <span class="k">run</span>     <span class="o">=</span> <span class="s">"lights.mts"</span>
 
 <span class="t">[config]</span>
 <span class="k">bridge</span> <span class="o">=</span> <span class="s">"Hue bridge address"</span>
+<span class="k">token</span>  <span class="o">=</span> <span class="o">{</span> <span class="k">about</span> <span class="o">=</span> <span class="s">"Hue API key"</span><span class="o">,</span> <span class="k">secret</span> <span class="o">=</span> <span class="n">true</span> <span class="o">}</span>
 
 <span class="t">[args.room]</span>
 <span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which room?"</span>
 <span class="k">vocab</span> <span class="o">=</span> <span class="s">"rooms"</span>
 
 <span class="t">[args.state]</span>
-<span class="k">ask</span>         <span class="o">=</span> <span class="s">"What should the lights do?"</span>
+<span class="k">ask</span> <span class="o">=</span> <span class="s">"What should the lights do?"</span>
 <span class="k">options.on</span>  <span class="o">=</span> <span class="s">"Switch on."</span>
 <span class="k">options.off</span> <span class="o">=</span> <span class="s">"Switch off."</span>
 <span class="k">options.dim</span> <span class="o">=</span> <span class="s">"Lower the brightness without switching off."</span>
@@ -113,6 +212,9 @@ Ceiling and lamp lights only."""</span>
 <span class="k">pick</span>     <span class="o">=</span> <span class="s">"number"</span>
 <span class="k">range</span>    <span class="o">=</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">100</span><span class="o">]</span>
 <span class="k">optional</span> <span class="o">=</span> <span class="n">true</span>
+
+<span class="t">[yields]</span>
+<span class="k">level</span> <span class="o">=</span> <span class="s">"number"</span>
 
 <span class="t">[examples]</span>
 <span class="s">"turn on the kitchen lights"</span>   <span class="o">=</span> <span class="o">{</span> <span class="k">state</span> <span class="o">=</span> <span class="s">"on"</span> <span class="o">}</span>
@@ -124,35 +226,59 @@ Ceiling and lamp lights only."""</span>
         </div>
         <div class="text legend">
           <dl>
+            <dt>description · examples</dt>
+            <dd><strong>Your wording decides how well sentences find your reflex.</strong> The classifier knows your reflex
+              only through its manifest's words. Examples are sent with each request, and they teach it. The classifier's
+              provider reports its best accuracy in English.</dd>
             <dt>options · vocab · pick · flag</dt>
-            <dd><strong>The four sources of an input.</strong> The author's closed set, the user's word list, a piece
-              of the sentence read by code and checked against a range, or a yes/no switch.</dd>
+            <dd><strong>The four sources of an input.</strong> Each value comes from one of four places: the author's own
+              list, the user's own list of words, a piece of the sentence read word for word, or a yes/no switch. A number
+              or a duration is also checked against its range.</dd>
+            <dt>one source each</dt>
+            <dd><strong>Valid is not the same as understood.</strong> Each input takes exactly one of the four sources.
+              evoke guarantees that every value is one the reflex allows. It cannot guarantee that it read you right. That
+              is why a confidence bar, set by what the program changes, decides what runs without a question.</dd>
             <dt>ask · the meanings</dt>
-            <dd><strong>Questions a person could answer.</strong> The same line serves the classifier and the prompt.
-              One meaning per option, distinct and short.</dd>
-            <dt>not_for · false tests</dt>
-            <dd><strong>The near misses.</strong> Name what sounds like this reflex and is not. Then hold the boundary
-              with a test that must never route here.</dd>
+            <dd><strong>Questions a person could answer.</strong> The classifier reads the <code>ask</code> line, and
+              evoke asks it when the value is missing. Give each option one short meaning, distinct from the others.</dd>
+            <dt>not_for · tests</dt>
+            <dd><strong>The near misses.</strong> Name what sounds like this reflex but is not. Tests are never sent as
+              examples, and <code>evoke test</code> runs them. A <code>false</code> test must never choose this
+              reflex.</dd>
             <dt>effect</dt>
-            <dd><strong>Your honest claim.</strong> A read observes. A write can be undone. Destructive cannot, and
-              always asks. Absent means destructive.</dd>
+            <dd><strong>Your honest claim.</strong> A read only looks. A write can be undone. A destructive program cannot,
+              so it always asks first. A manifest with no effect counts as destructive.</dd>
+            <dt>config · confirm · tags</dt>
+            <dd><strong>Settings, a question, and filters.</strong> Each user sets the <code>[config]</code> values once,
+              with <code>evoke config</code>. A secret, such as <code>token</code>, is only ever taken from an environment
+              variable. <code>confirm</code> is the question evoke asks when it needs a yes. <code>tags</code> let a
+              person narrow a decision with <code>--tag</code>.</dd>
             <dt>[yields]</dt>
-            <dd><strong>Optional outputs.</strong> A field of the result, by kind, so a later step can take it.</dd>
+            <dd><strong>What the result holds, for a later step.</strong> It names a field of the result and its kind,
+              such as a number or an email address. A later step of the same sentence can then take it.</dd>
           </dl>
-          <a class="more" href="/format.html">Read the format →</a>
         </div>
       </div>
+      <p class="caption"><code>lights</code> is an illustration from evoke's own tests, not a reflex you can install. It
+        shows every top-level key a manifest may carry.</p>
+      <p class="after"><a class="more" href="/format.html">The reflex.toml format and its JSON Schema →</a>
+        <span class="also"><a href="/manual/author/wording.html">How to word a reflex →</a></span></p>
     </section>
 
     <section id="decisions">
-      <div class="rule"><p class="label">In your app</p><span class="num">03</span></div>
+      <div class="rule"><p class="label">Decisions in your app</p><span class="num">03</span></div>
       <h2>Put decisions inside your app.</h2>
-      <p class="sub">A decision is a typed value your code holds before anything runs. <strong>Inspect it, show it,
-        fill what is missing, ask for approval, then run it.</strong> Or let <code>handle()</code> do the whole loop.</p>
+      <p class="sub"><strong>A decision is a typed value your code holds before anything runs.</strong> Inspect it, show
+        it, fill in what is missing, ask for approval, then run it. Or let <code>handle()</code> run the whole loop.</p>
       <div class="grid">
-        <div class="panel">
-          <div class="head"><i></i>app.ts</div>
-<pre><span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Reflexes <span class="o">}</span> <span class="w">from</span> <span class="s">"./evoke.d.ts"</span>
+        <div class="stack setup">
+          <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
+          <p class="small">Node 24.5 or newer, and ES modules. evoke's engine ships inside the package as WebAssembly, so
+            there is no build step and no other package to install.</p>
+          <div class="panel">
+            <div class="head"><i></i>app.ts</div>
+<pre><span class="w">import</span> <span class="o">{</span> load <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
+<span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Reflexes <span class="o">}</span> <span class="w">from</span> <span class="s">"./evoke.d.ts"</span>
 
 <span class="w">const</span> project <span class="o">=</span> <span class="w">await</span> load<span class="o">&lt;</span>Reflexes<span class="o">&gt;({</span> <span class="k">root</span><span class="o">:</span> <span class="w">import</span><span class="o">.</span>meta<span class="o">.</span>dirname <span class="o">})</span>
 <span class="w">const</span> d <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>decide<span class="o">(</span><span class="s">"kill the lights in the den"</span><span class="o">)</span>
@@ -170,36 +296,51 @@ Ceiling and lamp lights only."""</span>
   d<span class="o">.</span>values<span class="o">.</span>room    <span class="c">// string</span>
   d<span class="o">.</span>values<span class="o">.</span>state   <span class="c">// "on" | "off" | "dim"</span>
 <span class="o">}</span></pre>
+          </div>
+          <p class="small"><code>lights</code> is the illustration from part 02.</p>
         </div>
-        <div class="sheet solo shapes">
-          <dl>
-            <div><dt>run</dt><dd><b>Ready.</b> <span>The call, the typed values, the confidence and every judgment.</span></dd></div>
-            <div><dt>confirm</dt><dd><b>Needs a yes.</b> <span>All of the above, the reflex's own question, and every reason it stopped.</span></dd></div>
-            <div><dt>ask</dt><dd><b>Needs a value.</b> <span>What is missing, why, and what it may be. <code>fill()</code> types the answer and gates again.</span></dd></div>
-            <div><dt>abstain</dt><dd><b>Nothing fits.</b> <span>The ranking, so your app can show it or queue the request.</span></dd></div>
-            <div><dt>data</dt><dd><b>Plain JSON.</b> <span>A decision survives a queue and a database. A second process can run it later, with <code>confirmed: true</code>.</span></dd></div>
-          </dl>
+        <div class="stack">
+          <p><strong>A decision's confidence is the lowest probability among its answers.</strong> A reflex
+            that only reads needs 0.6 or more to run without a question, and one that writes needs 0.8. A destructive
+            reflex always asks, however sure. These are the defaults. You can change them in <code>evoke.toml</code>, a
+            file you own, or in code.</p>
+          <div class="sheet solo shapes">
+            <dl>
+              <div><dt>run</dt><dd><b>Ready.</b> <span>The call, the typed values, the confidence, and every answer behind it.</span></dd></div>
+              <div><dt>confirm</dt><dd><b>Needs a yes.</b> <span>All of the above, the reflex's own question, and every reason it stopped.</span></dd></div>
+              <div><dt>ask</dt><dd><b>Needs a value.</b> <span>What is missing, why, and what it may be. <code>fill()</code> reads the answer, types it, and checks the bar again.</span></dd></div>
+              <div><dt>abstain</dt><dd><b>Nothing fits.</b> <span>The ranking, so your app can show it or queue the request.</span></dd></div>
+              <div><dt>any decision</dt><dd><b>Plain JSON.</b> <span>A decision can wait in a queue or a database. It can run later, over the same reflexes and the same words. A decision that needs a yes runs only with <code>{ confirmed: true }</code>.</span></dd></div>
+            </dl>
+          </div>
         </div>
       </div>
-      <p class="after"><a class="more" href="/start.html?mode=sdk">Use the SDK →</a> <span class="also">The types, key by key: <a href="/manual/sdk/decisions.html">Decisions</a>.</span></p>
+      <p class="caption">Two examples build on this. In the <a href="/examples/inbox.html">triage example</a>, what is sure
+        runs and the rest waits in a queue for a person. In the <a href="/examples/approval.html">maker-checker approval
+        example</a>, one person types a payment and a second person confirms it.</p>
+      <p class="after"><a class="more" href="/start.html?mode=sdk">Use the SDK →</a>
+        <span class="also"><a href="/manual/sdk/decisions.html">The decision types, key by key →</a>
+        <a href="/guides/approval-by-risk.html">Approval set by risk: read, write, destructive →</a></span></p>
     </section>
 
     <section id="chaining">
-      <div class="rule"><p class="label">Chaining</p><span class="num">04</span></div>
-      <h2>Connect compatible operations.</h2>
-      <p class="sub">Two ways to run several things, with two owners. <strong>A weave is planned by evoke from declared
-        outputs. A continuation is chosen by your program and driven by your loop.</strong></p>
+      <div class="rule"><p class="label">Several steps</p><span class="num">04</span></div>
+      <h2>Run several steps, planned by evoke or by your loop.</h2>
+      <p class="sub"><strong>One sentence can ask for several reflexes, and evoke shows the plan before anything
+        runs.</strong> Or a program names the next request, and your own loop sends it.</p>
       <div class="compare">
         <div>
-          <h3>A weave: explicit result bindings</h3>
-          <p>A reflex declares what its result holds under <code>[yields]</code>. A later step that lacks a value of
-            that kind takes it. <code>steps()</code> reads a sentence into its plan and runs nothing. <code>weave()</code>
-            runs it under your handlers.</p>
+          <h3>A weave: one step's result feeds the next</h3>
+          <p>One sentence read as several steps is a weave. A reflex declares under <code>[yields]</code> what its result
+            holds, such as an email address. A later step takes that value when its words point back to it, as
+            <code>them</code> does, and it lacks a value of that kind. <code>steps()</code> reads a sentence into its plan
+            and runs nothing. <code>weave()</code> runs the plan under your handlers.</p>
         </div>
         <div>
           <h3>A continuation: your loop decides</h3>
-          <p>A body returns <code>{ text, data: { next } }</code>. Your application submits <code>next</code> as the
-            following request. Each hop is a decision like any other, gated on its own.</p>
+          <p>A program returns <code>{ text, data: { next } }</code>. Here <code>next</code> is a field of your own
+            choosing that holds the following request. Your app sends it. Each request is a decision like any other,
+            checked against its own bar.</p>
         </div>
       </div>
       <div class="panel" style="margin-top: 1.1rem">
@@ -215,14 +356,20 @@ plan<span class="o">.</span>verdict     <span class="c">// { outcome: "run" | "a
 <span class="o">})</span>
 woven<span class="o">.</span>status     <span class="c">// the worst step's: "ran", "failed", "declined", "refused", "unanswered"</span></pre>
       </div>
-      <p class="after"><a class="more" href="/examples/contact-to-draft.html">View the chaining example →</a> <span class="also">The loop, in the <a href="/examples/runbook.html">runbook example</a>.</span></p>
+      <p class="caption"><code>contact</code> in this plan is a stand-in from evoke's own tests. No reflex in evoke's own
+        collection declares <code>[yields]</code> yet. So today a result can come only from a reflex whose author
+        declares it, such as one you write. A sentence with several steps makes one request to find the steps, then at
+        least one for each step.</p>
+      <p class="after"><a class="more" href="/examples/contact-to-draft.html">Pass a result to the next step →</a>
+        <span class="also">The loop, in the <a href="/examples/runbook.html">runbook example</a>. <a href="/how-it-works.html#handoff">How one sentence becomes a plan →</a></span></p>
     </section>
 
     <section id="vocabulary">
-      <div class="rule"><p class="label">Team names</p><span class="num">05</span></div>
-      <h2>Keep team-specific names separate.</h2>
-      <p class="sub">Your data supplies the vocabulary. <strong>The operation underneath never changes.</strong> A
-        multi-tenant server compiles the same reflexes over each tenant's own words, in milliseconds.</p>
+      <div class="rule"><p class="label">Each team's words</p><span class="num">05</span></div>
+      <h2>Keep each team's names apart from the program.</h2>
+      <p class="sub"><strong>Your data supplies the words people type, such as room or service names.</strong> The
+        program underneath never changes. A server for many teams loads the reflexes once. It gives each team its own
+        words with one synchronous call, <code>with({ vocab })</code>.</p>
       <div class="split">
         <div class="panel">
           <div class="head"><i></i>server.ts</div>
@@ -235,36 +382,42 @@ woven<span class="o">.</span>status     <span class="c">// the worst step's: "ra
         </div>
         <div class="text">
           <ul class="ticks">
-            <li><strong>A word has a meaning and a value.</strong> The classifier reads the meaning. The program receives
-              the value, or the word itself.</li>
-            <li><strong>A decision is bound to its words.</strong> One made on a tenant's project is refused by
-              another's, so a server cannot mix them up.</li>
-            <li><strong>Files or data, the same shape.</strong> On a laptop the words are a file. In an app they come
-              from wherever you keep them.</li>
+            <li><strong>A word has a meaning, and may have a value.</strong> The classifier reads the meaning. The program
+              receives the value, or the word itself when no value is set.</li>
+            <li><strong>The value stays with you.</strong> evoke never sends a word's value to the classifier. It can be a
+              path, a URL or a device id.</li>
+            <li><strong>A decision is bound to its words.</strong> A decision made with one team's words is refused when it
+              runs with another team's words. So a server cannot mix them up.</li>
+            <li><strong>Files or data, the same shape.</strong> On a laptop, the words are a file. In an app, they can be
+              files at the app's root or rows from your own database.</li>
           </ul>
-          <a class="more" href="/manual/sdk/projects.html#with-vocab--a-tenants-words">View the vocabulary guide →</a>
+          <p class="after"><a class="more" href="/manual/sdk/projects.html#with-vocab--a-tenants-words">Give each team its own words, in the SDK manual →</a>
+            <span class="also"><a href="/manual/use/projects.html#an-applications-project">How an app keeps its reflexes and words →</a></span></p>
         </div>
       </div>
     </section>
 
     <section id="testing">
-      <div class="rule"><p class="label">Testing</p><span class="num">06</span></div>
-      <h2>Test the interpretation and the program.</h2>
-      <p class="sub">Three tests, each for a different thing. <strong>The wording over the installed set, the control flow
-        offline, and the body as a plain function.</strong></p>
+      <div class="rule"><p class="label">Three kinds of test</p><span class="num">06</span></div>
+      <h2>Test how sentences are read, and what the program does.</h2>
+      <p class="sub">Three tests, each for a different thing. <strong>One checks the wording over everything
+        installed.</strong> One runs your app's control flow offline. One calls the program as a plain function.</p>
       <div class="stack">
         <div class="split">
           <div class="panel term quiet" role="figure" aria-label="evoke test">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>the wording</div>
-<pre><span class="p">$</span> <span class="in">evoke test</span>
+<pre data-flow="test"><span class="p">$</span> <span class="in">evoke test</span>
 <span class="own">  <span class="name">lights</span>  3 passed · <span class="mid">1 failed</span>
     "make it darker in here"  state: expected "dim", read "off"
   <span class="name">timer</span>   8 passed
   1 of 12 cases failed  →  evoke test</span>
 <span class="own">[1]</span></pre>
           </div>
-          <p class="caption">Every example and every held-out test, decided over everything installed. A neighbour
-            installed beside yours is part of the test.</p>
+          <p class="caption">Every example and every test is decided over everything installed. So a test fails when
+            another installed reflex would take your sentence. The classifier's provider trains its probabilities to be
+            calibrated: across many answers, those given 0.85 should be right about 85 times in 100. evoke shows every
+            one; <code>evoke test</code> checks your own sentences, and <code>evoke calibrate</code> measures that claim
+            on your own records. The <code>lights</code> results come from evoke's own tests.</p>
         </div>
         <div class="split">
           <div class="panel">
@@ -277,8 +430,9 @@ woven<span class="o">.</span>status     <span class="c">// the worst step's: "ra
 <span class="w">const</span> d <span class="o">=</span> <span class="w">await</span> project<span class="o">.</span>decide<span class="o">(</span><span class="s">"timer for 10 minutes"</span><span class="o">)</span>
 assert<span class="o">.</span>equal<span class="o">(</span>d<span class="o">.</span>outcome<span class="o">,</span> <span class="s">"run"</span><span class="o">)</span></pre>
           </div>
-          <p class="caption">One run records the answers. Every run after is offline and gives the same result. The
-            gate in tests is the gate in production.</p>
+          <p class="caption">One run records the answers. Every run after that is offline and gives the same result. The
+            recording carries the bars, so a test is gated exactly as production is. The CLI can replay the same
+            recording, so a CI job can test your reflexes without an API key.</p>
         </div>
         <div class="split">
           <div class="panel">
@@ -293,72 +447,114 @@ assert<span class="o">.</span>equal<span class="o">(</span>d<span class="o">.</s
 assert<span class="o">.</span>equal<span class="o">(</span><span class="w">await</span> note<span class="o">({</span> <span class="k">text</span><span class="o">:</span> <span class="s">"buy milk"</span> <span class="o">},</span> context<span class="o">),</span>
   <span class="s">'noted "buy milk" in ~/notes/today.txt'</span><span class="o">)</span></pre>
           </div>
-          <p class="caption">A body is a function. Import it and call it with a context of your own. Nothing of evoke
-            is involved.</p>
+          <p class="caption">A program in a file is a function. Import it and call it with a context of your own. No part of
+            evoke runs.</p>
         </div>
       </div>
-      <p class="after"><a class="more" href="/manual/author/records.html">Examples and tests →</a> <span class="also"><a href="/manual/sdk/testing.html">Testing in the SDK →</a></span></p>
+      <p class="after"><a class="more" href="/manual/author/records.html">Write examples and tests →</a>
+        <span class="also"><a href="/manual/sdk/testing.html">Testing in the SDK →</a></span></p>
     </section>
 
     <section id="share">
-      <div class="rule"><p class="label">Sharing</p><span class="num">07</span></div>
-      <h2>Share what you built.</h2>
-      <p class="sub">Publishing is a git tag. <strong>No account, no registry, no build step.</strong> Others install
-        from the repository, pinned by tag, commit and content. Their wording stays in their own files.</p>
+      <div class="rule"><p class="label">Share with a git tag</p><span class="num">07</span></div>
+      <h2>Share a reflex with a git tag.</h2>
+      <p class="sub"><strong>Publishing is a git tag, with no account, no registry and no build step.</strong> Others
+        install from your repository, pinned by tag, commit and content.</p>
       <div class="grid">
-        <div class="panel term quiet" role="figure" aria-label="A tag published and installed">
-          <div class="head"><span class="dots"><i></i><i></i><i></i></span>publish · install</div>
-<pre><span class="p">$</span> <span class="in">git tag v1.2.0 &amp;&amp; git push --tags</span>
-<span class="p">$</span> <span class="in">evoke add radhi/home/lights</span>
-<span class="add">+ lights  radhi/home/lights 1.2.0  write  runs lights.mts</span>
-<span class="own">  inactive  lights: vocabulary "rooms" is empty  →  evoke vocab rooms add &lt;word&gt; "&lt;meaning&gt;"</span></pre>
+        <div class="stack">
+          <div class="cmd"><code>git tag v1.2.0 &amp;&amp; git push --tags</code><button type="button" data-copy aria-label="Copy the tag command">Copy</button></div>
+          <div class="panel term quiet" role="figure" aria-label="Two reflexes installed from their repositories">
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>install, from evoke's own tests</div>
+<pre data-flow="add"><span class="p">$</span> <span class="in">evoke add radhi/home/lights radhi/timer</span>
+<span class="add">+ lights  radhi/home/lights 1.2.0  write  runs lights.mts
++ timer   radhi/timer 1.0.1        write  runs timer.mts</span>
+<span class="own">  inactive  lights: vocabulary "rooms" is empty  →  evoke vocab rooms add &lt;word&gt; "&lt;meaning&gt;"
+  inactive  lights: config "bridge" is not set   →  evoke config lights bridge &lt;value&gt;
+  inactive  lights: config "token" is not set    →  evoke config lights token --env &lt;VAR&gt;</span></pre>
+          </div>
+          <p class="caption"><code>radhi/home/lights</code> and <code>radhi/timer</code> are illustrations from evoke's own
+            tests. You cannot install them. Put your own repository in their place.</p>
         </div>
         <div class="side">
           <div class="panel term quiet" role="figure" aria-label="evoke check names the next version">
-            <div class="head"><span class="dots"><i></i><i></i><i></i></span>the next version</div>
-<pre><span class="p">$</span> <span class="in">evoke check</span>
-<span class="own">  <span class="name">lights</span>  write  runs lights.mts
-  1.2.0 → 2.0.0  <span class="mid">major</span>
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke check · the next version</div>
+<pre data-flow="check"><span class="own">  <span class="name">lights</span>  write  runs lights.mts</span>
+<span class="add">+ reflex.d.ts</span>
+<span class="own">  1.2.0 → 2.0.0  <span class="mid">major</span>
     args.state  renamed power</span></pre>
           </div>
           <ol class="notes column">
-            <li><b>1</b><span><strong>Wording changes at any tag.</strong> A contract change, an input or the program,
-              is a version bump. <code>evoke check</code> diffs against your last tag and says which.</span></li>
-            <li><b>2</b><span><strong>A user's lessons survive.</strong> Rename an input with <code>was</code>, and
-              every overlay follows. An update reports and never rewrites their files.</span></li>
+            <li><b>1</b><span><strong>Any new tag can improve the wording.</strong> A change to what the program takes or
+              runs, such as an input or the <code>run</code> line, raises the version. <code>evoke check</code> compares
+              the manifest with your last tag, and names the level the next tag must carry: <code>same</code> for wording
+              only, <code>minor</code> for an addition, <code>major</code> for a change that users' files or calls may not
+              survive.</span></li>
+            <li><b>2</b><span><strong>People keep their own wording.</strong> Whoever installs your reflex can reword it in
+              an overlay, a file of their own laid over your manifest. When you rename an input, list its old name under
+              <code>was</code>, and every overlay follows. An update reports what changed and never rewrites their
+              files.</span></li>
+            <li><b>3</b><span><strong>Installing is a trust decision.</strong> No code runs at install, and a lock file pins
+              exactly what was read, the declaration included. After that, a reflex runs with its user's permissions,
+              held by the kernel to what it declared.</span></li>
           </ol>
         </div>
       </div>
-      <p class="after"><a class="more" href="/manual/author/publishing.html">Publish a reflex →</a></p>
+      <p class="after">evoke's own collection, thirteen reflexes for macOS, installs the same way:
+        <code>evoke add evoke-build/reflexes</code>.</p>
+      <p class="after"><a class="more" href="/manual/author/publishing.html">Publish a reflex →</a>
+        <span class="also"><a href="/manual/security.html">What you trust when you install a reflex →</a></span></p>
     </section>
 
-    <section id="llm">
-      <div class="rule"><p class="label">Beside an LLM</p><span class="num">08</span></div>
-      <h2>Where evoke fits in what you already have.</h2>
+    <section id="beside">
+      <div class="rule"><p class="label">Beside what you use</p><span class="num">08</span></div>
+      <h2>How evoke relates to what you already use.</h2>
+      <p class="sub"><strong>evoke turns a typed sentence into a call of a program you installed.</strong> It asks when
+        something is missing or unclear, and runs nothing when nothing fits. Here is how that job sits beside what you
+        already have.</p>
+      <div class="table"><table>
+        <thead><tr><th>You have</th><th>How evoke relates</th></tr></thead>
+        <tbody>
+          <tr><td>Scripts and shell aliases</td><td>A reflex wraps a script or a command you already have. You ask for it in your words instead of remembering its name and flags, and evoke asks for any value you left out. An existing command needs only a manifest, and no code. Nothing runs that nobody wrote a reflex for.</td></tr>
+          <tr><td>APIs</td><td>A reflex's program can call any API you use. evoke decides which call a sentence means, and with which values. A key the API needs stays in your environment, and reaches the program for one run.</td></tr>
+          <tr><td>Workflow tools</td><td>Those run flows you build ahead of time, often when a trigger fires. evoke runs what one typed sentence asks for, now. It has no triggers, schedules or hosted runs.</td></tr>
+          <tr id="llm"><td>LLM tool calling</td><td>LLM tool calling, also called function calling, does the same step as evoke: a sentence becomes a call of your own code. With evoke, every value comes from a fixed source, each answer carries a probability, and reflexes are shared by git tag. A bar set by what the program changes decides what runs without a question, and your code can inspect each decision first. Use a model instead when a value must be composed, when you need a conversation, or when the task is open-ended.</td></tr>
+          <tr><td>Intents and slots</td><td>A reflex is like an intent with its slots and sample sentences, packaged with its program and installed from git. Its examples are the sample sentences, and its inputs are the slots. A vocabulary is a slot list that each user owns. The manifest's words go with every request, so a new example takes effect from the next sentence you type.</td></tr>
+        </tbody>
+      </table></div>
       <div class="prose">
-        <p>Tools built on a large language model can also make constrained tool calls. The pattern overlaps: a model
-          picks an operation and fills its arguments. <strong>Judge evoke on what it packages around that step.</strong>
-          A reflex you install from git and share. A vocabulary of your own names, kept apart from the operation. A
-          decision your code inspects before anything runs. And a plan that runs several steps in order, each gated
-          on its own.</p>
-        <p>This site claims no advantage in speed or cost. Such a claim needs a named comparison and measurements.
-          The classifier answers closed questions with calibrated probabilities, and evoke's core names no
-          engine, so another one can be plugged in behind the same manifests.</p>
+        <p>This site claims no advantage in speed or cost.</p>
+        <p>In the SDK, you can plug in any classifier that answers the same closed questions with probabilities, and keep
+          your manifests as they are. The command-line tool uses only its own built-in connections to Jev.</p>
       </div>
+      <p class="after"><a class="more" href="/how-it-works.html#sentence">How the classifier reads a sentence →</a></p>
     </section>
 
-    <div class="closing">
-      <div>
-        <h2>Use evoke in your app.</h2>
-        <p>One file, one reflex as code, one call that decides, asks, confirms and runs. Node 24.5 or newer.</p>
+    <section id="start">
+      <div class="rule"><p class="label">Start</p></div>
+      <h2>Start with what you already have.</h2>
+      <p class="sub">Wrap one command in your terminal today, or put decisions inside a Node app.</p>
+      <div class="ways">
+        <div class="way">
+          <h3>In your terminal</h3>
+          <p>One binary for macOS or Linux, and a key for the classifier. A reflex that runs a command needs no Node.</p>
+          <div class="actions"><a class="button primary" href="/start.html?mode=terminal">Install in your terminal</a></div>
+        </div>
+        <div class="way">
+          <h3>In your app</h3>
+          <p>Node 24.5 or newer, and ES modules.</p>
+          <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
+          <div class="actions"><a class="button" href="/start.html?mode=sdk">Use in your app</a><a class="quiet" href="/manual/sdk/getting-started.html">The SDK manual →</a></div>
+        </div>
       </div>
-      <div class="actions">
-        <a class="button primary" href="/start.html?mode=sdk">Use in my app</a>
-        <a class="quiet" href="/manual/sdk/getting-started.html">The SDK manual →</a>
-      </div>
-    </div>
+      <p class="after">evoke is free and open source. Each decision is one request to the classifier, billed by its
+        provider to your own key. At the terminal, a sentence you repeat is answered from a local cache. Nothing goes to
+        evoke.build.</p>
+      <p class="after"><a class="more" href="/privacy.html#tool">What leaves your machine →</a>
+        <span class="also"><a href="/faq.html">Questions before you install →</a></span></p>
+    </section>
   </main>
 
   <!-- footer -->
+  <script src="/scenes.js"></script>
 </body>
 </html>

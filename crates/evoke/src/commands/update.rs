@@ -1,9 +1,10 @@
 //! `evoke update [name] [--accept name]`: every unpinned remote reflex to its newest tag, a pinned one to its pin;
-//! each move read as the contract diff and what it means for your files, the consented effect kept until accepted;
-//! a reflex new to a repository you use reported; the lock written, your files never. What a move leaves inactive
-//! prints at the next run, with its fix. A reflex that cannot move — its new manifest does not read — is reported
-//! at the new tree, kept in the store, and skipped; the rest move. In: a name or none, a name whose looser effect
-//! to accept or none, the environment. Out: `Exit`, a block per reflex moved, or `up to date`.
+//! each move read as the contract diff and what it means for your files, the consented effect and needs kept
+//! until accepted; a reflex new to a repository you use reported; the lock written, your files never. What a move
+//! leaves inactive prints at the next run, with its fix. A reflex that cannot move — its new manifest does not
+//! read — is reported at the new tree, kept in the store, and skipped; the rest move. In: a name or none, a name
+//! whose looser effect or wider needs to accept or none, the environment. Out: `Exit`, a block per reflex moved,
+//! or `up to date`.
 
 use std::collections::BTreeMap;
 
@@ -11,10 +12,11 @@ use evoke_core::contract::{Change, WasViolation};
 use evoke_core::document::Text;
 use evoke_core::manifest::{Effect, Record, Records};
 use evoke_core::name::{ArgName, LocalName, RelPath};
+use evoke_core::needs::{self, Needs};
 use evoke_core::project::{Location, Lock, Locked, Reference};
 use evoke_core::{
     Consent, ContractDiff, Diagnostic, Document, File, Fix, KeyPath, Level, Manifest, Overlay,
-    Report, consent, diff, manifest, overlay, report,
+    Report, consent, diff, manifest, overlay, report, widens,
 };
 
 use super::session::{self, Opening, Session};
@@ -39,10 +41,10 @@ pub fn run(
     session.reporter.exit(&input, exit)
 }
 
-/// One reflex moved: its block, and the accept line when upstream loosened the effect.
+/// One reflex moved: its block, and the accept lines when upstream loosened the effect or widened the needs.
 struct Moved {
     block: Updated,
-    unaccepted: Option<Diagnostic>,
+    unaccepted: Vec<Diagnostic>,
 }
 
 fn updated(
@@ -104,7 +106,7 @@ fn updated(
     }
     for one in &moved {
         terminal::note(&render::updated(&one.block));
-        if let Some(problem) = &one.unaccepted {
+        for problem in &one.unaccepted {
             session.reporter.note(input, problem);
         }
     }
@@ -115,7 +117,7 @@ fn updated(
 }
 
 /// One reflex brought to its target tag, when it is not there already; `--accept` at the current tag takes
-/// upstream's looser effect on.
+/// upstream's looser effect and wider needs on.
 fn one(
     session: &mut Session<'_>,
     input: &str,
@@ -181,11 +183,30 @@ fn one(
     };
     let previous_manifest = parsed(session, input, name, &previous.files)?;
     if target.version == locked.tag {
-        if accept && previous_manifest.effect < locked.effect {
-            lock.reflexes[name].effect = previous_manifest.effect;
-            return Ok(Some(accepted(name, &locked, previous_manifest.effect)));
+        let effect = accept && previous_manifest.effect < locked.effect;
+        let wider = accept && widens(&locked.needs, &previous_manifest.needs);
+        if !effect && !wider {
+            return Ok(None);
         }
-        return Ok(None);
+        let mut lines = Vec::new();
+        if effect {
+            lock.reflexes[name].effect = previous_manifest.effect;
+            lines.push((
+                "effect".to_owned(),
+                format!(
+                    "{} accepted; was {}",
+                    previous_manifest.effect, locked.effect
+                ),
+            ));
+        }
+        if wider {
+            lock.reflexes[name].needs = previous_manifest.needs.clone();
+            lines.push((
+                "needs".to_owned(),
+                format!("{} accepted; was {}", previous_manifest.needs, locked.needs),
+            ));
+        }
+        return Ok(Some(accepted(name, &locked, lines)));
     }
     let r#move = Move {
         name,
@@ -251,6 +272,7 @@ fn moved(
     let code_changed = code(&previous.files) != code(&kept.files);
     let contract = diff(previous_manifest, &next);
     let consent = consent(locked.effect, next.effect);
+    let needs_consent = needs::consent(&locked.needs, &next.needs);
     let yours = session.overlay_text(name)?;
     let yours_next = yours
         .as_deref()
@@ -266,22 +288,9 @@ fn moved(
         &contract,
         &report,
         &consent,
+        &needs_consent,
     );
-    let (effect, unaccepted) = match consent {
-        Consent::Kept { effect } | Consent::Tightened { effect } => (effect, None),
-        Consent::NeedsAccept { upstream, .. } if accept => (upstream, None),
-        Consent::NeedsAccept { locked, upstream } => (
-            locked,
-            Some(Diagnostic {
-                reflex: Some(name.clone()),
-                at: None,
-                message: format!("upstream loosened the effect to {upstream}; {locked} kept"),
-                fix: Fix::Accept {
-                    reflex: name.clone(),
-                },
-            }),
-        ),
-    };
+    let (effect, needs, unaccepted) = consented(name, &consent, needs_consent, accept);
     lock.reflexes.insert(
         name.clone(),
         Locked {
@@ -290,6 +299,7 @@ fn moved(
             commit: fetched.commit,
             h1: kept.h1,
             effect,
+            needs,
         },
     );
     Ok(Moved {
@@ -305,8 +315,48 @@ fn moved(
     })
 }
 
-/// `--accept` at the current tag: the looser effect upstream declares, taken on.
-fn accepted(name: &LocalName, locked: &Locked, effect: Effect) -> Moved {
+/// What the lock records after a move: the effect and the needs consented to — upstream's when it kept or
+/// tightened them, or when `--accept` takes them on; else what was consented to, with the accept line for each.
+fn consented(
+    name: &LocalName,
+    consent: &Consent,
+    needs_consent: needs::Consent,
+    accept: bool,
+) -> (Effect, Needs, Vec<Diagnostic>) {
+    let mut unaccepted = Vec::new();
+    let waits = |what: String| Diagnostic {
+        reflex: Some(name.clone()),
+        at: None,
+        message: what,
+        fix: Fix::Accept {
+            reflex: name.clone(),
+        },
+    };
+    let effect = match *consent {
+        Consent::Kept { effect } | Consent::Tightened { effect } => effect,
+        Consent::NeedsAccept { upstream, .. } if accept => upstream,
+        Consent::NeedsAccept { locked, upstream } => {
+            unaccepted.push(waits(format!(
+                "upstream loosened the effect to {upstream}; {locked} kept"
+            )));
+            locked
+        }
+    };
+    let needs = match needs_consent {
+        needs::Consent::Kept { needs } | needs::Consent::Tightened { needs, .. } => needs,
+        needs::Consent::NeedsAccept { upstream, .. } if accept => upstream,
+        needs::Consent::NeedsAccept { locked, upstream } => {
+            unaccepted.push(waits(format!(
+                "upstream widened the needs to {upstream}; {locked} kept"
+            )));
+            locked
+        }
+    };
+    (effect, needs, unaccepted)
+}
+
+/// `--accept` at the current tag: what upstream declares, taken on, one line per thing accepted.
+fn accepted(name: &LocalName, locked: &Locked, lines: Vec<(String, String)>) -> Moved {
     Moved {
         block: Updated {
             name: name.to_string(),
@@ -314,12 +364,9 @@ fn accepted(name: &LocalName, locked: &Locked, effect: Effect) -> Moved {
             to: locked.tag,
             level: Level::Same,
             code_changed: false,
-            lines: vec![(
-                "effect".to_owned(),
-                format!("{effect} accepted; was {}", locked.effect),
-            )],
+            lines,
         },
-        unaccepted: None,
+        unaccepted: Vec::new(),
     }
 }
 
@@ -398,7 +445,8 @@ fn code(files: &[(RelPath, Vec<u8>)]) -> Vec<(&RelPath, &Vec<u8>)> {
 }
 
 /// What the move means, one line each: the description when rewritten, every contract change, every `was`
-/// violation, what upstream changed that you override, what yours no longer addresses, the effect when it moved.
+/// violation, what upstream changed that you override, what yours no longer addresses, the effect and the needs
+/// when they moved — the needs as the consent says them, since it also says what is kept.
 fn details(
     previous: &Manifest,
     next: &Manifest,
@@ -406,6 +454,7 @@ fn details(
     contract: &ContractDiff,
     report: &Report,
     consent: &Consent,
+    needs_consent: &needs::Consent,
 ) -> Vec<(String, String)> {
     let mut lines = Vec::new();
     let description = KeyPath::new(["description"]);
@@ -418,6 +467,12 @@ fn details(
         lines.push(("description".to_owned(), what.to_owned()));
     }
     for change in &contract.changes {
+        if matches!(
+            change,
+            Change::NeedsWidened { .. } | Change::NeedsNarrowed { .. }
+        ) {
+            continue;
+        }
         let (key, mut what) = render::change(change);
         if let Change::ArgRenamed { from, .. } = change {
             what.push_str(&following(yours, from));
@@ -448,6 +503,19 @@ fn details(
             "effect".to_owned(),
             format!("{upstream} upstream; {locked} kept until you accept"),
         )),
+    }
+    match needs_consent {
+        needs::Consent::Kept { .. } => {}
+        needs::Consent::Tightened { removed, .. } => {
+            lines.push(("needs".to_owned(), format!("narrowed: {removed} dropped")));
+        }
+        needs::Consent::NeedsAccept { locked, upstream } => {
+            let added = needs::added(upstream, locked);
+            lines.push((
+                "needs".to_owned(),
+                format!("widened: {added} upstream; {locked} kept until you accept"),
+            ));
+        }
     }
     lines
 }

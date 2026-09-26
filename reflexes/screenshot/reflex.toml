@@ -10,6 +10,10 @@ effect  = "write"
 confirm = "Take a screenshot?"
 run     = "screenshot.mts"
 
+[needs]
+writes = ["~/Desktop"]
+runs   = ["screencapture"]
+
 [args.area]
 ask               = "The whole screen, a window, or a selection?"
 options.screen    = "The whole screen."

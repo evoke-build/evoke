@@ -222,6 +222,7 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 .panel.term .head .dots i:nth-child(3) { background: #28c840; }
 .panel.term pre { white-space: pre-wrap; overflow-wrap: anywhere; text-indent: 4ch hanging each-line; }  /* a terminal wraps, and a wrapped line hangs under its start */
 .panel.term pre { color: var(--term-fg); }
+.panel.term pre.columns { white-space: pre; }  /* output laid out in columns scrolls instead, so its columns hold */
 .panel .p { color: var(--accent); }
 .panel .in { color: var(--term-in); }
 .panel .own { color: var(--term-dim); }
@@ -431,6 +432,7 @@ p.after .also { margin-left: 1.25rem; }  /* a second, quieter way on, beside the
 .walk-door a { font-size: .93rem; font-weight: 560; }
 .walk-legend { margin: 1.1rem 0 0; color: var(--faint); font-size: .86rem; line-height: 1.5; }
 .walk-legend p { margin: 0; }
+.walk-legend p + p { margin-top: .4rem; }
 .walk-legend b { color: var(--muted); font-weight: 500; }
 .walk-key { list-style: none; display: flex; flex-wrap: wrap; gap: .35rem 1.75rem; margin: .75rem 0 0; padding: .6rem 0 0; border-top: 1px solid var(--line); color: var(--text); font-size: .86rem; }
 .walk-key li { display: inline-flex; align-items: center; gap: .45rem; }
@@ -629,6 +631,18 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 .ticks li { position: relative; padding-left: 1.4rem; color: var(--muted); font-size: 1rem; line-height: 1.5; }
 .ticks li::before { content: ""; position: absolute; left: 0; top: .72em; width: .8rem; height: 2px; background: var(--accent); border-radius: 1px; }
 .ticks li strong { color: var(--fg); font-weight: 560; }
+/* Tables: a head in small capitals, rows ruled, the first column leading; on a phone each row stacks */
+td code, th code { font-size: .86em; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: .05em .35em; color: inherit; white-space: nowrap; }
+.table { max-width: 60rem; margin: 0 0 1.2rem; overflow-x: auto; border-top: 1px solid var(--line-strong); }
+.table.wide table { min-width: 36rem; }   /* a table whose first column cannot wrap scrolls in its box on a phone */
+table { width: 100%; border-collapse: collapse; font-size: .94rem; line-height: 1.5; }
+th { text-align: left; font-weight: 560; color: var(--fg); font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; padding: .8rem .9rem .6rem 0; border-bottom: 1px solid var(--line-strong); white-space: nowrap; }
+td { vertical-align: top; padding: .7rem .9rem .7rem 0; border-bottom: 1px solid var(--line); color: var(--text); }
+td:first-child { color: var(--fg); white-space: nowrap; }
+td:first-child code { background: none; border: 0; padding: 0; font-size: .9em; color: var(--tk-key); }
+td strong { color: var(--fg); font-weight: 560; }
+td.y { color: var(--term-ok); font-family: var(--mono); font-size: .86em; white-space: nowrap; }
+td.n { color: var(--faint); font-family: var(--mono); font-size: .86em; white-space: nowrap; }
 .sheet { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.25rem; align-items: start; }
 .sheet.solo { grid-template-columns: minmax(0, 1fr); }
 .sheet dl { margin: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--bg); }
@@ -661,6 +675,8 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 .way .cmd { background: var(--bg); }
 .way .cmd + .cmd { margin-top: .5rem; }
 .way .after { margin: .85rem 0 0; color: var(--muted); font-size: .92rem; }
+.ways + .ticks { margin: 1.6rem 0 0; }  /* the questions a reader has before installing, under both ways in */
+.answers a { display: block; width: fit-content; }  /* each answer ends on its way on, a line of its own */
 
 /* Get started: a route, and the steps of it */
 .routes { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin: 0 0 2.5rem; }
@@ -679,17 +695,16 @@ a.card:hover { text-decoration: none; border-color: var(--line-strong); transfor
 .plan { list-style: none; margin: 0; padding: 0; counter-reset: step; }
 .plan > li { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 1.25rem; padding: 1.6rem 0; border-top: 1px solid var(--line); counter-increment: step; }
 .plan > li::before { content: counter(step, decimal-leading-zero); font: 600 .78rem/2.2 var(--mono); color: var(--accent-ink); letter-spacing: .12em; }
-.plan h3 { margin: 0 0 .4rem; font-size: 1.25rem; font-weight: 560; letter-spacing: -.012em; }
+.plan h2, .plan h3 { margin: 0 0 .4rem; font-size: 1.25rem; font-weight: 560; letter-spacing: -.012em; }
 .plan p { margin: 0 0 .9rem; color: var(--text); font-size: 1rem; line-height: 1.55; max-width: 44rem; }
 .plan p strong { color: var(--fg); font-weight: 560; }
 .plan .cmd { max-width: 44rem; margin: 0 0 .6rem; }
 .plan .panel { max-width: 44rem; margin: .2rem 0 .8rem; }
 .plan .panel pre { font-size: .8rem; }
 .plan .actions { margin-top: .4rem; }
-.plan .only { display: none; }
-.plan.terminal .only.terminal, .plan.sdk .only.sdk { display: block; }
-.plan .only.inline { display: none; }
-.plan.terminal .only.terminal.inline, .plan.sdk .only.sdk.inline { display: inline; }
+/* A page of two routes shows the chosen one's parts; with a kept example of its own setup, the general steps give way */
+[data-shown="terminal"] .only.sdk, [data-shown="sdk"] .only.terminal { display: none; }
+[data-setup] .general, [data-shown]:not([data-setup]) .kept-step { display: none; }
 
 /* Questions and answers */
 .qa { border-top: 1px solid var(--line); padding: 1.5rem 0 1.6rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 1rem 3rem; }
@@ -733,6 +748,24 @@ footer a:hover { color: var(--fg); }
 }
 @media (max-width: 1200px) { .hero .lede { font-size: 1.12rem; } }
 @media (max-width: 560px) {
+  /* a row stacks: its first cell leads, and every other cell carries its column's name */
+  .table { overflow: visible; }
+  .table table, .table tbody, .table tr, .table td { display: block; }
+  .table table, .table.wide table { min-width: 0; font-size: .92rem; }
+  .table thead { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .table tr { padding: .8rem 0 .9rem; border-bottom: 1px solid var(--line); }
+  .table td { padding: 0; border: 0; }
+  .table td:first-child { white-space: normal; }
+  .table td + td { margin-top: .5rem; }
+  .table td[data-label]::before { content: attr(data-label); display: block; margin-bottom: .1rem; font: 560 .68rem/1.4 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .table td.y, .table td.n { display: inline-block; margin-right: 1.1rem; }
+  .table td.y::before, .table td.n::before { display: inline; margin-right: .45rem; }
+  /* a table whose last column is a short tag: the tag sits beside the name, and the middle cell runs below them */
+  .table.tagged tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 1rem; }
+  .table.tagged td:nth-child(2) { grid-column: 1 / -1; margin-top: .3rem; }
+  .table.tagged td:nth-child(2)::before { content: none; }
+  .table.tagged td:last-child { grid-area: 1 / 2; margin: 0; }
+  .table.tagged td:last-child::before { display: inline; margin-right: .45rem; }
   .sheet dl > div { grid-template-columns: minmax(0, 1fr); gap: .15rem; }
   .cmd code { font-size: .8rem; }
   .jobs { flex-direction: column; gap: .5rem; }  /* the three jobs as a short list, not a 2 + 1 row */

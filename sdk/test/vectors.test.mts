@@ -12,6 +12,7 @@ const spec = new URL("../../spec/", import.meta.url)
 /** The families whose function returns a Result, so their expect is already { ok } | { err }. */
 const RESULTS = new Set([
   "manifest",
+  "needs.resolve",
   "overlay",
   "vocabulary",
   "project",

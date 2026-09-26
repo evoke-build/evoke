@@ -1,0 +1,66 @@
+{
+  "input": {
+    "doc": {
+      "file": { "type": "manifest", "name": "download" },
+      "toml": "reflex = 1\ndescription = \"Download a file.\"\nconfirm = \"Download?\"\nrun = \"download.mts\"\n\n[needs]\nreads  = [\"{nowhere}\", \"{quiet}\", \"{place}\", \"Downloads\", \"*\"]\nwrites = [\"~/a\", \"~/a\"]\nhosts  = [\"example.com\"]\nruns   = [\"bin/open\", \"{tool}\"]\n\n[config]\nplace = \"A folder\"\n\n[args.place]\nask   = \"Which?\"\nvocab = \"places\"\n\n[args.quiet]\nask  = \"Quietly?\"\nflag = true\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "download",
+        "at": { "file": { "type": "manifest", "name": "download" }, "line": 7, "column": 1 },
+        "message": "needs.reads names {nowhere}, which is neither an argument nor a config key",
+        "fix": { "type": "edit_line", "at": { "file": { "type": "manifest", "name": "download" }, "line": 7, "column": 1 } }
+      },
+      {
+        "reflex": "download",
+        "at": { "file": { "type": "manifest", "name": "download" }, "line": 7, "column": 1 },
+        "message": "needs.reads names {quiet}, a flag, which has no value",
+        "fix": { "type": "edit_line", "at": { "file": { "type": "manifest", "name": "download" }, "line": 7, "column": 1 } }
+      },
+      {
+        "reflex": "download",
+        "at": { "file": { "type": "manifest", "name": "download" }, "line": 7, "column": 1 },
+        "message": "needs.reads names {place}, which is both an argument and a config key",
+        "fix": { "type": "edit_line", "at": { "file": { "type": "manifest", "name": "download" }, "line": 7, "column": 1 } }
+      },
+      {
+        "reflex": "download",
+        "at": { "file": { "type": "manifest", "name": "download" }, "line": 7, "column": 1 },
+        "message": "needs.reads: \"Downloads\" is neither ~/…, an absolute path nor a {name}",
+        "fix": { "type": "edit_line", "at": { "file": { "type": "manifest", "name": "download" }, "line": 7, "column": 1 } }
+      },
+      {
+        "reflex": "download",
+        "at": { "file": { "type": "manifest", "name": "download" }, "line": 7, "column": 1 },
+        "message": "needs.reads: \"*\" is neither ~/…, an absolute path nor a {name}",
+        "fix": { "type": "edit_line", "at": { "file": { "type": "manifest", "name": "download" }, "line": 7, "column": 1 } }
+      },
+      {
+        "reflex": "download",
+        "at": { "file": { "type": "manifest", "name": "download" }, "line": 8, "column": 1 },
+        "message": "needs.writes repeats \"~/a\"",
+        "fix": { "type": "edit_line", "at": { "file": { "type": "manifest", "name": "download" }, "line": 8, "column": 1 } }
+      },
+      {
+        "reflex": "download",
+        "at": { "file": { "type": "manifest", "name": "download" }, "line": 9, "column": 1 },
+        "message": "needs.hosts names \"example.com\"; hosts takes \"*\" or nothing",
+        "fix": { "type": "edit_line", "at": { "file": { "type": "manifest", "name": "download" }, "line": 9, "column": 1 } }
+      },
+      {
+        "reflex": "download",
+        "at": { "file": { "type": "manifest", "name": "download" }, "line": 10, "column": 1 },
+        "message": "needs.runs: \"bin/open\" is a relative path; name a program on PATH or by its absolute path",
+        "fix": { "type": "edit_line", "at": { "file": { "type": "manifest", "name": "download" }, "line": 10, "column": 1 } }
+      },
+      {
+        "reflex": "download",
+        "at": { "file": { "type": "manifest", "name": "download" }, "line": 10, "column": 1 },
+        "message": "needs.runs: \"{tool}\" is not a program; runs takes a name on PATH or an absolute path",
+        "fix": { "type": "edit_line", "at": { "file": { "type": "manifest", "name": "download" }, "line": 10, "column": 1 } }
+      }
+    ]
+  }
+}

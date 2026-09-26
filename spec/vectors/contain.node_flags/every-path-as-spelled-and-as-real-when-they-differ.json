@@ -1,0 +1,31 @@
+{
+  "input": {
+    "policy": {
+      "reads": [
+        { "path": "/Users/me/notes.txt", "from": "{file}" }
+      ],
+      "writes": [
+        { "path": "/var/tmp/out", "from": "/var/tmp/out" },
+        { "path": "/Users/me/Downloads", "from": "~/Downloads" }
+      ],
+      "hosts": ["*"],
+      "runs": ["open"]
+    },
+    "facts": { "$ref": "fixtures/facts-macos.json" }
+  },
+  "expect": [
+    "--permission",
+    "--allow-fs-read=/Users/me/.cache/evoke/store/8416c7959e55e8f74c0dd96ca8396d1980acc68ccfa7ac32fd650be96f658703",
+    "--allow-fs-read=/private/var/folders/1j/rwfvrrld5wd4__9gt0wvlc0m0000gn/T/evoke-4242-1",
+    "--allow-fs-write=/private/var/folders/1j/rwfvrrld5wd4__9gt0wvlc0m0000gn/T/evoke-4242-1",
+    "--allow-fs-read=/Users/me/notes.txt",
+    "--allow-fs-read=/var/tmp/out",
+    "--allow-fs-read=/private/var/tmp/out",
+    "--allow-fs-read=/Users/me/Downloads",
+    "--allow-fs-write=/var/tmp/out",
+    "--allow-fs-write=/private/var/tmp/out",
+    "--allow-fs-write=/Users/me/Downloads",
+    "--allow-child-process",
+    "--disable-warning=SecurityWarning"
+  ]
+}

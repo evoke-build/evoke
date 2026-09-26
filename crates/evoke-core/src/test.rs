@@ -262,7 +262,7 @@ impl Claim {
 
     /// What a decision read for an argument, in a claim's shape: absent is unstated, a flag is raised, and a key,
     /// a word or a span is its text.
-    fn read(value: Option<&Value>) -> Self {
+    pub(crate) fn read(value: Option<&Value>) -> Self {
         match value {
             None => Self::Unstated,
             Some(Value::Flag) => Self::Flag,

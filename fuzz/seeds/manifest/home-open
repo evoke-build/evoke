@@ -1,0 +1,22 @@
+reflex = 1
+
+description = """
+Open one of your folders.
+In the file manager, in front."""
+not_for = ["opening a file", "opening a website"]
+tags = ["files"]
+effect = "read"
+confirm = "Open {place}?"
+run = ["open", "{place}"]
+
+[args.place]
+ask   = "Which folder?"
+vocab = "places"
+
+[examples]
+"open my downloads folder" = {}
+"show me the desktop"      = {}
+
+[tests]
+"open the website"          = false
+"go to the projects folder" = {}

@@ -1,0 +1,4 @@
+#!/bin/sh
+# A stand-in for the spec: says it is waiting, then sleeps for over an hour unless ended.
+echo waiting >&2
+exec sleep 4242

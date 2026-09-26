@@ -1,0 +1,23 @@
+{
+  "input": {
+    "lacking": { "type": "place", "place": { "path": "/Users/me/notes.txt", "from": "{file}" }, "key": "writes" },
+    "reflex": "note",
+    "active": {
+      "effect": "write",
+      "run": "note.mts",
+      "needs": { "writes": ["{file}"] },
+      "confirm": "Note?",
+      "args": {},
+      "yields": {},
+      "config": { "file": { "type": "plain", "value": "~/notes.txt" } },
+      "tags": []
+    },
+    "origin": { "type": "fetched" },
+    "home": "/Users/me"
+  },
+  "expect": {
+    "reflex": "note",
+    "message": "[needs] writes names ~/notes.txt, which is not there",
+    "fix": { "type": "config_set", "reflex": "note", "key": "file" }
+  }
+}

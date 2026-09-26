@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The reflex format - Evoke</title>
-  <meta name="description" content="The reflex format, version 1, frozen: the manifest a classifier reads and a program receives, the decision, the gate, the files around it and the wire.">
+  <title>The reflex format: reflex.toml spec and JSON Schema - Evoke</title>
+  <meta name="description" content="Version 1 of the reflex format, frozen: reflex.toml and its JSON Schema, the decision and gate built from it, the project files, the adapter and the wire.">
   <!-- head -->
   <script type="application/ld+json">
   {
@@ -14,7 +14,7 @@
     "url": "https://evoke.build/format.html",
     "headline": "The reflex format",
     "name": "The reflex format",
-    "description": "The reflex format, version 1, frozen: the manifest a classifier reads and a program receives, the decision, the gate, the files around it and the wire.",
+    "description": "Version 1 of the reflex format, frozen: reflex.toml and its JSON Schema, the decision and gate built from it, the project files, the adapter and the wire.",
     "inLanguage": "en",
     "isPartOf": {
       "@id": "https://evoke.build/#website"
@@ -33,7 +33,6 @@
   </script>
   <style>
     p, li, dd, td { text-wrap: pretty; }
-    td code, th code { font-size: .86em; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: .05em .35em; color: inherit; white-space: nowrap; }
     .sheet dd code { background: var(--bg); }
     .hero.solo .index { margin-top: 1.9rem; }
     .status { max-width: 46rem; margin: 1.5rem 0 0; color: var(--muted); font-size: .97rem; line-height: 1.55; }
@@ -54,33 +53,11 @@
     .terms > div { display: grid; grid-template-columns: 8rem 1fr; gap: .6rem; padding: .75rem 0; border-top: 1px solid var(--line); }
     .terms dt { font-weight: 560; color: var(--fg); font-size: .98rem; }
     .terms dd { margin: 0; color: var(--text); font-size: .95rem; line-height: 1.5; }
-    .table { max-width: 60rem; margin: 0 0 1.2rem; overflow-x: auto; border-top: 1px solid var(--line-strong); }
-    .table.wide table { min-width: 36rem; }   /* a table whose first column cannot wrap scrolls in its box on a phone */
-    table { width: 100%; border-collapse: collapse; font-size: .94rem; line-height: 1.5; }
-    th { text-align: left; font-weight: 560; color: var(--fg); font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; padding: .8rem .9rem .6rem 0; border-bottom: 1px solid var(--line-strong); white-space: nowrap; }
-    td { vertical-align: top; padding: .7rem .9rem .7rem 0; border-bottom: 1px solid var(--line); color: var(--text); }
-    td:first-child { color: var(--fg); white-space: nowrap; }
-    td:first-child code { background: none; border: 0; padding: 0; font-size: .9em; color: var(--tk-key); }
-    td strong { color: var(--fg); font-weight: 560; }
-    td.y { color: var(--term-ok); font-family: var(--mono); font-size: .86em; white-space: nowrap; }
-    td.n { color: var(--faint); font-family: var(--mono); font-size: .86em; white-space: nowrap; }
     .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: stretch; margin: 1.1rem 0 1.2rem; }  /* two files, one height */
     .pair > * { min-width: 0; }
     @media (max-width: 960px) { .pair, .terms { grid-template-columns: minmax(0, 1fr); } .terms > div { grid-template-columns: minmax(0, 1fr); gap: .15rem; } }
     @media (max-width: 560px) {
       p code, li code, dd code { white-space: normal; overflow-wrap: anywhere; }
-      /* a row stacks: its first cell leads, and every other cell carries its column's name */
-      .table { overflow: visible; }
-      .table table, .table tbody, .table tr, .table td { display: block; }
-      .table table, .table.wide table { min-width: 0; font-size: .92rem; }
-      .table thead { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); }
-      .table tr { padding: .8rem 0 .9rem; border-bottom: 1px solid var(--line); }
-      .table td { padding: 0; border: 0; }
-      .table td:first-child { white-space: normal; }
-      .table td + td { margin-top: .5rem; }
-      .table td[data-label]::before { content: attr(data-label); display: block; margin-bottom: .1rem; font: 560 .68rem/1.4 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-      .table td.y, .table td.n { display: inline-block; margin-right: 1.1rem; }
-      .table td.y::before, .table td.n::before { display: inline; margin-right: .45rem; }
     }
   </style>
 </head>
@@ -91,9 +68,9 @@
     <div class="hero solo">
       <div class="copy">
         <h1>The reflex <em>format.</em></h1>
-        <p class="lede"><strong>One file that a classifier reads and a program receives.</strong> This page is the
-          standard: the format of that file, the decision made from it, the gate that runs it, the files around it,
-          the adapter contract and the wire.</p>
+        <p class="lede"><strong>A reflex is a small program you install and ask for in your words.</strong> Its manifest
+          is one file that a classifier reads and a program receives. This page is the standard: the format of that file,
+          the decision made from it, the gate that runs it, the files around it, the adapter contract and the wire.</p>
       </div>
       <div class="sheet solo">
         <dl>
@@ -163,7 +140,7 @@
         <div><dt>Manifest</dt><dd><code>reflex.toml</code>: what the classifier reads and what the body receives.</dd></div>
         <div><dt>Body</dt><dd>What <code>run</code> names: a JavaScript file exporting a function, or a program with its arguments.</dd></div>
         <div><dt>Wording</dt><dd>What a user may override: descriptions, questions, option meanings, records.</dd></div>
-        <div><dt>Contract</dt><dd>What a user cannot override: <code>run</code>, argument names and sources, option keys, ranges, config keys, yields.</dd></div>
+        <div><dt>Contract</dt><dd>What a user cannot override: <code>run</code>, needs, argument names and sources, option keys, ranges, config keys, yields.</dd></div>
         <div><dt>Argument</dt><dd>A question about the input and a value for the body, from exactly one source.</dd></div>
         <div><dt>Source</dt><dd>Where an argument's values come from: <code>options</code>, <code>vocab</code>, <code>pick</code> or <code>flag</code>.</dd></div>
         <div><dt>Span</dt><dd>An exact piece of the input, by character offsets.</dd></div>
@@ -174,6 +151,7 @@
         <div><dt>Decision</dt><dd>One input decided: an outcome, the call, the confidence, every judgment.</dd></div>
         <div><dt>Call</dt><dd>A reflex with its arguments filled in, on one line: <code>lights room="den" state="off"</code>.</dd></div>
         <div><dt>Effect</dt><dd>What running a reflex does to the world: <code>read</code>, <code>write</code> or <code>destructive</code>.</dd></div>
+        <div><dt>Needs</dt><dd>What a body touches, declared under <code>[needs]</code> and held by the kernel: the paths it reads and writes, the network, the programs it runs.</dd></div>
         <div><dt>Bar</dt><dd>The probability a decision must clear for its effect. The adapter ships it. Also called the floor.</dd></div>
         <div><dt>Confidence</dt><dd>The lowest top probability among the route and every argument question of the winner.</dd></div>
         <div><dt>Weave</dt><dd>A sentence read as several steps, each decided on its own, the plan shown before anything runs.</dd></div>
@@ -200,6 +178,9 @@ Ceiling and lamp lights only."""</span>
 <span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>                            <span class="c"># absent means destructive</span>
 <span class="k">confirm</span> <span class="o">=</span> <span class="s">"Set the <span class="ph">{room}</span> lights <span class="ph">{state}</span>?"</span>
 <span class="k">run</span>     <span class="o">=</span> <span class="s">"lights.mts"</span>                       <span class="c"># or an argv, as in 08</span>
+
+<span class="t">[needs]</span>                                      <span class="c"># what the body touches; absent means its own directory only</span>
+<span class="k">hosts</span> <span class="o">=</span> <span class="o">[</span><span class="s">"*"</span><span class="o">]</span>                                <span class="c"># the bridge is on the network</span>
 
 <span class="t">[config]</span>
 <span class="k">bridge</span> <span class="o">=</span> <span class="s">"Hue bridge address"</span>
@@ -247,6 +228,9 @@ Ceiling and lamp lights only."""</span>
         </div>
       </div>
 
+      <p class="caption">The <code>lights</code> reflex on this page is an illustration from evoke's tests. It is not in
+        the collection. <code>radhi/home/lights</code> and the other addresses in §09 are examples.</p>
+
       <div class="clause">
         <h3><i>3.1</i>Keys</h3>
         <div class="table"><table>
@@ -259,6 +243,7 @@ Ceiling and lamp lights only."""</span>
             <tr><td><code>effect</code></td><td class="n">no</td><td><code>read</code>, <code>write</code> or <code>destructive</code>. Absent means destructive. A reflex has one effect; grouped actions take the worst case.</td></tr>
             <tr><td><code>confirm</code></td><td class="y">yes</td><td>The one-line question a person answers. A <code>{placeholder}</code> names a required argument.</td></tr>
             <tr><td><code>run</code></td><td class="y">yes</td><td>The body: a path ending in <code>.mts</code> or <code>.mjs</code> inside the directory, or an argv.</td></tr>
+            <tr><td><code>[needs]</code></td><td class="n">no</td><td>What the body touches, held by the kernel: <code>reads</code> and <code>writes</code>, paths as <code>~/…</code>, absolute, or <code>{name}</code> for the value of an argument or a config key; <code>hosts</code>, <code>["*"]</code> for the network; <code>runs</code>, programs by name on <code>PATH</code> or by absolute path. Absent means the tightest declaration: its own directory and a private <code>TMPDIR</code>.</td></tr>
             <tr><td><code>[config]</code></td><td class="n">no</td><td>Settings the user provides: <code>key = "about"</code>, or <code>{ about, secret = true }</code>. A secret is only ever set from an environment variable.</td></tr>
             <tr><td><code>[args.&lt;name&gt;]</code></td><td class="n">no</td><td>The arguments. Each has <code>ask</code> and exactly one source.</td></tr>
             <tr><td><code>[yields]</code></td><td class="n">no</td><td>What the body's <code>data</code> holds for a later step: per field, the kind that reads it, or <code>{ each = { … } }</code> for a list of records.</td></tr>
@@ -286,7 +271,7 @@ Ceiling and lamp lights only."""</span>
         <div class="table"><table>
           <thead><tr><th>Contract</th><th>Wording</th></tr></thead>
           <tbody>
-            <tr><td><code>run</code></td><td><code>description</code>, <code>not_for</code>, <code>tags</code>, <code>confirm</code></td></tr>
+            <tr><td><code>run</code>, <code>[needs]</code></td><td><code>description</code>, <code>not_for</code>, <code>tags</code>, <code>confirm</code></td></tr>
             <tr><td>argument names and their sources</td><td>every <code>ask</code></td></tr>
             <tr><td>option keys, <code>range</code></td><td>the meaning of each option</td></tr>
             <tr><td><code>config</code> keys, <code>yields</code></td><td>examples and tests</td></tr>
@@ -333,8 +318,8 @@ Ceiling and lamp lights only."""</span>
         <div class="table"><table>
           <thead><tr><th>pick</th><th>Recognizes</th><th>Value</th><th>range</th></tr></thead>
           <tbody>
-            <tr><td><code>number</code></td><td>A bare number, unit words kept in the span: <code>30 percent</code>; a leading minus is the number's: <code>-5</code></td><td>The number</td><td class="y">yes</td></tr>
-            <tr><td><code>duration</code></td><td>One number and one unit: <code>10 minutes</code>, <code>2 hours</code>, <code>90 seconds</code></td><td>Whole seconds</td><td class="y">yes</td></tr>
+            <tr><td><code>number</code></td><td>A number in digits or in words up to a hundred, unit words kept in the span: <code>30 percent</code>, <code>fifty percent</code>, <code>twenty-five</code>; a leading minus is the number's: <code>-5</code></td><td>The number</td><td class="y">yes</td></tr>
+            <tr><td><code>duration</code></td><td>One number and one unit, the number in digits or in words: <code>10 minutes</code>, <code>2 hours</code>, <code>twenty five minutes</code>; <code>an hour</code>, <code>half an hour</code>, <code>a quarter of an hour</code>, <code>an hour and a half</code>, <code>two and a half hours</code></td><td>Whole seconds</td><td class="y">yes</td></tr>
             <tr><td><code>email</code></td><td>An address</td><td>The text</td><td class="n">no</td></tr>
             <tr><td><code>url</code></td><td>A URL</td><td>The text</td><td class="n">no</td></tr>
             <tr><td><code>quoted</code></td><td><code>"…"</code>, <code>“…”</code> or <code>‘…’</code>; a straight single quote is an apostrophe</td><td>The text between the quotes</td><td class="n">no</td></tr>
@@ -454,7 +439,7 @@ Ceiling and lamp lights only."""</span>
   <span class="name">ask room</span> · weakest: state <span class="mid">0.58</span></span></pre>
         </div>
         <p class="caption">The route, each argument with <b>unstated</b> as a choice, the fit per reflex, then the
-          outcome and the weakest judgment. The room was not said, so the outcome is an ask.</p>
+          outcome and the weakest judgment. The room was not in the sentence, so the outcome is an ask.</p>
       </div>
     </section>
 
@@ -462,8 +447,9 @@ Ceiling and lamp lights only."""</span>
       <div class="rule"><p class="label">The gate</p><span class="num">07</span></div>
       <h2>The weakest answer, against the bar of the effect.</h2>
       <p class="sub">Confidence is the lowest top probability among the route and every argument question of the winner.
-        Unstated arguments and flags count too. Each effect has a bar, and the bars come from the adapter. Each number
-        means the probability this is right.</p>
+        Unstated arguments and flags count too. Each effect has a bar, and the bars come from the adapter. The bars
+        assume that the adapter's probabilities are calibrated: across many answers, those given 0.85 should be right
+        about 85 times in 100.</p>
       <div class="clause">
         <h3><i>7.1</i>The bars</h3>
         <div class="table"><table>
@@ -487,6 +473,7 @@ Ceiling and lamp lights only."""</span>
           <li><strong>A complete call still stops.</strong> A typed span no argument consumed, or a runner-up over its bar, holds the outcome at confirm, with the reason on the line.</li>
         </ul>
       </div>
+      <p class="after"><a class="more" href="/guides/approval-by-risk.html">The gate, explained for readers →</a></p>
     </section>
 
     <section id="body">
@@ -534,10 +521,12 @@ Ceiling and lamp lights only."""</span>
       <div class="clause">
         <h3><i>8.2</i>The run</h3>
         <ul class="ticks">
-          <li><strong>The environment is scrubbed.</strong> <code>PATH</code>, <code>HOME</code>, <code>TMPDIR</code>, <code>LANG</code> and <code>TERM</code>, nothing else. Secrets reach a body through <code>config</code>, never the environment.</li>
+          <li><strong>The environment is scrubbed.</strong> <code>PATH</code>, <code>HOME</code>, <code>TMPDIR</code>, <code>LANG</code> and <code>TERM</code>, nothing else. <code>TMPDIR</code> is a private folder made for the run and removed after it. Secrets reach a body through <code>config</code>, never the environment.</li>
+          <li><strong>The body is held to its declaration.</strong> It touches what <code>[needs]</code> names, its own directory and <code>TMPDIR</code>, and nothing else: on Linux through Landlock, <code>no_new_privs</code> and a seccomp filter, on macOS through Seatbelt, with Node's permission model under both. A reach past the declaration ends the run with the path and the key. A program named in <code>runs</code> runs held to the same declaration. A machine that holds only part of a declaration, or none, says so, and the status is never assumed.</li>
+          <li><strong>A word's value or a plain setting that begins with <code>~/</code></strong> reaches the body as a path under the home, so the value, the argv and the declaration name one path.</li>
           <li><strong>The deadline is 30 seconds per decision</strong>, shared with the classifier's answer. Anything that must outlive the run detaches and returns at once.</li>
           <li><strong>A body's own stdout goes to stderr</strong>, so a stray line never corrupts a result. The result is what the function returns.</li>
-          <li><strong>The process group is ended</strong> on timeout or decline: <code>SIGTERM</code>, a second's grace, then <code>SIGKILL</code>. A body's life is bounded by its caller's.</li>
+          <li><strong>The runtime starts once the decision is made</strong>, in the body's directory. <strong>The process group is ended</strong> on timeout or decline: <code>SIGTERM</code>, a second's grace, then <code>SIGKILL</code>. A body's life is bounded by its caller's.</li>
           <li><strong>An argv runs directly, never through a shell.</strong> The program is a name on <code>PATH</code> or an absolute path, never a path relative to wherever the tool runs.</li>
         </ul>
       </div>
@@ -626,16 +615,19 @@ Ceiling and lamp lights only."""</span>
       <div class="clause">
         <h3><i>9.3</i>The lock and the store</h3>
         <p>The lock records, for each remote reflex, the ref, the tag, the commit, the content hash <code>h1</code> of
-          the reflex directory, and the effect the user consented to. It records the adapter by name and id. Fetched
+          the reflex directory, the effect the user consented to, and the declaration they consented to. Upstream may
+          narrow a declaration at any tag; widening waits for <code>evoke update --accept</code>. It records the
+          adapter by name and id. Fetched
           code lives in a store keyed by <code>h1</code>, and an implementation <span class="kw">MUST</span> re-hash it
           against the lock at every start. A copy that does not match is a miss. Local reflexes are never locked.</p>
       </div>
       <div class="clause">
         <h3><i>9.4</i>Trust</h3>
         <p>A project outside the home project <span class="kw">MUST</span> be trusted before an implementation decides
-          in it. Trust binds to the content of the four owned paths: <code>evoke.toml</code>, <code>evoke.lock</code>,
-          <code>overlays/</code>, <code>vocab/</code>. The implementation's own writes renew it. Any other change stops
-          the next run until the project is trusted again. Adapter names resolve only against the tool's built-ins,
+          in it. Trust is recorded against the content of the four owned paths: <code>evoke.toml</code>,
+          <code>evoke.lock</code>, <code>overlays/</code> and <code>vocab/</code>. When the implementation writes one of
+          them itself, it records the new content as trusted. Any other change to them stops the next run until the
+          project is trusted again. Adapter names resolve only against the tool's built-ins,
           never from a project directory, so a cloned repository cannot choose the classifier.</p>
       </div>
     </section>
@@ -818,8 +810,8 @@ Ceiling and lamp lights only."""</span>
         <ul class="ticks">
           <li><strong>A connective is a question.</strong> Where <code>and</code>, <code>then</code>, <code>but</code>, a comma, <code>after</code> or <code>before</code> could separate two things, the classifier is asked whether it does.</li>
           <li><strong>Each part is decided as one input is.</strong> Routed, gated, its arguments read. A part that matches nothing is tried as another item of its neighbour's task first. Failing that, the whole request <span class="kw">MUST</span> be refused rather than half done.</li>
-          <li><strong>A part that begins with a negation is left out.</strong> <code>not</code>, <code>don't</code>, <code>never</code>, <code>without</code>: what was said not to do is no step.</li>
-          <li><strong>Order words order.</strong> <code>then</code>, <code>after that</code>, <code>next</code>; <code>before you X, Y</code> and <code>Y after you X</code> both read as <code>X, then Y</code>. Two writes never run side by side. Reads may.</li>
+          <li><strong>A part that begins with a negation is left out.</strong> <code>not</code>, <code>don't</code>, <code>never</code>, <code>without</code>: a part that names what not to do is no step.</li>
+          <li><strong>Order comes from the words.</strong> <code>then</code>, <code>after that</code> and <code>next</code> order the steps. <code>before you X, Y</code> runs Y first, and <code>Y after you X</code> runs X first. Two writes never run side by side. Reads may.</li>
         </ul>
       </div>
       <div class="clause">
@@ -831,13 +823,15 @@ Ceiling and lamp lights only."""</span>
           could satisfy <span class="kw">MUST</span> be asked, never guessed.</p>
         <div class="panel term">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre><span class="p">$</span> <span class="in">evoke "look up dana's address and email them"</span>
+<pre data-flow="weave"><span class="p">$</span> <span class="in">evoke "look up dana's address and email them"</span>
 <span class="own">  1  <span class="name">contact</span> name="dana"  <span class="hi">0.90</span>
   2  <span class="name">mail</span> · takes email from 1</span>
 <span class="out">dana &lt;dana@example.com&gt;</span>
 <span class="own">  2  <span class="name">mail</span> to="dana@example.com"  <span class="hi">0.88</span></span>
 <span class="out">drafted to dana@example.com</span></pre>
         </div>
+        <p class="caption"><code>contact</code> and this <code>mail</code> are stand-ins from evoke's tests. They print a
+          line and change nothing.</p>
       </div>
       <div class="clause">
         <h3><i>13.3</i>Before anything runs</h3>
@@ -861,7 +855,8 @@ Ceiling and lamp lights only."""</span>
           <li><strong>A value is a closed choice or an exact span.</strong> Injected text can choose a call. It can never mint a value.</li>
           <li><strong>The effect gate covers what it chooses.</strong> A destructive reflex always confirms, and there is no <code>--yes</code>.</li>
           <li><strong>Prompts cannot be repainted.</strong> Control characters and bidi overrides are refused in every manifest, overlay and vocabulary string, and in every span. The tool's own line prints before the reflex's template.</li>
-          <li><strong>Wording is linted and conflict-tested at install.</strong> Effect only tightens. The contract cannot be overridden. Tags carry no meaning but <code>--tag</code>.</li>
+          <li><strong>Wording is linted and conflict-tested at install.</strong> Effect and needs only tighten. The contract cannot be overridden. Tags carry no meaning but <code>--tag</code>.</li>
+          <li><strong>A body is held to its declaration.</strong> What <code>[needs]</code> names, its own directory and a private <code>TMPDIR</code>, and nothing else, by the kernel. A machine that holds less says so.</li>
           <li><strong>Trust and the lock bind to content.</strong> A changed project stops. A tag that moved is refused. The store is re-hashed at every start.</li>
           <li><strong>Fetching is narrow.</strong> A strict ref grammar, <code>https</code> and <code>ssh</code> only, no symlinks, no submodules, no checkout, no hook, no install-time script.</li>
           <li><strong>Secrets are referenced, never stored.</strong> A project names a variable. The value reaches a body for the length of one run.</li>
@@ -869,10 +864,10 @@ Ceiling and lamp lights only."""</span>
       </div>
       <div class="clause">
         <h3><i>14.2</i>Not guaranteed</h3>
-        <p><strong>Containment.</strong> A body runs with the user's rights under a scrubbed environment. The scrubbing
-          prevents leaks. It does not contain malice. A <code>read</code> or <code>write</code> reflex over its bar runs
-          without asking, and whatever it does with a span it is handed, an injected sentence can make it do. So its
-          effect is the author's promise about exactly that. Read what you install. The manual's
+        <p><strong>What a body does within its declaration.</strong> The kernel bounds what a body touches, not what it
+          does with it. A <code>read</code> or <code>write</code> reflex over its bar runs without asking, and whatever
+          it does with a span it is handed, an injected sentence can make it do. So its effect is the author's promise
+          about exactly that, read beside the declaration. Read what you install. The manual's
           <a href="/manual/security.html">security page</a> holds every claim, and how to try each without a key.</p>
       </div>
     </section>
@@ -932,8 +927,9 @@ Ceiling and lamp lights only."""</span>
       <p class="after">A reflex directory's <b>h1</b> skips the five names a project keeps: <code>evoke.toml</code>,
         <code>evoke.lock</code>, <code>overlays/</code>, <code>vocab/</code>, <code>evoke.d.ts</code>. So an author may
         keep a project beside their reflex, and none of it ships.</p>
-      <p class="after">Next: <a href="/manual/author/first-reflex.html">write a reflex</a> in ten minutes, or read
-        <a href="/manual/author/manifest.html">the manifest, key by key</a> in the manual.</p>
+      <p class="after">To see the format at work, <a href="/start.html">install evoke and run your first command</a>,
+        then <a href="/manual/author/first-reflex.html">write your first reflex</a>. The manual has
+        <a href="/manual/author/manifest.html">the manifest, key by key</a>.</p>
     </section>
   </main>
 

@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "an hour and a half, or two and a half hours"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 0,
+        "end": 18,
+        "text": "an hour and a half"
+      },
+      "value": {
+        "type": "duration",
+        "value": 5400
+      }
+    },
+    {
+      "span": {
+        "start": 23,
+        "end": 43,
+        "text": "two and a half hours"
+      },
+      "value": {
+        "type": "duration",
+        "value": 9000
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+reflex = 1
+
+description = """
+Pause: a program that sleeps.
+For the spec: an argv body whose program says it is waiting, then sleeps past its signal."""
+effect = "write"
+confirm = "Pause?"
+run = ["pause"]
+
+[needs]
+runs = ["sleep"]
+
+[examples]
+"pause a moment" = {}
+"hold on"        = {}

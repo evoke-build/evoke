@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "volume twenty, not two hundred, a hundred and fifty or seven thirty"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 7,
+        "end": 13,
+        "text": "twenty"
+      },
+      "value": {
+        "type": "number",
+        "value": 20
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "input": {
+    "from": { "reads": ["/etc/hosts"], "writes": ["~/Downloads"], "hosts": ["*"], "runs": ["open", "plutil"] },
+    "to": { "writes": ["~/Downloads"], "runs": ["plutil"] }
+  },
+  "expect": false
+}

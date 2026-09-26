@@ -12,3 +12,4 @@ tag    = "1.2.0"
 commit = "7a498d11d5375f3cb65c575c3186bc64ecac7f52"
 h1     = "h1:a30b1bbcf52390c4b1311685ceee9f886b81b7699cde1374040979ad00c25d3a"
 effect = "write"
+needs  = { hosts = ["*"] }

@@ -1,0 +1,41 @@
+{
+  "input": {
+    "shipped": { "$ref": "fixtures/note-needs.json" },
+    "yours": {
+      "description": "Keep a note.",
+      "effect": "destructive",
+      "args": { "text": { "ask": "The note?", "options": {} } },
+      "examples": { "jot \"call dana\"": { "text": "call dana" } },
+      "tests": {},
+      "renamed": [],
+      "orphaned": []
+    }
+  },
+  "expect": {
+    "manifest": {
+      "description": "Keep a note.",
+      "not_for": ["reading notes back"],
+      "tags": ["text"],
+      "effect": "destructive",
+      "confirm": "Note \"{text}\"?",
+      "run": "note.mts",
+      "needs": {
+        "writes": ["{file}"]
+      },
+      "config": {
+        "file": { "about": "Path of the notes file", "secret": false }
+      },
+      "args": {
+        "text": { "ask": "The note?", "pick": "quoted", "optional": false, "was": [] }
+      },
+      "yields": {},
+      "examples": {
+        "note \"buy milk\"": { "text": "buy milk" },
+        "jot \"call dana\"": { "text": "call dana" }
+      },
+      "tests": {},
+      "unknown": []
+    },
+    "yours": [["args", "text", "ask"], ["description"], ["effect"], ["examples", "jot \"call dana\""]]
+  }
+}

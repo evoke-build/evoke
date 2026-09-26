@@ -1,0 +1,15 @@
+reflex = 1
+
+description = """
+List what one of your words names.
+For the spec: an argv body reading what a word names."""
+effect = "read"
+confirm = "List {place}?"
+run = ["ls", "{place}"]
+
+[needs]
+reads = ["{place}"]
+
+[args.place]
+ask   = "Which one?"
+vocab = "places"

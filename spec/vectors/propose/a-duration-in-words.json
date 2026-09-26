@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "set alarm for one hour from now"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 14,
+        "end": 22,
+        "text": "one hour"
+      },
+      "value": {
+        "type": "duration",
+        "value": 3600
+      }
+    }
+  ]
+}

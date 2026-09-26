@@ -1,0 +1,304 @@
+{
+  "input": {
+    "adapter": "replay",
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "lines": [
+      {
+        "input": "step one",
+        "decision": {
+          "outcome": "run",
+          "reflex": "timer",
+          "args": {
+            "duration": {
+              "type": "pick",
+              "span": {
+                "start": 16,
+                "end": 26,
+                "text": "10 minutes"
+              },
+              "value": {
+                "type": "duration",
+                "value": 600
+              }
+            }
+          },
+          "call": "timer duration=\"10 minutes\"",
+          "effect": "write",
+          "confidence": 0.9,
+          "weakest": {
+            "question": "route",
+            "top": "timer",
+            "p": 0.9
+          },
+          "judgments": [
+            {
+              "question": "route",
+              "top": "timer",
+              "p": 0.9
+            },
+            {
+              "question": "timer.duration",
+              "top": "16-26",
+              "p": 0.9
+            }
+          ],
+          "contenders": [
+            {
+              "reflex": "timer",
+              "route": 0.9
+            }
+          ]
+        },
+        "ran": true,
+        "status": "ran"
+      },
+      {
+        "input": "step two",
+        "decision": {
+          "outcome": "run",
+          "reflex": "timer",
+          "args": {
+            "duration": {
+              "type": "pick",
+              "span": {
+                "start": 16,
+                "end": 26,
+                "text": "10 minutes"
+              },
+              "value": {
+                "type": "duration",
+                "value": 600
+              }
+            }
+          },
+          "call": "timer duration=\"10 minutes\"",
+          "effect": "write",
+          "confidence": 0.9,
+          "weakest": {
+            "question": "route",
+            "top": "timer",
+            "p": 0.9
+          },
+          "judgments": [
+            {
+              "question": "route",
+              "top": "timer",
+              "p": 0.9
+            },
+            {
+              "question": "timer.duration",
+              "top": "16-26",
+              "p": 0.9
+            }
+          ],
+          "contenders": [
+            {
+              "reflex": "timer",
+              "route": 0.9
+            }
+          ]
+        },
+        "status": "skipped"
+      },
+      {
+        "input": "step three",
+        "decision": {
+          "outcome": "confirm",
+          "reflex": "timer",
+          "args": {
+            "duration": {
+              "type": "pick",
+              "span": {
+                "start": 16,
+                "end": 26,
+                "text": "10 minutes"
+              },
+              "value": {
+                "type": "duration",
+                "value": 600
+              }
+            }
+          },
+          "call": "timer duration=\"10 minutes\"",
+          "effect": "write",
+          "confidence": 0.7,
+          "weakest": {
+            "question": "timer.duration",
+            "top": "16-26",
+            "p": 0.7
+          },
+          "judgments": [
+            {
+              "question": "route",
+              "top": "timer",
+              "p": 0.9
+            },
+            {
+              "question": "timer.duration",
+              "top": "16-26",
+              "p": 0.7
+            }
+          ],
+          "contenders": [
+            {
+              "reflex": "timer",
+              "route": 0.9
+            }
+          ],
+          "prompt": {
+            "own": "own",
+            "template": "Start a 10 minutes timer?"
+          },
+          "because": [
+            {
+              "type": "under_floor",
+              "judgment": {
+                "question": "timer.duration",
+                "top": "16-26",
+                "p": 0.7
+              },
+              "floor": 0.8
+            }
+          ]
+        },
+        "ran": true,
+        "status": "ran"
+      },
+      {
+        "input": "boom",
+        "decision": {
+          "outcome": "run",
+          "reflex": "timer",
+          "args": {
+            "duration": {
+              "type": "pick",
+              "span": {
+                "start": 16,
+                "end": 26,
+                "text": "10 minutes"
+              },
+              "value": {
+                "type": "duration",
+                "value": 600
+              }
+            }
+          },
+          "call": "timer duration=\"10 minutes\"",
+          "effect": "write",
+          "confidence": 0.9,
+          "weakest": {
+            "question": "route",
+            "top": "timer",
+            "p": 0.9
+          },
+          "judgments": [
+            {
+              "question": "route",
+              "top": "timer",
+              "p": 0.9
+            },
+            {
+              "question": "timer.duration",
+              "top": "16-26",
+              "p": 0.9
+            }
+          ],
+          "contenders": [
+            {
+              "reflex": "timer",
+              "route": 0.9
+            }
+          ]
+        },
+        "failed": true
+      },
+      {
+        "input": "start a timer",
+        "decision": {
+          "outcome": "ask",
+          "reflex": "lights",
+          "args": {
+            "state": {
+              "type": "option",
+              "key": "off"
+            }
+          },
+          "unconsumed": [],
+          "confidence": 0.9,
+          "weakest": {
+            "question": "route",
+            "top": "lights",
+            "p": 0.9
+          },
+          "judgments": [
+            {
+              "question": "route",
+              "top": "lights",
+              "p": 0.9
+            },
+            {
+              "question": "lights.room",
+              "top": "unstated",
+              "p": 0.9
+            },
+            {
+              "question": "lights.state",
+              "top": "off",
+              "p": 0.9
+            }
+          ],
+          "contenders": [
+            {
+              "reflex": "lights",
+              "route": 0.9
+            }
+          ],
+          "missing": [
+            {
+              "arg": "room",
+              "ask": "Which room?",
+              "because": {
+                "type": "unstated"
+              },
+              "choices": {
+                "type": "vocab",
+                "words": {
+                  "den": "The TV room downstairs; also 'the snug'.",
+                  "office": "The upstairs study."
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "cases": [],
+    "unread": 0
+  },
+  "expect": {
+    "adapter": "replay",
+    "decisions": 5,
+    "ran": 1,
+    "confirmed_ran": 1,
+    "confirmed_stopped": 0,
+    "asked": 1,
+    "abstained": 0,
+    "failed": 1,
+    "skipped": 1,
+    "stopped_by_confidence": [],
+    "records": {
+      "count": 0,
+      "right": 0,
+      "interval": [
+        0.0,
+        0.0
+      ]
+    },
+    "unread": 0
+  }
+}

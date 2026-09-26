@@ -1,5 +1,5 @@
 $ evoke --help
-evoke 0.4.0 · you invoke a function; you evoke a reflex
+evoke 0.8.0 · you invoke a function; you evoke a reflex
 
 use
   evoke "<input>"                         decide, gate, run
@@ -31,6 +31,9 @@ tune
   evoke vocab <name> remove <word>
   evoke config <name> <key> <value>       a setting; a secret as --env <VAR>
   evoke test [<name>]                     every example and test, judged
+  evoke calibrate [<name>]                the confidence measured on the records
+    --repeat <k>                          each input decided k times: the spread
+    --json                                one JSON object, for a script
 
 author
   evoke new <name>                        a working reflex from the template
@@ -39,10 +42,10 @@ author
 exit    0 ran · 1 failed · 2 declined · 3 needs a human · 4 adapter failed
 manual  https://evoke.build/manual/
 $ evoke --version
-evoke 0.4.0
+evoke 0.8.0
 $ evoke help | head -1
-evoke 0.4.0 · you invoke a function; you evoke a reflex
+evoke 0.8.0 · you invoke a function; you evoke a reflex
 $ evoke add -h | head -1
-evoke 0.4.0 · you invoke a function; you evoke a reflex
+evoke 0.8.0 · you invoke a function; you evoke a reflex
 $ evoke -V
-evoke 0.4.0
+evoke 0.8.0

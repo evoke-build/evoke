@@ -47,7 +47,8 @@
       "tags": [
         "sound"
       ]
-    }
+    },
+    "home": "/Users/me"
   },
   "expect": {
     "ok": [

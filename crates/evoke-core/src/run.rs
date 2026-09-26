@@ -1,12 +1,13 @@
 //! What a body receives: the envelope a file body reads on stdin, or the argv a program is spawned with. In: the
-//! chosen call, its active reflex, the input and the deadline. Out: an `Envelope` — config still references, which
-//! the host resolves — or an argv, where a placeholder whose argument is unstated is dropped and a value starting
-//! with `-` is refused.
+//! chosen call, its active reflex, the input, the deadline and the home. Out: an `Envelope` — config still
+//! references, which the host resolves — or an argv, where a placeholder whose argument is unstated is dropped
+//! and a value starting with `-` is refused. In both, a word's value and a plain setting that name a path under
+//! the home, `~/Desktop`, are expanded to it: the body, the argv and the declaration see one path.
 
 use indexmap::IndexMap;
 use serde::Serialize;
 
-use crate::call::Value;
+use crate::call::{Value, expand_home};
 use crate::decide::Chosen;
 use crate::diagnostic::{Diagnostic, Fix};
 use crate::document::Json;
@@ -31,7 +32,13 @@ pub struct Envelope {
 
 /// The envelope of a chosen call, for a file body and an inline one alike.
 #[must_use]
-pub fn envelope(chosen: &Chosen, active: &Active, input: &Input, deadline: Millis) -> Envelope {
+pub fn envelope(
+    chosen: &Chosen,
+    active: &Active,
+    input: &Input,
+    deadline: Millis,
+    home: &str,
+) -> Envelope {
     Envelope {
         reflex: chosen.call.reflex.clone(),
         run: active.run.clone(),
@@ -39,16 +46,28 @@ pub fn envelope(chosen: &Chosen, active: &Active, input: &Input, deadline: Milli
             .call
             .args
             .iter()
-            .map(|(name, value)| (name.clone(), value.plain()))
+            .map(|(name, value)| (name.clone(), value.under_home(home)))
             .collect(),
         input: input.clone(),
-        config: active.config.clone(),
+        config: active
+            .config
+            .iter()
+            .map(|(key, setting)| {
+                let setting = match setting {
+                    Setting::Plain { value } => Setting::Plain {
+                        value: expand_home(value, home),
+                    },
+                    Setting::Env { var } => Setting::Env { var: var.clone() },
+                };
+                (key.clone(), setting)
+            })
+            .collect(),
         deadline,
     }
 }
 
 /// The argv of a chosen call: the program, then each element as written or as its argument's value.
-pub fn argv(chosen: &Chosen, active: &Active) -> Result<Vec<String>, Diagnostic> {
+pub fn argv(chosen: &Chosen, active: &Active, home: &str) -> Result<Vec<String>, Diagnostic> {
     let reflex = &chosen.call.reflex;
     let Run::Argv { program, rest } = &active.run else {
         return Err(refused(
@@ -64,7 +83,7 @@ pub fn argv(chosen: &Chosen, active: &Active) -> Result<Vec<String>, Diagnostic>
                 let Some(value) = chosen.call.args.get(name) else {
                     continue;
                 };
-                let text = text(value);
+                let text = text(value, home);
                 if text.starts_with('-') {
                     return Err(refused(
                         reflex,
@@ -81,8 +100,8 @@ pub fn argv(chosen: &Chosen, active: &Active) -> Result<Vec<String>, Diagnostic>
 }
 
 /// A value as one argv element: the envelope's value as a person would type it.
-fn text(value: &Value) -> String {
-    match value.plain() {
+fn text(value: &Value, home: &str) -> String {
+    match value.under_home(home) {
         Json::String(text) => text,
         Json::Number(number) => number
             .as_f64()

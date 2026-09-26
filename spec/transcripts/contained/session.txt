@@ -1,0 +1,62 @@
+# A local reflex under its declaration: the declared write goes through; a read, a write, a program, a host and
+# an address it did not declare are refused, each naming the path and the key, with the declaration's line as the
+# fix; the JSON line says the machine held the whole declaration; a declared path that is not there is refused
+# before the body runs; an argv body reads what a word names; a program the declaration names runs, and one it
+# does not name is refused by the kernel; a declaration that names any host opens the network; show lists each
+# declaration under its row.
+$ evoke run notes text="buy milk"
+  notes text="buy milk"
+noted "buy milk"
+$ cat notes/today.txt
+first
+buy milk
+$ evoke run notes text=x also=read
+  notes text="x" also="read"
+  running notes: ~/secret.txt is not in [needs] reads  →  ~/.config/evoke/notes/reflex.toml:10:1
+[1]
+$ evoke run notes text=x also=write
+  notes text="x" also="write"
+  running notes: ~/pwned.txt is not in [needs] writes  →  ~/.config/evoke/notes/reflex.toml:10:1
+[1]
+$ evoke run notes text=x also=spawn
+  notes text="x" also="spawn"
+  running notes: [needs] runs names no program  →  ~/.config/evoke/notes/reflex.toml:10:1
+[1]
+$ evoke run notes text=x also=fetch
+  notes text="x" also="fetch"
+  running notes: example.com is not in [needs] hosts  →  ~/.config/evoke/notes/reflex.toml:10:1
+[1]
+$ evoke run notes text=x also=connect
+  notes text="x" also="connect"
+  running notes: 127.0.0.1:1 is not in [needs] hosts  →  ~/.config/evoke/notes/reflex.toml:10:1
+[1]
+$ evoke run --json notes text=tea
+{"input":"","outcome":"run","reflex":"notes","args":{"text":{"type":"pick","span":{"start":0,"end":3,"text":"tea"},"value":{"type":"quoted","value":"tea"}}},"call":"notes text=\"tea\"","effect":"write","trace":[],"contained":{"type":"full"},"result":{"text":"noted \"tea\""}}
+$ evoke run nowhere
+  nowhere
+  running nowhere: [needs] reads names ~/nowhere, which is not there  →  ~/.config/evoke/nowhere/reflex.toml:10:1
+[1]
+$ evoke run list place=shell
+  list place="shell"
+/bin/sh
+$ evoke run tools program=true
+  tools program="true"
+ran true
+$ evoke run tools program=env
+  tools program="env"
+  running tools: env is not in [needs] runs  →  ~/.config/evoke/tools/reflex.toml:10:1
+[1]
+$ evoke run reach
+  reach
+reached 127.0.0.1:1
+$ evoke show
+  notes    ./notes    write  runs notes.mts
+           needs writes {file}
+  nowhere  ./nowhere  read   runs nowhere.mts
+           needs reads ~/nowhere
+  list     ./list     read   runs ls
+           needs reads {place}
+  tools    ./tools    read   runs tools.mts
+           needs runs true
+  reach    ./reach    read   runs reach.mts
+           needs hosts *

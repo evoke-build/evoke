@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Operate services in team language - Evoke</title>
-  <meta name="description" content="Scale a service, mute an alert, roll back a release. Your service names map to the arguments kubectl needs, and a rollback always asks. A pattern for your app.">
+  <title>Natural-language kubectl for approved operations - Evoke</title>
+  <meta name="description" content="Scale and roll back with kubectl by typing what you want. Only the operations your team approved can run, and a rollback always asks for a yes first.">
   <!-- head -->
 </head>
 <body>
@@ -14,24 +14,28 @@
     <div class="hero solo">
       <div class="copy">
         <p class="crumb"><a href="/examples.html">Examples</a> · 03 of 06</p>
-        <h1>Operate services <em>in your team's words.</em></h1>
-        <p class="lede"><strong>Scale a service, mute an alert, roll back a release.</strong> Your service names map to the
-          arguments <code>kubectl</code> needs. A write runs when the bar is met, and a rollback asks every time. A
-          pattern for your app: the tooling, the credentials and the cluster access stay yours.</p>
+        <h1>Run kubectl operations <em>in your team's words.</em></h1>
+        <p class="lede"><strong>Natural-language commands for the operations your team approved.</strong> A reflex is a
+          small program you install and ask for in your words. Your team writes one per operation, and only those can
+          run. Your service names fill in kubectl's arguments. A scale runs when evoke is sure enough, and a rollback
+          asks every time.</p>
+        <div class="cta"><a class="button primary" href="#set-up">Adapt this pattern</a></div>
       </div>
       <ul class="index" aria-label="The sections">
         <li><a href="#request"><code>01</code>The request and the result</a></li>
         <li><a href="#files"><code>02</code>The operations</a></li>
         <li><a href="#boundary"><code>03</code>One boundary</a></li>
-        <li><a href="#needs"><code>04</code>Before you run it</a></li>
+        <li><a href="#set-up"><code>04</code>Set it up</a></li>
+        <li><a href="#app"><code>05</code>In your app</a></li>
       </ul>
     </div>
 
     <section id="request">
       <div class="rule"><p class="label">The request and the result</p><span class="num">01</span></div>
-      <h2>Scale, silence, roll back.</h2>
-      <p class="sub">Three reflexes for one channel. <strong>A write runs when the bar is met. A rollback always
-        asks.</strong> Every line is what the terminal printed.</p>
+      <h2>A scale runs. A rollback waits for a yes.</h2>
+      <p class="sub">Four sentences typed in the ops project, the directory that holds these reflexes. Jev, TypeSafe AI's
+        model, read each one and gave every answer a probability. <strong>A change runs without a question only when
+        every answer is at least 0.8, the default.</strong> Recorded on 21 September 2026.</p>
       <div class="grid">
         <div class="panel term demo ops-room" role="figure" data-scene="ops" data-checkout="2" data-payments="3" data-release="42" data-bell="ring" aria-label="An ops board answering four sentences">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/ops<span class="trail" aria-hidden="true"><b>run</b><b>ask</b><b>confirm</b></span></div>
@@ -84,25 +88,30 @@
         </div>
         <div class="side">
           <ol class="notes column">
-            <li><b>1</b><span><strong>kubectl, no code.</strong> The <code>scale</code> reflex is a manifest and nothing
-              else: a program with its arguments, filled from the sentence.</span></li>
-            <li><b>2</b><span><strong>Your names, from a vocabulary.</strong> «checkout» is a word whose value is
-              <code>checkout-api</code>. The program gets the value. The classifier sees the word.</span></li>
-            <li><b>3</b><span><strong>The rollback is destructive.</strong> Sure at 0.99, and it still asked. A release
-              moved only after the yes.</span></li>
+            <li><b>1</b><span><strong>kubectl, and no code.</strong> The <code>scale</code> reflex is only a manifest, the
+              <code>reflex.toml</code> file that describes it. It names kubectl and its arguments, and the sentence fills
+              them in.</span></li>
+            <li><b>2</b><span><strong>Your names become kubectl's values.</strong> «checkout» is a word in your list, and
+              its value is <code>checkout-api</code>. The classifier reads the word and its meaning. kubectl gets the
+              value.</span></li>
+            <li><b>3</b><span><strong>A rollback cannot be undone, so it asks.</strong> «weakest: service 0.99» names its
+              least sure answer, the service. evoke was that sure, and it still asked. Every value is one your lists
+              allow, but a reading can still be wrong.</span></li>
           </ol>
+          <p class="after"><a class="more" href="/guides/approval-by-risk.html">Why the rollback asked at 0.99 →</a></p>
         </div>
       </div>
     </section>
 
     <section id="files">
       <div class="rule"><p class="label">The operations</p><span class="num">02</span></div>
-      <h2>The same reflexes as files, as code, and in the app.</h2>
-      <p class="sub">A manifest around <code>kubectl</code>, the team's names in a file, and the eight-line app that runs a
-        sentence. <strong>In code, the same text, and <code>with</code> hands the names over.</strong></p>
+      <h2>The scale reflex as a manifest, as code, and in an app.</h2>
+      <p class="sub">The <code>scale</code> manifest around kubectl, your service names in a file, and an app of nine
+        lines that runs one sentence. <strong>In code, the manifest becomes an object, and <code>with()</code> passes
+        your names to it.</strong></p>
       <div class="split">
         <div class="panel tabbed">
-          <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The ops channel as files, as code, and the app">
+          <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The scale reflex as files, as code, and the app">
             <button role="tab" id="t1" aria-controls="p1" aria-selected="true">files</button>
             <button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1">code</button>
             <button role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1">the app</button>
@@ -126,6 +135,10 @@
   <span class="s">"kubectl"</span><span class="o">,</span> <span class="s">"-n"</span><span class="o">,</span> <span class="s">"<span class="ph">{env}</span>"</span><span class="o">,</span> <span class="s">"scale"</span><span class="o">,</span> <span class="s">"deployment"</span><span class="o">,</span> <span class="s">"<span class="ph">{service}</span>"</span><span class="o">,</span>
   <span class="s">"--replicas"</span><span class="o">,</span> <span class="s">"<span class="ph">{replicas}</span>"</span><span class="o">,</span>
 <span class="o">]</span>
+
+<span class="t">[needs]</span>
+<span class="k">writes</span> <span class="o">=</span> <span class="o">[</span><span class="s">"~/.kube"</span><span class="o">]</span>                   <span class="c"># the kubeconfig, and kubectl's cache beside it</span>
+<span class="k">hosts</span>  <span class="o">=</span> <span class="o">[</span><span class="s">"*"</span><span class="o">]</span>
 
 <span class="t">[args.service]</span>
 <span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which service?"</span>
@@ -207,7 +220,7 @@
           </div>
           <div role="tabpanel" id="p3" aria-labelledby="t3" hidden>
             <div class="file">app.ts<span class="who">loads the files</span></div>
-<pre><span class="c">// The project next to this file: reflex.toml, vocab/, overlays/.</span>
+<pre><span class="c">// The project next to this file: evoke.toml, vocab/, overlays/.</span>
 <span class="c">// One sentence in, one line out.</span>
 <span class="w">import</span> <span class="o">{</span> load <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
 <span class="w">import</span> <span class="o">{</span> done<span class="o">,</span> handlers <span class="o">}</span> <span class="w">from</span> <span class="s">"../terminal.ts"</span>
@@ -229,8 +242,8 @@ done<span class="o">()</span></pre>
 <span class="w">const</span> handled <span class="o">=</span> <span class="w">await</span> ops<span class="o">.</span>handle<span class="o">(</span>process<span class="o">.</span>argv<span class="o">[</span><span class="n">2</span><span class="o">]</span> <span class="o">??</span> <span class="s">""</span><span class="o">,</span> handlers<span class="o">)</span>
 console<span class="o">.</span>log<span class="o">(</span>handled<span class="o">.</span>outcome <span class="o">===</span> <span class="s">"ran"</span> <span class="o">?</span> handled<span class="o">.</span>result<span class="o">.</span>text <span class="o">:</span> handled<span class="o">.</span>outcome<span class="o">)</span>
 done<span class="o">()</span></pre>
-            <div class="file">terminal.ts<span class="who you">the two handlers every app shares</span></div>
-<pre><span class="c">// The two handlers every app here shares.</span>
+            <div class="file">terminal.ts<span class="who">the two handlers</span></div>
+<pre><span class="c">// The two handlers the ops and runbook apps share.</span>
 <span class="c">// A confirm is a question; an ask is a numbered menu, or a blank to type into.</span>
 <span class="w">import</span> <span class="o">{</span> createInterface <span class="o">}</span> <span class="w">from</span> <span class="s">"node:readline/promises"</span>
 <span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Handlers <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
@@ -262,12 +275,15 @@ done<span class="o">()</span></pre>
         </div>
         <div class="side">
           <ol class="notes column">
-            <li><b>1</b><span><strong>An argv body needs no runtime.</strong> Each placeholder is a whole element,
-              filled with the word's value or the number's text. Never through a shell.</span></li>
-            <li><b>2</b><span><strong><code>silence</code> and <code>rollback</code> follow the same shape.</strong> A
-              duration read from the sentence, a host from your words, and a destructive effect on the rollback.</span></li>
-            <li><b>3</b><span><strong>The app is two handlers.</strong> A confirm is a question. An ask is a numbered
-              menu. Twenty lines, shared by every example here.</span></li>
+            <li><b>1</b><span><strong>A reflex that runs a program directly needs no Node.</strong> evoke starts kubectl
+              itself with its arguments, never through a shell. Each placeholder, such as <code>{service}</code>, fills
+              one whole argument. A value that starts with a dash is refused.</span></li>
+            <li><b>2</b><span><strong><code>silence</code> and <code>rollback</code> have the same shape.</strong>
+              <code>silence</code> reads a duration from the sentence and a host from your words. <code>rollback</code>
+              is marked destructive.</span></li>
+            <li><b>3</b><span><strong>The app asks through two handlers.</strong> One asks for a yes or a no. The other
+              offers a numbered menu for a missing value. Both live in <code>terminal.ts</code>, which the ops and runbook
+              apps share.</span></li>
           </ol>
         </div>
       </div>
@@ -276,8 +292,8 @@ done<span class="o">()</span></pre>
     <section id="boundary">
       <div class="rule"><p class="label">One boundary</p><span class="num">03</span></div>
       <h2>A missing environment is asked for, from your own list.</h2>
-      <p class="sub">The sentence named the service and the number, not where. <strong>evoke offered the environments
-        you defined</strong>, and decided again with the answer.</p>
+      <p class="sub">The sentence named the service and the number, but not where. <strong>evoke offered the
+        environments you listed</strong>, then checked the call again with your answer.</p>
       <div class="grid">
         <div class="panel term" role="figure" aria-label="A required input the sentence did not state is asked for">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
@@ -286,27 +302,103 @@ done<span class="o">()</span></pre>
   <span class="name">scale</span> service="payments" env="prod" replicas="1"  <span class="hi">0.95</span></span>
 <span class="out">deployment.apps/payments-svc scaled</span></pre>
         </div>
-        <p class="caption">The choice came from <code>vocab/envs.toml</code>, never from the classifier. Piped from a file
-          with no terminal, this line would exit 3 instead, and name the command to run yourself.</p>
+        <p class="caption">The choices are the words in <code>vocab/envs.toml</code>. With no terminal attached, as in a
+          cron job, evoke cannot ask. It prints the command to run yourself and exits with code 3.
+          <a href="/examples/inbox.html">A file of requests: the inbox example →</a></p>
       </div>
     </section>
 
-    <section id="needs">
-      <div class="rule"><p class="label">Before you run it</p><span class="num">04</span></div>
-      <h2>What this pattern needs.</h2>
+    <section id="set-up">
+      <div class="rule"><p class="label">Set it up</p><span class="num">04</span></div>
+      <h2>Build the scale reflex from this page, then type one sentence.</h2>
+      <p class="sub"><code>scale</code> is shown whole above, and it runs kubectl itself, so the terminal route needs no
+        Node. <strong>kubectl changes your cluster for real, so point your words at a deployment you may
+        scale.</strong></p>
       <ul class="needs">
-        <li class="ok"><b>kubectl, with access</b>On the machine that runs the sentence, with the cluster credentials it
-          already uses. evoke adds none.</li>
-        <li class="ok"><b>Your vocabulary</b>Services and environments, with their real names as values. From a file, or
-          from your database through <code>with</code>.</li>
-        <li class="ok"><b>A classifier key</b>For every live sentence. The provider bills the use.</li>
-        <li class="no"><b>Node, only for code</b>The manifest-only <code>scale</code> needs no runtime. The reflexes
-          written in TypeScript need Node 24.5 and the SDK.</li>
+        <li class="ok"><b>kubectl, with access</b>On the machine where you type. A reflex runs as you, held to what its
+          manifest declares: your kubeconfig, and the network.</li>
+        <li class="ok"><b>Your kubeconfig</b>kubectl reads <code>~/.kube/config</code>, and its current context picks the
+          cluster. The program gets only <code>PATH</code>, <code>HOME</code>, <code>TMPDIR</code>, <code>LANG</code>
+          and <code>TERM</code>, so an exported <code>KUBECONFIG</code> does not reach it.</li>
+        <li class="ok"><b>evoke and a key</b><a href="/start.html?example=ops">Install evoke and set your key</a>, then
+          come back here.</li>
+        <li class="no"><b>Questions about the cluster</b>This example only changes things. A question like «which pods
+          restarted?» needs a reflex that reads, around <code>kubectl get</code>.</li>
       </ul>
-      <p class="after">The files above are the whole example. Copy them from this page.</p>
+      <ol class="plan">
+        <li>
+          <div>
+            <h3>Make the project</h3>
+            <p>A folder with an <code>evoke.toml</code> file is a project, and <code>adapter = "jev"</code> has Jev read
+              its sentences. Then save the manifest from the files tab above as <code>~/ops/scale/reflex.toml</code>.</p>
+            <div class="cmd"><code>mkdir -p ~/ops/scale &amp;&amp; cd ~/ops &amp;&amp; echo 'adapter = "jev"' &gt; evoke.toml</code><button type="button" data-copy aria-label="Copy the project command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Trust it, and add the reflex</h3>
+            <p>evoke decides in a new project only after you trust it once. The add checks the manifest and prints one
+              row: <code>scale</code> runs kubectl. It stays inactive until its two lists have words.</p>
+            <div class="cmd"><code>evoke trust</code><button type="button" data-copy aria-label="Copy the trust command">Copy</button></div>
+            <div class="cmd"><code>evoke add ./scale</code><button type="button" data-copy aria-label="Copy the add command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Put in your words</h3>
+            <p>The word is what you type, and the meaning is what the classifier reads. The value is what kubectl gets:
+              here the deployment <code>checkout-api</code>. A word with no value, like <code>staging</code>, passes the
+              word itself as the namespace. Put your own deployments and namespaces in place of these.</p>
+            <div class="cmd"><code>evoke vocab services add checkout "The checkout API." --value checkout-api</code><button type="button" data-copy aria-label="Copy the services command">Copy</button></div>
+            <div class="cmd"><code>evoke vocab envs add staging "The pre-production cluster."</code><button type="button" data-copy aria-label="Copy the environments command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Look at a decision before it runs</h3>
+            <p><code>evoke try</code> decides and runs nothing. It shows the ranking, the answer for each input, and what
+              would happen.</p>
+            <div class="cmd"><code>evoke try "scale checkout to 6 in staging"</code><button type="button" data-copy aria-label="Copy the try command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Type the sentence</h3>
+            <p>evoke prints the call it chose and how sure it was, then kubectl's own line. kubectl changes the cluster
+              for real.</p>
+            <div class="cmd"><code>evoke "scale checkout to 6 in staging"</code><button type="button" data-copy aria-label="Copy the sentence">Copy</button></div>
+          </div>
+        </li>
+      </ol>
+      <p class="after">To add an operation, copy <code>scale/</code> to a directory of its own, then change its
+        description, its examples and its run line. <code>evoke add ./&lt;name&gt;</code> checks the manifest, and warns
+        when the new reflex would win a phrase that belongs to another one.</p>
+    </section>
+
+    <section id="app">
+      <div class="rule"><p class="label">In your app</p><span class="num">05</span></div>
+      <h2>The same reflex, from a Node application.</h2>
+      <p class="sub"><code>app.ts</code> loads <code>~/ops</code>: its <code>evoke.toml</code>, the <code>scale</code>
+        reflex and your words. It runs the manifest, so kubectl gets the same five variables as at your terminal.
+        <strong>It needs Node 24.5 or newer, and ES modules.</strong></p>
+      <div class="split">
+        <div class="stack">
+          <div class="cmd"><code>npm init -y &amp;&amp; npm pkg set type=module</code><button type="button" data-copy aria-label="Copy the package command">Copy</button></div>
+          <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
+          <div class="cmd"><code>node app.ts "scale checkout to 3"</code><button type="button" data-copy aria-label="Copy the app command">Copy</button></div>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>Save <code>app.ts</code> in <code>~/ops</code>, and <code>terminal.ts</code> in the
+              folder above it.</strong> <code>app.ts</code> imports its two handlers from there.</span></li>
+            <li><b>2</b><span><strong>The sentence names no environment</strong>, so the app's menu offers the ones you
+              listed. kubectl then scales for real.</span></li>
+          </ol>
+        </div>
+      </div>
       <div class="actions">
-        <a class="button primary" href="/start.html?example=ops">Adapt this pattern</a>
-        <a class="quiet" href="/manual/author/body.html#an-argv-body">Read the docs →</a>
+        <a class="button primary" href="/manual/author/body.html#an-argv-body">A reflex around a command</a>
+        <a class="quiet" href="/manual/use/projects.html#local-reflexes">Projects, in the manual →</a>
       </div>
     </section>
   </main>

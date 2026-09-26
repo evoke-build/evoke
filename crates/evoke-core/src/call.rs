@@ -50,6 +50,17 @@ pub enum Value {
     Flag,
 }
 
+/// `~` or `~/…` as a path under the home; anything else as it is.
+#[must_use]
+pub fn expand_home(value: &str, home: &str) -> String {
+    match value {
+        "~" => home.to_owned(),
+        _ => value
+            .strip_prefix("~/")
+            .map_or_else(|| value.to_owned(), |rest| format!("{home}/{rest}")),
+    }
+}
+
 impl Value {
     /// The value as a body receives it: an option key, a word's `value` if set else the word, a pick's number,
     /// seconds or text, `true` for a flag.
@@ -68,6 +79,18 @@ impl Value {
                 | PickValue::Quoted { value } => Json::String(value.to_string()),
             },
             Self::Flag => Json::Bool(true),
+        }
+    }
+
+    /// The value as a body receives it, a word's `value` that names a path under the home expanded: a vocabulary
+    /// keeps a path as a person writes it, `~/Desktop`, and the body, an argv and the declaration see one path.
+    #[must_use]
+    pub fn under_home(&self, home: &str) -> Json {
+        match self {
+            Self::Word {
+                value: Some(value), ..
+            } => Json::String(expand_home(value, home)),
+            _ => self.plain(),
         }
     }
 

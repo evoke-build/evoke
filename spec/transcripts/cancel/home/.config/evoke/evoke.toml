@@ -1,0 +1,6 @@
+adapter = "replay"
+
+[reflexes]
+wait  = "./wait"
+pause = "./pause"
+timer = "./timer"

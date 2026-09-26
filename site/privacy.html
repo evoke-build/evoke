@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Privacy policy - Evoke</title>
-  <meta name="description" content="No cookies, no analytics, no accounts, nothing held by us. A decision goes from your machine to the classifier you chose. What is sent, and what stays.">
+  <meta name="description" content="No cookies, no analytics, no accounts, nothing held by us. Each decision goes from your machine to the classifier you chose. What is sent, and what stays.">
   <!-- head -->
   <script type="application/ld+json">
   {
@@ -14,7 +14,7 @@
     "url": "https://evoke.build/privacy.html",
     "name": "Privacy policy",
     "headline": "Privacy policy",
-    "description": "No cookies, no analytics, no accounts, nothing held by us. A decision goes from your machine to the classifier you chose. What is sent, and what stays.",
+    "description": "No cookies, no analytics, no accounts, nothing held by us. Each decision goes from your machine to the classifier you chose. What is sent, and what stays.",
     "inLanguage": "en",
     "isPartOf": {
       "@id": "https://evoke.build/#website"
@@ -29,7 +29,7 @@
       "@id": "https://evoke.build/#organization"
     },
     "datePublished": "2026-09-23",
-    "dateModified": "2026-09-23"
+    "dateModified": "2026-09-25"
   }
   </script>
   <style>
@@ -51,12 +51,12 @@
           <div><dt>Cookies</dt><dd><b>None.</b> Not one, on any page.</dd></div>
           <div><dt>Analytics</dt><dd><b>None.</b> No script watches you read, and nothing is loaded from a third party.</dd></div>
           <div><dt>Accounts</dt><dd><b>None.</b> There is nothing to sign up for.</dd></div>
-          <div><dt>The tool</dt><dd><b>Runs on your machine and sends nothing to us.</b> Its one request goes to the classifier you chose, with your key.</dd></div>
+          <div><dt>The tool</dt><dd><b>Runs on your machine and sends nothing to us.</b> Each decision is one request to the classifier you chose, with your key.</dd></div>
           <div><dt>Held by us</dt><dd><b>Nothing.</b> There is no server of ours.</dd></div>
           <div><dt>The host</dt><dd>GitHub Pages, which logs the address of each visit.</dd></div>
-          <div><dt>Published by</dt><dd>Radhi Guennichi, the author of <code>evoke</code>.</dd></div>
+          <div><dt>Published by</dt><dd>Radhi Guennichi, the author of evoke.</dd></div>
           <div><dt>Questions</dt><dd>An <a href="https://github.com/evoke-build/evoke/issues">issue</a> on GitHub. A vulnerability through the <a href="https://github.com/evoke-build/evoke/security/advisories/new">private form</a>.</dd></div>
-          <div><dt>Changed</dt><dd><time datetime="2026-09-23">23 September 2026</time>. Every change is a <a href="https://github.com/evoke-build/evoke/commits/main/site/privacy.html">public commit</a>.</dd></div>
+          <div><dt>Changed</dt><dd><time datetime="2026-09-25">25 September 2026</time>. Every change is a <a href="https://github.com/evoke-build/evoke/commits/main/site/privacy.html">public commit</a>.</dd></div>
         </dl>
       </div>
       <ul class="index" aria-label="The sections">
@@ -91,15 +91,25 @@
     <section id="tool">
       <div class="rule"><p class="label">The tool</p><span class="num">02</span></div>
       <h2>Your sentence goes to the classifier. Nothing goes to us.</h2>
-      <p class="sub"><code>evoke</code> runs on your computer. It never contacts evoke.build, checks for nothing and
-        reports nothing. There is no server of ours on the way, and no telemetry.</p>
+      <p class="sub">A reflex is a small program you install and ask for in your words. evoke runs on your computer. It
+        never contacts evoke.build, checks for nothing and reports nothing. There is no server of ours on the way, and
+        no telemetry.</p>
       <h3>When it decides</h3>
       <ul class="ticks">
-        <li><strong>One request leaves your machine</strong>, to the adapter your project names: Jev, at
-          <a href="https://typesafe.ai">TypeSafe AI</a>, or <a href="https://openjev.sh">OpenJEV</a>, an independent
-          service that forwards the request to Jev. It carries your sentence, and the questions built from the
-          reflexes you installed: their descriptions, options and examples, and your vocabulary's words with the
+        <li><strong>Each decision is one request</strong>, through your project's adapter: <code>jev</code>, the default,
+          which reaches Jev at <a href="https://typesafe.ai">TypeSafe AI</a>, or <code>openjev</code>, which reaches Jev
+          through <a href="https://openjev.sh">OpenJEV</a>, an independent service that forwards the request. It carries
+          your sentence and the questions built from the reflexes you installed. Each reflex adds its description, what
+          it is not for, its examples, and each input's question and options. Your vocabulary adds its words, with the
           meaning you wrote for each.</li>
+        <li><strong>A sentence that may hold several steps can make more than one request.</strong> Where a word such as
+          <em>and</em> or <em>then</em>, or a comma, could separate two things, one request asks the classifier whether
+          it does. Each step is then decided with a request of its own, and when a sentence has three steps or more, a
+          word such as <em>them</em> can take one more. Each carries only your words and questions built from them and
+          from your reflexes. <a href="/manual/use/weaving.html#how-a-sentence-is-read">How a sentence is read →</a></li>
+        <li><strong>A sentence you repeat is answered from a cache on your machine</strong>, with no request, as long as
+          your installed reflexes and your own words for them have not changed.
+          <a href="/manual/use/outcomes.html#the-cache">The cache →</a></li>
         <li><strong>Nothing else of yours travels.</strong> Never a vocabulary's value, a setting, a key, a file,
           or anything else on your machine. Your key goes only in that request's header, to the classifier.</li>
         <li><strong>A proxy you name in your environment</strong> carries the connection, and sees ciphertext.</li>
@@ -109,7 +119,9 @@
         <li><strong>What the classifier does with the request</strong> is set by TypeSafe AI's
           <a href="https://typesafe.ai/legal/privacy">privacy policy</a> and
           <a href="https://typesafe.ai/legal/mca">customer agreement</a>, which you accept when you take a key. As of
-          the date at the top of this page, both say your input is not used to train its models.</li>
+          the date at the top of this page, the customer agreement says your input is not used to train its models
+          without your consent. It also lets TypeSafe AI derive information from your requests, such as logs, metrics
+          and summary statistics, and use it without restriction, including to improve its services.</li>
       </ul>
       <h3>What stays on your machine</h3>
       <ul class="ticks">
@@ -149,7 +161,7 @@
     <section id="sdk">
       <div class="rule"><p class="label">The SDK</p><span class="num">04</span></div>
       <h2>Inside your application, under its policy.</h2>
-      <p class="sub">The SDK runs inside your application and sends the same request to the adapter your application
+      <p class="sub">The SDK runs inside your application and sends the same requests to the adapter your application
         configures, with your application's key. We receive nothing.</p>
       <p class="after">What your application does with its users' sentences, and what it tells them, is your
         application's responsibility, and belongs in its own privacy policy. The
@@ -158,12 +170,11 @@
 
     <section id="others">
       <div class="rule"><p class="label">Who else sees something</p><span class="num">05</span></div>
-      <h2>Five parties, each under its own terms.</h2>
-      <p class="sub">None of them is us. Each sees only what the line names, and its own policy governs what it
-        keeps.</p>
+      <h2>The other parties, and what each one sees.</h2>
+      <p class="sub">None of them is us. Each sees only what its line names.</p>
       <ul class="ticks">
-        <li><strong>TypeSafe AI</strong> sees a decision's request when your project names <code>jev</code>, and one
-          forwarded by OpenJEV when it names <code>openjev</code>. Its
+        <li><strong>TypeSafe AI</strong> sees every request evoke makes through <code>jev</code>, the default adapter,
+          and each one OpenJEV forwards when a project names <code>openjev</code>. Its
           <a href="https://typesafe.ai/legal/privacy">privacy policy</a> and
           <a href="https://typesafe.ai/legal/mca">customer agreement</a> apply.</li>
         <li><strong>OpenJEV</strong> sees a decision's request when your project names <code>openjev</code>, and
@@ -173,7 +184,7 @@
           it hosts. Its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy
           statement</a> applies.</li>
         <li><strong>npm</strong> sees an install of the SDK. Its
-          <a href="https://docs.npmjs.com/policies/privacy">privacy policy</a> applies.</li>
+          <a href="https://docs.npmjs.com/policies/privacy/">privacy policy</a> applies.</li>
         <li><strong>Your git host</strong> sees a fetch of a reflex you install from it, under your own account
           and its terms.</li>
       </ul>
@@ -186,16 +197,17 @@
         <a href="https://github.com/evoke-build/evoke/commits/main/site/privacy.html">repository's history</a>. The
         date at the top of this page is the last change.</p>
       <ul class="ticks">
-        <li><strong>If a version of <code>evoke</code> or of this site ever sends or keeps something new,</strong>
+        <li><strong>If a version of evoke or of this site ever sends or keeps something new,</strong>
           this page changes in the same commit, so what the page says is what the tool does.</li>
         <li><strong>Nothing is held by us,</strong> so there is nothing we could hand over, correct or delete. What is
-          on your machine, you delete. For the four parties above, their policies say how to ask.</li>
+          on your machine, you delete. For what a party above holds, its own policy says how to ask.</li>
         <li><strong>A question</strong> is an <a href="https://github.com/evoke-build/evoke/issues">issue</a> on
           GitHub. <strong>A vulnerability</strong> goes through
           <a href="https://github.com/evoke-build/evoke/security/advisories/new">GitHub's private form</a>, never a
           public issue.</li>
       </ul>
-      <p class="after"><a class="more" href="/faq.html">Frequently asked questions →</a></p>
+      <p class="after"><a class="more" href="/faq.html#machine">Questions about evoke →</a>
+        <span class="also"><a href="/start.html#needs">What you need to get started →</a></span></p>
     </section>
   </main>
 

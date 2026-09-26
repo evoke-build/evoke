@@ -1,0 +1,14 @@
+{
+  "input": {
+    "policy": { "runs": ["open"] },
+    "reflex": "visit",
+    "origin": { "type": "fetched" },
+    "refused": { "what": "spawnSync plutil", "path": "plutil" },
+    "home": "/Users/me"
+  },
+  "expect": {
+    "reflex": "visit",
+    "message": "plutil is not in [needs] runs",
+    "fix": { "type": "remove", "reflex": "visit" }
+  }
+}

@@ -1,5 +1,6 @@
 //! The five recognizers over an input, and masking. In: `Input`. Out: `Vec<Proposed>`, verbatim spans with typed
-//! values, in order of position: quotes hide what they enclose, a duration hides its number.
+//! values, in order of position: quotes hide what they enclose, a duration hides its number. A number and a
+//! duration read spelled out as they read in digits.
 
 use std::ops::Range;
 
@@ -53,9 +54,16 @@ pub fn propose(input: &Input) -> Vec<Proposed> {
     for recognize in RECOGNIZERS {
         let mut i = 0;
         while i < chars.len() {
-            let Some(Found { span, after, read }) = recognize(&chars, i) else {
-                i += 1;
-                continue;
+            let Found { span, after, read } = match recognize(&chars, i) {
+                Scan::Found(found) => found,
+                Scan::Skip(after) => {
+                    i = after;
+                    continue;
+                }
+                Scan::Nothing => {
+                    i += 1;
+                    continue;
+                }
             };
             if !hidden.iter().any(|range| range.contains(&i)) {
                 // A typed match hides what it covers whether or not its text can be a span.
@@ -72,6 +80,14 @@ pub fn propose(input: &Input) -> Vec<Proposed> {
     }
     found.sort_by_key(|proposed| proposed.span.start());
     found
+}
+
+/// What a recognizer finds at one position: a candidate; a run of number words it reads as nothing, passed over
+/// whole so that no part of it is a candidate; or nothing.
+enum Scan {
+    Found(Found),
+    Skip(usize),
+    Nothing,
 }
 
 /// A recognizer's match at one position: the candidate inside it, where scanning resumes, and what it reads as.
@@ -109,17 +125,17 @@ impl Read {
 }
 
 /// What one kind finds at a position of the input.
-type Recognizer = fn(&[char], usize) -> Option<Found>;
+type Recognizer = fn(&[char], usize) -> Scan;
 
 /// In this order: an earlier kind's match hides the candidates that start inside it.
 const RECOGNIZERS: [Recognizer; 5] = [quoted, url, email, duration, number];
 
-fn quoted(chars: &[char], i: usize) -> Option<Found> {
+fn quoted(chars: &[char], i: usize) -> Scan {
     let close = match chars[i] {
         '"' => '"',
         '\u{201c}' => '\u{201d}',
         '\u{2018}' => '\u{2019}',
-        _ => return None,
+        _ => return Scan::Nothing,
     };
     let open = chars[i];
     let mut j = i + 1;
@@ -127,35 +143,41 @@ fn quoted(chars: &[char], i: usize) -> Option<Found> {
         j += 1;
     }
     if j == i + 1 || j == chars.len() || chars[j] != close {
-        return None;
+        return Scan::Nothing;
     }
-    Some(Found {
+    Scan::Found(Found {
         span: i + 1..j,
         after: j + 1,
         read: Read::Quoted,
     })
 }
 
-fn url(chars: &[char], i: usize) -> Option<Found> {
-    let scheme = ["https://", "http://"]
+fn url(chars: &[char], i: usize) -> Scan {
+    let Some(scheme) = ["https://", "http://"]
         .into_iter()
-        .find(|scheme| starts_with(chars, i, scheme))?;
+        .find(|scheme| starts_with(chars, i, scheme))
+    else {
+        return Scan::Nothing;
+    };
     let inner = |c: char| !(c.is_whitespace() || matches!(c, '<' | '>' | '"' | '\''));
     let mut j = i + scheme.len();
     while j < chars.len() && inner(chars[j]) {
         j += 1;
     }
-    let end = (i + scheme.len() + 2..=j)
+    let Some(end) = (i + scheme.len() + 2..=j)
         .rev()
-        .find(|&end| !matches!(chars[end - 1], '.' | ',' | ';' | ':' | '!' | '?' | ')'))?;
-    Some(Found {
+        .find(|&end| !matches!(chars[end - 1], '.' | ',' | ';' | ':' | '!' | '?' | ')'))
+    else {
+        return Scan::Nothing;
+    };
+    Scan::Found(Found {
         span: i..end,
         after: end,
         read: Read::Url,
     })
 }
 
-fn email(chars: &[char], i: usize) -> Option<Found> {
+fn email(chars: &[char], i: usize) -> Scan {
     let local = |c: char| c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '%' | '+' | '-');
     let domain = |c: char| c.is_ascii_alphanumeric() || matches!(c, '.' | '-');
     let mut at = i;
@@ -163,13 +185,13 @@ fn email(chars: &[char], i: usize) -> Option<Found> {
         at += 1;
     }
     if at == i || chars.get(at) != Some(&'@') {
-        return None;
+        return Scan::Nothing;
     }
     let mut j = at + 1;
     while j < chars.len() && domain(chars[j]) {
         j += 1;
     }
-    let end = (at + 2..j)
+    let Some(end) = (at + 2..j)
         .rev()
         .filter(|&dot| chars[dot] == '.')
         .find_map(|dot| {
@@ -178,8 +200,11 @@ fn email(chars: &[char], i: usize) -> Option<Found> {
                 .take_while(|c| c.is_ascii_alphabetic())
                 .count();
             (letters >= 2).then_some(dot + 1 + letters)
-        })?;
-    Some(Found {
+        })
+    else {
+        return Scan::Nothing;
+    };
+    Scan::Found(Found {
         span: i..end,
         after: end,
         read: Read::Email,
@@ -205,30 +230,94 @@ const UNITS: [(&str, f64); 15] = [
     ("h", 3600.0),
 ];
 
-fn duration(chars: &[char], i: usize) -> Option<Found> {
+/// The words that stand for an amount before a unit written out, and what they stand for.
+const ARTICLES: [(&str, f64); 6] = [
+    ("a quarter of an", 0.25),
+    ("a quarter of a", 0.25),
+    ("half an", 0.5),
+    ("half a", 0.5),
+    ("an", 1.0),
+    ("a", 1.0),
+];
+
+/// What stands before a unit: the amount, where it ends, and whether a one-letter unit — `10m` — may follow it,
+/// which it may after a number and never after an article; a run of number words to pass over; or nothing.
+enum Amount {
+    Read(f64, usize, bool),
+    Skip(usize),
+    Nothing,
+}
+
+/// The amount at `i`: a number in words, an article's — «an hour», «half a minute» — or a number in digits.
+fn amount(chars: &[char], i: usize) -> Amount {
+    match words(chars, i) {
+        Some(Words {
+            end,
+            value: Some(value),
+        }) => return Amount::Read(value, end, true),
+        Some(Words { end, value: None }) => return Amount::Skip(end),
+        None => {}
+    }
+    if let Some((value, end)) = article(chars, i) {
+        return Amount::Read(value, end, false);
+    }
     // A minus the number's own — `-5 minutes` — makes no duration: the number stands alone, negative.
     if i > 0 && chars[i - 1] == '-' && (i == 1 || !is_word(chars[i - 2])) {
-        return None;
+        return Amount::Nothing;
     }
-    let (amount, after) = decimal(chars, i)?;
-    let unit_at = after_space(chars, after);
-    let (end, seconds_each) = UNITS
-        .into_iter()
-        .find_map(|(unit, seconds)| unit_end(chars, unit_at, unit).map(|end| (end, seconds)))?;
-    Some(Found {
+    match decimal(chars, i) {
+        Some((value, end)) => Amount::Read(value, end, true),
+        None => Amount::Nothing,
+    }
+}
+
+fn duration(chars: &[char], i: usize) -> Scan {
+    let (amount, after, letters) = match amount(chars, i) {
+        Amount::Read(value, end, letters) => (value, end, letters),
+        Amount::Skip(end) => return Scan::Skip(end),
+        Amount::Nothing => return Scan::Nothing,
+    };
+    // «and a half» adds a half, after the amount — «two and a half hours» — or after the unit — «an hour and a
+    // half».
+    let (amount, after, halved) = match half_after(chars, after) {
+        Some(end) => (amount + 0.5, end, true),
+        None => (amount, after, false),
+    };
+    let Some((end, seconds_each)) = unit(chars, after_space(chars, after), letters) else {
+        return Scan::Nothing;
+    };
+    let (amount, end) = match half_after(chars, end) {
+        Some(end) if !halved => (amount + 0.5, end),
+        _ => (amount, end),
+    };
+    let Some(seconds) = seconds(amount * seconds_each) else {
+        return Scan::Nothing;
+    };
+    Scan::Found(Found {
         span: i..end,
         after: end,
-        read: Read::Seconds(seconds(amount * seconds_each)?),
+        read: Read::Seconds(seconds),
     })
 }
 
-fn number(chars: &[char], i: usize) -> Option<Found> {
-    // A minus is the number's when nothing wordlike stands before it and a digit follows: `-5`, never `5-10`.
-    let signed = chars[i] == '-'
-        && chars.get(i + 1).is_some_and(char::is_ascii_digit)
-        && (i == 0 || !is_word(chars[i - 1]));
-    let (value, after) = decimal(chars, if signed { i + 1 } else { i })?;
-    let value = if signed { -value } else { value };
+fn number(chars: &[char], i: usize) -> Scan {
+    let (value, after) = match words(chars, i) {
+        Some(Words {
+            end,
+            value: Some(value),
+        }) => (value, end),
+        Some(Words { end, value: None }) => return Scan::Skip(end),
+        None => {
+            // A minus is the number's when nothing wordlike stands before it and a digit follows: `-5`, never `5-10`.
+            let signed = chars[i] == '-'
+                && chars.get(i + 1).is_some_and(char::is_ascii_digit)
+                && (i == 0 || !is_word(chars[i - 1]));
+            let Some((value, after)) = decimal(chars, if signed { i + 1 } else { i }) else {
+                return Scan::Nothing;
+            };
+            (if signed { -value } else { value }, after)
+        }
+    };
     let unit_at = after_space(chars, after);
     let end = if let Some(end) = unit_end(chars, unit_at, "percent") {
         end
@@ -237,11 +326,186 @@ fn number(chars: &[char], i: usize) -> Option<Found> {
     } else {
         after
     };
-    Some(Found {
+    Scan::Found(Found {
         span: i..end,
         after: end,
         read: Read::Number(value),
     })
+}
+
+/// The number words read, with their values: the ones to nineteen, then the tens.
+const ONES: [(&str, u32); 20] = [
+    ("zero", 0),
+    ("one", 1),
+    ("two", 2),
+    ("three", 3),
+    ("four", 4),
+    ("five", 5),
+    ("six", 6),
+    ("seven", 7),
+    ("eight", 8),
+    ("nine", 9),
+    ("ten", 10),
+    ("eleven", 11),
+    ("twelve", 12),
+    ("thirteen", 13),
+    ("fourteen", 14),
+    ("fifteen", 15),
+    ("sixteen", 16),
+    ("seventeen", 17),
+    ("eighteen", 18),
+    ("nineteen", 19),
+];
+const TENS: [(&str, u32); 8] = [
+    ("twenty", 20),
+    ("thirty", 30),
+    ("forty", 40),
+    ("fifty", 50),
+    ("sixty", 60),
+    ("seventy", 70),
+    ("eighty", 80),
+    ("ninety", 90),
+];
+
+/// A word of a run of number words.
+#[derive(Clone, Copy, PartialEq)]
+enum Token {
+    Ones(u32),
+    Tens(u32),
+    Hundred,
+    /// «thousand», «million», «billion»: past what is read, so a run holding one reads as nothing.
+    Beyond,
+    /// «a», opening a run before «hundred» or a word beyond it: «a hundred».
+    A,
+    /// «and», after «hundred» or a word beyond it and before a number word: «a hundred and fifty».
+    And,
+}
+
+fn token(word: &str) -> Option<Token> {
+    if let Some((_, value)) = ONES.iter().find(|(ones, _)| *ones == word) {
+        return Some(Token::Ones(*value));
+    }
+    if let Some((_, value)) = TENS.iter().find(|(tens, _)| *tens == word) {
+        return Some(Token::Tens(*value));
+    }
+    match word {
+        "hundred" => Some(Token::Hundred),
+        "thousand" | "million" | "billion" => Some(Token::Beyond),
+        "a" => Some(Token::A),
+        "and" => Some(Token::And),
+        _ => None,
+    }
+}
+
+/// The word at `at`, in any letter case, as a token, with where it ends.
+fn token_at(chars: &[char], at: usize) -> Option<(Token, usize)> {
+    let end = at
+        + chars
+            .get(at..)?
+            .iter()
+            .take_while(|c| c.is_alphabetic())
+            .count();
+    let word: String = chars[at..end]
+        .iter()
+        .flat_map(|c| c.to_lowercase())
+        .collect();
+    token(&word).map(|token| (token, end))
+}
+
+/// Whether one space or one hyphen at `at` is followed by a word that `fits`.
+fn follows(chars: &[char], at: usize, fits: impl Fn(Token) -> bool) -> bool {
+    matches!(chars.get(at), Some(' ' | '-'))
+        && token_at(chars, at + 1).is_some_and(|(token, _)| fits(token))
+}
+
+/// A run of number words: where it ends, and its value when it is a form that is read.
+struct Words {
+    end: usize,
+    value: Option<f64>,
+}
+
+/// The run of number words at `i` — the words to nineteen, the tens, «hundred» and the words beyond it, «a»
+/// before those and «and» after them — joined by one space or one hyphen, with a word boundary at each end:
+/// «tenant» and «one-off» hold none. It reads as one word to ninety, a tens word joined to a word from one to
+/// nine, «a hundred» or «one hundred»; a longer run — «two hundred», «a hundred and fifty», «seven thirty» —
+/// reads as nothing, whole, so no part of it is a candidate.
+fn words(chars: &[char], i: usize) -> Option<Words> {
+    if i > 0 && (is_word(chars[i - 1]) || i >= 2 && hyphen_binds(chars, i - 1, i - 2)) {
+        return None;
+    }
+    let mut tokens: Vec<Token> = Vec::new();
+    let mut end = i;
+    let mut at = i;
+    while let Some((token, word_end)) = token_at(chars, at) {
+        let fits = match token {
+            Token::A => {
+                tokens.is_empty()
+                    && follows(chars, word_end, |next| {
+                        matches!(next, Token::Hundred | Token::Beyond)
+                    })
+            }
+            Token::And => {
+                matches!(tokens.last(), Some(Token::Hundred | Token::Beyond))
+                    && follows(chars, word_end, |next| {
+                        matches!(next, Token::Ones(_) | Token::Tens(_))
+                    })
+            }
+            _ => true,
+        };
+        if !fits {
+            break;
+        }
+        tokens.push(token);
+        end = word_end;
+        if !matches!(chars.get(end), Some(' ' | '-')) {
+            break;
+        }
+        at = end + 1;
+    }
+    if tokens.is_empty()
+        || chars.get(end).is_some_and(|&c| is_word(c))
+        || hyphen_binds(chars, end, end + 1)
+    {
+        return None;
+    }
+    let value = match tokens[..] {
+        [Token::Ones(value) | Token::Tens(value)] => Some(value),
+        [Token::Tens(tens), Token::Ones(ones)] if (1..=9).contains(&ones) => Some(tens + ones),
+        [Token::A | Token::Ones(1), Token::Hundred] => Some(100),
+        _ => None,
+    };
+    Some(Words {
+        end,
+        value: value.map(f64::from),
+    })
+}
+
+/// Whether a hyphen at `at` binds the word beside it to a word at `other`, as in «one-off».
+fn hyphen_binds(chars: &[char], at: usize, other: usize) -> bool {
+    chars.get(at) == Some(&'-') && chars.get(other).is_some_and(|c| c.is_alphabetic())
+}
+
+/// An article's amount at `i`, at a word boundary and in any letter case: what it stands for, and where it ends.
+fn article(chars: &[char], i: usize) -> Option<(f64, usize)> {
+    if i > 0 && is_word(chars[i - 1]) {
+        return None;
+    }
+    ARTICLES
+        .into_iter()
+        .find_map(|(words, value)| phrase_end(chars, i, words).map(|end| (value, end)))
+}
+
+/// Where «and a half» ends when it follows what ends at `at`.
+fn half_after(chars: &[char], at: usize) -> Option<usize> {
+    phrase_end(chars, after_space(chars, at), "and a half")
+}
+
+/// The unit at `at` and its seconds; a one-letter form, `10m`, only after a number.
+fn unit(chars: &[char], at: usize, letters: bool) -> Option<(usize, f64)> {
+    UNITS
+        .into_iter()
+        .filter(|(unit, _)| letters || unit.len() > 1)
+        .find_map(|(unit, seconds)| unit_end(chars, at, unit).map(|end| (end, seconds)))
 }
 
 /// `\b\d+(\.\d+)?` at `i`: the number and where it ends; digits past what a number holds are no candidate, and
@@ -293,6 +557,17 @@ fn after_space(chars: &[char], at: usize) -> usize {
 fn unit_end(chars: &[char], at: usize, unit: &str) -> Option<usize> {
     let end = at + unit.len();
     (starts_with(chars, at, unit) && !chars.get(end).is_some_and(|&c| is_word(c))).then_some(end)
+}
+
+/// Where `text`, words in any letter case, ends when it stands at `at` and no word continues it.
+fn phrase_end(chars: &[char], at: usize, text: &str) -> Option<usize> {
+    let end = at + text.chars().count();
+    let stands = text.chars().enumerate().all(|(k, c)| {
+        chars
+            .get(at + k)
+            .is_some_and(|d| d.to_ascii_lowercase() == c)
+    });
+    (stands && !chars.get(end).is_some_and(|&c| is_word(c))).then_some(end)
 }
 
 fn is_word(c: char) -> bool {
@@ -351,6 +626,36 @@ mod tests {
             [(5, 25, number(1e20))]
         );
         assert_eq!(spans("wait 1e3 hours")[0].2, number(1.0));
+    }
+
+    #[test]
+    fn number_words_read_whole_or_not_at_all() {
+        assert_eq!(
+            spans("twenty five or twenty-five"),
+            [(0, 11, number(25.0)), (15, 26, number(25.0))]
+        );
+        assert_eq!(spans("One Hundred Percent"), [(0, 11, number(100.0))]);
+        assert_eq!(spans("one hundred percent"), [(0, 19, number(100.0))]);
+        assert!(spans("two hundred, a hundred and fifty, seven thirty, a thousand").is_empty());
+        assert!(spans("tenant one-off fifty5 twenty-fiveish").is_empty());
+        assert_eq!(spans("5fifty"), [(0, 1, number(5.0))]);
+        assert_eq!(
+            spans("lamp one and two"),
+            [(5, 8, number(1.0)), (13, 16, number(2.0))]
+        );
+        assert_eq!(spans("twenty five mins"), [(0, 16, seconds(1500))]);
+    }
+
+    #[test]
+    fn articles_and_halves_make_durations() {
+        assert_eq!(spans("in an hour's time"), [(3, 10, seconds(3600))]);
+        assert_eq!(spans("half a minute")[0].2, seconds(30));
+        assert_eq!(spans("a quarter of an hour and a half")[0].2, seconds(2700));
+        assert_eq!(spans("2 and a half hours")[0].2, seconds(9000));
+        assert_eq!(spans("2 hours and a half")[0].2, seconds(9000));
+        assert_eq!(spans("five m")[0].2, seconds(300));
+        assert_eq!(spans("at seven a m"), [(3, 8, number(7.0))]);
+        assert!(spans("a timer and an alarm").is_empty());
     }
 
     #[test]

@@ -1,0 +1,103 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md).
+# The same engine a week later: "ping me in 2 hours" now routes to none, "25 minute timer" reads no duration,
+# and "turn on the kitchen lights" reads off, sure enough to run.
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.6
+write = 0.8
+
+[answers."turn on the kitchen lights"]
+route          = { lights = 0.9, timer = 0.02, none = 0.08 }
+"fits.lights"  = { yes = 0.75 }
+"fits.timer"   = { yes = 0.05 }
+"lights.room"  = { den = 0.9, office = 0.05, unstated = 0.05 }
+"lights.state" = { off = 0.85, on = 0.1, dim = 0.03, unstated = 0.02 }
+
+[answers."dim the office to 30 percent"]
+route               = { lights = 0.92, timer = 0.02, none = 0.06 }
+"fits.lights"       = { yes = 0.75 }
+"fits.timer"        = { yes = 0.05 }
+"lights.room"       = { office = 0.9, den = 0.05, unstated = 0.05 }
+"lights.state"      = { dim = 0.9, on = 0.03, off = 0.02, unstated = 0.05 }
+"lights.brightness" = { "18-28" = 0.9, unstated = 0.1 }
+
+[answers."make it darker in here"]
+route          = { lights = 0.85, timer = 0.05, none = 0.1 }
+"fits.lights"  = { yes = 0.7 }
+"fits.timer"   = { yes = 0.05 }
+"lights.room"  = { unstated = 0.85, den = 0.1, office = 0.05 }
+"lights.state" = { off = 0.6, dim = 0.3, on = 0.05, unstated = 0.05 }
+
+[answers."light a candle"]
+route          = { none = 0.8, lights = 0.15, timer = 0.05 }
+"fits.lights"  = { yes = 0.2 }
+"fits.timer"   = { yes = 0.05 }
+"lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+
+[answers."set a timer for 10 minutes"]
+route            = { timer = 0.93, lights = 0.02, none = 0.05 }
+"fits.lights"    = { yes = 0.05 }
+"fits.timer"     = { yes = 0.8 }
+"lights.room"    = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state"   = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"timer.duration" = { "16-26" = 0.95, unstated = 0.05 }
+
+[answers."25 minute timer"]
+route            = { timer = 0.9, lights = 0.03, none = 0.07 }
+"fits.lights"    = { yes = 0.05 }
+"fits.timer"     = { yes = 0.8 }
+"lights.room"    = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state"   = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"timer.duration" = { unstated = 0.75, "0-9" = 0.25 }
+
+[answers.'timer for 3 minutes called "eggs"']
+route            = { timer = 0.94, lights = 0.02, none = 0.04 }
+"fits.lights"    = { yes = 0.05 }
+"fits.timer"     = { yes = 0.8 }
+"lights.room"    = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state"   = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"timer.duration" = { "10-19" = 0.9, unstated = 0.1 }
+"timer.label"    = { "28-32" = 0.9, unstated = 0.1 }
+
+[answers."count down 90 seconds"]
+route            = { timer = 0.9, lights = 0.02, none = 0.08 }
+"fits.lights"    = { yes = 0.05 }
+"fits.timer"     = { yes = 0.8 }
+"lights.room"    = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state"   = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"timer.duration" = { "11-21" = 0.9, unstated = 0.1 }
+
+[answers."ping me in 2 hours"]
+route            = { none = 0.9, timer = 0.05, lights = 0.05 }
+"fits.lights"    = { yes = 0.05 }
+"fits.timer"     = { yes = 0.1 }
+"lights.room"    = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state"   = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"timer.duration" = { "11-18" = 0.9, unstated = 0.1 }
+
+[answers.'start a "laundry" timer, 45 minutes']
+route            = { timer = 0.92, lights = 0.03, none = 0.05 }
+"fits.lights"    = { yes = 0.05 }
+"fits.timer"     = { yes = 0.8 }
+"lights.room"    = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state"   = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"timer.duration" = { "25-35" = 0.9, unstated = 0.1 }
+"timer.label"    = { "9-16" = 0.9, unstated = 0.1 }
+
+[answers."start a timer"]
+route          = { timer = 0.92, lights = 0.03, none = 0.05 }
+"fits.lights"  = { yes = 0.05 }
+"fits.timer"   = { yes = 0.8 }
+"lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+
+[answers."what time is it"]
+route          = { none = 0.85, timer = 0.1, lights = 0.05 }
+"fits.lights"  = { yes = 0.05 }
+"fits.timer"   = { yes = 0.1 }
+"lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }

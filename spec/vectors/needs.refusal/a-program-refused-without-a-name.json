@@ -1,0 +1,14 @@
+{
+  "input": {
+    "policy": {},
+    "reflex": "awake",
+    "origin": { "type": "fetched" },
+    "refused": { "what": "ChildProcess", "path": "" },
+    "home": "/Users/me"
+  },
+  "expect": {
+    "reflex": "awake",
+    "message": "[needs] runs names no program",
+    "fix": { "type": "remove", "reflex": "awake" }
+  }
+}

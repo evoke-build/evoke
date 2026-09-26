@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Natural-language commands from a fixed list - Evoke</title>
+  <meta name="description" content="Type what you want in a terminal, and only a program you installed can run. Its values come from lists or your words, and what cannot be undone asks first.">
+  <!-- head -->
+</head>
+<body>
+  <!-- bar -->
+
+  <main class="wrap">
+    <div class="hero solo">
+      <div class="copy">
+        <p class="crumb"><a href="/guides.html">Guides</a></p>
+        <h1>Type what you want. <em>Only what you installed can run.</em></h1>
+        <p class="lede"><strong>evoke gives your terminal natural-language commands, from a fixed list of programs you
+          installed.</strong> It picks one of them and fills the inputs its author declared. It never writes a new
+          command. So what can run is always a list you can read.</p>
+        <p class="note">Each program on that list is a reflex. A reflex is a small program you install and ask for in
+          your words. A classifier reads each sentence: Jev, TypeSafe AI's model. It answers closed questions, such as
+          which reflex or none, and which value for each input. It gives each answer a probability.</p>
+      </div>
+      <ul class="index" aria-label="The sections">
+        <li><a href="#list"><code>01</code>The list</a></li>
+        <li><a href="#values"><code>02</code>The values</a></li>
+        <li><a href="#shell"><code>03</code>The shell</a></li>
+        <li><a href="#bar"><code>04</code>The bar</a></li>
+        <li><a href="#refusal"><code>05</code>Refusal</a></li>
+        <li><a href="#leaves"><code>06</code>What leaves</a></li>
+        <li><a href="#limits"><code>07</code>Limits</a></li>
+        <li><a href="#fit"><code>08</code>Fit</a></li>
+      </ul>
+    </div>
+
+    <section id="list">
+      <div class="rule"><p class="label">The list</p><span class="num">01</span></div>
+      <h2>What can run is the list you installed.</h2>
+      <p class="sub"><code>evoke show</code> lists every reflex you installed, with its effect and the program it runs. A
+        sentence is matched against that list, and «none of these» is always one of the answers. <strong>When nothing
+        fits, nothing runs</strong>, and evoke prints the ranking so you can see why.</p>
+      <div class="grid">
+        <div class="panel term" role="figure" aria-label="A sentence that fits no installed reflex">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke "what time is it"</span>
+<span class="own">  <span class="name">none</span> <span class="hi">0.70</span> · timer 0.20 · awake 0.05 · lock 0.05
+  note, open and visit are inactive  →  evoke show
+[2]</span></pre>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>No reflex tells the time, so <code>none</code> won.</strong> Nothing ran, and the
+              exit code is 2.</span></li>
+            <li><b>2</b><span><strong>Three reflexes wait for a word or a setting from you.</strong> evoke names them,
+              and <code>evoke show</code> explains why.</span></li>
+          </ol>
+        </div>
+      </div>
+      <p class="caption">These lines are what evoke printed in its tests, replayed here. The classifier's answers were
+        written for those tests, so your own numbers will differ.</p>
+    </section>
+
+    <section id="values">
+      <div class="rule"><p class="label">The values</p><span class="num">02</span></div>
+      <h2>Each input takes its value from one source.</h2>
+      <p class="sub">The source is an option the author listed, or a word from your own list. It can also be a piece of
+        what you typed, such as a number or a quoted phrase. Code finds that piece in the sentence, word for word.
+        <strong>A number is also checked against its range, and a value outside it is asked for again.</strong></p>
+      <div class="grid">
+        <div class="panel term" role="figure" aria-label="A value outside its range is asked for again">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre data-flow="ask"><span class="p">$</span> <span class="in">evoke "set the volume to 150 percent"</span>
+<span class="own">  How loud, in percent?  <span class="mid">150 percent is outside 0–100</span>  &gt; <span class="in">40</span>
+  <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span>
+<span class="out">volume set to 40%</span></pre>
+        </div>
+        <p class="caption">The volume reflex here comes from evoke's tests. These lines are what evoke printed in its
+          tests, replayed here. The classifier's answers were written for those tests, so your own numbers will
+          differ.</p>
+      </div>
+    </section>
+
+    <section id="shell">
+      <div class="rule"><p class="label">The shell</p><span class="num">03</span></div>
+      <h2>A program runs with its arguments, never through a shell.</h2>
+      <p class="sub">A reflex that wraps a command lists the program and its arguments. evoke starts that program
+        directly, so no shell reads the values. <strong>A value that would start with a dash is refused before the
+        program starts.</strong></p>
+      <div class="grid">
+        <div class="panel term" role="figure" aria-label="A value that starts with a dash is refused">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre data-flow="run"><span class="p">$</span> <span class="in">evoke run shout word=-n</span>
+<span class="own">  <span class="name">shout</span> word="-n"
+  running shout: word is "-n", which starts with -; an argv cannot carry it  →  evoke run shout word=-n
+[1]</span></pre>
+        </div>
+        <p class="caption"><code>shout</code> is a small reflex from evoke's tests that runs <code>printf</code>.
+          <code>evoke run</code> calls a reflex by name, with no classifier. These lines are what evoke printed in its
+          tests, replayed here.</p>
+      </div>
+    </section>
+
+    <section id="bar">
+      <div class="rule"><p class="label">The bar</p><span class="num">04</span></div>
+      <h2>Reads and writes clear a bar. What cannot be undone always asks.</h2>
+      <p class="sub">A decision's confidence is its least sure answer. A read runs at 0.6 or more, and a write at 0.8 or
+        more. A read or a write under its bar asks first. <strong>A destructive reflex always asks, however sure, and no
+        flag skips that question.</strong></p>
+      <div class="grid">
+        <div class="panel term" role="figure" aria-label="A destructive reflex asks at 0.97">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke "restart the computer"</span>
+<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: route <span class="hi">0.97</span>
+  Really restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
+[2]</span></pre>
+        </div>
+        <p class="caption">Sure at 0.97, and it still asked. These lines are what evoke printed in its tests, replayed
+          here. The classifier's answers were written for those tests, so your own numbers will differ.
+          <a href="/guides/approval-by-risk.html">Approval set by risk →</a></p>
+      </div>
+    </section>
+
+    <section id="refusal">
+      <div class="rule"><p class="label">Refusal</p><span class="num">05</span></div>
+      <h2>A sentence runs whole, or not at all.</h2>
+      <p class="sub">A sentence can ask for two things. <strong>If one part matches no reflex, evoke refuses the sentence
+        before anything runs.</strong> The part that did match does not run either. Once the steps start, one you
+        decline or one that fails skips the steps after it. What already ran is not undone.</p>
+      <div class="grid">
+        <div class="panel term" role="figure" aria-label="A sentence refused before anything runs">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre data-flow="weave"><span class="p">$</span> <span class="in">evoke "kill the lights in the den and feed the cat"</span>
+<span class="own">  1  <span class="name">lights</span> room="den" state="off"  <span class="hi">0.85</span>
+  2  "feed the cat" · <span class="mid">no reflex</span>
+[2]</span></pre>
+        </div>
+        <p class="caption">The lights reflex here comes from evoke's tests. These lines are what evoke printed in its
+          tests, replayed here. The classifier's answers were written for those tests, so your own numbers will
+          differ.</p>
+      </div>
+    </section>
+
+    <section id="leaves">
+      <div class="rule"><p class="label">What leaves</p><span class="num">06</span></div>
+      <h2>Only your sentence and its questions leave your machine.</h2>
+      <p class="sub">For each decision, evoke sends one request to the classifier, with your own key. The request carries
+        your sentence and the questions built from your installed manifests and your word lists. <strong>The values
+        behind your words stay on your machine.</strong> Nothing else of yours is sent, and nothing goes to
+        evoke.build.</p>
+      <p class="after"><a class="more" href="/privacy.html#tool">What leaves your machine, in the privacy policy →</a></p>
+    </section>
+
+    <section id="limits">
+      <div class="rule"><p class="label">Limits</p><span class="num">07</span></div>
+      <h2>What this does not protect you from.</h2>
+      <ul class="ticks">
+        <li><strong>A wrong reading.</strong> The classifier can pick the wrong reflex or the wrong option. evoke
+          guarantees that every value is one the reflex allows. It cannot guarantee that it read you right. That is why
+          the bar is set by what the program changes.</li>
+        <li><strong>What a program does.</strong> A reflex runs as you, held by the kernel to what its manifest declares.
+          Read what you install.</li>
+        <li><strong>Exact text.</strong> A URL or a quoted phrase passes to the program as you typed it. What the program
+          does with it is its author's promise.</li>
+        <li><strong>Programs nobody wrote.</strong> evoke runs only what someone wrote a reflex for.</li>
+        <li><strong>The network.</strong> Every new decision needs a request to the classifier and a key.</li>
+      </ul>
+      <p class="after"><a class="more" href="/manual/security.html">The security manual →</a></p>
+    </section>
+
+    <section id="fit">
+      <div class="rule"><p class="label">Fit</p><span class="num">08</span></div>
+      <h2>When a tool that writes commands fits better.</h2>
+      <p class="sub">Sometimes you need a command you have never run, for a program nobody has wrapped. evoke cannot help
+        there, because it only runs what is installed. A tool that writes the command for you to read fits that job.
+        <strong>evoke fits the commands you run again and again, and the ones a teammate should run without
+        guessing.</strong></p>
+    </section>
+
+    <div class="closing">
+      <div>
+        <h2>Try it on a sentence of your own.</h2>
+        <p>Install evoke, add the collection or wrap a script, and run <code>evoke try</code> on the sentence you worry
+          about. It decides and runs nothing.</p>
+      </div>
+      <div class="actions">
+        <a class="button primary" href="/start.html">Get started</a>
+        <a class="quiet" href="/how-it-works.html#decisions">How a decision is gated →</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- footer -->
+</body>
+</html>

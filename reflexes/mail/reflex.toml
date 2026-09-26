@@ -10,6 +10,9 @@ effect  = "write"
 confirm = "Write to {to}?"
 run     = "mail.mts"
 
+[needs]
+runs = ["open"]
+
 [args.to]
 ask  = "To which address?"
 pick = "email"

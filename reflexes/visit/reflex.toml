@@ -10,6 +10,10 @@ effect  = "read"
 confirm = "Open {site} in the browser?"
 run     = "visit.mts"
 
+[needs]
+reads = ["~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist"]
+runs  = ["open", "plutil"]
+
 [args.site]
 ask   = "Which site?"
 vocab = "sites"

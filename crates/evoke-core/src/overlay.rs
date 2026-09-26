@@ -7,7 +7,7 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
 use crate::diagnostic::Diagnostic;
-use crate::document::{self, Diagnostics, Document, Form, Json, KeyPath, Node};
+use crate::document::{self, Diagnostics, Document, Form, Json, KeyPath, Node, Value};
 use crate::manifest::{
     self, Argument, Description, Effect, Kind, Lookup, Manifest, Owner, Record, Records, Source,
     Template,
@@ -339,7 +339,7 @@ fn read(d: &mut Diagnostics, root: Node, of: &Manifest, form: Form) -> Option<Ov
         }
         Some(effect)
     });
-    for (_, node) in top.take_any(&["run", "config", "yields"]) {
+    for (_, node) in top.take_any(&["run", "needs", "config", "yields"]) {
         d.fail(
             node.at.as_ref(),
             format!(
@@ -420,6 +420,10 @@ fn args(d: &mut Diagnostics, node: Node, r: &mut Resolver<'_>) -> IndexMap<ArgNa
 }
 
 fn options(d: &mut Diagnostics, node: Node, arg: &Argument, wording: &mut Wording) {
+    // An empty table rewords nothing, on any argument: the wire form a wording takes.
+    if matches!(&node.value, Value::Table(entries) if entries.is_empty()) {
+        return;
+    }
     let Kind::Value {
         source: Source::Options(shipped),
         ..

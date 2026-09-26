@@ -17,6 +17,9 @@ effect  = "write"                            # absent means destructive
 confirm = "Set the {room} lights {state}?"
 run     = "lights.mts"                       # or argv: ["hue", "set", "{room}", "{state}"]
 
+[needs]                                      # what the body touches; absent means its own directory and TMPDIR
+hosts = ["*"]                                # the bridge is on the network
+
 [config]
 bridge = "Hue bridge address"
 token  = { about = "Hue API key", secret = true }
@@ -60,11 +63,44 @@ level = "number"
 | `effect`      | no       | `read`, `write` or `destructive`. **Absent means destructive.** It is the author's claim, and not trusted: a user may tighten it, never loosen it. A reflex has one effect, so grouped actions take the worst case |
 | `confirm`     | yes      | The one-line question a person answers. A `{placeholder}` names a **required** argument. A pick shows its span. A placeholder for an optional argument or a flag is an error |
 | `run`         | yes      | The body: a path ending in `.mts` or `.mjs` inside the directory, or an argv. [The body](body.md) |
+| `[needs]`     | no       | What the body touches, held by the kernel: `reads`, `writes`, `hosts`, `runs`. Left out, the tightest declaration: its own directory and `TMPDIR`. [What the body touches](#what-the-body-touches) |
 | `[config]`    | no       | Settings the user provides with `evoke config`: `key = "about"` or `key = { about, secret = true }`. A secret is only ever set from an environment variable |
 | `[args.<name>]` | no     | The arguments: `ask` and exactly one source. [Arguments](arguments.md) |
 | `[yields]`    | no       | What the body's `data` holds, for a later step to take ([Weaving](../use/weaving.md)): per field, the kind that reads it, `number`, `duration`, `email`, `url` or `quoted`; or `{ each = { … } }` for a list of records |
 | `[examples]`  | no       | Utterances with what they assert, sent to the classifier. [Examples and tests](records.md) |
 | `[tests]`     | no       | The same shape, held out: never sent, run by `evoke test` |
+
+## What the body touches
+
+```toml
+[needs]
+reads  = ["{place}"]                         # the value of an argument or a config key
+writes = ["~/Downloads", "{to}"]             # under the home; or absolute, like "/tmp/out"
+hosts  = ["*"]                               # the network, all of it; absent means none
+runs   = ["open", "/usr/bin/plutil"]         # by name on PATH, or by absolute path
+```
+
+Each key is a list, and leaving the table out is the tightest declaration: the body's own directory and its
+private `TMPDIR`, nothing else. `reads` and `writes` name paths: `~/…` under the home, absolute, or `{name}` for
+the value of an argument or a config key, so a folder the user names reaches the body and nothing beside it. A
+path names a file, or a folder with everything under it, whichever is on the disk when the body runs. A path in
+`writes` may be read too. **A declared path must exist when the body runs.** A body that makes a file declares
+its folder, and a path the machine lacks stops the run before the body starts: `[needs] reads names ~/nowhere,
+which is not there`. `hosts` is all or nothing: `["*"]` reaches every host, absent reaches none, and a name is
+refused at `check`. `runs` names programs, by name on `PATH` or by absolute path; each of them runs held to the
+same declaration, and what it asks the system to do happens outside it. The kernel holds the body to all of
+this: [Security](../security.md#what-runs-and-as-whom).
+
+A `{name}` names an argument that carries a value, a word's or a typed one, or a config key; `evoke check`
+refuses one that names neither, or a flag. An entry over an optional argument left unstated is dropped. A value
+that is not a path, a word whose value is a name rather than a folder, refuses the run and points at the value's
+source: `[needs] writes names {to}, whose value "desk" is not a path  →  evoke vocab places add <word> "<meaning>"`.
+
+A reach past the declaration ends the run with what was reached and the key, `~/secret.txt is not in [needs]
+reads`, and a fix by where the declaration is written: this manifest's line for a local reflex; for a fetched
+one, `evoke update --accept` when upstream's declaration already allows it, else `evoke remove`. `[needs]` is
+contract: an overlay cannot touch it; upstream may narrow it at any tag, which is `same`; widening waits for the
+user's `evoke update --accept`, and is `minor`: [Publishing](publishing.md).
 
 ## Text rules
 
@@ -80,7 +116,7 @@ level = "number"
 
 | Contract: a user cannot override it, and changing it is a version bump | Wording: a user may override it, and you may improve it at any tag |
 | :---------------------------------------------------------------- | :--------------------------------------------------------- |
-| `run`; argument names and their sources; option keys; `range`; `config` keys; `yields` | `description`, `not_for`, `tags`, `confirm`; every `ask`; the meaning of each option; examples and tests |
+| `run`; `[needs]`; argument names and their sources; option keys; `range`; `config` keys; `yields` | `description`, `not_for`, `tags`, `confirm`; every `ask`; the meaning of each option; examples and tests |
 
 An argument may be renamed by declaring its former names, like `was = ["state"]`. Every user's overlay and call
 then follows. [Publishing](publishing.md) says how `evoke check` diffs one tag against the next.

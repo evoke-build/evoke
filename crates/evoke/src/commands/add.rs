@@ -2,9 +2,10 @@
 //! fetch per repository and tag, however many reflexes come from it — and each local ref read where it is; every
 //! manifest read and linted; the installed examples routed over the new set, a few at a time, to name each phrase
 //! a newcomer steals; then the project, the lock and `evoke.d.ts` written, the runtime recorded, and for each
-//! newcomer its row, then the lint, theft and inactive lines. Nothing is written until every newcomer is in hand;
-//! a theft test that could not finish — the adapter faulted, or has no key yet — is reported with `evoke test`,
-//! never a refusal. In: the refs, one name or none, the environment. Out: `Exit`.
+//! newcomer its row with what it may touch, the machine's status once when it does not hold a declaration whole,
+//! then the lint, theft and inactive lines. Nothing is written until every newcomer is in hand; a theft test that
+//! could not finish — the adapter faulted, or has no key yet — is reported with `evoke test`, never a refusal.
+//! In: the refs, one name or none, the environment. Out: `Exit`.
 
 use std::path::PathBuf;
 
@@ -102,6 +103,9 @@ fn added(session: &mut Session<'_>, input: &str, refs: &[Ref], name: Option<&Loc
         &session.rows(names.iter().copied()),
         Gutter::Added,
     ));
+    if let Some(status) = report::status(&session.contained) {
+        terminal::note(&status);
+    }
     for newcomer in &newcomers {
         for finding in &newcomer.findings {
             terminal::note(&report::finding(&newcomer.name, finding));
@@ -261,6 +265,7 @@ fn fetched(
                 commit: fetched.commit.clone(),
                 h1: kept.h1,
                 effect: manifest.effect,
+                needs: manifest.needs.clone(),
             }),
             name: local,
             written,
@@ -375,6 +380,7 @@ fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<
             Item {
                 wording: Ok(effective(&newcomer.manifest, None)),
                 consented: newcomer.manifest.effect,
+                needs: newcomer.manifest.needs.clone(),
                 configured: session.configured(&newcomer.name),
             },
         );

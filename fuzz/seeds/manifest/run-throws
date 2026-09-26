@@ -1,0 +1,8 @@
+reflex = 1
+
+description = """
+Throw an error with a message of two lines.
+For the spec: what the loader prints of it, and what evoke says."""
+effect = "read"
+confirm = "Throw?"
+run = "throws.mts"

@@ -1,0 +1,119 @@
+{
+  "input": {
+    "adapter": "replay",
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "lines": [
+      {
+        "input": "x",
+        "decision": {
+          "outcome": "run",
+          "reflex": "timer",
+          "args": {
+            "duration": {
+              "type": "pick",
+              "span": {
+                "start": 16,
+                "end": 26,
+                "text": "10 minutes"
+              },
+              "value": {
+                "type": "duration",
+                "value": 600
+              }
+            }
+          },
+          "call": "timer duration=\"10 minutes\"",
+          "effect": "write",
+          "confidence": 0.9,
+          "weakest": {
+            "question": "route",
+            "top": "timer",
+            "p": 0.9
+          },
+          "judgments": [
+            {
+              "question": "route",
+              "top": "timer",
+              "p": 0.9
+            },
+            {
+              "question": "timer.duration",
+              "top": "16-26",
+              "p": 0.9
+            }
+          ],
+          "contenders": [
+            {
+              "reflex": "timer",
+              "route": 0.9
+            }
+          ]
+        },
+        "adapters": [
+          "jev-1.13.0"
+        ],
+        "ran": true
+      }
+    ],
+    "cases": [
+      {
+        "reflex": "timer",
+        "utterance": {
+          "text": "set a timer for 10 minutes",
+          "id": "set a timer for 10 minutes"
+        },
+        "expect": {
+          "duration": "10 minutes"
+        },
+        "from": "examples"
+      },
+      {
+        "reflex": "lights",
+        "utterance": {
+          "text": "make it darker in here",
+          "id": "make it darker in here"
+        },
+        "expect": {
+          "state": "dim"
+        },
+        "from": "tests"
+      },
+      {
+        "reflex": "timer",
+        "utterance": {
+          "text": "what time is it",
+          "id": "what time is it"
+        },
+        "expect": false,
+        "from": "tests"
+      }
+    ],
+    "unread": 0
+  },
+  "expect": {
+    "adapter": "replay",
+    "decisions": 0,
+    "ran": 0,
+    "confirmed_ran": 0,
+    "confirmed_stopped": 0,
+    "asked": 0,
+    "abstained": 0,
+    "failed": 0,
+    "skipped": 0,
+    "stopped_by_confidence": [],
+    "records": {
+      "count": 0,
+      "right": 0,
+      "interval": [
+        0.0,
+        0.0
+      ]
+    },
+    "unread": 0
+  }
+}

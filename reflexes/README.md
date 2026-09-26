@@ -31,11 +31,24 @@ evoke add evoke-build/reflexes
 A reflex that needs your words or a setting for a required argument stays inactive until it has them. `evoke`
 says which line gives it what it needs. `places` names your folders, and each word's value is its full path.
 `sites` names your sites, and each value is its URL. `download` runs without `places`; with it, a place you name.
+`note`'s file is a path, under your home or absolute, and it must exist: the reflex declares it and writes nothing
+else.
 
 ```bash
-evoke vocab places add desktop "The desktop." --value /Users/you/Desktop
+evoke vocab places add desktop "The desktop." --value "~/Desktop"
 evoke vocab sites add github "GitHub." --value https://github.com
-evoke config note file ~/notes.txt
+evoke config note file "~/notes.txt"
+```
+
+## What each one touches
+
+A manifest declares what its body touches, under `[needs]`, and evoke holds the body there. `evoke add` prints
+each declaration under its row. `screenshot`'s:
+
+```toml
+[needs]
+writes = ["~/Desktop"]
+runs   = ["screencapture"]
 ```
 
 ## Writing one

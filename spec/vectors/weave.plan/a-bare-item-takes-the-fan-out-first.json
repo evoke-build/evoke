@@ -1,0 +1,474 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "input": "kill the lights in the den and the office",
+    "tags": [],
+    "answers": {
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.73
+        }
+      },
+      "decided": [
+        [
+          {
+            "text": "kill the lights in the den"
+          },
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.85,
+            "weakest": {
+              "question": "lights.room",
+              "top": "den",
+              "p": 0.85
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.91
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.85
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.88
+              }
+            ],
+            "runner_up": {
+              "reflex": "timer",
+              "route": 0.02,
+              "fits": 0.05
+            },
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.91,
+                "fits": 0.7
+              },
+              {
+                "reflex": "timer",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "volume",
+                "route": 0.01,
+                "fits": 0.05
+              },
+              {
+                "reflex": "contact",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "mail",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "the office"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "contact",
+            "args": {},
+            "unconsumed": [],
+            "confidence": 0.55,
+            "weakest": {
+              "question": "route",
+              "top": "contact",
+              "p": 0.55
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "contact",
+                "p": 0.55
+              },
+              {
+                "question": "contact.name",
+                "top": "unstated",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "lights",
+              "route": 0.3,
+              "fits": 0.2
+            },
+            "contenders": [
+              {
+                "reflex": "contact",
+                "route": 0.55,
+                "fits": 0.4
+              },
+              {
+                "reflex": "lights",
+                "route": 0.3,
+                "fits": 0.2
+              },
+              {
+                "reflex": "mail",
+                "route": 0.05,
+                "fits": 0.05
+              },
+              {
+                "reflex": "timer",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "volume",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "name",
+                "ask": "Whose address?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "dana": "Dana Ortiz, operations.",
+                    "sam": "Sam Lee, sales."
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "the office",
+            "only": "lights"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.05,
+                "fits": 0.05
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "kill the lights in the office",
+            "only": "lights"
+          },
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "office"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"office\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.85,
+            "weakest": {
+              "question": "lights.room",
+              "top": "office",
+              "p": 0.85
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.91
+              },
+              {
+                "question": "lights.room",
+                "top": "office",
+                "p": 0.85
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.88
+              }
+            ],
+            "runner_up": {
+              "reflex": "timer",
+              "route": 0.02,
+              "fits": 0.05
+            },
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.91,
+                "fits": 0.7
+              },
+              {
+                "reflex": "timer",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "volume",
+                "route": 0.01,
+                "fits": 0.05
+              },
+              {
+                "reflex": "contact",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "mail",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ]
+      ]
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "kill the lights in the den and the office",
+        "splits": [
+          {
+            "start": 26,
+            "end": 31,
+            "word": "and",
+            "order": "and",
+            "p": 0.73
+          }
+        ],
+        "steps": [
+          {
+            "n": 1,
+            "text": "kill the lights in the den",
+            "end": 26,
+            "decision": {
+              "outcome": "run",
+              "reflex": "lights",
+              "args": {
+                "room": {
+                  "type": "word",
+                  "word": "den"
+                },
+                "state": {
+                  "type": "option",
+                  "key": "off"
+                }
+              },
+              "call": "lights room=\"den\" state=\"off\"",
+              "effect": "write",
+              "confidence": 0.85,
+              "weakest": {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.85
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "lights",
+                  "p": 0.91
+                },
+                {
+                  "question": "lights.room",
+                  "top": "den",
+                  "p": 0.85
+                },
+                {
+                  "question": "lights.state",
+                  "top": "off",
+                  "p": 0.88
+                }
+              ],
+              "runner_up": {
+                "reflex": "timer",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              "contenders": [
+                {
+                  "reflex": "lights",
+                  "route": 0.91,
+                  "fits": 0.7
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0.02,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0.01,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "lights",
+            "effect": "write"
+          },
+          {
+            "n": 2,
+            "text": "kill the lights in the office",
+            "end": 41,
+            "decision": {
+              "outcome": "run",
+              "reflex": "lights",
+              "args": {
+                "room": {
+                  "type": "word",
+                  "word": "office"
+                },
+                "state": {
+                  "type": "option",
+                  "key": "off"
+                }
+              },
+              "call": "lights room=\"office\" state=\"off\"",
+              "effect": "write",
+              "confidence": 0.85,
+              "weakest": {
+                "question": "lights.room",
+                "top": "office",
+                "p": 0.85
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "lights",
+                  "p": 0.91
+                },
+                {
+                  "question": "lights.room",
+                  "top": "office",
+                  "p": 0.85
+                },
+                {
+                  "question": "lights.state",
+                  "top": "off",
+                  "p": 0.88
+                }
+              ],
+              "runner_up": {
+                "reflex": "timer",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              "contenders": [
+                {
+                  "reflex": "lights",
+                  "route": 0.91,
+                  "fits": 0.7
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0.02,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0.01,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "lights",
+            "effect": "write",
+            "refs": [
+              {
+                "span": {
+                  "start": 5,
+                  "end": 15,
+                  "text": "the lights"
+                },
+                "from": [
+                  0
+                ],
+                "how": "phrase",
+                "weak": true,
+                "noun": "light"
+              }
+            ],
+            "repair": "spliced"
+          }
+        ],
+        "exclusive": true,
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        }
+      }
+    }
+  }
+}

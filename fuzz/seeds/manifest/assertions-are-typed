@@ -1,0 +1,22 @@
+reflex = 1
+
+description = "Turn the lights in one room on, off, or dim them."
+confirm = "Set the lights {state}?"
+run = "lights.mts"
+
+[args.state]
+ask = "What should the lights do?"
+options.on = "Switch on."
+options.off = "Switch off."
+options.dim = "Lower the brightness without switching off."
+
+[args.brightness]
+ask = "How bright?"
+pick = "number"
+optional = true
+
+[examples]
+"warm it up"    = { colour = "warm" }
+"lights on"     = { state = true }
+"make it bright" = { state = "bright" }
+"dim to 30"     = { brightness = "30 percent" }

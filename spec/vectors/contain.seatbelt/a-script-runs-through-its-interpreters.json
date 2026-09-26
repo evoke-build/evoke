@@ -1,0 +1,17 @@
+{
+  "input": {
+    "policy": {
+      "runs": ["open"]
+    },
+    "facts": {
+      "platform": "macos",
+      "body_dir": "/Users/me/.config/evoke/open",
+      "tmp": "/private/var/folders/1j/rwfvrrld5wd4__9gt0wvlc0m0000gn/T/evoke-4242-3",
+      "home": "/Users/me",
+      "programs": {
+        "open": { "path": "/Users/me/bin/open", "interpreters": ["/bin/sh"] }
+      }
+    }
+  },
+  "expect": "(version 1)\n(deny default)\n(allow process-fork)\n(allow signal (target same-sandbox))\n(allow sysctl-read)\n(allow file-read-metadata)\n(allow file-read-data (literal \"/\"))\n(allow file-read* (subpath \"/usr\") (subpath \"/System\") (subpath \"/Library\") (subpath \"/private/etc\") (subpath \"/private/var/db\") (subpath \"/dev\") (subpath \"/bin\") (subpath \"/sbin\") (subpath \"/opt\") (subpath \"/Users/me/.config/evoke/open\") (subpath \"/private/var/folders/1j/rwfvrrld5wd4__9gt0wvlc0m0000gn/T/evoke-4242-3\") (literal \"/Users/me/bin/open\"))\n(allow file-write* (subpath \"/private/var/folders/1j/rwfvrrld5wd4__9gt0wvlc0m0000gn/T/evoke-4242-3\") (literal \"/dev/null\"))\n(allow process-exec (literal \"/Users/me/bin/open\") (literal \"/bin/sh\") (literal \"/bin/bash\") (literal \"/bin/zsh\") (literal \"/bin/dash\"))\n(allow mach-lookup)\n(allow appleevent-send)\n(allow lsopen)\n(allow iokit-open)\n(allow ipc-posix-shm*)\n(allow user-preference-read)\n(allow distributed-notification-post)\n"
+}

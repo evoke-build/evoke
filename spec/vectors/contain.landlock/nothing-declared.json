@@ -1,0 +1,27 @@
+{
+  "input": {
+    "policy": {},
+    "facts": { "$ref": "fixtures/facts-linux.json" }
+  },
+  "expect": [
+    { "path": "/usr", "rights": ["read_file", "read_dir"] },
+    { "path": "/lib", "rights": ["read_file", "read_dir"] },
+    { "path": "/lib64", "rights": ["read_file", "read_dir"] },
+    { "path": "/bin", "rights": ["read_file", "read_dir"] },
+    { "path": "/sbin", "rights": ["read_file", "read_dir"] },
+    { "path": "/etc", "rights": ["read_file", "read_dir"] },
+    { "path": "/opt", "rights": ["read_file", "read_dir"] },
+    { "path": "/nix", "rights": ["read_file", "read_dir"] },
+    { "path": "/proc/self", "rights": ["read_file", "read_dir"] },
+    { "path": "/opt/orbstack-guest/etc/resolv.conf", "rights": ["read_file"] },
+    { "path": "/dev/null", "rights": ["read_file", "write_file"] },
+    { "path": "/dev/urandom", "rights": ["read_file"] },
+    { "path": "/dev/random", "rights": ["read_file"] },
+    { "path": "/dev/zero", "rights": ["read_file"] },
+    { "path": "/tmp/evoke-4242-1", "rights": ["read_file", "read_dir", "write_file", "remove_dir", "remove_file", "make_dir", "make_reg", "make_sym", "make_fifo", "make_sock", "refer", "truncate"] },
+    { "path": "/home/me/.local/share/mise/installs/node/24.20.0", "rights": ["read_file", "read_dir"] },
+    { "path": "/home/me/.local/share/mise/installs/node/24.20.0/bin/node", "rights": ["read_file", "execute"] },
+    { "path": "/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1", "rights": ["read_file", "execute"] },
+    { "path": "/home/me/.cache/evoke/store/8416c7959e55e8f74c0dd96ca8396d1980acc68ccfa7ac32fd650be96f658703", "rights": ["read_file", "read_dir"] }
+  ]
+}

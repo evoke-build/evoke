@@ -304,9 +304,18 @@ pub struct Asking {
 pub enum Cap {
     Destructive,
     NoGate,
-    UnderFloor { judgment: Judgment, floor: Prob },
-    UnconsumedSpan { span: Span },
-    TwoThings { contender: Contender },
+    UnderFloor {
+        judgment: Judgment,
+        floor: Prob,
+    },
+    UnconsumedSpan {
+        span: Span,
+    },
+    TwoThings {
+        contender: Contender,
+    },
+    /// A weave merged a part that matched nothing on its own back into these words: never run unasked.
+    Merged,
 }
 
 /// The confirm prompt: `evoke`'s own line, then the manifest's template filled in.
@@ -340,6 +349,7 @@ impl Prompt {
                     };
                     let _ = write!(own, " · also {} ({judged})", contender.reflex);
                 }
+                Cap::Merged => own.push_str(" · merged"),
                 Cap::Destructive | Cap::UnderFloor { .. } => {}
             }
         }
@@ -1155,6 +1165,42 @@ fn capped(active: &Active, chosen: Chosen, unconsumed: Vec<Span>, gate: Option<&
             because,
         },
         Err(_) => Decision::Run { chosen },
+    }
+}
+
+/// A step a weave merged back from a part that matched nothing on its own never runs unasked: a run confirms
+/// with the cap, a confirm gains it, once; an ask stands, capped once it is answered; an abstain stands.
+#[must_use]
+pub fn merged(plan: &Plan, decision: Decision) -> Decision {
+    let active = match &decision {
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
+            plan.active().get(&chosen.call.reflex)
+        }
+        Decision::Ask { .. } | Decision::Abstain { .. } => None,
+    };
+    let Some(active) = active else {
+        return decision;
+    };
+    let (chosen, because) = match decision {
+        Decision::Run { chosen } => (chosen, NonEmpty::new(Cap::Merged, Vec::new())),
+        Decision::Confirm {
+            chosen,
+            mut because,
+            ..
+        } => {
+            if !because.iter().any(|cap| *cap == Cap::Merged) {
+                because.push(Cap::Merged);
+            }
+            (chosen, because)
+        }
+        Decision::Ask { .. } | Decision::Abstain { .. } => return decision,
+    };
+    let caps: Vec<Cap> = because.iter().cloned().collect();
+    let prompt = Prompt::of(&chosen, active, &caps);
+    Decision::Confirm {
+        chosen,
+        prompt,
+        because,
     }
 }
 

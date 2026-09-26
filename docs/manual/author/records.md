@@ -1,3 +1,4 @@
+<!-- description: A reflex's examples teach the classifier and its held-out tests check it. How to write both, and how evoke test reports each miss and each regression. -->
 # Examples and tests
 
 Two tables, one shape. `[examples]` are sent to the classifier: they teach. `[tests]` are held out, never sent:

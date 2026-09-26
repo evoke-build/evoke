@@ -1,0 +1,3 @@
+#!/bin/sh
+# A stand-in for the Mac's networksetup, which the declaration names and the stand-in bodies never call.
+exit 0

@@ -1,0 +1,76 @@
+{
+  "input": {
+    "needs": {
+      "writes": [
+        "{file}"
+      ],
+      "runs": [
+        "open"
+      ]
+    },
+    "call": {
+      "reflex": "note",
+      "args": {
+        "text": {
+          "type": "pick",
+          "span": {
+            "start": 6,
+            "end": 14,
+            "text": "buy milk"
+          },
+          "value": {
+            "type": "quoted",
+            "value": "buy milk"
+          }
+        }
+      },
+      "call": "note text=\"buy milk\""
+    },
+    "active": {
+      "effect": "write",
+      "run": "note.mts",
+      "needs": {
+        "writes": [
+          "{file}"
+        ],
+        "runs": [
+          "open"
+        ]
+      },
+      "confirm": "Note {text}?",
+      "args": {
+        "text": {
+          "ask": "What should the note say?",
+          "pick": "quoted",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {
+        "file": {
+          "type": "plain",
+          "value": "/Users/me/notes.txt"
+        }
+      },
+      "tags": []
+    },
+    "config": {
+      "file": "/Users/me/notes.txt"
+    },
+    "home": "/Users/me"
+  },
+  "expect": {
+    "ok": {
+      "writes": [
+        {
+          "path": "/Users/me/notes.txt",
+          "from": "{file}"
+        }
+      ],
+      "runs": [
+        "open"
+      ]
+    }
+  }
+}

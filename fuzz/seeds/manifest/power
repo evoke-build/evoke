@@ -1,0 +1,29 @@
+reflex = 1
+
+description = """
+Sleep, restart or shut down the laptop.
+Apps are asked to quit first; unsaved work can block it or be lost."""
+
+not_for = ["locking the screen", "turning the display off", "keeping the laptop awake"]
+tags    = ["power"]
+effect  = "destructive"
+confirm = "Really {action} now?"
+run     = "power.mts"
+
+[args.action]
+ask              = "Sleep, restart or shut down?"
+options.sleep    = "Suspend; wakes on the lid or a key."
+options.restart  = "Reboot."
+options.shutdown = "Power off."
+
+[examples]
+"put the laptop to sleep" = { action = "sleep" }
+"restart the computer"    = { action = "restart" }
+"shut down"               = { action = "shutdown" }
+
+[tests]
+"reboot"           = { action = "restart" }
+"power off"        = { action = "shutdown" }
+"go to sleep"      = { action = "sleep" }
+"lock the screen"  = false
+"restart the wifi" = false

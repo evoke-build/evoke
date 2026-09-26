@@ -1,0 +1,14 @@
+{
+  "input": {
+    "policy": { "writes": [{ "path": "/Users/me/notes", "from": "~/notes" }] },
+    "reflex": "note",
+    "origin": { "type": "local", "at": { "file": { "type": "manifest", "name": "note" }, "line": 9, "column": 1 } },
+    "refused": { "what": "FileSystemRead", "path": "/Users/me/secret.txt" },
+    "home": "/Users/me"
+  },
+  "expect": {
+    "reflex": "note",
+    "message": "~/secret.txt is not in [needs] reads",
+    "fix": { "type": "edit_line", "at": { "file": { "type": "manifest", "name": "note" }, "line": 9, "column": 1 } }
+  }
+}

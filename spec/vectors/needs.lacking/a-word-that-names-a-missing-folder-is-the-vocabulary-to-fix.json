@@ -1,0 +1,14 @@
+{
+  "input": {
+    "lacking": { "type": "place", "place": { "path": "/Users/me/Desktop", "from": "{to}" }, "key": "writes" },
+    "reflex": "download",
+    "active": { "$ref": "fixtures/active-download.json" },
+    "origin": { "type": "fetched" },
+    "home": "/Users/me"
+  },
+  "expect": {
+    "reflex": "download",
+    "message": "[needs] writes names ~/Desktop, which is not there",
+    "fix": { "type": "vocab_add", "vocab": "places" }
+  }
+}

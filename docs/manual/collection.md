@@ -1,3 +1,4 @@
+<!-- description: The first-party collection: thirteen reflexes for everyday Mac tasks, such as the volume, Wi-Fi, a timer or a screenshot, and what each one needs. -->
 # The collection
 
 `evoke-build/reflexes` is the first-party collection: thirteen reflexes for what a Mac does at a word. Each
@@ -32,9 +33,9 @@ says which line gives it what it needs. `download` runs without `places`; with i
 vocabularies and one setting cover the collection:
 
 ```bash
-evoke vocab places add desktop "The desktop." --value /Users/you/Desktop      # a word per folder; the value its path
+evoke vocab places add desktop "The desktop." --value "~/Desktop"      # a word per folder; the value its path
 evoke vocab sites add github "GitHub." --value https://github.com             # a word per site; the value its URL
-evoke config note file notes.txt                                              # ~ allowed; a bare name lands under your home
+evoke config note file "~/notes.txt"                                          # a path under your home, or absolute; a file that exists
 ```
 
 ## What they say back
@@ -47,7 +48,8 @@ private window` · `saved report.pdf to ~/Downloads (1.2 MB)`.
 ## How they are built
 
 - **macOS**, one self-contained file each; a body that is not on a Mac says so and stops. `open` and `trash` are
-  argv reflexes and need no runtime. `wifi` finds the Wi-Fi device by its port's name: `en0` on a laptop, often
+  argv reflexes and need no runtime. Each manifest declares what its body touches under `[needs]`, and `evoke
+  add` prints it under the row: `screenshot` writes `~/Desktop` and runs `screencapture`. `wifi` finds the Wi-Fi device by its port's name: `en0` on a laptop, often
   not on a desktop with Ethernet.
 - What outlives a run detaches and returns at once. `awake` leaves `caffeinate` running. `timer` leaves a script
   that waits, then notifies with a sound.

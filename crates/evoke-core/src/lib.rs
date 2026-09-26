@@ -7,7 +7,9 @@
 #![allow(clippy::result_large_err)]
 
 pub mod adapter;
+pub mod calibrate;
 pub mod call;
+pub mod contain;
 pub mod contract;
 pub mod decide;
 pub mod diagnostic;
@@ -17,6 +19,7 @@ pub mod dts;
 pub mod edit;
 pub mod manifest;
 pub mod name;
+pub mod needs;
 pub mod overlay;
 pub mod plan;
 pub mod project;
@@ -28,13 +31,15 @@ pub mod vocabulary;
 pub mod weave;
 
 pub use adapter::{Declared, Fault, Gate, Key, Limits, Prob, Question, QuestionId, Raw, Request};
+pub use calibrate::{Calibration, LogBlock, Logged, calibrate, log_block};
 pub use call::{Call, Value, Written, call, render};
+pub use contain::{Contained, Facts, landlock, node_flags, seatbelt};
 pub use contract::{
     Change, Consent, ContractDiff, Finding, Level, LintRule, WasViolation, consent, diff, lint,
 };
 pub use decide::{
     Asking, Cap, Choices, Chosen, Contender, Decision, Judged, Judgment, Missing, Prompt, Reading,
-    Scope, Why, Winner, by_name, fill, gate, picked, read, request, validated,
+    Scope, Why, Winner, by_name, fill, gate, merged, picked, read, request, validated,
 };
 pub use diagnostic::{At, Diagnostic, File, Fix};
 pub use digest::{Digest, compose, digest};
@@ -44,6 +49,7 @@ pub use edit::{
     Edit, Lesson, Owned, VocabChange, add_entry, remove_entry, set_config, teach, vocab_edit,
 };
 pub use manifest::{Manifest, manifest};
+pub use needs::{Needs, Policy, resolve, widens};
 pub use overlay::{Effective, Overlay, Report, effective, overlay, report};
 pub use plan::{Active, Held, Installed, Item, Millis, Plan, Slot, compile};
 pub use project::{Lock, Project, Reference, Version, lock, project, reference, render_lock};

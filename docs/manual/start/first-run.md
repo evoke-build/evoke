@@ -29,25 +29,39 @@ a repository installs every reflex in it.
 ```text
 $ evoke add evoke-build/reflexes
 + awake       evoke-build/reflexes/awake 0.1.0       write        runs awake.mts
+              needs runs caffeinate
 + download    evoke-build/reflexes/download 0.1.0    write        runs download.mts
+              needs writes {to} ~/Downloads · hosts *
 + lock        evoke-build/reflexes/lock 0.1.0        write        runs lock.mts
+              needs runs open
 + mail        evoke-build/reflexes/mail 0.1.0        write        runs mail.mts
+              needs runs open
 + note        evoke-build/reflexes/note 0.1.0        write        runs note.mts
+              needs writes {file}
 + open        evoke-build/reflexes/open 0.1.0        read         runs open
+              needs reads {place}
 + power       evoke-build/reflexes/power 0.1.0       destructive  runs power.mts
+              needs runs pmset osascript
 + screenshot  evoke-build/reflexes/screenshot 0.1.0  write        runs screenshot.mts
+              needs writes ~/Desktop · runs screencapture
 + timer       evoke-build/reflexes/timer 0.1.0       write        runs timer.mts
+              needs runs osascript
 + trash       evoke-build/reflexes/trash 0.1.0       destructive  runs osascript
 + visit       evoke-build/reflexes/visit 0.1.0       read         runs visit.mts
+              needs reads ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist · runs open plutil
 + volume      evoke-build/reflexes/volume 0.1.0      write        runs volume.mts
+              needs runs osascript
 + wifi        evoke-build/reflexes/wifi 0.1.0        write        runs wifi.mts
+              needs runs networksetup
   inactive  note: config "file" is not set      →  evoke config note file <value>
   inactive  open: vocabulary "places" is empty  →  evoke vocab places add <word> "<meaning>"
   inactive  visit: vocabulary "sites" is empty  →  evoke vocab sites add <word> "<meaning>"
 ```
 
-One row per reflex: its local name, where it came from, its tag, its effect, and what it runs. Then the
-**inactive** lines. A reflex that needs your words or a setting stays out of every decision until it has them. Each
+One row per reflex: its local name, where it came from, its tag, its effect, and what it runs. Under it, what
+it touches: the paths, the network as `hosts *`, the programs; a row without that line declares nothing, and its
+body touches nothing but its own folder. The kernel holds each body to that line: [Security](../security.md).
+Then the **inactive** lines. A reflex that needs your words or a setting stays out of every decision until it has them. Each
 line ends with the command that gives it what it lacks. Nothing is guessed for you.
 
 ## 3. Use it
@@ -100,8 +114,8 @@ Some reflexes need words only you can supply: your folders, your sites. A **voca
 file you own, and every reflex that names it reads it.
 
 ```text
-$ evoke vocab places add desktop "The desktop." --value /Users/you/Desktop
-+ vocab/places.toml  desktop = { what = "The desktop.", value = "/Users/you/Desktop" }
+$ evoke vocab places add desktop "The desktop." --value "~/Desktop"
++ vocab/places.toml  desktop = { what = "The desktop.", value = "~/Desktop" }
 $ evoke "open my desktop folder"
   open place="desktop"  0.91
 ```
@@ -110,12 +124,13 @@ The meaning is what the classifier reads. The value is what the reflex receives:
 setting works the same way:
 
 ```text
-$ evoke config note file notes.txt
-+ evoke.toml  [config.note] file = "notes.txt"
+$ evoke config note file "~/notes.txt"
++ evoke.toml  [config.note] file = "~/notes.txt"
 ```
 
-A secret is only ever named, never stored: `evoke config <reflex> <key> --env <VAR>` writes the variable's name,
-and the value is read from your environment when the reflex runs.
+The notes file must exist, since the reflex declares it: `touch ~/notes.txt` first. A secret is only ever named,
+never stored: `evoke config <reflex> <key> --env <VAR>` writes the variable's name, and the value is read from
+your environment when the reflex runs.
 
 ## 5. Teach it
 
@@ -155,4 +170,4 @@ weakest answer is the confidence. It sits under the write bar, so this one would
 Your project holds only what you wrote, the lock, and generated types. Put it in your dotfiles. Everything else
 is a cache, and `evoke sync` rebuilds it on a new machine.
 
-**Next:** [Concepts](concepts.md), or straight to [Saying things](../use/saying-things.md).
+**Next:** [Concepts](concepts.md), or straight to [Typing a request](../use/saying-things.md).

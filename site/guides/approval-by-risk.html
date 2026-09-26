@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Read, write, destructive: approval set by risk - Evoke</title>
+  <meta name="description" content="evoke sets the bar for running without a question by what a program changes. A read runs at 0.6, a write at 0.8, and a destructive one always asks first.">
+  <!-- head -->
+</head>
+<body>
+  <!-- bar -->
+
+  <main class="wrap">
+    <div class="hero solo">
+      <div class="copy">
+        <p class="crumb"><a href="/guides.html">Guides</a></p>
+        <h1>Reads run, writes need a surer reading, <em>and what cannot be undone always asks.</em></h1>
+        <p class="lede"><strong>evoke sets the approval for natural-language commands by what each program
+          changes.</strong> Reads pass on a sure reading. Writes need a surer one. What cannot be undone waits for a
+          person every time, and no flag skips it.</p>
+        <p class="note">The programs here are reflexes. A reflex is a small program you install and ask for in your
+          words.</p>
+      </div>
+      <ul class="index" aria-label="The sections">
+        <li><a href="#effects"><code>01</code>Effects</a></li>
+        <li><a href="#bars"><code>02</code>The bars</a></li>
+        <li><a href="#outcomes"><code>03</code>Four outcomes</a></li>
+        <li><a href="#reasons"><code>04</code>Reasons</a></li>
+        <li><a href="#no-bypass"><code>05</code>No bypass</a></li>
+        <li><a href="#stricter"><code>06</code>Only stricter</a></li>
+        <li><a href="#app"><code>07</code>In an app</a></li>
+        <li><a href="#limits"><code>08</code>Limits</a></li>
+      </ul>
+    </div>
+
+    <section id="effects">
+      <div class="rule"><p class="label">Effects</p><span class="num">01</span></div>
+      <h2>Each program declares what it changes.</h2>
+      <p class="sub">Every reflex carries an effect, written by its author. A <code>read</code> only looks. A
+        <code>write</code> changes something you can undo. A <code>destructive</code> reflex cannot be undone, or costs
+        something. <strong>When a manifest leaves the effect out, evoke treats the reflex as destructive.</strong></p>
+      <div class="table tagged"><table>
+        <thead><tr><th>Reflex</th><th>Does</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>open</code></td><td>Opens one of your folders.</td><td>read</td></tr>
+          <tr><td><code>volume</code></td><td>Sets the output volume.</td><td>write</td></tr>
+          <tr><td><code>power</code></td><td>Puts the laptop to sleep, restarts it or shuts it down.</td><td>destructive</td></tr>
+        </tbody>
+      </table></div>
+      <p class="caption">Three of the thirteen reflexes in <a href="/manual/collection.html">evoke's collection</a> for a
+        Mac.</p>
+    </section>
+
+    <section id="bars">
+      <div class="rule"><p class="label">The bars</p><span class="num">02</span></div>
+      <h2>The bar each effect must clear.</h2>
+      <p class="sub">evoke asks the classifier every question at once and takes the least sure answer as the decision's
+        confidence. <strong>That number is compared with the bar for the reflex's effect.</strong></p>
+      <div class="table"><table>
+        <thead><tr><th>Effect</th><th>Runs without a question at</th><th>Under the bar</th></tr></thead>
+        <tbody>
+          <tr><td>read</td><td>0.6 or more</td><td>asks first</td></tr>
+          <tr><td>write</td><td>0.8 or more</td><td>asks first</td></tr>
+          <tr><td>destructive</td><td>never</td><td>always asks</td></tr>
+        </tbody>
+      </table></div>
+      <div class="split">
+        <div class="prose">
+          <p>Before any of that, if the choice of reflex itself is under 0.5, nothing runs. evoke shows the ranking
+            instead.</p>
+          <p>The classifier's provider trains its probabilities to be calibrated: across many answers, those given 0.85
+            should be right about 85 times in 100. evoke shows every one, and <code>evoke test</code> checks your own
+            sentences.</p>
+          <p>Each bar has a default. One line in <code>evoke.toml</code>, a file you own, moves it for your machine. A
+            read may never need a higher bar than a write.</p>
+          <p class="after"><a class="more" href="/manual/use/outcomes.html#what-confidence-is">What confidence is, in the manual →</a></p>
+        </div>
+        <div class="panel">
+          <div class="head"><i></i>evoke.toml<span class="who you">yours</span></div>
+<pre><span class="t">[adapters.jev]</span>
+<span class="k">gate</span> <span class="o">=</span> <span class="o">{</span> <span class="k">write</span> <span class="o">=</span> <span class="n">0.85</span> <span class="o">}</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="outcomes">
+      <div class="rule"><p class="label">Four outcomes</p><span class="num">03</span></div>
+      <h2>One installed set, four outcomes.</h2>
+      <p class="sub">These four sentences were decided over the Mac collection. <strong>Each ended differently, and the
+        line before the result shows why.</strong></p>
+      <div class="grid">
+        <div class="panel term" role="figure" aria-label="Four sentences over the Mac collection">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke "set the volume to 40 percent"</span>
+<span class="own">  <span class="name">volume</span> level="40 percent"  <span class="hi">0.93</span></span>
+<span class="out">volume 40%</span>
+<span class="p">$</span> <span class="in">evoke "kill the wifi"</span>
+<span class="own">  <span class="name">wifi</span> state="off" · write · weakest: state <span class="mid">0.72</span>
+  Turn Wi-Fi off?  [y]es [n]o [t]each &gt; <span class="in">t</span></span>
+<span class="add">+ overlays/wifi.toml  [examples] "kill the wifi" = { state = "off" }</span>
+<span class="out">wi-fi off</span>
+<span class="p">$</span> <span class="in">evoke "restart the computer"</span>
+<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: route <span class="hi">0.97</span>
+  Really restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
+[2]</span>
+<span class="p">$</span> <span class="in">evoke "what time is it"</span>
+<span class="own">  <span class="name">none</span> <span class="hi">0.70</span> · timer 0.20 · awake 0.05 · lock 0.05
+  note, open and visit are inactive  →  evoke show
+[2]</span></pre>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong><code>volume</code> is a write.</strong> Its reading, 0.93, cleared the bar of 0.8,
+              so it ran.</span></li>
+            <li><b>2</b><span><strong><code>wifi</code> is a write too.</strong> Its least sure answer, 0.72, was under
+              0.8, so it asked. <code>t</code> answered yes and kept the phrase as an example of yours.</span></li>
+            <li><b>3</b><span><strong><code>power</code> is destructive.</strong> The reading was 0.97, and it still
+              asked. <code>n</code> declined, with exit code 2.</span></li>
+            <li><b>4</b><span><strong>Nothing fit.</strong> evoke ranked the reflexes, ran none, and exited with
+              2.</span></li>
+          </ol>
+        </div>
+      </div>
+      <p class="caption">These lines are what evoke printed in its tests, replayed here. The classifier's answers were
+        written for those tests, so your own numbers will differ.</p>
+    </section>
+
+    <section id="reasons">
+      <div class="rule"><p class="label">Reasons</p><span class="num">04</span></div>
+      <h2>Every confirmation names why it stopped.</h2>
+      <p class="sub">A decision stops to confirm for one of five reasons. <strong>The line before the question shows it:
+        the effect, the least sure answer, and any further reason.</strong></p>
+      <ul class="ticks">
+        <li><strong>Destructive.</strong> The reflex cannot be undone, so it always asks.</li>
+        <li><strong>No bars.</strong> The adapter, evoke's link to the classifier, shipped none, so nothing runs on its
+          own.</li>
+        <li><strong>Under the bar.</strong> The least sure answer is under the bar for this effect.</li>
+        <li><strong>An unused piece.</strong> You typed a number, a duration or a quoted phrase, and no input took
+          it.</li>
+        <li><strong>Two things.</strong> A second reflex fits well enough that the sentence may ask for both.</li>
+      </ul>
+      <p class="after">With <code>--json</code>, every reason that applies arrives, in order, in a list named
+        <code>because</code>, for a script to read.</p>
+      <div class="panel term" role="figure" aria-label="The reasons in the JSON line">
+        <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre data-flow="run"><span class="p">$</span> <span class="in">evoke run --json power action=restart</span>
+<span class="own">  <span class="name">power</span> action="restart" · destructive
+  Really restart now?  [y]es [n]o &gt; <span class="in">n</span></span>
+<span class="out">{"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","template":"Really restart now?"},"because":[{"type":"destructive"}],"trace":[]}</span>
+<span class="own">[2]</span></pre>
+      </div>
+      <p class="caption"><code>power</code> here comes from evoke's tests. These lines are what evoke printed in its
+        tests, replayed here.</p>
+    </section>
+
+    <section id="no-bypass">
+      <div class="rule"><p class="label">No bypass</p><span class="num">05</span></div>
+      <h2>No flag skips the question.</h2>
+      <p class="sub">There is no <code>--yes</code>. Even a call you write by name, with no classifier, asks before a
+        destructive program runs. <strong>With no terminal to ask, as in a script or a scheduled job, the question
+        becomes exit code 3.</strong> evoke names the command to run yourself.</p>
+      <div class="grid">
+        <div class="panel term" role="figure" aria-label="With no terminal, a confirm exits 3">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>no terminal</div>
+<pre data-flow="no-terminal"><span class="p">$</span> <span class="in">echo "restart the computer" | evoke</span>
+<span class="own">  a confirm needs a terminal  →  evoke "restart the computer"
+[3]</span>
+<span class="p">$</span> <span class="in">evoke run power action=restart</span>
+<span class="own">  a confirm needs a terminal  →  evoke run power action=restart
+[3]</span></pre>
+        </div>
+        <p class="caption"><code>power</code> here comes from evoke's tests. These lines are what evoke printed in its
+          tests, replayed here. To let reads and writes run unattended, set their bars in a file you own. A destructive
+          reflex still waits for a person.</p>
+      </div>
+    </section>
+
+    <section id="stricter">
+      <div class="rule"><p class="label">Only stricter</p><span class="num">06</span></div>
+      <h2>An effect can only get stricter.</h2>
+      <p class="sub">Your lock file keeps the effect you agreed to when you installed a reflex. If a new version claims a
+        looser effect, evoke keeps the old one until you run <code>evoke update --accept &lt;name&gt;</code>. <strong>Your
+        own overlay may tighten an effect, from read to write or to destructive. It can never loosen one.</strong></p>
+      <div class="grid">
+        <div class="panel">
+          <div class="head"><i></i>overlays/wifi.toml<span class="who you">yours</span></div>
+<pre><span class="k">effect</span> <span class="o">=</span> <span class="s">"destructive"</span></pre>
+        </div>
+        <p class="caption">From now on, turning Wi-Fi off asks every time.</p>
+      </div>
+    </section>
+
+    <section id="app">
+      <div class="rule"><p class="label">In an app</p><span class="num">07</span></div>
+      <h2>In an app, the question is a value your code holds.</h2>
+      <p class="sub">The SDK returns the same decision as data before anything runs. A confirm carries the call, the
+        reflex's own question and every reason it stopped. <strong>It runs only when your code passes
+        <code>confirmed: true</code>.</strong> So a second person can approve it later, from a queue, over the same
+        reflexes and the same words.</p>
+      <div class="grid">
+        <div class="panel">
+          <div class="head"><i></i>app.ts</div>
+<pre><span class="w">switch</span> <span class="o">(</span>d<span class="o">.</span>outcome<span class="o">)</span> <span class="o">{</span>
+  <span class="w">case</span> <span class="s">"run"</span><span class="o">:</span>     <span class="w">await</span> project<span class="o">.</span>run<span class="o">(</span>d<span class="o">);</span> <span class="w">break</span>
+  <span class="w">case</span> <span class="s">"confirm"</span><span class="o">:</span> <span class="w">if</span> <span class="o">(</span><span class="w">await</span> ui<span class="o">.</span>confirm<span class="o">(</span>d<span class="o">.</span>prompt<span class="o">.</span>template<span class="o">))</span> <span class="w">await</span> project<span class="o">.</span>run<span class="o">(</span>d<span class="o">,</span> <span class="o">{</span> <span class="k">confirmed</span><span class="o">:</span> <span class="n">true</span> <span class="o">});</span> <span class="w">break</span>
+  <span class="w">case</span> <span class="s">"ask"</span><span class="o">:</span>     project<span class="o">.</span>fill<span class="o">(</span>d<span class="o">,</span> <span class="w">await</span> ui<span class="o">.</span>pick<span class="o">(</span>d<span class="o">.</span>missing<span class="o">));</span> <span class="w">break</span>
+  <span class="w">case</span> <span class="s">"abstain"</span><span class="o">:</span> ui<span class="o">.</span>say<span class="o">(</span>d<span class="o">.</span>contenders<span class="o">);</span> <span class="w">break</span>
+<span class="o">}</span></pre>
+        </div>
+        <p class="caption"><a href="/examples/approval.html">See a payment wait for a second person →</a></p>
+      </div>
+      <p class="after"><a class="more" href="/manual/sdk/decisions.html#confirm">Confirm, in the SDK manual →</a></p>
+    </section>
+
+    <section id="limits">
+      <div class="rule"><p class="label">Limits</p><span class="num">08</span></div>
+      <h2>What this gate does not cover.</h2>
+      <ul class="ticks">
+        <li>It gates what evoke chose from a sentence. It is not a guard around the calls another agent makes.</li>
+        <li>Above its bar, a read or a write runs on the classifier's reading, without a question. Set the bars for what
+          matters to you.</li>
+        <li>A reading can be wrong. The bar decides how much can happen on one.</li>
+        <li>The effect is the author's claim. A reflex runs as you, held by the kernel to what its manifest declares, so
+          read what you install.</li>
+        <li>In a sentence of several steps, a step that already ran is not undone when a later one stops.</li>
+      </ul>
+      <p class="after"><a class="more" href="/guides/commands-from-a-fixed-list.html">Natural-language commands from a fixed list →</a></p>
+    </section>
+
+    <div class="closing">
+      <div>
+        <h2>See the question before anything runs.</h2>
+        <p>On a Mac with the collection, <code>evoke try</code> shows what a sentence would do, and runs nothing.</p>
+        <div class="cmd"><code>evoke try "restart the computer"</code><button type="button" data-copy aria-label="Copy the try command">Copy</button></div>
+      </div>
+      <div class="actions">
+        <a class="button primary" href="/start.html">Get started</a>
+        <a class="quiet" href="/examples/approval.html">See the approval example →</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- footer -->
+  <script src="/scenes.js"></script>
+</body>
+</html>

@@ -85,6 +85,13 @@ pub enum Command {
     Check,
     /// `evoke test [name]`: every example and test of every active reflex, or of one, judged over the whole set.
     Test(Option<LocalName>),
+    /// `evoke calibrate [name] [--repeat <k>] [--json]`: every record decided once, or `repeat` times, and what
+    /// the confidence meant on them.
+    Calibrate {
+        name: Option<LocalName>,
+        repeat: usize,
+        json: bool,
+    },
     /// `evoke --help`, `-h` or `help`, or `--help` after a command word: every command, and what it does.
     Help,
     /// `evoke --version` or `-V`: `evoke <version>`.
@@ -149,79 +156,12 @@ impl Command {
         let (word, arguments) = match self {
             Self::Use(arguments) => (None, arguments),
             Self::Try(arguments) => (Some("try"), arguments),
-            Self::Why => return "evoke why".to_owned(),
-            Self::Run { written, json } => {
-                let flag = if *json { " --json" } else { "" };
-                return format!("evoke run{flag} {written}");
-            }
             Self::Teach {
                 spoken: Spoken::Either { word, .. },
                 lesson,
             } => return format!("evoke teach {word} {lesson}"),
             Self::Teach { lesson, .. } => return format!("evoke teach {} {lesson}", quoted(input)),
-            Self::Show(None) => return "evoke show".to_owned(),
-            Self::Show(Some(name)) => return format!("evoke show {name}"),
-            Self::Vocab { name, change } => {
-                let mut line = format!("evoke vocab {name}");
-                match change {
-                    None => {}
-                    Some(VocabChange::Add { word, meaning }) => {
-                        let _ = write!(
-                            line,
-                            " add {} {}",
-                            self::word(word.as_str()),
-                            self::word(meaning.what.as_str())
-                        );
-                        if let Some(value) = &meaning.value {
-                            let _ = write!(line, " --value {}", self::word(value));
-                        }
-                    }
-                    Some(VocabChange::Remove { word }) => {
-                        let _ = write!(line, " remove {}", self::word(word.as_str()));
-                    }
-                }
-                return line;
-            }
-            Self::Config {
-                reflex,
-                key,
-                setting,
-            } => {
-                let value = match setting {
-                    Setting::Plain { value } => word(value),
-                    Setting::Env { var } => format!("--env {var}"),
-                };
-                return format!("evoke config {reflex} {key} {value}");
-            }
-            Self::Add { refs, name } => {
-                let mut line = "evoke add".to_owned();
-                for r in refs {
-                    let _ = write!(line, " {}", r.written);
-                }
-                if let Some(name) = name {
-                    let _ = write!(line, " --as {name}");
-                }
-                return line;
-            }
-            Self::Remove(name) => return format!("evoke remove {name}"),
-            Self::Update { reflex, accept } => {
-                let mut line = "evoke update".to_owned();
-                if let Some(reflex) = reflex {
-                    let _ = write!(line, " {reflex}");
-                }
-                if let Some(accept) = accept {
-                    let _ = write!(line, " --accept {accept}");
-                }
-                return line;
-            }
-            Self::Sync => return "evoke sync".to_owned(),
-            Self::Trust => return "evoke trust".to_owned(),
-            Self::New(name) => return format!("evoke new {name}"),
-            Self::Check => return "evoke check".to_owned(),
-            Self::Test(None) => return "evoke test".to_owned(),
-            Self::Test(Some(name)) => return format!("evoke test {name}"),
-            Self::Help => return "evoke --help".to_owned(),
-            Self::Version => return "evoke --version".to_owned(),
+            _ => return self.line(),
         };
         let mut line = "evoke".to_owned();
         if let Some(word) = word {
@@ -243,6 +183,91 @@ impl Command {
         };
         line.push_str(&quoted(shown));
         line
+    }
+
+    /// The literal command of one that takes no input.
+    fn line(&self) -> String {
+        let named = |name: &Option<LocalName>| {
+            name.as_ref()
+                .map_or_else(String::new, |name| format!(" {name}"))
+        };
+        match self {
+            Self::Use(_) | Self::Try(_) | Self::Teach { .. } => {
+                unreachable!("a deciding command's line takes its input")
+            }
+            Self::Why => "evoke why".to_owned(),
+            Self::Run { written, json } => {
+                let flag = if *json { " --json" } else { "" };
+                format!("evoke run{flag} {written}")
+            }
+            Self::Show(name) => format!("evoke show{}", named(name)),
+            Self::Vocab { name, change } => {
+                let mut line = format!("evoke vocab {name}");
+                match change {
+                    None => {}
+                    Some(VocabChange::Add { word, meaning }) => {
+                        let _ = write!(
+                            line,
+                            " add {} {}",
+                            self::word(word.as_str()),
+                            self::word(meaning.what.as_str())
+                        );
+                        if let Some(value) = &meaning.value {
+                            let _ = write!(line, " --value {}", self::word(value));
+                        }
+                    }
+                    Some(VocabChange::Remove { word }) => {
+                        let _ = write!(line, " remove {}", self::word(word.as_str()));
+                    }
+                }
+                line
+            }
+            Self::Config {
+                reflex,
+                key,
+                setting,
+            } => {
+                let value = match setting {
+                    Setting::Plain { value } => word(value),
+                    Setting::Env { var } => format!("--env {var}"),
+                };
+                format!("evoke config {reflex} {key} {value}")
+            }
+            Self::Add { refs, name } => {
+                let mut line = "evoke add".to_owned();
+                for r in refs {
+                    let _ = write!(line, " {}", r.written);
+                }
+                if let Some(name) = name {
+                    let _ = write!(line, " --as {name}");
+                }
+                line
+            }
+            Self::Remove(name) => format!("evoke remove {name}"),
+            Self::Update { reflex, accept } => {
+                let mut line = format!("evoke update{}", named(reflex));
+                if let Some(accept) = accept {
+                    let _ = write!(line, " --accept {accept}");
+                }
+                line
+            }
+            Self::Sync => "evoke sync".to_owned(),
+            Self::Trust => "evoke trust".to_owned(),
+            Self::New(name) => format!("evoke new {name}"),
+            Self::Check => "evoke check".to_owned(),
+            Self::Test(name) => format!("evoke test{}", named(name)),
+            Self::Calibrate { name, repeat, json } => {
+                let repeat = if *repeat == 1 {
+                    String::new()
+                } else {
+                    format!(" --repeat {repeat}")
+                };
+                let json = if *json { " --json" } else { "" };
+                format!("evoke calibrate{}{repeat}{json}", named(name))
+            }
+            Self::Help => "evoke --help".to_owned(),
+            Self::Version => "evoke --version".to_owned(),
+        }
     }
 
     /// The input as the setup lines name it before one is read: the one given, else `<input>` — for `teach`,
@@ -357,6 +382,7 @@ pub fn parse(
             [name] => named("test", name).map(Some).map(Command::Test),
             _ => Err(usage("test takes one name: evoke test [<name>]")),
         },
+        "calibrate" => calibrate(rest),
         word if WORDS.contains(&word) => Err(usage(format!("evoke {word} is not available yet"))),
         _ => deciding("evoke", &arguments, stdin_is_pipe).map(Command::Use),
     }
@@ -672,6 +698,45 @@ fn is_local(text: &str) -> bool {
     matches!(text, "." | "..") || text.starts_with("./") || text.starts_with("../")
 }
 
+/// `[<name>] [--repeat <k>] [--json]`: the repeats from 1 to 100.
+fn calibrate(arguments: &[String]) -> Result<Command, Diagnostic> {
+    const LINE: &str = "evoke calibrate [<name>] [--repeat <k>] [--json]";
+    let mut name = None;
+    let mut repeat = 1;
+    let mut json = false;
+    let mut rest = arguments.iter();
+    while let Some(argument) = rest.next() {
+        match argument.as_str() {
+            "--json" => json = true,
+            "--repeat" => {
+                let text = rest
+                    .next()
+                    .ok_or_else(|| usage(format!("--repeat needs a count: {LINE}")))?;
+                repeat = match text.parse::<usize>() {
+                    Ok(count) if (1..=100).contains(&count) => count,
+                    _ => {
+                        return Err(usage(format!(
+                            "--repeat takes a count from 1 to 100, not {text}: {LINE}"
+                        )));
+                    }
+                };
+            }
+            flag if flag.starts_with('-') && flag.len() > 1 => {
+                return Err(usage(format!(
+                    "{flag} is not a flag of calibrate; the flags are --repeat <k> and --json"
+                )));
+            }
+            text => {
+                if name.is_some() {
+                    return Err(usage(format!("calibrate takes one name: {LINE}")));
+                }
+                name = Some(LocalName::new(text).map_err(usage)?);
+            }
+        }
+    }
+    Ok(Command::Calibrate { name, repeat, json })
+}
+
 /// `[<name>] [--accept <name>]`.
 fn update(arguments: &[String]) -> Result<Command, Diagnostic> {
     let mut reflex = None;
@@ -754,6 +819,12 @@ mod tests {
         assert_eq!(
             parsed(&["edit", "lights"], false).unwrap_err().message,
             "evoke edit is not available yet"
+        );
+        assert_eq!(
+            parsed(&["calibrate", "--repeat", "101"], false)
+                .unwrap_err()
+                .message,
+            "--repeat takes a count from 1 to 100, not 101: evoke calibrate [<name>] [--repeat <k>] [--json]"
         );
         assert_eq!(
             parsed(&["why", "now"], false).unwrap_err().message,
@@ -1114,6 +1185,16 @@ mod tests {
             (&["check"], "evoke check"),
             (&["test"], "evoke test"),
             (&["test", "timer"], "evoke test timer"),
+            (&["calibrate"], "evoke calibrate"),
+            (&["calibrate", "timer"], "evoke calibrate timer"),
+            (
+                &["calibrate", "--repeat", "10", "--json"],
+                "evoke calibrate --repeat 10 --json",
+            ),
+            (
+                &["calibrate", "--json", "timer", "--repeat", "1"],
+                "evoke calibrate timer --json",
+            ),
         ];
         for (arguments, line) in lines {
             let command = parsed(arguments, false)
@@ -1127,6 +1208,12 @@ mod tests {
             &["check", "lights"],
             &["test", "a", "b"],
             &["test", "none"],
+            &["calibrate", "a", "b"],
+            &["calibrate", "--repeat"],
+            &["calibrate", "--repeat", "0"],
+            &["calibrate", "--repeat", "101"],
+            &["calibrate", "--repeat", "ten"],
+            &["calibrate", "--loud"],
         ] {
             assert_eq!(
                 parsed(arguments, false).unwrap_err().fix,

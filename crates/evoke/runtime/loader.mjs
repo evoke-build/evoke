@@ -1,14 +1,20 @@
 // The loader: one envelope line on stdin — { run, args, input, config, deadline } — the body `run` names imported
 // and its default export called with (args, { input, config, signal }), then one result line on stdout:
-// { text, data? } or { error }. It exits when stdin closes, before or during a body, so its life is bounded by its
-// parent's. The body's console and stdout go to stderr, as do the frames of an error it throws — the frames alone,
-// without the message the host reports, and without the frames inside Node itself. SIGTERM and the deadline abort
-// `signal`; a body that has not settled a second later is abandoned. The SDK ships this same file.
+// { text, data? } or { error, refused? } — `refused` when the error is a refusal by Node's permission model or the
+// kernel: what was refused, a permission or a syscall, and the path, so the host names the declaration's key. It
+// exits when stdin closes before a body, and during one aborts the body's `signal` first, so its life is bounded
+// by its parent's and the body still hears the end. The body's console and stdout go to stderr, as do the frames
+// of an error it throws — the frames alone, without the message the host reports, and without the frames inside
+// Node itself; an error thrown from a callback ends the body as a rejection does. SIGTERM, the deadline and
+// stdin's end abort `signal`; a body that has not settled a second later is abandoned. The SDK ships this same
+// file.
 import { writeSync } from "node:fs";
 import module from "node:module";
 import { pathToFileURL } from "node:url";
 
 const GRACE = 1000;
+// What a refusal's code is: Node's permission model's, the kernel's, or the resolver's when its socket is refused.
+const REFUSALS = new Set(["ERR_ACCESS_DENIED", "EACCES", "EPERM", "EAI_AGAIN", "ENOTFOUND"]);
 // Node's type stripper loads on the first `.mts` import, some twenty milliseconds a body would pay after its
 // envelope arrived: loaded now instead, while the envelope is on its way. The host turns the API's experimental
 // warning off; a runtime without the API skips this, and a body's own import says if types cannot be stripped.
@@ -18,6 +24,12 @@ try {
   // Nothing to warm.
 }
 const controller = new AbortController();
+// The body's signal aborted with the reason, and the loader gone a grace later whatever the body does: with a
+// line for the host when it is still there to read one, silently when it is not.
+const stop = (why, report) => {
+  if (!controller.signal.aborted) controller.abort(new Error(why));
+  setTimeout(() => (report ? fail(why) : process.exit(1)), GRACE);
+};
 // The whole line, however long: `process.stdout` below puts the pipe in non-blocking mode, so one write may take
 // part of it, and the next may be told to wait a moment.
 const out = (value) => {
@@ -31,8 +43,8 @@ const out = (value) => {
     }
   }
 };
-const fail = (message) => {
-  out({ error: message });
+const fail = (message, refused) => {
+  out(refused === undefined ? { error: message } : { error: message, refused });
   process.exit(1);
 };
 
@@ -51,7 +63,8 @@ process.stdin.on("data", (chunk) => {
     run(buffered.slice(0, end));
   }
 });
-process.stdin.on("end", () => process.exit(started ? 1 : 0));
+// The host is gone: before a body, nothing to do; during one, the body hears it and the loader follows.
+process.stdin.on("end", () => (started ? stop("the host is gone", false) : process.exit(0)));
 
 async function run(line) {
   let envelope;
@@ -61,12 +74,9 @@ async function run(line) {
     return fail(`the envelope is not JSON: ${error.message}`);
   }
   const { run, args, input, config, deadline } = envelope;
-  const stop = (why) => {
-    if (!controller.signal.aborted) controller.abort(new Error(why));
-    setTimeout(() => fail(why), GRACE);
-  };
-  process.on("SIGTERM", () => stop("terminated"));
-  const timer = setTimeout(() => stop(`timed out after ${deadline} ms`), deadline);
+  process.on("SIGTERM", () => stop("terminated", true));
+  process.on("uncaughtException", thrown);
+  const timer = setTimeout(() => stop(`timed out after ${deadline} ms`, true), deadline);
   try {
     const module = await import(pathToFileURL(run).href);
     if (module.default === undefined) throw new Error(`${run} has no default export`);
@@ -80,17 +90,38 @@ async function run(line) {
     out(result.data === undefined ? { text: result.text } : { text: result.text, data: result.data });
     process.exit(0);
   } catch (error) {
-    const frames = error instanceof Error && error.stack ? where(error.stack) : "";
-    if (frames) process.stderr.write(`${frames}\n`);
-    fail(error instanceof Error ? error.message : String(error));
+    thrown(error);
   }
+}
+
+// A body's error, whether its promise rejected with it or a callback threw it: the frames on stderr, then the
+// message and what refused the body, when something did, as the one line.
+function thrown(error) {
+  const frames = error instanceof Error && error.stack ? where(error.stack) : "";
+  if (frames) process.stderr.write(`${frames}\n`);
+  fail(error instanceof Error ? error.message : String(error), refusal(error));
+}
+
+// What refused the body, when something did. A lookup names the host, whether Node's permission model refused it
+// or the kernel refused the resolver its socket; any other refused call names the syscall and the path, or the
+// address and a port when there is one, the kernel's and, on the network, Node's alike; anything else Node's
+// permission model refuses names the permission and the resource. A fetch wraps what refused it in its cause.
+function refusal(error) {
+  const cause = error?.cause;
+  const e = cause !== null && typeof cause === "object" && "code" in cause ? cause : error;
+  if (e === null || typeof e !== "object" || !REFUSALS.has(e.code)) return undefined;
+  const text = (value) => (value === undefined || value === null ? "" : String(value));
+  if (e.hostname !== undefined) return { what: "resolve", path: text(e.hostname) };
+  if (e.syscall === undefined) return { what: text(e.permission), path: text(e.resource) };
+  const address = [e.address, e.port].filter((part) => part !== undefined).join(":");
+  return { what: text(e.syscall), path: text(e.path) || address };
 }
 
 function where(stack) {
   const lines = stack.split("\n");
   const first = lines.findIndex((line) => line.startsWith("    at "));
   return (first < 0 ? [] : lines.slice(first))
-    .filter((line) => !line.includes("node:internal") && !line.includes("[eval"))
+    .filter((line) => !/[( ]node:/.test(line) && !line.includes("[eval"))
     .join("\n");
 }
 

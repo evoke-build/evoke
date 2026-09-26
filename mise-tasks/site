@@ -29,7 +29,10 @@ CARD_ALT = "evoke — Software, by reflex."
 LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)\)")
 TOKEN = re.compile(r"--([a-z-]+):\s*([^;]+);")
 UNLISTED = {"404.html", "print.html", "toc.html"}
-UNINDEXED = {"use-cases.html"}  # kept for the links that reach it; it sends the reader on
+UNINDEXED = {"404.html", "use-cases.html"}  # the page for an address that is not there, and one that sends readers on
+BRAND = re.compile(r"^evoke - |\s+-\s+evoke(?: manual)?$", re.IGNORECASE)
+SETTINGS = re.compile(r"\A(?:<!-- (?:title|description): .+? -->\n)+")
+FLOW = re.compile(r'<pre[^>]*\sdata-flow="([\w-]+)"[^>]*>(.*?)</pre>', re.DOTALL)
 PARTS = SITE / "parts"
 ID = re.compile(r'\sid="([^"]+)"')
 HREF = re.compile(r'\s(?:href|src)="([^"]+)"')
@@ -128,9 +131,31 @@ def recorded():
         sys.exit("\n".join(problems))
 
 
+def pinned():
+    """Every terminal a site page pins to a flow, `<pre data-flow="<flow>">`, shows only lines that flow printed in
+    spec/transcripts/<flow>/session.txt, the transcript the tests replay: a page quotes the binary, never a memory of
+    it. A line of … stands for the lines a panel leaves out."""
+    problems = []
+    for page in pages():
+        for flow, pre in FLOW.findall(page.read_text()):
+            session = ROOT / "spec/transcripts" / flow / "session.txt"
+            if not session.is_file():
+                problems.append(f"{page.relative_to(ROOT)}: data-flow names {flow!r}, a flow with no transcript")
+                continue
+            printed = {line.rstrip() for line in session.read_text().splitlines()}
+            for line in html_text.unescape(re.sub(r"<[^>]+>", "", pre)).splitlines():
+                if line.strip() not in ("", "…") and line.rstrip() not in printed:
+                    problems.append(
+                        f"{page.relative_to(ROOT)}: {line.rstrip()!r} is not a line the {flow} flow printed"
+                    )
+    if problems:
+        sys.exit("\n".join(problems))
+
+
 def pages():
-    """The site's own pages: every page under site/ and site/examples/, but the social card's source."""
-    return [p for p in sorted(SITE.glob("*.html")) + sorted(SITE.glob("examples/*.html")) if p.name != "og.html"]
+    """The site's own pages: every page under site/, site/examples/ and site/guides/, but the social card's source."""
+    found = [*sorted(SITE.glob("*.html")), *sorted(SITE.glob("examples/*.html")), *sorted(SITE.glob("guides/*.html"))]
+    return [p for p in found if p.name != "og.html"]
 
 
 def assembled(page):
@@ -230,24 +255,36 @@ def description(page_html):
 
 
 def trail(page, name):
-    """The page's place, for a search engine: evoke, then the manual or the examples where the page is one of
-    them, then the page. The last step needs no address."""
+    """The page's place, for a search engine: evoke, then the manual, the examples or the guides where the page is
+    one of them, then the page, named without the brand. The last step needs no address."""
     steps = [{"@type": "ListItem", "position": 1, "name": "evoke", "item": URL}]
     rel = page.relative_to(OUT).as_posix()
-    if rel.startswith("manual/") and page != OUT / "manual/index.html":
-        steps.append({"@type": "ListItem", "position": 2, "name": "Manual", "item": URL + "manual/"})
-    elif rel.startswith("examples/"):
-        steps.append({"@type": "ListItem", "position": 2, "name": "Examples", "item": URL + "examples.html"})
+    folders = [
+        ("manual/", "Manual", "manual/"),
+        ("examples/", "Examples", "examples.html"),
+        ("guides/", "Guides", "guides.html"),
+    ]
+    for folder, label, item in folders:
+        if rel.startswith(folder) and address(page) != URL + item:
+            steps.append({"@type": "ListItem", "position": 2, "name": label, "item": URL + item})
     steps.append({"@type": "ListItem", "position": len(steps) + 1, "name": name})
     return json.dumps(
         {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": steps}, ensure_ascii=False
     )
 
 
+def settings(markdown_page):
+    """What a manual page sets for its search result on its first lines: `<!-- title: … -->`, the name its title
+    shows where the index's would read badly in a result, and `<!-- description: … -->`, the line under it where the
+    first paragraph would. The comments are the page's own, stripped wherever its markdown is published."""
+    head = SETTINGS.match(markdown_page.read_text())
+    return dict(re.findall(r"<!-- (title|description): (.+?) -->", head[0])) if head else {}
+
+
 def described(page):
-    """A page with what a search engine and a shared link read: canonical, description, the card, the trail. A
-    manual page is described by its first paragraph; a site page by the description it carries. The pages nobody
-    should land on from a search are marked so."""
+    """A page with what a search engine and a shared link read: title, canonical, description, the card, the trail. A
+    manual page is titled by its name in the index and described by its first paragraph, unless it sets either; a
+    site page by what it carries. The pages nobody should land on from a search are marked so."""
     text = page.read_text()
     titled = re.search(r"<title>(.*?)</title>", text)
     manual = page.relative_to(OUT).parts[0] == "manual"
@@ -255,9 +292,16 @@ def described(page):
         page.write_text(text.replace("</head>", '<meta name="robots" content="noindex">\n</head>', 1))
         return
     title = html_text.unescape(titled[1])
-    name = title.removesuffix(" - evoke").removeprefix("Evoke - ")
-    own = re.search(r'<meta name="description" content="([^"]*)">', text)
-    summary_line = description(text) if manual else (html_text.unescape(own[1]) if own else None)
+    own = settings(source(page)) if manual else {}
+    name = own.get("title", BRAND.sub("", title))
+    front = page == OUT / "manual/index.html"
+    if manual:
+        title = f"{name} - Evoke" if front else f"{name} - Evoke manual"
+        text = text.replace(titled[0], f"<title>{html_text.escape(title, quote=False)}</title>", 1)
+    carried = re.search(r'<meta name="description" content="([^"]*)">', text)
+    summary_line = (
+        own.get("description", description(text)) if manual else (html_text.unescape(carried[1]) if carried else None)
+    )
     if summary_line is None:
         sys.exit(f"{page.relative_to(OUT)}: nothing to describe the page by")
     quoted = html_text.escape(summary_line, quote=True)
@@ -283,7 +327,11 @@ def described(page):
             f'<meta name="twitter:description" content="{quoted}">',
             f'<meta name="twitter:image" content="{CARD}">',
             f'<meta name="twitter:image:alt" content="{CARD_ALT}">',
-            *([] if home else [f'<script type="application/ld+json">{trail(page, name)}</script>']),
+            *(
+                []
+                if home
+                else [f'<script type="application/ld+json">{trail(page, "Manual" if front else name)}</script>']
+            ),
             "</head>",
         ]
     )
@@ -298,8 +346,8 @@ AT_WORK = """                    <aside class="at-work" aria-label="The examples
                         <div class="words">
                             <p class="label">Examples</p>
                             <h2>Find the first thing you want it to do.</h2>
-                            <p>Six examples, from what a Mac does at a word to a runbook that names its own next step.
-                                Each one shows its request, its result, and what it needs before you run it.</p>
+                            <p>Six natural-language command examples: one runs today on a Mac, and five are patterns
+                                to adapt. Each ends with the steps to run it or adapt it.</p>
                             <a class="go" href="/examples.html">Explore examples &rarr;</a>
                         </div>
                         <ul class="said">
@@ -406,6 +454,7 @@ def coloured(text):
 
 
 BLOCKS = {"p", "li", "dd", "dt", "h1", "h2", "h3", "h4", "figcaption"}
+BREAKS = BLOCKS | {"br", "div", "pre", "ul", "ol", "dl", "table", "tr", "td", "th", "figure", "blockquote", "hr"}
 VERBATIM = {"pre", "code", "script", "style", "textarea"}
 
 
@@ -458,15 +507,20 @@ def widowless(page):
 def glue(parts, start, end):
     """The last two words between two indices of a split page joined by a no-break space, unless the break before the
     last word sits inside code, the words are joined already, or they are the only two: a two-word heading glued whole
-    cannot wrap, and overflowed a phone."""
-    chars, code = [], 0
+    cannot wrap, and overflowed a phone. Only the last run of text counts, a run ending at a br or a block tag: glued
+    across a block, the space before a terminal showed as a blank line."""
+    runs, code = [[]], 0
     for i in range(start + 1, end):
         if i % 2:
             tag = re.match(r"</?\s*([a-zA-Z][a-zA-Z0-9]*)", parts[i])
-            if tag and tag[1].lower() in VERBATIM:
+            name = tag[1].lower() if tag else ""
+            if name in VERBATIM:
                 code += -1 if parts[i].startswith("</") else 1
+            if name in BREAKS:
+                runs.append([])
         else:
-            chars.extend((i, j, c, code > 0) for j, c in enumerate(parts[i]))
+            runs[-1].extend((i, j, c, code > 0) for j, c in enumerate(parts[i]))
+    chars = next((run for run in reversed(runs) if any(not c.isspace() for _, _, c, _ in run)), [])
     space = lambda c: c in " \t\n\r"
     last = next((k for k in range(len(chars) - 1, -1, -1) if not space(chars[k][2])), None)
     if last is None:
@@ -569,10 +623,11 @@ def versioned(landing, format_page):
 
 def twinned():
     """Every page of the manual served beside its markdown source, README.md as index.md, so a reader that wants text
-    gets the file the page was made from, its relative links resolving to the twins beside it."""
+    gets the file the page was made from, its relative links resolving to the twins beside it; what a page sets for
+    its search result stays out of it."""
     for page in MANUAL.rglob("*.md"):
         rel = page.relative_to(MANUAL).as_posix()
-        shutil.copy(page, OUT / "manual" / ("index.md" if rel == "README.md" else rel))
+        (OUT / "manual" / ("index.md" if rel == "README.md" else rel)).write_text(SETTINGS.sub("", page.read_text(), 1))
 
 
 def absolute(page):
@@ -587,7 +642,7 @@ def absolute(page):
         url = published(target) if target.is_relative_to(MANUAL) else URL + target.relative_to(ROOT).as_posix()
         return f"[{found[1]}]({url}{'#' + fragment if fragment else ''})"
 
-    return LINK.sub(link, page.read_text())
+    return LINK.sub(link, SETTINGS.sub("", page.read_text(), 1))
 
 
 def llms():
@@ -698,14 +753,13 @@ def sitemap(pages, dated):
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(entries) + "\n</urlset>\n"
     )
-    (OUT / "robots.txt").write_text(
-        f"User-agent: *\nAllow: /\nDisallow: /manual/print.html\n\nSitemap: {URL}sitemap.xml\n"
-    )
+    (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {URL}sitemap.xml\n")
 
 
 links_resolve()
 palette = site_palette()
 recorded()
+pinned()
 shutil.rmtree(OUT, ignore_errors=True)
 shutil.rmtree(SRC, ignore_errors=True)
 shutil.copytree(MANUAL, SRC)
@@ -714,10 +768,10 @@ shutil.copytree(MANUAL, SRC)
 front = SRC / "README.md"
 front.write_text(front.read_text().replace('src="../../assets/logo.png"', 'src="/logo-512.png"', 1))
 subprocess.run(["mdbook", "build", str(SITE)], check=True)
-(OUT / "examples").mkdir()
 site_pages = []
 for source_page in pages():
     target = OUT / source_page.relative_to(SITE)
+    target.parent.mkdir(exist_ok=True)
     shutil.copy(source_page, target)
     site_pages.append(target)
 for name in ["site.css", "scenes.js", "install.sh", "og.png", "logo.png", "logo-512.png", "apple-touch-icon.png"]:
@@ -743,7 +797,6 @@ for page in manual_pages:
     furnished(page)
     described(page)
     widowless(page)
-shutil.copy(OUT / "manual/404.html", OUT / "404.html")
 listed = (
     [OUT / "index.html"]
     + [p for p in site_pages if p.name not in UNINDEXED and p != OUT / "index.html"]

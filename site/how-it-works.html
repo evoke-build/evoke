@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>How it works - Evoke</title>
-  <meta name="description" content="One sentence followed to the program that runs: what a reflex contains, how a decision is gated, and how one result reaches the next step.">
+  <title>How a typed sentence becomes a program call - Evoke</title>
+  <meta name="description" content="How a natural-language command picks a program you installed, fills its inputs, clears a confidence threshold, and can pass its result to the next step.">
   <!-- head -->
   <style>
     .legend dt { font: 500 .8rem/1.6 var(--mono); color: var(--accent-ink); margin: 0; }
@@ -33,27 +33,29 @@
   <main class="wrap">
     <div class="hero solo">
       <div class="copy">
-        <h1>Follow a sentence <em>all the way to an action.</em></h1>
-        <p class="lede"><strong>One request, from the words you type to the program that runs.</strong> Seven short
-          parts, each shown on the same example. Read them in order, or jump to the one you need.</p>
+        <h1>How a sentence you type <em>becomes a program call.</em></h1>
+        <p class="lede"><strong>A reflex is a small program you install and ask for in your words.</strong> This page
+          follows one natural-language command to the program it runs. A classifier reads the sentence, and a bar set by
+          what the program changes decides whether it runs, asks you first, or stops.</p>
       </div>
       <ul class="index" aria-label="The sections">
-        <li><a href="#ability"><code>01</code>What a reflex contains</a></li>
-        <li><a href="#sentence"><code>02</code>What your sentence contributes</a></li>
-        <li><a href="#decisions"><code>03</code>Run, ask, confirm, or stop</a></li>
-        <li><a href="#handoff"><code>04</code>One result reaches the next step</a></li>
-        <li><a href="#runbook"><code>05</code>A program continues a workflow</a></li>
-        <li><a href="#vocabulary"><code>06</code>Your team's vocabulary</a></li>
-        <li><a href="#app"><code>07</code>What your application owns</a></li>
+        <li><a href="#reflex"><code>01</code>What a reflex contains</a></li>
+        <li><a href="#sentence"><code>02</code>How your sentence is read</a></li>
+        <li><a href="#decisions"><code>03</code>How sure evoke must be to run</a></li>
+        <li><a href="#handoff"><code>04</code>Passing a result to the next step</a></li>
+        <li><a href="#runbook"><code>05</code>A program chooses what runs next</a></li>
+        <li><a href="#vocabulary"><code>06</code>Your names and phrases</a></li>
+        <li><a href="#app"><code>07</code>What stays yours to decide</a></li>
       </ul>
     </div>
 
-    <section id="ability">
+    <section id="reflex">
+      <span id="ability" aria-hidden="true"></span>
       <div class="rule"><p class="label">A reflex</p><span class="num">01</span></div>
-      <h2>An installed reflex is a program with a manifest.</h2>
-      <p class="sub">This is <code>contact</code>, the first reflex of the walkthrough. Its manifest states its purpose,
-        its inputs, what its result holds, and how careful to be. <strong>The classifier reads these words. The program
-        receives the values.</strong></p>
+      <h2>A reflex brings its program and the words to ask for it.</h2>
+      <p class="sub">A reflex is a program with a manifest, <code>reflex.toml</code>, beside it. The manifest states what
+        the program does, what it is not for, which inputs it takes, and how careful to be. <strong>The classifier reads
+        these words. The program receives the values of its inputs.</strong></p>
       <div class="split">
         <div class="panel">
           <div class="head"><i></i>contact/reflex.toml<span class="who">by the author</span></div>
@@ -84,39 +86,49 @@ One person at a time; prints the address."""</span>
         <div class="text legend">
           <dl>
             <dt>description · not_for</dt>
-            <dd><strong>The purpose, and its edges.</strong> What it does in plain words, then the near misses it must not take.</dd>
+            <dd><strong>What it is for, and what it is not.</strong> A plain description, and the near misses it must turn down.</dd>
             <dt>effect</dt>
-            <dd><strong>How careful to be.</strong> A read only observes, so it runs at a lower bar than a write.</dd>
+            <dd><strong>How careful to be.</strong> The author declares read, write or destructive. A read needs less certainty to run than a write, and a destructive one always asks. You can make it stricter, never looser.</dd>
             <dt>confirm</dt>
-            <dd><strong>Its own question.</strong> The line a person answers when evoke is not sure.</dd>
+            <dd><strong>Its own question.</strong> The line you answer when evoke wants your yes first.</dd>
+            <dt>run</dt>
+            <dd><strong>The program that runs.</strong> A file its author wrote, or a command you already use. Your sentence fills its inputs and never changes what runs.</dd>
+            <dt>[needs]</dt>
+            <dd><strong>What it touches.</strong> The paths, the network and the programs the author declares; the kernel holds the program there. <code>contact</code> declares nothing, so it touches nothing but its own folder.</dd>
             <dt>[args.name]</dt>
-            <dd><strong>The input it accepts.</strong> A name from your own word list, <code>people</code>. Every input has one source: the author's options, your words, a piece of the sentence, or a yes/no switch.</dd>
+            <dd><strong>The input it takes.</strong> A word from <code>people</code>, a list you keep. Every input has one source: options the author listed, a word list you keep, a piece of what you typed, or a yes/no switch.</dd>
             <dt>[yields]</dt>
-            <dd><strong>What its result holds.</strong> An email address. A later step that needs one can take it.</dd>
+            <dd><strong>What its result holds.</strong> An email address. A later step in the same sentence that needs one can take it.</dd>
+            <dt>[examples]</dt>
+            <dd><strong>Sentences that show it in use.</strong> The classifier reads these too, with the description and the near misses.</dd>
           </dl>
-          <a class="more" href="/examples/contact-to-draft.html#files">Inspect the example definition →</a>
+          <a class="more" href="/examples/contact-to-draft.html#files">See both manifests in the contact example →</a>
         </div>
       </div>
+      <p class="caption"><code>contact</code> is a stand-in from evoke's tests: it makes an address up from the name, and you
+        cannot install it. You can install <a href="/manual/collection.html">the collection's thirteen Mac reflexes</a>, or
+        write a reflex of your own.</p>
     </section>
 
     <section id="sentence">
       <div class="rule"><p class="label">Your sentence</p><span class="num">02</span></div>
       <h2>Your sentence picks the reflex and fills its inputs.</h2>
-      <p class="sub">evoke turns every installed manifest into closed questions and asks the classifier all of them at
-        once. <strong>Each answer is a probability.</strong> Nothing in the answer is a new value: only a choice among
-        what already exists.</p>
+      <p class="sub">The classifier is Jev, TypeSafe AI's model. evoke turns every installed manifest into closed questions
+        and sends them all in one request. A sentence with «and» or «then» can make <a href="#questions">a few more</a>.
+        <strong>Jev answers each question with a probability, and evoke accepts only an answer from the choices it
+        offered.</strong></p>
       <ol class="steps">
         <li><i>01</i><b>Which reflex?</b><span>One choice over every installed reflex, or none of them. Built from
-          each description and its examples.</span></li>
-        <li><i>02</i><b>Does it fit?</b><span>A yes or no per reflex, so a sentence that asks for two things is
-          noticed.</span></li>
-        <li><i>03</i><b>Which value?</b><span>One choice per input: an option, one of your words, or a piece of the
-          sentence found by code. Or unstated.</span></li>
+          each description, its near misses and its examples.</span></li>
+        <li><i>02</i><b>Does it fit?</b><span>A yes or no for each reflex. When a second reflex fits well too, the
+          sentence may ask for two things, so evoke asks you before anything runs.</span></li>
+        <li><i>03</i><b>Which value?</b><span>One choice per input: an option the author listed, a word from a list you
+          keep, or a piece of your sentence taken word for word. Or «unstated».</span></li>
       </ol>
       <div class="grid">
         <div class="panel term" role="figure" aria-label="evoke try shows every answer without running anything">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke try</div>
-<pre><span class="p">$</span> <span class="in">evoke try "kill the lights in the den"</span>
+<pre data-flow="try"><span class="p">$</span> <span class="in">evoke try "kill the lights in the den"</span>
 <span class="own">  <span class="name">lights</span> <span class="hi">0.91</span> · none 0.06 · timer 0.02 · volume 0.01
   room   <span class="name">den</span> <span class="hi">0.85</span> · unstated 0.10 · office 0.05
   state  <span class="name">off</span> <span class="hi">0.88</span> · on 0.05 · dim 0.05 · unstated 0.02
@@ -126,32 +138,38 @@ One person at a time; prints the address."""</span>
         <div class="side">
           <div class="panel term" id="missing" role="figure" aria-label="A required input the sentence did not state is asked for">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>a missing value</div>
-<pre><span class="p">$</span> <span class="in">evoke "kill the lights"</span>
+<pre data-flow="use"><span class="p">$</span> <span class="in">evoke "kill the lights"</span>
 <span class="own">  Which room?  [1] den  [2] office  [+] add one  &gt; <span class="in">1</span>
   <span class="name">lights</span> room="den" state="off" · write · weakest: state <span class="mid">0.58</span>
-  Set the den lights off?  [y]es [n]o [t]each &gt; <span class="in">y</span></span>
+  Set the den lights off?  [y]es [n]o [t]each &gt; <span class="in">t</span></span>
+<span class="add">+ overlays/lights.toml  [examples] "kill the lights" = { state = "off" }</span>
 <span class="out">den lights off</span></pre>
           </div>
           <ol class="notes column">
-            <li><b>1</b><span><strong>«den» matched a word of yours.</strong> Rooms are a vocabulary you filled. The
-              classifier read the word's meaning, and the program gets its value.</span></li>
-            <li><b>2</b><span><strong>«kill» meant off at 0.88.</strong> An option the author listed, chosen from the
-              sentence. Without «in the den», the room was unstated, so evoke asked.</span></li>
-            <li><b>3</b><span><strong>Some things are never read from a sentence.</strong> A setting like a bridge
-              address, or a secret, is supplied once with <code>evoke config</code>.</span></li>
+            <li><b>1</b><span><strong>«den» matched a word of yours.</strong> Rooms are a word list you keep, called a
+              vocabulary. The classifier reads each word's meaning, and the program gets its value.</span></li>
+            <li><b>2</b><span><strong>«kill» meant off at 0.88.</strong> Off is an option the author listed. Without «in the
+              den», the room was unstated, so evoke asked for it.</span></li>
+            <li><b>3</b><span><strong>Then evoke asked for a yes.</strong> Off got only 0.58 this time, under the bar for a
+              write. Typing <code>t</code> answered yes and saved the phrase in a file of yours.</span></li>
+            <li><b>4</b><span><strong>Some things are never read from a sentence.</strong> A setting like a bridge
+              address, or a secret, is set once with <code>evoke config</code>.</span></li>
           </ol>
         </div>
       </div>
-      <p class="caption"><code>evoke try</code> decides and runs nothing. The lights reflex here comes from the product's
-        own tests. <a href="/manual/use/outcomes.html#try-decide-and-show-the-work">Every judgment, explained →</a></p>
+      <p class="caption"><code>evoke try</code> shows every answer and runs nothing. The lights reflex here comes from evoke's
+        tests, and so do these lines, over answers written for those tests. Your own numbers will differ. <a href="/manual/use/outcomes.html#try-decide-and-show-the-work">Every judgment, explained →</a></p>
+      <p class="caption"><strong>If you know LLM function calling,</strong> this is the same step: a sentence becomes a
+        call to your code. evoke adds three things. Every value is one the reflex allows, and every answer carries a
+        probability. A bar set by what the program changes decides what runs without a question.
+        <a href="/developers.html#llm">Where evoke fits beside an LLM →</a></p>
     </section>
 
     <section id="decisions" class="outcomes">
       <div class="rule"><p class="label">The gate</p><span class="num">03</span></div>
-      <h2>Run, ask, confirm, or stop.</h2>
-      <p class="sub">The weakest answer is the decision's confidence. Each effect has a bar. <strong>Confidence is
-        evidence the policy uses. It is not a guarantee that the reading is right.</strong> So what cannot be undone
-        always asks.</p>
+      <h2>How sure evoke must be depends on what the program changes.</h2>
+      <p class="sub">evoke guarantees that every value is one the reflex allows. It cannot guarantee that it read you
+        right. <strong>That is why a bar, set by what the program changes, decides what runs without a question.</strong></p>
       <div class="grid">
         <figure class="figure gate">
           <div class="scene">
@@ -218,28 +236,37 @@ One person at a time; prints the address."""</span>
               </g>
             </svg>
           </div>
-          <figcaption><b>Every number is calibrated.</b> 0.85 means right about 85 times in 100. The bars are lines in a
-            file you own, and a read may never run at a higher bar than a write.</figcaption>
+          <figcaption><b>Each effect has its own bar.</b> A decision's confidence is its weakest answer: the lowest probability
+            among the reflex chosen and each of its values. Under 0.5 for the best reflex, nothing runs. A read runs
+            without a question at 0.6 or more, a write at 0.8, and a destructive reflex always asks.</figcaption>
         </figure>
         <ol class="steps column">
-          <li><b><i class="ok"></i>Run</b><span>Over the bar, every required input stated. The call prints
-            with its confidence, then the result.</span></li>
-          <li><b><i class="mid"></i>Ask</b><span>A required input was not stated, or a value fell outside
-            its range. evoke asks the input's own question and decides again.</span></li>
-          <li><b><i class="mid"></i>Confirm</b><span>Under the bar, or a second reflex fits well too, or a
-            piece of the sentence went unused. And always, for a destructive reflex.</span></li>
+          <li><b><i class="ok"></i>Run</b><span>At or over the bar, with every required input stated. It runs on the
+            classifier's reading, without a question. The call prints with its confidence, then the result.</span></li>
+          <li><b><i class="mid"></i>Ask</b><span>A required input was not stated, or a value fell outside its range.
+            evoke asks the input's own question, then checks the bar again with your answer.</span></li>
+          <li><b><i class="mid"></i>Confirm</b><span>evoke shows the call and waits for your yes: under the bar, when a
+            second reflex fits well too, or when something you typed went unused. A destructive reflex always waits.</span></li>
           <li><b><i class="no"></i>Stop</b><span>Nothing fits, and evoke abstains: the ranking prints and nothing runs. In a
             sentence of several steps, one part that fits nothing stops the whole sentence.</span></li>
         </ol>
       </div>
-      <p class="after"><a class="more" href="/manual/use/outcomes.html">Read the decision details →</a></p>
+      <p class="caption"><strong>What a number means.</strong> The classifier's provider
+        <a href="https://docs.typesafe.ai/concepts/system-one">trains its probabilities to be calibrated</a>: across many
+        answers, those given 0.85 should be right about 85 times in 100. evoke shows every one, and
+        <code>evoke test</code> checks your own sentences. You can read and change the bars in a file you own.</p>
+      <p class="after"><a class="more" href="/manual/use/outcomes.html">Every outcome, in the manual →</a> <span class="also"><a
+        href="/examples/desktop.html">See a restart ask first, even at 0.97</a></span></p>
+      <p class="after"><a class="more" href="/guides/approval-by-risk.html">Approval set by what a program changes →</a> <span class="also"><a
+        href="/guides/commands-from-a-fixed-list.html">Natural-language commands from a fixed list →</a></span></p>
     </section>
 
     <section id="handoff">
       <div class="rule"><p class="label">A handoff</p><span class="num">04</span></div>
-      <h2>What one step finds, the next one takes.</h2>
-      <p class="sub">A reflex declares what its result holds. A later step that lacks a value of that kind takes it.
-        <strong>The plan says so before anything runs.</strong></p>
+      <h2>One step's result can fill the next step's input.</h2>
+      <p class="sub">One sentence can ask for several reflexes, and evoke shows the numbered plan before anything runs.
+        <strong>When your words point back to an earlier step, and its result holds the kind of value a later step lacks,
+        that value passes along.</strong></p>
       <div class="grid">
         <figure class="figure">
           <div class="scene">
@@ -278,13 +305,13 @@ One person at a time; prints the address."""</span>
               <text class="dim" x="40" y="284">takes an address</text>
             </svg>
           </div>
-          <figcaption><b>Same kind, so it binds.</b> «them» in the sentence names step 1. Its <code>email</code> field is
+          <figcaption><b>The kinds match.</b> «them» in the sentence points back to step 1. Its <code>email</code> field holds
             an address, and <code>mail</code> needs one for <code>to</code>.</figcaption>
         </figure>
         <div class="side">
           <div class="panel term" role="figure" aria-label="The plan, then the run">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre><span class="p">$</span> <span class="in">evoke "look up dana's address and email them"</span>
+<pre data-flow="weave"><span class="p">$</span> <span class="in">evoke "look up dana's address and email them"</span>
 <span class="own">  1  <span class="name">contact</span> name="dana"  <span class="hi">0.90</span>
   2  <span class="name">mail</span> · takes email from 1</span>
 <span class="out">dana &lt;dana@example.com&gt;</span>
@@ -292,22 +319,39 @@ One person at a time; prints the address."""</span>
 <span class="out">drafted to dana@example.com</span></pre>
           </div>
           <ol class="notes column">
-            <li><b>1</b><span><strong>The plan comes first.</strong> Two numbered lines, and what step 2 takes from
-              step 1. A required input is filled. An optional one is decided again, with the value written into the sentence.</span></li>
-            <li><b>2</b><span><strong>Nothing is guessed.</strong> A reference that two fields could satisfy stops with a
-              line naming them. A part that matches nothing refuses the whole sentence.</span></li>
+            <li><b>1</b><span><strong>The plan comes first.</strong> Two numbered lines show each step, and what step 2
+              takes from step 1. A required input is filled with the value. An optional one is decided again, the value
+              written into that step's words.</span></li>
+            <li><b>2</b><span><strong>No field is guessed.</strong> When two fields could fit, evoke stops and names them.
+              When a step points back but takes nothing, evoke asks before anything runs. When a part matches nothing,
+              evoke refuses the whole sentence.</span></li>
           </ol>
         </div>
       </div>
-      <p class="after"><a class="more" href="/examples/contact-to-draft.html">Explore the chaining example →</a></p>
+      <p class="caption"><strong>A result passes to a later step only when all of this holds.</strong></p>
+      <ul class="ticks">
+        <li>The earlier reflex declares a field of its result under <code>[yields]</code>, with its kind: a number, a
+          duration, an email address, a URL, a quoted phrase, or a list of records made of these.</li>
+        <li>Its program returns that field with its result.</li>
+        <li>The later step has an input of the same kind, read from your sentence, that your sentence left empty. An input
+          filled from the author's options or from a word list never takes a result.</li>
+        <li>Your words point back to the earlier step, with a word like «it», «them» or «the address».</li>
+        <li>Exactly one field fits, or your words name the one you mean.</li>
+      </ul>
+      <p class="caption"><code>contact</code> and this <code>mail</code> are stand-ins from evoke's tests, and so are the
+        numbers. The collection's <code>mail</code> opens a draft in your mail app, and nothing is sent. No reflex in the
+        collection declares <code>[yields]</code> yet: to pass a result today, write a reflex that does.</p>
+      <p class="after"><a class="more" href="/examples/contact-to-draft.html">Pass a result to the next step, in the contact
+        example →</a> <span class="also"><a href="/manual/use/weaving.html#what-a-step-takes-from-another">The rule, in the
+        manual</a></span></p>
     </section>
 
     <section id="runbook">
       <div class="rule"><p class="label">A continuation</p><span class="num">05</span></div>
       <h2>A program can name the next step.</h2>
-      <p class="sub">Beside its one line of text, a reflex may return data. <strong>An application loop reads
-        <code>next</code> from that data and submits it as the next sentence.</strong> This is the runbook pattern, a
-        second way to chain, where the program decides what follows.</p>
+      <p class="sub">A reflex's program can return the next sentence with its result. A short loop in your application,
+        written with the TypeScript SDK, submits it as if you had typed it. <strong>This is the runbook pattern, a second
+        way to chain, where each program decides what follows.</strong></p>
       <div class="grid">
         <figure class="figure">
           <div class="scene">
@@ -338,8 +382,8 @@ One person at a time; prints the address."""</span>
               <text class="dim" x="170" y="358" text-anchor="middle">Only the destructive one asks a person.</text>
             </svg>
           </div>
-          <figcaption><b>Three reflexes, one loop.</b> Every hop is a decision like any other. The loop is six lines of
-            your code, and it stops the moment a step does not run.</figcaption>
+          <figcaption><b>Three reflexes, one loop.</b> Each step is decided and gated like any sentence you type. The loop
+            is six lines of your code, and it stops as soon as a step does not run.</figcaption>
         </figure>
         <div class="side">
           <div class="panel term" role="figure" aria-label="The runbook, run">
@@ -351,8 +395,10 @@ One person at a time; prints the address."""</span>
 writes landing on the new primary</span></pre>
           </div>
           <ol class="notes column">
-            <li><b>1</b><span><strong>Two ways to chain, two owners.</strong> A handoff is planned by evoke from
-              declared outputs. A continuation is chosen by the program, and driven by your loop.</span></li>
+            <li><b>1</b><span><strong>Two ways to chain.</strong> In one sentence of several steps, evoke plans the steps
+              and passes declared results. In a continuation, each program names the next step, and your loop submits it.</span></li>
+            <li><b>2</b><span><strong>The database programs are stand-ins.</strong> They print fixed lines. Yours would
+              drain, promote and check a real database.</span></li>
           </ol>
         </div>
       </div>
@@ -362,8 +408,9 @@ writes landing on the new primary</span></pre>
     <section id="vocabulary">
       <div class="rule"><p class="label">Your words</p><span class="num">06</span></div>
       <h2>Your names and phrases stay in your files.</h2>
-      <p class="sub">A vocabulary maps your words to the values a program needs. An overlay adds your phrases and your
-        wording. <strong>Both lay over the shipped manifest, and an update keeps them.</strong></p>
+      <p class="sub">A vocabulary is a word list you keep, like rooms or people, and each word has a meaning the
+        classifier reads. An overlay holds your phrases for one reflex. <strong>Both sit on top of the shipped manifest,
+        and an update keeps them.</strong></p>
       <div class="grid">
         <figure class="figure">
           <div class="scene">
@@ -403,13 +450,14 @@ writes landing on the new primary</span></pre>
               <text class="dim" x="170" y="380" text-anchor="middle">Nothing is ever deleted.</text>
             </svg>
           </div>
-          <figcaption><b>One merge rule.</b> Your file adds and replaces wording. It cannot change the contract: the
-            inputs, their sources, the program. A file of yours that will not parse makes the reflex inactive, never looser.</figcaption>
+          <figcaption><b>Your files change wording, never the program.</b> An overlay adds and replaces wording. It cannot
+            change what runs, which inputs exist, or where their values come from. If your file does not parse, the
+            reflex sits out every decision until you fix it. It never becomes looser.</figcaption>
         </figure>
         <div class="side">
           <div class="panel term" role="figure" aria-label="evoke show marks your lines">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke show</div>
-<pre><span class="p">$</span> <span class="in">evoke show lights</span>
+<pre data-flow="show"><span class="p">$</span> <span class="in">evoke show lights</span>
 <span class="own">  description = "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only."
   …
   [args.state]</span>
@@ -422,41 +470,84 @@ writes landing on the new primary</span></pre>
           </div>
           <ol class="notes column">
             <li><b>1</b><span><strong>A <code>+</code> marks a line of yours.</strong> Teach one with <code>evoke teach</code>,
-              or with <code>t</code> at any question. Edit the file by hand if you like.</span></li>
-            <li><b>2</b><span><strong>An update reports, never overwrites.</strong> New wording upstream is taken where
-              you had none, and yours is kept where you did.</span></li>
+              or answer <code>t</code> when evoke asks for a yes. You can also edit the file by hand.</span></li>
+            <li><b>2</b><span><strong>An update never overwrites your files.</strong> It lists what changed, takes the
+              author's new wording where you had none, and keeps yours where you had some.</span></li>
           </ol>
         </div>
       </div>
-      <p class="after"><a class="more" href="/manual/use/tuning.html">View the tuning guide →</a></p>
+      <p class="caption">The lights reflex here comes from evoke's tests. You cannot install it.</p>
+      <p class="after"><a class="more" href="/manual/use/tuning.html">Teach evoke your words, in the manual →</a> <span
+        class="also"><a href="/examples/ops.html">Service names as a word list: the ops example</a></span></p>
     </section>
 
     <section id="app">
       <div class="rule"><p class="label">Your application</p><span class="num">07</span></div>
       <h2>What stays yours to decide.</h2>
-      <p class="sub">evoke decides which call a sentence means, and whether it may run. <strong>Four things remain the
-        application's.</strong></p>
+      <p class="sub">evoke decides which call a sentence means, and whether it may run without a question. <strong>Four
+        things stay with you and your application.</strong></p>
       <ul class="promises">
-        <li><b>Who may ask for what.</b><span>A decision is plain data your code holds before it runs. Check the person,
-          the account, the time of day. The approval example waits for a second person.</span></li>
-        <li><b>What the programs do.</b><span>A reflex runs with your permissions and there is no sandbox yet. Read what
-          you install. Its effect is the author's claim, and you can only tighten it.</span></li>
-        <li><b>What happens after a partial run.</b><span>A step that fails stops the steps after it. Nothing already
-          done is rolled back. Your application decides what to do with what ran.</span></li>
-        <li><b>Where the key goes.</b><span>One request per decision leaves the machine, to the classifier you chose,
-          with your key. Nothing goes to evoke.build.</span></li>
+        <li><b>Who may ask for what.</b><span>A decision is plain data your code holds before anything runs. Check the
+          person, the account or the time of day first. The <a href="/examples/approval.html">approval example</a> waits
+          for a second person.</span></li>
+        <li><b>What the programs do.</b><span>A reflex runs with your permissions, held by the kernel to what its manifest
+          declares. Read what you install. Its effect is the author's claim, and you can make it stricter, never
+          looser.</span></li>
+        <li><b>What happens after a partial run.</b><span>A step that fails stops the steps after it. evoke undoes
+          nothing that already ran, and your application decides what happens next.</span></li>
+        <li><b>Where your sentence and key go.</b><span>Each decision is one request to the classifier, with your own
+          key, billed by its provider. At the terminal, a sentence you repeat is answered from a local cache. Nothing
+          goes to evoke.build.</span></li>
       </ul>
-      <p class="after"><a class="more" href="/manual/security.html">Read the security manual →</a></p>
+      <p class="after"><a class="more" href="/manual/security.html">Read the security manual →</a> <span class="also"><a
+        href="/privacy.html">Read the privacy policy</a></span></p>
+    </section>
+
+    <section id="questions">
+      <div class="rule"><p class="label">Questions</p></div>
+      <h2>Requests, running by name, and changing the bars.</h2>
+      <div class="qa">
+        <h3>How many requests does one sentence make?</h3>
+        <div>
+          <p>A sentence that asks for one thing is one request, carrying every question at once. When it has a word like
+            «and» or «then», one request first asks whether each such word joins two steps. With three steps or more,
+            another may ask which step a word like «them» points to. Then each step is one request, and a step decided
+            again with a value from an earlier step makes one more.</p>
+          <p>At the terminal, a sentence you repeat, with the same reflexes installed, is answered from a local cache
+            without a request.</p>
+          <a class="go" href="/manual/use/weaving.html">How a sentence with several steps is read →</a>
+        </div>
+      </div>
+      <div class="qa">
+        <h3>Can I run a reflex without the classifier?</h3>
+        <div>
+          <p>Yes. <code>evoke run</code> takes a call you write yourself, like <code>evoke run power action=restart</code>,
+            and asks no classifier. Every value is still checked, so a word missing from your list or a number out of
+            range is refused. A destructive reflex still asks for your yes.</p>
+          <a class="go" href="/manual/use/outcomes.html">Running by name, in the manual →</a>
+        </div>
+      </div>
+      <div class="qa">
+        <h3>Can I change the bars?</h3>
+        <div>
+          <p>Yes. The defaults are 0.5 to pick a reflex at all, 0.6 for a reflex that only reads, and 0.8 for one that
+            writes. You can raise or lower them for your machine in <code>evoke.toml</code>. A read's bar can never be
+            higher than a write's, and nothing lets a destructive reflex run without your yes.</p>
+          <a class="go" href="/manual/use/outcomes.html">The bars, in the manual →</a>
+        </div>
+      </div>
     </section>
 
     <div class="closing">
       <div>
         <h2>Every reflex you install is one more thing you can ask for.</h2>
-        <p>That is the direction: every program with a manifest, and your words following you from one device to the
-          next. <a href="/idea.html#road">The idea page</a> lays out six stages, and three exist today.</p>
+        <p>Install evoke, add the collection's thirteen reflexes for the Mac, and type a sentence of your own. On Linux,
+          start with a reflex that wraps a command you already use. <code>evoke try</code> shows a decision without
+          running it.</p>
       </div>
       <div class="actions">
-        <a class="button primary" href="/examples.html">Explore examples</a>
+        <a class="button primary" href="/start.html">Get started</a>
+        <a class="quiet" href="/examples.html">Explore examples →</a>
         <a class="quiet" href="/idea.html">Why reflexes →</a>
       </div>
     </div>

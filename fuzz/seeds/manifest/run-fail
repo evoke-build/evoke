@@ -1,0 +1,8 @@
+reflex = 1
+
+description = """
+Fail on purpose.
+An argv body for the spec: a program that exits 1 and says nothing."""
+effect = "read"
+confirm = "Fail?"
+run = ["false"]

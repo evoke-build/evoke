@@ -1,0 +1,20 @@
+reflex = 1
+
+description = "Turn the lights in one room on, off, or dim them."
+confirm = "Set the lights {brightness} {clipboard} {colour}?"
+run = "lights.mts"
+
+[args.state]
+ask = "What should the lights do?"
+options.on = "Switch on."
+options.off = "Switch off."
+options.dim = "Lower the brightness without switching off."
+
+[args.brightness]
+ask = "How bright?"
+pick = "number"
+optional = true
+
+[args.clipboard]
+ask = "To the clipboard?"
+flag = true

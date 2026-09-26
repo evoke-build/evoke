@@ -17,3 +17,7 @@ serde_json.workspace            = true
 sha2.workspace                  = true
 toml_edit.workspace             = true
 unicode-normalization.workspace = true
+
+[dev-dependencies]
+proptest.workspace               = true
+proptest-state-machine.workspace = true

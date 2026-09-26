@@ -77,6 +77,12 @@ export type VarName = string
 /** A path inside one reflex directory: relative, plain segments, no `..`. */
 export type RelPath = string
 
+/** A `{name}` in `[needs]`: an argument or a config key, whose value fills the entry at the decision. */
+export type ValueName = string
+
+/** An absolute path as `[needs]` names one: `/`, or plain segments under it, no `.` or `..`. */
+export type AbsPath = string
+
 /** A GitHub owner, user or organization: `[A-Za-z0-9][A-Za-z0-9-]*`. */
 export type Owner = string
 
@@ -157,6 +163,8 @@ export interface Manifest {
   confirm: Template
   /** Absent: inline, a function the SDK holds. */
   run?: Run
+  /** What the body may touch; absent, the tightest declaration. Contract, like `run`. */
+  needs?: Needs
   config: Record<ConfigKey, ConfigSpec>
   args: Record<ArgName, Argument>
   /** What the body's `data` yields for a later step to take, per field. */
@@ -223,6 +231,132 @@ export type Yield = Recognizer | { each: Record<FieldName, Recognizer> }
 
 /** `[min, max]` on a value, min ≤ max. */
 export type Range = [min: number, max: number]
+
+// ---- needs, contain ----
+
+// needs.rs
+
+/** The declaration: four lists, each absent when empty. */
+export interface Needs {
+  reads?: Entry[]
+  writes?: Entry[]
+  /** `["*"]` for any host, else absent: a name is held by no kernel. */
+  hosts?: Hosts
+  runs?: Program[]
+}
+
+/** One path the declaration names: `~/…`, `/…`, or `{name}`, the value of an argument or a config key. */
+export type Entry = string
+
+/** Which hosts the body may reach: `[]` none, `["*"]` any. */
+export type Hosts = [] | ["*"]
+
+/** A program the body may run: a name found on `PATH`, or an absolute path. */
+export type Program = string
+
+/** A key of the table, as a line names it. */
+export type NeedsKey = "reads" | "writes" | "hosts" | "runs"
+
+/** The declaration resolved at a decision: every path absolute, a `{name}` replaced by its value or dropped when unstated. Strings a host holds paths by. */
+export interface Policy {
+  reads?: Place[]
+  writes?: Place[]
+  hosts?: Hosts
+  runs?: Program[]
+}
+
+/** A path the body may reach, and the entry it came from. */
+export interface Place {
+  path: string
+  from: Entry
+}
+
+/** Where a declaration comes from, so a fix lands where it is written: a local reflex's manifest at its `[needs]` line, or a fetched reflex, whose author's it is. */
+export type Origin = { type: "local"; at: At } | { type: "fetched" }
+
+/** What the machine lacks that the declaration names: a path, or a program `PATH` does not hold. */
+export type Lacking = { type: "place"; place: Place; key: NeedsKey } | { type: "program"; program: Program }
+
+/** What refused a body, as the loader reports it: Node's permission or the kernel's syscall, and the path. */
+export interface Refused {
+  what: string
+  path: string
+}
+
+/** What an update does to the needs a person consented to: upstream may keep or narrow them, and widens them only through `evoke update --accept`; `kept` is what the lock records meanwhile. */
+export type NeedsConsent =
+  | { type: "kept"; needs: Needs }
+  | { type: "tightened"; needs: Needs; removed: Needs }
+  | { type: "needs_accept"; locked: Needs; upstream: Needs }
+
+// contain.rs
+
+/** What the host knows that the policy does not: where things are. */
+export interface Facts {
+  platform: Platform
+  /** The runtime a file body runs under; absent for an argv body. */
+  runtime?: Runtime
+  /** The body's directory: readable, and its working directory. */
+  body_dir: string
+  /** The private temporary folder made for the run, by its real path. */
+  tmp: string
+  /** The home: the runtime's installation is readable whole unless that would be the home or above it. */
+  home: string
+  /** Linux: the file `/etc/resolv.conf` really is when it links out of `/etc`. */
+  resolver?: string
+  /** What the host found at each of the policy's paths, by the path as the policy spells it. */
+  found?: Record<string, Found>
+  /** Where each program the policy names is, by the name as the policy spells it. */
+  programs?: Record<string, Executable>
+}
+
+export type Platform = "linux" | "macos"
+
+/** The runtime a file body runs under: its program, as `process.execPath` names it, and whether its permission
+ *  model holds the network, which it does from Node 25, the first to know `--allow-net`. */
+export interface Runtime extends Executable {
+  holds_network?: boolean
+}
+
+/** A program as the kernel runs it: its path, and the interpreters the kernel executes to run it. */
+export interface Executable {
+  path: string
+  interpreters?: string[]
+}
+
+/** A path as the host found it: its real path, links followed, and whether it is a directory. */
+export interface Found {
+  real: string
+  dir: boolean
+}
+
+/** One Landlock rule: the path, and the rights beneath it. */
+export interface Rule {
+  path: string
+  rights: Right[]
+}
+
+/** The file-system rights Landlock names. */
+export type Right =
+  | "execute"
+  | "write_file"
+  | "read_file"
+  | "read_dir"
+  | "remove_dir"
+  | "remove_file"
+  | "make_char"
+  | "make_dir"
+  | "make_reg"
+  | "make_sock"
+  | "make_fifo"
+  | "make_block"
+  | "make_sym"
+  | "refer"
+  | "truncate"
+  | "ioctl_dev"
+
+/** Whether the machine holds the whole declaration: fully; partly, with what it does not hold; not at all, with why. */
+export type Contained = { type: "full" } | { type: "partial"; why: string } | { type: "none"; why: string }
 
 /** Utterances, each with what it asserts; keyed by spelling, no two sharing an identity. */
 export type Records = Record<Clean, Asserted>
@@ -338,13 +472,14 @@ export interface LockedAdapter {
   id: AdapterId
 }
 
-/** One remote reflex as pinned. */
+/** One remote reflex as pinned; `needs` absent means none consented to. */
 export interface Locked {
   reference: Reference
   tag: Version
   commit: Commit
   h1: Digest
   effect: Effect
+  needs?: Needs
 }
 
 /** A commit as git printed it: 40 or 64 lowercase hex; compared, never parsed. */
@@ -458,10 +593,12 @@ export interface Installed {
   evoke: Version
 }
 
-/** One installed reflex as found: its wording or why it has none, the effect consented to, how its config is held. */
+/** One installed reflex as found: its wording or why it has none, the effect and the needs consented to — the lock's for a remote reflex, its own for a local one — and how its config is held. */
 export interface Item {
   wording: Result<Effective, Diagnostic[]>
   consented: Effect
+  /** Absent: none consented to. */
+  needs?: Needs
   configured: Record<ConfigKey, Held>
 }
 
@@ -490,11 +627,13 @@ export interface Plan {
   deadline: Millis
 }
 
-/** An active reflex as the decision needs it; `effect` is the tighter of the manifest's and the consented one. */
+/** An active reflex as the decision needs it; `effect` is the tighter of the manifest's and the consented one, `needs` the manifest's declaration narrowed to what was consented to. */
 export interface Active {
   effect: Effect
   /** Absent: inline, a function the SDK holds. */
   run?: Run
+  /** Absent: the tightest declaration. */
+  needs?: Needs
   confirm: Template
   args: Record<ArgName, Argument>
   /** What the body's `data` yields for a later step to take, per field. */
@@ -623,6 +762,8 @@ export type Cap =
   | { type: "under_floor"; judgment: Judgment; floor: Prob }
   | { type: "unconsumed_span"; span: Span }
   | { type: "two_things"; contender: Contender }
+  /** A weave merged a part that matched nothing on its own back into these words: never run unasked. */
+  | { type: "merged" }
 
 /** The confirm prompt: `evoke`'s own line, then the manifest's template filled in. */
 export interface Prompt {
@@ -831,6 +972,8 @@ export type WeaveWhy =
   | { type: "found_nothing" }
   | { type: "no_reflex" }
   | { type: "read_as"; reflex: LocalName }
+  /** The weave was cancelled: the round the host ended, and every step that had not finished by then. */
+  | { type: "cancelled" }
   | { type: "said"; message: string }
 
 /** What a host made of one round. */
@@ -849,7 +992,7 @@ export interface Progress {
 }
 
 /** What the run needs a host to do next. */
-export type Todo = { type: "decide"; asked: Asked } | { type: "handle"; handling: Handling[] }
+export type Todo = { type: "decide"; step: number; round: number; asked: Asked } | { type: "handle"; handling: Handling[] }
 
 /** The run, or what it needs first. */
 export type Running = { type: "done"; executed: Executed } | { type: "todo"; todo: Todo }
@@ -880,10 +1023,10 @@ export interface ContractDiff {
   violations: WasViolation[]
 }
 
-/** `same`: nothing but wording. `minor`: additions, and a config key gone. `major`: something a person's files or calls may not survive. */
+/** `same`: nothing but wording, or a declaration narrowed. `minor`: additions, a declaration widened, and a config key gone. `major`: something a person's files or calls may not survive. */
 export type Level = "same" | "minor" | "major"
 
-/** One change to the contract, in the order the diff walks: the previous arguments, the added ones, the body, config, then what the result yields. */
+/** One change to the contract, in the order the diff walks: the previous arguments, the added ones, the body, what it may touch, config, then what the result yields. */
 export type Change =
   | { type: "arg_removed"; arg: ArgName }
   | { type: "option_removed"; arg: ArgName; key: OptionKey }
@@ -891,6 +1034,8 @@ export type Change =
   | { type: "source_changed"; arg: ArgName }
   | { type: "range_changed"; arg: ArgName }
   | { type: "run_changed" }
+  | { type: "needs_widened"; added: Needs }
+  | { type: "needs_narrowed"; removed: Needs }
   | { type: "required"; arg: ArgName }
   | { type: "config_secret"; key: ConfigKey; secret: boolean }
   | { type: "arg_added"; arg: ArgName }
@@ -999,6 +1144,166 @@ export interface Theft {
   thief: LocalName
 }
 
+// calibrate
+
+/** The report `evoke calibrate` prints: every record of the active reflexes decided once, or `repeats` times, and judged; each input counts once, by its first decision, the repeats measuring stability. */
+export interface Calibration {
+  adapter: AdapterId
+  records: number
+  reflexes: number
+  inputs: number
+  repeats: number
+  outcomes: Outcomes
+  /** The whole call right, by the confidence claimed; a bin with no call is left out. */
+  bins: BinRow[]
+  /** Calls no record can judge: a `false` record routed to a reflex no record names. */
+  unknown: number
+  abstained: Share
+  bars: Bars
+  questions: QuestionRow[]
+  brier?: Brier
+  misses: Miss[]
+  variance?: Variance
+}
+
+/** How many inputs ended in each outcome. */
+export interface Outcomes {
+  run: number
+  confirm: number
+  ask: number
+  abstain: number
+}
+
+/** One bin: the calls whose confidence lies in `lo..hi` — `hi` inside the last bin — how many were right, the Wilson interval of that share, the mean confidence claimed; `over_confident` when the claim is above the interval, `thin` under a hundred calls. */
+export interface BinRow {
+  lo: Prob
+  hi: Prob
+  calls: number
+  right: number
+  interval: [Prob, Prob]
+  claimed: Prob
+  thin: boolean
+  over_confident: boolean
+}
+
+/** A count with how many were right, and the Wilson interval of the share. */
+export interface Share {
+  count: number
+  right: number
+  interval: [Prob, Prob]
+}
+
+/** Each effect's bar, for an effect with a judged call under a gate. */
+export interface Bars {
+  read?: BarRow
+  write?: BarRow
+}
+
+/** The calls of one effect at or over its bar: how many were wrong, per thousand, the one-sided bound at 95 % per thousand, and the neighbourhood at the bar and a step either side. */
+export interface BarRow {
+  bar: Prob
+  wrong: number
+  calls: number
+  per_thousand: number
+  at_most: number
+  near: NearRow[]
+}
+
+/** At a threshold: how many calls would run, and how many of those are wrong. */
+export interface NearRow {
+  at: Prob
+  run: number
+  wrong: number
+}
+
+/** One kind of judgment on its own: the route, or the arguments by source; right when the record names the argument and the decision read it as claimed. */
+export interface QuestionRow {
+  kind: QuestionKind
+  judgments: number
+  right: number
+  interval: [Prob, Prob]
+  claimed: Prob
+}
+
+export type QuestionKind = "route" | "options" | "vocab" | "pick" | "flag"
+
+/** The Brier score over the calls, and Murphy's parts over the bins. */
+export interface Brier {
+  brier: number
+  reliability: number
+  resolution: number
+  uncertainty: number
+}
+
+/** A decision a record proved wrong: the record, what was decided, where it missed; `wrong` counts the repeats that missed the same way. */
+export interface Miss {
+  case: Case
+  outcome: "run" | "confirm" | "ask" | "abstain"
+  reflex?: LocalName
+  confidence?: Prob
+  mismatch: Mismatch
+  wrong: number
+}
+
+/** Over repeats: the inputs whose winner or verdict flipped, the spread of the confidence per input, the inputs straddling the bar of their effect, the calls wrong at or over their bar in any repeat, and what moved most. */
+export interface Variance {
+  flips: number
+  verdict_flips: number
+  spread: Spread
+  straddling: number
+  wrong_at_bar: number
+  moved: Moved[]
+}
+
+export interface Spread {
+  median: number
+  p90: number
+  max: number
+}
+
+/** One input whose repeats moved: the confidence's range, the route's, each winner and outcome with its count, and how many repeats were wrong. */
+export interface Moved {
+  utterance: string
+  confidence?: [Prob, Prob]
+  route: [Prob, Prob]
+  winners: Record<string, number>
+  outcomes: Record<string, number>
+  wrong: number
+}
+
+/** One line of the log as the block reads it: what was decided, which adapters answered — none when the cache did — whether the body ran or failed, and a weave step's status. */
+export interface Logged {
+  input: Input
+  decision: Decision
+  adapters?: AdapterId[]
+  ran?: boolean
+  failed?: boolean
+  status?: Status
+}
+
+/** The log's lines under one adapter, counted by what became of each; the confidence of what stopped at a confirm by segment; the lines whose input is a record, judged; and the lines that did not read. */
+export interface LogBlock {
+  adapter: AdapterId
+  decisions: number
+  ran: number
+  confirmed_ran: number
+  confirmed_stopped: number
+  asked: number
+  abstained: number
+  failed: number
+  skipped: number
+  stopped_by_confidence: Counted[]
+  records: Share
+  unread: number
+}
+
+/** A count of confidences in `lo..hi`. */
+export interface Counted {
+  lo: Prob
+  hi: Prob
+  count: number
+}
+
 // systemone
 
 /** A door on the System One wire: which address, under which key, naming which model. Its adapter name. */
@@ -1013,11 +1318,11 @@ export interface Settings {
   issuer: string
   /** The endpoint both hosts post to. */
   url: string
-  policy: Policy
+  policy: Transport
 }
 
 /** The transport policy as a value, executed by each host: the wait after connect, how many times a connect error or a retried status is tried again, and which statuses those are. */
-export interface Policy {
+export interface Transport {
   timeout: Millis
   retries: number
   /** `[min, max]`, both retried. */

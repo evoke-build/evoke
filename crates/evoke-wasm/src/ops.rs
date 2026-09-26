@@ -6,18 +6,20 @@ use evoke_adapters::replay;
 use evoke_adapters::systemone::{self, Door};
 use evoke_core::document::Text;
 use evoke_core::manifest::{ConfigSpec, Effect, Recognizer};
-use evoke_core::name::{ArgName, LocalName, RelPath, Tag, VarName, VocabName};
+use evoke_core::name::AdapterId;
+use evoke_core::name::{ArgName, ConfigKey, LocalName, RelPath, Tag, VarName, VocabName};
 use evoke_core::plan::Millis;
 use evoke_core::project::Location;
 use evoke_core::text::NonEmpty;
 use evoke_core::{
-    Active, Baseline, Case, Chosen, Decision, Digest, Document, Fault, Fix, Gate, Input, Installed,
-    Lesson, Limits, Lock, Manifest, Overlay, Plan, Raw, Request, Scope, Utterance, Value, Verdict,
-    Weave, Written, add_entry, argv, baseline, by_name, call as call_grammar, cases, compile,
-    compose, consent, diff, effective, envelope, fill, gate, identity, judge, lint, lock, manifest,
+    Active, Baseline, Call, Case, Chosen, Decision, Digest, Document, Facts, Fault, Fix, Gate,
+    Input, Installed, Lesson, Limits, Lock, Logged, Manifest, Needs, Overlay, Plan, Policy, Raw,
+    Request, Scope, Utterance, Value, Verdict, Weave, Written, add_entry, argv, baseline, by_name,
+    calibrate, call as call_grammar, cases, compile, compose, consent, diff, effective, envelope,
+    fill, gate, identity, judge, landlock, lint, lock, log_block, manifest, needs, node_flags,
     overlay, picked, project, project_dts, propose, read, reference, reflex_dts, regressions,
-    remove_entry, render_lock, report, request, set_config, teach, thieves, vocab_edit, vocabulary,
-    weave,
+    remove_entry, render_lock, report, request, resolve, seatbelt, set_config, teach, thieves,
+    vocab_edit, vocabulary, weave, widens,
 };
 use indexmap::IndexMap;
 use serde::Serialize;
@@ -39,8 +41,8 @@ struct Bug(String);
 
 type Answer = Result<Json, Bug>;
 
-/// The op table in four parts — parse and customize, decide and run, tune and author, the adapters — each
-/// falling through to the next.
+/// The op table in five parts — parse and customize, decide and run, needs and containment, tune and author,
+/// the adapters — each falling through to the next.
 fn answer(op: &str, input: &Json) -> Answer {
     Ok(match op {
         "identity" => ok(identity(text(input, "text")?)),
@@ -142,10 +144,53 @@ fn decide(op: &str, input: &Json) -> Answer {
             &arg::<Active>(input, "active")?,
             &arg::<Input>(input, "input")?,
             arg::<Millis>(input, "deadline")?,
+            text(input, "home")?,
         )),
         "argv" => result(argv(
             &arg::<Chosen>(input, "chosen")?,
             &arg::<Active>(input, "active")?,
+            text(input, "home")?,
+        )),
+        _ => return needs_and_contain(op, input),
+    })
+}
+
+fn needs_and_contain(op: &str, input: &Json) -> Answer {
+    Ok(match op {
+        "needs.resolve" => result(resolve(
+            &arg::<Needs>(input, "needs")?,
+            &arg::<Call>(input, "call")?,
+            &arg::<Active>(input, "active")?,
+            &arg::<IndexMap<ConfigKey, String>>(input, "config")?,
+            text(input, "home")?,
+        )),
+        "contain.seatbelt" => ok(seatbelt(
+            &arg::<Policy>(input, "policy")?,
+            &arg::<Facts>(input, "facts")?,
+        )),
+        "contain.node_flags" => ok(node_flags(
+            &arg::<Policy>(input, "policy")?,
+            &arg::<Facts>(input, "facts")?,
+        )),
+        "contain.landlock" => ok(landlock(
+            &arg::<Policy>(input, "policy")?,
+            &arg::<Facts>(input, "facts")?,
+        )),
+        "needs.declared_at" => ok(needs::declared_at(document(input, "doc")?)),
+        "needs.lacking" => ok(needs::lacking(
+            &arg::<needs::Lacking>(input, "lacking")?,
+            &arg::<LocalName>(input, "reflex")?,
+            &arg::<Active>(input, "active")?,
+            &arg::<needs::Origin>(input, "origin")?,
+            text(input, "home")?,
+        )),
+        "needs.refusal" => ok(needs::refusal(
+            &arg::<Policy>(input, "policy")?,
+            opt::<Policy>(input, "upstream")?.as_ref(),
+            &arg::<LocalName>(input, "reflex")?,
+            &arg::<needs::Origin>(input, "origin")?,
+            &arg::<needs::Refused>(input, "refused")?,
+            text(input, "home")?,
         )),
         _ => return tune(op, input),
     })
@@ -181,6 +226,14 @@ fn tune(op: &str, input: &Json) -> Answer {
             arg::<Effect>(input, "locked")?,
             arg::<Effect>(input, "upstream")?,
         )),
+        "needs.widens" => ok(widens(
+            &arg::<Needs>(input, "from")?,
+            &arg::<Needs>(input, "to")?,
+        )),
+        "needs.consent" => ok(needs::consent(
+            &arg::<Needs>(input, "locked")?,
+            &arg::<Needs>(input, "upstream")?,
+        )),
         "lint" => ok(lint(&arg::<Manifest>(input, "manifest")?)),
         "reflex_dts" => ok(reflex_dts(&arg::<Manifest>(input, "manifest")?)),
         "project_dts" => ok(project_dts(&arg::<Installed>(input, "set")?)),
@@ -200,6 +253,19 @@ fn tune(op: &str, input: &Json) -> Answer {
         "thieves" => ok(thieves(
             &arg::<Vec<LocalName>>(input, "newcomers")?,
             &arg::<Vec<(Case, Option<LocalName>)>>(input, "routed")?,
+        )),
+        "calibrate" => ok(calibrate(
+            &arg::<AdapterId>(input, "adapter")?,
+            opt::<Gate>(input, "gate")?.as_ref(),
+            &arg::<Plan>(input, "plan")?,
+            &arg::<Vec<(Case, NonEmpty<Decision>)>>(input, "judged")?,
+        )),
+        "calibrate.log" => ok(log_block(
+            &arg::<AdapterId>(input, "adapter")?,
+            opt::<Gate>(input, "gate")?.as_ref(),
+            &arg::<Vec<Logged>>(input, "lines")?,
+            &arg::<Vec<Case>>(input, "cases")?,
+            arg::<usize>(input, "unread")?,
         )),
         _ => return adapters(op, input),
     })

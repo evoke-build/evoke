@@ -204,6 +204,25 @@ name!(
     }
 );
 name!(
+    /// A `{name}` in `[needs]`: an argument or a config key, whose value fills the entry at the decision.
+    ValueName,
+    name
+);
+name!(
+    /// An absolute path as `[needs]` names one: `/`, or plain segments under it, no `.` or `..`, one clean line.
+    AbsPath,
+    |s: &str| {
+        let Some(rest) = s.strip_prefix('/') else {
+            return Err(format!("\"{s}\" is not an absolute path"));
+        };
+        if !rest.is_empty() && rest.split('/').any(|segment| segment.is_empty() || segment == "." || segment == "..") {
+            return Err(format!("\"{s}\" is not a plain absolute path"));
+        }
+        crate::text::Clean::line(s).map_err(|why| format!("\"{s}\" {why}"))?;
+        Ok(())
+    }
+);
+name!(
     /// A GitHub owner, user or organization: `[A-Za-z0-9][A-Za-z0-9-]*`.
     Owner,
     |s: &str| {
@@ -293,6 +312,13 @@ mod tests {
         assert!(RelPath::new("/a").is_err());
         assert!(RelPath::new("../a").is_err());
         assert!(RelPath::new("a//b").is_err());
+        assert!(ValueName::new("to").is_ok());
+        assert!(ValueName::new("To").is_err());
+        assert!(AbsPath::new("/").is_ok());
+        assert!(AbsPath::new("/etc/hosts").is_ok());
+        assert!(AbsPath::new("/etc/").is_err());
+        assert!(AbsPath::new("/a/../b").is_err());
+        assert!(AbsPath::new("etc").is_err());
         assert!(Owner::new("evoke-build").is_ok());
         assert!(Owner::new("-radhi").is_err());
         assert!(Owner::new("a.b").is_err());

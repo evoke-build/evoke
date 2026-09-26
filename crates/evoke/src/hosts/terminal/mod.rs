@@ -5,6 +5,9 @@
 //! terminal stdout is, for a layout that must fit. In: `Text` and prompts. Out: nothing, the lines a pipe holds,
 //! or what was typed at a prompt.
 
+// The prompt polls its terminal through libc, so an interrupt is seen while a person is still to answer.
+#![expect(unsafe_code)]
+
 mod busy;
 mod repl;
 mod size;
@@ -12,15 +15,20 @@ mod text;
 
 use std::fs::{File, OpenOptions};
 use std::io::{self, BufRead, BufReader, IsTerminal, Write};
+use std::os::fd::AsRawFd as _;
 use std::path::PathBuf;
 use std::sync::OnceLock;
+use std::time::Duration;
 
 pub use busy::Busy;
 pub use repl::Repl;
 pub use size::columns;
 pub use text::{Role, Text};
 
-use super::{Environment, Failure, failed};
+use super::{Environment, Failure, failed, interrupt};
+
+/// How long a prompt waits between two looks at the interrupt.
+const POLL: Duration = Duration::from_millis(50);
 
 /// What the terminal shows beyond plain text, decided once. Colour and weight on a stream need it to be a
 /// terminal, `NO_COLOR` unset or empty, and `TERM` set to something other than `dumb`; the spinner needs stderr
@@ -65,12 +73,15 @@ impl Look {
 static LOOK: OnceLock<Look> = OnceLock::new();
 
 /// Decides the look from the two streams and the environment, once at the start; until then everything is plain.
+/// The interrupt handler is installed here too, told whether stderr is a terminal.
 pub fn configure(environment: &Environment) {
+    let stderr_is_terminal = io::stderr().is_terminal();
     let _ = LOOK.set(Look::of(
         io::stdout().is_terminal(),
-        io::stderr().is_terminal(),
+        stderr_is_terminal,
         environment,
     ));
+    interrupt::install(stderr_is_terminal);
 }
 
 fn look() -> Look {
@@ -164,13 +175,18 @@ impl Tty {
             .map_err(|error| failed("showing the prompt", &super::cause(&error)))
     }
 
-    /// Shows the text and reads what was typed, without its line end; none at the end of input.
+    /// Shows the text and reads what was typed, without its line end; none at the end of input — and none when
+    /// Ctrl-C was pressed while the host was armed for it: the prompt returns as an end of input does, and the
+    /// host acts on the interrupt.
     pub fn prompt(&mut self, text: &str) -> Result<Option<String>, Failure> {
         let asked = self
             .writer
             .write_all(text.as_bytes())
             .and_then(|()| self.writer.flush());
         asked.map_err(|error| failed("showing the prompt", &super::cause(&error)))?;
+        if !self.answered()? {
+            return Ok(None);
+        }
         let mut typed = String::new();
         match self.reader.read_line(&mut typed) {
             Ok(0) => {
@@ -179,6 +195,36 @@ impl Tty {
             }
             Ok(_) => Ok(Some(typed.trim_end_matches(['\n', '\r']).to_owned())),
             Err(error) => Err(failed("reading the answer", &super::cause(&error))),
+        }
+    }
+
+    /// Waits until the terminal has a line to read, looking at the interrupt between polls: false once one was
+    /// noted. The terminal is canonical, so a line ready is a whole line, and the read after never blocks.
+    fn answered(&mut self) -> Result<bool, Failure> {
+        if !self.reader.buffer().is_empty() {
+            return Ok(true);
+        }
+        let mut polled = libc::pollfd {
+            fd: self.reader.get_ref().as_raw_fd(),
+            events: libc::POLLIN,
+            revents: 0,
+        };
+        let millis = i32::try_from(POLL.as_millis()).expect("a short poll");
+        loop {
+            if interrupt::interrupted() {
+                return Ok(false);
+            }
+            // SAFETY: one pollfd, owned here, for the length given.
+            let ready = unsafe { libc::poll(&raw mut polled, 1, millis) };
+            if ready > 0 {
+                return Ok(true);
+            }
+            if ready < 0 {
+                let error = io::Error::last_os_error();
+                if error.kind() != io::ErrorKind::Interrupted {
+                    return Err(failed("reading the answer", &super::cause(&error)));
+                }
+            }
         }
     }
 }

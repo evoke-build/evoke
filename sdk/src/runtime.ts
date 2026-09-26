@@ -1,20 +1,35 @@
 // A body run, three ways: a function in-process under the deadline's signal; a file body in a child through the
-// same loader.mjs the CLI embeds, the envelope on its stdin held open until it exits; a program spawned with an
-// argv, config as EVOKE_CONFIG_<KEY> and the input as EVOKE_INPUT. Config is resolved from the environment here
-// and only here; a secret reaches the body and nothing else. In: the envelope, where the body lives, a signal.
-// Out: what the body returned, or a FailureError; the caller's abort passes through as its own reason.
+// same loader.mjs the CLI embeds, under the layers, in its own directory with a private TMPDIR, the envelope on
+// its stdin held open until it exits; a program spawned with an argv under the same layers, config as
+// EVOKE_CONFIG_<KEY> and the input as EVOKE_INPUT. Config is resolved from the environment here and only here; a
+// secret reaches the body and nothing else. In: the envelope, where the body lives, the layers, a signal. Out:
+// what the body returned, or a FailureError; a refusal, which the project names; the caller's abort passes
+// through as its own reason.
 
 import { type ChildProcess, spawn } from "node:child_process"
 import { fileURLToPath } from "node:url"
 
+import { type Layers, flags, under } from "./contain.ts"
 import { command } from "./core.ts"
 import { FailureError } from "./errors.ts"
-import type { Envelope, Fix, Setting } from "./types.ts"
+import type { Contained, Envelope, Fix, Refused, Setting } from "./types.ts"
 
-/** What a body returns: its text, and data when it gives some. */
+/** What a body returns: its text, and data when it gives some; for a file or an argv body, whether the machine
+ *  held its declaration. */
 export interface Result {
   text: string
   data?: unknown
+  contained?: Contained
+}
+
+/** A body refused past its declaration, as the loader reported it: the project names the key and the fix. */
+export class Refusal extends Error {
+  readonly refused: Refused
+  constructor(message: string, refused: Refused) {
+    super(message)
+    this.name = "Refusal"
+    this.refused = refused
+  }
 }
 
 /** What a body receives beside its arguments. */
@@ -75,11 +90,13 @@ export async function inline(
   }
 }
 
-/** A file body, in a child: the loader fed the envelope with the body's path under its directory. */
+/** A file body, in a child: the loader started under the layers in the body's directory, fed the envelope with
+ *  the body's path under it. */
 export async function child(
   what: string,
   dir: string,
   envelope: Envelope & { run: string },
+  layers: Layers,
   signal: AbortSignal | undefined,
 ): Promise<Result> {
   signal?.throwIfAborted()
@@ -92,9 +109,11 @@ export async function child(
   }
   // The loader warms Node's type stripper through an API still marked experimental: its warning is off, so a
   // body's stderr is the body's.
-  const started = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", LOADER], {
+  const { file, args } = under(process.execPath, ["--disable-warning=ExperimentalWarning", ...flags(layers), LOADER], layers)
+  const started = spawn(file, args, {
+    cwd: dir,
     detached: true,
-    env: scrubbed(),
+    env: scrubbed(layers.facts.tmp),
     stdio: ["pipe", "pipe", "inherit"],
   })
   // A loader gone before it read is reported by its exit, not by the pipe.
@@ -110,38 +129,55 @@ export async function child(
   try {
     parsed = JSON.parse(line)
   } catch {
-    throw failed(what, line === "" ? `${ended(code)} without a result` : `the result line is not JSON: ${line}`)
+    throw failed(what, line === "" ? (refusedProfile(code) ?? `${ended(code)} without a result`) : `the result line is not JSON: ${line}`)
   }
-  if (parsed !== null && typeof parsed === "object" && "error" in parsed) throw failed(what, String(parsed.error))
+  if (parsed !== null && typeof parsed === "object" && "error" in parsed) {
+    const refused = "refused" in parsed ? parsed.refused : undefined
+    if (refused !== null && typeof refused === "object" && "what" in refused && "path" in refused) {
+      throw new Refusal(String(parsed.error), { what: String(refused.what), path: String(refused.path) })
+    }
+    throw failed(what, String(parsed.error))
+  }
   return result(what, parsed)
 }
 
-/** A program with its argv: config and the input in its environment, its stdout the text. */
+/** `sandbox-exec`'s own exit, when the code is one: a profile it refused before the program ran. */
+function refusedProfile(code: number | null): string | undefined {
+  if (process.platform === "linux") return undefined
+  if (code === 65) return "sandbox-exec refused the profile (exit 65)"
+  if (code === 71) return "sandbox-exec is too old for the profile (exit 71)"
+  return undefined
+}
+
+/** A program with its argv, under the layers, in the body's directory: config and the input in its
+ *  environment, its stdout the text. */
 export async function program(
   what: string,
   argv: readonly string[],
   envelope: Envelope,
+  layers: Layers,
   signal: AbortSignal | undefined,
 ): Promise<Result> {
   signal?.throwIfAborted()
-  const [file, ...rest] = argv
-  if (file === undefined) throw failed(what, "the argv is empty")
-  const env = scrubbed()
+  const [program, ...rest] = argv
+  if (program === undefined) throw failed(what, "the argv is empty")
+  const env = scrubbed(layers.facts.tmp)
   for (const [key, value] of Object.entries(resolved(what, envelope.config))) {
     env[`EVOKE_CONFIG_${key.toUpperCase()}`] = value
   }
   env.EVOKE_INPUT = envelope.input
-  const started = spawn(file, rest, { detached: true, env, stdio: ["ignore", "pipe", "inherit"] })
+  const { file, args } = under(program, rest, layers)
+  const started = spawn(file, args, { cwd: layers.facts.body_dir, detached: true, env, stdio: ["ignore", "pipe", "inherit"] })
   const { output, code, timedOut, error } = await collected(started, envelope.deadline, signal)
   if (signal?.aborted) throw signal.reason
   if (error !== undefined) throw failed(what, error.message)
   if (timedOut) throw failed(what, `did not finish within ${envelope.deadline} ms`)
-  if (code !== 0) throw failed(what, ended(code))
+  if (code !== 0) throw failed(what, refusedProfile(code) ?? ended(code))
   return { text: output.endsWith("\n") ? output.slice(0, -1) : output }
 }
 
 /** Each config setting as its value; a variable that is not set is the failure it names. */
-function resolved(what: string, config: Record<string, Setting>): Record<string, string> {
+export function resolved(what: string, config: Record<string, Setting>): Record<string, string> {
   const values: Record<string, string> = {}
   for (const [key, setting] of Object.entries(config)) {
     if (setting.type === "plain") {
@@ -157,13 +193,14 @@ function resolved(what: string, config: Record<string, Setting>): Record<string,
   return values
 }
 
-/** The environment a body runs under: five variables, nothing else. */
-function scrubbed(): Record<string, string> {
+/** The environment a body runs under: five variables, nothing else, `TMPDIR` the private folder made for the run. */
+function scrubbed(tmp: string): Record<string, string> {
   const env: Record<string, string> = {}
   for (const name of KEPT) {
     const value = process.env[name]
     if (value !== undefined) env[name] = value
   }
+  env.TMPDIR = tmp
   return env
 }
 

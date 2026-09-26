@@ -1,0 +1,11 @@
+{
+  "input": {
+    "locked": { "writes": ["~/Downloads"], "runs": ["open"] },
+    "upstream": { "writes": ["~/Desktop"], "runs": ["open"] }
+  },
+  "expect": {
+    "type": "needs_accept",
+    "locked": { "runs": ["open"] },
+    "upstream": { "writes": ["~/Desktop"], "runs": ["open"] }
+  }
+}

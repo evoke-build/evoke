@@ -1,3 +1,4 @@
+<!-- description: Make evoke read your phrasing: teach it a sentence, add your own words, fill in a reflex's settings, test your cases and move the confidence bars. -->
 # Tuning
 
 A reflex ships its wording. You own the last word. Every change lands in a file under your project. `evoke`
@@ -156,7 +157,8 @@ the whole installed set, a few cases at a time, never through the cache. It judg
 exits 1 when a case failed, so a script can act on it. It never blocks an install.
 
 A case that passed last time and fails now is decided twice more. Failing two of three marks it `· regression`.
-The last verdicts are kept per installed set, on this machine.
+The last verdicts are kept per installed set, on this machine. What the confidence beside each call meant on the
+same records is `evoke calibrate`'s answer: [Calibrating](calibrating.md).
 
 ## Thresholds
 
@@ -172,4 +174,4 @@ The `openjev` adapter takes the same table under `[adapters.openjev]`. Both reac
 same. Each number means *the probability this is right*. `read` may not exceed `write`. Destructive reflexes always
 confirm. [Outcomes](outcomes.md#what-confidence-is) explains what the numbers gate.
 
-**Next:** [Projects](projects.md).
+**Next:** [Calibrating](calibrating.md).

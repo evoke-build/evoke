@@ -2,16 +2,17 @@
 //! environment. Out: `Exit`. The call is typed by name against the plan; a read or write call runs at once, a
 //! destructive one confirms with `[y]es [n]o` — there is no utterance to teach — and the body runs with an empty
 //! input. Under `--json` the decision's line goes to stdout, the result or the error on it, and with no terminal
-//! the line stands for the confirm that could not be shown. Nothing is logged: nothing was decided.
+//! the line stands for the confirm that could not be shown. Nothing is logged: nothing was decided. Ctrl-C while
+//! the body runs ends its group, and `evoke` ends as an interrupted process, the line's `error` saying so.
 
 use evoke_core::plan::Millis;
 use evoke_core::{Decision, Input, Written, by_name};
 
 use super::needs_terminal;
-use super::session::{self, Confirmed, Opening, Session, dismiss};
+use super::session::{self, Confirmed, Opening, Session};
 use super::{Decline, Exit};
 use crate::args::Command;
-use crate::hosts::{Environment, terminal};
+use crate::hosts::{Environment, interrupt, terminal};
 use crate::report::{self, Line};
 
 pub fn run(command: &Command, written: &Written, json: bool, environment: &Environment) -> Exit {
@@ -31,20 +32,16 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
         Err(refused) => return session.reporter.exit(&input, Exit::Human(refused)),
     };
     let mut line = Line::unjudged(&decision);
-    let warm = match session.warm() {
-        Ok(warm) => warm,
-        Err(exit) => return session.reporter.exit(&input, exit),
-    };
+    let contained = session.contained.clone();
     let chosen = match decision {
         Decision::Run { chosen } => {
             if !json {
-                terminal::note(&report::running(&chosen));
+                terminal::note(&report::running(&chosen, &contained));
             }
             chosen
         }
         Decision::Confirm { chosen, prompt, .. } => {
             if !session.has_tty() {
-                dismiss(warm);
                 let human = Exit::Human(needs_terminal("a confirm"));
                 if json {
                     terminal::result(&line.json());
@@ -52,10 +49,9 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
                 }
                 return session.reporter.exit(&input, human);
             }
-            let own = report::confirming(&chosen, &prompt);
+            let own = report::confirming(&chosen, &prompt, &contained);
             match session.confirmed(&own, &prompt, false) {
                 Ok(Some(Confirmed::No) | None) => {
-                    dismiss(warm);
                     if json {
                         terminal::result(&line.json());
                     }
@@ -64,10 +60,7 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
                         .exit(&input, Exit::Declined(Decline::Refused));
                 }
                 Ok(Some(_)) => chosen,
-                Err(exit) => {
-                    dismiss(warm);
-                    return session.reporter.exit(&input, exit);
-                }
+                Err(exit) => return session.reporter.exit(&input, exit),
             }
         }
         Decision::Ask { .. } | Decision::Abstain { .. } => {
@@ -75,7 +68,8 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
         }
     };
     let empty = Input::new("").expect("nothing is under the cap");
-    let exit = match session.run(&chosen, &empty, Millis(0), warm) {
+    line.contained = Some(contained);
+    let exit = match session.run(&chosen, &empty, Millis(0)) {
         Ok(returned) => {
             if !json && !returned.text.is_empty() {
                 terminal::result(&returned.text);
@@ -90,10 +84,13 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
     };
     if json {
         terminal::result(&line.json());
-        // A body's failure is the line's own `error`: nothing more prints, so a line stays one object.
-        if line.error.is_some() {
-            return exit;
-        }
+    }
+    if interrupt::interrupted() {
+        interrupt::end();
+    }
+    // A body's failure is the line's own `error`: nothing more prints, so a line stays one object.
+    if json && line.error.is_some() {
+        return exit;
     }
     session.reporter.exit(&input, exit)
 }

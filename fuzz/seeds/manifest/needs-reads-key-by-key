@@ -1,0 +1,23 @@
+reflex = 1
+description = "Download a file."
+effect = "write"
+confirm = "Download {url}?"
+run = "download.mts"
+
+[needs]
+reads  = ["{place}", "/etc/hosts"]
+writes = ["{to}", "~/Downloads"]
+hosts  = ["*"]
+runs   = ["open", "/usr/bin/plutil"]
+
+[config]
+place = "A folder to read"
+
+[args.url]
+ask  = "Which URL?"
+pick = "url"
+
+[args.to]
+ask      = "Into which folder?"
+vocab    = "places"
+optional = true

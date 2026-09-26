@@ -1,0 +1,9 @@
+{
+  "input": {
+    "doc": {
+      "file": { "type": "manifest", "name": "note" },
+      "toml": "reflex = 1\ndescription = \"Note.\"\nconfirm = \"Note?\"\nrun = \"note.mts\"\n\n[needs]\nwrites = [\"{file}\"]\n"
+    }
+  },
+  "expect": { "file": { "type": "manifest", "name": "note" }, "line": 6, "column": 1 }
+}

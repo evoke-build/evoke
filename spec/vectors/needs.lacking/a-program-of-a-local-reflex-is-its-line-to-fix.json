@@ -1,0 +1,23 @@
+{
+  "input": {
+    "lacking": { "type": "program", "program": "caffeinate" },
+    "reflex": "awake",
+    "active": {
+      "effect": "write",
+      "run": "awake.mts",
+      "needs": { "runs": ["caffeinate"] },
+      "confirm": "Keep the laptop awake?",
+      "args": {},
+      "yields": {},
+      "config": {},
+      "tags": []
+    },
+    "origin": { "type": "local", "at": { "file": { "type": "manifest", "name": "awake" }, "line": 12, "column": 1 } },
+    "home": "/Users/me"
+  },
+  "expect": {
+    "reflex": "awake",
+    "message": "[needs] runs names caffeinate, which is not on PATH",
+    "fix": { "type": "edit_line", "at": { "file": { "type": "manifest", "name": "awake" }, "line": 12, "column": 1 } }
+  }
+}

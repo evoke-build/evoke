@@ -1,0 +1,15 @@
+{
+  "input": {
+    "policy": { "writes": [{ "path": "/Users/me/Downloads", "from": "~/Downloads" }] },
+    "upstream": { "writes": [{ "path": "/Users/me/Downloads", "from": "~/Downloads" }, { "path": "/Users/me/Desktop", "from": "{to}" }], "hosts": ["*"] },
+    "reflex": "download",
+    "origin": { "type": "fetched" },
+    "refused": { "what": "FileSystemWrite", "path": "/Users/me/Desktop/report.pdf" },
+    "home": "/Users/me"
+  },
+  "expect": {
+    "reflex": "download",
+    "message": "~/Desktop/report.pdf is not in [needs] writes",
+    "fix": { "type": "accept", "reflex": "download" }
+  }
+}

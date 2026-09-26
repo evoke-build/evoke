@@ -49,13 +49,19 @@ Say what happened, in one lowercase line: `volume 40%`, `locked`, `saved report.
 
 ### The run
 
-- **Environment.** Scrubbed: `PATH`, `HOME`, `TMPDIR`, `LANG` and `TERM`, nothing else. Secrets reach the body
-  through `config`, never the environment.
+- **Environment.** Scrubbed: `PATH`, `HOME`, `TMPDIR`, `LANG` and `TERM`, nothing else. `TMPDIR` is a private
+  folder, made for the run and removed after it. Secrets reach the body through `config`, never the environment.
+- **Reach.** The body touches what `[needs]` declares, and nothing else:
+  [The manifest](manifest.md#what-the-body-touches). Its own directory and `TMPDIR` are always there. A read
+  past the declaration throws in the body, and the run ends with what was reached and the key, `~/secret.txt is
+  not in [needs] reads`, and the fix the manifest page gives by where the declaration is written. A word's value
+  or a plain setting that begins with `~/` reaches the body as a path under the home, in `config`, in an argv and
+  in `EVOKE_CONFIG_<KEY>`, so the value, the argv and the declaration name one path.
 - **Deadline.** 30 seconds per decision, shared with the classifier's answer. Anything that must outlive the
   run, like a timer or `caffeinate`, detaches and returns at once.
 - **Output.** The result is what the function returns. The body's own `stdout` and `console` go to stderr, so a
   stray `console.log` never corrupts a result.
-- **Process.** The CLI starts the runtime as the decision begins, so a body is warm when the answer lands. Its
+- **Process.** The runtime starts once the decision is made, in the body's directory, held by the kernel. Its
   life is bounded by `evoke`'s. On timeout or decline, the process group is ended: `SIGTERM`, a second's grace,
   then `SIGKILL`.
 - **Platform.** A body that runs on one platform says so on its first line: `throw new Error("runs on macOS
@@ -72,7 +78,8 @@ It is a name found on `PATH`, or an absolute path. It is never a path relative t
 placeholder is a whole element. It names an `options`, `vocab` or `pick` argument, and is replaced by the option
 key, the word's value or the word, or the pick's text. An element whose optional argument is unstated is
 dropped. A value that would start with `-` is refused. Config arrives as `EVOKE_CONFIG_<KEY>`, and the input as
-`EVOKE_INPUT`. Stdout is the result. A non-zero exit is failure. No runtime is needed.
+`EVOKE_INPUT`. Stdout is the result. A non-zero exit is failure. No runtime is needed. The program is the body,
+so it runs without being named in `runs`, held to what `[needs]` declares.
 
 Flags and literal braces cannot be expressed in an argv. Write a file instead.
 

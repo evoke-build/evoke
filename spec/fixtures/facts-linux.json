@@ -1,0 +1,19 @@
+{
+  "platform": "linux",
+  "runtime": {
+    "path": "/home/me/.local/share/mise/installs/node/24.20.0/bin/node",
+    "interpreters": ["/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1"]
+  },
+  "body_dir": "/home/me/.cache/evoke/store/8416c7959e55e8f74c0dd96ca8396d1980acc68ccfa7ac32fd650be96f658703",
+  "tmp": "/tmp/evoke-4242-1",
+  "home": "/home/me",
+  "resolver": "/opt/orbstack-guest/etc/resolv.conf",
+  "found": {
+    "/home/me/Desktop": { "real": "/home/me/Desktop", "dir": true },
+    "/home/me/Downloads": { "real": "/home/me/Downloads", "dir": true },
+    "/home/me/notes.txt": { "real": "/home/me/notes.txt", "dir": false }
+  },
+  "programs": {
+    "open": { "path": "/usr/bin/open", "interpreters": ["/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1"] }
+  }
+}

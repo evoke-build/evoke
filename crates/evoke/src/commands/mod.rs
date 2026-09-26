@@ -3,6 +3,7 @@
 //! already printed.
 
 pub mod add;
+pub mod calibrate;
 pub mod check;
 pub mod config;
 pub mod help;
@@ -83,6 +84,9 @@ pub fn dispatch(command: &Command, environment: &Environment) -> Exit {
         Command::New(name) => new::run(command, name),
         Command::Check => check::run(command, environment),
         Command::Test(name) => test::run(command, name.as_ref(), environment),
+        Command::Calibrate { name, repeat, json } => {
+            calibrate::run(command, name.as_ref(), *repeat, *json, environment)
+        }
         Command::Help => help::run(),
         Command::Version => help::version(),
     }

@@ -1,0 +1,29 @@
+reflex = 1
+
+description = """
+Append a line to your notes file.
+Plain text, dated, one note per line."""
+
+not_for = ["reading notes back", "reminders and timers", "the clipboard"]
+tags    = ["text"]
+effect  = "write"
+confirm = 'Note "{text}"?'
+run     = "note.mts"
+
+[config]
+file = "Path of the notes file"
+
+[args.text]
+ask  = "What should the note say?"
+pick = "quoted"
+
+[examples]
+'note "buy milk"'                                   = { text = "buy milk" }
+'jot down "call the dentist on monday"'             = { text = "call the dentist on monday" }
+'write this down: "the spare key is under the mat"' = { text = "the spare key is under the mat" }
+
+[tests]
+'add a note "renew the passport"' = { text = "renew the passport" }
+'remember "ana owes me 20"'       = { text = "ana owes me 20" }
+"make a note"                     = { text = false }
+"read me my notes"                = false

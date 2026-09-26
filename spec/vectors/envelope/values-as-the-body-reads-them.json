@@ -32,7 +32,8 @@
       "$ref": "fixtures/active-lights.json"
     },
     "input": "dim the office to 30 percent",
-    "deadline": 29950
+    "deadline": 29950,
+    "home": "/Users/me"
   },
   "expect": {
     "reflex": "lights",

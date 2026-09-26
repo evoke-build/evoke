@@ -1,0 +1,60 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "weave": {
+      "$ref": "fixtures/weave-timer-lights.json"
+    },
+    "progress": {
+      "handled": [
+        {
+          "step": 1,
+          "round": 0,
+          "status": "skipped",
+          "why": {
+            "type": "cancelled"
+          }
+        }
+      ]
+    }
+  },
+  "expect": {
+    "type": "done",
+    "executed": {
+      "steps": [
+        {
+          "step": 1,
+          "status": "skipped",
+          "why": {
+            "type": "cancelled"
+          },
+          "rounds": [
+            {
+              "step": 1,
+              "round": 0,
+              "status": "skipped",
+              "why": {
+                "type": "cancelled"
+              }
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "status": "skipped",
+          "why": {
+            "type": "cancelled"
+          }
+        }
+      ],
+      "worst": "ran"
+    }
+  }
+}

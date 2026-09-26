@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "twenty five or twenty-five percent"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 0,
+        "end": 11,
+        "text": "twenty five"
+      },
+      "value": {
+        "type": "number",
+        "value": 25
+      }
+    },
+    {
+      "span": {
+        "start": 15,
+        "end": 34,
+        "text": "twenty-five percent"
+      },
+      "value": {
+        "type": "number",
+        "value": 25
+      }
+    }
+  ]
+}

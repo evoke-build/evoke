@@ -1,0 +1,15 @@
+reflex = 1
+
+description = """
+Wait, doing nothing, until told to stop.
+For the spec: a body that notes its process, says it is waiting, and sleeps past its signal."""
+effect = "write"
+confirm = "Wait?"
+run = "wait.mts"
+
+[needs]
+writes = ["~/wait.pid"]
+
+[examples]
+"wait a while" = {}
+"just wait"    = {}

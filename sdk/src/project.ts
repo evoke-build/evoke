@@ -5,15 +5,17 @@
 // read into steps, and `weave`, the steps run stage by stage under the same handlers. In: LoadOptions; inputs;
 // decisions. Out: a Project, decisions, results, plans.
 
-import { statSync } from "node:fs"
+import { realpathSync, statSync } from "node:fs"
+import { homedir } from "node:os"
 
 import { type Adapter, type Trace, answered } from "./adapter.ts"
+import { facts, scratch, status } from "./contain.ts"
 import { bug, call, command, fromCode, misnamed, problem, reply } from "./core.ts"
 import type { Abstain, AnyReflexes, Ask, Confirm, Decision, Given, Handled, Line, Run } from "./decision.ts"
 import { DiagnosticError, FailureError, type Problem } from "./errors.ts"
 import { entry, snapshot, text } from "./files.ts"
 import type { Inline } from "./reflex.ts"
-import { type Reflex, type Result, child, inline, program } from "./runtime.ts"
+import { type Reflex, type Result, Refusal, child, inline, program, resolved } from "./runtime.ts"
 import type * as W from "./types.ts"
 
 export interface LoadOptions<R = AnyReflexes> {
@@ -31,7 +33,8 @@ export interface DecideOptions {
   tags?: string[] | undefined
   /** This reflex alone is offered: how a weave decides a fragment, or a step with a value written into its words. */
   only?: string | undefined
-  /** Aborts the adapter call; `decide` rejects with the signal's reason. */
+  /** Aborts the adapter call; `decide` rejects with the signal's reason. A weave's run it cancels: every body
+   *  ended, every step that did not finish `skipped · cancelled`, the rejection's reason carrying the record. */
   signal?: AbortSignal | undefined
 }
 
@@ -91,7 +94,8 @@ export interface WovenStep<R = AnyReflexes> {
 
 /** A request planned and run: the plan; the whole's status — the worst step's, as the exit codes rank them, or
  *  why nothing ran: refused by the verdict, declined or unanswered at what the plan asked first; per step what
- *  became of it, none when nothing ran. */
+ *  became of it, none when nothing ran. A weave the signal cancelled rejects with the signal's reason and carries
+ *  this record on it as `woven`: the steps that finished as they ended, every other one `skipped · cancelled`. */
 export interface Woven<R = AnyReflexes> {
   plan: W.Weave
   status: W.Status
@@ -133,12 +137,15 @@ export interface Project<R = AnyReflexes> {
 /** The home project as the CLI writes it on first use: what a root without evoke.toml means. */
 const DEFAULT: W.Project = { adapter: "jev", reflexes: {}, config: {}, adapters: {} }
 
-/** What a project is made of, before its plan: the installed set, who answers, where each body lives. */
+/** What a project is made of, before its plan: the installed set, who answers, where each body lives, each
+ *  shipped manifest and which reflexes are local — whose declaration is their own file's. */
 interface Ground {
   installed: W.Installed
   adapter: Adapter
   dirs: Record<string, string>
   bodies: Record<string, Reflex<Record<string, unknown>, Record<never, string>>>
+  shipped: Record<string, W.Manifest>
+  local: Set<string>
 }
 
 /** A project from its root: its installed reflexes are what `Reflexes` from evoke.d.ts names, so R is written. */
@@ -163,6 +170,8 @@ export async function load<R extends object = AnyReflexes>(options: LoadOptions<
   const reflexes: Record<string, W.Item> = {}
   const dirs: Record<string, string> = {}
   const bodies: Ground["bodies"] = {}
+  const shipped: Record<string, W.Manifest> = {}
+  const local = new Set<string>()
   const given = (options.reflexes ?? {}) as Record<string, Inline | undefined>
   for (const name of Object.keys(given)) {
     const why = misnamed(name, "local")
@@ -183,8 +192,15 @@ export async function load<R extends object = AnyReflexes>(options: LoadOptions<
         continue
       }
       const worded = word(name, { file: { type: "manifest", name }, toml: manifest }, files.overlays[name])
-      reflexes[name] = { wording: worded.wording, consented: worded.manifest?.effect ?? "destructive", configured }
+      reflexes[name] = {
+        wording: worded.wording,
+        consented: worded.manifest?.effect ?? "destructive",
+        ...(worded.manifest?.needs === undefined ? {} : { needs: worded.manifest.needs }),
+        configured,
+      }
       dirs[name] = dir
+      if (worded.manifest !== undefined) shipped[name] = worded.manifest
+      local.add(name)
       continue
     }
     const locked = lock?.reflexes[name]
@@ -196,8 +212,9 @@ export async function load<R extends object = AnyReflexes>(options: LoadOptions<
     const manifest = text(`${dir}/reflex.toml`)
     if (manifest === undefined) throw refused(name, `${name} has no reflex.toml in the store`, { type: "sync" })
     const worded = word(name, { file: { type: "manifest", name }, toml: manifest }, files.overlays[name])
-    reflexes[name] = { wording: worded.wording, consented: locked.effect, configured }
+    reflexes[name] = { wording: worded.wording, consented: locked.effect, ...(locked.needs === undefined ? {} : { needs: locked.needs }), configured }
     dirs[name] = dir
+    if (worded.manifest !== undefined) shipped[name] = worded.manifest
   }
   for (const [name, handed] of Object.entries(given)) {
     if (handed === undefined) continue
@@ -212,7 +229,7 @@ export async function load<R extends object = AnyReflexes>(options: LoadOptions<
     vocab[name] = call("vocabulary", { doc: { file: { type: "vocab", name }, toml } }, "load()")
   }
   const installed: W.Installed = { reflexes, vocab, adapter: adapter.id, evoke: call("version", {}) }
-  return make({ installed, adapter, dirs, bodies }, "load()") as unknown as Project<R>
+  return make({ installed, adapter, dirs, bodies, shipped, local }, "load()") as unknown as Project<R>
 }
 
 /** The adapter evoke.toml names, from its own subpath; a recording is never resolved by name. */
@@ -320,7 +337,7 @@ type Readied =
 /** The project over its ground: the set compiled, every reflex's status read off the plan. The implementation
  *  speaks the wire's shapes; the app's R lives on the interface alone. */
 function make(ground: Ground, invoked: string): Project<AnyReflexes> {
-  const { installed, adapter, dirs, bodies } = ground
+  const { installed, adapter, dirs, bodies, shipped, local } = ground
   const plan: W.Plan = call("compile", { set: installed, ...(adapter.limits === undefined ? {} : { limits: adapter.limits }) }, invoked)
   if (adapter.plan !== undefined && adapter.plan !== plan.digest) {
     const message = `the recording was made against plan ${adapter.plan}, not ${plan.digest}`
@@ -393,15 +410,13 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
       const spent = chosen.trace.reduce((sum, entry) => sum + entry.ms, 0)
       // The whole decision crosses: the core reads the fields of a Chosen and ignores the SDK's own.
       const wire = chosen as unknown as W.Chosen
-      const envelope = call("envelope", { chosen: wire, active, input: chosen.input, deadline: Math.max(plan.deadline - spent, 0) })
+      const envelope = call("envelope", { chosen: wire, active, input: chosen.input, deadline: Math.max(plan.deadline - spent, 0), home: homedir() })
       const what = `running ${chosen.reflex}`
       const body = bodies[chosen.reflex]
       if (body !== undefined) return inline(what, body, envelope, options.signal)
       const dir = dirs[chosen.reflex]
       if (dir === undefined) throw refused(chosen.reflex, `${chosen.reflex} has no body to run`, { type: "sync" }, "run(d)")
-      if (typeof active.run === "string") return child(what, dir, { ...envelope, run: active.run }, options.signal)
-      const argv = call("argv", { chosen: wire, active }, "run(d)")
-      return program(what, argv, envelope, options.signal)
+      return contained(what, chosen, active, dir, envelope, options.signal)
     },
 
     async handle(input, options = {}) {
@@ -506,9 +521,13 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   }
 
   /** The plan run: stage by stage, a stage's rounds each taken to the point of running in the words' order, then
-   *  their bodies together; a step decided again with its bound values in its words when the run asks for it. */
+   *  their bodies together; a step decided again with its bound values in its words when the run asks for it. The
+   *  signal aborted mid-run is a cancel: every body's group ended, the rounds under way and every round after
+   *  reported `skipped · cancelled`, and the rejection — the signal's reason — carrying the record once it is
+   *  whole. */
   async function executed(woven: W.Weave, options: WeaveOptions<AnyReflexes>, traces: Map<string, Trace[]>): Promise<Woven<AnyReflexes>> {
     const invoked = `weave(${JSON.stringify(shown(woven.input))})`
+    const { signal } = options
     const progress: Required<W.Progress> = { decided: [], handled: [] }
     const rounds = new Map<number, WovenRound<AnyReflexes>[]>()
     const record = (handling: W.Handling, decision: Decision<AnyReflexes>, became: Became) => {
@@ -523,7 +542,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
       const running = call("weave.execute", { plan, ...gate, weave: woven, progress }, invoked)
       if (running.type === "done") {
         const { executed } = running
-        return {
+        const whole: Woven<AnyReflexes> = {
           plan: woven,
           status: executed.worst,
           steps: executed.steps.map(step => ({
@@ -534,10 +553,18 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
             rounds: rounds.get(step.step) ?? [],
           })),
         }
+        if (signal?.aborted) throw carrying(signal.reason, whole)
+        return whole
       }
       const { todo } = running
       if (todo.type === "decide") {
-        progress.decided.push([todo.asked, await decided(todo.asked, options, traces)])
+        try {
+          progress.decided.push([todo.asked, await decided(todo.asked, options, traces)])
+        } catch (error) {
+          // The signal aborted the decision's call: the round it was for never starts.
+          if (!signal?.aborted || error !== signal.reason) throw error
+          progress.handled.push({ step: todo.step, round: todo.round, ...CANCELLED })
+        }
         continue
       }
       const bodies: Promise<void>[] = []
@@ -547,12 +574,17 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
         const own = step?.reflex === undefined || !handling.bound?.length ? undefined : traces.get(key({ text: handling.input, only: step.reflex }))
         const trace = own ?? (step === undefined ? undefined : traces.get(key(askedFor(step, options.tags ?? [])))) ?? []
         const decision = lined(handling.decision, { input: handling.input, plan: plan.digest, trace })
+        // Nothing starts after the signal: a round handed after it is cancelled without a question asked.
+        if (signal?.aborted) {
+          record(handling, decision, CANCELLED)
+          continue
+        }
         const readied = await ready(decision, told(options, { step: handling.step, round: handling.round }))
         if (!readied.ready) {
           record(handling, readied.decision, { status: readied.status, why: readied.why })
           continue
         }
-        bodies.push(ran(readied.decision, options.signal).then(became => record(handling, readied.decision, became)))
+        bodies.push(ran(readied.decision, signal).then(became => record(handling, readied.decision, became)))
       }
       await Promise.all(bodies)
     }
@@ -613,15 +645,78 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     return decision.outcome === "confirm" ? project.run(decision, { ...options, confirmed: true }) : project.run(decision, options)
   }
 
-  /** One body run for a weave: what it returned, or its failure as the step's own outcome, never the weave's. */
+  /** One body run for a weave: what it returned, or its failure as the step's own outcome, never the weave's; a
+   *  body the signal ended is the round cancelled. */
   async function ran(decision: Run<AnyReflexes> | Confirm<AnyReflexes>, signal: AbortSignal | undefined): Promise<Became> {
     try {
       return { status: "ran", result: await bodied(decision, signal) }
     } catch (error) {
+      if (signal?.aborted && error === signal.reason) return CANCELLED
       if (error instanceof FailureError) {
         return { status: "failed", why: { type: "said", message: error.why === undefined ? error.what : `${error.what}: ${error.why}` } }
       }
       throw error
+    }
+  }
+
+  /** A file or an argv body under its declaration: the policy resolved with the call's values, the machine's facts
+   *  gathered — a declared path or program it lacks is the failure, before anything runs — then the loader or the
+   *  program in the body's directory with a private temporary folder, the layers around it; a refusal past the
+   *  declaration names the path, the key and the fix. */
+  async function contained(
+    what: string,
+    chosen: Run<AnyReflexes> | Confirm<AnyReflexes>,
+    active: W.Active,
+    dir: string,
+    envelope: W.Envelope,
+    signal: AbortSignal | undefined,
+  ): Promise<Result> {
+    const reflex = chosen.reflex
+    const wire = chosen as unknown as W.Chosen
+    const called: W.Call = { reflex, args: chosen.args, call: chosen.call }
+    const config = resolved(what, envelope.config)
+    const home = homedir()
+    const policy: W.Policy = call("needs.resolve", { needs: active.needs ?? {}, call: called, active, config, home }, "run(d)")
+    const argv = typeof active.run === "string" ? undefined : call("argv", { chosen: wire, active, home }, "run(d)")
+    const body = realpathSync(dir)
+    const origin = (): W.Origin => {
+      if (!local.has(reflex)) return { type: "fetched" }
+      const file = { type: "manifest", name: reflex } as const
+      const toml = text(`${dir}/reflex.toml`) ?? ""
+      return { type: "local", at: call("needs.declared_at", { doc: { file, toml } }) }
+    }
+    const named = (diagnostic: W.Diagnostic) => new FailureError(what, diagnostic.message, diagnostic.fix, command(diagnostic.fix, "run(d)"))
+    const kind = argv === undefined ? "file" : "argv"
+    const tmp = scratch()
+    try {
+      const gathered = facts(policy, kind, body, tmp.path)
+      if ("place" in gathered || "program" in gathered) {
+        const lacking: W.Lacking = "place" in gathered ? { type: "place", place: gathered.place, key: gathered.key } : { type: "program", program: gathered.program }
+        throw named(call("needs.lacking", { lacking, reflex, active, origin: origin(), home }))
+      }
+      const layers = { policy, facts: gathered }
+      let result: Result
+      try {
+        result =
+          argv === undefined
+            ? await child(what, body, { ...envelope, run: active.run as string }, layers, signal)
+            : await program(what, argv, envelope, layers, signal)
+      } catch (error) {
+        if (!(error instanceof Refusal)) throw error
+        const at = origin()
+        let upstream: W.Policy | undefined
+        const declared = shipped[reflex]?.needs
+        if (at.type === "fetched" && declared !== undefined) {
+          const answer = reply("needs.resolve", { needs: declared, call: called, active, config, home })
+          if ("ok" in answer) upstream = answer.ok as W.Policy
+        }
+        const diagnostic = call("needs.refusal", { policy, ...(upstream === undefined ? {} : { upstream }), reflex, origin: at, refused: error.refused, home })
+        if (diagnostic === null) throw new FailureError(what, error.message, { type: "rerun" }, command({ type: "rerun" }, "run(d)"))
+        throw named(diagnostic)
+      }
+      return { ...result, contained: status(kind) }
+    } finally {
+      tmp.remove()
     }
   }
 
@@ -634,6 +729,18 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   }
 
   return project
+}
+
+/** A round the signal cancelled, as its step and the record read it. */
+const CANCELLED = { status: "skipped", why: { type: "cancelled" } } as const satisfies Became
+
+/** The signal's reason with the record on it as `woven`, when the reason is something that can carry one: what
+ *  a cancelled `weave` rejects with, so the caller's own test for a cancel holds and the steps are there to read. */
+function carrying(reason: unknown, woven: Woven<AnyReflexes>): unknown {
+  if (reason !== null && (typeof reason === "object" || typeof reason === "function") && Object.isExtensible(reason)) {
+    Object.assign(reason, { woven })
+  }
+  return reason
 }
 
 /** Whether two asks want the same things for the same reasons. */

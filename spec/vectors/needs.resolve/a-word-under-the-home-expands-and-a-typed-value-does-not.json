@@ -1,0 +1,35 @@
+{
+  "input": {
+    "needs": { "reads": ["{place}"], "writes": ["{file}"] },
+    "call": {
+      "reflex": "copy",
+      "args": {
+        "place": { "type": "word", "word": "desktop", "value": "~/Desktop" },
+        "file": { "type": "pick", "span": { "start": 5, "end": 14, "text": "~/out.txt" }, "value": { "type": "quoted", "value": "~/out.txt" } }
+      },
+      "call": "copy place=\"desktop\" file=\"~/out.txt\""
+    },
+    "active": {
+      "effect": "write",
+      "run": "copy.mts",
+      "needs": { "reads": ["{place}"], "writes": ["{file}"] },
+      "confirm": "Copy {place} to {file}?",
+      "args": {
+        "place": { "ask": "Which one?", "vocab": "places", "optional": false, "was": [] },
+        "file": { "ask": "To which file?", "pick": "quoted", "optional": false, "was": [] }
+      },
+      "yields": {},
+      "config": {},
+      "tags": []
+    },
+    "config": {},
+    "home": "/Users/me"
+  },
+  "expect": {
+    "err": {
+      "reflex": "copy",
+      "message": "[needs] writes names {file}, whose value \"~/out.txt\" is not a path",
+      "fix": { "type": "rerun" }
+    }
+  }
+}

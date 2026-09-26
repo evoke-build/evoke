@@ -1,9 +1,9 @@
 //! `evoke check`: the reflex in the working directory read with its lines to fix, its body's file present and
-//! loaded by the runtime, lint reported, `reflex.d.ts` written for a file body when it changed, and — when the
-//! directory sits in a git repository whose newest version tag holds this reflex — the contract diffed against
-//! that tag, with the version the next tag must carry; a `was` violation is refused. In: the working directory,
-//! the environment. Out: `Exit`; the row, the findings and the contract on stdout, the write and the refusals on
-//! stderr.
+//! loaded by the runtime under its declaration — a declared path or program the machine lacks is a line to fix —
+//! lint reported, `reflex.d.ts` written for a file body when it changed, and — when the directory sits in a git
+//! repository whose newest version tag holds this reflex — the contract diffed against that tag, with the
+//! version the next tag must carry; a `was` violation is refused. In: the working directory, the environment.
+//! Out: `Exit`; the row, the findings and the contract on stdout, the write and the refusals on stderr.
 
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -12,14 +12,19 @@ use evoke_core::contract::WasViolation;
 use evoke_core::document::Text;
 use evoke_core::manifest::Run;
 use evoke_core::name::LocalName;
-use evoke_core::plan::DEADLINE;
+use evoke_core::needs::{self, Origin};
+use evoke_core::plan::{DEADLINE, Millis};
 use evoke_core::{
-    Diagnostic, Document, File, Fix, Manifest, Version, diff, lint, manifest, reflex_dts,
+    Active, At, Call, Diagnostic, Document, Envelope, File, Fix, Input, Manifest, Version, diff,
+    lint, manifest, reflex_dts, resolve,
 };
+use indexmap::IndexMap;
 
 use super::{Exit, about, human};
 use crate::args::Command;
-use crate::hosts::processes::{self, Probed};
+use crate::hosts::contain;
+use crate::hosts::processes::{self, Body, Probed};
+use crate::hosts::state::State;
 use crate::hosts::{Deadline, Environment, Failure, files, git, terminal};
 use crate::report::{self, Paths};
 
@@ -82,7 +87,7 @@ impl Checking<'_> {
         };
         let checked = self.parsed(&text)?;
         if let Run::File(entrypoint) = &checked.run {
-            self.loaded(entrypoint.path().as_str())?;
+            self.loaded(&checked, &text, entrypoint.path().as_str())?;
         }
         terminal::answer(&report::checked_row(self.name, &checked));
         for finding in lint(&checked) {
@@ -115,9 +120,10 @@ impl Checking<'_> {
         Ok(Exit::Ran)
     }
 
-    /// The body's file, present and loaded by the runtime with a function as its default export; what is wrong
-    /// with it is the author's to fix, so it exits as a manifest's line does.
-    fn loaded(&self, run: &str) -> Result<(), Exit> {
+    /// The body's file, present and loaded by the runtime under the declaration — its `{name}`s unstated, so
+    /// dropped — with a function as its default export; what is wrong with it is the author's to fix, so it exits
+    /// as a manifest's line does, and a declared path or program this machine lacks names its line.
+    fn loaded(&self, checked: &Manifest, text: &str, run: &str) -> Result<(), Exit> {
         if !self.cwd.join(run).is_file() {
             return Err(about(
                 self.name,
@@ -125,25 +131,84 @@ impl Checking<'_> {
                 Fix::Rerun,
             ));
         }
-        let Some(runtime) = processes::find_runtime(self.environment) else {
+        let Some(found) = processes::find_runtime(self.environment) else {
             return Err(about(
                 self.name,
                 format!("needs node on PATH to load {run}"),
                 Fix::Rerun,
             ));
         };
-        let probed = processes::probe(
-            &runtime,
-            self.cwd,
-            run,
+        let runtime = processes::real_runtime(&found, self.environment).map_err(Exit::Failed)?;
+        let dir = std::fs::canonicalize(self.cwd).map_err(|error| {
+            Exit::Failed(Failure {
+                what: format!("finding {}", self.cwd.display()),
+                cause: Some(crate::hosts::cause(&error)),
+                fix: Fix::Rerun,
+            })
+        })?;
+        let active = Active::of(checked, IndexMap::new());
+        let call = Call {
+            reflex: self.name.clone(),
+            args: IndexMap::new(),
+        };
+        let home = self.environment.get("HOME").unwrap_or_default();
+        let policy =
+            resolve(&checked.needs, &call, &active, &IndexMap::new(), home).map_err(Exit::Human)?;
+        let scratch = files::scratch(self.environment).map_err(Exit::Failed)?;
+        let state = State::of(self.environment).map_err(Exit::Failed)?;
+        let facts = match contain::facts(
+            &policy,
+            Some(&runtime),
+            &dir,
+            &scratch.path,
+            &state,
             self.environment,
-            Deadline::after(DEADLINE),
         )
-        .map_err(Exit::Failed)?;
+        .map_err(Exit::Failed)?
+        {
+            Ok(facts) => facts,
+            Err(missing) => {
+                let origin = Origin::Local {
+                    at: self.declared_at(text),
+                };
+                return Err(Exit::Human(needs::lacking(
+                    &missing, self.name, &active, &origin, home,
+                )));
+            }
+        };
+        let envelope = Envelope {
+            reflex: self.name.clone(),
+            run: checked.run.clone(),
+            args: IndexMap::new(),
+            input: Input::new("").expect("nothing is under the cap"),
+            config: IndexMap::new(),
+            deadline: Millis(DEADLINE.0),
+        };
+        let what = format!("loading {run}");
+        let body = Body {
+            what: &what,
+            envelope: &envelope,
+            config: &IndexMap::new(),
+            policy: &policy,
+            facts: &facts,
+            environment: self.environment,
+            deadline: Deadline::after(DEADLINE),
+        };
+        let probed = processes::probe(&body, &runtime, &dir, run).map_err(Exit::Failed)?;
         match probed {
             Probed::Loads => Ok(()),
-            Probed::Refused(why) => Err(about(self.name, why, Fix::Rerun)),
+            Probed::DoesNotLoad(why) => Err(about(self.name, why, Fix::Rerun)),
         }
+    }
+
+    /// Where the manifest declares its needs, or its first line, where the table is added.
+    fn declared_at(&self, text: &str) -> At {
+        needs::declared_at(Document {
+            file: File::Manifest {
+                name: self.name.clone(),
+            },
+            text: Text::Toml(text),
+        })
     }
 
     /// The manifest, or every line to fix: all but the last printed, the last the exit.

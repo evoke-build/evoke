@@ -1,3 +1,5 @@
+<!-- title: JSON output -->
+<!-- description: What --json prints: one line per input, with the decision, every judgment, each call to the classifier, and the result or the error, field by field. -->
 # The JSON line
 
 `--json` prints one line per input. The line holds the input, the decision's fields flattened next to it, the
@@ -21,11 +23,12 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `contenders` | ●   | ●       | ●   | ●       | The ranking: `{ reflex, route, fits? }`                         |
 | `runner_up`  | ○   | ○       | ○   |         | The second reflex, when there is one                            |
 | `prompt`     |     | ●       |     |         | `{ own, template }`: `evoke`'s line and the reflex's question   |
-| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `unconsumed_span`, `two_things` |
+| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `unconsumed_span`, `two_things`, `merged` |
 | `unconsumed` |     |         | ●   |         | Typed spans no argument took                                    |
 | `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because`, `choices`        |
 | `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call: `{ adapter, questions, ms }`. Empty when the answers came from the cache |
 | `result`     | ○   |         |     |         | `{ text, data? }` when the body ran                             |
+| `contained`  | ○   |         |     |         | Whenever the body ran, with `result` or `error`: whether this machine held it to its declaration, `{ "type": "full" }`, or `"partial"` or `"none"` with `why`, one sentence |
 | `error`      | ○   |         |     |         | The failure's message when it did not. The line is all that prints; the exit is 1 |
 
 A sentence read as several steps ([Weaving](../use/weaving.md)) prints one line per step, as each runs, the
@@ -40,7 +43,7 @@ call the plan took.
 | Field    | Holds                                                                                                   |
 | :------- | :------------------------------------------------------------------------------------------------------ |
 | `status` | `"ran"`, `"failed"`, `"declined"`, `"refused"`, `"skipped"`, `"unanswered"`                              |
-| `why`    | `{ "type": "earlier_step" }`, `nothing_to_take`, `found_nothing`, `no_reflex`, `{ "type": "read_as", "reflex" }`, or `{ "type": "said", "message" }`: a prompt's own line, a failure, a question no one answered |
+| `why`    | `{ "type": "earlier_step" }`, `nothing_to_take`, `found_nothing`, `no_reflex`, `cancelled`, `{ "type": "read_as", "reflex" }`, or `{ "type": "said", "message" }`: a prompt's own line, a failure, a question no one answered |
 
 In the plan `evoke try --json` prints, a step's `refs` count the steps they may name from 0; `step`, `after`,
 `stages` and `binds` count from 1.
@@ -81,6 +84,21 @@ A question id is `route`, `fits.<reflex>`, `<reflex>.<argument>`, or `weave.<nam
 its own account, beside a reflex's, and no reflex is named `weave`. A choice's keys are option keys, vocabulary
 words, `<start>-<end>` for a pick's candidates, `yes` and `no` for a flag, local names for the route, and the
 sentinels `none` and `unstated`.
+
+## `evoke calibrate --json`
+
+One object, the report of [Calibrating](../use/calibrating.md): `adapter`; `records`, `reflexes`, `inputs`,
+`repeats`; `outcomes` with `run`, `confirm`, `ask`, `abstain`; `bins`, each `{ lo, hi, calls, right, interval,
+claimed, thin, over_confident }`, a bin with no call left out; `unknown`; `abstained` as `{ count, right,
+interval }`; `bars` with `read` and `write` where the effect has a call, each `{ bar, wrong, calls,
+per_thousand, at_most, near }` and `near` a list of `{ at, run, wrong }`; `questions`, each `{ kind, judgments,
+right, interval, claimed }` with `kind` one of `route`, `options`, `vocab`, `pick`, `flag`; `brier` with
+`brier`, `reliability`, `resolution`, `uncertainty`, absent without a call; `misses`, each `{ case, outcome,
+reflex?, confidence?, mismatch, wrong }`; under `--repeat`, `variance` with `flips`, `verdict_flips`, `spread`
+as `{ median, p90, max }`, `straddling`, `wrong_at_bar`, and `moved`, each `{ utterance, confidence?, route,
+winners, outcomes, wrong }`; and `log` with `adapter`, `decisions`, `ran`, `confirmed_ran`,
+`confirmed_stopped`, `asked`, `abstained`, `failed`, `skipped`, `stopped_by_confidence` as `[{ lo, hi, count }]`,
+`records` as `{ count, right, interval }`, and `unread`. An interval is `[low, high]`; a rate is per thousand.
 
 ## Rules of the wire
 

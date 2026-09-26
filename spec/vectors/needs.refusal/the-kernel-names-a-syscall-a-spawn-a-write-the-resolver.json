@@ -1,0 +1,14 @@
+{
+  "input": {
+    "policy": { "writes": [{ "path": "/Users/me/notes", "from": "~/notes" }], "runs": ["sh"] },
+    "reflex": "note",
+    "origin": { "type": "fetched" },
+    "refused": { "what": "spawn env", "path": "env" },
+    "home": "/Users/me"
+  },
+  "expect": {
+    "reflex": "note",
+    "message": "env is not in [needs] runs",
+    "fix": { "type": "remove", "reflex": "note" }
+  }
+}

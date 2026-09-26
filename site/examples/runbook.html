@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Continue an operational procedure - Evoke</title>
-  <meta name="description" content="Drain, fail over, verify. Each step's program returns the next sentence and a six-line loop submits it. Only the destructive step asks. A pattern for your app.">
+  <title>A runbook that asks before its destructive step - Evoke</title>
+  <meta name="description" content="Drain, fail over, check: a runbook in plain words. Each step's program names the next one, and only the failover, which cannot be undone, waits for a yes.">
   <!-- head -->
 </head>
 <body>
@@ -14,24 +14,27 @@
     <div class="hero solo">
       <div class="copy">
         <p class="crumb"><a href="/examples.html">Examples</a> · 05 of 06</p>
-        <h1>A runbook where <em>each step names the next.</em></h1>
-        <p class="lede"><strong>Drain, fail over, verify.</strong> Each step's program returns the next sentence, and a
-          six-line loop submits it. Every hop passes the gate on its own, and only the destructive one stops for a
-          person. A pattern for your app. The database bodies shown are stand-ins that return fixed lines.</p>
+        <h1>A runbook where each step names the next. <em>Only the destructive one waits for a yes.</em></h1>
+        <p class="lede"><strong>A runbook that waits for a yes before the step you cannot undo.</strong> A reflex is a
+          small program you install and ask for in your words. Here each step is a reflex: drain, fail over, check. Each
+          step's program names the next step in words, and a loop of six lines in your app passes that sentence to
+          evoke. The database programs shown are stand-ins that return fixed lines.</p>
+        <div class="cta"><a class="button primary" href="#set-up">Adapt this pattern</a></div>
       </div>
       <ul class="index" aria-label="The sections">
         <li><a href="#request"><code>01</code>The request and the result</a></li>
         <li><a href="#files"><code>02</code>The operations</a></li>
         <li><a href="#boundary"><code>03</code>One boundary</a></li>
-        <li><a href="#needs"><code>04</code>Before you run it</a></li>
+        <li><a href="#set-up"><code>04</code>Set it up</a></li>
       </ul>
     </div>
 
     <section id="request">
       <div class="rule"><p class="label">The request and the result</p><span class="num">01</span></div>
-      <h2>Three steps, one sentence typed.</h2>
-      <p class="sub">The person types the first step. <strong>The program names the second, and the second names the
-        third.</strong> Every line is what Node printed.</p>
+      <h2>Three steps run from one typed sentence.</h2>
+      <p class="sub">The person types the first step. <strong>The drain's program names the failover, and the failover
+        names the check.</strong> Recorded on 21 September 2026 against Jev, TypeSafe AI's model, which reads each
+        sentence.</p>
       <div class="grid">
         <div class="panel term demo runbook" role="figure" data-scene="runbook" aria-label="Three steps lighting up in turn, the middle one after a yes">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/runbook<span class="trail" aria-hidden="true"><b>drain</b><b>failover</b><b>verify</b></span></div>
@@ -55,11 +58,11 @@
         <div class="side">
           <ol class="notes column">
             <li><b>1</b><span><strong>A step names the next.</strong> The program returns <code>data.next</code>, a
-              sentence. The loop submits it as if a person had typed it.</span></li>
-            <li><b>2</b><span><strong>Every hop passes the bar.</strong> Drain is a write, verify is a read. Each was decided
-              and gated on its own.</span></li>
-            <li><b>3</b><span><strong>Only the failover asks.</strong> It is destructive, so it confirms every time,
-              however sure the classifier was.</span></li>
+              sentence. The loop passes it to evoke as if a person had typed it.</span></li>
+            <li><b>2</b><span><strong>Every step is decided on its own.</strong> The drain changes something, so it runs
+              without a question only at 0.8 or more. The check only reads, so 0.6 is enough.</span></li>
+            <li><b>3</b><span><strong>Only the failover asks.</strong> It cannot be undone, so its author marked it
+              destructive. It asks every time, however sure evoke is.</span></li>
           </ol>
         </div>
       </div>
@@ -68,8 +71,9 @@
     <section id="files">
       <div class="rule"><p class="label">The operations</p><span class="num">02</span></div>
       <h2>Three reflexes and a loop.</h2>
-      <p class="sub">A manifest and a body per step, as files or as code. <strong>The loop is the whole application:
-        while there is a next sentence, handle it.</strong></p>
+      <p class="sub">Each step is a manifest, the file that describes the reflex, and a program. Both can also be written
+        as code. <strong>The loop is the whole application: while there is a next sentence, it hands that sentence to
+        evoke.</strong></p>
       <div class="split">
         <div class="panel tabbed">
           <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The runbook as files, as code, and the app">
@@ -90,7 +94,7 @@
 
 <span class="t">[examples]</span>
 <span class="s">"drain the primary"</span> <span class="o">=</span> <span class="o">{</span><span class="o">}</span></pre>
-            <div class="file">drain/drain.mts<span class="who">the author's</span></div>
+            <div class="file">drain/drain.mts<span class="who">a stand-in</span></div>
 <pre><span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"./reflex.d.ts"</span>
 
 <span class="w">export</span> <span class="w">default</span> <span class="o">(</span><span class="w">async</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="o">({</span>
@@ -163,8 +167,8 @@ done<span class="o">()</span></pre>
   next <span class="o">=</span> <span class="o">(</span>step<span class="o">.</span>result<span class="o">.</span>data <span class="w">as</span> <span class="o">{</span> next<span class="o">?:</span> string <span class="o">}</span> <span class="o">|</span> <span class="n">undefined</span><span class="o">)?.</span>next
 <span class="o">}</span>
 done<span class="o">()</span></pre>
-            <div class="file">terminal.ts<span class="who you">the two handlers every app shares</span></div>
-<pre><span class="c">// The two handlers every app here shares.</span>
+            <div class="file">terminal.ts<span class="who">the two handlers</span></div>
+<pre><span class="c">// The two handlers the ops and runbook apps share.</span>
 <span class="c">// A confirm is a question; an ask is a numbered menu, or a blank to type into.</span>
 <span class="w">import</span> <span class="o">{</span> createInterface <span class="o">}</span> <span class="w">from</span> <span class="s">"node:readline/promises"</span>
 <span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Handlers <span class="o">}</span> <span class="w">from</span> <span class="s">"@evoke-build/evoke"</span>
@@ -196,12 +200,12 @@ done<span class="o">()</span></pre>
         </div>
         <div class="side">
           <ol class="notes column">
-            <li><b>1</b><span><strong>The bodies are stand-ins.</strong> Each returns its line and the next sentence.
+            <li><b>1</b><span><strong>The programs are stand-ins.</strong> Each returns its line and the next sentence.
               Yours would drain, promote and check a real database.</span></li>
-            <li><b>2</b><span><strong>The loop stops the moment a step does not run.</strong> A no, an abstain or a
-              failure ends it. Nothing after runs, and nothing before is undone.</span></li>
-            <li><b>3</b><span><strong>The same loop over files or code.</strong> <code>load</code> takes a root with
-              <code>evoke.toml</code>, or the reflexes handed as objects.</span></li>
+            <li><b>2</b><span><strong>The loop stops when a step does not run.</strong> A no, a sentence that fits no
+              reflex, or a program that fails ends it. Nothing after it runs, and nothing before it is undone.</span></li>
+            <li><b>3</b><span><strong>The same loop over files or code.</strong> <code>load()</code> takes a directory with
+              its <code>evoke.toml</code>, or the reflexes handed over as objects.</span></li>
           </ol>
         </div>
       </div>
@@ -210,8 +214,8 @@ done<span class="o">()</span></pre>
     <section id="boundary">
       <div class="rule"><p class="label">One boundary</p><span class="num">03</span></div>
       <h2>The destructive step waits for a yes.</h2>
-      <p class="sub">The failover cannot be undone from where it runs, so its manifest says <code>destructive</code>.
-        <strong>Answer no, and the loop ends there.</strong> The drain stays done. The verify never runs.</p>
+      <p class="sub">The failover cannot be undone from where it runs, so its author marked it destructive.
+        <strong>Answer no, and the loop ends there.</strong> The drain stays done, and the check never runs.</p>
       <div class="grid">
         <div class="panel term" role="figure" aria-label="The failover's question">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>node</div>
@@ -219,27 +223,60 @@ done<span class="o">()</span></pre>
 <span class="out">primary drained</span>
 <span class="own">Promote the replica now?  [y]es [n]o &gt; <span class="in">n</span></span></pre>
         </div>
-        <p class="caption">The question is the reflex's own <code>confirm</code> line. A confirm handler that returns
-          false makes <code>handle()</code> answer <code>declined</code>, and the loop's <code>break</code> does the rest.
-          <a href="/manual/sdk/decisions.html">handle, in the manual →</a></p>
+        <p class="caption">The question is the one the failover's author wrote. Answer no, and the handler returns false.
+          <code>handle()</code> then returns <code>declined</code>, and the loop stops at its <code>break</code>.
+          <a href="/manual/sdk/decisions.html#handleinput--confirm-ask-tags-signal-">handle(), in the manual →</a></p>
       </div>
     </section>
 
-    <section id="needs">
-      <div class="rule"><p class="label">Before you run it</p><span class="num">04</span></div>
-      <h2>What this pattern needs.</h2>
+    <section id="set-up">
+      <div class="rule"><p class="label">Set it up</p><span class="num">04</span></div>
+      <h2>Run the runbook from one file, with the SDK.</h2>
+      <p class="sub"><code>runbook.ts</code> holds the three reflexes and the loop, so it runs on its own.
+        <strong>Its programs are stand-ins that change nothing, so it is safe to run.</strong></p>
       <ul class="needs">
-        <li class="ok"><b>Node 24.5 or newer</b>And the SDK, <code>@evoke-build/evoke</code>.</li>
-        <li class="ok"><b>A classifier key</b>One request per step. The provider bills the use.</li>
-        <li class="no"><b>Real bodies</b>The three shown return fixed lines. Yours would talk to the database, and honour
-          the deadline's <code>signal</code>.</li>
+        <li class="ok"><b>Node 24.5 or newer, and the SDK</b>The loop runs in your app.</li>
+        <li class="ok"><b>A classifier key</b><a href="/start.html?example=runbook">Get a key from TypeSafe AI</a>. Each
+          step is one request, billed to your key.</li>
+        <li class="no"><b>Real programs</b>The three shown return fixed lines. Yours would call your database, and pass
+          the <code>signal</code> it receives to every call: each decision has 30 seconds.</li>
         <li class="no"><b>Recovery, decided by you</b>A step that fails stops the rest. What to do about the steps
-          already done is the application's call.</li>
+          already done is your application's call.</li>
+        <li class="no"><b>A chat bot</b>evoke has no chat integration. In an app, the confirm handler is where a bot
+          would ask for its yes.</li>
       </ul>
-      <p class="after">The files above are the whole example. Copy them from this page.</p>
+      <ol class="plan">
+        <li>
+          <div>
+            <h3>Make the project</h3>
+            <p>A folder for the app, with a package of ES modules and the SDK.</p>
+            <div class="cmd"><code>mkdir -p ~/runbook &amp;&amp; cd ~/runbook &amp;&amp; npm init -y &amp;&amp; npm pkg set type=module</code><button type="button" data-copy aria-label="Copy the project command">Copy</button></div>
+            <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Save the two files</h3>
+            <p>Save <code>runbook.ts</code> from the code tab above in <code>~/runbook</code>. Save
+              <code>terminal.ts</code> from the app tab in your home folder, the folder above it, where
+              <code>runbook.ts</code> imports it from.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Start the runbook</h3>
+            <p>The drain runs, then the failover asks for its yes. Answer <code>y</code>, and the check runs. Answer
+              <code>n</code>, and the loop stops there.</p>
+            <div class="cmd"><code>export TYPESAFE_API_KEY=&lt;value&gt;</code><button type="button" data-copy aria-label="Copy the key command">Copy</button></div>
+            <div class="cmd"><code>node runbook.ts "drain the primary"</code><button type="button" data-copy aria-label="Copy the run command">Copy</button></div>
+          </div>
+        </li>
+      </ol>
+      <p class="after">To make it yours, replace each stand-in with a program that calls your database. Keep
+        <code>data.next</code>, which names the step that follows.</p>
       <div class="actions">
-        <a class="button primary" href="/start.html?example=runbook">Adapt this pattern</a>
-        <a class="quiet" href="/how-it-works.html#runbook">How a continuation works →</a>
+        <a class="button primary" href="/how-it-works.html#runbook">How a program names the next step</a>
+        <a class="quiet" href="/manual/use/weaving.html">Several steps in one sentence, in the manual →</a>
       </div>
     </section>
   </main>

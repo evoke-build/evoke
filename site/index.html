@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Evoke - You invoke a function. You evoke a reflex.</title>
-  <meta name="description" content="evoke runs the small program your sentence asks for, and can pass one program's result to the next. A CLI, a package manager and a TypeScript SDK.">
+  <title>Evoke - Natural-language commands for programs you install</title>
+  <meta name="description" content="A reflex is a small program you install and ask for in your words. Type a natural-language command, and evoke runs the one that matches, or asks first.">
   <!-- head -->
   <script type="application/ld+json">
   {
@@ -15,7 +15,7 @@
         "@id": "https://evoke.build/#software",
         "name": "evoke",
         "url": "https://evoke.build/",
-        "description": "evoke packages small programs, called reflexes, with the descriptions and rules needed to call them in everyday language. One sentence combines compatible ones into a plan, passes results between steps, and pauses for confirmation where you set it. Anyone can write a reflex, share it through git, and improve it. evoke is a CLI, a package manager for reflexes, and a TypeScript SDK.",
+        "description": "evoke gives you natural-language commands for small programs you install. A reflex is a small program you install and ask for in your words. You type what you want. evoke picks the reflex that matches and fills its inputs from your words and your own lists. It runs the reflex when it is sure enough. It asks when something is missing or unclear, and always before anything that cannot be undone. One sentence can ask for several reflexes. evoke shows the plan first, and can pass a result to a later step that takes that kind of value. Anyone can write a reflex and share it through git. evoke is a CLI, a package manager for reflexes, and a TypeScript SDK.",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "macOS, Linux",
         "softwareVersion": "0.1.0",
@@ -54,6 +54,7 @@
         "@type": "WebSite",
         "@id": "https://evoke.build/#website",
         "name": "evoke",
+        "alternateName": ["evoke.build"],
         "url": "https://evoke.build/",
         "inLanguage": "en",
         "publisher": { "@id": "https://evoke.build/#organization" }
@@ -82,13 +83,13 @@
     <div class="hero">
       <div class="copy">
         <h1>You invoke<br> a function. <em>You evoke<br> a reflex.</em></h1>
-        <p class="lede"><strong>A reflex is a small program you install and ask for in your words.</strong> evoke fills in
-          its inputs, or asks when it isn't sure. Ask for two reflexes at once, and the first hands its result to the second.</p>
+        <p class="lede"><strong>A reflex is a small program you install and ask for in your words.</strong> Type a
+          natural-language command, and evoke runs the reflex that matches, or asks you first. One sentence can ask for several.</p>
         <div class="cta">
           <button class="button primary" type="button" data-see>See it work</button>
           <a class="button" href="/start.html">Get started</a>
         </div>
-        <p class="note">evoke is free and open source. The online classifier that reads your sentences is billed by its provider, through <a href="/start.html#needs">your own key</a>.</p>
+        <p class="note">evoke is free and open source. A classifier reads each sentence over the network, and its provider bills <a href="/start.html#needs">your own API key</a>. Nothing you type goes to evoke.build.</p>
         <ul class="jobs" aria-label="What evoke is">
           <li><a href="/manual/use/saying-things.html"><code>$</code>a CLI</a></li>
           <li><a href="/manual/use/installing.html"><code>+</code>a package manager</a></li>
@@ -100,7 +101,7 @@
           <div class="panel term">
             <div class="head">
               <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-              <div class="tabs" role="tablist" aria-label="Three recorded sentences">
+              <div class="tabs" role="tablist" aria-label="Three sentences from evoke's tests">
                 <button type="button" role="tab" id="walk-tab-a" aria-controls="walk-a" aria-selected="true">email them</button>
                 <button type="button" role="tab" id="walk-tab-b" aria-controls="walk-b" aria-selected="false" tabindex="-1">timer for them</button>
                 <button type="button" role="tab" id="walk-tab-c" aria-controls="walk-c" aria-selected="false" tabindex="-1">feed the cat</button>
@@ -108,7 +109,7 @@
             </div>
             <div class="scenes">
               <div class="scene on" id="walk-a" role="tabpanel" aria-labelledby="walk-tab-a" data-stage="5">
-                <div class="room" role="figure" aria-label="A recorded session, replayed. Five reflexes are installed, among them contact and mail. contact looks up a person's email address, and mail starts an email in your mail app. The sentence «look up dana's address and email them» is typed. evoke reads two steps and shows the plan first: contact for dana, then mail to «them». contact gives back an email, and mail's to input takes an email, so the address can travel. contact finds dana@example.com. The address becomes the draft's recipient, and a draft opens, its subject waiting for you. Nothing is sent.">
+                <div class="room" role="figure" aria-label="A session from evoke's tests, replayed. Five reflexes are installed, among them contact and mail. contact looks up a person's email address, and mail starts an email. The sentence «look up dana's address and email them» is typed. evoke reads two steps and shows the plan first: contact for dana, then mail to «them». contact's manifest says its result holds an email address, and mail's to input takes one, so the address can pass. contact finds dana@example.com, and the address becomes the draft's recipient. Nothing is sent.">
                   <p class="part q1" data-lit="and" data-on="2-">"<button type="button" class="word" data-point="look" aria-describedby="walk-a-look">look up</button> <button type="button" class="word" data-point="dana" aria-describedby="walk-a-dana">dana</button>'s address"</p>
                   <p class="seam" data-on="2-"><button type="button" class="word" data-point="and" aria-describedby="walk-a-and">and</button><small>yes 0.90</small></p>
                   <p class="part q2" data-lit="and" data-on="2-">"<button type="button" class="word" data-point="email" aria-describedby="walk-a-email">email</button> <button type="button" class="word ref bound" data-point="them" data-at="plan:2-3 bound:4-" aria-describedby="walk-a-them">them</button>"</p>
@@ -180,7 +181,7 @@ Start an email in your mail app.</span>
               </div>
 
               <div class="scene" id="walk-b" role="tabpanel" aria-labelledby="walk-tab-b" data-stage="4" inert>
-                <div class="room" role="figure" aria-label="A recorded session, replayed. The sentence «look up dana's address and start a 10 minute timer for them» is typed. evoke reads two steps: contact for dana, then a 10 minute timer. «them» points at step 1, but the timer takes a duration, not an email. So step 2 takes nothing from step 1, and evoke asks whether to run the plan as it stands. The answer is yes. dana's address is looked up, and a 10 minute timer starts. The address stays where it was found.">
+                <div class="room" role="figure" aria-label="A session from evoke's tests, replayed. The sentence «look up dana's address and start a 10 minute timer for them» is typed. evoke reads two steps: contact for dana, then a 10 minute timer. «them» points at step 1, but no input of the timer takes an email address. So evoke asks whether to run the plan as it stands. The answer is yes. dana's address is looked up, and a 10 minute timer starts. Nothing passes between them.">
                   <p class="part q1" data-lit="and" data-on="2-">"<button type="button" class="word" data-point="look" aria-describedby="walk-b-look">look up</button> <button type="button" class="word" data-point="dana" aria-describedby="walk-b-dana">dana</button>'s address"</p>
                   <p class="seam" data-on="2-"><button type="button" class="word" data-point="and" aria-describedby="walk-b-and">and</button><small>yes 0.90</small></p>
                   <p class="part q2" data-lit="and" data-on="2-">"start a 10 minute <button type="button" class="word" data-point="timer" aria-describedby="walk-b-timer">timer</button> for <button type="button" class="word ref ask" data-point="them" data-at="ask:2-" aria-describedby="walk-b-them">them</button>"</p>
@@ -249,7 +250,7 @@ Count down a duration, then sound an alert.</span>
               </div>
 
               <div class="scene" id="walk-c" role="tabpanel" aria-labelledby="walk-tab-c" data-stage="3" inert>
-                <div class="room" role="figure" aria-label="A recorded session, replayed. The sentence «kill the lights in the den and feed the cat» is typed. The first part reads as lights, in the den. No installed reflex feeds a cat, so the second part matches nothing. evoke refuses the whole sentence before any step starts, and nothing runs, not even the lights.">
+                <div class="room" role="figure" aria-label="A session from evoke's tests, replayed. The sentence «kill the lights in the den and feed the cat» is typed. The first part reads as lights, in the den. No installed reflex feeds a cat, so the second part matches nothing. evoke refuses the whole sentence before any step starts, and nothing runs, not even the lights.">
                   <p class="part q1" data-lit="and" data-on="2-">"<button type="button" class="word" data-point="kill" aria-describedby="walk-c-kill">kill the lights</button> in the den"</p>
                   <p class="seam" data-on="2-"><button type="button" class="word" data-point="and" aria-describedby="walk-c-and">and</button><small>yes 0.95</small></p>
                   <p class="part q2" data-lit="and" data-on="2-">"<button type="button" class="word ref stop" data-point="cat" data-at="stop:2-" aria-describedby="walk-c-cat">feed the cat</button>"</p>
@@ -306,59 +307,60 @@ Turn the lights in one room on, off, or dim them.</span>
 
           <div class="walk-notes" aria-hidden="true">
             <div class="set on" data-for="walk-a">
-              <p><strong>Five reflexes are installed.</strong> Each came with a manifest: what it does, what it takes, what it gives back.</p>
-              <p><strong>You type one sentence.</strong> Each card is its manifest, turned face up.</p>
-              <p><strong>The plan comes first.</strong> «and» splits the sentence in two. «them» points at what step 1 will find.</p>
+              <p><strong>Five reflexes are installed.</strong> Each manifest says what its reflex does and the inputs it takes. contact returns an <code>email</code>, and mail's <code>to</code> takes one.</p>
+              <p><strong>You type one sentence.</strong> Each card turns over to show what its reflex does and the inputs it takes.</p>
+              <p><strong>evoke shows the plan before anything runs.</strong> «and» splits the sentence into two steps, and «them» points at what step 1 will find.</p>
               <p><strong>Step 1 runs.</strong> contact finds dana's address.</p>
-              <p><strong>The address becomes the recipient.</strong> contact gives back an <code>email</code>, and mail's <code>to</code> takes an <code>email</code>.</p>
-              <p class="on"><strong>A draft opens, and you still press send.</strong> Two more sentences wait in the tabs above: one where evoke asks first, and one where it stops.</p>
+              <p><strong>The address becomes the draft's recipient.</strong> contact returns an <code>email</code>, and mail's <code>to</code> takes an <code>email</code>. The kinds match, so the address passes.</p>
+              <p class="on"><strong>The draft is addressed to dana, and nothing is sent.</strong> Two more sentences wait in the tabs above: one where evoke asks first, and one where it stops.</p>
               <p id="walk-a-look" data-point="look"><strong>«look up dana's address» reads as contact.</strong> <code class="said">contact 0.90 · none 0.06 · mail 0.03 · lights 0.01</code></p>
-              <p id="walk-a-dana" data-point="dana"><strong>«dana» is a word from your list of people.</strong> <code class="said">name  dana 0.90 · unstated 0.08 · sam 0.02</code></p>
-              <p id="walk-a-and" data-point="and"><strong>Asked whether «and» joins two tasks, the classifier said yes.</strong> <code class="said">"splits":[{"start":22,"end":27,"word":"and","order":"and","p":0.9}]</code></p>
+              <p id="walk-a-dana" data-point="dana"><strong>«dana» is a word from your own list of people.</strong> <code class="said">name  dana 0.90 · unstated 0.08 · sam 0.02</code></p>
+              <p id="walk-a-and" data-point="and"><strong>evoke asks the classifier whether «and» separates two tasks. Here, the answer is yes.</strong> <code class="said">"splits":[{"start":22,"end":27,"word":"and","order":"and","p":0.9}]</code></p>
               <p id="walk-a-email" data-point="email"><strong>«email them» reads as mail.</strong> <code class="said">mail 0.88 · none 0.08 · contact 0.04</code></p>
-              <p id="walk-a-them" data-point="them"><strong>«them» takes the email step 1 found: the kind mail needs.</strong> <code class="said">"binds":[{"from":1,"to":2,"arg":"to","field":"email","kind":"email","via":"fill"}]</code></p>
+              <p id="walk-a-them" data-point="them"><strong>«them» takes the email that step 1 found, the kind mail's <code>to</code> needs.</strong> <code class="said">"binds":[{"from":1,"to":2,"arg":"to","field":"email","kind":"email","via":"fill"}]</code></p>
             </div>
             <div class="set" data-for="walk-b">
-              <p><strong>Five reflexes are installed.</strong> Each came with a manifest: what it does, what it takes, what it gives back.</p>
-              <p><strong>You type one sentence.</strong> This time, its second part is about a timer.</p>
-              <p><strong>«them» points at step 1, but a timer takes no address.</strong> contact gives back an <code>email</code>. The timer takes a <code>duration</code>.</p>
-              <p><strong>So evoke asks before anything runs.</strong> A word that points at a step it takes nothing from always asks. Here, the answer was yes.</p>
-              <p class="on"><strong>Both steps ran, each on its own.</strong> The address had nowhere to go.</p>
+              <p><strong>The same five reflexes are installed.</strong> contact returns an <code>email</code>, and no input of the timer takes one.</p>
+              <p><strong>You type one sentence.</strong> This time, its second part asks for a timer.</p>
+              <p><strong>«them» points at step 1, but a timer takes no address.</strong> Its inputs take a <code>duration</code> and a quoted label, never an <code>email</code>.</p>
+              <p><strong>So evoke asks before anything runs.</strong> When «them» points back at a step it can take nothing from, evoke asks first. Here, the answer was yes.</p>
+              <p class="on"><strong>Both steps ran, each on its own.</strong> The address had nowhere to go, so nothing passed.</p>
               <p id="walk-b-look" data-point="look"><strong>«look up dana's address» reads as contact.</strong> <code class="said">contact 0.90 · none 0.06 · mail 0.03 · lights 0.01</code></p>
-              <p id="walk-b-dana" data-point="dana"><strong>«dana» is a word from your list of people.</strong> <code class="said">name  dana 0.90 · unstated 0.08 · sam 0.02</code></p>
-              <p id="walk-b-and" data-point="and"><strong>Asked whether «and» joins two tasks, the classifier said yes.</strong> <code class="said">"splits":[{"start":22,"end":27,"word":"and","order":"and","p":0.9}]</code></p>
+              <p id="walk-b-dana" data-point="dana"><strong>«dana» is a word from your own list of people.</strong> <code class="said">name  dana 0.90 · unstated 0.08 · sam 0.02</code></p>
+              <p id="walk-b-and" data-point="and"><strong>evoke asks the classifier whether «and» separates two tasks. Here, the answer is yes.</strong> <code class="said">"splits":[{"start":22,"end":27,"word":"and","order":"and","p":0.9}]</code></p>
               <p id="walk-b-timer" data-point="timer"><strong>«start a 10 minute timer for them» reads as timer.</strong> <code class="said">timer 0.88 · none 0.08 · lights 0.02 · volume 0.02</code></p>
-              <p id="walk-b-them" data-point="them"><strong>«them» finds no slot of its kind in the timer.</strong> <code class="said">step 2 refers to step 1, but takes nothing from it</code></p>
+              <p id="walk-b-them" data-point="them"><strong>«them» points at step 1, but the timer takes no <code>email</code>.</strong> <code class="said">step 2 refers to step 1, but takes nothing from it</code></p>
             </div>
             <div class="set" data-for="walk-c">
-              <p><strong>Five reflexes are installed.</strong> Each came with a manifest: what it does, what it takes, what it gives back.</p>
-              <p><strong>You type one sentence.</strong> This time, its second part is about feeding the cat.</p>
+              <p><strong>The same five reflexes are installed.</strong> None of them feeds a cat.</p>
+              <p><strong>You type one sentence.</strong> This time, its second part asks to feed the cat.</p>
               <p><strong>No installed reflex feeds a cat.</strong> The second part matches nothing.</p>
-              <p class="on"><strong>So nothing runs, not even the lights.</strong> evoke refuses the whole sentence before any step starts.</p>
+              <p class="on"><strong>So nothing runs, not even the lights.</strong> evoke refuses the whole sentence before any step starts, rather than do half of it.</p>
               <p id="walk-c-kill" data-point="kill"><strong>«kill the lights in the den» reads as lights.</strong> <code class="said">lights 0.91 · none 0.06 · timer 0.02 · volume 0.01</code></p>
-              <p id="walk-c-and" data-point="and"><strong>Asked whether «and» joins two tasks, the classifier said yes.</strong> <code class="said">"splits":[{"start":26,"end":31,"word":"and","order":"and","p":0.95}]</code></p>
+              <p id="walk-c-and" data-point="and"><strong>evoke asks the classifier whether «and» separates two tasks. Here, the answer is yes.</strong> <code class="said">"splits":[{"start":26,"end":31,"word":"and","order":"and","p":0.95}]</code></p>
               <p id="walk-c-cat" data-point="cat"><strong>Nothing installed matches «feed the cat».</strong> <code class="said">none 0.95 · lights 0.05</code></p>
             </div>
           </div>
           <p class="sr" aria-live="polite"></p>
           <ul class="walk-key" aria-label="What the colours mean">
             <li class="plan">the plan</li>
-            <li class="ok">bound, or ran</li>
+            <li class="ok">passed on, or ran</li>
             <li class="mid">asks you</li>
             <li class="no">stops</li>
           </ul>
-          <p class="walk-door"><a href="/examples/contact-to-draft.html">See this example →</a><a href="/start.html#install">Try the collection in a terminal →</a></p>
           <div class="walk-legend">
-            <p><b>A recorded session, replayed here.</b> The contact reflex is a stand-in from the product's tests. The mail reflex is one of thirteen you can install today, and opens a real draft on a Mac.</p>
+            <p><b>What evoke printed in its tests, replayed here.</b> The classifier's answers and the five reflexes were written for those tests. You cannot install these reflexes.</p>
+            <p>The collection, thirteen reflexes you can install today, has its own mail reflex. It opens a real draft on a Mac.</p>
           </div>
+          <p class="walk-door"><a href="/examples/contact-to-draft.html">See the files behind this sentence →</a><a href="/start.html#needs">Try the collection in your terminal →</a></p>
         </div>
       </div>
     </div>
 
     <section id="reflex">
       <div class="rule"><p class="label">A reflex</p><span class="num">01</span></div>
-      <h2>A reflex comes with a way to ask for it.</h2>
-      <p class="sub">The <code>mail</code> reflex from the walkthrough is a small program and its manifest. <strong>The
+      <h2>Install a reflex, and you can ask for it. Two that fit can pass a result along.</h2>
+      <p class="sub">The <code>mail</code> reflex, from the collection, is a small program and its manifest. <strong>The
         manifest says what it does, what it is not for, and what to ask you when something is missing.</strong></p>
       <div class="split">
         <div class="panel">
@@ -394,98 +396,75 @@ To one address, with an optional subject; nothing goes out until you press send.
             <dt>not_for</dt>
             <dd><strong>What it does not do.</strong> Naming the near misses keeps a similar request from landing here.</dd>
             <dt>effect</dt>
-            <dd><strong>How careful to be.</strong> It is read, write or destructive. A write can be undone, so it runs on its own when evoke is sure enough. A destructive one always asks.</dd>
+            <dd><strong>How careful to be.</strong> Its author declares read, write or destructive. A write runs on its own when evoke is sure enough. A destructive one always asks.</dd>
             <dt>confirm</dt>
             <dd><strong>Its own question.</strong> The line you answer when evoke asks before it runs.</dd>
             <dt>[args.to] · [args.subject]</dt>
-            <dd><strong>What it needs from you.</strong> An email address is taken from your sentence, word for word. The subject is optional.</dd>
+            <dd><strong>What it needs from you.</strong> An email address, taken from your sentence word for word. The subject is optional.</dd>
             <dt>[examples]</dt>
             <dd><strong>Sentences that teach.</strong> You can add your own, and they stay in a file of yours.</dd>
           </dl>
-          <p>The <code>contact</code> reflex adds one more section: <code>[yields] email = "email"</code>. It says its result
-            holds an email address, which is how <code>mail</code> can take it.</p>
-          <a class="more" href="/how-it-works.html">How it works →</a>
+          <p><strong>Two fit when one returns a kind of value and the other takes it.</strong> The walkthrough's
+            <code>contact</code> declares <code>[yields] email = "email"</code>, so its address can fill <code>to</code>. No
+            collection reflex declares a result yet.</p>
+          <a class="more" href="/how-it-works.html#handoff">See what one step can take from another →</a>
         </div>
       </div>
-    </section>
-
-    <section id="words">
-      <div class="rule"><p class="label">Your words</p><span class="num">02</span></div>
-      <h2>Teach evoke your team's names and phrases.</h2>
-      <p class="sub">A reflex comes with its author's wording, and you can add your own. <strong>Your names and your
-        phrases live in files you own</strong>, and an update never touches them.</p>
-      <div class="grid">
-        <div class="stack">
-          <div class="panel">
-            <div class="head"><i></i>vocab/people.toml<span class="who you">your word list</span></div>
-<pre><span class="k">dana</span> <span class="o">=</span> <span class="s">"Dana Ortiz, operations."</span>
-<span class="k">sam</span>  <span class="o">=</span> <span class="s">"Sam Lee, sales."</span></pre>
-          </div>
-          <div class="panel term quiet">
-            <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre><span class="p">$</span> <span class="in">evoke teach "dana's details" contact name=dana</span>
-<span class="add">+ overlays/contact.toml  [examples] "dana's details" = { name = "dana" }</span>
-<span class="p">$</span> <span class="in">evoke "dana's details"</span>
-<span class="own">  <span class="name">contact</span> name="dana"  <span class="hi">0.94</span></span>
-<span class="out">dana &lt;dana@example.com&gt;</span></pre>
-          </div>
-        </div>
-        <ol class="notes column">
-          <li><b>1</b><span><strong>A word is a name you chose, with a note on what it means.</strong> The classifier reads
-            the note. The program gets the word itself, or a value you set for it.</span></li>
-          <li><b>2</b><span><strong>Teaching adds your phrase as one line in a file of yours.</strong> From then on, every decision reads it.
-            Type <code>t</code> at any question to teach the same way.</span></li>
-          <li><b>3</b><span><strong>The shipped reflex stays as the author wrote it.</strong> Your files add to it without changing it.
-            An update brings new wording and keeps yours.</span></li>
-        </ol>
-      </div>
-      <p class="after"><a class="more" href="/how-it-works.html#vocabulary">Explore your team's words →</a></p>
     </section>
 
     <section id="decisions">
-      <div class="rule"><p class="label">Decisions</p><span class="num">03</span></div>
-      <h2>See when it runs, and when it asks.</h2>
-      <p class="sub">Every decision prints the call it chose and how sure it is. <strong>When something is missing or
-        uncertain, it asks.</strong> An action that cannot be undone always asks.</p>
+      <div class="rule"><p class="label">Decisions</p><span class="num">02</span></div>
+      <h2>It runs when it is sure enough. It asks when it is not, or when a change cannot be undone.</h2>
+      <p class="sub">A wrong reading is possible. A made-up value is not. <strong>So each reflex has a bar: how sure evoke
+        must be before it runs without asking.</strong></p>
       <div class="stack">
         <div class="split">
           <div class="panel term" role="figure" aria-label="A decision that ran">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>ran</div>
-<pre><span class="p">$</span> <span class="in">evoke "set the volume to 40 percent"</span>
+<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke "set the volume to 40 percent"</span>
 <span class="own">  <span class="name">volume</span> level="40 percent"  <span class="hi">0.93</span></span>
 <span class="out">volume 40%</span></pre>
           </div>
-          <p class="caption"><strong>Sure enough, so it ran.</strong> The number is how sure it is, going by its least sure answer.</p>
+          <p class="caption"><strong>Sure enough, so it ran.</strong> The number is how sure evoke is, going by its least sure answer. Changing the volume needs 0.8.</p>
         </div>
         <div class="split">
-          <div class="panel term" role="figure" aria-label="A decision that asked for a value">
+          <div class="panel term" role="figure" aria-label="A decision that asked first">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>asked</div>
-<pre><span class="p">$</span> <span class="in">evoke "set the volume to 150 percent"</span>
-<span class="own">  How loud, in percent?  <span class="mid">150 percent is outside 0–100</span>  &gt; <span class="in">40</span>
-  <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span>
-<span class="out">volume 40%</span></pre>
+<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke "kill the wifi"</span>
+<span class="own">  <span class="name">wifi</span> state="off" · write · weakest: state <span class="mid">0.72</span>
+  Turn Wi-Fi off?  [y]es [n]o [t]each &gt; <span class="in">t</span></span>
+<span class="add">+ overlays/wifi.toml  [examples] "kill the wifi" = { state = "off" }</span>
+<span class="out">wi-fi off</span></pre>
           </div>
-          <p class="caption"><strong>The value was out of range, so it asked.</strong> A value comes from your sentence or from you, never from a guess.</p>
+          <p class="caption"><strong>Under the bar, so it asked first.</strong> evoke was 0.72 sure, and a change needs 0.8. Typing <code>t</code> answered yes and saved your phrase in a file of yours.</p>
         </div>
         <div class="split">
           <div class="panel term" role="figure" aria-label="A decision that asked for confirmation">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>declined</div>
-<pre><span class="p">$</span> <span class="in">evoke "restart the computer"</span>
-<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: action <span class="hi">0.97</span>
+<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke "restart the computer"</span>
+<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: route <span class="hi">0.97</span>
   Really restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
 [2]</span></pre>
           </div>
-          <p class="caption"><strong>Destructive, so it asked.</strong> Even at 0.97. There is no flag that skips the question. <code>[2]</code> is the exit code for declined. Here, you said no.</p>
+          <p class="caption"><strong>Destructive, so it asked, even at 0.97.</strong> No flag skips this question. You typed <code>n</code>, so nothing ran, and <code>[2]</code> means declined.</p>
         </div>
       </div>
-      <p class="caption">A reflex that only reads things runs on its own at <b>0.6</b> or more. One that changes things needs <b>0.8</b>. You can change these
-        numbers in a file you own. <a href="/how-it-works.html#decisions">Explore the decisions →</a></p>
+      <p class="caption">A reflex that only reads runs on its own at <b>0.6</b> or more, one that changes something at
+        <b>0.8</b>, and one that cannot be undone always asks. You can change these bars in a file you own.</p>
+      <p class="caption">The classifier is Jev, TypeSafe AI's model. Its provider trains each probability to be calibrated:
+        across many answers, those given 0.85 should be right about 85 times in 100.</p>
+      <p class="caption">These sessions are what evoke printed in its tests, over answers written for them, so your own
+        numbers will differ. <code>evoke try</code> shows every judgment and runs nothing.</p>
+      <p class="after"><a class="more" href="/how-it-works.html#decisions">See how a decision is made →</a> <span class="also"><a
+        href="/faq.html#wrong-choice">Can evoke pick the wrong reflex?</a></span></p>
+      <p class="after"><a class="more" href="/guides/approval-by-risk.html">Why a destructive reflex always asks →</a></p>
     </section>
 
     <section id="examples">
-      <div class="rule"><p class="label">Examples</p><span class="num">04</span></div>
-      <h2>Start with something useful.</h2>
-      <p class="sub">Three places to begin. <strong>Each example shows what ran, and where evoke asked first.</strong></p>
+      <div class="rule"><p class="label">Examples</p><span class="num">03</span></div>
+      <h2>Three examples: one to run today, two to adapt.</h2>
+      <p class="sub">Each example shows what ran and where evoke asked first. <strong>Each says what you need to try it
+        yourself.</strong></p>
       <div class="cards">
         <a class="card" href="/examples/desktop.html">
           <div class="room mac">
@@ -501,8 +480,8 @@ To one address, with an optional subject; nothing goes out until you press send.
             </svg>
             <span class="say"><i>$</i> evoke "set the volume to 40 percent"</span>
           </div>
-          <div class="text"><i>01</i><b>Everyday Mac tasks</b><span>Thirteen reflexes for everyday things on a Mac:
-            lock, volume, a timer, a draft.</span><small><b>Runs today</b> on a Mac with the collection.</small></div>
+          <div class="text"><i>01</i><b>Everyday Mac tasks</b><span>Thirteen reflexes for everyday things on a Mac: lock
+            the screen, set the volume, start a timer or a draft.</span><small><b>Runs today</b> on a Mac with the collection.</small></div>
         </a>
         <a class="card" href="/examples/contact-to-draft.html">
           <div class="room duo">
@@ -523,8 +502,8 @@ To one address, with an optional subject; nothing goes out until you press send.
             </svg>
             <span class="say"><i>$</i> evoke "look up dana's address and email them"</span>
           </div>
-          <div class="text"><i>02</i><b>Look up a contact, prepare a draft</b><span>Two reflexes connect. What one
-            finds, the next one takes.</span><small><b>A recorded session</b>, and a pattern for your app.</small></div>
+          <div class="text"><i>02</i><b>Pass a result to the next step</b><span>One sentence runs two reflexes. The address
+            the first one finds becomes the draft's recipient.</span><small><b>A pattern to adapt.</b> You write the lookup. The mail reflex is in the collection.</small></div>
         </a>
         <a class="card" href="/examples/ops.html">
           <div class="room ops">
@@ -549,78 +528,134 @@ To one address, with an optional subject; nothing goes out until you press send.
             </svg>
             <span class="say"><i>$</i> evoke "scale checkout to 6 in staging"</span>
           </div>
-          <div class="text"><i>03</i><b>Operate services in team language</b><span>Your names for services fill a
-            command's arguments. A scale runs at once, and a rollback always asks.</span><small><b>A pattern for your app.</b> Needs kubectl and its access.</small></div>
+          <div class="text"><i>03</i><b>kubectl operations in your team's words</b><span>Your names fill the command. A
+            scale runs when evoke is sure enough, and a rollback always asks.</span><small><b>A pattern to adapt.</b> Needs kubectl and access to your cluster.</small></div>
         </a>
       </div>
-      <p class="after"><a class="more" href="/examples.html">Explore examples →</a></p>
+      <p class="after"><a class="more" href="/examples.html">See all six examples →</a></p>
     </section>
 
     <section id="build">
-      <div class="rule"><p class="label">Your own</p><span class="num">05</span></div>
-      <h2>Give your own program a way to be asked.</h2>
-      <p class="sub">A function, a script or a command you already have can become a reflex. <strong>You write the
-        program. The manifest describes it.</strong></p>
+      <div class="rule"><p class="label">Your own</p><span class="num">04</span></div>
+      <h2>Turn a command or script you already have into a reflex.</h2>
+      <p class="sub">A manifest describes it, and evoke runs it when you ask. <strong>Share it with a git tag, and anyone
+        can install it and ask for it in their own words.</strong></p>
       <div class="split">
         <div class="panel">
-          <div class="head"><i></i>hello/reflex.toml<span class="who">written by evoke new</span></div>
+          <div class="head"><i></i>scale/reflex.toml<span class="who">a command you have</span></div>
 <pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
 
 <span class="k">description</span> <span class="o">=</span> <span class="s">"""
-Say hello to someone.
-A greeting with the name given, printed back."""</span>
-<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span><span class="s">"saying goodbye"</span><span class="o">]</span>
-<span class="k">effect</span>  <span class="o">=</span> <span class="s">"read"</span>
-<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Say hello to <span class="ph">{who}</span>?"</span>
-<span class="k">run</span>     <span class="o">=</span> <span class="s">"hello.mts"</span>
+Scale a service to a number of replicas.
+One deployment in one environment; the number is set, never added to."""</span>
+<span class="o">…</span>
+<span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Scale <span class="ph">{service}</span> in <span class="ph">{env}</span> to <span class="ph">{replicas}</span>?"</span>
+<span class="k">run</span>     <span class="o">=</span> <span class="o">[</span>
+  <span class="s">"kubectl"</span><span class="o">,</span> <span class="s">"-n"</span><span class="o">,</span> <span class="s">"<span class="ph">{env}</span>"</span><span class="o">,</span> <span class="s">"scale"</span><span class="o">,</span> <span class="s">"deployment"</span><span class="o">,</span> <span class="s">"<span class="ph">{service}</span>"</span><span class="o">,</span>
+  <span class="s">"--replicas"</span><span class="o">,</span> <span class="s">"<span class="ph">{replicas}</span>"</span><span class="o">,</span>
+<span class="o">]</span>
 
-<span class="t">[args.who]</span>
-<span class="k">ask</span>  <span class="o">=</span> <span class="s">"Who should be greeted?"</span>
-<span class="k">pick</span> <span class="o">=</span> <span class="s">"quoted"</span>
+<span class="t">[args.service]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which service?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"services"</span>
+
+<span class="t">[args.env]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"Which environment?"</span>
+<span class="k">vocab</span> <span class="o">=</span> <span class="s">"envs"</span>
+
+<span class="t">[args.replicas]</span>
+<span class="k">ask</span>   <span class="o">=</span> <span class="s">"How many replicas?"</span>
+<span class="k">pick</span>  <span class="o">=</span> <span class="s">"number"</span>
+<span class="k">range</span> <span class="o">=</span> <span class="o">[</span><span class="n">1</span><span class="o">,</span> <span class="n">20</span><span class="o">]</span>
 
 <span class="t">[examples]</span>
-<span class="s">'say hello to "Ada"'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">who</span> <span class="o">=</span> <span class="s">"Ada"</span> <span class="o">}</span>
-<span class="s">'greet "Grace"'</span>      <span class="o">=</span> <span class="o">{</span> <span class="k">who</span> <span class="o">=</span> <span class="s">"Grace"</span> <span class="o">}</span></pre>
-          <div class="file">hello/hello.mts<span class="who you">your code</span></div>
-<pre><span class="w">import</span> <span class="w">type</span> <span class="o">{</span> Reflex <span class="o">}</span> <span class="w">from</span> <span class="s">"./reflex.d.ts"</span>
-
-<span class="w">export</span> <span class="w">default</span> <span class="o">(</span><span class="w">async</span> <span class="o">({</span> who <span class="o">})</span> <span class="o">=&gt;</span> <span class="s">`Hello, ${who}!`</span><span class="o">)</span> <span class="w">satisfies</span> Reflex</pre>
+<span class="s">"scale checkout to 6 in staging"</span>   <span class="o">=</span> <span class="o">{</span> <span class="k">replicas</span> <span class="o">=</span> <span class="s">"6"</span> <span class="o">}</span>
+<span class="s">"run 3 replicas of search in prod"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">replicas</span> <span class="o">=</span> <span class="s">"3"</span> <span class="o">}</span>
+<span class="o">…</span></pre>
         </div>
         <div class="text">
-          <p><strong><code>evoke new hello</code> writes a reflex that already works.</strong> The manifest describes it.
-            The program is your code, and it can call anything you already have.</p>
+          <p><strong>A kubectl command becomes a reflex, with no code.</strong> <code>run</code> names the program and
+            where each value goes. <code>confirm</code> is the question you answer when evoke asks first.</p>
           <ul class="ticks">
-            <li><strong>The program receives typed arguments.</strong> Here <code>who</code> is a string, taken from the quotes.</li>
-            <li><strong>The effect is your claim about it.</strong> A read, a write, or something that cannot be undone.</li>
-            <li><strong><code>evoke check</code> points out any line to fix</strong>, and updates the types your code imports.</li>
+            <li><strong>Any program on your <code>PATH</code> works, a script of yours as well as kubectl.</strong> evoke runs
+              it directly, never through a shell, and needs no Node to do it.</li>
+            <li><strong>Values arrive checked.</strong> A service must be a word from your list, and the replicas a number
+              from 1 to 20. Out of range, evoke asks for another.</li>
+            <li><strong>Or write the program yourself.</strong> <code>evoke new hello</code> writes a reflex that already works,
+              and <code>evoke check</code> names any line to fix.</li>
           </ul>
-          <a class="more" href="/developers.html">Build a reflex →</a>
+          <a class="more" href="/developers.html#operation">Turn your code into natural-language commands →</a>
         </div>
       </div>
+    </section>
+
+    <section id="words">
+      <div class="rule"><p class="label">Your words</p><span class="num">05</span></div>
+      <h2>Teach evoke your names and the phrases you use.</h2>
+      <p class="sub">«dana», in the sentence at the top of this page, came from your list of people. <strong>Your names
+        and phrases live in files you own</strong>, and an update never touches them.</p>
+      <div class="grid">
+        <div class="stack">
+          <div class="panel">
+            <div class="head"><i></i>vocab/people.toml<span class="who you">your word list</span></div>
+<pre><span class="k">dana</span> <span class="o">=</span> <span class="s">"Dana Ortiz, operations."</span>
+<span class="k">sam</span>  <span class="o">=</span> <span class="s">"Sam Lee, sales."</span></pre>
+          </div>
+          <div class="panel term quiet">
+            <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke vocab places add desktop "The desktop." --value "~/Desktop"</span>
+<span class="add">+ vocab/places.toml  desktop = { what = "The desktop.", value = "~/Desktop" }</span>
+<span class="p">$</span> <span class="in">evoke teach "go dark" wifi state=off</span>
+<span class="add">+ overlays/wifi.toml  [examples] "go dark" = { state = "off" }</span></pre>
+          </div>
+        </div>
+        <ol class="notes column">
+          <li><b>1</b><span><strong>A word list holds your names.</strong> <code>desktop</code> is a word you chose. The
+            classifier reads its meaning, and the program receives its value, a folder's path.</span></li>
+          <li><b>2</b><span><strong>Teaching adds your phrase to a file of yours.</strong> Type <code>t</code> when evoke asks
+            you to confirm, or use <code>evoke teach</code>. Every later decision reads it.</span></li>
+          <li><b>3</b><span><strong>The author's wording stays as shipped.</strong> <code>overlays/wifi.toml</code> is your own
+            file for the wifi reflex's wording. An update never rewrites it.</span></li>
+        </ol>
+      </div>
+      <p class="after"><a class="more" href="/how-it-works.html#vocabulary">See how your words are read →</a></p>
     </section>
 
     <section id="start">
       <div class="rule"><p class="label">Start</p><span class="num">06</span></div>
-      <h2>Run your first reflex.</h2>
-      <p class="sub">Ten minutes from an empty machine to a first result. <strong>Pick your terminal, or your app.</strong></p>
+      <h2>Start in your terminal or in your app.</h2>
+      <p class="sub">On a Mac, the collection gives you thirteen reflexes to ask for. <strong>On Linux, start with
+        <a href="/manual/author/body.html#an-argv-body">a command you already run</a>.</strong></p>
       <div class="ways">
         <div class="way">
           <h3>In your terminal</h3>
-          <p>Install one small binary on macOS or Linux, then the Mac collection of reflexes. You need a classifier key
-            first, and the <a href="/start.html#needs">guide</a> says where to get one.</p>
+          <p>You need <a href="/start.html#needs">an API key from TypeSafe AI</a>, and git to add the collection. Its
+            thirteen reflexes are for a Mac, and eleven of them need Node 24 or newer.</p>
+          <div class="cmd"><code>export TYPESAFE_API_KEY=&lt;value&gt;</code><button type="button" data-copy aria-label="Copy the key command">Copy</button></div>
           <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
           <div class="cmd"><code>evoke add evoke-build/reflexes</code><button type="button" data-copy aria-label="Copy the add command">Copy</button></div>
-          <div class="cmd"><code>evoke "lock the screen"</code><button type="button" data-copy aria-label="Copy the first sentence">Copy</button></div>
-          <p class="after">The first result is one line: <code>locked</code>.</p>
+          <div class="cmd"><code>evoke "set the volume to 40 percent"</code><button type="button" data-copy aria-label="Copy the first sentence">Copy</button></div>
+          <p class="after">It prints the reflex it chose, the value it read and how sure it is, then the reflex's own line:
+            <code>volume 40%</code>.</p>
         </div>
         <div class="way">
           <h3>In your app</h3>
-          <p>The same decisions, inside your Node application.</p>
+          <p>The same decisions, inside a Node application.</p>
           <div class="cmd"><code>npm install @evoke-build/evoke</code><button type="button" data-copy aria-label="Copy the npm command">Copy</button></div>
-          <p class="after">One file can hold a reflex written as code, and run it in one call. The SDK manual starts
-            with <a href="/start.html?mode=sdk">six things to learn</a>, in order.</p>
+          <p class="after"><a href="/manual/sdk/getting-started.html">The SDK manual</a> starts with one file, one reflex and one decision.</p>
         </div>
       </div>
+      <ul class="ticks answers">
+        <li><strong>What does it cost?</strong> evoke is free and open source. The classifier's provider bills your key for
+          live decisions, and at the terminal a sentence you repeat is answered from a local cache.
+          <a href="/faq.html#cost">What a decision costs →</a></li>
+        <li><strong>What leaves your machine?</strong> Your sentence goes to the classifier, with questions built from the
+          reflexes you installed and your own names for things. Nothing goes to evoke.build.
+          <a href="/faq.html#what-leaves">What is sent, and what stays →</a></li>
+        <li><strong>What does a reflex run as?</strong> As you, held by the kernel to what its manifest declares. What a
+          reflex changes is its author's claim, which you can make stricter, never looser. <a href="/faq.html#contained">What is contained, and what is not →</a></li>
+      </ul>
       <p class="after"><a class="more" href="/start.html">Get started →</a></p>
     </section>
   </main>

@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Everyday Mac tasks - Evoke</title>
-  <meta name="description" content="Thirteen reflexes for what a Mac does at a word: volume, Wi-Fi, a timer, a draft, the screen locked. One line installs them, and every file is there to read.">
+  <title>Everyday Mac tasks from the terminal in plain words - Evoke</title>
+  <meta name="description" content="Natural-language commands for everyday Mac tasks: type a sentence in the terminal to set the volume, turn Wi-Fi off, start a timer or lock the screen.">
   <!-- head -->
 </head>
 <body>
@@ -14,24 +14,26 @@
     <div class="hero solo">
       <div class="copy">
         <p class="crumb"><a href="/examples.html">Examples</a> · 01 of 06</p>
-        <h1>Your Mac does everyday things <em>at a word.</em></h1>
-        <p class="lede"><strong>Thirteen reflexes, installed with one line.</strong> Set the volume, turn Wi-Fi off, start a
-          timer, lock the screen, draft a mail. Each is a small program with its manifest, and you can read every file.
-          This example runs today, on a Mac.</p>
+        <h1>Run everyday Mac tasks from the terminal, <em>in plain words.</em></h1>
+        <p class="lede"><strong>Type "set the volume to 40 percent" in your terminal, and evoke sets it.</strong> A reflex
+          is a small program you install and ask for in your words. Thirteen reflexes for everyday Mac tasks install with
+          one line. This example runs today on a Mac, and every file is on GitHub.</p>
+        <div class="cta"><a class="button primary" href="#set-up">Run this example</a></div>
       </div>
       <ul class="index" aria-label="The sections">
         <li><a href="#request"><code>01</code>The request and the result</a></li>
-        <li><a href="#files"><code>02</code>The operations</a></li>
-        <li><a href="#boundary"><code>03</code>One boundary</a></li>
-        <li><a href="#needs"><code>04</code>Before you run it</a></li>
+        <li><a href="#reflexes"><code>02</code>The collection</a></li>
+        <li><a href="#files"><code>03</code>Inside one reflex</a></li>
+        <li><a href="#boundary"><code>04</code>One boundary</a></li>
+        <li><a href="#set-up"><code>05</code>Set it up</a></li>
       </ul>
     </div>
 
     <section id="request">
       <div class="rule"><p class="label">The request and the result</p><span class="num">01</span></div>
       <h2>Three sentences, three outcomes.</h2>
-      <p class="sub">A volume change runs at once. A less certain one asks, and learns from your answer. <strong>A restart
-        asks every time.</strong> Every line is what the terminal printed.</p>
+      <p class="sub">A volume change runs at once. A less certain request asks first, and can keep your phrase as an
+        example. <strong>A restart asks every time.</strong></p>
       <div class="grid">
         <div class="panel term demo mac-room" role="figure" data-scene="mac" data-volume="15" data-wifi="on" data-power="on" aria-label="A laptop answering three sentences: the volume set, Wi-Fi turned off after a lesson, a restart declined">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>~<span class="trail" aria-hidden="true"><b>ran</b><b>taught</b><b>declined</b></span></div>
@@ -61,35 +63,74 @@
           </div>
           <div class="strip" style="--lines: 6" aria-live="off">
             <span class="line say show"><span class="p">$</span> <span class="in">evoke "restart the computer"</span></span>
-            <span class="line own show">  <b>power</b> action="restart" · destructive · weakest: action <i>0.97</i></span>
+            <span class="line own show">  <b>power</b> action="restart" · destructive · weakest: route <i>0.97</i></span>
             <span class="line own show">  Really restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span></span>
             <span class="line own show">[2]</span>
           </div>
         </div>
         <div class="side">
           <ol class="notes column">
-            <li><b>1</b><span><strong>Sure enough, so it ran.</strong> «40 percent» is a number read from the sentence and
-              checked against the range 0 to 100. At 0.93, over the write bar of 0.8, nothing asked.</span></li>
-            <li><b>2</b><span><strong>«kill» meant off at only 0.72.</strong> Under the bar, so evoke asked. Typing
-              <code>t</code> recorded the phrase in your overlay, then ran. The next time, it is sure.</span></li>
-            <li><b>3</b><span><strong>Sure at 0.97, and it still asked.</strong> A restart is destructive. No number and no
-              flag skips that question. <code>[2]</code> means you said no.</span></li>
+            <li><b>1</b><span><strong>Sure enough, so it ran.</strong> «40 percent» is a number read from your sentence and
+              checked against the range 0 to 100. The least sure answer was 0.93, and a change runs without a question at
+              0.8 or above.</span></li>
+            <li><b>2</b><span><strong>«kill» meant off, but only at 0.72.</strong> Under 0.8, so evoke asked first. Typing
+              <code>t</code>, for teach, saved your phrase as an example in a file of yours, then ran.</span></li>
+            <li><b>3</b><span><strong>Sure at 0.97, and it still asked.</strong> Its author marked <code>power</code>
+              destructive, so it asks every time. No number and no flag skips that question. <code>[2]</code> means you
+              answered no.</span></li>
           </ol>
         </div>
       </div>
+      <p class="caption">Every line is from a session in evoke's tests, which run on every change. The classifier's numbers
+        in it come from a file written for the test, so yours will differ.
+        <a href="/how-it-works.html#decisions">How sure evoke must be to run →</a></p>
+    </section>
+
+    <section id="reflexes">
+      <div class="rule"><p class="label">The collection</p><span class="num">02</span></div>
+      <h2>What each of the thirteen reflexes does.</h2>
+      <p class="sub">Together they are evoke's collection, and one command installs them all. <strong>Each prints one
+        short line about what it did.</strong></p>
+      <div class="table tagged"><table>
+        <thead><tr><th>Reflex</th><th>What it does</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>awake</code></td><td>Keeps the laptop awake for a while, or until you stop it.</td><td>write</td></tr>
+          <tr><td><code>download</code></td><td>Saves a file from a URL to your Downloads folder, or to one of your folders.</td><td>write</td></tr>
+          <tr><td><code>lock</code></td><td>Locks the screen.</td><td>write</td></tr>
+          <tr><td><code>mail</code></td><td>Starts an email in your mail app. Nothing is sent until you press send.</td><td>write</td></tr>
+          <tr><td><code>note</code></td><td>Adds a dated line to your notes file.</td><td>write</td></tr>
+          <tr><td><code>open</code></td><td>Opens one of your folders.</td><td>read</td></tr>
+          <tr><td><code>power</code></td><td>Puts the laptop to sleep, restarts it or shuts it down.</td><td>destructive</td></tr>
+          <tr><td><code>screenshot</code></td><td>Captures the screen, a window or a selection.</td><td>write</td></tr>
+          <tr><td><code>timer</code></td><td>Counts down, then rings.</td><td>write</td></tr>
+          <tr><td><code>trash</code></td><td>Empties the trash.</td><td>destructive</td></tr>
+          <tr><td><code>visit</code></td><td>Opens one of your sites, in a private window if you ask for one.</td><td>read</td></tr>
+          <tr><td><code>volume</code></td><td>Sets the output volume.</td><td>write</td></tr>
+          <tr><td><code>wifi</code></td><td>Turns Wi-Fi on or off.</td><td>write</td></tr>
+        </tbody>
+      </table></div>
+      <ol class="notes">
+        <li><b>1</b><span><strong>The effect sets the bar.</strong> A reflex that only reads runs without a question at
+          0.6 or above, one that writes at 0.8, and a destructive one always asks.</span></li>
+        <li><b>2</b><span><strong>Three start inactive.</strong> <code>open</code> needs your folders, <code>visit</code>
+          your sites and <code>note</code> your notes file. Step 5 below gives them what they need.</span></li>
+        <li><b>3</b><span><strong>Eleven run a JavaScript file</strong>, so they need Node 24 or newer. <code>open</code>
+          and <code>trash</code> run a program the Mac already has.</span></li>
+      </ol>
+      <p class="after"><a class="more" href="/manual/collection.html">The collection, in the manual →</a></p>
     </section>
 
     <section id="files">
-      <div class="rule"><p class="label">The operations</p><span class="num">02</span></div>
-      <h2>A manifest and a body, per reflex.</h2>
-      <p class="sub">This is <code>volume</code>, one of the thirteen. The manifest says what it does and what it asks.
-        The body is thirty lines that run one AppleScript line. <strong>The other twelve look the same.</strong></p>
+      <div class="rule"><p class="label">Inside one reflex</p><span class="num">03</span></div>
+      <h2>A reflex is a manifest, and usually a short program.</h2>
+      <p class="sub">This is <code>volume</code>. The manifest says what it does and what to ask you. The program runs one
+        AppleScript command. <strong>Ten others are built the same way. <code>open</code> and <code>trash</code> are a
+        manifest alone, which names a program the Mac already has.</strong></p>
       <div class="split">
         <div class="panel tabbed">
-          <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The volume reflex, and what is yours to set">
+          <div class="head"><i></i><div class="tabs" role="tablist" aria-label="The volume reflex">
             <button role="tab" id="t1" aria-controls="p1" aria-selected="true">the manifest</button>
-            <button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1">the body</button>
-            <button role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1">yours to set</button>
+            <button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1">the program</button>
           </div></div>
           <div role="tabpanel" id="p1" aria-labelledby="t1">
             <div class="file">volume/reflex.toml<span class="who">the collection's</span></div>
@@ -104,6 +145,9 @@
 <span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
 <span class="k">confirm</span> <span class="o">=</span> <span class="s">"Set the volume to <span class="ph">{level}</span>?"</span>
 <span class="k">run</span>     <span class="o">=</span> <span class="s">"volume.mts"</span>
+
+<span class="t">[needs]</span>
+<span class="k">runs</span> <span class="o">=</span> <span class="o">[</span><span class="s">"osascript"</span><span class="o">]</span>
 
 <span class="t">[args.level]</span>
 <span class="k">ask</span>   <span class="o">=</span> <span class="s">"How loud, in percent?"</span>
@@ -150,64 +194,171 @@
   <span class="w">return</span> <span class="w">typeof</span> text <span class="o">===</span> <span class="s">"string"</span> <span class="o">&amp;&amp;</span> text<span class="o">.</span>trim<span class="o">()</span> <span class="o">!==</span> <span class="s">""</span> <span class="o">?</span> text<span class="o">.</span>trim<span class="o">()</span> <span class="o">:</span> <span class="n">undefined</span>
 <span class="o">}</span></pre>
           </div>
-          <div role="tabpanel" id="p3" aria-labelledby="t3" hidden>
-            <div class="file">two words and one setting<span class="who you">yours</span></div>
-<pre><span class="c"># a word per folder; the value is its path</span>
-<span class="p">$</span> <span class="in">evoke vocab places add desktop "The desktop." --value ~/Desktop</span>
-<span class="c"># a word per site; the value is its URL</span>
-<span class="p">$</span> <span class="in">evoke vocab sites add github "GitHub." --value https://github.com</span>
-<span class="c"># where the note reflex appends its lines</span>
-<span class="p">$</span> <span class="in">evoke config note file ~/notes.txt</span></pre>
-          </div>
         </div>
         <div class="side">
           <ol class="notes column">
-            <li><b>1</b><span><strong>The manifest is the whole interface.</strong> A description, the near misses, one
-              input read as a number with a range, and the sentences that teach.</span></li>
-            <li><b>2</b><span><strong>The body says no to another platform first.</strong> Then it runs
-              <code>osascript</code> and returns one line. A body that fails prints why, and exits 1.</span></li>
-            <li><b>3</b><span><strong>Three reflexes wait for your words.</strong> <code>open</code>, <code>visit</code> and
-              <code>note</code> stay inactive until a folder, a site or a file is named. The other ten work at once.</span></li>
+            <li><b>1</b><span><strong>The manifest is how you ask for it.</strong> A description, what it is not for, one
+              input read as a number from 0 to 100, and example sentences.</span></li>
+            <li><b>2</b><span><strong>The program checks the platform first.</strong> On another system it stops at once and
+              says it runs on macOS only. On a Mac it runs <code>osascript</code> and returns one line.</span></li>
+            <li><b>3</b><span><strong>Every file is on GitHub.</strong> The collection is MIT-licensed, so you can copy a
+              script into a reflex of your own.</span></li>
           </ol>
-          <p class="after">The thirteen, in one table: <a href="/manual/collection.html">The collection →</a></p>
+          <p class="after"><a class="more" href="/developers.html#operation">Wrap a script of your own →</a></p>
         </div>
       </div>
     </section>
 
     <section id="boundary">
-      <div class="rule"><p class="label">One boundary</p><span class="num">03</span></div>
+      <div class="rule"><p class="label">One boundary</p><span class="num">04</span></div>
       <h2>A value outside its range never reaches the program.</h2>
-      <p class="sub">The manifest gives <code>level</code> a range of 0 to 100. <strong>A sentence can choose a value. It
-        cannot make one up, and it cannot push one past its range.</strong></p>
+      <p class="sub">The manifest gives the volume a range of 0 to 100. <strong>Your sentence chooses the value. evoke
+        checks it against the range before the program sees it.</strong></p>
       <div class="grid">
         <div class="panel term" role="figure" aria-label="A value out of range is asked for again">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre><span class="p">$</span> <span class="in">evoke "set the volume to 150 percent"</span>
+<pre data-flow="ask"><span class="p">$</span> <span class="in">evoke "set the volume to 150 percent"</span>
 <span class="own">  How loud, in percent?  <span class="mid">150 percent is outside 0–100</span>  &gt; <span class="in">40</span>
-  <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span>
-<span class="out">volume 40%</span></pre>
+  <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span></pre>
         </div>
-        <p class="caption">evoke asked the input's own question, with the reason on the line. The answer was checked the
-          same way. <a href="/manual/use/outcomes.html#ask">Ask, in the manual →</a></p>
+        <p class="caption">evoke asked the input's own question, with the reason on the same line. Your answer was checked
+          the same way, then <code>volume</code> ran with 40. evoke guarantees that every value is one the reflex allows.
+          It cannot guarantee that it read you right, which is why a bar decides what runs without a question.
+          <a href="/manual/use/outcomes.html#ask">When evoke asks for a value, in the manual →</a>
+          <a href="/guides/commands-from-a-fixed-list.html">What can run, and what cannot →</a></p>
       </div>
     </section>
 
-    <section id="needs">
-      <div class="rule"><p class="label">Before you run it</p><span class="num">04</span></div>
-      <h2>What this example needs.</h2>
+    <section id="set-up">
+      <div class="rule"><p class="label">Set it up</p><span class="num">05</span></div>
+      <h2>Set it up on your Mac, from nothing to your first sentence.</h2>
+      <p class="sub">Seven steps in your terminal. <strong>Every output line below comes from a session in evoke's
+        tests.</strong> If a step stops, the line it prints ends with the command that fixes it.
+        <a href="/start.html?example=desktop#help">Each stop and its fix, on Get started →</a></p>
       <ul class="needs">
-        <li class="ok"><b>macOS</b>The collection's programs are for a Mac. The binary itself also runs on Linux.</li>
-        <li class="ok"><b>Node 24 or newer</b>Eleven of the thirteen run a JavaScript file. <code>open</code> and
-          <code>trash</code> run a program the Mac has.</li>
-        <li class="ok"><b>git</b><code>evoke add</code> fetches the collection from GitHub at its newest tag.</li>
-        <li class="ok"><b>A classifier key</b>In <code>TYPESAFE_API_KEY</code>, or <code>OPENJEV_API_KEY</code> with
-          <code>adapter = "openjev"</code>. Its provider bills the use.</li>
-        <li class="no"><b>Your words, for three of them</b>A folder, a site, a notes file. Optional, and one line each.</li>
+        <li class="ok"><b>macOS</b>The collection's programs are for a Mac. evoke itself also runs on Linux.</li>
+        <li class="ok"><b>Node 24 or newer</b>Eleven of the thirteen reflexes run a JavaScript file.</li>
+        <li class="ok"><b>git</b><code>evoke add</code> fetches the collection from GitHub, at its newest version.</li>
+        <li class="ok"><b>A key from TypeSafe AI</b>For Jev, the classifier that reads your sentences. TypeSafe AI bills
+          each request to your key.</li>
+        <li class="no"><b>Your words, for three reflexes</b>A folder, a site and a notes file. Optional, and one line each.</li>
       </ul>
+      <ol class="plan">
+        <li>
+          <div>
+            <h3>Install evoke</h3>
+            <p>The script downloads the release built for your Mac, checks it against the release's checksums, and puts
+              evoke in <code>~/.local/bin</code>. If it prints a line that begins «add it to your PATH», run the command
+              on that line first.</p>
+            <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Give evoke a key</h3>
+            <p>The classifier that reads each sentence is Jev, TypeSafe AI's model. Without a key, your first sentence
+              stops and names the one it needs. <code>[3]</code> means evoke needs something from you.</p>
+            <div class="panel term">
+              <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre data-flow="first-run"><span class="p">$</span> <span class="in">evoke &quot;lock the screen&quot;</span>
+<span class="own">  jev needs TYPESAFE_API_KEY, a key from typesafe.ai  →  export TYPESAFE_API_KEY=&lt;value&gt;</span>
+<span class="own">[3]</span></pre>
+            </div>
+            <p>Get a key from <a href="https://typesafe.ai">TypeSafe AI</a>, then export it. evoke reads it from your shell
+              when it decides, and never writes it to a file. Each decision is one request, billed to your key, and a
+              sentence you repeat is answered from a local cache.</p>
+            <div class="cmd"><code>export TYPESAFE_API_KEY=&lt;value&gt;</code><button type="button" data-copy aria-label="Copy the key command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Have Node 24 or newer</h3>
+            <p>Eleven reflexes run a JavaScript file, so <code>evoke add</code> looks for <code>node</code> on your
+              <code>PATH</code> and records where it is. Install Node 24 or newer from <a href="https://nodejs.org">nodejs.org</a>
+              first. If you install it later, <code>evoke sync</code> records it.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Install the collection</h3>
+            <p>Each row names a reflex, where it came from and at which version, its effect, and what it runs. Your rows
+              show the collection's newest version. No code runs while it installs.</p>
+            <div class="panel term">
+              <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre class="columns" data-flow="first-ten"><span class="p">$</span> <span class="in">evoke add evoke-build/reflexes</span>
+<span class="add">+ awake       evoke-build/reflexes/awake 0.1.0       write        runs awake.mts</span>
+<span class="add">+ download    evoke-build/reflexes/download 0.1.0    write        runs download.mts</span>
+<span class="add">+ lock        evoke-build/reflexes/lock 0.1.0        write        runs lock.mts</span>
+<span class="add">+ mail        evoke-build/reflexes/mail 0.1.0        write        runs mail.mts</span>
+<span class="add">+ note        evoke-build/reflexes/note 0.1.0        write        runs note.mts</span>
+<span class="add">+ open        evoke-build/reflexes/open 0.1.0        read         runs open</span>
+<span class="add">+ power       evoke-build/reflexes/power 0.1.0       destructive  runs power.mts</span>
+<span class="add">+ screenshot  evoke-build/reflexes/screenshot 0.1.0  write        runs screenshot.mts</span>
+<span class="add">+ timer       evoke-build/reflexes/timer 0.1.0       write        runs timer.mts</span>
+<span class="add">+ trash       evoke-build/reflexes/trash 0.1.0       destructive  runs osascript</span>
+<span class="add">+ visit       evoke-build/reflexes/visit 0.1.0       read         runs visit.mts</span>
+<span class="add">+ volume      evoke-build/reflexes/volume 0.1.0      write        runs volume.mts</span>
+<span class="add">+ wifi        evoke-build/reflexes/wifi 0.1.0        write        runs wifi.mts</span>
+<span class="own">  inactive  note: config &quot;file&quot; is not set      →  evoke config note file &lt;value&gt;</span>
+<span class="own">  inactive  open: vocabulary &quot;places&quot; is empty  →  evoke vocab places add &lt;word&gt; &quot;&lt;meaning&gt;&quot;</span>
+<span class="own">  inactive  visit: vocabulary &quot;sites&quot; is empty  →  evoke vocab sites add &lt;word&gt; &quot;&lt;meaning&gt;&quot;</span></pre>
+            </div>
+            <p>A reflex runs as you, held by the kernel to what its manifest declares, the line under each row. Read what
+              you install: every file is on <a href="https://github.com/evoke-build/reflexes">GitHub</a>.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Give three reflexes your words</h3>
+            <p>The inactive lines above each end with the command that fixes them. In the first line,
+              <code>desktop</code> is your word and «The desktop.» its meaning, which the classifier reads. The path goes
+              only to the reflex. The notes file is a path under your home.</p>
+            <div class="panel term">
+              <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke vocab places add desktop &quot;The desktop.&quot; --value &quot;~/Desktop&quot;</span>
+<span class="add">+ vocab/places.toml  desktop = { what = &quot;The desktop.&quot;, value = &quot;~/Desktop&quot; }</span>
+<span class="p">$</span> <span class="in">evoke config note file &quot;~/notes.txt&quot;</span>
+<span class="add">+ evoke.toml  [config.note] file = &quot;~/notes.txt&quot;</span></pre>
+            </div>
+            <p>For <code>visit</code>, add a site the same way:</p>
+            <div class="cmd"><code>evoke vocab sites add github &quot;GitHub.&quot; --value https://github.com</code><button type="button" data-copy aria-label="Copy the site command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Look at a decision before it runs</h3>
+            <p><code>evoke try</code> decides and runs nothing. It shows the ranking of the reflexes, the answer for each
+              input, how well each one fits, and what would happen: here, 0.72 is under 0.8, so it would ask first.</p>
+            <div class="panel term">
+              <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke try</div>
+<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke try &quot;kill the wifi&quot;</span>
+<span class="own">  wifi 0.90 · none 0.06 · power 0.02 · lock 0.02</span>
+<span class="own">  state  off 0.72 · on 0.20 · unstated 0.08</span>
+<span class="own">  fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · timer 0.02 · trash 0.02 · volume 0.02</span>
+<span class="own">  confirm · wifi state=&quot;off&quot; · write · weakest: state 0.72</span></pre>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Type your first sentence</h3>
+            <p>The indented line is evoke's own: the call it chose, and how sure it was. The last line is the reflex's
+              result.</p>
+            <div class="panel term">
+              <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke &quot;set the volume to 40 percent&quot;</span>
+<span class="own">  volume level=&quot;40 percent&quot;  0.93</span>
+<span class="out">volume 40%</span></pre>
+            </div>
+          </div>
+        </li>
+      </ol>
+      <p class="after">Next, teach evoke a phrase of yours, or wrap a script of your own. The manual's first ten minutes
+        carry on from here.</p>
       <div class="actions">
-        <a class="button primary" href="/start.html?example=desktop">Run this example</a>
+        <a class="button primary" href="/manual/start/first-run.html">The first ten minutes</a>
         <a class="button" href="https://github.com/evoke-build/reflexes">View source</a>
-        <a class="quiet" href="/manual/collection.html">Read the docs →</a>
+        <a class="quiet" href="/start.html?example=desktop">Get started, with this example →</a>
       </div>
     </section>
   </main>

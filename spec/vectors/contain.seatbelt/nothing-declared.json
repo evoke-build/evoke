@@ -1,0 +1,7 @@
+{
+  "input": {
+    "policy": {},
+    "facts": { "$ref": "fixtures/facts-macos.json" }
+  },
+  "expect": "(version 1)\n(deny default)\n(allow process-fork)\n(allow signal (target same-sandbox))\n(allow sysctl-read)\n(allow file-read-metadata)\n(allow file-read-data (literal \"/\"))\n(allow file-read* (subpath \"/usr\") (subpath \"/System\") (subpath \"/Library\") (subpath \"/private/etc\") (subpath \"/private/var/db\") (subpath \"/dev\") (subpath \"/bin\") (subpath \"/sbin\") (subpath \"/opt\") (subpath \"/Users/me/.local/share/mise/installs/node/24.20.0\") (subpath \"/Users/me/.cache/evoke/store/8416c7959e55e8f74c0dd96ca8396d1980acc68ccfa7ac32fd650be96f658703\") (subpath \"/private/var/folders/1j/rwfvrrld5wd4__9gt0wvlc0m0000gn/T/evoke-4242-1\"))\n(allow file-write* (subpath \"/private/var/folders/1j/rwfvrrld5wd4__9gt0wvlc0m0000gn/T/evoke-4242-1\") (literal \"/dev/null\"))\n(allow process-exec (literal \"/Users/me/.local/share/mise/installs/node/24.20.0/bin/node\"))\n"
+}

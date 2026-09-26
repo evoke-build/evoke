@@ -1,0 +1,26 @@
+{
+  "effect": "write",
+  "run": "download.mts",
+  "needs": {
+    "writes": ["{to}", "~/Downloads"],
+    "hosts": ["*"]
+  },
+  "confirm": "Download {url}?",
+  "args": {
+    "url": {
+      "ask": "Which URL?",
+      "pick": "url",
+      "optional": false,
+      "was": []
+    },
+    "to": {
+      "ask": "Into which folder?",
+      "vocab": "places",
+      "optional": true,
+      "was": []
+    }
+  },
+  "yields": {},
+  "config": {},
+  "tags": ["web", "files"]
+}

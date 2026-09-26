@@ -1,0 +1,451 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "input": "turn the den lights off and put on some music",
+    "tags": [],
+    "answers": {
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.6
+        }
+      },
+      "decided": [
+        [
+          {
+            "text": "turn the den lights off"
+          },
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.85,
+            "weakest": {
+              "question": "lights.room",
+              "top": "den",
+              "p": 0.85
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.91
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.85
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.88
+              }
+            ],
+            "runner_up": {
+              "reflex": "timer",
+              "route": 0.02,
+              "fits": 0.05
+            },
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.91,
+                "fits": 0.7
+              },
+              {
+                "reflex": "timer",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "volume",
+                "route": 0.01,
+                "fits": 0.05
+              },
+              {
+                "reflex": "contact",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "mail",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "put on some music"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.05,
+                "fits": 0.05
+              },
+              {
+                "reflex": "timer",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "volume",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "contact",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "mail",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "put on some music",
+            "only": "lights"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.05,
+                "fits": 0.05
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "turn the put on some music lights off",
+            "only": "lights"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.05,
+                "fits": 0.05
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "turn the den lights put on some music",
+            "only": "lights"
+          },
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "on"
+              }
+            },
+            "call": "lights room=\"den\" state=\"on\"",
+            "effect": "write",
+            "confidence": 0.8,
+            "weakest": {
+              "question": "route",
+              "top": "lights",
+              "p": 0.8
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.8
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.85
+              },
+              {
+                "question": "lights.state",
+                "top": "on",
+                "p": 0.82
+              }
+            ],
+            "runner_up": {
+              "reflex": "timer",
+              "route": 0.02,
+              "fits": 0.05
+            },
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.91,
+                "fits": 0.7
+              },
+              {
+                "reflex": "timer",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "volume",
+                "route": 0.01,
+                "fits": 0.05
+              },
+              {
+                "reflex": "contact",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "mail",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "turn the den lights off and put on some music"
+          },
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "confidence": 0.85,
+            "weakest": {
+              "question": "lights.room",
+              "top": "den",
+              "p": 0.85
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.91
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.85
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.88
+              }
+            ],
+            "runner_up": {
+              "reflex": "timer",
+              "route": 0.02,
+              "fits": 0.05
+            },
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.91,
+                "fits": 0.7
+              },
+              {
+                "reflex": "timer",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              {
+                "reflex": "volume",
+                "route": 0.01,
+                "fits": 0.05
+              },
+              {
+                "reflex": "contact",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "mail",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ]
+      ]
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "turn the den lights off and put on some music",
+        "splits": [
+          {
+            "start": 23,
+            "end": 28,
+            "word": "and",
+            "order": "and",
+            "p": 0.6
+          }
+        ],
+        "steps": [
+          {
+            "n": 1,
+            "text": "turn the den lights off and put on some music",
+            "end": 45,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "lights",
+              "args": {
+                "room": {
+                  "type": "word",
+                  "word": "den"
+                },
+                "state": {
+                  "type": "option",
+                  "key": "off"
+                }
+              },
+              "call": "lights room=\"den\" state=\"off\"",
+              "effect": "write",
+              "confidence": 0.85,
+              "weakest": {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.85
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "lights",
+                  "p": 0.91
+                },
+                {
+                  "question": "lights.room",
+                  "top": "den",
+                  "p": 0.85
+                },
+                {
+                  "question": "lights.state",
+                  "top": "off",
+                  "p": 0.88
+                }
+              ],
+              "runner_up": {
+                "reflex": "timer",
+                "route": 0.02,
+                "fits": 0.05
+              },
+              "contenders": [
+                {
+                  "reflex": "lights",
+                  "route": 0.91,
+                  "fits": 0.7
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0.02,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0.01,
+                  "fits": 0.05
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "prompt": {
+                "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.85 · merged",
+                "template": "Set the den lights off?"
+              },
+              "because": [
+                {
+                  "type": "merged"
+                }
+              ]
+            },
+            "reflex": "lights",
+            "effect": "write",
+            "repair": "merged"
+          }
+        ],
+        "exclusive": false,
+        "stages": [
+          [
+            1
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        }
+      }
+    }
+  }
+}

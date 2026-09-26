@@ -1,0 +1,15 @@
+reflex = 1
+
+description = "Look up a job by its number."
+effect  = "read"
+confirm = "Look up job {number}?"
+run     = "job.mts"
+
+[args.number]
+ask  = "Which job number?"
+pick = "number"
+
+[yields]
+number = "number"
+client = "email"
+jobs   = { each = { number = "number", client = "email" } }

@@ -1,0 +1,14 @@
+{
+  "input": {
+    "policy": {},
+    "reflex": "download",
+    "origin": { "type": "fetched" },
+    "refused": { "what": "listen", "path": "127.0.0.1" },
+    "home": "/Users/me"
+  },
+  "expect": {
+    "reflex": "download",
+    "message": "127.0.0.1 is not in [needs] hosts",
+    "fix": { "type": "remove", "reflex": "download" }
+  }
+}

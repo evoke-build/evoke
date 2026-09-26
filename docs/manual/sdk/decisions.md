@@ -1,3 +1,4 @@
+<!-- title: Decisions in the SDK -->
 # Decisions
 
 One input decided is a `Decision`. It is a union, narrowed by `outcome` and then by `reflex`. `decide` makes one.
@@ -73,8 +74,10 @@ A text that does not read is a `DiagnosticError` naming the argument and what it
 
 ## `run(d, { signal? })`
 
-Runs the chosen call's body and resolves to `{ text, data? }`. A reflex handed as code runs in-process. A file
-runs in a child. An argv is spawned. A body's failure is a `FailureError`. `signal` aborts the body, and `run`
+Runs the chosen call's body and resolves to `{ text, data? }`, with `contained` when a file or an argv ran:
+whether this machine held it to its declaration, in the shape [`--json`](../reference/json.md#shape-by-outcome)
+prints. A reflex handed as code runs in-process. A file runs in a
+child. An argv is spawned. A body's failure is a `FailureError`. `signal` aborts the body, and `run`
 rejects with the signal's reason. A decision made under another plan is refused as misuse, with a `TypeError`.
 
 ## `handle(input, { confirm?, ask?, tags?, signal? })`
@@ -128,5 +131,19 @@ woven.steps      // per step: { step, status, why?, bound, rounds: [{ round, inp
 A body's failure is the step's, with `status: "failed"`, never a throw. A step after one that stopped is
 `skipped`, with `why: { type: "earlier_step" }`. A step bound to a list of records runs once per record, one
 round each.
+
+`signal` aborts the adapter's call while the plan is made, as it does in `decide`, and cancels the run once it
+is under way: every body is ended, its own `signal` aborted first, nothing starts after, and every step that did
+not finish reads `skipped` with `why: { type: "cancelled" }`. `weave` then rejects with the signal's reason, the
+record on it as `woven`:
+
+```ts
+try {
+  await project.weave(input, { signal: controller.signal })
+} catch (error) {
+  if (error === controller.signal.reason) console.log(error.woven.steps) // what ran, and what was cancelled
+  else throw error
+}
+```
 
 **Next:** [Adapters](adapters.md).

@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 4a933bafaae095efbe31bfd516beef0604393402179a20b933df690c4748d108 # shrinks to (initial_state, transitions, seen_counter) = (Model { specs: [Spec { role: Contact, effect: Read, takes: None, then: [] }], stages: [[1]], st: [Pending], data: [None], round: [0], rounds: [Some(1)], decided: [[]], stage: 0, batch: [1], awaiting: None, stopped: false, cancelled: false }, [Cancel], None)

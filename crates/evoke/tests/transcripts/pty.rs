@@ -1,5 +1,6 @@
 //! A pseudo-terminal for one command: the child gets the slave as stdin, stdout, stderr and controlling terminal;
-//! the parent reads the master until the child is gone, typing each answer as its prompt shows.
+//! the parent reads the master until the child is gone, typing each answer as its prompt shows, and Ctrl-C once
+//! the line before it has shown.
 
 // The one place in the workspace that needs unsafe: libc's openpty returns raw descriptors, and pre_exec runs
 // between fork and exec, where only async-signal-safe calls are allowed — setsid and one ioctl are.
@@ -8,24 +9,36 @@
 use std::fs::File;
 use std::io::{self, Read, Write};
 use std::os::fd::{AsRawFd, FromRawFd};
-use std::os::unix::process::CommandExt;
-use std::process::Command;
+use std::os::unix::process::{CommandExt, ExitStatusExt};
+use std::process::{Command, ExitStatus};
 use std::time::{Duration, Instant};
 
 /// The most one step may take: past it, the child's session is ended and the step fails, named.
 pub const DEADLINE: Duration = Duration::from_secs(60);
 
-/// Runs the command under a fresh pseudo-terminal; `typed` answers the prompts in order, each once the output so
-/// far ends with `> `; a prompt with no answer left gets the end of input. Returns everything the terminal showed,
-/// `\r` stripped, and the exit code; a step that has not finished within the deadline is the error, with what the
+/// What the harness types: an answer, once a prompt shows; or Ctrl-C, once the terminal has shown a line.
+pub enum Typed {
+    Answer(String),
+    Interrupt { after: String },
+}
+
+/// Runs the command under a fresh pseudo-terminal; `typed` is typed in order — an answer once the output so far
+/// ends with `> `, Ctrl-C once it ends with the line named — and a prompt with no answer left gets the end of
+/// input. Returns everything the terminal showed, `\r` stripped, and the exit code — a signal's as a shell
+/// reports it, 128 and its number; a step that has not finished within the deadline is the error, with what the
 /// terminal showed so far.
-pub fn run(mut command: Command, typed: &[String]) -> Result<(String, i32), String> {
+pub fn run(mut command: Command, typed: &[Typed]) -> Result<(String, i32), String> {
     let (mut master, slave) = open();
     let (stdout, stderr) = (slave.try_clone().unwrap(), slave.try_clone().unwrap());
     command.stdin(slave).stdout(stdout).stderr(stderr);
+    // The request's type follows the libc: a `c_ulong` on Linux, a `u32` on macOS.
+    #[cfg(target_os = "macos")]
+    let tiocsctty = libc::c_ulong::from(libc::TIOCSCTTY);
+    #[cfg(not(target_os = "macos"))]
+    let tiocsctty = libc::TIOCSCTTY;
     unsafe {
-        command.pre_exec(|| {
-            if libc::setsid() == -1 || libc::ioctl(0, libc::TIOCSCTTY, 0) == -1 {
+        command.pre_exec(move || {
+            if libc::setsid() == -1 || libc::ioctl(0, tiocsctty, 0) == -1 {
                 return Err(std::io::Error::last_os_error());
             }
             Ok(())
@@ -35,7 +48,7 @@ pub fn run(mut command: Command, typed: &[String]) -> Result<(String, i32), Stri
     // The parent's copies of the slave close with the command, so the master sees the end when the child is gone.
     drop(command);
     let mut output = Vec::new();
-    let mut typed = typed.iter();
+    let mut typed = typed.iter().peekable();
     let mut chunk = [0; 4096];
     let started = Instant::now();
     loop {
@@ -52,12 +65,23 @@ pub fn run(mut command: Command, typed: &[String]) -> Result<(String, i32), Stri
             Ok(0) => break,
             Ok(n) => {
                 output.extend_from_slice(&chunk[..n]);
-                if output.ends_with(b"> ") {
-                    let answer = typed
-                        .next()
-                        .map_or_else(|| "\x04".to_owned(), |text| format!("{text}\n"));
+                let typing = match typed.peek() {
+                    Some(Typed::Answer(text)) if output.ends_with(b"> ") => {
+                        typed.next();
+                        Some(format!("{text}\n"))
+                    }
+                    Some(Typed::Interrupt { after }) if shown(&output, after) => {
+                        typed.next();
+                        Some("\x03".to_owned())
+                    }
+                    Some(Typed::Interrupt { .. }) | None if output.ends_with(b"> ") => {
+                        Some("\x04".to_owned())
+                    }
+                    _ => None,
+                };
+                if let Some(typing) = typing {
                     master
-                        .write_all(answer.as_bytes())
+                        .write_all(typing.as_bytes())
                         .expect("the terminal takes input");
                 }
             }
@@ -67,13 +91,46 @@ pub fn run(mut command: Command, typed: &[String]) -> Result<(String, i32), Stri
         }
     }
     let status = child.wait().expect("the child is waited for");
-    Ok((
-        String::from_utf8_lossy(&output).replace('\r', ""),
-        status.code().unwrap_or(-1),
-    ))
+    let shown = String::from_utf8_lossy(&output).replace('\r', "");
+    // macOS's terminal echoes the end of input typed here as `^D` and rubs it out; Linux's echoes nothing, as
+    // the flows expect.
+    #[cfg(target_os = "macos")]
+    let shown = shown.replace("^D\x08\x08", "").replace("^D", "");
+    Ok((shown, code(status)))
+}
+
+/// Whether the terminal has just shown the line: the output so far, `\r` aside, ends with it and its line end.
+fn shown(output: &[u8], line: &str) -> bool {
+    let tail = &output[output.len().saturating_sub(line.len() + 8)..];
+    String::from_utf8_lossy(tail)
+        .replace('\r', "")
+        .ends_with(&format!("{line}\n"))
+}
+
+/// The exit code as a shell reports it: the code, or 128 and the signal's number for a child a signal ended.
+pub fn code(status: ExitStatus) -> i32 {
+    status
+        .code()
+        .or_else(|| status.signal().map(|signal| 128 + signal))
+        .unwrap_or(-1)
 }
 
 /// SIGKILL to the child's process group — its own, made at spawn — and the child reaped.
+/// The command in a session of its own, with no controlling terminal, as CI or a cron job runs one: `/dev/tty`
+/// opens for nothing, so a prompt is refused where a terminal would have carried it. The session is its own
+/// group too, so `end_group` ends it whole.
+pub fn detach(command: &mut Command) {
+    // SAFETY: setsid is async-signal-safe, and it is all that runs between fork and exec.
+    unsafe {
+        command.pre_exec(|| {
+            if libc::setsid() == -1 {
+                return Err(std::io::Error::last_os_error());
+            }
+            Ok(())
+        });
+    }
+}
+
 pub fn end_group(child: &mut std::process::Child) {
     // SAFETY: killpg takes a group id and a signal; the group is the child's own.
     unsafe {

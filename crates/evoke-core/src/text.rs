@@ -305,6 +305,11 @@ impl<T> NonEmpty<T> {
         &self.0
     }
 
+    /// One more at the end: a list that was not empty stays so.
+    pub fn push(&mut self, item: T) {
+        self.1.push(item);
+    }
+
     pub fn iter(&self) -> impl Iterator<Item = &T> {
         std::iter::once(&self.0).chain(&self.1)
     }

@@ -1,0 +1,7 @@
+{
+  "input": {
+    "from": { "writes": ["~/Downloads"], "runs": ["open"] },
+    "to": { "writes": ["~/Downloads", "{to}"], "runs": ["open"] }
+  },
+  "expect": true
+}

@@ -1,0 +1,31 @@
+{
+  "input": {
+    "doc": {
+      "file": { "type": "lock" },
+      "toml": "lock  = 1\nevoke = \"0.5.0\"\n\n[adapter]\nname = \"jev\"\nid   = \"jev-1.13.0\"\n\n[reflexes.download]\nref    = \"evoke-build/reflexes/download\"\ntag    = \"0.5.0\"\ncommit = \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"\nh1     = \"h1:0000000000000000000000000000000000000000000000000000000000000000\"\neffect = \"write\"\nneeds  = { writes = [\"{to}\", \"~/Downloads\"], hosts = [\"*\"] }\n\n[reflexes.lock]\nref    = \"evoke-build/reflexes/lock\"\ntag    = \"0.5.0\"\ncommit = \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"\nh1     = \"h1:1111111111111111111111111111111111111111111111111111111111111111\"\neffect = \"write\"\n"
+    }
+  },
+  "expect": {
+    "ok": {
+      "evoke": "0.5.0",
+      "adapter": { "name": "jev", "id": "jev-1.13.0" },
+      "reflexes": {
+        "download": {
+          "reference": { "repo": { "type": "github", "owner": "evoke-build", "name": "reflexes" }, "dir": "download" },
+          "tag": "0.5.0",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "h1": "h1:0000000000000000000000000000000000000000000000000000000000000000",
+          "effect": "write",
+          "needs": { "writes": ["{to}", "~/Downloads"], "hosts": ["*"] }
+        },
+        "lock": {
+          "reference": { "repo": { "type": "github", "owner": "evoke-build", "name": "reflexes" }, "dir": "lock" },
+          "tag": "0.5.0",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "h1": "h1:1111111111111111111111111111111111111111111111111111111111111111",
+          "effect": "write"
+        }
+      }
+    }
+  }
+}

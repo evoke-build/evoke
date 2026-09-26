@@ -30,6 +30,10 @@ $ evoke add radhi/home/lights radhi/timer
   inactive  lights: config "token" is not set    →  evoke config lights token --env <VAR>
 ```
 
+A reflex whose manifest declares what its body touches shows it on a second line under its row, `needs writes
+{to} ~/Downloads · hosts *`, as [the first ten minutes](../start/first-run.md#2-install-the-collection) show; a
+row without one declares nothing.
+
 `evoke add <ref>… [--as <name>]` does, in order:
 
 1. **Fetches** each ref at its pin or its newest tag. This is a bare, shallow fetch, read without a checkout,
@@ -73,7 +77,7 @@ rest move, and the exit is 3. For each move, it prints the level of the change a
 
 | Line                                  | Means                                                                          |
 | :------------------------------------ | :----------------------------------------------------------------------------- |
-| `same`, `minor`, `major`              | Wording only; additions; something your files or calls may not survive         |
+| `same`, `minor`, `major`              | Wording only, or a declaration narrowed; additions, a declaration widened among them; something your files or calls may not survive |
 | `· code changed`                      | A file other than the manifest changed                                         |
 | `description  rewritten, taken`       | You have no override, so upstream's new text is used. Otherwise: `yours kept`  |
 | `args.state  renamed power; your 1 example follows` | The author declared the rename; your records follow it at merge time |
@@ -81,10 +85,14 @@ rest move, and the exit is 3. For each move, it prints the level of the change a
 | `orphaned`                            | A line of yours addresses nothing any more: skipped, the rest applies          |
 | `effect  tightened to write`          | Upstream tightened the effect; it applies                                      |
 | `effect  write upstream; destructive kept until you accept` | Upstream loosened it; you keep what you consented to  |
+| `needs  narrowed: hosts * dropped`    | Upstream narrowed what the body touches; it applies                            |
+| `needs  widened: writes ~/notes upstream; none kept until you accept` | Upstream widened it; you keep what you consented to |
 
-The lock holds the effect you consented to. Upstream may tighten it at any time. It loosens only through
-`evoke update --accept <name>`, which takes the looser effect at the current tag and says so. A new reflex in a
-repository you already use is reported once, with its add line. `update` never adds one for you.
+The lock holds the effect and the declaration you consented to. Upstream may tighten either at any time. They
+loosen only through `evoke update --accept <name>`, which takes the looser effect and the wider declaration at
+the current tag and says so: `effect  write accepted; was destructive`, `needs  writes ~/notes accepted; was
+none`. A new reflex in a repository you already use is reported once, with its add line. `update` never adds
+one for you.
 
 ## `sync`
 
@@ -119,7 +127,8 @@ it  →  evoke trust`. Trust lives in `~/.local/state/evoke/trust.toml`, on this
 ## The lock and the store
 
 `evoke.lock` records, for each remote reflex, the ref, the tag, the commit, the content hash `h1` of the reflex
-directory, and the effect you consented to. It also records the adapter the project decides with, by name and id.
+directory, and the effect and the declaration you consented to. It also records the adapter the project decides
+with, by name and id.
 Commit it with your project.
 
 Fetched code lives under `~/.cache/evoke/store/<h1>/`. It is re-hashed against the lock every time `evoke` starts.

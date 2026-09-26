@@ -1,3 +1,4 @@
+<!-- description: The words the evoke manual uses, from reflex and manifest to overlay and adapter, and the three steps of every decision: decide, gate and run. -->
 # Concepts
 
 Seven words, three steps, and one idea that makes the rest follow.
@@ -59,4 +60,4 @@ an email address, a URL, or a quoted phrase, and it is checked against its range
 but it can never invent a value. And what it chooses still passes the gate. That is the shape of every guarantee
 in [Security](../security.md).
 
-**Next:** [Saying things](../use/saying-things.md).
+**Next:** [Typing a request](../use/saying-things.md).

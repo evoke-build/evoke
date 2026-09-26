@@ -36,7 +36,8 @@
       "tags": [
         "network"
       ]
-    }
+    },
+    "home": "/Users/me"
   },
   "expect": {
     "ok": [

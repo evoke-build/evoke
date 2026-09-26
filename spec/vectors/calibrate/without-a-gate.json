@@ -1,0 +1,139 @@
+{
+  "input": {
+    "adapter": "replay",
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "judged": [
+      [
+        {
+          "reflex": "timer",
+          "utterance": {
+            "text": "timer a",
+            "id": "timer a"
+          },
+          "expect": {},
+          "from": "tests"
+        },
+        [
+          {
+            "outcome": "confirm",
+            "reflex": "timer",
+            "args": {
+              "duration": {
+                "type": "pick",
+                "span": {
+                  "start": 16,
+                  "end": 26,
+                  "text": "10 minutes"
+                },
+                "value": {
+                  "type": "duration",
+                  "value": 600
+                }
+              }
+            },
+            "call": "timer duration=\"10 minutes\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "timer",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "timer",
+                "p": 0.9
+              },
+              {
+                "question": "timer.duration",
+                "top": "16-26",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.9
+              }
+            ],
+            "prompt": {
+              "own": "timer duration=\"10 minutes\" · write · no gate",
+              "template": "Start a 10 minutes timer?"
+            },
+            "because": [
+              {
+                "type": "under_floor",
+                "judgment": {
+                  "question": "route",
+                  "top": "timer",
+                  "p": 0.9
+                },
+                "floor": 0.8
+              }
+            ]
+          }
+        ]
+      ]
+    ]
+  },
+  "expect": {
+    "adapter": "replay",
+    "records": 1,
+    "reflexes": 1,
+    "inputs": 1,
+    "repeats": 1,
+    "outcomes": {
+      "run": 0,
+      "confirm": 1,
+      "ask": 0,
+      "abstain": 0
+    },
+    "bins": [
+      {
+        "lo": 0.0,
+        "hi": 1.0,
+        "calls": 1,
+        "right": 1,
+        "interval": [
+          0.2065493117918027,
+          1.0
+        ],
+        "claimed": 0.9,
+        "thin": true,
+        "over_confident": false
+      }
+    ],
+    "unknown": 0,
+    "abstained": {
+      "count": 0,
+      "right": 0,
+      "interval": [
+        0.0,
+        0.0
+      ]
+    },
+    "bars": {},
+    "questions": [
+      {
+        "kind": "route",
+        "judgments": 1,
+        "right": 1,
+        "interval": [
+          0.2065493117918027,
+          1.0
+        ],
+        "claimed": 0.9
+      }
+    ],
+    "brier": {
+      "brier": 0.009999999999999995,
+      "reliability": 0.009999999999999995,
+      "resolution": 0.0,
+      "uncertainty": 0.0
+    },
+    "misses": []
+  }
+}

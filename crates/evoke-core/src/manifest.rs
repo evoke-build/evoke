@@ -10,7 +10,10 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::diagnostic::{At, Diagnostic};
 use crate::document::{self, Diagnostics, Document, Form, Json, KeyPath, Node, Value};
-use crate::name::{ArgName, ConfigKey, FieldName, OptionKey, RelPath, Tag, VocabName, Word};
+use crate::name::{
+    ArgName, ConfigKey, FieldName, OptionKey, RelPath, Tag, ValueName, VocabName, Word,
+};
+use crate::needs::{self, Named, Needs, Program};
 use crate::text::{Clean, Identity, identity};
 
 /// A reflex's manifest, normalized: `effect` explicit, every table present, records typed. Read, never built.
@@ -24,6 +27,9 @@ pub struct Manifest {
     pub confirm: Template,
     #[serde(skip_serializing_if = "Run::is_inline")]
     pub run: Run,
+    /// What the body may touch; absent, the tightest declaration. Contract, like `run`.
+    #[serde(default, skip_serializing_if = "Needs::is_none")]
+    pub needs: Needs,
     pub config: IndexMap<ConfigKey, ConfigSpec>,
     pub args: IndexMap<ArgName, Argument>,
     /// What the body's `data` yields for a later step to take, per field.
@@ -205,7 +211,10 @@ impl fmt::Display for Template {
 pub enum Run {
     Inline,
     File(Entrypoint),
-    Argv { program: Clean, rest: Vec<Element> },
+    Argv {
+        program: Program,
+        rest: Vec<Element>,
+    },
 }
 
 impl Run {
@@ -657,6 +666,14 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
     let yields = top
         .take("yields")
         .map_or_else(IndexMap::new, |node| yields(d, node, &mut unknown));
+    let needs = top.take("needs").map_or_else(Needs::default, |node| {
+        needs::read(
+            d,
+            node,
+            &mut unknown,
+            Some(&named(&known, |name| config.contains_key(name))),
+        )
+    });
     let mut lookup = |name: &ArgName| match known.get_key_value(name) {
         None => Lookup::Unknown,
         Some((_, None)) => Lookup::Broken,
@@ -705,6 +722,7 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
         effect: effect?,
         confirm: confirm?,
         run: run?,
+        needs,
         config,
         args: args?,
         yields,
@@ -712,6 +730,31 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
         tests,
         unknown,
     })
+}
+
+/// What a `{name}` of `[needs]` resolves to: an argument that carries a value, a flag, a config key, both or
+/// neither. An argument that failed to read still counts as one.
+pub(crate) fn named<'a>(
+    known: &'a Known,
+    is_config: impl Fn(&str) -> bool + 'a,
+) -> impl Fn(&ValueName) -> Named + 'a {
+    move |name: &ValueName| {
+        let argument = known.get(name.as_str());
+        let flag = matches!(
+            argument,
+            Some(Some(Argument {
+                kind: Kind::Flag,
+                ..
+            }))
+        );
+        match (argument.is_some(), is_config(name.as_str())) {
+            (true, true) => Named::Both,
+            (true, false) if flag => Named::Flag,
+            (true, false) => Named::Arg,
+            (false, true) => Named::Config,
+            (false, false) => Named::Neither,
+        }
+    }
 }
 
 pub(crate) fn description(d: &mut Diagnostics, node: &Node) -> Option<Description> {
@@ -1283,7 +1326,8 @@ fn argv(d: &mut Diagnostics, node: Node, known: &Known) -> Option<Run> {
             );
             None
         }
-        None => literal(d, at, text),
+        None => literal(d, at, text)
+            .map(|clean| Program::new(clean.as_str()).expect("a literal that is no relative path")),
     });
     let mut elements = Vec::new();
     let mut ok = true;

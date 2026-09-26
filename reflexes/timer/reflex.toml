@@ -10,6 +10,9 @@ effect  = "write"
 confirm = "Start a {duration} timer?"
 run     = "timer.mts"
 
+[needs]
+runs = ["osascript"]
+
 [args.duration]
 ask  = "How long?"
 pick = "duration"

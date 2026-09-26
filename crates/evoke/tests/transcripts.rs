@@ -1,9 +1,11 @@
 //! Runs `spec/transcripts/<flow>/` against the built binary, as spec/README.md specifies: a throwaway home under
 //! `target/`, the JavaScript runtime found on `PATH` recorded in its state, each `$ ` line run by `sh -c` under a
-//! pseudo-terminal unless the flow says `# no tty`, with `TERM=dumb` and `NO_COLOR=1` so the terminal shows plain
-//! text, `replay` answering from `EVOKE_ANSWERS`, remotes rebuilt from their trees by the recipe. Every line must
-//! match, trailing spaces aside, JSON as JSON with `ms` aside; `[N]` is the exit code. One test per flow; each is
-//! turned on by the step that makes it pass.
+//! pseudo-terminal — or, when the flow says `# no tty`, with no terminal at all, in a session of its own, so the
+//! terminal of whoever runs the suite does not reach it — with `TERM=dumb` and `NO_COLOR=1` so the terminal shows
+//! plain text, `replay` answering from `EVOKE_ANSWERS`, remotes rebuilt from their trees by the recipe. Every line must
+//! match, trailing spaces aside, JSON as JSON with `ms` aside; `[N]` is the exit code; a line `^C` is Ctrl-C typed
+//! once the line before it has shown, and the terminal's echo of it. One test per flow; each is turned on by the
+//! step that makes it pass.
 
 #[path = "transcripts/pty.rs"]
 mod pty;
@@ -11,7 +13,6 @@ mod pty;
 use std::fmt::Write as _;
 use std::fs;
 use std::io::Read;
-use std::os::unix::process::CommandExt as _;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::time::Instant;
@@ -134,6 +135,11 @@ fn test() {
 }
 
 #[test]
+fn calibrate() {
+    flow("calibrate");
+}
+
+#[test]
 fn help() {
     flow("help");
 }
@@ -146,6 +152,16 @@ fn weave() {
 #[test]
 fn cache() {
     flow("cache");
+}
+
+#[test]
+fn contained() {
+    flow("contained");
+}
+
+#[test]
+fn cancel() {
+    flow("cancel");
 }
 
 /// The recipe yields the commit `spec/transcripts/update/home/.config/evoke/evoke.lock` records.
@@ -165,10 +181,14 @@ fn spec() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../spec")
 }
 
-/// A fresh directory under `target/transcripts/`.
+/// A fresh directory under the build's own `target/transcripts/`, beside the binary under test, so two builds'
+/// runs never share a flow's home.
 fn throwaway(name: &str) -> PathBuf {
-    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../target/transcripts")
+    let dir = Path::new(env!("CARGO_BIN_EXE_evoke"))
+        .ancestors()
+        .nth(2)
+        .expect("the binary sits at target/<profile>/evoke")
+        .join("transcripts")
         .join(name);
     if dir.exists() {
         fs::remove_dir_all(&dir).expect("the last run's directory goes");
@@ -224,7 +244,7 @@ fn prepared(name: &str, dir: &Path) -> (PathBuf, Vec<(String, String)>) {
     runtime(&home);
     remotes(dir, &home, &work);
     let mut environment = vec![
-        ("PATH".to_owned(), path()),
+        ("PATH".to_owned(), path(&home)),
         ("HOME".to_owned(), utf8(&home)),
         ("XDG_CONFIG_HOME".to_owned(), utf8(&home.join(".config"))),
         (
@@ -308,12 +328,19 @@ fn exit_code(line: &str) -> Option<i32> {
     line.strip_prefix('[')?.strip_suffix(']')?.parse().ok()
 }
 
-/// What each prompt line had typed after its `> `, in order.
-fn typed(expected: &[String]) -> Vec<String> {
-    expected
-        .iter()
-        .filter_map(|line| prompt(line).map(str::to_owned))
-        .collect()
+/// What the harness types, in order: each prompt line's answer after its `> `, and Ctrl-C where a line reads
+/// `^C`, once the terminal has shown the line before it.
+fn typed(expected: &[String]) -> Vec<pty::Typed> {
+    let mut typed = Vec::new();
+    for (i, line) in expected.iter().enumerate() {
+        if line == "^C" {
+            let after = expected[..i].last().cloned().unwrap_or_default();
+            typed.push(pty::Typed::Interrupt { after });
+        } else if let Some(answer) = prompt(line) {
+            typed.push(pty::Typed::Answer(answer.to_owned()));
+        }
+    }
+    typed
 }
 
 /// What a line typed at a prompt, when the line is one: the REPL's `> ` at its start, or a question — two spaces
@@ -329,16 +356,17 @@ fn prompt(line: &str) -> Option<&str> {
     None
 }
 
-/// The command with stdout and stderr on one pipe, as they came, and no terminal anywhere; in a group of its
-/// own, ended whole when the deadline runs out.
+/// The command with stdout and stderr on one pipe, as they came, and no terminal anywhere: stdin is nothing, and
+/// the session is its own, so a prompt finds no `/dev/tty` however the suite is run; ended whole when the
+/// deadline runs out.
 fn piped(mut command: Command) -> Result<(String, i32), String> {
     let (mut reader, writer) = std::io::pipe().expect("a pipe opens");
     let stderr = writer.try_clone().expect("the pipe is shared");
     command
         .stdin(Stdio::null())
         .stdout(Stdio::from(writer))
-        .stderr(Stdio::from(stderr))
-        .process_group(0);
+        .stderr(Stdio::from(stderr));
+    pty::detach(&mut command);
     let mut child = command.spawn().expect("sh spawns");
     drop(command);
     let drained = std::thread::spawn(move || {
@@ -365,7 +393,7 @@ fn piped(mut command: Command) -> Result<(String, i32), String> {
     let output = drained.join().unwrap_or_default();
     Ok((
         String::from_utf8_lossy(&output).into_owned(),
-        status.code().unwrap_or(-1),
+        pty::code(status),
     ))
 }
 
@@ -419,28 +447,62 @@ fn normalized(value: Json) -> Json {
     }
 }
 
-/// The binary's directory first, then whatever `sh`, `git` and the rest are found on.
-fn path() -> String {
+/// The binary's directory first, then the flow's own `bin/` under its home when it has one — stand-ins for the
+/// programs its reflexes declare and run — then whatever `sh`, `git` and the rest are found on.
+fn path(home: &Path) -> String {
     let bin = Path::new(env!("CARGO_BIN_EXE_evoke"))
         .parent()
         .expect("the binary has a directory");
     let rest = std::env::var("PATH").unwrap_or_default();
-    format!("{}:{rest}", bin.display())
+    let own = home.join("bin");
+    let runtime = runtime_dir();
+    if own.is_dir() {
+        format!(
+            "{}:{}:{}:{rest}",
+            bin.display(),
+            own.display(),
+            runtime.display()
+        )
+    } else {
+        format!("{}:{}:{rest}", bin.display(), runtime.display())
+    }
 }
 
-/// The JavaScript runtime `node` names on `PATH`, recorded in the home's state as `evoke sync` will record it.
+/// The JavaScript runtime `node` names on `PATH`, as the binary it runs as, recorded in the home's state as
+/// `evoke sync` will record it: a version manager's shim cannot run contained.
 fn runtime(home: &Path) {
-    let found = Command::new("sh")
-        .args(["-c", "command -v node"])
-        .output()
-        .expect("sh runs");
-    assert!(
-        found.status.success(),
-        "node is not on PATH; the transcripts run file bodies with it"
-    );
     let dir = home.join(".local/state/evoke");
     fs::create_dir_all(&dir).expect("the state directory is created");
-    fs::write(dir.join("runtime"), found.stdout).expect("the runtime is recorded");
+    fs::write(dir.join("runtime"), runtime_path()).expect("the runtime is recorded");
+}
+
+/// The runtime's real path, `node -p process.execPath`, asked once in the harness's own environment: a version
+/// manager's shim answers only in its owner's home, and a flow's home is its own.
+fn runtime_path() -> &'static str {
+    static PATH: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+    PATH.get_or_init(|| {
+        let found = Command::new("node")
+            .args(["-p", "process.execPath"])
+            .output()
+            .expect("node runs");
+        assert!(
+            found.status.success(),
+            "node is not on PATH; the transcripts run file bodies with it"
+        );
+        String::from_utf8(found.stdout)
+            .expect("a path")
+            .trim()
+            .to_owned()
+    })
+}
+
+/// The runtime's directory, first on every flow's `PATH` after the binary's and the home's own, so `add` and
+/// `sync` find the binary itself, never a shim.
+fn runtime_dir() -> PathBuf {
+    Path::new(runtime_path())
+        .parent()
+        .expect("the runtime has a directory")
+        .to_path_buf()
 }
 
 /// A path as text; everything under `target/` is UTF-8.
