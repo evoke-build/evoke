@@ -108,7 +108,7 @@
 
     /* The beats: the story, one screen each, on the left while the sky plays on the right */
     .future .beats { position: relative; z-index: 1; padding-bottom: 26vh; padding-bottom: 26svh; }
-    .future .beat { display: flex; flex-direction: column; justify-content: center; min-height: 100vh; min-height: 100svh; max-width: 27rem; padding: 5rem 0; }
+    .future .beat { display: flex; flex-direction: column; justify-content: center; min-height: 100vh; min-height: 100svh; max-width: 27rem; padding: 5rem 0; scroll-margin-top: 0; }  /* a link to a beat lands where a scroll comes to rest on it */
     .future .beat .count { margin: 0 0 .9rem; font: 500 .78rem/1 var(--mono); color: var(--faint); }
     .future .beat .count span { color: var(--accent-ink); }
     .future .beat h2 { margin: 0 0 1rem; font-size: clamp(1.8rem, 3vw, 2.45rem); font-weight: 560; line-height: 1.1; letter-spacing: -.028em; }
@@ -1687,6 +1687,39 @@ Turn the lights in one room on, off, or dim them.</span>
         }
         let queued = false
         addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; direct() }) } }, { passive: true })
+
+        // The assist: a scroll that ends inside the journey comes to rest on a beat, the next one when the scroll was heading
+        // there, so nobody stops between two chapters on a screen of sky with no words; an arrow key moves a beat at a time.
+        // Past the journey the page scrolls freely.
+        const today = document.querySelector(".future .today")
+        const stops = () => [0, ...beats.slice(1).map(b => b.el.getBoundingClientRect().top + scrollY), today.getBoundingClientRect().top + scrollY - 72]  // each beat whole on the screen, then the section after it, clear of the bar
+        const inside = (y, s) => y <= s[s.length - 1] + 4
+        let rested = scrollY, touching = false
+        const rest = to => { rested = to; if (Math.abs(to - scrollY) > 2) scrollTo({ top: to, behavior: "auto" }) }  // "auto" follows the page's scroll-behavior: smooth, or at once when motion is reduced
+        const assist = () => {
+          if (touching) return
+          const y = scrollY, s = stops()
+          if (!inside(y, s)) { rested = y; return }
+          const aim = y + Math.sign(y - rested) * innerHeight * .2  // a scroll that went on carries on
+          rest(s.reduce((best, x) => Math.abs(x - aim) < Math.abs(best - aim) ? x : best))
+        }
+        // A scroll has ended when the browser says so, or when its events pause and no finger is down; the assist, asked twice,
+        // rests where it already rests
+        let timer = 0
+        const soon = () => { clearTimeout(timer); timer = setTimeout(assist, 240) }
+        addEventListener("scrollend", assist)
+        addEventListener("scroll", soon, { passive: true })
+        addEventListener("touchstart", () => { touching = true }, { passive: true })
+        for (const end of ["touchend", "touchcancel"]) addEventListener(end, () => { touching = false; soon() }, { passive: true })
+        addEventListener("keydown", e => {
+          const step = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0
+          if (!step || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.target.closest?.("input, textarea, select, [contenteditable]")) return
+          const y = scrollY, s = stops()
+          if (!inside(y, s)) return
+          const to = step > 0 ? s.find(x => x > y + 2) : s.findLast(x => x < y - 2)
+          if (to === undefined) return
+          e.preventDefault(); rest(to)
+        })
         new IntersectionObserver(([e]) => { visible = e.isIntersecting; kick() }).observe(journey)
         document.addEventListener("visibilitychange", kick)
         journey.classList.add("directed")
