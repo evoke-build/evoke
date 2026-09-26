@@ -3,6 +3,7 @@ adapter = "replay"
 [reflexes]
 notes   = "./notes"
 nowhere = "./nowhere"
+outbox  = "./outbox"
 list    = "./list"
 tools   = "./tools"
 reach   = "./reach"

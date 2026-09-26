@@ -120,6 +120,7 @@ export type File =
 export type Fix =
   | { type: "vocab_add"; vocab: VocabName } // evoke vocab <vocab> add <word> "<meaning>"
   | { type: "vocab_value"; vocab: VocabName; word: Word } // evoke vocab <vocab> add <word> "<meaning>" --value <path>
+  | { type: "make_dir"; path: string } // mkdir -p <path>
   | { type: "vocab_remove"; vocab: VocabName } // evoke vocab <vocab> remove <word>
   | { type: "vocab"; vocab: VocabName } // evoke vocab <vocab>
   | { type: "config_set"; reflex: LocalName; key: ConfigKey } // evoke config <reflex> <key> <value>

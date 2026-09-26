@@ -190,6 +190,7 @@ fn head(problem: &Diagnostic) -> String {
 fn fixing(problem: &Diagnostic, invoked: &str, paths: Option<&Paths>) -> String {
     match (&problem.fix, paths) {
         (Fix::EditLine { at }, Some(paths)) => paths.at(at),
+        (Fix::MakeDir { .. }, Some(paths)) => paths.tilde(&problem.fix.command(invoked)),
         (fix, _) => fix.command(invoked),
     }
 }

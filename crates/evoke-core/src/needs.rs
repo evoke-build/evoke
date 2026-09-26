@@ -609,8 +609,8 @@ pub fn shown(path: &str, home: &str) -> String {
 }
 
 /// A declared path or program the machine lacks, before anything runs: `[needs] writes names ~/notes.txt, which
-/// is not there`, and the command that answers it — the value's source when the entry is a `{name}`, else the
-/// declaration itself.
+/// is not there`, and the command that answers it — the value's source when the entry is a `{name}`, the folder
+/// to make when the body writes into a path the manifest names, else the declaration itself.
 #[must_use]
 pub fn lacking(
     lacking: &Lacking,
@@ -625,9 +625,12 @@ pub fn lacking(
                 "[needs] {key} names {}, which is not there",
                 shown(&place.path, home)
             ),
-            match &place.from {
-                Entry::Value(name) => value_fix(name, None, reflex, active),
-                Entry::Home(_) | Entry::Absolute(_) => declaration_fix(reflex, origin),
+            match (&place.from, key) {
+                (Entry::Value(name), _) => value_fix(name, None, reflex, active),
+                (Entry::Home(_) | Entry::Absolute(_), Key::Writes) => Fix::MakeDir {
+                    path: place.path.clone(),
+                },
+                (Entry::Home(_) | Entry::Absolute(_), _) => declaration_fix(reflex, origin),
             },
         ),
         Lacking::Program { program } => (

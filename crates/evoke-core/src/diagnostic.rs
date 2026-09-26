@@ -48,6 +48,10 @@ pub enum Fix {
         vocab: VocabName,
         word: Word,
     },
+    /// `mkdir -p <path>`: a folder a body's declaration writes into, which is not there.
+    MakeDir {
+        path: String,
+    },
     /// `evoke vocab <name> remove <word>`: a vocabulary offers more words than the adapter takes in one question.
     VocabRemove {
         vocab: VocabName,
@@ -122,6 +126,7 @@ impl Fix {
             Self::VocabValue { vocab, word } => {
                 format!("evoke vocab {vocab} add {word} \"<meaning>\" --value <path>")
             }
+            Self::MakeDir { path } => format!("mkdir -p {path}"),
             Self::VocabRemove { vocab } => format!("evoke vocab {vocab} remove <word>"),
             Self::Vocab { vocab } => format!("evoke vocab {vocab}"),
             Self::ConfigSet { reflex, key } => format!("evoke config {reflex} {key} <value>"),

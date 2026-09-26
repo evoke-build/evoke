@@ -37,13 +37,15 @@ The set of fixing commands is closed. Each line ends in one of these:
 | `evoke check`                              | A body does not exist, does not load, or exports no function                |
 | `evoke new <name>`                         | No `reflex.toml` here, or the directory already exists                      |
 | `evoke test`                               | The theft test at `add` did not finish; the install stands                  |
+| `mkdir -p <path>`                          | A folder a body's declaration writes into is not there                      |
 | `evoke --help`                             | The arguments spell no command                                              |
 | `<file>:<line>:<column>`                   | A line of an owned file to edit: the schema, a contract key in an overlay, a loosening effect, a local reflex's declaration to widen, or one naming a path that is not there |
 | the command you ran                        | Try again once the reason on the line is addressed: a prompt with no terminal, a value out of range |
 
 A body refused past its declaration, or a declared path the machine lacks, is a failure, exit 1, whose line
 still ends in its fix: the manifest's line for a local reflex, `evoke remove <reflex>` or
-`evoke update --accept <reflex>` for a fetched one, the value's source for a `{name}`.
+`evoke update --accept <reflex>` for a fetched one, the value's source for a `{name}`, `mkdir -p` for a folder
+the body writes into.
 
 ## Why a reflex is inactive
 

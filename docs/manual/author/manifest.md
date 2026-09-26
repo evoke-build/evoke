@@ -98,7 +98,7 @@ the value of an argument or a config key, so a folder the user names reaches the
 path names a file, or a folder with everything under it, whichever is on the disk when the body runs. A path in
 `writes` may be read too. **A declared path must exist when the body runs.** A body that makes a file declares
 its folder, and a path the machine lacks stops the run before the body starts: `[needs] reads names ~/nowhere,
-which is not there`. `hosts` is all or nothing: `["*"]` reaches every host, absent reaches none, and a name is
+which is not there`; a folder in `writes` ends in the `mkdir -p` that makes it. `hosts` is all or nothing: `["*"]` reaches every host, absent reaches none, and a name is
 refused at `check`. `runs` names programs, by name on `PATH` or by absolute path; each of them runs held to the
 same declaration, and what it asks the system to do happens outside it. The kernel holds the body to all of
 this: [Security](../security.md#what-runs-and-as-whom).

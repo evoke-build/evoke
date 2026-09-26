@@ -1,0 +1,28 @@
+{
+  "input": {
+    "lacking": {
+      "type": "place",
+      "place": {
+        "path": "/Users/me/Library/Preferences/com.apple.LaunchServices",
+        "from": "~/Library/Preferences/com.apple.LaunchServices"
+      },
+      "key": "reads"
+    },
+    "reflex": "download",
+    "active": {
+      "$ref": "fixtures/active-download.json"
+    },
+    "origin": {
+      "type": "fetched"
+    },
+    "home": "/Users/me"
+  },
+  "expect": {
+    "reflex": "download",
+    "message": "[needs] reads names ~/Library/Preferences/com.apple.LaunchServices, which is not there",
+    "fix": {
+      "type": "remove",
+      "reflex": "download"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "input": {
+    "fix": {
+      "type": "make_dir",
+      "path": "/Users/me/Downloads"
+    }
+  },
+  "expect": "mkdir -p /Users/me/Downloads"
+}

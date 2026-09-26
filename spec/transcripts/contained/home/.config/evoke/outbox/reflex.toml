@@ -1,0 +1,11 @@
+reflex = 1
+
+description = """
+Write into a folder that is not there.
+For the spec: a folder a body writes into is the folder to make."""
+effect = "write"
+confirm = "Write?"
+run = "outbox.mts"
+
+[needs]
+writes = ["~/outbox"]
