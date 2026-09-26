@@ -11,11 +11,12 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::OnceLock;
 
-use evoke_core::Contained;
 use evoke_core::contain::{Executable, Facts, Found, Platform, Runtime};
+use evoke_core::name::VarName;
 use evoke_core::needs::{Key, Lacking, Policy};
 #[cfg(not(target_os = "linux"))]
 use evoke_core::seatbelt;
+use evoke_core::{Contained, Diagnostic, Fix};
 use indexmap::IndexMap;
 
 use super::state::State;
@@ -82,9 +83,28 @@ pub fn facts(
 }
 
 #[cfg(target_os = "linux")]
-const PLATFORM: Platform = Platform::Linux;
+pub const PLATFORM: Platform = Platform::Linux;
+
+/// The platform the plan judges a manifest's `platforms` by: this machine's, unless `EVOKE_PLATFORM` names
+/// another, to decide and test as that machine would. The layers keep this machine's.
+pub fn judged(environment: &Environment) -> Result<Platform, Diagnostic> {
+    let Some(named) = environment
+        .get("EVOKE_PLATFORM")
+        .filter(|text| !text.is_empty())
+    else {
+        return Ok(PLATFORM);
+    };
+    named.parse().map_err(|why: String| Diagnostic {
+        reflex: None,
+        at: None,
+        message: format!("EVOKE_PLATFORM: {why}"),
+        fix: Fix::ExportKey {
+            var: VarName::new("EVOKE_PLATFORM").expect("a variable name"),
+        },
+    })
+}
 #[cfg(not(target_os = "linux"))]
-const PLATFORM: Platform = Platform::MacOs;
+pub const PLATFORM: Platform = Platform::MacOs;
 
 /// A program by its absolute path, or the first executable of its name on `PATH`.
 fn locate(program: &str, environment: &Environment) -> Option<PathBuf> {

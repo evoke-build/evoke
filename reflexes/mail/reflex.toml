@@ -4,11 +4,12 @@ description = """
 Start an email in your mail app.
 To one address, with an optional subject; nothing goes out until you press send."""
 
-not_for = ["reading or searching mail", "chat and text messages"]
-tags    = ["mail"]
-effect  = "write"
-confirm = "Write to {to}?"
-run     = "mail.mts"
+not_for   = ["reading or searching mail", "chat and text messages"]
+tags      = ["mail"]
+effect    = "write"
+confirm   = "Write to {to}?"
+run       = "mail.mts"
+platforms = ["macos"]
 
 [needs]
 runs = ["open"]

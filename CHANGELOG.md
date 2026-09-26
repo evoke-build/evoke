@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A manifest names where its body runs, `platforms = ["macos"]`. On another machine the reflex is inactive,
+  and `add` and `show` say so. The collection's reflexes name macOS.
 - A body's failure prints its message alone. The frames of an error a JavaScript body threw are kept in the
   log: `evoke why` shows them, and `--json` carries them as `frames`.
 

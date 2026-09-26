@@ -4,11 +4,12 @@ description = """
 Keep the laptop awake, display on.
 For a duration, or until you cancel it."""
 
-not_for = ["timers and reminders", "putting the laptop to sleep", "screen brightness"]
-tags    = ["power"]
-effect  = "write"
-confirm = "Keep the laptop awake?"
-run     = "awake.mts"
+not_for   = ["timers and reminders", "putting the laptop to sleep", "screen brightness"]
+tags      = ["power"]
+effect    = "write"
+confirm   = "Keep the laptop awake?"
+run       = "awake.mts"
+platforms = ["macos"]
 
 [needs]
 runs = ["caffeinate"]

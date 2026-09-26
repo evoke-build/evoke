@@ -8,6 +8,7 @@ use std::cmp::Ordering;
 use indexmap::IndexMap;
 use serde::Serialize;
 
+use crate::contain::Platform;
 use crate::document::KeyPath;
 use crate::manifest::{Effect, Element, Kind, Manifest, Run, Source, renames};
 use crate::name::{ArgName, ConfigKey, FieldName, OptionKey};
@@ -123,6 +124,14 @@ pub enum Change {
     ReturnsChanged {
         name: FieldName,
     },
+    /// A platform the body runs on, gained: the reflex is active there now.
+    PlatformAdded {
+        platform: Platform,
+    },
+    /// A platform dropped: the reflex is inactive there from now on.
+    PlatformRemoved {
+        platform: Platform,
+    },
 }
 
 impl Change {
@@ -145,7 +154,8 @@ impl Change {
             | Self::TakesRemoved { .. }
             | Self::TakesChanged { .. }
             | Self::ReturnsRemoved { .. }
-            | Self::ReturnsChanged { .. } => Level::Major,
+            | Self::ReturnsChanged { .. }
+            | Self::PlatformRemoved { .. } => Level::Major,
             Self::ConfigSecret { secret: false, .. }
             | Self::ArgAdded { .. }
             | Self::Optional { .. }
@@ -154,10 +164,29 @@ impl Change {
             | Self::ConfigRemoved { .. }
             | Self::YieldAdded { .. }
             | Self::ReturnsAdded { .. }
+            | Self::PlatformAdded { .. }
             | Self::NeedsWidened { .. } => Level::Minor,
             Self::NeedsNarrowed { .. } => Level::Same,
         }
     }
+}
+
+/// The platforms dropped, then those gained; a manifest that names none runs anywhere.
+fn platforms(previous: &Manifest, next: &Manifest) -> Vec<Change> {
+    let covers =
+        |named: &[Platform], platform: Platform| named.is_empty() || named.contains(&platform);
+    let mut changes = Vec::new();
+    for platform in Platform::ALL {
+        match (
+            covers(&previous.platforms, platform),
+            covers(&next.platforms, platform),
+        ) {
+            (true, false) => changes.push(Change::PlatformRemoved { platform }),
+            (false, true) => changes.push(Change::PlatformAdded { platform }),
+            _ => {}
+        }
+    }
+    changes
 }
 
 /// `was` is flat and cumulative: a retired name never returns as a live argument, and never leaves the lists.
@@ -249,6 +278,7 @@ pub fn diff(previous: &Manifest, next: &Manifest) -> ContractDiff {
         }
     }
     changes.extend(joined(previous, next));
+    changes.extend(platforms(previous, next));
     let level = changes
         .iter()
         .map(Change::level)

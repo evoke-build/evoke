@@ -25,7 +25,7 @@ export interface Ops {
   effective: { input: { shipped: T.Manifest; yours?: T.Overlay }; output: T.Effective }
   report: { input: { previous: T.Manifest; next: T.Manifest; yours?: T.Overlay }; output: T.Report }
   // decide
-  compile: { input: { set: T.Installed; limits?: T.Limits }; output: T.Result<T.Plan, T.Diagnostic> }
+  compile: { input: { set: T.Installed; limits?: T.Limits; platform?: T.Platform }; output: T.Result<T.Plan, T.Diagnostic> }
   propose: { input: { input: T.Input }; output: T.Proposed[] }
   request: { input: { plan: T.Plan; input: string; tags: T.Tag[]; only?: T.LocalName; scope: T.Scope }; output: T.Result<T.Request, T.Diagnostic> }
   read: { input: { plan: T.Plan; request: T.Request; raw: T.Raw }; output: T.Result<T.Reading, T.Fault> }

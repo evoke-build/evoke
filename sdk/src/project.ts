@@ -9,7 +9,7 @@ import { realpathSync, statSync } from "node:fs"
 import { homedir } from "node:os"
 
 import { type Adapter, type Trace, answered } from "./adapter.ts"
-import { facts, scratch, status } from "./contain.ts"
+import { PLATFORM, facts, scratch, status } from "./contain.ts"
 import { bug, call, command, fromCode, misnamed, problem, reply } from "./core.ts"
 import type { Abstain, AnyReflexes, Ask, Confirm, Decision, Given, Handled, Line, Run } from "./decision.ts"
 import { DiagnosticError, FailureError, type Problem } from "./errors.ts"
@@ -26,6 +26,9 @@ export interface LoadOptions<R = AnyReflexes> {
   reflexes?: { [K in keyof R]?: Inline<R[K]> | undefined } | undefined
   /** Who answers. Absent: the adapter evoke.toml names, from its own subpath; required without a root. */
   adapter?: Adapter | undefined
+  /** The platform a manifest's `platforms` is judged by: this machine's when absent. A reflex named for another
+   *  is inactive; name one to decide or test as that machine would. A body still runs here. */
+  platform?: W.Platform | undefined
 }
 
 export interface DecideOptions {
@@ -142,6 +145,8 @@ const DEFAULT: W.Project = { adapter: "jev", reflexes: {}, config: {}, adapters:
 interface Ground {
   installed: W.Installed
   adapter: Adapter
+  /** The platform the plan judges a manifest's `platforms` by. */
+  platform: W.Platform
   dirs: Record<string, string>
   bodies: Record<string, Reflex<Record<string, unknown>, Record<never, string>>>
   shipped: Record<string, W.Manifest>
@@ -150,11 +155,11 @@ interface Ground {
 
 /** A project from its root: its installed reflexes are what `Reflexes` from evoke.d.ts names, so R is written. */
 export function load<R extends object = AnyReflexes>(
-  options: { root: string; reflexes?: NoInfer<{ [K in keyof R]?: Inline<R[K]> | undefined }> | undefined; adapter?: Adapter | undefined },
+  options: { root: string; reflexes?: NoInfer<{ [K in keyof R]?: Inline<R[K]> | undefined }> | undefined; adapter?: Adapter | undefined; platform?: W.Platform | undefined },
 ): Promise<Project<R>>
 /** A project from reflexes handed as code alone: R is inferred from them. */
 export function load<R extends object = AnyReflexes>(
-  options: { root?: undefined; reflexes?: { [K in keyof R]?: Inline<R[K]> | undefined } | undefined; adapter: Adapter },
+  options: { root?: undefined; reflexes?: { [K in keyof R]?: Inline<R[K]> | undefined } | undefined; adapter: Adapter; platform?: W.Platform | undefined },
 ): Promise<Project<R>>
 export async function load<R extends object = AnyReflexes>(options: LoadOptions<R>): Promise<Project<R>> {
   const { root } = options
@@ -229,7 +234,8 @@ export async function load<R extends object = AnyReflexes>(options: LoadOptions<
     vocab[name] = call("vocabulary", { doc: { file: { type: "vocab", name }, toml } }, "load()")
   }
   const installed: W.Installed = { reflexes, vocab, adapter: adapter.id, evoke: call("version", {}) }
-  return make({ installed, adapter, dirs, bodies, shipped, local }, "load()") as unknown as Project<R>
+  const platform = options.platform ?? PLATFORM
+  return make({ installed, adapter, platform, dirs, bodies, shipped, local }, "load()") as unknown as Project<R>
 }
 
 /** The adapter evoke.toml names, from its own subpath; a recording is never resolved by name. */
@@ -337,8 +343,8 @@ type Readied =
 /** The project over its ground: the set compiled, every reflex's status read off the plan. The implementation
  *  speaks the wire's shapes; the app's R lives on the interface alone. */
 function make(ground: Ground, invoked: string): Project<AnyReflexes> {
-  const { installed, adapter, dirs, bodies, shipped, local } = ground
-  const plan: W.Plan = call("compile", { set: installed, ...(adapter.limits === undefined ? {} : { limits: adapter.limits }) }, invoked)
+  const { installed, adapter, platform, dirs, bodies, shipped, local } = ground
+  const plan: W.Plan = call("compile", { set: installed, platform, ...(adapter.limits === undefined ? {} : { limits: adapter.limits }) }, invoked)
   if (adapter.plan !== undefined && adapter.plan !== plan.digest) {
     const message = `the recording was made against plan ${adapter.plan}, not ${plan.digest}`
     throw new DiagnosticError([{ message, fix: { type: "rerun" }, command: "replay(file, { record: jev() })" }])

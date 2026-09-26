@@ -1765,6 +1765,13 @@ pub fn change(change: &Change) -> (String, String) {
         Change::ReturnsAdded { name } => ("returns".to_owned(), format!("added: {name}")),
         Change::ReturnsRemoved { .. } => ("returns".to_owned(), "removed".to_owned()),
         Change::ReturnsChanged { name } => ("returns".to_owned(), format!("changed: {name}")),
+        Change::PlatformAdded { platform } => {
+            ("platforms".to_owned(), format!("added: {}", platform.key()))
+        }
+        Change::PlatformRemoved { platform } => (
+            "platforms".to_owned(),
+            format!("dropped: {}", platform.key()),
+        ),
     }
 }
 
@@ -1947,6 +1954,7 @@ pub fn manifest(effective: &Effective) -> Text {
         "effect",
         "confirm",
         "run",
+        "platforms",
         "returns",
     ] {
         let Some(value) = manifest.get(key) else {

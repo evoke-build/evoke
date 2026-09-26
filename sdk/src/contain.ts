@@ -12,7 +12,8 @@ import { join } from "node:path"
 import { call } from "./core.ts"
 import type { Contained, Executable, Facts, Found, NeedsKey, Place, Platform, Policy, Program, Runtime } from "./types.ts"
 
-const PLATFORM: Platform = process.platform === "linux" ? "linux" : "macos"
+/** This machine's platform, which the plan and the layers take. */
+export const PLATFORM: Platform = process.platform === "linux" ? "linux" : "macos"
 const SANDBOX_EXEC = "/usr/bin/sandbox-exec"
 /** Whether this runtime's permission model holds the network: from Node 25, the first to know `--allow-net`. */
 const HOLDS_NETWORK = process.allowedNodeEnvironmentFlags.has("--allow-net")

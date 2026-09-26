@@ -14,6 +14,7 @@ const project = await load<Reflexes>({ root, reflexes, adapter })
 | `root`     | The project directory: `evoke.toml`, `evoke.lock`, `overlays/`, `vocab/`, local reflexes. Absent: no files at all. A root without `evoke.toml` is the default project, `adapter = "jev"`, nothing installed |
 | `reflexes` | Reflexes handed as code, by local name. A name `evoke.toml` also lists is an error. Overlays under `root` apply to them too |
 | `adapter`  | Who answers. Absent: the adapter `evoke.toml` names, resolved from the SDK's own subpath and built under `[adapters.<name>]`. Required when there is no root |
+| `platform` | `"linux"` or `"macos"`: the platform a manifest's `platforms` is judged by, this machine's when absent. A reflex named for another platform is inactive; name one to decide or test as that machine would. A body still runs here |
 
 Remote reflexes come from the store, by the lock's content hash, and are hashed again at load. A missing entry
 fails, and the fix is `evoke sync`. The SDK never checks trust, since the root is yours to choose. It keeps no

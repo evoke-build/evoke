@@ -4,11 +4,12 @@ description = """
 Sleep, restart or shut down the laptop.
 Apps are asked to quit first; unsaved work can block it or be lost."""
 
-not_for = ["locking the screen", "turning the display off", "keeping the laptop awake"]
-tags    = ["power"]
-effect  = "destructive"
-confirm = "Really {action} now?"
-run     = "power.mts"
+not_for   = ["locking the screen", "turning the display off", "keeping the laptop awake"]
+tags      = ["power"]
+effect    = "destructive"
+confirm   = "Really {action} now?"
+run       = "power.mts"
+platforms = ["macos"]
 
 [needs]
 runs = ["pmset", "osascript"]

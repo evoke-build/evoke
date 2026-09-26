@@ -66,6 +66,17 @@
         }
       ]
     },
+    "platforms": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "linux",
+          "macos"
+        ]
+      },
+      "description": "Where the body runs: linux, macos. Absent means anywhere; elsewhere the reflex is inactive. Contract."
+    },
     "returns": {
       "$ref": "#/definitions/name",
       "description": "The name the body's whole data goes by, for a later step to take. Not with an argv run. Contract."

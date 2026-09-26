@@ -54,7 +54,9 @@ and the seeds test read those directory names as owned files:
   the same line; a prompt with nothing after its `>` gets the end of input, so `>` alone ends a REPL. `[N]` alone
   on a line is a non-zero exit code; absent, the command exited 0. Lines compare exactly but for trailing spaces;
   a line that is JSON is compared as JSON, `ms` values aside and every number one kind. A line starting with `#`
-  is a note for the reader; the note `# no tty` runs the flow's commands without a terminal. A step that has not
+  is a note for the reader; the note `# no tty` runs the flow's commands without a terminal, and `# platform macos`
+  or `# platform linux` runs them as that machine, `EVOKE_PLATFORM` set, so a flow over the collection replays
+  anywhere. A step that has not
   finished within a minute fails, named, and its process group is ended.
 - `home/` — the throwaway `$HOME`: the project under `.config/evoke/`, local reflexes, XDG state as the flow needs it.
   A flow without one uses [`transcripts/home/`](home/.config/evoke/evoke.toml). Paths under it print as `~/…`. The

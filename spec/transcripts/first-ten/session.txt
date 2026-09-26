@@ -1,4 +1,6 @@
-# The first ten minutes over the collection, as the manual's page shows them; the recording answers as Jev would.
+# platform macos
+# The first ten minutes over the collection, as the manual's page shows them, on the Mac the collection is for;
+# the recording answers as Jev would.
 # In the remote, volume.mts and wifi.mts stand in for the collection's bodies and say what those say on a Mac;
 # under ~/bin, open, osascript and networksetup stand in for the Mac's programs the declarations name, and say
 # nothing: the flow changes nothing on the machine it runs on.

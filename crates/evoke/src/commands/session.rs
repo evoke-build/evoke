@@ -296,7 +296,9 @@ fn prepare(
             (name.clone(), shown)
         })
         .collect();
-    let plan = compile(&installed, declared.limits.as_ref()).map_err(Exit::Human)?;
+    let platform = contain::judged(ground.environment).map_err(Exit::Human)?;
+    let plan =
+        compile(&installed, declared.limits.as_ref(), Some(platform)).map_err(Exit::Human)?;
     Ok(Prepared {
         project,
         lock,

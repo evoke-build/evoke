@@ -4,11 +4,12 @@ description = """
 Count down a duration, then sound an alert.
 Seconds to hours; runs until it rings or you cancel it."""
 
-not_for = ["keeping the laptop awake", "alarms at a time of day", "asking the time"]
-tags    = ["time"]
-effect  = "write"
-confirm = "Start a {duration} timer?"
-run     = "timer.mts"
+not_for   = ["keeping the laptop awake", "alarms at a time of day", "asking the time"]
+tags      = ["time"]
+effect    = "write"
+confirm   = "Start a {duration} timer?"
+run       = "timer.mts"
+platforms = ["macos"]
 
 [needs]
 runs = ["osascript"]

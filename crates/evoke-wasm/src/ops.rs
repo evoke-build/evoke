@@ -4,6 +4,7 @@
 
 use evoke_adapters::replay;
 use evoke_adapters::systemone::{self, Door};
+use evoke_core::contain::Platform;
 use evoke_core::document::Text;
 use evoke_core::manifest::{ConfigSpec, Effect, Recognizer};
 use evoke_core::name::AdapterId;
@@ -89,6 +90,7 @@ fn decide(op: &str, input: &Json) -> Answer {
         "compile" => result(compile(
             &arg::<Installed>(input, "set")?,
             opt::<Limits>(input, "limits")?.as_ref(),
+            opt::<Platform>(input, "platform")?,
         )),
         "propose" => ok(propose(&arg::<Input>(input, "input")?)),
         "request" => result(request(

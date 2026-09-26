@@ -163,6 +163,8 @@ export interface Manifest {
   confirm: Template
   /** Absent: inline, a function the SDK holds. */
   run?: Run
+  /** Where the body runs, when not anywhere; elsewhere the reflex is inactive. Absent when anywhere. Contract, like `run`. */
+  platforms?: Platform[]
   /** What the body may touch; absent, the tightest declaration. Contract, like `run`. */
   needs?: Needs
   config: Record<ConfigKey, ConfigSpec>
@@ -1061,6 +1063,8 @@ export type Change =
   | { type: "run_changed" }
   | { type: "needs_widened"; added: Needs }
   | { type: "needs_narrowed"; removed: Needs }
+  | { type: "platform_added"; platform: Platform }
+  | { type: "platform_removed"; platform: Platform }
   | { type: "required"; arg: ArgName }
   | { type: "config_secret"; key: ConfigKey; secret: boolean }
   | { type: "arg_added"; arg: ArgName }

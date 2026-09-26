@@ -2,7 +2,8 @@
 //! `target/`, the JavaScript runtime found on `PATH` recorded in its state, each `$ ` line run by `sh -c` under a
 //! pseudo-terminal — or, when the flow says `# no tty`, with no terminal at all, in a session of its own, so the
 //! terminal of whoever runs the suite does not reach it — with `TERM=dumb` and `NO_COLOR=1` so the terminal shows
-//! plain text, `replay` answering from `EVOKE_ANSWERS`, remotes rebuilt from their trees by the recipe. Every line must
+//! plain text, `replay` answering from `EVOKE_ANSWERS`, `# platform macos` replaying the flow as that machine,
+//! remotes rebuilt from their trees by the recipe. Every line must
 //! match, trailing spaces aside, JSON as JSON with `ms` aside; `[N]` is the exit code; a line `^C` is Ctrl-C typed
 //! once the line before it has shown, and the terminal's echo of it. One test per flow; each is turned on by the
 //! step that makes it pass.
@@ -214,7 +215,14 @@ fn flow(name: &str) {
     let dir = spec().join("transcripts").join(name);
     let session = fs::read_to_string(dir.join("session.txt")).expect("session.txt");
     let tty = !session.lines().any(|line| line.starts_with("# no tty"));
-    let (home, environment) = prepared(name, &dir);
+    let (home, mut environment) = prepared(name, &dir);
+    // `# platform macos`: the flow replays as that machine, whatever this one is.
+    if let Some(platform) = session
+        .lines()
+        .find_map(|line| line.strip_prefix("# platform "))
+    {
+        environment.push(("EVOKE_PLATFORM".to_owned(), platform.trim().to_owned()));
+    }
     for step in steps(&session) {
         let mut command = Command::new("sh");
         command

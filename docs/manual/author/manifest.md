@@ -63,6 +63,7 @@ level = "number"
 | `effect`      | no       | `read`, `write` or `destructive`. **Absent means destructive.** It is the author's claim, and not trusted: a user may tighten it, never loosen it. A reflex has one effect, so grouped actions take the worst case |
 | `confirm`     | yes      | The one-line question a person answers. A `{placeholder}` names a **required** argument. A pick shows its span. A placeholder for an optional argument or a flag is an error |
 | `run`         | yes      | The body: a path ending in `.mts` or `.mjs` inside the directory, or an argv. [The body](body.md) |
+| `platforms`   | no       | Where the body runs, when not anywhere: `["macos"]`, `["linux"]`, or both. On another machine the reflex is inactive, and `add` and `show` say so: `runs on macOS only` |
 | `[needs]`     | no       | What the body touches, held by the kernel: `reads`, `writes`, `hosts`, `runs`. Left out, the tightest declaration: its own directory and `TMPDIR`. [What the body touches](#what-the-body-touches) |
 | `[config]`    | no       | Settings the user provides with `evoke config`: `key = "about"` or `key = { about, secret = true }`. A secret is only ever set from an environment variable |
 | `[args.<name>]` | no     | The arguments: an `ask` and exactly one source, or `takes` alone. [Arguments](arguments.md) |
@@ -127,7 +128,7 @@ user's `evoke update --accept`, and is `minor`: [Publishing](publishing.md).
 
 | Contract: a user cannot override it, and changing it is a version bump | Wording: a user may override it, and you may improve it at any tag |
 | :---------------------------------------------------------------- | :--------------------------------------------------------- |
-| `run`; `[needs]`; argument names and their sources; option keys; `range`; `config` keys; `yields`; `returns`; what an argument takes | `description`, `not_for`, `tags`, `confirm`; every `ask`; the meaning of each option; examples and tests |
+| `run`; `platforms`; `[needs]`; argument names and their sources; option keys; `range`; `config` keys; `yields`; `returns`; what an argument takes | `description`, `not_for`, `tags`, `confirm`; every `ask`; the meaning of each option; examples and tests |
 
 An argument may be renamed by declaring its former names, like `was = ["state"]`. Every user's overlay and call
 then follows. [Publishing](publishing.md) says how `evoke check` diffs one tag against the next.

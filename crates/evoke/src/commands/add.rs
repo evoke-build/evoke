@@ -21,7 +21,7 @@ use super::session::{self, Opening, Session};
 use super::{Exit, default_name, human};
 use crate::adapter;
 use crate::args::{Command, Ref};
-use crate::hosts::{Deadline, Environment, files, git, terminal, threads};
+use crate::hosts::{Deadline, Environment, contain, files, git, terminal, threads};
 use crate::report::{self, Gutter};
 
 pub fn run(
@@ -385,7 +385,9 @@ fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<
             },
         );
     }
-    let plan = compile(&set, session.declared.limits.as_ref()).map_err(Exit::Human)?;
+    let platform = contain::judged(session.environment()).map_err(Exit::Human)?;
+    let plan =
+        compile(&set, session.declared.limits.as_ref(), Some(platform)).map_err(Exit::Human)?;
     if !plan.active().keys().any(|name| names.contains(name)) {
         return Ok(Vec::new());
     }

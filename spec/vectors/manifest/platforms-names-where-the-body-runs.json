@@ -1,0 +1,30 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "lock"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Lock the screen.\"\neffect  = \"write\"\nconfirm = \"Lock the screen?\"\nrun     = \"lock.mts\"\nplatforms = [\"macos\"]\n"
+    }
+  },
+  "expect": {
+    "ok": {
+      "description": "Lock the screen.",
+      "not_for": [],
+      "tags": [],
+      "effect": "write",
+      "confirm": "Lock the screen?",
+      "run": "lock.mts",
+      "platforms": [
+        "macos"
+      ],
+      "config": {},
+      "args": {},
+      "yields": {},
+      "examples": {},
+      "tests": {},
+      "unknown": []
+    }
+  }
+}

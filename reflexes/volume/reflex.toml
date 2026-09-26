@@ -4,11 +4,12 @@ description = """
 Set the output volume.
 A percentage of the maximum; 0 is silent."""
 
-not_for = ["muting and unmuting", "screen brightness", "one app's volume", "turning it up or down by an amount"]
-tags    = ["sound"]
-effect  = "write"
-confirm = "Set the volume to {level}?"
-run     = "volume.mts"
+not_for   = ["muting and unmuting", "screen brightness", "one app's volume", "turning it up or down by an amount"]
+tags      = ["sound"]
+effect    = "write"
+confirm   = "Set the volume to {level}?"
+run       = "volume.mts"
+platforms = ["macos"]
 
 [needs]
 runs = ["osascript"]

@@ -4,11 +4,12 @@ description = """
 Capture the screen, a window or a selection.
 Saved to the desktop as PNG, or copied to the clipboard."""
 
-not_for = ["recording the screen", "photos from the camera"]
-tags    = ["screen"]
-effect  = "write"
-confirm = "Take a screenshot?"
-run     = "screenshot.mts"
+not_for   = ["recording the screen", "photos from the camera"]
+tags      = ["screen"]
+effect    = "write"
+confirm   = "Take a screenshot?"
+run       = "screenshot.mts"
+platforms = ["macos"]
 
 [needs]
 writes = ["~/Desktop"]

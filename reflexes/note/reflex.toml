@@ -4,11 +4,12 @@ description = """
 Append a line to your notes file.
 Plain text, dated, one note per line."""
 
-not_for = ["reading notes back", "reminders and timers", "the clipboard"]
-tags    = ["text"]
-effect  = "write"
-confirm = 'Note "{text}"?'
-run     = "note.mts"
+not_for   = ["reading notes back", "reminders and timers", "the clipboard"]
+tags      = ["text"]
+effect    = "write"
+confirm   = 'Note "{text}"?'
+run       = "note.mts"
+platforms = ["macos"]
 
 [needs]
 writes = ["{file}"]

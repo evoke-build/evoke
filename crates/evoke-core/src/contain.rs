@@ -53,6 +53,42 @@ pub enum Platform {
     MacOs,
 }
 
+impl Platform {
+    /// Every platform a body may name.
+    pub const ALL: [Self; 2] = [Self::Linux, Self::MacOs];
+
+    /// The word a manifest writes: `linux`, `macos`.
+    #[must_use]
+    pub fn key(self) -> &'static str {
+        match self {
+            Self::Linux => "linux",
+            Self::MacOs => "macos",
+        }
+    }
+}
+
+/// The platform as a person reads it: `Linux`, `macOS`.
+impl fmt::Display for Platform {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Linux => "Linux",
+            Self::MacOs => "macOS",
+        })
+    }
+}
+
+impl std::str::FromStr for Platform {
+    type Err = String;
+
+    /// The word a manifest writes; anything else names what is allowed.
+    fn from_str(text: &str) -> Result<Self, String> {
+        Self::ALL
+            .into_iter()
+            .find(|platform| platform.key() == text)
+            .ok_or_else(|| format!("\"{text}\" is not a platform: linux, macos"))
+    }
+}
+
 /// A program as the kernel runs it: its path, and the interpreters the kernel executes to run it — a script's
 /// shebang interpreter, then the ELF interpreter that loads a dynamic binary — each of which a rule must let run.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]

@@ -4,11 +4,12 @@ description = """
 Turn Wi-Fi on or off.
 The laptop's radio; which network to join is chosen elsewhere."""
 
-not_for = ["joining or leaving a network", "Bluetooth", "airplane mode"]
-tags    = ["network"]
-effect  = "write"
-confirm = "Turn Wi-Fi {state}?"
-run     = "wifi.mts"
+not_for   = ["joining or leaving a network", "Bluetooth", "airplane mode"]
+tags      = ["network"]
+effect    = "write"
+confirm   = "Turn Wi-Fi {state}?"
+run       = "wifi.mts"
+platforms = ["macos"]
 
 [needs]
 runs = ["networksetup"]

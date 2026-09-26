@@ -8,6 +8,7 @@ use serde::de::Error as _;
 use serde::ser::SerializeMap;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
+use crate::contain::Platform;
 use crate::diagnostic::{At, Diagnostic};
 use crate::document::{self, Diagnostics, Document, Form, Json, KeyPath, Node, Table, Value};
 use crate::name::{
@@ -27,6 +28,9 @@ pub struct Manifest {
     pub confirm: Template,
     #[serde(skip_serializing_if = "Run::is_inline")]
     pub run: Run,
+    /// Where the body runs, when not anywhere; elsewhere the reflex is inactive. Contract, like `run`.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub platforms: Vec<Platform>,
     /// What the body may touch; absent, the tightest declaration. Contract, like `run`.
     #[serde(default, skip_serializing_if = "Needs::is_none")]
     pub needs: Needs,
@@ -718,6 +722,9 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
         &taken_names,
         root_at.as_ref(),
     );
+    let platforms = top
+        .take("platforms")
+        .map_or_else(Vec::new, |node| platforms(d, node));
     let (examples, tests) = tables(d, &mut top, form, known, &taken_names);
     let takes = taken(
         d,
@@ -743,6 +750,7 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
         effect: effect?,
         confirm: confirm?,
         run: run?,
+        platforms,
         needs,
         config,
         args: args?,
@@ -917,6 +925,25 @@ pub(crate) fn tags(d: &mut Diagnostics, node: Node) -> Vec<Tag> {
         }
     }
     tags
+}
+
+/// `platforms`: where the body runs, each named once.
+fn platforms(d: &mut Diagnostics, node: Node) -> Vec<Platform> {
+    let mut platforms: Vec<Platform> = Vec::new();
+    for item in d.array(node).unwrap_or_default() {
+        let Some(text) = d.str(&item) else { continue };
+        match text.parse::<Platform>() {
+            Ok(platform) if platforms.contains(&platform) => {
+                d.fail(
+                    item.at.as_ref(),
+                    format!("platforms repeats \"{}\"", platform.key()),
+                );
+            }
+            Ok(platform) => platforms.push(platform),
+            Err(why) => d.fail(item.at.as_ref(), format!("platforms: {why}")),
+        }
+    }
+    platforms
 }
 
 pub(crate) fn effect(d: &mut Diagnostics, node: &Node) -> Option<Effect> {

@@ -140,7 +140,7 @@
         <div><dt>Manifest</dt><dd><code>reflex.toml</code>: what the classifier reads and what the body receives.</dd></div>
         <div><dt>Body</dt><dd>What <code>run</code> names: a JavaScript file exporting a function, or a program with its arguments.</dd></div>
         <div><dt>Wording</dt><dd>What a user may override: descriptions, questions, option meanings, records.</dd></div>
-        <div><dt>Contract</dt><dd>What a user cannot override: <code>run</code>, needs, argument names and sources, option keys, ranges, config keys, what a reflex yields, returns and takes.</dd></div>
+        <div><dt>Contract</dt><dd>What a user cannot override: <code>run</code>, platforms, needs, argument names and sources, option keys, ranges, config keys, what a reflex yields, returns and takes.</dd></div>
         <div><dt>Argument</dt><dd>A question about the input and a value for the body, from exactly one source.</dd></div>
         <div><dt>Source</dt><dd>Where an argument's values come from: <code>options</code>, <code>vocab</code>, <code>pick</code>, <code>flag</code>, or <code>takes</code>, an earlier step's whole result.</dd></div>
         <div><dt>Span</dt><dd>An exact piece of the input, by character offsets.</dd></div>
@@ -244,6 +244,7 @@ Ceiling and lamp lights only."""</span>
             <tr><td><code>effect</code></td><td class="n">no</td><td><code>read</code>, <code>write</code> or <code>destructive</code>. Absent means destructive. A reflex has one effect; grouped actions take the worst case.</td></tr>
             <tr><td><code>confirm</code></td><td class="y">yes</td><td>The one-line question a person answers. A <code>{placeholder}</code> names a required argument.</td></tr>
             <tr><td><code>run</code></td><td class="y">yes</td><td>The body: a path ending in <code>.mts</code> or <code>.mjs</code> inside the directory, or an argv.</td></tr>
+            <tr><td><code>platforms</code></td><td class="n">no</td><td>Where the body runs, when not anywhere: <code>linux</code>, <code>macos</code>. Elsewhere the reflex is inactive, and the install says so.</td></tr>
             <tr><td><code>[needs]</code></td><td class="n">no</td><td>What the body touches, held by the kernel: <code>reads</code> and <code>writes</code>, paths as <code>~/…</code>, absolute, or <code>{name}</code> for the value of an argument or a config key; <code>hosts</code>, <code>["*"]</code> for the network; <code>runs</code>, programs by name on <code>PATH</code> or by absolute path. Absent means the tightest declaration: its own directory and a private <code>TMPDIR</code>.</td></tr>
             <tr><td><code>[config]</code></td><td class="n">no</td><td>Settings the user provides: <code>key = "about"</code>, or <code>{ about, secret = true }</code>. A secret is only ever set from an environment variable.</td></tr>
             <tr><td><code>[args.&lt;name&gt;]</code></td><td class="n">no</td><td>The arguments. Each has <code>ask</code> and exactly one source, or <code>takes</code> alone: the whole result of an earlier step, by the name its reflex returns.</td></tr>
@@ -273,7 +274,7 @@ Ceiling and lamp lights only."""</span>
         <div class="table"><table>
           <thead><tr><th>Contract</th><th>Wording</th></tr></thead>
           <tbody>
-            <tr><td><code>run</code>, <code>[needs]</code></td><td><code>description</code>, <code>not_for</code>, <code>tags</code>, <code>confirm</code></td></tr>
+            <tr><td><code>run</code>, <code>platforms</code>, <code>[needs]</code></td><td><code>description</code>, <code>not_for</code>, <code>tags</code>, <code>confirm</code></td></tr>
             <tr><td>argument names and their sources</td><td>every <code>ask</code></td></tr>
             <tr><td>option keys, <code>range</code></td><td>the meaning of each option</td></tr>
             <tr><td><code>config</code> keys, <code>yields</code>, <code>returns</code>, what an argument takes</td><td>examples and tests</td></tr>

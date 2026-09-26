@@ -7,6 +7,7 @@ use serde::de::Error as _;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::adapter::{Choice, Key, Limits, Question, QuestionId, Text};
+use crate::contain::Platform;
 use crate::diagnostic::{Diagnostic, Fix};
 use crate::digest::Digest;
 use crate::document::{self, Diagnostics, Form, Json, KeyPath};
@@ -448,8 +449,13 @@ impl<'de> Deserialize<'de> for Slot {
     }
 }
 
-/// The plan of an installed set; over `limits.options`, a diagnostic naming what to remove.
-pub fn compile(set: &Installed, limits: Option<&Limits>) -> Result<Plan, Diagnostic> {
+/// The plan of an installed set on `platform`, when the host names one — a reflex whose manifest names other
+/// platforms is inactive there; over `limits.options`, a diagnostic naming what to remove.
+pub fn compile(
+    set: &Installed,
+    limits: Option<&Limits>,
+    platform: Option<Platform>,
+) -> Result<Plan, Diagnostic> {
     let json = serde_json::to_vec(set).map_err(|error| Diagnostic {
         reflex: None,
         at: None,
@@ -462,7 +468,7 @@ pub fn compile(set: &Installed, limits: Option<&Limits>) -> Result<Plan, Diagnos
     let mut route = IndexMap::new();
     let mut own = Vec::new();
     for (name, item) in &set.reflexes {
-        match judge(name, item, &set.vocab) {
+        match judge(name, item, &set.vocab, platform) {
             Err(problems) => {
                 if let Ok(effective) = &item.wording
                     && !effective.manifest.tags.is_empty()
@@ -524,6 +530,7 @@ fn judge<'a>(
     name: &LocalName,
     item: &'a Item,
     vocab: &IndexMap<VocabName, Vocabulary>,
+    platform: Option<Platform>,
 ) -> Result<(&'a Manifest, Active), NonEmpty<Diagnostic>> {
     let problem = |message: String, fix: Fix| Diagnostic {
         reflex: Some(name.clone()),
@@ -543,6 +550,7 @@ fn judge<'a>(
         }
     };
     let mut problems = Vec::new();
+    problems.extend(elsewhere(name, manifest, platform));
     let mut named = Vec::new();
     for arg in manifest.args.values() {
         let Kind::Value {
@@ -617,6 +625,36 @@ fn judge<'a>(
                 ..Active::of(manifest, config)
             },
         )),
+    }
+}
+
+/// A reflex whose manifest names platforms, none of them this one: inactive here, `runs on macOS only`.
+fn elsewhere(
+    name: &LocalName,
+    manifest: &Manifest,
+    platform: Option<Platform>,
+) -> Option<Diagnostic> {
+    let platform = platform?;
+    if manifest.platforms.is_empty() || manifest.platforms.contains(&platform) {
+        return None;
+    }
+    Some(Diagnostic {
+        reflex: Some(name.clone()),
+        at: None,
+        message: format!("runs on {} only", listed(&manifest.platforms)),
+        fix: Fix::Remove {
+            reflex: name.clone(),
+        },
+    })
+}
+
+/// Platforms as a person reads them: `macOS`, `Linux and macOS`.
+fn listed(platforms: &[Platform]) -> String {
+    let names: Vec<String> = platforms.iter().map(ToString::to_string).collect();
+    match names.split_last() {
+        None => String::new(),
+        Some((last, [])) => last.clone(),
+        Some((last, rest)) => format!("{} and {last}", rest.join(", ")),
     }
 }
 

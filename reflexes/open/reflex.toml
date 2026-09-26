@@ -4,11 +4,12 @@ description = """
 Open one of your folders.
 The places named in your vocabulary, in the file manager."""
 
-not_for = ["websites", "applications", "files by name"]
-tags    = ["files"]
-effect  = "read"
-confirm = "Open {place}?"
-run     = ["open", "{place}"]
+not_for   = ["websites", "applications", "files by name"]
+tags      = ["files"]
+effect    = "read"
+confirm   = "Open {place}?"
+run       = ["open", "{place}"]
+platforms = ["macos"]
 
 [needs]
 reads = ["{place}"]

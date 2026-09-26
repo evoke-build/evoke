@@ -54,7 +54,8 @@ private window` · `saved report.pdf to ~/Downloads (1.2 MB)`.
 
 ## How they are built
 
-- **macOS**, one self-contained file each; a body that is not on a Mac says so and stops. `open` and `trash` are
+- **macOS**, one self-contained file each: every manifest names it, so on Linux each reflex is inactive, and `evoke
+  add` says so. `open` and `trash` are
   argv reflexes and need no runtime. Each manifest declares what its body touches under `[needs]`, and `evoke
   add` prints it under the row: `screenshot` writes `~/Desktop` and runs `screencapture`. `wifi` finds the Wi-Fi device by its port's name: `en0` on a laptop, often
   not on a desktop with Ethernet.

@@ -50,6 +50,7 @@ An inactive reflex is left out of every decision, and `show` lists why, one line
 
 | Line                                             | Means                                                    |
 | :----------------------------------------------- | :------------------------------------------------------- |
+| `runs on macOS only`                             | The manifest's `platforms` leave this machine out        |
 | `vocabulary "rooms" is empty`                    | An argument names a vocabulary with no words             |
 | `config "bridge" is not set`                     | A declared setting has no value                          |
 | `config "token" is a secret; it is set from a variable` | A secret was given plain                           |

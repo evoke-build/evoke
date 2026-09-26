@@ -4,11 +4,12 @@ description = """
 Open one of your sites in the browser.
 The sites named in your vocabulary; in a private window on request."""
 
-not_for = ["folders and files on this machine", "downloading a file", "searching the web"]
-tags    = ["web"]
-effect  = "read"
-confirm = "Open {site} in the browser?"
-run     = "visit.mts"
+not_for   = ["folders and files on this machine", "downloading a file", "searching the web"]
+tags      = ["web"]
+effect    = "read"
+confirm   = "Open {site} in the browser?"
+run       = "visit.mts"
+platforms = ["macos"]
 
 [needs]
 reads = ["~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist"]
