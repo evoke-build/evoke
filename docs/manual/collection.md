@@ -42,8 +42,8 @@ evoke config note file "~/notes.txt"                                          # 
 
 A reflex may declare what its result holds, for a later step of one sentence to take ([Weaving](use/weaving.md)).
 `download` and `screenshot` yield `path`, the file they saved to, a quoted text: a later step with a `quoted`
-argument your words left empty can take it. No reflex in the collection returns a whole result under a name yet,
-and none takes one.
+argument your words left empty can take it, as `note` does in `download https://evoke.build/llms.txt and note it`.
+No reflex in the collection returns a whole result under a name yet, and none takes one.
 
 ## What they say back
 

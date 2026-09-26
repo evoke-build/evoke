@@ -104,3 +104,50 @@ route                  = { open = 0.91, download = 0.02, lock = 0.01, none = 0.0
 "screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
 "screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
 "wifi.state"           = { unstated = 0.9, on = 0.05, off = 0.05 }
+
+# One sentence over two collection reflexes, tried at the end: the plan takes note's text from download's path.
+[answers."download https://evoke.build/llms.txt and note it"]
+"weave.split_0" = { yes = 0.9 }
+
+[answers."download https://evoke.build/llms.txt"]
+route                  = { download = 0.97, open = 0.01, none = 0.02 }
+"download.url"         = { "9-37" = 0.99, unstated = 0.01 }
+"download.to"          = { unstated = 0.96, desktop = 0.04 }
+"fits.awake"           = { yes = 0.02 }
+"fits.download"        = { yes = 0.8 }
+"fits.lock"            = { yes = 0.02 }
+"fits.mail"            = { yes = 0.02 }
+"fits.note"            = { yes = 0.05 }
+"fits.open"            = { yes = 0.02 }
+"fits.power"           = { yes = 0.02 }
+"fits.screenshot"      = { yes = 0.02 }
+"fits.timer"           = { yes = 0.02 }
+"fits.trash"           = { yes = 0.02 }
+"fits.volume"          = { yes = 0.02 }
+"fits.wifi"            = { yes = 0.02 }
+"open.place"           = { unstated = 0.96, desktop = 0.04 }
+"power.action"         = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+"screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
+"screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
+"wifi.state"           = { unstated = 0.9, on = 0.05, off = 0.05 }
+
+[answers."note it"]
+route                  = { note = 0.93, download = 0.02, none = 0.05 }
+"download.to"          = { unstated = 0.96, desktop = 0.04 }
+"fits.awake"           = { yes = 0.02 }
+"fits.download"        = { yes = 0.06 }
+"fits.lock"            = { yes = 0.02 }
+"fits.mail"            = { yes = 0.02 }
+"fits.note"            = { yes = 0.7 }
+"fits.open"            = { yes = 0.02 }
+"fits.power"           = { yes = 0.02 }
+"fits.screenshot"      = { yes = 0.02 }
+"fits.timer"           = { yes = 0.02 }
+"fits.trash"           = { yes = 0.02 }
+"fits.volume"          = { yes = 0.02 }
+"fits.wifi"            = { yes = 0.02 }
+"open.place"           = { unstated = 0.96, desktop = 0.04 }
+"power.action"         = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+"screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
+"screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
+"wifi.state"           = { unstated = 0.9, on = 0.05, off = 0.05 }

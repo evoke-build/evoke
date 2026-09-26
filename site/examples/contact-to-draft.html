@@ -18,15 +18,17 @@
         <p class="lede"><strong>Type one sentence that asks for two things, and the result of the first fills an input of
           the second.</strong> A reflex is a small program you install and ask for in your words. Here one reflex finds
           Dana's address, and a second starts an email to it. The lookup on this page is a stand-in from evoke's tests.
-          You write your own, and the mail reflex comes from evoke's collection of Mac reflexes.</p>
+          You write your own, and the mail reflex comes from evoke's collection of Mac reflexes. Two reflexes from the
+          collection do the same with a file's path, on any machine.</p>
         <div class="cta"><a class="button primary" href="#set-up">Adapt this pattern</a></div>
       </div>
       <ul class="index" aria-label="The sections">
         <li><a href="#request"><code>01</code>The request and the result</a></li>
         <li><a href="#files"><code>02</code>How the address passes</a></li>
         <li><a href="#boundary"><code>03</code>One boundary</a></li>
-        <li><a href="#set-up"><code>04</code>Set it up</a></li>
-        <li><a href="#app"><code>05</code>In your app</a></li>
+        <li><a href="#collection"><code>04</code>Two reflexes from the collection</a></li>
+        <li><a href="#set-up"><code>05</code>Set it up</a></li>
+        <li><a href="#app"><code>06</code>In your app</a></li>
       </ul>
     </div>
 
@@ -243,8 +245,65 @@
       </div>
     </section>
 
+    <section id="collection">
+      <div class="rule"><p class="label">Two reflexes from the collection</p><span class="num">04</span></div>
+      <h2>Two reflexes you can install pass a path the same way.</h2>
+      <p class="sub"><code>download</code> saves a file and declares the path it saved to. <code>note</code> takes a
+        quoted phrase, and «it» points back. <strong>Both run wherever Node runs.</strong> Recorded on 26 September 2026
+        against Jev, TypeSafe AI's model, on Linux.</p>
+      <div class="grid">
+        <div class="panel term" role="figure" aria-label="One sentence downloads a file and notes its path">
+          <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
+<pre><span class="p">$</span> <span class="in">evoke "download https://evoke.build/llms.txt and note it"</span>
+<span class="own">  1  <span class="name">download</span> url="https://evoke.build/llms.txt"  <span class="hi">1.00</span>
+  2  <span class="name">note</span> · takes path from 1</span>
+<span class="out">saved llms.txt to ~/Downloads (12 kB)</span>
+<span class="own">  2  <span class="name">note</span> text="~/Downloads/llms.txt"  <span class="hi">0.99</span></span>
+<span class="out">noted "~/Downloads/llms.txt" in ~/notes.txt</span></pre>
+        </div>
+        <div class="side">
+          <ol class="notes column">
+            <li><b>1</b><span><strong>«it» points at step 1.</strong> <code>note</code> needs a quoted phrase your words did
+              not give. <code>download</code>'s result holds the path it saved to, of that kind, so the plan prints
+              <code>takes path from 1</code>. Once the file is saved, the path fills <code>text</code>.</span></li>
+            <li><b>2</b><span><strong>Two lines in two manifests make the pass.</strong> <code>download</code>'s declares
+              <code>[yields]</code> <code>path = "quoted"</code>, and <code>note</code>'s <code>text</code> has
+              <code>pick = "quoted"</code>. Neither names the other.</span></li>
+            <li><b>3</b><span><strong>The note is the path, dated.</strong> <code>~/notes.txt</code> gained one line,
+              <code>2026-09-26  ~/Downloads/llms.txt</code>, and the file sits in <code>~/Downloads</code>.</span></li>
+          </ol>
+        </div>
+      </div>
+      <p class="caption">The plan for this sentence is also pinned in evoke's tests, over the whole collection, replayed
+        from written answers. To run it yourself, install the two reflexes, name a notes file that exists, and type the
+        sentence.</p>
+      <ol class="plan">
+        <li>
+          <div>
+            <h3>Install both from the collection</h3>
+            <div class="cmd"><code>evoke add evoke-build/reflexes/download</code><button type="button" data-copy aria-label="Copy the first add command">Copy</button></div>
+            <div class="cmd"><code>evoke add evoke-build/reflexes/note</code><button type="button" data-copy aria-label="Copy the second add command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Name the notes file</h3>
+            <p><code>note</code> appends to a file that exists, so make it first.</p>
+            <div class="cmd"><code>touch ~/notes.txt &amp;&amp; evoke config note file "~/notes.txt"</code><button type="button" data-copy aria-label="Copy the config command">Copy</button></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Type the sentence</h3>
+            <p>The plan prints first. Once the file is saved, step 2 prints again with the path, and the note is written.</p>
+            <div class="cmd"><code>evoke "download https://evoke.build/llms.txt and note it"</code><button type="button" data-copy aria-label="Copy the sentence">Copy</button></div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
     <section id="set-up">
-      <div class="rule"><p class="label">Set it up</p><span class="num">04</span></div>
+      <div class="rule"><p class="label">Set it up</p><span class="num">05</span></div>
       <h2>Set it up on a Mac, with a lookup you write.</h2>
       <p class="sub">No reflex in the collection looks up an address, so you write the lookup, and the collection's
         <code>mail</code> takes its address. <strong>The draft opens in your mail app, and you send it yourself.</strong></p>
@@ -383,7 +442,7 @@
     </section>
 
     <section id="app">
-      <div class="rule"><p class="label">In your app</p><span class="num">05</span></div>
+      <div class="rule"><p class="label">In your app</p><span class="num">06</span></div>
       <h2>The same sentence, from a Node application.</h2>
       <p class="sub">The SDK loads <code>~/dev</code>, runs the sentence with <code>weave()</code>, and lets your code
         answer its questions. <strong>It needs Node 24.5 or newer, and ES modules.</strong></p>
