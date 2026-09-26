@@ -8,7 +8,7 @@ It picks the ones the sentence asks for and fills their inputs from your words o
 plan before anything runs. It runs when it is sure enough for what the program changes, asks when something is
 missing or unclear, and always asks before anything that cannot be undone.
 
-<p align="center"><a href="https://evoke.build/film.html"><img src="site/og-film.jpg" alt="Software, by reflex. A film about where evoke is going." width="720"></a></p>
+<p align="center"><a href="https://evoke.build/film.html"><img src="assets/film.jpg" alt="Software, by reflex. A film about where evoke is going." width="640"></a></p>
 
 ## Where evoke is going
 
