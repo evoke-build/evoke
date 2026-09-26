@@ -1688,37 +1688,51 @@ Turn the lights in one room on, off, or dim them.</span>
         let queued = false
         addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; direct() }) } }, { passive: true })
 
-        // The assist: a scroll that ends inside the journey comes to rest on a beat, the next one when the scroll was heading
-        // there, so nobody stops between two chapters on a screen of sky with no words; an arrow key moves a beat at a time.
-        // Past the journey the page scrolls freely.
-        const today = document.querySelector(".future .today")
+        // The assist: a scroll that ends where nothing reads, in the empty middle between two beats, carries on to the next
+        // beat in the direction it was going. Wherever a beat reads from, the page is left where it is, and it never turns a
+        // scroll around; any input of yours ends the glide at once. The arrow keys move a beat at a time. On a phone the cards
+        // are held at the foot of the screen, so nothing is empty; past the journey the page scrolls freely.
+        const today = document.querySelector(".future .today"), bodies = beats.map(b => b.el.querySelector(".beat-body, .wrap"))
         const stops = () => [0, ...beats.slice(1).map(b => b.el.getBoundingClientRect().top + scrollY), today.getBoundingClientRect().top + scrollY - 72]  // each beat whole on the screen, then the section after it, clear of the bar
-        const inside = (y, s) => y <= s[s.length - 1] + 4
-        let rested = scrollY, touching = false
-        const rest = to => { rested = to; if (Math.abs(to - scrollY) > 2) scrollTo({ top: to, behavior: "auto" }) }  // "auto" follows the page's scroll-behavior: smooth, or at once when motion is reduced
-        const assist = () => {
-          if (touching) return
-          const y = scrollY, s = stops()
-          if (!inside(y, s)) { rested = y; return }
-          const aim = y + Math.sign(y - rested) * innerHeight * .2  // a scroll that went on carries on
-          rest(s.reduce((best, x) => Math.abs(x - aim) < Math.abs(best - aim) ? x : best))
+        const reads = () => bodies.some(el => { const r = el.getBoundingClientRect(), c = (r.top + r.bottom) / 2; return c > innerHeight * .2 && c < innerHeight * .8 })  // some beat's words sit in the middle of the screen
+        const settle = t => 1 - (1 - t) ** 4
+        let carry = null, touching = false, moved = -1e9, dir = 1, lastY = scrollY, pause = 0
+        const halt = () => { carry = null }
+        const carryTo = to => {  // the page glides to a stop, quickly for a short way, and stops the moment you scroll
+          const y0 = scrollY, d = to - y0
+          if (Math.abs(d) < 2) return
+          if (still) return scrollTo({ top: to, behavior: "instant" })
+          const t0 = performance.now(), ms = clamp(260 + Math.abs(d) * .45, 300, 700), c = carry = { t0 }
+          const step = now => {
+            if (carry !== c) return
+            const t = clamp((now - t0) / ms, 0, 1)
+            scrollTo({ top: y0 + d * settle(t), behavior: "instant" })
+            if (t < 1) requestAnimationFrame(step); else carry = null
+          }
+          requestAnimationFrame(step)
         }
-        // A scroll has ended when the browser says so, or when its events pause and no finger is down; the assist, asked twice,
-        // rests where it already rests
-        let timer = 0
-        const soon = () => { clearTimeout(timer); timer = setTimeout(assist, 240) }
-        addEventListener("scrollend", assist)
-        addEventListener("scroll", soon, { passive: true })
-        addEventListener("touchstart", () => { touching = true }, { passive: true })
-        for (const end of ["touchend", "touchcancel"]) addEventListener(end, () => { touching = false; soon() }, { passive: true })
-        addEventListener("keydown", e => {
-          const step = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0
-          if (!step || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.target.closest?.("input, textarea, select, [contenteditable]")) return
+        const assist = () => {
+          if (carry || touching || narrow || performance.now() - moved > 1500) return  // a glide of the page's own, a finger down, a phone, a scrollbar: left alone
           const y = scrollY, s = stops()
-          if (!inside(y, s)) return
+          if (y > s[s.length - 1] - innerHeight * .3 || reads()) return  // the journey's end, or a beat, reads from here
+          const to = dir < 0 ? s.findLast(x => x < y) : s.find(x => x > y)
+          if (to !== undefined) carryTo(to)
+        }
+        const soon = () => { clearTimeout(pause); pause = setTimeout(assist, 260) }  // a scroll has ended when its events and yours have paused
+        addEventListener("scroll", () => { const y = scrollY; dir = Math.sign(y - lastY) || dir; lastY = y; soon() }, { passive: true })
+        addEventListener("wheel", () => { halt(); moved = performance.now(); soon() }, { passive: true })
+        addEventListener("touchstart", () => { halt(); touching = true; moved = performance.now() }, { passive: true })
+        for (const end of ["touchend", "touchcancel"]) addEventListener(end, () => { touching = false; moved = performance.now(); soon() }, { passive: true })
+        addEventListener("keydown", e => {
+          if (e.altKey || e.ctrlKey || e.metaKey || e.target.closest?.("input, textarea, select, [contenteditable]")) return
+          halt(); moved = performance.now()
+          const step = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0
+          if (!step || e.shiftKey || narrow) return
+          const y = scrollY, s = stops()
+          if (y > s[s.length - 1] + 4) return
           const to = step > 0 ? s.find(x => x > y + 2) : s.findLast(x => x < y - 2)
           if (to === undefined) return
-          e.preventDefault(); rest(to)
+          e.preventDefault(); carryTo(to)
         })
         new IntersectionObserver(([e]) => { visible = e.isIntersecting; kick() }).observe(journey)
         document.addEventListener("visibilitychange", kick)
