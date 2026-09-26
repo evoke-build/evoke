@@ -1,6 +1,6 @@
 {
   "name": "@evoke-build/evoke",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "You invoke a function; you evoke a reflex. The SDK: load a project of reflexes, decide with Jev, run.",
   "keywords": [
     "jev",

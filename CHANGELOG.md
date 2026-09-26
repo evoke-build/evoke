@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-26
+
 - A number or a duration spelled out is a candidate, as one in digits is: `fifty percent`, `twenty-five`,
   `an hour`, `half an hour`, `an hour and a half`.
 - The collection's `volume` is not for turning it up or down by an amount.
