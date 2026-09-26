@@ -85,9 +85,9 @@ def recorded():
     line the binary printed in the weave flow, whose transcript the tests replay: the page shows nothing invented."""
     session = (ROOT / "spec/transcripts/weave/session.txt").read_text().splitlines()
     page = (SITE / "index.html").read_text()
-    start, end = page.find('<div class="walk"'), page.find('<section id="reflex">')
+    start, end = page.find('<div class="walk"'), page.find("<!-- /walk -->")
     if start < 0 or end < start:
-        sys.exit('site/index.html: no walkthrough between <div class="walk" and <section id="reflex">')
+        sys.exit('site/index.html: no walkthrough between <div class="walk" and <!-- /walk -->')
     walk = page[start:end]
 
     class Quoted(HTMLParser):  # an element left open, as a void one is, closes with its parent
