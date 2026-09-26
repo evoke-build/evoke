@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-09-26
+
 - A manifest names what its body returns, `returns = "deploys"`, and an argument takes an earlier step's whole
   result by that name, `[args.deploys] takes = "deploys"`: filled by the plan alone, never asked, handed to the
   body beside its decision. A step takes several in one call. No step before the taker returning the name, or two
