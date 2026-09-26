@@ -328,7 +328,7 @@ One person at a time; prints the address."""</span>
           </ol>
         </div>
       </div>
-      <p class="caption"><strong>A result passes to a later step only when all of this holds.</strong></p>
+      <p class="caption"><strong>A field of a result passes to a later step only when all of this holds.</strong></p>
       <ul class="ticks">
         <li>The earlier reflex declares a field of its result under <code>[yields]</code>, with its kind: a number, a
           duration, an email address, a URL, a quoted phrase, or a list of records made of these.</li>
@@ -338,9 +338,12 @@ One person at a time; prints the address."""</span>
         <li>Your words point back to the earlier step, with a word like «it», «them» or «the address».</li>
         <li>Exactly one field fits, or your words name the one you mean.</li>
       </ul>
+      <p class="caption">A reflex can also return its whole result under a name, for a later reflex that takes that
+        name: nothing points back, and nothing is asked.</p>
       <p class="caption"><code>contact</code> and this <code>mail</code> are stand-ins from evoke's tests, and so are the
-        numbers. The collection's <code>mail</code> opens a draft in your mail app, and nothing is sent. No reflex in the
-        collection declares <code>[yields]</code> yet: to pass a result today, write a reflex that does.</p>
+        numbers. The collection's <code>mail</code> opens a draft in your mail app, and nothing is sent. In the
+        collection, <code>download</code> and <code>screenshot</code> yield the path they saved to, for a later step to
+        take.</p>
       <p class="after"><a class="more" href="/examples/contact-to-draft.html">Pass a result to the next step, in the contact
         example →</a> <span class="also"><a href="/manual/use/weaving.html#what-a-step-takes-from-another">The rule, in the
         manual</a></span></p>

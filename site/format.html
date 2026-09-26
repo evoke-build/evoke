@@ -140,9 +140,9 @@
         <div><dt>Manifest</dt><dd><code>reflex.toml</code>: what the classifier reads and what the body receives.</dd></div>
         <div><dt>Body</dt><dd>What <code>run</code> names: a JavaScript file exporting a function, or a program with its arguments.</dd></div>
         <div><dt>Wording</dt><dd>What a user may override: descriptions, questions, option meanings, records.</dd></div>
-        <div><dt>Contract</dt><dd>What a user cannot override: <code>run</code>, needs, argument names and sources, option keys, ranges, config keys, yields.</dd></div>
+        <div><dt>Contract</dt><dd>What a user cannot override: <code>run</code>, needs, argument names and sources, option keys, ranges, config keys, what a reflex yields, returns and takes.</dd></div>
         <div><dt>Argument</dt><dd>A question about the input and a value for the body, from exactly one source.</dd></div>
-        <div><dt>Source</dt><dd>Where an argument's values come from: <code>options</code>, <code>vocab</code>, <code>pick</code> or <code>flag</code>.</dd></div>
+        <div><dt>Source</dt><dd>Where an argument's values come from: <code>options</code>, <code>vocab</code>, <code>pick</code>, <code>flag</code>, or <code>takes</code>, an earlier step's whole result.</dd></div>
         <div><dt>Span</dt><dd>An exact piece of the input, by character offsets.</dd></div>
         <div><dt>Vocabulary</dt><dd>The user's closed list of words, shared by every argument that names it.</dd></div>
         <div><dt>Overlay</dt><dd>The user's wording for one reflex, merged over the shipped manifest.</dd></div>
@@ -156,6 +156,7 @@
         <div><dt>Confidence</dt><dd>The lowest top probability among the route and every argument question of the winner.</dd></div>
         <div><dt>Weave</dt><dd>A sentence read as several steps, each decided on its own, the plan shown before anything runs.</dd></div>
         <div><dt>Yield</dt><dd>A field of a result a later step may take, declared under <code>[yields]</code> with the kind that reads it.</dd></div>
+        <div><dt>Return</dt><dd>The name a body's whole result goes by, <code>returns = "deploys"</code>. An argument that <code>takes</code> that name receives the result as the body returned it.</dd></div>
         <div><dt>Plan</dt><dd>The installed set compiled to questions. Its digest keys the cache and every decision.</dd></div>
       </dl>
     </section>
@@ -245,8 +246,9 @@ Ceiling and lamp lights only."""</span>
             <tr><td><code>run</code></td><td class="y">yes</td><td>The body: a path ending in <code>.mts</code> or <code>.mjs</code> inside the directory, or an argv.</td></tr>
             <tr><td><code>[needs]</code></td><td class="n">no</td><td>What the body touches, held by the kernel: <code>reads</code> and <code>writes</code>, paths as <code>~/…</code>, absolute, or <code>{name}</code> for the value of an argument or a config key; <code>hosts</code>, <code>["*"]</code> for the network; <code>runs</code>, programs by name on <code>PATH</code> or by absolute path. Absent means the tightest declaration: its own directory and a private <code>TMPDIR</code>.</td></tr>
             <tr><td><code>[config]</code></td><td class="n">no</td><td>Settings the user provides: <code>key = "about"</code>, or <code>{ about, secret = true }</code>. A secret is only ever set from an environment variable.</td></tr>
-            <tr><td><code>[args.&lt;name&gt;]</code></td><td class="n">no</td><td>The arguments. Each has <code>ask</code> and exactly one source.</td></tr>
+            <tr><td><code>[args.&lt;name&gt;]</code></td><td class="n">no</td><td>The arguments. Each has <code>ask</code> and exactly one source, or <code>takes</code> alone: the whole result of an earlier step, by the name its reflex returns.</td></tr>
             <tr><td><code>[yields]</code></td><td class="n">no</td><td>What the body's <code>data</code> holds for a later step: per field, the kind that reads it, or <code>{ each = { … } }</code> for a list of records.</td></tr>
+            <tr><td><code>returns</code></td><td class="n">no</td><td>The name of the body's whole <code>data</code>, for a later step whose argument takes it. Never a name the reflex takes. Absent from a reflex whose <code>run</code> is an argv, which returns no data.</td></tr>
             <tr><td><code>[examples]</code></td><td class="n">no</td><td>Utterances with what they assert. Sent to the classifier.</td></tr>
             <tr><td><code>[tests]</code></td><td class="n">no</td><td>The same shape, held out. Never sent; run by <code>evoke test</code>.</td></tr>
           </tbody>
@@ -274,7 +276,7 @@ Ceiling and lamp lights only."""</span>
             <tr><td><code>run</code>, <code>[needs]</code></td><td><code>description</code>, <code>not_for</code>, <code>tags</code>, <code>confirm</code></td></tr>
             <tr><td>argument names and their sources</td><td>every <code>ask</code></td></tr>
             <tr><td>option keys, <code>range</code></td><td>the meaning of each option</td></tr>
-            <tr><td><code>config</code> keys, <code>yields</code></td><td>examples and tests</td></tr>
+            <tr><td><code>config</code> keys, <code>yields</code>, <code>returns</code>, what an argument takes</td><td>examples and tests</td></tr>
           </tbody>
         </table></div>
       </div>
@@ -821,6 +823,13 @@ Ceiling and lamp lights only."""</span>
           kind into the argument it lacks. A required argument is filled with the value. An optional one is decided
           again with the value written into the words, under the same gate as any words. A reference several fields
           could satisfy <span class="kw">MUST</span> be asked, never guessed.</p>
+        <p>A body <span class="kw">MAY</span> name its whole result, <code>returns = "deploys"</code>. A later step whose
+          argument <code>takes</code> that name receives the result as the body returned it, beside its decision and
+          never in its words, whatever the words refer to; nothing is asked. The step waits for the steps it takes
+          from. A step that takes a name no earlier step returns, or that two return, <span class="kw">MUST</span> be
+          refused before anything runs. A result over 1 MiB <span class="kw">MUST NOT</span> be handed: the step is
+          skipped, as when its source yields nothing. A reflex that runs destructive takes no whole result, since its
+          confirm cannot show one.</p>
         <div class="panel term">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="weave"><span class="p">$</span> <span class="in">evoke "look up dana's address and email them"</span>

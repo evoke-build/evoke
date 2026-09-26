@@ -230,12 +230,13 @@
             <dd><strong>Your wording decides how well sentences find your reflex.</strong> The classifier knows your reflex
               only through its manifest's words. Examples are sent with each request, and they teach it. The classifier's
               provider reports its best accuracy in English.</dd>
-            <dt>options · vocab · pick · flag</dt>
-            <dd><strong>The four sources of an input.</strong> Each value comes from one of four places: the author's own
-              list, the user's own list of words, a piece of the sentence read word for word, or a yes/no switch. A number
-              or a duration is also checked against its range.</dd>
+            <dt>options · vocab · pick · flag · takes</dt>
+            <dd><strong>The five sources of an input.</strong> Each value comes from one of five places: the author's own
+              list, the user's own list of words, a piece of the sentence read word for word, a yes/no switch, or the
+              whole result of an earlier step in the same sentence. A number or a duration is also checked against its
+              range.</dd>
             <dt>one source each</dt>
-            <dd><strong>Valid is not the same as understood.</strong> Each input takes exactly one of the four sources.
+            <dd><strong>Valid is not the same as understood.</strong> Each input takes exactly one of the five sources.
               evoke guarantees that every value is one the reflex allows. It cannot guarantee that it read you right. That
               is why a confidence bar, set by what the program changes, decides what runs without a question.</dd>
             <dt>ask · the meanings</dt>
@@ -253,9 +254,10 @@
               with <code>evoke config</code>. A secret, such as <code>token</code>, is only ever taken from an environment
               variable. <code>confirm</code> is the question evoke asks when it needs a yes. <code>tags</code> let a
               person narrow a decision with <code>--tag</code>.</dd>
-            <dt>[yields]</dt>
+            <dt>[yields] · returns</dt>
             <dd><strong>What the result holds, for a later step.</strong> It names a field of the result and its kind,
-              such as a number or an email address. A later step of the same sentence can then take it.</dd>
+              such as a number or an email address. A later step of the same sentence can then take it. A reflex names
+              its whole result with <code>returns</code>, and a later reflex takes it by that name.</dd>
           </dl>
         </div>
       </div>
@@ -333,8 +335,9 @@
           <h3>A weave: one step's result feeds the next</h3>
           <p>One sentence read as several steps is a weave. A reflex declares under <code>[yields]</code> what its result
             holds, such as an email address. A later step takes that value when its words point back to it, as
-            <code>them</code> does, and it lacks a value of that kind. <code>steps()</code> reads a sentence into its plan
-            and runs nothing. <code>weave()</code> runs the plan under your handlers.</p>
+            <code>them</code> does, and it lacks a value of that kind. A reflex can also return its whole result under a
+            name, for a later reflex that takes that name. <code>steps()</code> reads a sentence into its plan and runs
+            nothing. <code>weave()</code> runs the plan under your handlers.</p>
         </div>
         <div>
           <h3>A continuation: your loop decides</h3>
@@ -356,10 +359,9 @@ plan<span class="o">.</span>verdict     <span class="c">// { outcome: "run" | "a
 <span class="o">})</span>
 woven<span class="o">.</span>status     <span class="c">// the worst step's: "ran", "failed", "declined", "refused", "unanswered"</span></pre>
       </div>
-      <p class="caption"><code>contact</code> in this plan is a stand-in from evoke's own tests. No reflex in evoke's own
-        collection declares <code>[yields]</code> yet. So today a result can come only from a reflex whose author
-        declares it, such as one you write. A sentence with several steps makes one request to find the steps, then at
-        least one for each step.</p>
+      <p class="caption"><code>contact</code> in this plan is a stand-in from evoke's own tests. In the collection,
+        <code>download</code> and <code>screenshot</code> yield the path they saved to, for a later step to take. A
+        sentence with several steps makes one request to find the steps, then at least one for each step.</p>
       <p class="after"><a class="more" href="/examples/contact-to-draft.html">Pass a result to the next step →</a>
         <span class="also">The loop, in the <a href="/examples/runbook.html">runbook example</a>. <a href="/how-it-works.html#handoff">How one sentence becomes a plan →</a></span></p>
     </section>
