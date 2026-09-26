@@ -245,3 +245,51 @@ route          = { none = 0.95, lights = 0.05 }
 "fits.lights"  = { yes = 0.05 }
 "lights.room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
 "lights.state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+
+[answers."kill the lights in the den, be quick, and start a 10 minute timer"]
+"weave.split_0" = { yes = 0.61 }
+"weave.split_1" = { yes = 0.9 }
+
+[answers."kill the lights in the den, be quick"]
+route          = { lights = 1.0 }
+"fits.lights"  = { yes = 0.78 }
+"fits.timer"   = { yes = 0.02 }
+"fits.volume"  = { yes = 0.02 }
+"fits.contact" = { yes = 0.05 }
+"fits.mail"    = { yes = 0.01 }
+"lights.room"  = { den = 1.0 }
+"lights.state" = { off = 1.0 }
+"contact.name" = { unstated = 1.0 }
+
+[answers."email dana@example.com and sam@example.com"]
+"weave.split_0" = { yes = 0.31 }
+route           = { mail = 1.0 }
+"fits.lights"   = { yes = 0.01 }
+"fits.timer"    = { yes = 0.02 }
+"fits.volume"   = { yes = 0.01 }
+"fits.contact"  = { yes = 0.04 }
+"fits.mail"     = { yes = 0.6 }
+"lights.room"   = { unstated = 1.0 }
+"lights.state"  = { unstated = 1.0 }
+"contact.name"  = { unstated = 0.91, dana = 0.08, sam = 0.01 }
+"mail.to"       = { unstated = 0.7, "6-22" = 0.29, "27-42" = 0.01 }
+"mail.cc"       = { unstated = 0.86, "6-22" = 0.11, "27-42" = 0.03 }
+
+[answers."email dana@example.com"]
+route          = { mail = 1.0 }
+"fits.lights"  = { yes = 0.01 }
+"fits.timer"   = { yes = 0.02 }
+"fits.volume"  = { yes = 0.02 }
+"fits.contact" = { yes = 0.15 }
+"fits.mail"    = { yes = 0.74 }
+"lights.room"  = { unstated = 1.0 }
+"lights.state" = { unstated = 1.0 }
+"contact.name" = { dana = 0.93, unstated = 0.07 }
+"mail.to"      = { "6-22" = 1.0 }
+"mail.cc"      = { unstated = 0.8, "6-22" = 0.2 }
+
+[answers."sam@example.com"]
+route       = { mail = 0.71, none = 0.29 }
+"fits.mail" = { yes = 0.43 }
+"mail.to"   = { "0-15" = 0.89, unstated = 0.11 }
+"mail.cc"   = { "0-15" = 0.61, unstated = 0.39 }

@@ -484,10 +484,7 @@ impl Using<'_> {
                 Answered::Declined { ask } => return Ok(UpFront::Declined { step: n, ask }),
             };
             let filled = fill(&self.session.plan, asking.clone(), given, self.floors());
-            let mut decided = woven
-                .decided_for(step, &tags)
-                .expect("every step was decided")
-                .clone();
+            let mut decided = woven.planned(step, &tags).expect("every step was decided");
             decided.decision = filled;
             seeded.push((weave::asked_for(step, &tags), decided));
         }
@@ -534,11 +531,10 @@ impl Using<'_> {
         let tags = self.arguments.tags.clone();
         let of = woven.weave.steps.len();
         for step in &woven.weave.steps {
-            let Some(decided) = woven.decided_for(step, &tags) else {
+            let Some(decided) = woven.planned(step, &tags) else {
                 continue;
             };
-            let mut line = Line::of(decided);
-            line.decision = step.decision.clone();
+            let mut line = Line::of(&decided);
             let (status, why) = became(step);
             line.step = Some(StepLine {
                 n: step.n,
@@ -616,10 +612,9 @@ impl Using<'_> {
                         let decided = rewritten
                             .iter()
                             .find(|(asked, _)| *asked == again)
-                            .map(|(_, decided)| decided)
-                            .or_else(|| woven.decided_for(step, &tags))
-                            .expect("every round has its decision")
-                            .clone();
+                            .map(|(_, decided)| decided.clone())
+                            .or_else(|| woven.planned(step, &tags))
+                            .expect("every round has its decision");
                         // Ctrl-C noted: a round handed after it never starts, and reads skipped · cancelled.
                         if interrupt::interrupted() {
                             progress
@@ -706,10 +701,10 @@ impl Using<'_> {
                                 && matches!(decided.decision, Decision::Abstain { .. })
                         })
                     })
-                    .map(|(_, decided)| decided),
+                    .map(|(_, decided)| decided.clone()),
                 None => None,
             }
-            .or_else(|| woven.decided_for(step, &tags));
+            .or_else(|| woven.planned(step, &tags));
             let Some(decided) = decided else {
                 continue;
             };
@@ -735,10 +730,7 @@ impl Using<'_> {
             {
                 continue;
             }
-            let mut line = Line::of(decided);
-            if refused.is_none() {
-                line.decision = step.decision.clone();
-            }
+            let mut line = Line::of(&decided);
             line.step = Some(StepLine {
                 n: outcome.step,
                 of,

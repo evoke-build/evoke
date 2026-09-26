@@ -69,6 +69,88 @@ $ evoke "kill the lights in the den, then be quick"
   lights room="den" state="off" · write · weakest: room 0.85 · merged
   Set the den lights off?  [y]es [n]o [t]each > y
 den lights off
+# A part that matches nothing between two that do is read with the part before it as one request, when the engine
+# is not firm that it is a task of its own: that step confirms at its turn, merged on its line, and try shows it so.
+$ evoke try "kill the lights in the den, be quick, and start a 10 minute timer"
+  1  lights room="den" state="off" · write · weakest: route 1.00 · merged
+  2  timer duration="10 minute"  0.90
+  1  "kill the lights in the den, be quick"
+  lights 1.00
+  room   den 1.00
+  state  off 1.00
+  fits   lights 0.78 · contact 0.05 · timer 0.02 · volume 0.02 · mail 0.01
+  confirm · lights room="den" state="off" · write · weakest: route 1.00 · merged
+  2  "start a 10 minute timer"
+  timer 0.90 · none 0.06 · lights 0.02 · volume 0.02
+  duration  "10 minute" 0.90 · unstated 0.10
+  fits      timer 0.80 · lights 0.05 · volume 0.05 · contact 0.02 · mail 0.02
+  run · weakest: route 0.90
+$ evoke "kill the lights in the den, be quick, and start a 10 minute timer"
+  1  lights room="den" state="off" · write · weakest: route 1.00 · merged
+  2  timer duration="10 minute"  0.90
+  1  lights room="den" state="off" · write · weakest: route 1.00 · merged
+  Set the den lights off?  [y]es [n]o [t]each > y
+den lights off
+10 minute timer started
+$ evoke --json "kill the lights in the den, be quick, and start a 10 minute timer"
+  1  lights room="den" state="off" · write · weakest: route 1.00 · merged
+  Set the den lights off?  [y]es [n]o [t]each > y
+{"step":1,"steps":2,"input":"kill the lights in the den, be quick","outcome":"confirm","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","confidence":1.0,"weakest":{"question":"route","top":"lights","p":1.0},"judgments":[{"question":"route","top":"lights","p":1.0},{"question":"lights.room","top":"den","p":1.0},{"question":"lights.state","top":"off","p":1.0}],"runner_up":{"reflex":"timer","route":0.0,"fits":0.02},"contenders":[{"reflex":"lights","route":1.0,"fits":0.78},{"reflex":"timer","route":0.0,"fits":0.02},{"reflex":"volume","route":0.0,"fits":0.02},{"reflex":"contact","route":0.0,"fits":0.05},{"reflex":"mail","route":0.0,"fits":0.01}],"prompt":{"own":"lights room=\"den\" state=\"off\" · write · weakest: route 1.00 · merged","template":"Set the den lights off?"},"because":[{"type":"merged"}],"trace":[],"contained":{"type":"full"},"result":{"text":"den lights off"},"status":"ran"}
+{"step":2,"steps":2,"input":"start a 10 minute timer","outcome":"run","reflex":"timer","args":{"duration":{"type":"pick","span":{"start":8,"end":17,"text":"10 minute"},"value":{"type":"duration","value":600}}},"call":"timer duration=\"10 minute\"","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"timer","p":0.9},"judgments":[{"question":"route","top":"timer","p":0.9},{"question":"timer.duration","top":"8-17","p":0.9}],"runner_up":{"reflex":"lights","route":0.02,"fits":0.05},"contenders":[{"reflex":"timer","route":0.9,"fits":0.8},{"reflex":"lights","route":0.02,"fits":0.05},{"reflex":"volume","route":0.02,"fits":0.05},{"reflex":"contact","route":0.0,"fits":0.02},{"reflex":"mail","route":0.0,"fits":0.02}],"trace":[],"contained":{"type":"full"},"result":{"text":"10 minute timer started"},"status":"ran"}
+# Two addresses the engine reads as one request are two steps of the same reflex, the second decided under that
+# reflex alone; a judgment under the floor makes it confirm at its turn.
+$ evoke try "email dana@example.com and sam@example.com"
+  1  mail to="dana@example.com"  0.80
+  2  mail to="sam@example.com" cc="sam@example.com" · write · weakest: cc 0.61
+  1  "email dana@example.com"
+  mail 1.00
+  to    "dana@example.com" 1.00
+  cc    unstated 0.80 · "dana@example.com" 0.20
+  fits  mail 0.74 · contact 0.15 · timer 0.02 · volume 0.02 · lights 0.01
+  run · weakest: cc 0.80
+  2  "sam@example.com"
+  mail 0.71 · none 0.29
+  to    "sam@example.com" 0.89 · unstated 0.11
+  cc    "sam@example.com" 0.61 · unstated 0.39
+  fits  mail 0.43
+  confirm · mail to="sam@example.com" cc="sam@example.com" · write · weakest: cc 0.61
+$ evoke "email dana@example.com and sam@example.com"
+  1  mail to="dana@example.com"  0.80
+  2  mail to="sam@example.com" cc="sam@example.com" · write · weakest: cc 0.61
+drafted to dana@example.com
+  2  mail to="sam@example.com" cc="sam@example.com" · write · weakest: cc 0.61
+  Write to sam@example.com?  [y]es [n]o [t]each > y
+drafted to sam@example.com, copy sam@example.com
+$ evoke --json "email dana@example.com and sam@example.com"
+{"step":1,"steps":2,"input":"email dana@example.com","outcome":"run","reflex":"mail","args":{"to":{"type":"pick","span":{"start":6,"end":22,"text":"dana@example.com"},"value":{"type":"email","value":"dana@example.com"}}},"call":"mail to=\"dana@example.com\"","effect":"write","confidence":0.8,"weakest":{"question":"mail.cc","top":"unstated","p":0.8},"judgments":[{"question":"route","top":"mail","p":1.0},{"question":"mail.to","top":"6-22","p":1.0},{"question":"mail.cc","top":"unstated","p":0.8}],"runner_up":{"reflex":"lights","route":0.0,"fits":0.01},"contenders":[{"reflex":"mail","route":1.0,"fits":0.74},{"reflex":"lights","route":0.0,"fits":0.01},{"reflex":"timer","route":0.0,"fits":0.02},{"reflex":"volume","route":0.0,"fits":0.02},{"reflex":"contact","route":0.0,"fits":0.15}],"trace":[],"contained":{"type":"full"},"result":{"text":"drafted to dana@example.com"},"status":"ran"}
+  2  mail to="sam@example.com" cc="sam@example.com" · write · weakest: cc 0.61
+  Write to sam@example.com?  [y]es [n]o [t]each > y
+{"step":2,"steps":2,"input":"sam@example.com","outcome":"confirm","reflex":"mail","args":{"to":{"type":"pick","span":{"start":0,"end":15,"text":"sam@example.com"},"value":{"type":"email","value":"sam@example.com"}},"cc":{"type":"pick","span":{"start":0,"end":15,"text":"sam@example.com"},"value":{"type":"email","value":"sam@example.com"}}},"call":"mail to=\"sam@example.com\" cc=\"sam@example.com\"","effect":"write","confidence":0.61,"weakest":{"question":"mail.cc","top":"0-15","p":0.61},"judgments":[{"question":"route","top":"mail","p":0.71},{"question":"mail.to","top":"0-15","p":0.89},{"question":"mail.cc","top":"0-15","p":0.61}],"contenders":[{"reflex":"mail","route":0.71,"fits":0.43}],"prompt":{"own":"mail to=\"sam@example.com\" cc=\"sam@example.com\" · write · weakest: cc 0.61","template":"Write to sam@example.com?"},"because":[{"type":"under_floor","judgment":{"question":"mail.cc","top":"0-15","p":0.61},"floor":0.8}],"trace":[],"contained":{"type":"full"},"result":{"text":"drafted to sam@example.com, copy sam@example.com"},"status":"ran"}
+# A bare item, a determiner and one word, takes the place of the value it stands for in its neighbour's words and
+# keeps the rest: two steps of one reflex.
+$ evoke try "kill the lights in the den and the office"
+  1  lights room="den" state="off"  0.85
+  2  lights room="office" state="off"  0.88
+  1  "kill the lights in the den"
+  lights 0.91 · none 0.06 · timer 0.02 · volume 0.01
+  room   den 0.85 · unstated 0.10 · office 0.05
+  state  off 0.88 · on 0.05 · dim 0.05 · unstated 0.02
+  fits   lights 0.70 · timer 0.05 · volume 0.05 · contact 0.02 · mail 0.02
+  run · weakest: room 0.85
+  2  "kill the lights in the office"
+  lights 0.92 · none 0.08
+  room   office 0.90 · unstated 0.08 · den 0.02
+  state  off 0.88 · on 0.05 · dim 0.05 · unstated 0.02
+  fits   lights 0.70
+  run · weakest: state 0.88
+$ evoke "kill the lights in the den and the office"
+  1  lights room="den" state="off"  0.85
+  2  lights room="office" state="off"  0.88
+den lights off
+group-7 lights off
+$ evoke --json "kill the lights in the den and the office"
+{"step":1,"steps":2,"input":"kill the lights in the den","outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","confidence":0.85,"weakest":{"question":"lights.room","top":"den","p":0.85},"judgments":[{"question":"route","top":"lights","p":0.91},{"question":"lights.room","top":"den","p":0.85},{"question":"lights.state","top":"off","p":0.88}],"runner_up":{"reflex":"timer","route":0.02,"fits":0.05},"contenders":[{"reflex":"lights","route":0.91,"fits":0.7},{"reflex":"timer","route":0.02,"fits":0.05},{"reflex":"volume","route":0.01,"fits":0.05},{"reflex":"contact","route":0.0,"fits":0.02},{"reflex":"mail","route":0.0,"fits":0.02}],"trace":[],"contained":{"type":"full"},"result":{"text":"den lights off"},"status":"ran"}
+{"step":2,"steps":2,"input":"kill the lights in the office","outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"office","value":"group-7"},"state":{"type":"option","key":"off"}},"call":"lights room=\"office\" state=\"off\"","effect":"write","confidence":0.88,"weakest":{"question":"lights.state","top":"off","p":0.88},"judgments":[{"question":"route","top":"lights","p":0.92},{"question":"lights.room","top":"office","p":0.9},{"question":"lights.state","top":"off","p":0.88}],"contenders":[{"reflex":"lights","route":0.92,"fits":0.7}],"trace":[],"contained":{"type":"full"},"result":{"text":"group-7 lights off"},"status":"ran"}
 # A part that says what not to do is no step; one step beside it is decided as one input. Only such parts is
 # nothing to do.
 $ evoke "kill the lights in the den but don't start a timer"

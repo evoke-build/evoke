@@ -6,6 +6,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- `evoke try` shows a step read with its neighbour as one request as the confirm it is, in a plan of several
+  steps too.
+
 ## [0.8.0] - 2026-09-26
 
 - A number or a duration spelled out is a candidate, as one in digits is: `fifty percent`, `twenty-five`,

@@ -107,28 +107,35 @@ pub struct Woven {
 }
 
 impl Woven {
-    /// What a step's words decided, as the planner asked for them.
+    /// A step as a host shows or runs it: its words' request, answers and reading, under the decision the plan
+    /// holds for the step, caps included — a part merged back confirms wherever the step is shown. The run puts
+    /// the plan's cap on again at the turn, to a decision filled or rewritten there.
     #[must_use]
-    pub fn decided_for(&self, step: &Step, tags: &[Tag]) -> Option<&Decided> {
+    pub fn planned(&self, step: &Step, tags: &[Tag]) -> Option<Decided> {
+        self.decided_for(step, tags).map(|decided| Decided {
+            decision: step.decision.clone(),
+            ..decided.clone()
+        })
+    }
+
+    /// The one decision a request read as: one step, and so nothing bound — what the foundation alone would have
+    /// made of it, under the plan's cap. A part left out beside it changes nothing: what was said not to do is
+    /// no step.
+    #[must_use]
+    pub fn single(&self, tags: &[Tag]) -> Option<Decided> {
+        match self.weave.steps.as_slice() {
+            [step] => self.planned(step, tags),
+            _ => None,
+        }
+    }
+
+    /// What a step's words decided, as the planner asked for them: the text's own word, before the plan's.
+    fn decided_for(&self, step: &Step, tags: &[Tag]) -> Option<&Decided> {
         let asked = weave::asked_for(step, tags);
         self.decided
             .iter()
             .find(|(a, _)| *a == asked)
             .map(|(_, decided)| decided)
-    }
-
-    /// The one decision a request read as: one step, and so nothing bound — what the foundation alone would have
-    /// made of it, under the cap the plan put on the step: merged back, it confirms here too. A part left out
-    /// beside it changes nothing: what was said not to do is no step.
-    #[must_use]
-    pub fn single(&self, tags: &[Tag]) -> Option<Decided> {
-        match self.weave.steps.as_slice() {
-            [step] => self.decided_for(step, tags).map(|decided| Decided {
-                decision: step.decision.clone(),
-                ..decided.clone()
-            }),
-            _ => None,
-        }
     }
 }
 
