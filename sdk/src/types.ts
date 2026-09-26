@@ -119,6 +119,7 @@ export type File =
 /** The closed set of fixing commands, each rendered as the literal last line of a diagnostic. */
 export type Fix =
   | { type: "vocab_add"; vocab: VocabName } // evoke vocab <vocab> add <word> "<meaning>"
+  | { type: "vocab_value"; vocab: VocabName; word: Word } // evoke vocab <vocab> add <word> "<meaning>" --value <path>
   | { type: "vocab_remove"; vocab: VocabName } // evoke vocab <vocab> remove <word>
   | { type: "vocab"; vocab: VocabName } // evoke vocab <vocab>
   | { type: "config_set"; reflex: LocalName; key: ConfigKey } // evoke config <reflex> <key> <value>

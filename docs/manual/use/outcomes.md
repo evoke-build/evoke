@@ -67,7 +67,8 @@ volume set to 40%
   is a number, a duration, an address, a URL, or a quoted phrase. A quoted argument takes the whole line when
   nothing is quoted.
 - An answer that does not fit is asked again, with the reason on the line. An empty line asks again.
-- `+` at a vocabulary's prompt asks `Word?` and `Meaning?`, writes the word to your vocabulary, and goes on.
+- `+` at a vocabulary's prompt asks `Word?` and `Meaning?`, then `Path?` when a reflex's declaration takes the
+  word's value as a path, writes the word to your vocabulary, and goes on.
 - The end of input, `Ctrl-D`, declines with exit 2.
 
 ## Abstain

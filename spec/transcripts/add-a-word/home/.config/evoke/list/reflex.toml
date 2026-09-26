@@ -1,0 +1,18 @@
+reflex = 1
+
+description = """
+List what one of your folders holds.
+The folders named in your vocabulary."""
+effect = "read"
+confirm = "List {place}?"
+run = ["ls", "{place}"]
+
+[needs]
+reads = ["{place}"]
+
+[args.place]
+ask   = "Which folder?"
+vocab = "places"
+
+[examples]
+"list the desktop" = {}

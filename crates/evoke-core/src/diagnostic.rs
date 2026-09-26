@@ -4,7 +4,7 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 
-use crate::name::{ConfigKey, LocalName, VarName, VocabName};
+use crate::name::{ConfigKey, LocalName, VarName, VocabName, Word};
 
 /// A problem a person has to fix, ending in the command that fixes it.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -42,6 +42,11 @@ pub enum File {
 pub enum Fix {
     VocabAdd {
         vocab: VocabName,
+    },
+    /// `evoke vocab <name> add <word> "<meaning>" --value <path>`: a word whose value is not the path a body needs.
+    VocabValue {
+        vocab: VocabName,
+        word: Word,
     },
     /// `evoke vocab <name> remove <word>`: a vocabulary offers more words than the adapter takes in one question.
     VocabRemove {
@@ -114,6 +119,9 @@ impl Fix {
     pub fn command(&self, invoked: &str) -> String {
         match self {
             Self::VocabAdd { vocab } => format!("evoke vocab {vocab} add <word> \"<meaning>\""),
+            Self::VocabValue { vocab, word } => {
+                format!("evoke vocab {vocab} add {word} \"<meaning>\" --value <path>")
+            }
             Self::VocabRemove { vocab } => format!("evoke vocab {vocab} remove <word>"),
             Self::Vocab { vocab } => format!("evoke vocab {vocab}"),
             Self::ConfigSet { reflex, key } => format!("evoke config {reflex} {key} <value>"),

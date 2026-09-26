@@ -120,7 +120,8 @@ $ evoke vocab rooms remove attic
 ```
 
 `add` of a word already there replaces its meaning. A word may contain spaces. `none` and `unstated` are
-reserved. At an ask over a vocabulary, `+` adds a word without leaving the prompt.
+reserved. At an ask over a vocabulary, `+` adds a word without leaving the prompt, its path too when a reflex
+declares the word's value as one it reads or writes.
 
 ## `config`: settings and secrets
 

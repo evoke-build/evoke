@@ -81,6 +81,11 @@ fn repl() {
 }
 
 #[test]
+fn add_a_word() {
+    flow("add-a-word");
+}
+
+#[test]
 fn teach() {
     flow("teach");
 }

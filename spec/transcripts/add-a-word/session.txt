@@ -1,0 +1,14 @@
+# A word added at the prompt takes its path when a declaration reads or writes what the word names, and the body
+# runs held to it.
+$ evoke "list the photos"
+  Which folder?  [1] desktop  [+] add one  > +
+  Word?  > photos
+  Meaning?  > My photos.
+  Path?  > photos
+  Path?  "photos" is not a path  > ~/Photos
++ vocab/places.toml  photos = { what = "My photos.", value = "~/Photos" }
+  list place="photos"  0.90
+one.jpg
+$ evoke vocab places
+  desktop = { what = "The desktop.", value = "~/Desktop" }
+  photos = { what = "My photos.", value = "~/Photos" }

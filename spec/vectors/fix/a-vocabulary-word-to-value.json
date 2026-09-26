@@ -1,0 +1,10 @@
+{
+  "input": {
+    "fix": {
+      "type": "vocab_value",
+      "vocab": "places",
+      "word": "photos"
+    }
+  },
+  "expect": "evoke vocab places add photos \"<meaning>\" --value <path>"
+}

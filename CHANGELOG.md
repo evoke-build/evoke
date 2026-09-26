@@ -8,6 +8,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 - A manifest names where its body runs, `platforms = ["macos"]`. On another machine the reflex is inactive,
   and `add` and `show` say so. The collection's reflexes name macOS.
+- `[+] add one` at a prompt asks for the word's path when a reflex declares its value as one it reads or
+  writes, and a word without one names itself in the fix: `evoke vocab places add photos "<meaning>" --value
+  <path>`.
 - A body's failure prints its message alone. The frames of an error a JavaScript body threw are kept in the
   log: `evoke why` shows them, and `--json` carries them as `frames`.
 

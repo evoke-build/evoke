@@ -21,6 +21,7 @@ The set of fixing commands is closed. Each line ends in one of these:
 | `evoke add evoke-build/reflexes`           | Nothing is installed                                                        |
 | `evoke add <ref> --as <name>`              | A local name is taken, or a `[reflexes]` line names something not locked    |
 | `evoke vocab <name> add <word> "<meaning>"`| A vocabulary is empty, or a word is not in it                               |
+| `evoke vocab <name> add <word> "<meaning>" --value <path>` | A word's value is not the path a declaration takes it for |
 | `evoke vocab <name> remove <word>`         | A vocabulary offers more words than the classifier takes in one question    |
 | `evoke vocab <name>`                       | A word to remove is not in the vocabulary                                   |
 | `evoke add <ref>…`                         | The rest of a collection one taken name refused; a ref without a tag it has not, or without `--as` |

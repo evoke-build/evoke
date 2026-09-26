@@ -106,7 +106,8 @@ this: [Security](../security.md#what-runs-and-as-whom).
 A `{name}` names an argument that carries a value, a word's or a typed one, or a config key; `evoke check`
 refuses one that names neither, or a flag. An entry over an optional argument left unstated is dropped. A value
 that is not a path, a word whose value is a name rather than a folder, refuses the run and points at the value's
-source: `[needs] writes names {to}, whose value "desk" is not a path  →  evoke vocab places add <word> "<meaning>"`.
+source: `[needs] writes names {to}, whose value "desk" is not a path  →  evoke vocab places add desk "<meaning>"
+--value <path>`.
 
 A reach past the declaration ends the run with what was reached and the key, `~/secret.txt is not in [needs]
 reads`, and a fix by where the declaration is written: this manifest's line for a local reflex; for a fetched

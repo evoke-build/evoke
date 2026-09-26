@@ -999,6 +999,15 @@ pub fn meaning_prompt(retry: Option<&str>) -> String {
     }
 }
 
+/// `[+] add one`, third prompt, where a body's declaration takes the word's value as a path: the path.
+#[must_use]
+pub fn path_prompt(retry: Option<&str>) -> String {
+    match retry {
+        Some(retry) => format!("  Path?  {retry}  > "),
+        None => "  Path?  > ".to_owned(),
+    }
+}
+
 /// `evoke --help`: the version with its line, then every command by group — its line, then what it does, in
 /// a second column where the terminal is wide enough for one and under the line where it is not — then the exit
 /// codes and the manual. Plain: it goes to stdout. `columns` is the terminal's width, when stdout is one.

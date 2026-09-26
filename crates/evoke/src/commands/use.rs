@@ -15,6 +15,7 @@ use evoke_core::decide::{Choices, Missing, Why};
 use evoke_core::document::Json;
 use evoke_core::manifest::{Kind, Source};
 use evoke_core::name::{ArgName, LocalName, OptionKey, VocabName, Word};
+use evoke_core::needs::Entry;
 use evoke_core::text::NonEmpty;
 use evoke_core::vocabulary::Meaning;
 use evoke_core::weave::{
@@ -1032,8 +1033,9 @@ impl Using<'_> {
         }
     }
 
-    /// `[+] add one`: the word and its meaning asked, written to the vocabulary, the plan reloaded; a word already
-    /// there under identity is taken as it is. None at the end of input.
+    /// `[+] add one`: the word and its meaning asked — and its path, where a body's declaration takes the word's
+    /// value as one — written to the vocabulary, the plan reloaded; a word already there under identity is taken
+    /// as it is. None at the end of input.
     fn added(
         &mut self,
         input: &str,
@@ -1078,14 +1080,58 @@ impl Using<'_> {
                 Err(why) => retry = Some(format!("{} {why}", report::quoted(typed))),
             }
         };
+        let value = if self.pathed(vocabulary) {
+            let mut retry = None;
+            loop {
+                let Some(typed) = self
+                    .session
+                    .prompt(&report::path_prompt(retry.as_deref()))?
+                else {
+                    return Ok(None);
+                };
+                let typed = typed.trim();
+                if typed.is_empty() {
+                    continue;
+                }
+                if !typed.starts_with('/') && !typed.starts_with("~/") {
+                    retry = Some(format!("{} is not a path", report::quoted(typed)));
+                    continue;
+                }
+                match Clean::line(typed) {
+                    Ok(path) => break Some(path.to_string()),
+                    Err(why) => retry = Some(format!("{} {why}", report::quoted(typed))),
+                }
+            }
+        } else {
+            None
+        };
         let change = VocabChange::Add {
             word: word.clone(),
-            meaning: Meaning { what, value: None },
+            meaning: Meaning { what, value },
         };
         self.session
             .apply(input, &vocab_edit(vocabulary.clone(), change))?;
         self.session.reload(input)?;
         Ok(Some(word))
+    }
+
+    /// Whether an active reflex's declaration takes a word of the vocabulary as a path: `reads = ["{place}"]`
+    /// over an argument that draws from it.
+    fn pathed(&self, vocabulary: &VocabName) -> bool {
+        self.session.plan.active().values().any(|active| {
+            active
+                .needs
+                .reads
+                .iter()
+                .chain(&active.needs.writes)
+                .any(|entry| match entry {
+                    Entry::Value(name) => matches!(
+                        active.args.get(name.as_str()).map(|argument| &argument.kind),
+                        Some(Kind::Value { source: Source::Vocab(named), .. }) if named == vocabulary
+                    ),
+                    Entry::Home(_) | Entry::Absolute(_) => false,
+                })
+        })
     }
 
     /// The vocabulary an argument draws from, when it draws from one.

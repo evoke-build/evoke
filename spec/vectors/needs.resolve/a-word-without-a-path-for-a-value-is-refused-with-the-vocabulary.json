@@ -42,8 +42,9 @@
       "reflex": "download",
       "message": "[needs] writes names {to}, whose value \"desktop\" is not a path",
       "fix": {
-        "type": "vocab_add",
-        "vocab": "places"
+        "type": "vocab_value",
+        "vocab": "places",
+        "word": "desktop"
       }
     }
   }

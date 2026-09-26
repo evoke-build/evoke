@@ -11,7 +11,7 @@ use indexmap::IndexMap;
 use serde::de::Error as _;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
-use crate::call::Call;
+use crate::call::{Call, Value as Given};
 use crate::diagnostic::{At, Diagnostic, Fix};
 use crate::document::{self, Diagnostics, Document, Json, KeyPath, Node, Value};
 use crate::manifest::{Kind, Run, Source};
@@ -498,7 +498,7 @@ pub fn resolve(
                                 "[needs] {key} names {{{name}}}, whose value {} is not a path",
                                 Json::String(value)
                             ),
-                            fix: value_fix(name, &call.reflex, active),
+                            fix: value_fix(name, Some(call), &call.reflex, active),
                         });
                     }
                     value
@@ -531,8 +531,9 @@ fn value_of(
     config.get(name.as_str()).cloned()
 }
 
-/// The command that gives a `{name}` a path: the setting, the vocabulary's word, or the call typed again.
-fn value_fix(name: &ValueName, reflex: &LocalName, active: &Active) -> Fix {
+/// The command that gives a `{name}` a path: the setting, the vocabulary's word — with its value, when the call
+/// names the word — or the call typed again.
+fn value_fix(name: &ValueName, call: Option<&Call>, reflex: &LocalName, active: &Active) -> Fix {
     match active
         .args
         .get(name.as_str())
@@ -541,8 +542,14 @@ fn value_fix(name: &ValueName, reflex: &LocalName, active: &Active) -> Fix {
         Some(Kind::Value {
             source: Source::Vocab(vocab),
             ..
-        }) => Fix::VocabAdd {
-            vocab: vocab.clone(),
+        }) => match call.and_then(|call| call.args.get(name.as_str())) {
+            Some(Given::Word { word, .. }) => Fix::VocabValue {
+                vocab: vocab.clone(),
+                word: word.clone(),
+            },
+            _ => Fix::VocabAdd {
+                vocab: vocab.clone(),
+            },
         },
         Some(Kind::Value {
             source: Source::Pick(_),
@@ -619,7 +626,7 @@ pub fn lacking(
                 shown(&place.path, home)
             ),
             match &place.from {
-                Entry::Value(name) => value_fix(name, reflex, active),
+                Entry::Value(name) => value_fix(name, None, reflex, active),
                 Entry::Home(_) | Entry::Absolute(_) => declaration_fix(reflex, origin),
             },
         ),
@@ -1100,8 +1107,9 @@ mod tests {
         );
         assert_eq!(
             refused.fix,
-            Fix::VocabAdd {
-                vocab: crate::name::VocabName::new("places").unwrap()
+            Fix::VocabValue {
+                vocab: crate::name::VocabName::new("places").unwrap(),
+                word: crate::name::Word::new("desk").unwrap(),
             }
         );
         let bad = IndexMap::from([(ConfigKey::new("file").unwrap(), "notes.txt".to_owned())]);
