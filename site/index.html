@@ -881,9 +881,9 @@ Turn the lights in one room on, off, or dim them.</span>
         }
         const F = arm(.4, 1, 0)
         const far = Array.from({ length: small ? 110 : 220 }, () => ({ u: rnd(), v: rnd(), s: .6 + rnd() * .8, a: .1 + rnd() * .26, tw: rnd() * TAU }))
-        const TINTS = [INK, ICE, GOLD, ACC], PHASES = 2  // two twinkle phases: at rest, a layer each
+        const TINTS = [INK, ICE, GOLD, ACC], RGB = TINTS.map(s => s.split(",").map(Number)), PHASES = 2  // two twinkle phases: at rest, a layer each
         // A star's magnitude sets its light and its size together: most are faint and small, a few bright and wide
-        const MAGNITUDES = [[.16, .55], [.26, .65], [.38, .85], [.52, 1.2], [.66, 1.9]], MAGNITUDE_AT = [.35, .63, .83, .95, 1]
+        const MAGNITUDES = [[.22, .6], [.34, .8], [.46, 1], [.58, 1.45], [.68, 2]], MAGNITUDE_AT = [.38, .64, .82, .94, 1]
         const dust = Array.from({ length: small ? 3600 : 7200 }, (_, i) => {  // stars along the arms, and a ring around the empty middle
           const pop = rnd(), tint = rnd()
           const p = pop < .07 ? (a => ({ x: Math.cos(a) * (232 + (rnd() + rnd() - 1) * 22), y: Math.sin(a) * (232 + (rnd() + rnd() - 1) * 22) * .8 }))(rnd() * TAU)
@@ -892,14 +892,19 @@ Turn the lights in one room on, off, or dim them.</span>
           return { ...p, q: MAGNITUDE_AT.findIndex(at => m < at), k: Math.floor(rnd() * PHASES), c: tint < .58 ? 0 : tint < .8 ? 1 : tint < .94 ? 2 : 3 }
         }).sort((p, q) => p.c - q.c || p.q - q.q || p.k - q.k)
         const BATCHES = []  // the stars of one tint, one magnitude and one twinkle phase: one light, one size, many stars
+        // The star field is light in a pixel buffer: the far stars, the arms' stars and the other machines' constellations are
+        // written as light into an image the size of the canvas, which every browser then shows alike and cheaply; the canvas
+        // rasterises no star. At rest each twinkle phase is written once per view into a layer of its own; in motion the whole
+        // field is written every frame, each star's streak with it
         const layers = Array.from({ length: PHASES }, () => document.createElement("canvas")), layerCtx = layers.map(c => c.getContext("2d"))
-        let drawnFor = null  // the view the layers hold, or null
+        const fieldCanvas = document.createElement("canvas"), fieldCtx = fieldCanvas.getContext("2d")
+        let field = null, half = null, drawnFor = null  // the image at the canvas's resolution, the one at half for motion, and the view the layers hold
         for (let i = 0; i < dust.length;) {
           const d = dust[i], from = i
           while (i < dust.length && dust[i].c === d.c && dust[i].q === d.q && dust[i].k === d.k) i++
           const [light, size] = MAGNITUDES[d.q], inside = Math.min(1, size)
-          // A star smaller than a pixel is a pixel with less light, so every browser draws it alike; a streak is as wide as its star
-          BATCHES.push({ c: d.c, k: d.k, a: light * inside * inside, px: Math.max(1, size), streak: light * inside, ph: d.k * TAU / PHASES, from, to: i })
+          // A star smaller than a pixel is a pixel with less light, so every browser draws it alike
+          BATCHES.push({ c: d.c, k: d.k, a: light * inside * inside, px: Math.max(1, size), ph: d.k * TAU / PHASES, from, to: i })
         }
         const gas = Array.from({ length: small ? 70 : 130 }, (_, i) => {  // clouds lit from within, along the arms
           const t = .03 + rnd() * .97, p = arm(t, i % 2, (rnd() - .5) * .6), c = rnd()
@@ -963,7 +968,7 @@ Turn the lights in one room on, off, or dim them.</span>
         }
 
         // The camera: world to screen around a focus point, the middle of the part of the screen the story leaves free
-        let W = 0, H = 0, dpr = 1, narrow = false, laidOut = false, colRight = 0, barH = 56, dots = [], ground = []
+        let W = 0, H = 0, dpr = 1, scale = 1, narrow = false, laidOut = false, colRight = 0, barH = 56, dots = []  // scale: the sky's share of the screen's pixels
         const view = { x: 0, y: 0, z: .3, layout: 0, machines: 0, anatomy: 0, others: 1, reflexes: 0, crowd: 0, web: 0, solo: 0, f: { x: 0, y: 0 } }
         const KEYS = ["layout", "machines", "anatomy", "others", "reflexes", "crowd", "web", "solo"]
         const toScreen = (p, v = view) => ({ x: (p.x - v.x) * v.z + v.f.x, y: (p.y - v.y) * v.z + v.f.y })
@@ -1133,97 +1138,114 @@ Turn the lights in one room on, off, or dim them.</span>
         const dot = (x, y, r, rgb) => { ctx.fillStyle = `rgb(${rgb})`; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill() }
         const offscreen = (p, m) => p.x < -m || p.y < -m || p.x > W + m || p.y > H + m
         let prev = null, sentenceOn = false, asking = false
-        const drawFar = now => {
-          const k = 1 + .08 * Math.log(view.z / .3), ox = -view.x * .02, oy = -view.y * .02
-          ctx.fillStyle = "#fff"
-          for (const s of far) {
-            const x = W / 2 + (((s.u * W + ox) % W + W) % W - W / 2) * k, y = H / 2 + (((s.v * H + oy) % H + H) % H - H / 2) * k
-            if (x < 0 || y < 0 || x > W || y > H) continue
-            ctx.globalAlpha = s.a * (still ? 1 : .7 + .3 * Math.sin(now / 1900 + s.tw)); ctx.fillRect(x, y, s.s, s.s)
-          }
-          ctx.globalAlpha = 1
-        }
-        const drawGas = () => {
-          const fade = clamp(1.15 - Math.log2(view.z / .3) * .3, 0, 1), v = view  // the gas thins as the camera nears, to nothing up close
+        // The ground and the gas: painted into a backdrop at half the canvas's resolution when the view changes, drawn whole
+        // each frame. The gas is soft, so half the pixels look the same and cost a quarter. The ground itself, the sky's glow,
+        // is painted once per size
+        const ground = document.createElement("canvas"), groundCtx = ground.getContext("2d", { alpha: false })
+        const backdrop = document.createElement("canvas"), backCtx = backdrop.getContext("2d", { alpha: false })
+        let backFor = null, bdpr = 1
+        const paintBackdrop = () => {
+          const v = view, c = backCtx
+          c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(ground, 0, 0); c.setTransform(bdpr, 0, 0, bdpr, 0, 0)
+          const fade = clamp(1.15 - Math.log2(v.z / .3) * .3, 0, 1)  // the gas thins as the camera nears, to nothing up close
           if (fade < .04) return
-          ctx.globalCompositeOperation = "lighter"
+          c.globalCompositeOperation = "lighter"
           for (const g of gas) {
             const r = g.r * v.z; if (r < 3 || r > 640) continue  // too small to see, or a haze over the whole screen
             const x = (g.x - v.x) * v.z + v.f.x, y = (g.y - v.y) * v.z + v.f.y
             if (x < -r || y < -r || x > W + r || y > H + r) continue
-            ctx.globalAlpha = g.a * fade
-            ctx.drawImage(puffs[g.c], x - r, y - r, r * 2, r * 2)
+            c.globalAlpha = g.a * fade; c.drawImage(puffs[g.c], x - r, y - r, r * 2, r * 2)
           }
-          ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1
+          c.globalCompositeOperation = "source-over"; c.globalAlpha = 1
         }
-        const paintStars = (c, layer) => {  // one twinkle phase's stars into a layer at their own brightness; the frame sets their light
-          c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H); c.globalCompositeOperation = "lighter"
-          const v = view
-          for (const b of BATCHES) {
-            if (b.k !== layer) continue
-            c.fillStyle = `rgba(${TINTS[b.c]}, ${b.a})`
+
+        // The field for one twinkle phase, or for every star when the phase is -1, written into an image at S device pixels a
+        // CSS pixel; in motion, given the last view, each star streaks from where it was, one pixel wide and dimmer the longer
+        // its streak, so the sky reads as the same stars moving: neither blazing, as hairlines at one alpha did in some
+        // browsers, nor gone, as light spread thin would be. The buffer clamps at white
+        const writeField = (now, phase, motion, img, S) => {
+          const d = img.data, fw = img.width, fh = img.height; d.fill(0)
+          const put = (x, y, w, r, g, b) => {  // a block of light, its corners left dark once it is wide enough to have them
+            for (let j = 0; j < w; j++) {
+              const yy = y + j; if (yy < 0 || yy >= fh) continue
+              for (let i = 0; i < w; i++) {
+                const xx = x + i; if (xx < 0 || xx >= fw || (w > 2 && (i === 0 || i === w - 1) && (j === 0 || j === w - 1))) continue
+                const o = (yy * fw + xx) << 2; d[o] += r; d[o + 1] += g; d[o + 2] += b; d[o + 3] = 255
+              }
+            }
+          }
+          const streak = (x0, y0, x1, y1, r, g, b) => {  // light along a line, a step a pixel, one pixel wide
+            const dx = x1 - x0, dy = y1 - y0, n = Math.max(1, Math.round(Math.max(Math.abs(dx), Math.abs(dy))))
+            for (let s = 0; s <= n; s++) {
+              const u = s / n, xx = Math.round(x0 + dx * u), yy = Math.round(y0 + dy * u)
+              if (xx < 0 || yy < 0 || xx >= fw || yy >= fh) continue
+              const o = (yy * fw + xx) << 2; d[o] += r; d[o + 1] += g; d[o + 2] += b; d[o + 3] = 255
+            }
+          }
+          const v = view, z = v.z, rest = phase >= 0, gain = rest ? 1 : clamp(1.1 - Math.log2(z / .3) * .15, .4, 1)  // at rest the layer carries the fade and the twinkle
+          const k = 1 + .08 * Math.log(z / .3), ox = -v.x * .02, oy = -v.y * .02
+          for (let i = 0; i < far.length; i++) {  // the far stars, slow with parallax
+            if (rest && (i & 1) !== phase) continue
+            const s = far[i], x = W / 2 + (((s.u * W + ox) % W + W) % W - W / 2) * k, y = H / 2 + (((s.v * H + oy) % H + H) % H - H / 2) * k
+            if (x < 0 || y < 0 || x > W || y > H) continue
+            const l = 255 * s.a * gain * (rest || still ? 1 : .7 + .3 * Math.sin(now / 1900 + s.tw))
+            put(Math.round(x * S), Math.round(y * S), Math.max(1, Math.round(s.s * S)), l, l, l)
+          }
+          for (const b of BATCHES) {  // the arms' stars: a block of the star's size, or its streak
+            if (rest && b.k !== phase) continue
+            const [cr, cg, cb] = RGB[b.c], l = b.a * gain * (rest || still ? 1 : .78 + .22 * Math.sin(now / 1500 + b.ph))
+            const w = Math.max(1, Math.round(b.px * S)), bright = b.px >= 1.4 ? 1.5 : 1, r = cr * l, g = cg * l, bl = cb * l
             for (let i = b.from; i < b.to; i++) {
-              const d = dust[i], x = (d.x - v.x) * v.z + v.f.x, y = (d.y - v.y) * v.z + v.f.y
+              const dd = dust[i], x = (dd.x - v.x) * z + v.f.x, y = (dd.y - v.y) * z + v.f.y
               if (x < -4 || y < -4 || x > W + 4 || y > H + 4) continue
-              c.fillRect(x, y, b.px, b.px)
-            }
-          }
-        }
-        let meanStreak = 4  // how far the stars moved in the last frame of a flight, in pixels
-        const drawDust = now => {
-          const fade = clamp(1.1 - Math.log2(view.z / .3) * .15, .4, 1), v = view, p0 = prev
-          const moving = p0 && !still && (Math.abs(p0.z - v.z) / v.z > .002 || Math.abs(p0.x - v.x) * v.z > .6 || Math.abs(p0.y - v.y) * v.z > .6)
-          if (!moving && !still) {  // at rest: the stars drawn once per view into a layer per phase, and each frame the layers twinkle whole
-            if (!drawnFor || drawnFor.x !== v.x || drawnFor.y !== v.y || drawnFor.z !== v.z || drawnFor.fx !== v.f.x || drawnFor.fy !== v.f.y) {
-              layers.forEach((_, k) => paintStars(layerCtx[k], k)); drawnFor = { x: v.x, y: v.y, z: v.z, fx: v.f.x, fy: v.f.y }
-            }
-            ctx.globalCompositeOperation = "lighter"; ctx.setTransform(1, 0, 0, 1, 0, 0)
-            layers.forEach((l, k) => { ctx.globalAlpha = fade * (.78 + .22 * Math.sin(now / 1500 + k * TAU / PHASES)); ctx.drawImage(l, 0, 0) })
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1
-            return
-          }
-          drawnFor = null
-          ctx.lineCap = "round"; ctx.globalCompositeOperation = "lighter"  // light added to light: a dense arm glows
-          // In flight a star streaks from where it was, as wide as itself, its light spread along the way: the sky is no brighter
-          // for moving, and a faint star's streak, too thin to see, is not drawn
-          const spread = moving ? clamp((2 / meanStreak) ** .75, .04, 1) : 1
-          let streaks = 0, travelled = 0
-          for (const b of BATCHES) {
-            const tw = still ? 1 : .78 + .22 * Math.sin(now / 1500 + b.ph), rgb = `rgb(${TINTS[b.c]})`
-            ctx.fillStyle = rgb; ctx.globalAlpha = b.a * fade * tw
-            const light = moving ? b.streak * spread * fade * tw : 0, drawn = light > .012
-            if (drawn) { ctx.strokeStyle = rgb; ctx.lineWidth = b.px; ctx.beginPath() }
-            for (let i = b.from; i < b.to; i++) {
-              const d = dust[i], x = (d.x - v.x) * v.z + v.f.x, y = (d.y - v.y) * v.z + v.f.y
-              if (x < -40 || y < -40 || x > W + 40 || y > H + 40) continue
-              if (moving) {
-                const px = (d.x - p0.x) * p0.z + p0.f.x, py = (d.y - p0.y) * p0.z + p0.f.y, len = Math.hypot(x - px, y - py)
+              if (motion) {
+                const px = (dd.x - motion.x) * motion.z + motion.f.x, py = (dd.y - motion.y) * motion.z + motion.f.y, len = Math.hypot(x - px, y - py)
                 if (len > 1.5) {
-                  streaks++; travelled += len
-                  if (drawn) { const k = Math.min(1, 90 / len); ctx.moveTo(x + (px - x) * k, y + (py - y) * k); ctx.lineTo(x, y) }
+                  const c = Math.min(1, 45 / len), sp = bright * clamp(Math.sqrt(3 / len), .1, 1)  // no longer than a finger; a bright star's streak brighter, never wider
+                  streak(Math.round((x + (px - x) * c) * S), Math.round((y + (py - y) * c) * S), Math.round(x * S), Math.round(y * S), r * sp, g * sp, bl * sp)
                   continue
                 }
               }
-              ctx.fillRect(x, y, b.px, b.px)
+              put(Math.round(x * S), Math.round(y * S), w, r, g, bl)
             }
-            if (drawn) { ctx.globalAlpha = light; ctx.stroke() }
           }
-          meanStreak = streaks ? Math.min(90, travelled / streaks) : 4
-          ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1
+          const oa = v.others
+          if (oa > .01) {  // the other machines' constellations: a thread through the members, and the members as dots
+            const rr = clamp(z * 1.3, .8, 2.4) * .8, [ir, ig, ib] = RGB[0]
+            for (let n = 0; n < others.length; n++) {
+              if (rest && (n & 1) !== phase) continue
+              const o = others[n], c = toScreen(o); if (offscreen(c, 80)) continue
+              const lt = .13 * oa, ld = .5 * oa * (rest || still ? 1 : .72 + .28 * Math.sin(now / 1700 + o.tw))
+              let px = 0, py = 0
+              o.members.forEach((m, j) => {
+                const q = toScreen(m), x = Math.round(q.x * S), y = Math.round(q.y * S)
+                if (j) streak(px, py, x, y, ir * lt, ig * lt, ib * lt)
+                px = x; py = y
+                const w = Math.max(1, Math.round(rr * m.s * S * 2))
+                put(Math.round(q.x * S - w / 2), Math.round(q.y * S - w / 2), w, ir * ld, ig * ld, ib * ld)
+              })
+            }
+          }
         }
-        const drawOthers = now => {
-          const a = view.others; if (a < .01) return
-          const r = clamp(view.z * 1.3, .8, 2.4)
-          for (const o of others) {
-            const c = toScreen(o); if (offscreen(c, 80)) continue
-            ctx.globalAlpha = .13 * a; ctx.strokeStyle = `rgb(${INK})`; ctx.lineWidth = 1; ctx.beginPath()
-            o.members.forEach((m, i) => { const p = toScreen(m); i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y) })
-            ctx.stroke()
-            ctx.globalAlpha = .6 * a * (still ? 1 : .72 + .28 * Math.sin(now / 1700 + o.tw)); ctx.fillStyle = `rgb(${INK})`; ctx.beginPath()
-            for (const m of o.members) { const p = toScreen(m), rr = r * m.s * .8; ctx.moveTo(p.x + rr, p.y); ctx.arc(p.x, p.y, rr, 0, TAU) }
-            ctx.fill()
+        const drawSky = now => {  // the backdrop, then at rest the phases' layers twinkling whole; in motion the field written fresh, streaks and all
+          const v = view, p0 = prev, fade = clamp(1.1 - Math.log2(v.z / .3) * .15, .4, 1), key = `${v.x},${v.y},${v.z},${v.f.x},${v.f.y}`
+          const moving = p0 && !still && (Math.abs(p0.z - v.z) / v.z > .002 || Math.abs(p0.x - v.x) * v.z > .6 || Math.abs(p0.y - v.y) * v.z > .6)
+          ctx.setTransform(1, 0, 0, 1, 0, 0)
+          if (moving) {  // the backdrop carries the field too, all at half resolution, and one draw brings both up: motion is soft anyway
+            drawnFor = backFor = null
+            paintBackdrop()
+            writeField(now, -1, p0, half, bdpr); fieldCtx.putImageData(half, 0, 0)
+            backCtx.setTransform(1, 0, 0, 1, 0, 0); backCtx.globalCompositeOperation = "lighter"; backCtx.drawImage(fieldCanvas, 0, 0); backCtx.globalCompositeOperation = "source-over"
+            ctx.drawImage(backdrop, 0, 0, canvas.width, canvas.height)
+          } else {
+            if (backFor !== key) { paintBackdrop(); backFor = key }
+            ctx.drawImage(backdrop, 0, 0, canvas.width, canvas.height)
+            const held = `${key},${v.others}`
+            if (drawnFor !== held) { for (let k = 0; k < PHASES; k++) { writeField(now, k, null, field, dpr); layerCtx[k].putImageData(field, 0, 0) } drawnFor = held }
+            ctx.globalCompositeOperation = "lighter"
+            for (let k = 0; k < PHASES; k++) { ctx.globalAlpha = fade * (still ? 1 : .78 + .22 * Math.sin(now / 1500 + k * TAU / PHASES)); ctx.drawImage(layers[k], 0, 0) }
           }
-          ctx.globalAlpha = 1
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1
         }
         const drawWeb = () => {  // the galaxy's plans, and nothing in the middle
           const a = view.web; if (a < .01) return
@@ -1434,31 +1456,42 @@ Turn the lights in one room on, off, or dim them.</span>
             r.state = st
           }
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-          ctx.fillStyle = "#060608"; ctx.fillRect(0, 0, W, H)
-          for (const g of ground) { ctx.fillStyle = g; ctx.fillRect(0, 0, W, H) }
-          drawFar(now); drawGas(); drawDust(now); drawOthers(now); drawWeb(); drawMachines(now); drawInstalled(); drawPlan(); drawCalls()
+          drawSky(now); drawWeb(); drawMachines(now); drawInstalled(); drawPlan(); drawCalls()
           drawParticles(now); drawReflexes(now); drawDecider(); drawAnatomy(now)
           placeMarks()
           prev = { x: view.x, y: view.y, z: view.z, f: view.f }
         }
 
         // The loop: drawn only while the journey is on screen and the page is seen
-        let raf = 0, visible = true, tween = null, current = null, started = false
-        const loop = now => { frame(now); raf = visible && !document.hidden ? requestAnimationFrame(loop) : 0 }
+        let raf = 0, visible = true, tween = null, current = null, started = false, last = 0, slow = 0
+        const loop = now => {
+          if (last) { slow = now - last > 20 ? slow + 1 : 0; if (slow >= 40 && scale > .5) { scale -= .25; slow = 0; resample() } }  // a second of slow frames: fewer pixels
+          last = now
+          frame(now)
+          raf = visible && !document.hidden ? requestAnimationFrame(loop) : 0
+          if (!raf) last = 0
+        }
         const kick = () => {
           if (still) return frame(performance.now())
           if (!raf && visible && !document.hidden) { prev = null; raf = requestAnimationFrame(loop) }
         }
-        const size = () => {
-          const r = sky.getBoundingClientRect()
-          W = r.width; H = r.height; dpr = Math.min(2, devicePixelRatio || 1, Math.sqrt(9e6 / (W * H)))  // at most nine million pixels a canvas, on the largest screens
+        const resample = () => {  // the canvas, the layers, the field and the backdrop at the sky's resolution
+          dpr = Math.min(2, devicePixelRatio || 1, Math.sqrt(9e6 / (W * H))) * scale  // at most nine million pixels a canvas, on the largest screens
           canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr)
           for (const l of layers) { l.width = canvas.width; l.height = canvas.height }
-          drawnFor = null
-          ground = [[.68, .42, .5, "229, 118, 29", .06], [.3, .8, .6, "143, 212, 138", .03]].map(([u, v, r, rgb, a]) => {  // the sky's glow: warm where Acme is, a breath of green below
-            const g = ctx.createRadialGradient(W * u, H * v, 0, W * u, H * v, Math.max(W, H) * r)
-            g.addColorStop(0, `rgba(${rgb}, ${a})`); g.addColorStop(.7, `rgba(${rgb}, 0)`); return g
-          })
+          field = new ImageData(canvas.width, canvas.height)
+          bdpr = dpr / 2; ground.width = backdrop.width = fieldCanvas.width = Math.max(1, Math.round(W * bdpr)); ground.height = backdrop.height = fieldCanvas.height = Math.max(1, Math.round(H * bdpr))
+          half = new ImageData(backdrop.width, backdrop.height)
+          groundCtx.setTransform(bdpr, 0, 0, bdpr, 0, 0); groundCtx.fillStyle = "#060608"; groundCtx.fillRect(0, 0, W, H)
+          for (const [u, v, r, rgb, a] of [[.68, .42, .5, "229, 118, 29", .06], [.3, .8, .6, "143, 212, 138", .03]]) {  // the sky's glow: warm where Acme is, a breath of green below
+            const g = groundCtx.createRadialGradient(W * u, H * v, 0, W * u, H * v, Math.max(W, H) * r)
+            g.addColorStop(0, `rgba(${rgb}, ${a})`); g.addColorStop(.7, `rgba(${rgb}, 0)`); groundCtx.fillStyle = g; groundCtx.fillRect(0, 0, W, H)
+          }
+          drawnFor = backFor = null
+        }
+        const size = () => {
+          const r = sky.getBoundingClientRect()
+          W = r.width; H = r.height; resample()
           const was = narrow; narrow = thin.matches
           barH = bar ? bar.offsetHeight : 56
           colRight = cards.reflex ? cards.reflex.getBoundingClientRect().right : 0
