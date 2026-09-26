@@ -38,6 +38,13 @@ evoke vocab sites add github "GitHub." --value https://github.com             # 
 evoke config note file "~/notes.txt"                                          # a path under your home, or absolute; a file that exists
 ```
 
+## What they pass on
+
+A reflex may declare what its result holds, for a later step of one sentence to take ([Weaving](use/weaving.md)).
+`download` and `screenshot` yield `path`, the file they saved to, a quoted text: a later step with a `quoted`
+argument your words left empty can take it. No reflex in the collection returns a whole result under a name yet,
+and none takes one.
+
 ## What they say back
 
 One lowercase line that says what happened: `volume 40%` · `locked` · `sleeping` · `saved ~/Desktop/Screenshot 2026-09-20

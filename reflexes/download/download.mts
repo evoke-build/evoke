@@ -1,6 +1,6 @@
 // Download a URL into your downloads folder or the place named — a path, `~` allowed, a bare word under your home —
 // as the file the URL names — never a hidden one, never over one already there; a download the deadline cuts short
-// leaves nothing.
+// leaves nothing. The result's data holds the path saved to, for a later step of one sentence to take.
 import { open, rm, stat } from "node:fs/promises"
 import { homedir } from "node:os"
 import { join, resolve } from "node:path"
@@ -28,7 +28,7 @@ export default (async ({ url, to }, { signal }) => {
     throw signal.aborted ? signal.reason : error
   }
   const { size } = await stat(path)
-  return `saved ${name} to ${shown(dir)} (${describe(size)})`
+  return { text: `saved ${name} to ${shown(dir)} (${describe(size)})`, data: { path: shown(path) } }
 }) satisfies Reflex
 
 /** The file the URL's path names, decoded, or `download` when it names none. */

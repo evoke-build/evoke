@@ -25,6 +25,9 @@ optional          = true
 ask  = "To the clipboard instead of a file?"
 flag = true
 
+[yields]
+path = "quoted"
+
 [examples]
 "take a screenshot"                        = { area = false }
 "screenshot this window"                   = { area = "window" }

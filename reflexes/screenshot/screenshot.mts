@@ -1,5 +1,6 @@
 // Capture with `screencapture`, silently (`-x`): the whole screen, or a window (`-w`) or a selection (`-s`) picked
-// interactively (`-i`); to a PNG on the desktop named as macOS names its own, or to the clipboard (`-c`).
+// interactively (`-i`); to a PNG on the desktop named as macOS names its own, its path the result's data for a later
+// step of one sentence to take, or to the clipboard (`-c`), which leaves no path.
 import { execFile } from "node:child_process"
 import { homedir } from "node:os"
 import { join } from "node:path"
@@ -19,7 +20,7 @@ export default (async ({ area = "screen", clipboard }, { signal }) => {
     if (signal.aborted) throw signal.reason
     throw new Error(stderr(error) ?? "screenshot cancelled")
   }
-  return clipboard ? "copied to the clipboard" : `saved ${shown(file)}`
+  return clipboard ? "copied to the clipboard" : { text: `saved ${shown(file)}`, data: { path: shown(file) } }
 }) satisfies Reflex
 
 /** `2026-09-20 at 10.31.05`: the moment, as macOS names a screenshot. */

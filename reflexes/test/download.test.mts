@@ -1,7 +1,7 @@
 // download saves the file a URL names under the place given or ~/Downloads, says what it saved and how big, never
 // writes over a file already there, names a folder that is not there and an answer that is not a file, and leaves
 // nothing behind when it is cut short.
-import { equal, rejects } from "node:assert/strict"
+import { deepStrictEqual, equal, rejects } from "node:assert/strict"
 import { access, mkdir, mkdtemp, readFile, rm } from "node:fs/promises"
 import { createServer } from "node:http"
 import type { Server } from "node:http"
@@ -46,14 +46,20 @@ after(async () => {
 
 const context = (signal = new AbortController().signal) => ({ input: "", config: {}, signal })
 
-test("a file lands in ~/Downloads under the name the URL gives it, decoded", async () => {
-  equal(await download({ url: `${base}/files/report%20final.pdf` }, context()), "saved report final.pdf to ~/Downloads (12 B)")
+test("a file lands in ~/Downloads under the name the URL gives it, decoded, and the result holds its path", async () => {
+  deepStrictEqual(await download({ url: `${base}/files/report%20final.pdf` }, context()), {
+    text: "saved report final.pdf to ~/Downloads (12 B)",
+    data: { path: "~/Downloads/report final.pdf" },
+  })
   equal(await readFile(join(home, "Downloads/report final.pdf"), "utf8"), "twelve bytes")
 })
 
 test("a place is a path under ~, or a word for a folder there; one that is not there is named", async () => {
   await mkdir(join(home, "desktop"))
-  equal(await download({ url: `${base}/files/report%20final.pdf`, to: "desktop" }, context()), "saved report final.pdf to ~/desktop (12 B)")
+  deepStrictEqual(await download({ url: `${base}/files/report%20final.pdf`, to: "desktop" }, context()), {
+    text: "saved report final.pdf to ~/desktop (12 B)",
+    data: { path: "~/desktop/report final.pdf" },
+  })
   await rejects(download({ url: `${base}/files/report%20final.pdf`, to: "~/nowhere" }, context()), { message: "~/nowhere does not exist" })
 })
 

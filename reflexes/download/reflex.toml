@@ -23,6 +23,9 @@ ask      = "Into which folder?"
 vocab    = "places"
 optional = true
 
+[yields]
+path = "quoted"
+
 [examples]
 "download https://example.com/report.pdf"             = { url = "https://example.com/report.pdf" }
 "fetch https://example.com/photos.zip to the desktop" = { url = "https://example.com/photos.zip" }
