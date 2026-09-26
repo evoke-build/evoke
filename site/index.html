@@ -75,7 +75,7 @@
     /* The sky: a rail as tall as the journey, and in it a view held on screen until the journey ends */
     .future .journey { position: relative; }
     .future .sky { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-    .future .sky::after { content: ""; position: absolute; inset: auto 0 0; z-index: 1; height: 26vh; height: 26svh; background: linear-gradient(rgba(6, 6, 8, 0), var(--space) 88%); }  /* the sky dissolves into the page as the journey ends */
+    .future .sky::after { content: ""; position: absolute; inset: auto 0 0; z-index: 1; height: 18vh; height: 18svh; background: linear-gradient(rgba(6, 6, 8, 0), var(--space) 88%); }  /* the sky dissolves into the page as the journey ends */
     .future .sky-view { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--space); }  /* the canvas paints the sky's glow */
     .future .sky-view::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(6, 6, 8, .92) 0%, rgba(6, 6, 8, .6) 30%, transparent 48%); opacity: var(--scrim, 0); transition: opacity .8s ease; }
     .future .sky-view canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -107,8 +107,8 @@
     @keyframes nudge { 50% { transform: translateY(3px); } }
 
     /* The beats: the story, one screen each, on the left while the sky plays on the right */
-    .future .beats { position: relative; z-index: 1; padding-bottom: 26vh; padding-bottom: 26svh; }
-    .future .beat { display: flex; flex-direction: column; justify-content: center; min-height: 100vh; min-height: 100svh; max-width: 27rem; padding: 5rem 0; scroll-margin-top: 0; }  /* a link to a beat lands where a scroll comes to rest on it */
+    .future .beats { position: relative; z-index: 1; padding-bottom: 18vh; padding-bottom: 18svh; }
+    .future .beat { display: flex; flex-direction: column; justify-content: center; min-height: 76vh; min-height: 76svh; max-width: 27rem; padding: 5rem 0; scroll-margin-top: 12vh; scroll-margin-top: 12svh; }  /* three quarters of a screen, so the chapters before and after show at its edges; a link to a beat lands with its words centred */
     .future .beat .count { margin: 0 0 .9rem; font: 500 .78rem/1 var(--mono); color: var(--faint); }
     .future .beat .count span { color: var(--accent-ink); }
     .future .beat h2 { margin: 0 0 1rem; font-size: clamp(1.8rem, 3vw, 2.45rem); font-weight: 560; line-height: 1.1; letter-spacing: -.028em; }
@@ -222,7 +222,7 @@
     /* What holds at every size */
     .future .laws, .future .picture, .future .lens, .future .road, .future .coda { position: relative; z-index: 1; }
     /* One rhythm below the journey: a long breath after the sky, then the same step between sections */
-    .future .laws, .future .lens, .future .road { padding-top: 8rem; }
+    .future .laws, .future .lens, .future .road { padding-top: 6rem; }
     .future .laws .after { margin-top: 1.6rem; }
     .future .law-grid { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin: 0; padding: 0; }
     .future .law-grid li { display: grid; align-content: start; gap: .35rem; padding: 1.3rem 1.25rem 1.35rem; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(180deg, rgba(255, 255, 255, .025), transparent 60%), var(--panel); }
@@ -239,7 +239,7 @@
     .future .law-grid span { color: var(--muted); font-size: .93rem; line-height: 1.5; }
 
     /* The picture: a reflex is a neuron, line by line */
-    .future .picture { position: relative; z-index: 1; padding-top: 8rem; }
+    .future .picture { position: relative; z-index: 1; padding-top: 6rem; }
     .future .nerves { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 3.5rem; margin: 0; padding: 0; border-top: 1px solid var(--line); }
     .future .nerves li { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr) auto; gap: .15rem 1.1rem; align-items: baseline; padding: .8rem 0; border-bottom: 1px solid var(--line); }
     .future .nerves b { color: var(--fg); font-size: .98rem; font-weight: 560; letter-spacing: -.006em; }
@@ -282,7 +282,7 @@
     .future .stops span { color: var(--muted); font-size: .9rem; line-height: 1.5; }
 
     /* The last word */
-    .future .coda { padding: 10rem 0 1rem; text-align: center; }
+    .future .coda { padding: 7rem 0 1rem; text-align: center; }
     .future .coda .lines { max-width: 66rem; margin: 0 auto; font-size: clamp(2rem, 4.2vw, 3.6rem); font-weight: 600; line-height: 1.08; letter-spacing: -.04em; }
     .future .coda .lines span, .future .coda .lines em { display: block; }
     .future .coda .lines em { font-style: normal; color: var(--accent); }
@@ -301,7 +301,7 @@
     /* Narrow: the sky above, each beat a card held at the bottom while it is read */
     @media (max-width: 900px) {
       .future .sky-view::after { background: linear-gradient(0deg, rgba(6, 6, 8, .7) 0%, transparent 40%); }
-      .future .beat { justify-content: flex-end; max-width: none; padding: 0; }
+      .future .beat { justify-content: flex-end; max-width: none; min-height: 100vh; min-height: 100svh; padding: 0; scroll-margin-top: 0; }  /* a screen each: the card is held at its foot */
       .future .beat-body { position: sticky; bottom: 16px; margin-bottom: 16px; padding: 1.1rem 1.15rem 1rem; border: 1px solid rgba(255, 255, 255, .08); border-radius: 16px; background: rgba(9, 9, 12, .86); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
       .future .directed .beat:not(.current) .beat-body { opacity: 0; pointer-events: none; }
       .future .beat h2 { margin-bottom: .75rem; }
@@ -1693,7 +1693,7 @@ Turn the lights in one room on, off, or dim them.</span>
         // scroll around; any input of yours ends the glide at once. The arrow keys move a beat at a time. On a phone the cards
         // are held at the foot of the screen, so nothing is empty; past the journey the page scrolls freely.
         const today = document.querySelector(".future .today"), bodies = beats.map(b => b.el.querySelector(".beat-body, .wrap"))
-        const stops = () => [0, ...beats.slice(1).map(b => b.el.getBoundingClientRect().top + scrollY), today.getBoundingClientRect().top + scrollY - 72]  // each beat whole on the screen, then the section after it, clear of the bar
+        const stops = () => [0, ...bodies.slice(1).map(el => { const r = el.getBoundingClientRect(); return Math.max(0, (r.top + r.bottom) / 2 + scrollY - innerHeight / 2) }), today.getBoundingClientRect().top + scrollY - 72]  // each beat with its words centred on the screen, then the section after it, clear of the bar
         const reads = () => bodies.some(el => { const r = el.getBoundingClientRect(), c = (r.top + r.bottom) / 2; return c > innerHeight * .2 && c < innerHeight * .8 })  // some beat's words sit in the middle of the screen
         const settle = t => 1 - (1 - t) ** 4
         let carry = null, touching = false, moved = -1e9, dir = 1, lastY = scrollY, pause = 0
