@@ -26,6 +26,10 @@ MANUAL, SITE, OUT, SRC = ROOT / "docs/manual", ROOT / "site", ROOT / "target/sit
 URL = "https://evoke.build/"
 CARD = URL + "og.png"
 CARD_ALT = "evoke — Software, by reflex."
+# A page's own card, declared in its head, 1200×630 at twice the size like og.png
+OWN_CARD = re.compile(r'[ \t]*<meta property="og:image" content="([^"]*)">\n')
+OWN_ALT = re.compile(r'[ \t]*<meta property="og:image:alt" content="([^"]*)">\n')
+THEME = re.compile(r'[ \t]*<meta name="theme-color" content="[^"]*">\n')
 LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)\)")
 TOKEN = re.compile(r"--([a-z-]+):\s*([^;]+);")
 UNLISTED = {"404.html", "print.html", "toc.html"}
@@ -167,8 +171,11 @@ def assembled(page):
     bar = bar.replace(f'href="{here}"', f'href="{here}" aria-current="page"', 1)
     if here.startswith("/examples/"):
         bar = bar.replace('href="/examples.html"', 'href="/examples.html" aria-current="true"', 1)
+    head_part = (PARTS / "head.html").read_text().rstrip("\n")
+    if 'name="theme-color"' in text:  # a page in a colour of its own names it once
+        head_part = THEME.sub("", head_part, count=1)
     for marker, part in (
-        ("<!-- head -->", (PARTS / "head.html").read_text().rstrip("\n")),
+        ("<!-- head -->", head_part),
         ("<!-- bar -->", bar.rstrip("\n")),
         ("<!-- footer -->", (PARTS / "footer.html").read_text().rstrip("\n")),
     ):
@@ -307,6 +314,11 @@ def described(page):
     quoted = html_text.escape(summary_line, quote=True)
     heading = html_text.escape(title, quote=True)
     home = page == OUT / "index.html"
+    card, alt = CARD, CARD_ALT
+    own_card, own_alt = OWN_CARD.search(text), OWN_ALT.search(text)
+    if own_card and own_alt:  # a page with a card of its own declares it once; the build says it with the rest
+        card, alt = own_card[1], own_alt[1]
+        text = text.replace(own_card[0], "", 1).replace(own_alt[0], "", 1)
     head = "\n".join(
         [
             f'<link rel="canonical" href="{address(page)}">',
@@ -318,15 +330,16 @@ def described(page):
             f'<meta property="og:title" content="{heading}">',
             f'<meta property="og:description" content="{quoted}">',
             f'<meta property="og:url" content="{address(page)}">',
-            f'<meta property="og:image" content="{CARD}">',
+            f'<meta property="og:image" content="{card}">',
+            f'<meta property="og:image:type" content="image/{"jpeg" if card.endswith(".jpg") else "png"}">',
             '<meta property="og:image:width" content="2400">',
             '<meta property="og:image:height" content="1260">',
-            f'<meta property="og:image:alt" content="{CARD_ALT}">',
+            f'<meta property="og:image:alt" content="{alt}">',
             '<meta name="twitter:card" content="summary_large_image">',
             f'<meta name="twitter:title" content="{heading}">',
             f'<meta name="twitter:description" content="{quoted}">',
-            f'<meta name="twitter:image" content="{CARD}">',
-            f'<meta name="twitter:image:alt" content="{CARD_ALT}">',
+            f'<meta name="twitter:image" content="{card}">',
+            f'<meta name="twitter:image:alt" content="{alt}">',
             *(
                 []
                 if home
@@ -597,8 +610,8 @@ def answered(page):
 
 
 def changed(page, dated):
-    """The privacy page says when it last changed: the date of the last commit to its source, the sitemap's own, shown
-    as a reader reads a date and as a search engine does."""
+    """A dated page says when it last changed: the date of the last commit to its source, the sitemap's own, shown as
+    a reader reads a date where the page shows one, and as a search engine does."""
     date = git("log", "-1", "--format=%cs", "--", str(source(page))) if dated else ""
     if not date:
         return
@@ -742,6 +755,23 @@ def checked(pages):
         sys.exit("\n".join(problems))
 
 
+def structured(pages_built):
+    """Every block of structured data on every built page parses as JSON and names its schema.org context and type: a
+    comma out of place would drop a page's card and trail without a word."""
+    problems = []
+    for page in pages_built:
+        for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>', page.read_text(), re.DOTALL):
+            try:
+                data = json.loads(block)
+            except json.JSONDecodeError as error:
+                problems.append(f"{page.relative_to(OUT)}: structured data does not parse: {error}")
+                continue
+            if data.get("@context") != "https://schema.org" or not (data.get("@type") or data.get("@graph")):
+                problems.append(f"{page.relative_to(OUT)}: structured data names no schema.org type")
+    if problems:
+        sys.exit("\n".join(problems))
+
+
 def sitemap(pages, dated):
     """Every listed page, dated by the last commit that touched its source. A clone without history dates nothing:
     a search engine trusts a date only while every date is right."""
@@ -774,7 +804,16 @@ for source_page in pages():
     target.parent.mkdir(exist_ok=True)
     shutil.copy(source_page, target)
     site_pages.append(target)
-for name in ["site.css", "scenes.js", "install.sh", "og.png", "logo.png", "logo-512.png", "apple-touch-icon.png"]:
+for name in [
+    "site.css",
+    "scenes.js",
+    "install.sh",
+    "og.png",
+    "og-film.jpg",
+    "logo.png",
+    "logo-512.png",
+    "apple-touch-icon.png",
+]:
     shutil.copy(SITE / name, OUT / name)
 shutil.copy(SITE / "theme/favicon.png", OUT / "favicon.png")
 shutil.copytree(SITE / "fonts", OUT / "fonts")
@@ -786,6 +825,7 @@ llms()
 whole()
 answered(OUT / "faq.html")
 changed(OUT / "privacy.html", dated)
+changed(OUT / "film.html", dated)
 for page in site_pages:
     assembled(page)
     described(page)
@@ -803,6 +843,7 @@ listed = (
     + [OUT / "manual/index.html"]
     + [p for p in manual_pages if p.name not in UNLISTED and p != OUT / "manual/index.html"]
 )
+structured([*site_pages, *manual_pages])
 sitemap(listed, dated)
 checked(listed)
 linked([*site_pages, *manual_pages])
