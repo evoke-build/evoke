@@ -27,6 +27,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   nothing.
 - A body that overruns its deadline says so in seconds. `Ctrl-C` on one body reads `cancelled` in `why` and
   on the JSON line.
+- `evoke trust` in the home project says it is trusted by construction. A collection added again when every
+  reflex of it is installed ends in `evoke update`.
+- A local reflex outside the project is shown where it is, `~/hello`, in `show` and in a line to fix.
 - A body's failure prints its message alone. The frames of an error a JavaScript body threw are kept in the
   log: `evoke why` shows them, and `--json` carries them as `frames`.
 

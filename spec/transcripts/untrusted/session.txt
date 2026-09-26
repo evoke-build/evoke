@@ -20,3 +20,6 @@ $ cd app && evoke trust
 $ cd app && evoke "kill the lights in the den"
   lights room="den" state="off"  0.85
 den lights off
+# The home project needs no trust, and says so.
+$ evoke trust
+  ~/.config/evoke is your home project, trusted by construction

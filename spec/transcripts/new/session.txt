@@ -8,7 +8,7 @@ $ evoke new hello
   hello already exists  →  evoke new <name>
 [3]
 $ evoke add ./hello
-+ hello  ../../hello  read  runs hello.mts
++ hello  ~/hello  read  runs hello.mts
   the theft test did not finish: "turn on the kitchen lights" is not recorded  →  evoke test
 $ evoke run hello who=Ada
   hello who="Ada"
@@ -22,3 +22,10 @@ $ evoke try 'say hi to "Ada"'
 $ evoke 'wave at "Grace"'
   hello who="Grace"  0.92
 Hello, Grace!
+# A local reflex outside the project is shown where it is, its lines to fix too.
+$ evoke new broken && grep -v '^confirm' broken/reflex.toml > t && mv t broken/reflex.toml && evoke add ./broken
++ broken/reflex.toml
++ broken/broken.mts
++ broken/reflex.d.ts
+  broken: confirm is required  →  ~/broken/reflex.toml:1:1
+[3]

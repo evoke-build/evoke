@@ -315,6 +315,22 @@ fn resolved(path: &Path) -> io::Result<PathBuf> {
         .unwrap_or(Path::new("."));
     Ok(fs::canonicalize(parent)?.join(name))
 }
+/// A path with its `.` and `..` components folded, lexically: what a person reads for `<root>/../../hello`,
+/// no link followed.
+#[must_use]
+pub fn normalised(path: &Path) -> PathBuf {
+    let mut folded = PathBuf::new();
+    for component in path.components() {
+        match component {
+            std::path::Component::CurDir => {}
+            std::path::Component::ParentDir => {
+                folded.pop();
+            }
+            other => folded.push(other),
+        }
+    }
+    folded
+}
 
 /// The path as a person reads it: `~/…` when it is under `$HOME`, however `$HOME` is spelled.
 #[must_use]

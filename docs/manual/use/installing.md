@@ -13,7 +13,7 @@ installed that a person did not name. No install-time code ever runs.
 | `owner/repo/dir@1.2.0`            | Pinned: `update` keeps it there. Tags are `X.Y.Z` or `vX.Y.Z`. The newest is the highest |
 | `https://host/repo.git#dir@1.2.0` | Any git host over `https` or `ssh`. `#dir` and `@tag` are optional                  |
 | `ssh://git@github.com/owner/repo` | The same over ssh, the user before the host                                        |
-| `./dir`, `../dir`                 | A local directory, relative to `evoke.toml`. Never fetched, never locked            |
+| `./dir`, `../dir`                 | A local directory, relative to `evoke.toml`. Never fetched, never locked; one outside the project is shown where it is, `~/hello` |
 
 An unpinned ref means its newest tag at `add`, and `update` moves it forward. A repository with no version tag
 cannot be installed. Its author publishes one with `git push --tags`. A password or a token in a URL is refused:
@@ -56,8 +56,9 @@ row without one declares nothing.
 
 The **local name** is the ref's last segment. `--as <name>` picks another, for a single ref. The local name is
 what the classifier reads, and your overlay file is named after it. A name already taken is refused. For one ref,
-the fix is the `--as` line; for a collection, the line that adds the rest. So is the same reflex under another
-name, the one the lock already holds by content: `clock: is timer under another name  →  evoke show timer`.
+the fix is the `--as` line; for a collection, the line that adds the rest, or `evoke update` when every reflex
+of it is installed already. So is the same reflex under another name, the one the lock already holds by
+content: `clock: is timer under another name  →  evoke show timer`.
 
 ## `remove`
 
@@ -112,8 +113,8 @@ $ evoke sync
 
 ## `trust`
 
-Your home project is trusted by construction. Any other project, an application's or a clone's, must be trusted
-before `evoke` decides in it. A project's files decide what runs:
+Your home project is trusted by construction, and `evoke trust` there says so. Any other project, an
+application's or a clone's, must be trusted before `evoke` decides in it. A project's files decide what runs:
 
 ```text
 $ cd app && evoke "kill the lights in the den"

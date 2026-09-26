@@ -65,7 +65,8 @@ fn added(session: &mut Session<'_>, input: &str, refs: &[Ref], name: Option<&Loc
             Err(exit) => return exit,
         }
     }
-    if let Err(exit) = placed(session, &newcomers) {
+    let typed: Vec<String> = refs.iter().map(|r| r.written.clone()).collect();
+    if let Err(exit) = placed(session, &newcomers, &typed) {
         return exit;
     }
     let (thefts, unfinished) = match stolen(session, input, &newcomers) {
@@ -158,11 +159,8 @@ fn local(
             )
         })?
     };
-    session
-        .reporter
-        .paths
-        .reflexes
-        .insert(local.clone(), path.clone());
+    let shown = session::local_shown(&session.root.path, &path, session.environment());
+    session.reporter.paths.reflexes.insert(local.clone(), shown);
     let manifest = parsed(session, input, &local, &text)?;
     let findings = lint(&manifest);
     Ok(Newcomer {
@@ -294,7 +292,7 @@ fn parsed(
 /// Every newcomer's name is free: not another newcomer's, not an installed reflex's from elsewhere, not one
 /// already locked. An entry the project names but the lock lacks is taken over. One taken name refuses the add;
 /// when the add brought several, the fix installs the ones that are free.
-fn placed(session: &Session<'_>, newcomers: &[Newcomer]) -> Result<(), Exit> {
+fn placed(session: &Session<'_>, newcomers: &[Newcomer], typed: &[String]) -> Result<(), Exit> {
     let conflicts: Vec<Option<Diagnostic>> = newcomers
         .iter()
         .enumerate()
@@ -309,6 +307,19 @@ fn placed(session: &Session<'_>, newcomers: &[Newcomer]) -> Result<(), Exit> {
         .filter(|(_, conflict)| conflict.is_none())
         .map(|(newcomer, _)| newcomer.written.clone())
         .collect();
+    // A collection installed whole already: one line, and the update that moves it.
+    if newcomers.len() > 1
+        && conflicts
+            .iter()
+            .all(|conflict| matches!(conflict, Some(problem) if matches!(problem.fix, Fix::Update { .. })))
+    {
+        return Err(Exit::Human(Diagnostic {
+            reflex: None,
+            at: None,
+            message: format!("every reflex of {} is already installed", typed.join(", ")),
+            fix: Fix::Update { reflex: None },
+        }));
+    }
     let mut problem = first.clone();
     if newcomers.len() > 1 && !free.is_empty() {
         problem.fix = Fix::AddRefs { references: free };

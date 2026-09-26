@@ -1717,6 +1717,14 @@ pub fn trusted(root: &str) -> Text {
     text
 }
 
+/// `evoke trust` in the home project, which needs no blessing.
+#[must_use]
+pub fn home_trusted(root: &str) -> Text {
+    Text::from(format!(
+        "  {root} is your home project, trusted by construction"
+    ))
+}
+
 /// A file written whole where none was, or changed: `+ <path>`.
 #[must_use]
 pub fn created(path: &str) -> Text {

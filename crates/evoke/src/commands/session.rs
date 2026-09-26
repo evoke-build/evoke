@@ -287,7 +287,9 @@ fn prepare(
         .iter()
         .map(|(name, location)| {
             let shown = match location {
-                Location::Local { path } => path.clone(),
+                Location::Local { path } => {
+                    local_shown(&ground.root.path, path, ground.environment)
+                }
                 Location::Remote { .. } => {
                     shipped.get(name).map_or_else(String::new, |(_, dir)| {
                         files::shown(dir, ground.environment)
@@ -371,6 +373,19 @@ fn installed(
         },
         shipped,
     ))
+}
+
+/// A local reflex's directory as a person reads it: as written while it stays under the project, `./lights`;
+/// resolved and shown under the home, `~/hello`, when it climbs out.
+pub(super) fn local_shown(root: &Path, path: &str, environment: &Environment) -> String {
+    if Path::new(path)
+        .components()
+        .any(|c| c == std::path::Component::ParentDir)
+    {
+        files::shown(&files::normalised(&root.join(path)), environment)
+    } else {
+        path.to_owned()
+    }
 }
 
 /// A local reflex as found: its manifest under the path as written, its overlay when there is one.
@@ -636,7 +651,9 @@ impl Session<'_> {
                 let location = self.project.reflexes.get(name)?;
                 // A pinned ref already names its tag; an unpinned one shows the tag the lock holds.
                 let from = match location {
-                    Location::Local { path } => path.clone(),
+                    Location::Local { path } => {
+                        local_shown(&self.root.path, path, self.environment)
+                    }
                     Location::Remote { pin, .. } => {
                         match self.lock.as_ref().and_then(|lock| lock.reflexes.get(name)) {
                             Some(locked) if *pin != Some(locked.tag) => {
