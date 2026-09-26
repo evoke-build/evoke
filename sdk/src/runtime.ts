@@ -54,6 +54,11 @@ const KEPT = ["PATH", "HOME", "TMPDIR", "LANG", "TERM"]
 /** What a body gets to settle after its signal aborts, and a group after SIGTERM before SIGKILL, in milliseconds. */
 const GRACE = 1000
 
+/** Milliseconds as a person reads them: `30 s`, `1.5 s`, `0.05 s`. */
+function seconds(ms: number): string {
+  return `${ms < 1000 ? (ms / 1000).toFixed(2) : Math.round(ms / 100) / 10} s`
+}
+
 /** A function body, in-process: its arguments as the envelope carries them, the deadline as its signal. */
 export async function inline(
   what: string,
@@ -65,7 +70,7 @@ export async function inline(
   const config = resolved(what, envelope.config)
   // Referenced timers: a body that hangs holding no handle cannot let the process exit before the deadline.
   const timeout = new AbortController()
-  const timer = setTimeout(() => timeout.abort(new DOMException(`no answer within ${envelope.deadline} ms`, "TimeoutError")), envelope.deadline)
+  const timer = setTimeout(() => timeout.abort(new DOMException(`no answer within ${seconds(envelope.deadline)}`, "TimeoutError")), envelope.deadline)
   const own = signal === undefined ? timeout.signal : AbortSignal.any([signal, timeout.signal])
   let grace: NodeJS.Timeout | undefined
   const abandoned = new Promise<{ abandoned: true }>(resolve => {
@@ -79,7 +84,7 @@ export async function inline(
   try {
     const outcome = await Promise.race([settled, abandoned])
     if (signal?.aborted) throw signal.reason
-    if ("abandoned" in outcome) throw failed(what, `did not finish within ${envelope.deadline} ms`)
+    if ("abandoned" in outcome) throw failed(what, `did not finish within ${seconds(envelope.deadline)}`)
     if ("threw" in outcome) {
       throw failed(what, outcome.threw instanceof Error ? outcome.threw.message : String(outcome.threw), undefined, outcome.threw)
     }
@@ -123,7 +128,7 @@ export async function child(
   const { output, code, timedOut, error } = await collected(started, envelope.deadline + 2 * GRACE, signal)
   if (signal?.aborted) throw signal.reason
   if (error !== undefined) throw failed(what, error.message)
-  if (timedOut) throw failed(what, `did not finish within ${envelope.deadline} ms`)
+  if (timedOut) throw failed(what, `did not finish within ${seconds(envelope.deadline)}`)
   const line = output.split("\n")[0] ?? ""
   let parsed: unknown
   try {
@@ -172,7 +177,7 @@ export async function program(
   const { output, code, timedOut, error } = await collected(started, envelope.deadline, signal)
   if (signal?.aborted) throw signal.reason
   if (error !== undefined) throw failed(what, error.message)
-  if (timedOut) throw failed(what, `did not finish within ${envelope.deadline} ms`)
+  if (timedOut) throw failed(what, `did not finish within ${seconds(envelope.deadline)}`)
   if (code !== 0) throw failed(what, refusedProfile(code) ?? ended(code))
   return { text: output.endsWith("\n") ? output.slice(0, -1) : output }
 }

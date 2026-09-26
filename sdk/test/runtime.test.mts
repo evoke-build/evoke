@@ -59,7 +59,7 @@ test("a function body that returns text alone, or the wrong shape", async () => 
 test("a function body that never settles is abandoned after the deadline and a grace", async () => {
   await rejects(
     inline("running timer", (_args, { signal }) => new Promise<string>(resolve => signal.addEventListener("abort", () => setTimeout(() => resolve("late"), 5000))), envelope({ deadline: 50 }), undefined),
-    (error: FailureError) => error instanceof FailureError && error.message === "running timer: did not finish within 50 ms  →  run(d)",
+    (error: FailureError) => error instanceof FailureError && error.message === "running timer: did not finish within 0.05 s  →  run(d)",
   )
 })
 

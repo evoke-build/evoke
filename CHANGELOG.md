@@ -25,6 +25,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   input's abstain does.
 - `evoke teach` and `[t]each` say when the phrase is already an example with the same values, and write
   nothing.
+- A body that overruns its deadline says so in seconds. `Ctrl-C` on one body reads `cancelled` in `why` and
+  on the JSON line.
 - A body's failure prints its message alone. The frames of an error a JavaScript body threw are kept in the
   log: `evoke why` shows them, and `--json` carries them as `frames`.
 

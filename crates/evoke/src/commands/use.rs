@@ -277,8 +277,8 @@ impl Using<'_> {
 
     /// A round at its end: the line's status and reason from the exit, the line printed under `--json` and
     /// logged, the exit reported. Ctrl-C noted while the round was under way is what stopped it: a step reads
-    /// `skipped · cancelled`, one decision keeps the body's failure as its `error`, and nothing more prints — the
-    /// process ends once every line is logged.
+    /// `skipped · cancelled`, one decision keeps the body's failure as its `error` and reads `cancelled`, and
+    /// nothing more prints — the process ends once every line is logged.
     fn stopped(&self, input: &str, line: &mut Line, exit: Exit, why: Option<Stopped>) -> Rounded {
         let cancelled = exit != Exit::Ran && interrupt::interrupted();
         let (status, why) = if cancelled {
@@ -292,6 +292,8 @@ impl Using<'_> {
             if cancelled {
                 line.error = None;
             }
+        } else if cancelled {
+            line.cancelled = true;
         }
         // A failure after the line was built — a file that would not take a word — is the line's own `error`,
         // so under `--json` one object stands for the input.

@@ -76,7 +76,7 @@ async function run(line) {
   const { run, args, input, config, deadline } = envelope;
   process.on("SIGTERM", () => stop("terminated", true));
   process.on("uncaughtException", thrown);
-  const timer = setTimeout(() => stop(`timed out after ${deadline} ms`, true), deadline);
+  const timer = setTimeout(() => stop(`timed out after ${seconds(deadline)}`, true), deadline);
   try {
     const module = await import(pathToFileURL(run).href);
     if (module.default === undefined) throw new Error(`${run} has no default export`);
@@ -123,6 +123,11 @@ function where(stack) {
   return (first < 0 ? [] : lines.slice(first))
     .filter((line) => !/[( ]node:/.test(line) && !line.includes("[eval"))
     .map((line) => line.trim());
+}
+
+// Milliseconds as a person reads them: `30 s`, `1.5 s`, `0.05 s`.
+function seconds(ms) {
+  return `${ms < 1000 ? (ms / 1000).toFixed(2) : Math.round(ms / 100) / 10} s`;
 }
 
 function describe(value) {

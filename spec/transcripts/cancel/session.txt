@@ -40,10 +40,10 @@ none
 $ evoke --json "wait a while"
 waiting
 ^C
-{"input":"wait a while","outcome":"run","reflex":"wait","args":{},"call":"wait","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"wait","p":0.9},"judgments":[{"question":"route","top":"wait","p":0.9}],"runner_up":{"reflex":"pause","route":0.04,"fits":0.1},"contenders":[{"reflex":"wait","route":0.9,"fits":0.8},{"reflex":"pause","route":0.04,"fits":0.1},{"reflex":"timer","route":0.01,"fits":0.02}],"trace":[],"contained":{"type":"full"},"error":"running wait: interrupted"}
+{"input":"wait a while","outcome":"run","reflex":"wait","args":{},"call":"wait","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"wait","p":0.9},"judgments":[{"question":"route","top":"wait","p":0.9}],"runner_up":{"reflex":"pause","route":0.04,"fits":0.1},"contenders":[{"reflex":"wait","route":0.9,"fits":0.8},{"reflex":"pause","route":0.04,"fits":0.1},{"reflex":"timer","route":0.01,"fits":0.02}],"trace":[],"contained":{"type":"full"},"error":"running wait: interrupted","cancelled":true}
 [130]
 $ evoke why
   "wait a while"
   wait 0.90 · none 0.05 · pause 0.04 · timer 0.01
   fits  wait 0.80 · pause 0.10 · timer 0.02
-  failed wait · weakest: route 0.90 · cached
+  cancelled wait · weakest: route 0.90 · cached

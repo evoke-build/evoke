@@ -224,6 +224,8 @@ pub struct Line {
     pub error: Option<String>,
     /// The frames of the error a file body threw, from its first, when it threw one.
     pub frames: Vec<String>,
+    /// Whether Ctrl-C ended the body: one decision's word for what a weave's step says as `skipped · cancelled`.
+    pub cancelled: bool,
     /// Whether the machine held the body's declaration, when a body was run.
     pub contained: Option<Contained>,
     /// A weave's step: which of how many, what became of it, the values bound into it. None for one decision.
@@ -252,6 +254,7 @@ impl Line {
             result: None,
             error: None,
             frames: Vec::new(),
+            cancelled: false,
             contained: None,
             step: None,
         }
@@ -269,6 +272,7 @@ impl Line {
             result: None,
             error: None,
             frames: Vec::new(),
+            cancelled: false,
             contained: None,
             step: None,
         }
@@ -331,6 +335,9 @@ impl Line {
                 serde_json::to_value(&self.frames).expect("frames serialize"),
             );
         }
+        if self.cancelled {
+            line.insert("cancelled".to_owned(), Json::Bool(true));
+        }
         if let Some(step) = &self.step {
             line.insert(
                 "status".to_owned(),
@@ -371,6 +378,7 @@ impl Line {
         let result = field("result", take("result"))?;
         let error = field("error", take("error"))?;
         let frames = field("frames", take("frames")).unwrap_or_default();
+        let cancelled = field("cancelled", take("cancelled")).unwrap_or_default();
         let contained = field("contained", take("contained"))?;
         let step = match (take("step"), take("steps")) {
             (Json::Null, _) => None,
@@ -392,6 +400,7 @@ impl Line {
             result,
             error,
             frames,
+            cancelled,
             contained,
             step,
         })
@@ -498,8 +507,8 @@ fn became(line: &Line) -> Text {
     what
 }
 
-/// One input's outcome: `ran`, `failed` or `confirm` with the call as judged, `ask` with what was asked, or
-/// `abstain`.
+/// One input's outcome: `ran`, `failed`, `cancelled` or `confirm` with the call as judged, `ask` with what was
+/// asked, or `abstain`.
 fn alone(line: &Line) -> Text {
     match (&line.decision, &line.result) {
         (Decision::Run { chosen } | Decision::Confirm { chosen, .. }, Some(_)) => {
@@ -508,7 +517,9 @@ fn alone(line: &Line) -> Text {
             what
         }
         (Decision::Run { chosen } | Decision::Confirm { chosen, .. }, None) => {
-            let word = if line.error.is_some() {
+            let word = if line.cancelled {
+                "cancelled "
+            } else if line.error.is_some() {
                 "failed "
             } else {
                 "confirm "
