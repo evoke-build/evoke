@@ -1688,52 +1688,66 @@ Turn the lights in one room on, off, or dim them.</span>
         let queued = false
         addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; direct() }) } }, { passive: true })
 
-        // The assist: a scroll that ends where nothing reads, in the empty middle between two beats, carries on to the next
-        // beat in the direction it was going. Wherever a beat reads from, the page is left where it is, and it never turns a
-        // scroll around; any input of yours ends the glide at once. The arrow keys move a beat at a time. On a phone the cards
-        // are held at the foot of the screen, so nothing is empty; past the journey the page scrolls freely.
+        // The journey is paged for the wheel and the keys: a swipe, a turn of the wheel or a key carries the page to the next
+        // beat, or the one before, in one smooth move, and the rest of the swipe, its momentum, is spent on that move, so one
+        // swipe is one beat; a second swipe, felt as a rise over the momentum, is one more. A touch, a scrollbar, a phone and
+        // a reader who asked for less motion scroll it as they do the rest of the page; past the journey the page scrolls freely.
         const today = document.querySelector(".future .today"), bodies = beats.map(b => b.el.querySelector(".beat-body, .wrap"))
         const stops = () => [0, ...bodies.slice(1).map(el => { const r = el.getBoundingClientRect(); return Math.max(0, (r.top + r.bottom) / 2 + scrollY - innerHeight / 2) }), today.getBoundingClientRect().top + scrollY - 72]  // each beat with its words centred on the screen, then the section after it, clear of the bar
-        const reads = () => bodies.some(el => { const r = el.getBoundingClientRect(), c = (r.top + r.bottom) / 2; return c > innerHeight * .2 && c < innerHeight * .8 })  // some beat's words sit in the middle of the screen
-        const settle = t => 1 - (1 - t) ** 4
-        let carry = null, touching = false, moved = -1e9, dir = 1, lastY = scrollY, pause = 0
-        const halt = () => { carry = null }
-        const carryTo = to => {  // the page glides to a stop, quickly for a short way, and stops the moment you scroll
-          const y0 = scrollY, d = to - y0
-          if (Math.abs(d) < 2) return
-          if (still) return scrollTo({ top: to, behavior: "instant" })
-          const t0 = performance.now(), ms = clamp(260 + Math.abs(d) * .45, 300, 700), c = carry = { t0 }
+        const inOut = t => t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2, out = t => 1 - (1 - t) ** 3
+        let ride = null
+        const rideTo = (i, s) => {  // the page moves to a stop in one smooth glide; a glide already under way flows on into the next
+          const from = scrollY, to = s[i], d = to - from
+          if (Math.abs(d) < 1) { ride = null; return }
+          const t0 = performance.now(), ms = clamp(380 + Math.abs(d) * .5, 480, 900), ease = ride ? out : inOut, r = ride = { i, t0 }
           const step = now => {
-            if (carry !== c) return
+            if (ride !== r) return
             const t = clamp((now - t0) / ms, 0, 1)
-            scrollTo({ top: y0 + d * settle(t), behavior: "instant" })
-            if (t < 1) requestAnimationFrame(step); else carry = null
+            scrollTo({ top: from + d * ease(t), behavior: "instant" })
+            if (t < 1) requestAnimationFrame(step); else ride = null
           }
           requestAnimationFrame(step)
         }
-        const assist = () => {
-          if (carry || touching || narrow || performance.now() - moved > 1500) return  // a glide of the page's own, a finger down, a phone, a scrollbar: left alone
-          const y = scrollY, s = stops()
-          if (y > s[s.length - 1] - innerHeight * .3 || reads()) return  // the journey's end, or a beat, reads from here
-          const to = dir < 0 ? s.findLast(x => x < y) : s.find(x => x > y)
-          if (to !== undefined) carryTo(to)
+        const turnPage = dir => {  // one beat on, or back
+          const s = stops(), y = scrollY
+          const i = ride ? ride.i + dir : dir > 0 ? s.findIndex(x => x > y + 2) : s.findLastIndex(x => x < y - 2)
+          if (i >= 0 && i < s.length) rideTo(i, s)
         }
-        const soon = () => { clearTimeout(pause); pause = setTimeout(assist, 260) }  // a scroll has ended when its events and yours have paused
-        addEventListener("scroll", () => { const y = scrollY; dir = Math.sign(y - lastY) || dir; lastY = y; soon() }, { passive: true })
-        addEventListener("wheel", () => { halt(); moved = performance.now(); soon() }, { passive: true })
-        addEventListener("touchstart", () => { halt(); touching = true; moved = performance.now() }, { passive: true })
-        for (const end of ["touchend", "touchcancel"]) addEventListener(end, () => { touching = false; moved = performance.now(); soon() }, { passive: true })
+        const paged = dir => {  // whether a move this way is the journey's to make
+          if (still || narrow) return false
+          const s = stops(), y = scrollY, last = s[s.length - 1]
+          return dir < 0 ? y <= last + 2 : y < last - 2
+        }
+        let lastWheel = -1e9, sum = 0, spent = false, peak = 0, low = 0, before = 0
+        addEventListener("wheel", e => {
+          if (e.ctrlKey) return
+          const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY, dir = Math.sign(dy)
+          if (!dir) return
+          const now = performance.now(), fresh = now - lastWheel > 250  // a pause in the wheel's events is a new gesture: a stream runs at the frame rate
+          lastWheel = now
+          if (fresh) { sum = 0; spent = false }
+          // a gesture that turned the page is the journey's to its end, momentum and all; a new one is its own only over the journey
+          if (!spent && !ride && !(journey.contains(e.target) && paged(dir))) return
+          e.preventDefault()
+          const size = Math.abs(dy)
+          if (!spent) {
+            sum += dy
+            if (Math.abs(sum) >= 8) { spent = true; peak = low = before = size; turnPage(dir) }
+            return
+          }
+          // the swipe that turned the page is spent, and its momentum falls away; a rise out of a momentum that has fallen to
+          // half its peak is another swipe, while the ramp of a hard flick, still rising, is not
+          if (size >= 16 && low <= peak / 2 && size >= 2 * low && size >= 1.5 * before && (!ride || now - ride.t0 > 150)) { peak = low = size; turnPage(dir) }
+          else if (size > peak) { peak = size; low = size } else low = Math.min(low, size)
+          before = size
+        }, { passive: false })
         addEventListener("keydown", e => {
           if (e.altKey || e.ctrlKey || e.metaKey || e.target.closest?.("input, textarea, select, [contenteditable]")) return
-          halt(); moved = performance.now()
-          const step = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0
-          if (!step || e.shiftKey || narrow) return
-          const y = scrollY, s = stops()
-          if (y > s[s.length - 1] + 4) return
-          const to = step > 0 ? s.find(x => x > y + 2) : s.findLast(x => x < y - 2)
-          if (to === undefined) return
-          e.preventDefault(); carryTo(to)
+          const dir = e.key === "ArrowDown" || e.key === "PageDown" || e.key === " " && !e.shiftKey ? 1 : e.key === "ArrowUp" || e.key === "PageUp" || e.key === " " && e.shiftKey ? -1 : 0
+          if (!dir || e.key === " " && e.target.closest?.("button, a, summary") || !paged(dir)) return
+          e.preventDefault(); turnPage(dir)
         })
+        addEventListener("touchstart", () => { ride = null }, { passive: true })  // a finger takes the page back
         new IntersectionObserver(([e]) => { visible = e.isIntersecting; kick() }).observe(journey)
         document.addEventListener("visibilitychange", kick)
         journey.classList.add("directed")
