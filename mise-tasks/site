@@ -264,7 +264,7 @@ def description(page_html):
 def trail(page, name):
     """The page's place, for a search engine: evoke, then the manual, the examples or the guides where the page is
     one of them, then the page, named without the brand. The last step needs no address."""
-    steps = [{"@type": "ListItem", "position": 1, "name": "evoke", "item": URL}]
+    steps = [{"@type": "ListItem", "position": 1, "name": "Evoke", "item": URL}]
     rel = page.relative_to(OUT).as_posix()
     folders = [
         ("manual/", "Manual", "manual/"),
@@ -325,7 +325,7 @@ def described(page):
             *([f'<link rel="alternate" type="text/markdown" href="{markdown(page)}">'] if manual else []),
             '<meta name="robots" content="max-image-preview:large">',
             f'<meta property="og:type" content="{"website" if home else "article"}">',
-            '<meta property="og:site_name" content="evoke">',
+            '<meta property="og:site_name" content="Evoke">',
             '<meta property="og:locale" content="en_US">',
             f'<meta property="og:title" content="{heading}">',
             f'<meta property="og:description" content="{quoted}">',
