@@ -76,7 +76,7 @@ fn realise(
     else {
         return Err(about(
             name,
-            format!("{name} is not locked"),
+            "is not locked".to_owned(),
             Fix::AddRef {
                 reference: location.to_string(),
                 name: Some(name.clone()),

@@ -1,7 +1,7 @@
 # Before sync, show lists what the project names, the reflex the store lacks inactive.
 $ evoke show
   lights  radhi/home/lights 1.2.0
-  inactive  lights: lights is not in the store  →  evoke sync
+  inactive  lights: is not in the store  →  evoke sync
 $ evoke sync
 + lights  radhi/home/lights 1.2.0  write  runs lights.mts
 $ evoke update lights --accept timer
@@ -63,3 +63,6 @@ $ evoke show note
   'note "buy milk"' = { text = "buy milk" }
   'write down "call dana"' = { text = "call dana" }
   skipped  overlays/note.toml: args.tag addresses nothing
+$ evoke update --accept nothing
+  nothing: is not installed  →  evoke show
+[3]

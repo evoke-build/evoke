@@ -1391,7 +1391,9 @@ fn named(
                 return Err(refused(
                     reflex,
                     format!("{} is outside {}–{}", span.text(), range.min(), range.max()),
-                    Fix::Rerun,
+                    Fix::Show {
+                        reflex: Some(reflex.clone()),
+                    },
                 ));
             }
             Ok(value)

@@ -17,6 +17,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   installed example over the floor: `lamp: also fits "kill the lights" of lights (0.82)`.
 - The collection's `volume` sends `mute the sound` as an example of what it is not; `visit` drops the test
   `pull up the calendar`.
+- A diagnostic names its reflex once, `lamps: is not installed`. A call by name with a value out of range
+  points at `evoke show`, and `evoke update --accept` of a name not installed says so.
 - A body's failure prints its message alone. The frames of an error a JavaScript body threw are kept in the
   log: `evoke why` shows them, and `--json` carries them as `frames`.
 

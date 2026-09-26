@@ -14,7 +14,7 @@ $ evoke teach lights state=dim
 $ evoke teach dim lights state=dim
 + overlays/lights.toml  [examples] dim = { state = "dim" }
 $ evoke teach lights colour=blue
-  lights: lights has no argument colour  →  evoke show lights
+  lights: has no argument colour  →  evoke show lights
 [3]
 $ evoke teach -x lights state=off
   -x is not a flag of teach; teach takes --forget alone  →  evoke --help

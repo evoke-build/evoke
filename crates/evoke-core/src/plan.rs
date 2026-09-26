@@ -155,7 +155,7 @@ impl Plan {
             || Diagnostic {
                 reflex: Some(reflex.clone()),
                 at: None,
-                message: format!("{reflex} is not installed"),
+                message: "is not installed".to_owned(),
                 fix: Fix::Show { reflex: None },
             },
             |problems| problems.first().clone(),
@@ -287,7 +287,7 @@ impl Active {
             .ok_or_else(|| Diagnostic {
                 reflex: Some(reflex.clone()),
                 at: None,
-                message: format!("{reflex} has no argument {written}"),
+                message: format!("has no argument {written}"),
                 fix: Fix::Show {
                     reflex: Some(reflex.clone()),
                 },
@@ -672,16 +672,15 @@ fn taker_destructive(
     let yours = matches!(&item.wording, Ok(effective) if effective.yours.contains(&KeyPath::new(["effect"])));
     let (message, fix) = if yours {
         (
-            format!("{name} takes a result, and your overlay makes it destructive"),
+            "takes a result, and your overlay makes it destructive".to_owned(),
             Fix::Show {
                 reflex: Some(name.clone()),
             },
         )
     } else {
         (
-            format!(
-                "{name} takes a result, and runs destructive until the effect it now claims is accepted"
-            ),
+            "takes a result, and runs destructive until the effect it now claims is accepted"
+                .to_owned(),
             Fix::Accept {
                 reflex: name.clone(),
             },

@@ -15,7 +15,7 @@
   "expect": {
     "err": {
       "reflex": "lights",
-      "message": "lights has no argument colour",
+      "message": "has no argument colour",
       "fix": {
         "type": "show",
         "reflex": "lights"

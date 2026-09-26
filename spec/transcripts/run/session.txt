@@ -22,7 +22,7 @@ $ evoke run lights state=off
   lights: lights needs room  →  evoke show lights
 [3]
 $ evoke run volume level=150
-  volume: 150 is outside 0–100  →  evoke run volume level=150
+  volume: 150 is outside 0–100  →  evoke show volume
 [3]
 $ evoke run --json lights room=den state=off
 {"input":"","outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","trace":[],"contained":{"type":"full"},"result":{"text":"den lights off"}}

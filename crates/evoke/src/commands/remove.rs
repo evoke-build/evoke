@@ -25,7 +25,7 @@ fn removed(session: &mut Session<'_>, input: &str, name: &LocalName) -> Exit {
     if !session.project.reflexes.contains_key(name) {
         return about(
             name,
-            format!("{name} is not installed"),
+            "is not installed".to_owned(),
             Fix::Show { reflex: None },
         );
     }

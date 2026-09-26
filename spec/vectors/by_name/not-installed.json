@@ -13,7 +13,7 @@
   "expect": {
     "err": {
       "reflex": "volume",
-      "message": "volume is not installed",
+      "message": "is not installed",
       "fix": {
         "type": "show"
       }

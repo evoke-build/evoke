@@ -355,12 +355,11 @@ fn conflict(
         .as_ref()
         .is_some_and(|lock| lock.reflexes.contains_key(&newcomer.name));
     let (message, fix) = match session.project.reflexes.get(&newcomer.name) {
-        Some(existing) if *existing != newcomer.location => (
-            format!("{} is already installed from {existing}", newcomer.name),
-            choose,
-        ),
+        Some(existing) if *existing != newcomer.location => {
+            (format!("is already installed from {existing}"), choose)
+        }
         Some(_) if locked => (
-            format!("{} is already installed", newcomer.name),
+            "is already installed".to_owned(),
             Fix::Update {
                 reflex: Some(newcomer.name.clone()),
             },

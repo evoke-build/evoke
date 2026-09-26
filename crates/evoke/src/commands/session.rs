@@ -424,7 +424,7 @@ fn remote(
         let problem = Diagnostic {
             reflex: Some(name.clone()),
             at: None,
-            message: format!("{name} is not locked"),
+            message: "is not locked".to_owned(),
             fix: Fix::AddRef {
                 reference: location.to_string(),
                 name: Some(name.clone()),
@@ -436,7 +436,7 @@ fn remote(
         let problem = Diagnostic {
             reflex: Some(name.clone()),
             at: None,
-            message: format!("{name} is not in the store"),
+            message: "is not in the store".to_owned(),
             fix: Fix::Sync,
         };
         return unplaced(ground.opening, configured, problem);
@@ -452,7 +452,7 @@ fn remote(
             Err(vec![Diagnostic {
                 reflex: Some(name.clone()),
                 at: None,
-                message: format!("{name} has no reflex.toml in the store"),
+                message: "has no reflex.toml in the store".to_owned(),
                 fix: Fix::Sync,
             }]),
             None,
@@ -941,7 +941,7 @@ impl Session<'_> {
                     return Err(Exit::Human(Diagnostic {
                         reflex: Some(name.clone()),
                         at: None,
-                        message: format!("{name} has no manifest to read the overlay against"),
+                        message: "has no manifest to read the overlay against".to_owned(),
                         fix: Fix::Sync,
                     }));
                 };

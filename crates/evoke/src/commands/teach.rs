@@ -133,10 +133,7 @@ fn forgotten(session: &mut Session<'_>, text: &str, name: &LocalName) -> Exit {
         })
     };
     let Some(item) = session.installed.reflexes.get(name) else {
-        return about(
-            format!("{name} is not installed"),
-            Fix::Show { reflex: None },
-        );
+        return about("is not installed".to_owned(), Fix::Show { reflex: None });
     };
     let effective = match &item.wording {
         Ok(effective) => effective,

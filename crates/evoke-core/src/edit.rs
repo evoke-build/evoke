@@ -526,7 +526,7 @@ mod tests {
         assert_eq!(refused("lights state").message, "state takes a value");
         assert_eq!(
             refused("lights colour=blue").message,
-            "lights has no argument colour"
+            "has no argument colour"
         );
         assert_eq!(
             refused("lights colour=blue").fix,
@@ -534,7 +534,7 @@ mod tests {
                 reflex: Some(LocalName::new("lights").unwrap())
             }
         );
-        assert_eq!(refused("volume level=3").message, "volume is not installed");
+        assert_eq!(refused("volume level=3").message, "is not installed");
         assert_eq!(refused("volume level=3").fix, Fix::Show { reflex: None });
     }
 

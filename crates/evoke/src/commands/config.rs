@@ -38,7 +38,7 @@ fn set(
         return Exit::Human(Diagnostic {
             reflex: Some(reflex.clone()),
             at: None,
-            message: format!("{reflex} is not installed"),
+            message: "is not installed".to_owned(),
             fix: Fix::Show { reflex: None },
         });
     };
@@ -49,7 +49,7 @@ fn set(
             return Exit::Human(Diagnostic {
                 reflex: Some(reflex.clone()),
                 at: None,
-                message: format!("{reflex} is not in the store"),
+                message: "is not in the store".to_owned(),
                 fix: Fix::Sync,
             });
         }
@@ -58,7 +58,7 @@ fn set(
         return Exit::Human(Diagnostic {
             reflex: Some(reflex.clone()),
             at: None,
-            message: format!("{reflex} declares no config \"{key}\""),
+            message: format!("declares no config \"{key}\""),
             fix: Fix::Show {
                 reflex: Some(reflex.clone()),
             },

@@ -25,7 +25,7 @@ $ evoke add radhi/eggs
 # One taken name refuses a collection whole; the fix installs the rest. A ref without its tag, a collection
 # without --as, a directory that is not there: each fix is the command that helps.
 $ evoke add radhi/home
-  lights: lights is already installed  →  evoke add radhi/home/volume
+  lights: is already installed  →  evoke add radhi/home/volume
 [3]
 $ evoke add radhi/home --as tools
   radhi/home is a collection; --as names one reflex  →  evoke add radhi/home

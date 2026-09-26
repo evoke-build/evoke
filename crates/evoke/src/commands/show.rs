@@ -60,7 +60,7 @@ fn shown(session: &Session<'_>, name: Option<&LocalName>) -> Exit {
         return Exit::Human(Diagnostic {
             reflex: Some(name.clone()),
             at: None,
-            message: format!("{name} is not installed"),
+            message: "is not installed".to_owned(),
             fix: Fix::Show { reflex: None },
         });
     };

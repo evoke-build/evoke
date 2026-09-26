@@ -38,5 +38,5 @@ $ evoke show lights
   "make it darker in here" = { state = "dim" }
   "light a candle" = false
 $ evoke show lamps
-  lamps: lamps is not installed  →  evoke show
+  lamps: is not installed  →  evoke show
 [3]

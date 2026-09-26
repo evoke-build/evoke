@@ -12,10 +12,10 @@ $ evoke config lights token hue-example
 $ evoke config lights token --env HUE_TOKEN
 + evoke.toml  [config.lights] token = { env = "HUE_TOKEN" }
 $ evoke config lights colour blue
-  lights: lights declares no config "colour"  →  evoke show lights
+  lights: declares no config "colour"  →  evoke show lights
 [3]
 $ evoke config lamps bridge 10.0.0.2
-  lamps: lamps is not installed  →  evoke show
+  lamps: is not installed  →  evoke show
 [3]
 $ evoke show
   lights  ./lights  write  runs lights.mts

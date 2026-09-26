@@ -56,6 +56,15 @@ fn updated(
     if session.project.reflexes.is_empty() {
         return nothing_installed();
     }
+    if let Some(name) = accept
+        && !session.project.reflexes.contains_key(name)
+    {
+        return about(
+            name,
+            "is not installed".to_owned(),
+            Fix::Show { reflex: None },
+        );
+    }
     let scope: Vec<LocalName> = match reflex {
         Some(name) => vec![name.clone()],
         None => session
@@ -130,14 +139,14 @@ fn one(
     let Some(location) = session.project.reflexes.get(name) else {
         return Err(about(
             name,
-            format!("{name} is not installed"),
+            "is not installed".to_owned(),
             Fix::Show { reflex: None },
         ));
     };
     let Location::Remote { reference, pin } = location else {
         return Err(about(
             name,
-            format!("{name} is local; nothing to update"),
+            "is local; nothing to update".to_owned(),
             Fix::Show {
                 reflex: Some(name.clone()),
             },
@@ -148,7 +157,7 @@ fn one(
     let Some(locked) = lock.reflexes.get(name).cloned() else {
         return Err(about(
             name,
-            format!("{name} is not locked"),
+            "is not locked".to_owned(),
             Fix::AddRef {
                 reference: location.to_string(),
                 name: Some(name.clone()),
@@ -175,11 +184,7 @@ fn one(
         })?,
     };
     let Some(previous) = session.store.entry(&locked.h1).map_err(Exit::Failed)? else {
-        return Err(about(
-            name,
-            format!("{name} is not in the store"),
-            Fix::Sync,
-        ));
+        return Err(about(name, "is not in the store".to_owned(), Fix::Sync));
     };
     let previous_manifest = parsed(session, input, name, &previous.files)?;
     if target.version == locked.tag {
