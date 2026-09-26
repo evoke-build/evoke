@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>evoke — the card behind a shared link; rendered once to og.png at twice the size</title>
+  <title>evoke — the card behind a shared link; rendered once to og.jpg at twice the size</title>
   <style>
-    html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #0f0f10; color: #ececec;
+    html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #060608; color: #ececec;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, "Segoe UI", Roboto, sans-serif;
       -webkit-font-smoothing: antialiased; }
     .card { position: relative; width: 1200px; height: 630px; padding: 84px 96px 76px; box-sizing: border-box; }
+    .sky { position: absolute; inset: 0; width: 1200px; height: 630px; }
+    .brand, h1, p { position: relative; }  /* over the sky; the address is placed already */
     .brand { display: flex; align-items: center; gap: 18px; font-size: 40px; font-weight: 650; letter-spacing: -0.02em; }
     .brand img { width: 56px; height: 56px; }
     h1 { font-size: 100px; font-weight: 700; letter-spacing: -0.045em; line-height: 0.96; margin: 34px 0 0; }
@@ -16,62 +18,68 @@
     p strong { color: #ececec; font-weight: 600; }
     .url { position: absolute; left: 96px; bottom: 76px; font: 500 24px/1 ui-monospace, "SF Mono", Menlo, monospace; color: #7b7b82; letter-spacing: .01em; }
     .url b { color: #ef7f2b; font-weight: 500; margin-right: 12px; }
-    /* The scene: the hero's final frame, the sentence read down between the two abilities it reached, each slot
-       wearing its kind, and the address found by one and taken by the other */
-    .room { position: absolute; top: 70px; right: 64px; width: 432px; font: 16px/28px ui-monospace, "SF Mono", Menlo, monospace; color: #ebe8e3; }
-    .room::before { content: ""; position: absolute; inset: -120px -140px; background: radial-gradient(50% 50% at 50% 50%, rgba(229, 118, 29, .13), transparent 70%); }
-    .part, .seam { position: relative; margin: 0; font-size: 15px; white-space: nowrap; }
-    .part u { color: #8fd48a; text-decoration: underline solid #8fd48a; text-underline-offset: 5px; }
-    .seam { margin: 16px 0 2px; color: #ea8a40; }
-    .seam small { margin-left: 12px; font-size: 12px; color: #8f8c86; }
-    .ability { position: relative; width: 384px; margin-top: 8px; padding: 12px 16px 16px; box-sizing: border-box; background: #1a1a1e; border: 1px solid #36363d; border-radius: 12px; box-shadow: 0 0 0 1px rgba(143, 212, 138, .4); }
-    .top { display: flex; align-items: center; gap: 10px; height: 30px; }
-    .num { width: 24px; height: 24px; border-radius: 50%; background: rgba(234, 138, 64, .12); color: #ea8a40; font: 600 13px/24px ui-monospace, "SF Mono", Menlo, monospace; font-style: normal; text-align: center; }
-    .top svg { width: 19px; height: 19px; fill: none; stroke: #8f8c86; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-    .top b { color: #fff; font-weight: 500; }
-    .conf { margin-left: auto; font-style: normal; color: #8fd48a; }
-    .what { margin: 4px 0 0; font: 15px/21px -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; color: #b5b2ab; }
-    .rows { display: grid; grid-template-columns: max-content max-content; column-gap: 16px; row-gap: 16px; margin-top: 16px; align-items: center; }
-    .key { color: #8f8c86; }
-    .slot { position: relative; justify-self: start; height: 30px; padding: 0 9px; line-height: 28px; box-sizing: border-box; border: 1px solid #4a4a52; border-radius: 7px; color: #fff; }
-    .slot::before { content: attr(data-kind); position: absolute; top: -8px; left: 8px; padding: 0 4px; background: #1a1a1e; font-size: 11px; line-height: 14px; color: #8f8c86; }
-    .slot.ok { border-color: rgba(143, 212, 138, .5); color: #8fd48a; }
-    .slot.ok::before { color: #8fd48a; }
-    .slot.empty { width: 104px; border-style: dashed; border-color: #45454d; }
-    .cursor { display: inline-block; width: 10px; height: 19px; background: #ebe8e3; vertical-align: -3px; }
-    .thread { position: absolute; left: 0; top: 0; overflow: visible; }
-    .thread path { fill: none; stroke: #8fd48a; stroke-width: 2; }
   </style>
 </head>
 <body>
   <div class="card">
+    <canvas class="sky" aria-hidden="true"></canvas>
     <div class="brand"><img src="../assets/logo.png" alt="">evoke</div>
     <h1>Software,<br><em>by reflex.</em></h1>
     <p><strong>Take back control. Keep the intelligence.</strong><br>A reflex is a small program you install and ask
       for in your words.</p>
     <div class="url"><b>$</b>evoke.build</div>
-    <div class="room" aria-hidden="true">
-      <p class="part">"look up dana's address"</p>
-      <div class="ability a1">
-        <div class="top"><i class="num">1</i><svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="3"/><path d="M2.5 14.5c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5"/></svg><b>contact</b><em class="conf">0.90</em></div>
-        <p class="what">Look up a person's email address in the team directory.</p>
-        <div class="rows"><span class="key">name</span><span class="slot" data-kind="people">dana</span><span class="key">email</span><span class="slot ok from" data-kind="email">dana@example.com</span></div>
-      </div>
-      <p class="seam">and<small>yes 0.90</small></p>
-      <p class="part">"email <u>them</u>"</p>
-      <div class="ability a2">
-        <div class="top"><i class="num">2</i><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9.5" rx="1.8"/><path d="M2 4.5l6 4.5 6-4.5"/></svg><b>mail</b><em class="conf">0.88</em></div>
-        <p class="what">Start an email in your mail app.</p>
-        <div class="rows"><span class="key">to</span><span class="slot ok to" data-kind="email">dana@example.com</span><span class="key">subject</span><span class="slot empty" data-kind="quoted"><span class="cursor"></span></span></div>
-      </div>
-      <svg class="thread" width="432" height="10"><path/></svg>
-    </div>
     <script>
-      // The thread, measured once: from the address found down the cards' side into the slot that takes it.
-      const room = document.querySelector(".room").getBoundingClientRect(), at = s => document.querySelector(s).getBoundingClientRect()
-      const from = at(".from"), to = at(".to"), card = at(".a2"), x = card.right - room.left + 16
-      const y1 = (from.top + from.bottom) / 2 - room.top, y2 = (to.top + to.bottom) / 2 - room.top
-      document.querySelector(".thread path").setAttribute("d", `M${from.right - room.left} ${y1} H${x} V${y2} H${card.right - room.left}`)
+      // The home page's sky as one still, drawn in light: two arms of stars and gas around an empty middle, other
+      // machines as small membranes along them, seen at a tilt from above and bloomed once. The card's left stays dark
+      // for the words, and its edges fall away.
+      const canvas = document.querySelector(".sky"), dpr = 2, W = 1200, H = 630
+      canvas.width = W * dpr; canvas.height = H * dpr
+      const light = document.createElement("canvas"); light.width = canvas.width; light.height = canvas.height
+      const ctx = light.getContext("2d"); ctx.scale(dpr, dpr)
+      const rand = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296 }
+      const rnd = rand(19), TAU = Math.PI * 2
+      const gauss = () => (rnd() + rnd() + rnd() + rnd() + rnd() + rnd() - 3) / 1.5
+      const C = [905, 300], R = 300, TILT = .62, ROT = -.6, HOLE = 50
+      const place = (x, y) => { const c = Math.cos(ROT), s = Math.sin(ROT); return [C[0] + x * c - y * s, C[1] + (x * s + y * c) * TILT] }
+      const arm = (t, side, j = 0) => { const a = t * 5.2 + side * Math.PI + j * .45, r = HOLE + t * (R - HOLE), s = j * (12 + t * 44); return place(Math.cos(a) * r - Math.sin(a) * s, Math.sin(a) * r + Math.cos(a) * s) }
+      const T = { white: "255, 243, 230", ice: "201, 220, 255", gold: "255, 207, 143", acc: "255, 122, 26", rose: "208, 80, 122", teal: "63, 191, 160", violet: "138, 108, 255" }
+      const puff = (x, y, r, rgb, a) => { const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(${rgb}, ${a})`); g.addColorStop(.4, `rgba(${rgb}, ${a * .35})`); g.addColorStop(1, `rgba(${rgb}, 0)`); ctx.fillStyle = g; ctx.fillRect(x - r, y - r, r * 2, r * 2) }
+      ctx.globalCompositeOperation = "lighter"
+      puff(C[0], C[1], 300, T.acc, .07)  // the warmth of the middle
+      for (let i = 0; i < 220; i++) {  // the gas along the arms
+        const t = .1 + rnd() * .9, [x, y] = arm(t, i % 2, gauss() * .36), c = rnd()  // the gas keeps clear of the empty middle
+        puff(x, y, (16 + rnd() ** 2 * 72) * Math.min(1, .35 + t), c < .48 ? T.acc : c < .7 ? T.gold : c < .87 ? T.rose : c < .97 ? T.teal : T.violet, (.06 + rnd() * .08) * (1 - t * .4))
+      }
+      for (let i = 0; i < 22; i++) {  // other machines: a membrane each, a few reflexes inside
+        const [x, y] = arm(.12 + rnd() * .85, i % 2, gauss() * .9), r = 5 + rnd() * 8
+        ctx.strokeStyle = `rgba(${T.ice}, .16)`; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.stroke()
+        puff(x, y, r * 1.6, T.ice, .07)
+        ctx.fillStyle = `rgba(${T.ice}, .6)`
+        for (let k = 0, n = 3 + Math.floor(rnd() * 4); k < n; k++) { const a = rnd() * TAU, d = rnd() * r * .7; ctx.beginPath(); ctx.arc(x + Math.cos(a) * d, y + Math.sin(a) * d * TILT, .9, 0, TAU); ctx.fill() }
+      }
+      for (let i = 0; i < 6500; i++) {  // the stars: most along the arms, some between, and a ring around the empty middle
+        const pop = rnd(); let x, y
+        const ring = pop < .06
+        if (ring) { const a = rnd() * TAU, r = HOLE + gauss() * 3.5; [x, y] = place(Math.cos(a) * r, Math.sin(a) * r) }
+        else if (pop < .68) [x, y] = arm(rnd() ** .78, i % 2, gauss() * .45)
+        else [x, y] = arm(rnd() ** .62, i % 2, gauss() * 1.4)
+        const c = rnd(), rgb = c < .5 ? T.white : c < .76 ? T.ice : c < .92 ? T.gold : T.acc, s = .4 + rnd() ** 7 * 2.6
+        ctx.fillStyle = `rgba(${rgb}, ${(ring ? .45 : .2) + rnd() * .5})`
+        if (s < 1.3) ctx.fillRect(x, y, s, s)
+        else { ctx.beginPath(); ctx.arc(x, y, s / 2, 0, TAU); ctx.fill(); puff(x, y, s * 4, rgb, .3) }
+      }
+      for (let i = 0; i < 700; i++) { const s = .6 + rnd() * .9; ctx.fillStyle = `rgba(${T.white}, ${.08 + rnd() * .22})`; ctx.fillRect(rnd() * W, rnd() * H, s, s) }  // far stars over the whole card
+      const main = canvas.getContext("2d")
+      main.filter = `blur(${24 * dpr}px)`; main.globalAlpha = .28; main.drawImage(light, 0, 0)  // the light bloomed wide
+      main.globalCompositeOperation = "lighter"
+      main.filter = `blur(${5 * dpr}px)`; main.globalAlpha = .4; main.drawImage(light, 0, 0)  // and close
+      main.filter = "none"; main.globalAlpha = 1; main.drawImage(light, 0, 0)  // then sharp over it
+      main.globalAlpha = 1
+      main.globalCompositeOperation = "source-over"; main.scale(dpr, dpr)
+      const dark = main.createLinearGradient(430, 0, 790, 0); dark.addColorStop(0, "rgba(6, 6, 8, 1)"); dark.addColorStop(1, "rgba(6, 6, 8, 0)")
+      main.fillStyle = dark; main.fillRect(0, 0, 790, H)
+      const edge = main.createRadialGradient(C[0], C[1], 120, C[0], C[1], 560); edge.addColorStop(0, "rgba(6, 6, 8, 0)"); edge.addColorStop(.6, "rgba(6, 6, 8, 0)"); edge.addColorStop(1, "rgba(6, 6, 8, .85)")
+      main.fillStyle = edge; main.fillRect(0, 0, W, H)
     </script>
   </div>
 </body>

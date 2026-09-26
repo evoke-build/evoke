@@ -24,9 +24,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 MANUAL, SITE, OUT, SRC = ROOT / "docs/manual", ROOT / "site", ROOT / "target/site", ROOT / "target/site-src"
 URL = "https://evoke.build/"
-CARD = URL + "og.png"
+CARD = URL + "og.jpg"
 CARD_ALT = "evoke — Software, by reflex."
-# A page's own card, declared in its head, 1200×630 at twice the size like og.png
+# A page's own card, declared in its head, 1200×630 at twice the size like og.jpg
 OWN_CARD = re.compile(r'[ \t]*<meta property="og:image" content="([^"]*)">\n')
 OWN_ALT = re.compile(r'[ \t]*<meta property="og:image:alt" content="([^"]*)">\n')
 THEME = re.compile(r'[ \t]*<meta name="theme-color" content="[^"]*">\n')
@@ -808,7 +808,7 @@ for name in [
     "site.css",
     "scenes.js",
     "install.sh",
-    "og.png",
+    "og.jpg",
     "og-film.jpg",
     "logo.png",
     "logo-512.png",
