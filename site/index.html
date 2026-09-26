@@ -76,7 +76,7 @@
     .future .journey { position: relative; }
     .future .sky { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
     .future .sky::after { content: ""; position: absolute; inset: auto 0 0; z-index: 1; height: 26vh; height: 26svh; background: linear-gradient(rgba(6, 6, 8, 0), var(--space) 88%); }  /* the sky dissolves into the page as the journey ends */
-    .future .sky-view { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: radial-gradient(70% 60% at 68% 42%, rgba(229, 118, 29, .06), transparent 70%), radial-gradient(90% 70% at 30% 80%, rgba(143, 212, 138, .03), transparent 70%), var(--space); }
+    .future .sky-view { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--space); }  /* the canvas paints the sky's glow */
     .future .sky-view::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(6, 6, 8, .92) 0%, rgba(6, 6, 8, .6) 30%, transparent 48%); opacity: var(--scrim, 0); transition: opacity .8s ease; }
     .future .sky-view canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
     .future .sky-view .marks { position: absolute; inset: 0; z-index: 1; }
@@ -859,13 +859,14 @@ Turn the lights in one room on, off, or dim them.</span>
     {
       const sky = document.querySelector(".future .sky-view")
       if (sky) {
-        const canvas = sky.querySelector("canvas"), ctx = canvas.getContext("2d"), layer = sky.querySelector(".marks")
+        const canvas = sky.querySelector("canvas"), ctx = canvas.getContext("2d", { alpha: false }), layer = sky.querySelector(".marks")
         const journey = sky.closest(".journey"), bar = document.querySelector("header.top")
         const receiptsList = document.querySelector(".future .receipts")
         const still = matchMedia("(prefers-reduced-motion: reduce)").matches, thin = matchMedia("(max-width: 900px)")
         const TAU = Math.PI * 2, DEG = Math.PI / 180
         const rand = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296 }
         const ease = t => t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2
+        const glide = t => t < .5 ? 16 * t ** 5 : 1 - (-2 * t + 2) ** 5 / 2  // a flight: soft to leave and to land, quick between
         const lerp = (a, b, t) => a + (b - a) * t
         const clamp = (v, a, b) => Math.min(b, Math.max(a, v))
         const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -880,14 +881,21 @@ Turn the lights in one room on, off, or dim them.</span>
         }
         const F = arm(.4, 1, 0)
         const far = Array.from({ length: small ? 110 : 220 }, () => ({ u: rnd(), v: rnd(), s: .6 + rnd() * .8, a: .1 + rnd() * .26, tw: rnd() * TAU }))
-        const TINTS = [INK, ICE, GOLD, ACC]
+        const TINTS = [INK, ICE, GOLD, ACC], PHASES = 2, LEVELS = 4  // two twinkle phases: at rest, a layer each
         const dust = Array.from({ length: small ? 3600 : 7200 }, (_, i) => {  // stars along the arms, and a ring around the empty middle
           const pop = rnd(), tint = rnd()
           const p = pop < .07 ? (a => ({ x: Math.cos(a) * (232 + (rnd() + rnd() - 1) * 22), y: Math.sin(a) * (232 + (rnd() + rnd() - 1) * 22) * .8 }))(rnd() * TAU)
             : arm(rnd() ** .85, i % 2, (rnd() - .5) * (pop < .29 ? 2.4 : 1))
-          return { ...p, s: .55 + rnd() ** 3 * 1.5, a: .14 + rnd() * .5, c: tint < .58 ? 0 : tint < .8 ? 1 : tint < .94 ? 2 : 3, tw: rnd() * TAU }
-        }).sort((p, q) => p.c - q.c)
-        const DUST_AT = TINTS.map((_, c) => dust.findIndex(d => d.c === c)).concat(dust.length)  // where each tint's stars begin
+          return { ...p, s: .55 + rnd() ** 3 * 1.5, q: Math.floor(rnd() * LEVELS), k: Math.floor(rnd() * PHASES), c: tint < .58 ? 0 : tint < .8 ? 1 : tint < .94 ? 2 : 3 }
+        }).sort((p, q) => p.c - q.c || p.q - q.q || p.k - q.k)
+        const BATCHES = []  // the stars of one tint, one brightness and one twinkle phase: a batch is one alpha and many rects
+        const layers = Array.from({ length: PHASES }, () => document.createElement("canvas")), layerCtx = layers.map(c => c.getContext("2d"))
+        let drawnFor = null  // the view the layers hold, or null
+        for (let i = 0; i < dust.length;) {
+          const d = dust[i], from = i
+          while (i < dust.length && dust[i].c === d.c && dust[i].q === d.q && dust[i].k === d.k) i++
+          BATCHES.push({ c: d.c, k: d.k, a: .18 + d.q * .15, ph: d.k * TAU / PHASES, from, to: i })
+        }
         const gas = Array.from({ length: small ? 70 : 130 }, (_, i) => {  // clouds lit from within, along the arms
           const t = .03 + rnd() * .97, p = arm(t, i % 2, (rnd() - .5) * .6), c = rnd()
           return { ...p, r: 70 + rnd() ** 2 * 260, a: (.16 + rnd() * .2) * (1 - t * .45), c: c < .48 ? 0 : c < .7 ? 1 : c < .87 ? 2 : c < .97 ? 3 : 4 }
@@ -950,7 +958,7 @@ Turn the lights in one room on, off, or dim them.</span>
         }
 
         // The camera: world to screen around a focus point, the middle of the part of the screen the story leaves free
-        let W = 0, H = 0, dpr = 1, narrow = false, laidOut = false, colRight = 0, barH = 56, dots = []
+        let W = 0, H = 0, dpr = 1, narrow = false, laidOut = false, colRight = 0, barH = 56, dots = [], ground = []
         const view = { x: 0, y: 0, z: .3, layout: 0, machines: 0, anatomy: 0, others: 1, reflexes: 0, crowd: 0, web: 0, solo: 0, f: { x: 0, y: 0 } }
         const KEYS = ["layout", "machines", "anatomy", "others", "reflexes", "crowd", "web", "solo"]
         const toScreen = (p, v = view) => ({ x: (p.x - v.x) * v.z + v.f.x, y: (p.y - v.y) * v.z + v.f.y })
@@ -1131,10 +1139,11 @@ Turn the lights in one room on, off, or dim them.</span>
           ctx.globalAlpha = 1
         }
         const drawGas = () => {
-          const fade = clamp(1.15 - Math.log2(view.z / .3) * .3, .1, 1), v = view  // the gas thins as the camera nears
+          const fade = clamp(1.15 - Math.log2(view.z / .3) * .3, 0, 1), v = view  // the gas thins as the camera nears, to nothing up close
+          if (fade < .04) return
           ctx.globalCompositeOperation = "lighter"
           for (const g of gas) {
-            const r = g.r * v.z; if (r < 3) continue
+            const r = g.r * v.z; if (r < 3 || r > 640) continue  // too small to see, or a haze over the whole screen
             const x = (g.x - v.x) * v.z + v.f.x, y = (g.y - v.y) * v.z + v.f.y
             if (x < -r || y < -r || x > W + r || y > H + r) continue
             ctx.globalAlpha = g.a * fade
@@ -1142,25 +1151,53 @@ Turn the lights in one room on, off, or dim them.</span>
           }
           ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1
         }
+        const paintStars = (c, layer) => {  // one twinkle phase's stars into a layer at their own brightness; the frame sets their light
+          c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H); c.globalCompositeOperation = "lighter"
+          const v = view
+          for (const b of BATCHES) {
+            if (b.k !== layer) continue
+            c.fillStyle = `rgba(${TINTS[b.c]}, ${b.a})`
+            for (let i = b.from; i < b.to; i++) {
+              const d = dust[i], x = (d.x - v.x) * v.z + v.f.x, y = (d.y - v.y) * v.z + v.f.y
+              if (x < -4 || y < -4 || x > W + 4 || y > H + 4) continue
+              c.fillRect(x, y, d.s, d.s)
+            }
+          }
+        }
         const drawDust = now => {
           const fade = clamp(1.1 - Math.log2(view.z / .3) * .15, .4, 1), v = view, p0 = prev
           const moving = p0 && !still && (Math.abs(p0.z - v.z) / v.z > .002 || Math.abs(p0.x - v.x) * v.z > .6 || Math.abs(p0.y - v.y) * v.z > .6)
+          if (!moving && !still) {  // at rest: the stars drawn once per view into a layer per phase, and each frame the layers twinkle whole
+            if (!drawnFor || drawnFor.x !== v.x || drawnFor.y !== v.y || drawnFor.z !== v.z || drawnFor.fx !== v.f.x || drawnFor.fy !== v.f.y) {
+              layers.forEach((_, k) => paintStars(layerCtx[k], k)); drawnFor = { x: v.x, y: v.y, z: v.z, fx: v.f.x, fy: v.f.y }
+            }
+            ctx.globalCompositeOperation = "lighter"; ctx.setTransform(1, 0, 0, 1, 0, 0)
+            layers.forEach((l, k) => { ctx.globalAlpha = fade * (.78 + .22 * Math.sin(now / 1500 + k * TAU / PHASES)); ctx.drawImage(l, 0, 0) })
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1
+            return
+          }
+          drawnFor = null
           ctx.lineCap = "round"; ctx.lineWidth = 1; ctx.globalCompositeOperation = "lighter"  // light added to light: a dense arm glows
-          for (let c = 0; c < TINTS.length; c++) {  // one tint at a time: its stars, and while the camera flies, their streaks in one stroke
-            ctx.fillStyle = `rgb(${TINTS[c]})`
-            if (moving) { ctx.strokeStyle = `rgba(${TINTS[c]}, ${.45 * fade})`; ctx.beginPath() }
-            for (let i = DUST_AT[c]; i < DUST_AT[c + 1]; i++) {
+          let tint = -1
+          for (const b of BATCHES) {
+            if (b.c !== tint) {  // one tint at a time: its stars, and while the camera flies, their streaks in one stroke
+              if (moving && tint >= 0) { ctx.globalAlpha = 1; ctx.stroke() }
+              tint = b.c; ctx.fillStyle = `rgb(${TINTS[tint]})`
+              if (moving) { ctx.strokeStyle = `rgba(${TINTS[tint]}, ${.45 * fade})`; ctx.beginPath() }
+            }
+            ctx.globalAlpha = b.a * fade * (still ? 1 : .78 + .22 * Math.sin(now / 1500 + b.ph))
+            for (let i = b.from; i < b.to; i++) {
               const d = dust[i], x = (d.x - v.x) * v.z + v.f.x, y = (d.y - v.y) * v.z + v.f.y
               if (x < -40 || y < -40 || x > W + 40 || y > H + 40) continue
               if (moving) {
+                if (v.z < .45 && (i & 1)) continue  // over the whole galaxy, every second star streaks: the arms are dense enough
                 const px = (d.x - p0.x) * p0.z + p0.f.x, py = (d.y - p0.y) * p0.z + p0.f.y, len = Math.hypot(x - px, y - py)
                 if (len > 1.5) { const k = Math.min(1, 90 / len); ctx.moveTo(x + (px - x) * k, y + (py - y) * k); ctx.lineTo(x, y); continue }
               }
-              ctx.globalAlpha = d.a * fade * (still ? 1 : .78 + .22 * Math.sin(now / 1500 + d.tw))
               ctx.fillRect(x, y, d.s, d.s)
             }
-            if (moving) { ctx.globalAlpha = 1; ctx.stroke() }
           }
+          if (moving) { ctx.globalAlpha = 1; ctx.stroke() }
           ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1
         }
         const drawOthers = now => {
@@ -1171,8 +1208,9 @@ Turn the lights in one room on, off, or dim them.</span>
             ctx.globalAlpha = .13 * a; ctx.strokeStyle = `rgb(${INK})`; ctx.lineWidth = 1; ctx.beginPath()
             o.members.forEach((m, i) => { const p = toScreen(m); i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y) })
             ctx.stroke()
-            ctx.globalAlpha = .6 * a * (still ? 1 : .72 + .28 * Math.sin(now / 1700 + o.tw))
-            for (const m of o.members) { const p = toScreen(m); dot(p.x, p.y, r * m.s * .8, INK) }
+            ctx.globalAlpha = .6 * a * (still ? 1 : .72 + .28 * Math.sin(now / 1700 + o.tw)); ctx.fillStyle = `rgb(${INK})`; ctx.beginPath()
+            for (const m of o.members) { const p = toScreen(m), rr = r * m.s * .8; ctx.moveTo(p.x + rr, p.y); ctx.arc(p.x, p.y, rr, 0, TAU) }
+            ctx.fill()
           }
           ctx.globalAlpha = 1
         }
@@ -1370,7 +1408,7 @@ Turn the lights in one room on, off, or dim them.</span>
         }
         const frame = now => {
           if (tween) {
-            const t = clamp((now - tween.t0) / tween.ms, 0, 1), e = ease(t), { from, to, s0 } = tween
+            const t = clamp((now - tween.t0) / tween.ms, 0, 1), e = glide(t), { from, to, s0 } = tween
             for (const k of KEYS) view[k] = lerp(from[k], to[k], e)
             view.z = Math.exp(lerp(Math.log(from.z), Math.log(to.z), e))
             view.f = { x: lerp(from.f.x, to.f.x, e), y: lerp(from.f.y, to.f.y, e) }
@@ -1385,7 +1423,8 @@ Turn the lights in one room on, off, or dim them.</span>
             r.state = st
           }
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-          ctx.clearRect(0, 0, W, H)
+          ctx.fillStyle = "#060608"; ctx.fillRect(0, 0, W, H)
+          for (const g of ground) { ctx.fillStyle = g; ctx.fillRect(0, 0, W, H) }
           drawFar(now); drawGas(); drawDust(now); drawOthers(now); drawWeb(); drawMachines(now); drawInstalled(); drawPlan(); drawCalls()
           drawParticles(now); drawReflexes(now); drawDecider(); drawAnatomy(now)
           placeMarks()
@@ -1401,8 +1440,14 @@ Turn the lights in one room on, off, or dim them.</span>
         }
         const size = () => {
           const r = sky.getBoundingClientRect()
-          W = r.width; H = r.height; dpr = Math.min(2, devicePixelRatio || 1)
+          W = r.width; H = r.height; dpr = Math.min(2, devicePixelRatio || 1, Math.sqrt(9e6 / (W * H)))  // at most nine million pixels a canvas, on the largest screens
           canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr)
+          for (const l of layers) { l.width = canvas.width; l.height = canvas.height }
+          drawnFor = null
+          ground = [[.68, .42, .5, "229, 118, 29", .06], [.3, .8, .6, "143, 212, 138", .03]].map(([u, v, r, rgb, a]) => {  // the sky's glow: warm where Acme is, a breath of green below
+            const g = ctx.createRadialGradient(W * u, H * v, 0, W * u, H * v, Math.max(W, H) * r)
+            g.addColorStop(0, `rgba(${rgb}, ${a})`); g.addColorStop(.7, `rgba(${rgb}, 0)`); return g
+          })
           const was = narrow; narrow = thin.matches
           barH = bar ? bar.offsetHeight : 56
           colRight = cards.reflex ? cards.reflex.getBoundingClientRect().right : 0
@@ -1567,7 +1612,7 @@ Turn the lights in one room on, off, or dim them.</span>
           const first = !started
           if (same) tween = null
           else if (still || first) { Object.assign(view, to); tween = null }
-          else tween = { t0: performance.now(), ms: 1700, from: { ...view, f: { ...view.f } }, to, s0: toScreen({ x: to.x, y: to.y }) }
+          else tween = { t0: performance.now(), ms: 1800, from: { ...view, f: { ...view.f } }, to, s0: toScreen({ x: to.x, y: to.y }) }
           sky.style.setProperty("--scrim", name === "opening" ? 0 : 1)
           for (const q of particles) q.resolve()
           particles = []; askAt(false)
