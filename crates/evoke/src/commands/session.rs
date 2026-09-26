@@ -19,9 +19,10 @@ use evoke_core::text::NonEmpty;
 use evoke_core::weave::{self, Asked, Need, Step};
 use evoke_core::{
     Chosen, Contained, Decision, Declared, Diagnostic, Document, Edit, Effective, File, Fix, Input,
-    Installed, Item, Lock, Manifest, Needs, Owned, Plan, Planning, Project, Prompt, Raw, Reading,
-    Request, Scope, Version, Weave, argv, compile, effective, envelope, gate, lock, manifest,
-    overlay, project, project_dts, read, render_lock, request, resolve, validated, vocabulary,
+    Installed, Item, Lesson, Lock, Manifest, Needs, Owned, Plan, Planning, Project, Prompt, Raw,
+    Reading, Request, Scope, Version, Weave, argv, compile, effective, envelope, gate, lock,
+    manifest, overlay, project, project_dts, read, render_lock, request, resolve, validated,
+    vocabulary,
 };
 use indexmap::IndexMap;
 
@@ -583,6 +584,17 @@ impl Session<'_> {
     }
 
     #[must_use]
+    /// Whether the reflex's examples already hold the utterance with the lesson's record — shipped or yours — so
+    /// teaching it again would write nothing new.
+    pub fn taught_already(&self, lesson: &Lesson, text: &str) -> bool {
+        self.installed
+            .reflexes
+            .get(&lesson.reflex)
+            .and_then(|item| item.wording.as_ref().ok())
+            .and_then(|effective| effective.manifest.examples.get(&evoke_core::identity(text)))
+            .is_some_and(|(_, record)| *record == lesson.record)
+    }
+
     pub fn environment(&self) -> &Environment {
         self.environment
     }

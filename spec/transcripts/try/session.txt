@@ -33,3 +33,18 @@ $ evoke try --tag nothing "kill the lights in the den"
 $ evoke try --tag files "kill the lights in the den"
   open: vocabulary "places" is empty  →  evoke vocab places add <word> "<meaning>"
 [3]
+# A part of a sentence that matches nothing names the inactive reflexes too, as one input's abstain does.
+$ evoke try "kill the lights in the den and feed the cat"
+  1  lights room="den" state="off"  0.85
+  2  "feed the cat" · no reflex
+  1  "kill the lights in the den"
+  lights 0.91 · none 0.06 · timer 0.02 · volume 0.01
+  room   den 0.85 · unstated 0.10 · office 0.05
+  state  off 0.88 · on 0.05 · dim 0.05 · unstated 0.02
+  fits   lights 0.70 · timer 0.05 · volume 0.05
+  run · weakest: room 0.85
+  2  "feed the cat"
+  none 0.95 · lights 0.05
+  fits  lights 0.05 · timer 0.02 · volume 0.02
+  abstain
+  open is inactive  →  evoke show

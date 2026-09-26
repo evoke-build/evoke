@@ -982,6 +982,15 @@ pub fn because(why: &Why) -> String {
     }
 }
 
+/// `teach` of a phrase the reflex's examples already hold with the same values: nothing to write.
+#[must_use]
+pub fn already_example(text: &str, reflex: &LocalName) -> Text {
+    Text::from(format!(
+        "  {} is already an example of {reflex}",
+        plain(&quoted(text))
+    ))
+}
+
 /// After `config`: a path the declaration reads or writes, which is not there yet.
 #[must_use]
 pub fn not_there_yet(reflex: &LocalName, path: &str) -> Text {

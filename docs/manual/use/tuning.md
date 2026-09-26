@@ -48,6 +48,7 @@ $ evoke teach lights state=dim
 - `evoke teach "<utterance>" not <name>`: the utterance is never this reflex.
 - `evoke teach --forget "<utterance>" <name>`: the line your overlay holds for the utterance, an example or a
   test, is removed; the shipped wording stands again. One not there is refused.
+- A phrase the reflex's examples already hold with the same values is said to be one, and nothing is written.
 - Leave the utterance out, and it means the last input you gave. Say something, see it decided, then
   `evoke teach lights state=dim` corrects it. After a sentence of several steps, it means the step the lesson's
   reflex decided; when none or several did, `teach` names the steps and asks you to say which.

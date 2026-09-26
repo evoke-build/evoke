@@ -16,7 +16,7 @@ use evoke_core::{Diagnostic, Fix, Lesson, Utterance, teach};
 use super::Exit;
 use super::session::{self, Opening, Session};
 use crate::args::{Command, Spoken, Taught};
-use crate::hosts::Environment;
+use crate::hosts::{Environment, terminal};
 use crate::report::{self, Line};
 
 pub fn run(command: &Command, spoken: &Spoken, lesson: &Taught, environment: &Environment) -> Exit {
@@ -111,6 +111,10 @@ fn taught(session: &mut Session<'_>, text: &str, lesson: &Taught) -> Exit {
         },
         Taught::Forget(name) => return forgotten(session, text, name),
     };
+    if session.taught_already(&lesson, text) {
+        terminal::note(&report::already_example(text, &lesson.reflex));
+        return Exit::Ran;
+    }
     let edit = match teach(&utterance, lesson, &session.plan) {
         Ok(edit) => edit,
         Err(refused) => return Exit::Human(refused),

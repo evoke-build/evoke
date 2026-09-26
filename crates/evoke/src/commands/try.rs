@@ -63,6 +63,7 @@ fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, in
     }
     terminal::answer(&report::planned(&woven.weave));
     let of = woven.weave.steps.len();
+    let mut abstained = false;
     for step in &woven.weave.steps {
         let Some(decided) = woven.planned(step, &arguments.tags) else {
             continue;
@@ -73,6 +74,11 @@ fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, in
             Text::from(report::quoted(&step.text)),
         ));
         terminal::answer(&report::tried(&decided, floor));
+        abstained |= matches!(decided.decision, Decision::Abstain { .. });
+    }
+    // A part that matched nothing may have asked for an inactive reflex, as one input's abstain says.
+    if abstained && let Some(hint) = report::left_out(session.plan.inactive().keys()) {
+        terminal::note(&hint);
     }
     Exit::Ran
 }

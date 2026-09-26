@@ -33,3 +33,6 @@ $ evoke teach --forget lights
 $ evoke teach --forget
   teach --forget takes an utterance and a name: evoke teach --forget ["<utterance>"] <name>  →  evoke --help
 [3]
+# A phrase the reflex's examples already hold with the same values writes nothing.
+$ evoke teach "turn on the kitchen lights" lights state=on
+  "turn on the kitchen lights" is already an example of lights

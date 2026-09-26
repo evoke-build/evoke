@@ -900,10 +900,15 @@ impl Using<'_> {
                 fix: Fix::Rerun,
             })
         };
+        let lesson = Lesson::stated(chosen);
+        if self.session.taught_already(&lesson, input) {
+            terminal::note(&report::already_example(input, &lesson.reflex));
+            return;
+        }
         let taught = Utterance::new(input)
             .map_err(|why| refused(format!("{} {why}", report::quoted(input))))
             .and_then(|utterance| {
-                teach(&utterance, Lesson::stated(chosen), &self.session.plan).map_err(Exit::Human)
+                teach(&utterance, lesson, &self.session.plan).map_err(Exit::Human)
             })
             .and_then(|edit| self.session.apply(input, &edit));
         if let Err(exit) = taught {
