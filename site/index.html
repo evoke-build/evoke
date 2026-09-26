@@ -881,20 +881,25 @@ Turn the lights in one room on, off, or dim them.</span>
         }
         const F = arm(.4, 1, 0)
         const far = Array.from({ length: small ? 110 : 220 }, () => ({ u: rnd(), v: rnd(), s: .6 + rnd() * .8, a: .1 + rnd() * .26, tw: rnd() * TAU }))
-        const TINTS = [INK, ICE, GOLD, ACC], PHASES = 2, LEVELS = 4  // two twinkle phases: at rest, a layer each
+        const TINTS = [INK, ICE, GOLD, ACC], PHASES = 2  // two twinkle phases: at rest, a layer each
+        // A star's magnitude sets its light and its size together: most are faint and small, a few bright and wide
+        const MAGNITUDES = [[.16, .55], [.26, .65], [.38, .85], [.52, 1.2], [.66, 1.9]], MAGNITUDE_AT = [.35, .63, .83, .95, 1]
         const dust = Array.from({ length: small ? 3600 : 7200 }, (_, i) => {  // stars along the arms, and a ring around the empty middle
           const pop = rnd(), tint = rnd()
           const p = pop < .07 ? (a => ({ x: Math.cos(a) * (232 + (rnd() + rnd() - 1) * 22), y: Math.sin(a) * (232 + (rnd() + rnd() - 1) * 22) * .8 }))(rnd() * TAU)
             : arm(rnd() ** .85, i % 2, (rnd() - .5) * (pop < .29 ? 2.4 : 1))
-          return { ...p, s: .55 + rnd() ** 3 * 1.5, q: Math.floor(rnd() * LEVELS), k: Math.floor(rnd() * PHASES), c: tint < .58 ? 0 : tint < .8 ? 1 : tint < .94 ? 2 : 3 }
+          const m = rnd()
+          return { ...p, q: MAGNITUDE_AT.findIndex(at => m < at), k: Math.floor(rnd() * PHASES), c: tint < .58 ? 0 : tint < .8 ? 1 : tint < .94 ? 2 : 3 }
         }).sort((p, q) => p.c - q.c || p.q - q.q || p.k - q.k)
-        const BATCHES = []  // the stars of one tint, one brightness and one twinkle phase: a batch is one alpha and many rects
+        const BATCHES = []  // the stars of one tint, one magnitude and one twinkle phase: one light, one size, many stars
         const layers = Array.from({ length: PHASES }, () => document.createElement("canvas")), layerCtx = layers.map(c => c.getContext("2d"))
         let drawnFor = null  // the view the layers hold, or null
         for (let i = 0; i < dust.length;) {
           const d = dust[i], from = i
           while (i < dust.length && dust[i].c === d.c && dust[i].q === d.q && dust[i].k === d.k) i++
-          BATCHES.push({ c: d.c, k: d.k, a: .18 + d.q * .15, ph: d.k * TAU / PHASES, from, to: i })
+          const [light, size] = MAGNITUDES[d.q], inside = Math.min(1, size)
+          // A star smaller than a pixel is a pixel with less light, so every browser draws it alike; a streak is as wide as its star
+          BATCHES.push({ c: d.c, k: d.k, a: light * inside * inside, px: Math.max(1, size), streak: light * inside, ph: d.k * TAU / PHASES, from, to: i })
         }
         const gas = Array.from({ length: small ? 70 : 130 }, (_, i) => {  // clouds lit from within, along the arms
           const t = .03 + rnd() * .97, p = arm(t, i % 2, (rnd() - .5) * .6), c = rnd()
@@ -1160,10 +1165,11 @@ Turn the lights in one room on, off, or dim them.</span>
             for (let i = b.from; i < b.to; i++) {
               const d = dust[i], x = (d.x - v.x) * v.z + v.f.x, y = (d.y - v.y) * v.z + v.f.y
               if (x < -4 || y < -4 || x > W + 4 || y > H + 4) continue
-              c.fillRect(x, y, d.s, d.s)
+              c.fillRect(x, y, b.px, b.px)
             }
           }
         }
+        let meanStreak = 4  // how far the stars moved in the last frame of a flight, in pixels
         const drawDust = now => {
           const fade = clamp(1.1 - Math.log2(view.z / .3) * .15, .4, 1), v = view, p0 = prev
           const moving = p0 && !still && (Math.abs(p0.z - v.z) / v.z > .002 || Math.abs(p0.x - v.x) * v.z > .6 || Math.abs(p0.y - v.y) * v.z > .6)
@@ -1177,27 +1183,32 @@ Turn the lights in one room on, off, or dim them.</span>
             return
           }
           drawnFor = null
-          ctx.lineCap = "round"; ctx.lineWidth = 1; ctx.globalCompositeOperation = "lighter"  // light added to light: a dense arm glows
-          let tint = -1
+          ctx.lineCap = "round"; ctx.globalCompositeOperation = "lighter"  // light added to light: a dense arm glows
+          // In flight a star streaks from where it was, as wide as itself, its light spread along the way: the sky is no brighter
+          // for moving, and a faint star's streak, too thin to see, is not drawn
+          const spread = moving ? clamp((2 / meanStreak) ** .75, .04, 1) : 1
+          let streaks = 0, travelled = 0
           for (const b of BATCHES) {
-            if (b.c !== tint) {  // one tint at a time: its stars, and while the camera flies, their streaks in one stroke
-              if (moving && tint >= 0) { ctx.globalAlpha = 1; ctx.stroke() }
-              tint = b.c; ctx.fillStyle = `rgb(${TINTS[tint]})`
-              if (moving) { ctx.strokeStyle = `rgba(${TINTS[tint]}, ${.45 * fade})`; ctx.beginPath() }
-            }
-            ctx.globalAlpha = b.a * fade * (still ? 1 : .78 + .22 * Math.sin(now / 1500 + b.ph))
+            const tw = still ? 1 : .78 + .22 * Math.sin(now / 1500 + b.ph), rgb = `rgb(${TINTS[b.c]})`
+            ctx.fillStyle = rgb; ctx.globalAlpha = b.a * fade * tw
+            const light = moving ? b.streak * spread * fade * tw : 0, drawn = light > .012
+            if (drawn) { ctx.strokeStyle = rgb; ctx.lineWidth = b.px; ctx.beginPath() }
             for (let i = b.from; i < b.to; i++) {
               const d = dust[i], x = (d.x - v.x) * v.z + v.f.x, y = (d.y - v.y) * v.z + v.f.y
               if (x < -40 || y < -40 || x > W + 40 || y > H + 40) continue
               if (moving) {
-                if (v.z < .45 && (i & 1)) continue  // over the whole galaxy, every second star streaks: the arms are dense enough
                 const px = (d.x - p0.x) * p0.z + p0.f.x, py = (d.y - p0.y) * p0.z + p0.f.y, len = Math.hypot(x - px, y - py)
-                if (len > 1.5) { const k = Math.min(1, 90 / len); ctx.moveTo(x + (px - x) * k, y + (py - y) * k); ctx.lineTo(x, y); continue }
+                if (len > 1.5) {
+                  streaks++; travelled += len
+                  if (drawn) { const k = Math.min(1, 90 / len); ctx.moveTo(x + (px - x) * k, y + (py - y) * k); ctx.lineTo(x, y) }
+                  continue
+                }
               }
-              ctx.fillRect(x, y, d.s, d.s)
+              ctx.fillRect(x, y, b.px, b.px)
             }
+            if (drawn) { ctx.globalAlpha = light; ctx.stroke() }
           }
-          if (moving) { ctx.globalAlpha = 1; ctx.stroke() }
+          meanStreak = streaks ? Math.min(90, travelled / streaks) : 4
           ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1
         }
         const drawOthers = now => {
