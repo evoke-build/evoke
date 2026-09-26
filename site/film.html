@@ -44,11 +44,11 @@
     .film .screen { position: relative; height: calc(100vh - 3.5rem); height: calc(100svh - 3.5rem); min-height: 32rem; overflow: hidden; background: radial-gradient(60% 55% at 50% 42%, rgba(229, 118, 29, .045), transparent 70%), var(--space); isolation: isolate; -webkit-user-select: none; user-select: none; touch-action: pan-y; }
     .film .screen:fullscreen { height: 100vh; min-height: 0; }
     .film .screen canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .film .screen::after { content: ""; position: absolute; inset: auto 0 0; height: 34%; background: linear-gradient(rgba(3, 3, 5, 0), rgba(3, 3, 5, .78)); pointer-events: none; z-index: 1; }
+    .film .screen::after { content: ""; position: absolute; inset: auto 0 0; height: 44%; background: linear-gradient(rgba(3, 3, 5, 0), rgba(3, 3, 5, .3) 40%, rgba(3, 3, 5, .88)); pointer-events: none; z-index: 1; }  /* the words at the foot read over any light */
     .film .labels, .film .deck { position: absolute; inset: 0; pointer-events: none; }
     .film .deck > * { position: absolute; opacity: 0; visibility: hidden; }
     @media (min-width: 901px) {  /* on a wide screen these panels hang in space beside what they describe; the film places them */
-      .film .deck > .hung { left: 0; top: 0; right: auto; bottom: auto; translate: none; transform-origin: 0 0; }
+      .film .deck > .hung { left: 0; top: 0; right: auto; bottom: auto; translate: none; will-change: transform; }
     }
     .film .no-gl-note { display: none; }
     .film .screen.no-gl .title-card { opacity: 1; visibility: visible; }
@@ -56,22 +56,22 @@
     .film .screen.no-gl .no-gl-note { display: block; position: absolute; left: 50%; bottom: 14%; z-index: 4; width: min(30rem, calc(100% - 32px)); margin: 0; translate: -50% 0; color: var(--muted); text-align: center; }
 
     /* Labels placed from the camera; the side says where a label sits from its point */
-    .film .lbl { position: absolute; left: 0; top: 0; white-space: nowrap; font: 12px/1.4 var(--mono); color: var(--ink-dim); opacity: 0; will-change: transform, opacity; text-shadow: 0 0 10px rgba(0, 0, 0, .95), 0 0 3px rgba(0, 0, 0, .95); }
+    .film .lbl { position: absolute; left: 0; top: 0; white-space: nowrap; font: 13px/1.4 var(--mono); color: #dedcd6; opacity: 0; will-change: transform, opacity; text-shadow: 0 1px 2px rgba(0, 0, 0, .95), 0 0 6px rgba(0, 0, 0, .95), 0 0 16px rgba(0, 0, 0, .9); }
     .film .lbl.above { translate: -50% -100%; text-align: center; }
     .film .lbl.below { translate: -50% 0; text-align: center; }
     .film .lbl.left { translate: -100% -50%; text-align: right; }
     .film .lbl.right { translate: 0 -50%; }
     .film .lbl.mid { translate: -50% -50%; text-align: center; }
-    .film .lbl b { color: #ecebe8; font-weight: 500; }
+    .film .lbl b { color: #f4f2ec; font-weight: 600; }
     .film .lbl i { margin-left: .6ch; font-style: normal; color: var(--term-ok); }
-    .film .lbl small { display: block; font-size: 11px; color: var(--muted); }
+    .film .lbl small { display: block; font-size: 11.5px; color: #bdbbb5; }
     .film .lbl small.no { color: var(--term-no); }
-    .film .lbl.machine { font-size: 12.5px; color: #d8d6d0; }
-    .film .lbl.machine small { color: var(--faint); }
+    .film .lbl.machine { font-size: 13px; color: #e6e4de; }
+    .film .lbl.machine small { color: #a9a7a1; }
     .film .lbl.machine.asking small { color: var(--term-mid); }
-    .film .lbl.note { font: 500 13.5px/1.45 var(--sans); color: #e8e5df; }
+    .film .lbl.note { font: 500 14px/1.45 var(--sans); color: #f0ede7; }
     .film .lbl.note b { color: var(--fg); font-weight: 560; }
-    .film .lbl.prompt { white-space: normal; text-align: left; font: 13.5px/1.6 var(--mono); color: var(--term-dim); }
+    .film .lbl.prompt { white-space: normal; text-align: left; font: 14px/1.6 var(--mono); color: #b9b6b0; padding: .4em .8em; border: 1px solid rgba(255, 255, 255, .09); border-radius: 9px; background: rgba(6, 6, 9, .68); box-shadow: 0 16px 40px -20px rgba(0, 0, 0, .9); }
     .film .lbl.prompt .p { color: var(--accent); }
     .film .lbl.prompt .w { color: var(--term-in); }
     .film .lbl.prompt .rest { visibility: hidden; }
@@ -84,13 +84,13 @@
     .film .lbl.problem small { margin-top: .2rem; font: 12px/1.4 var(--mono); color: var(--term-dim); }
     .film .lbl.plan-name { font: 500 12px/1.3 var(--sans); color: #e9e6df; }
     .film .lbl.plan-name small { font: 10.5px/1.3 var(--mono); color: var(--faint); }
-    .film .lbl.said { max-width: 16rem; white-space: normal; font: 12px/1.35 var(--mono); color: var(--term-in); text-align: center; }
-    .film .lbl.void { font: 11px/1.3 var(--mono); color: var(--faint); }
+    .film .lbl.said { max-width: 17rem; white-space: normal; font: 13px/1.35 var(--mono); color: var(--term-in); text-align: center; }
+    .film .lbl.void { font: 12px/1.3 var(--mono); color: var(--muted); }
     .film .lbl.stop { font: 560 17px/1.3 var(--sans); color: var(--fg); text-shadow: 0 0 18px rgba(3, 3, 5, .95); }
     .film .lbl.stop { font-size: 20px; letter-spacing: -.01em; }
     .film .lbl.stop small { width: 19rem; margin: .4rem auto 0; white-space: normal; font: 14px/1.5 var(--sans); color: var(--text); letter-spacing: 0; }
     .film .lbl.stop.now { color: var(--term-ok); }
-    .film .lbl.look { font: 500 12.5px/1.3 var(--mono); color: #ffd9a8; }
+    .film .lbl.look { font: 500 13px/1.3 var(--mono); color: #ffd9a8; }
     .film .lbl.tick { font: 500 10.5px/1 var(--mono); color: #d8d6d0; }
 
     /* The title */
@@ -211,7 +211,7 @@
     .film .host .type .rest { visibility: hidden; }
     .film .host .said { margin: .5rem 0; font: 14px/1.4 var(--mono); color: var(--term-in); }
     .film .host .wave { display: flex; align-items: center; gap: 3px; height: 34px; }
-    .film .host .wave i { flex: 1; height: 20%; border-radius: 2px; background: var(--accent); opacity: .8; transition: height .15s; }
+    .film .host .wave i { flex: 1; height: 100%; border-radius: 2px; background: var(--accent); opacity: .8; transform: scaleY(.2); transform-origin: center; }
     .film .host .tree { margin: 0 0 .5rem; padding: 0; list-style: none; font: 12.5px/1.6 var(--mono); color: var(--term-fg); }
     .film .host .tree li { padding-left: 1.2ch; }
     .film .host .tree li.dir { padding-left: 0; color: var(--accent-ink); }
@@ -228,10 +228,10 @@
     .film .coda-actions.on { opacity: 1; visibility: visible; }
 
     /* The chapter, the problems, the lenses */
-    .film .tag { position: absolute; left: clamp(16px, 3vw, 40px); top: clamp(16px, 3vh, 28px); z-index: 2; display: flex; align-items: baseline; gap: .7rem; font: 12px/1.4 var(--mono); color: #b8b6b0; opacity: 0; transition: opacity .6s; pointer-events: none; text-shadow: 0 0 12px rgba(0, 0, 0, .95), 0 0 3px rgba(0, 0, 0, .95); }
+    .film .tag { position: absolute; left: clamp(16px, 3vw, 40px); top: clamp(16px, 3vh, 28px); z-index: 2; display: flex; align-items: baseline; gap: .7rem; font: 12.5px/1.4 var(--mono); color: #c4c2bc; opacity: 0; transition: opacity .6s; pointer-events: none; text-shadow: 0 1px 2px rgba(0, 0, 0, .95), 0 0 12px rgba(0, 0, 0, .95); }
     .film .tag.on { opacity: 1; }
     .film .tag .n { color: var(--accent-ink); }
-    .film .tag b { font: 560 14px/1.3 var(--sans); color: var(--fg); }
+    .film .tag b { font: 560 15px/1.3 var(--sans); color: var(--fg); }
     .film .tag i { font-style: normal; color: var(--accent-ink); }
     .film .tag i.today { color: var(--term-ok); }
     .film .picker, .film .lenses { position: absolute; left: 50%; top: clamp(14px, 2.6vh, 24px); z-index: 3; display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem; width: max-content; max-width: calc(100% - 32px); translate: -50% 0; opacity: 0; visibility: hidden; transition: opacity .5s, visibility .5s, translate .5s cubic-bezier(.2, .7, .2, 1); }
@@ -242,7 +242,7 @@
     .film .has-tag .picker, .film .has-tag .lenses { translate: -50% clamp(38px, 5.4vh, 48px); }
 
     /* Captions and the hint */
-    .film .caption { position: absolute; left: 50%; bottom: 5.6rem; z-index: 2; width: min(46rem, calc(100% - 32px)); margin: 0; translate: -50% 0; text-align: center; font-size: clamp(1rem, 1.45vw, 1.22rem); font-weight: 450; line-height: 1.5; color: #f3f1ec; text-shadow: 0 0 18px rgba(0, 0, 0, .95), 0 1px 2px rgba(0, 0, 0, .9); transition: opacity .3s, transform .35s; pointer-events: none; }
+    .film .caption { position: absolute; left: 50%; bottom: 5.6rem; z-index: 2; width: min(46rem, calc(100% - 32px)); margin: 0; translate: -50% 0; text-align: center; font-size: clamp(1.06rem, 1.55vw, 1.3rem); font-weight: 500; line-height: 1.45; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .95), 0 0 8px rgba(0, 0, 0, .95), 0 0 28px rgba(0, 0, 0, .9); transition: opacity .3s, transform .35s; pointer-events: none; }
     .film .caption.off { opacity: 0; }
     .film .screen.idle .caption { transform: translateY(3rem); }
     .film .hint { position: absolute; right: clamp(16px, 3vw, 40px); bottom: 5.6rem; z-index: 2; margin: 0; font: 12px/1.3 var(--mono); color: var(--muted); opacity: 0; transition: opacity .6s; pointer-events: none; }
@@ -317,7 +317,11 @@
       .film .picker, .film .lenses { flex-wrap: nowrap; justify-content: flex-start; width: auto; max-width: calc(100% - 24px); overflow-x: auto; scrollbar-width: none; }
       .film .picker::-webkit-scrollbar, .film .lenses::-webkit-scrollbar { display: none; }
       .film .picker button, .film .lenses button { flex: none; }
-      .film .envelope { right: auto; left: 50%; top: auto; bottom: 9rem; width: min(24rem, calc(100% - 32px)); translate: -50% 0; }
+      @supports (animation-timeline: scroll()) {
+        .film .picker, .film .lenses { -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent); mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent); animation: fades linear both; animation-timeline: scroll(self inline); }
+      }
+      .film .envelope { right: auto; left: 50%; top: auto; bottom: 10.5rem; width: min(24rem, calc(100% - 32px)); translate: -50% 0; }
+      .film .envelope .lens-note { display: none; }  /* the caption says it */
       .film .host { width: min(15rem, 44vw); padding: .6rem .7rem .7rem; font-size: 11.5px; }
       .film .host.chat, .film .host.voice { top: 10%; }
       .film .host.app, .film .host.agent { bottom: 24%; }
@@ -573,7 +577,8 @@ One region at a time."""</span>
             <h3>Receipts, and who sees what</h3>
             <p data-at="0.6" data-to="6.4">Each machine answers with a signed receipt: what ran, which version, who said yes, and when.</p>
             <p data-at="7.2" data-to="12.6">Each side sees only what it needs. deploy.acme sees its own step's words, never the whole sentence.</p>
-            <p data-at="14.6" data-to="21">The makers of evoke see nothing. Nothing we run sits between you and your machines.</p>
+            <p data-at="14.8" data-to="18">Its on-call sees the call it is asked about, and as much of the plan as Dana chose to share.</p>
+            <p data-at="18.4" data-to="23.6">The makers of evoke see nothing. Nothing we run sits between you and your machines.</p>
           </section>
           <section data-chapter="hosts" data-dur="30" data-when="Tomorrow">
             <h3>Everywhere people act</h3>
@@ -624,10 +629,31 @@ One region at a time."""</span>
         return { p, u }
       }
       const HEAD = "#version 300 es\nprecision highp float;\n"
+      // Five octaves of value noise, baked once into a tile the shaders sample, in place of computing them per pixel
       const NOISE = `
-        float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
-        float noise(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f); return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y); }
-        float fbm(vec2 p) { float a = 0.5, s = 0.0; for (int i = 0; i < 5; i++) { s += a * noise(p); p = p * 2.03 + 17.1; a *= 0.5; } return s; }`
+        uniform sampler2D uNoise;
+        float fbm(vec2 p) { return texture(uNoise, p * 0.125).r; }`
+      const noiseTex = (() => {
+        const N = 256, data = new Uint8Array(N * N), lattices = []
+        let s = 5
+        const seed = () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296 }
+        for (let o = 0; o < 5; o++) { const P = 8 << o; lattices.push({ P, v: Float32Array.from({ length: P * P }, seed) }) }
+        for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+          let sum = 0, a = .5
+          for (const { P, v } of lattices) {  // each octave wraps at its own period, so the tile repeats without a seam
+            const fx = x / N * P, fy = y / N * P, ix = Math.floor(fx), iy = Math.floor(fy), tx = fx - ix, ty = fy - iy
+            const ux = tx * tx * (3 - 2 * tx), uy = ty * ty * (3 - 2 * ty), at = (i, j) => v[(j % P) * P + (i % P)]
+            sum += a * ((at(ix, iy) * (1 - ux) + at(ix + 1, iy) * ux) * (1 - uy) + (at(ix, iy + 1) * (1 - ux) + at(ix + 1, iy + 1) * ux) * uy)
+            a *= .5
+          }
+          data[y * N + x] = Math.round(sum * 255)
+        }
+        const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.R8, N, N, 0, gl.RED, gl.UNSIGNED_BYTE, data)
+        for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.REPEAT], [gl.TEXTURE_WRAP_T, gl.REPEAT]]) gl.texParameteri(gl.TEXTURE_2D, k, v)
+        gl.generateMipmap(gl.TEXTURE_2D)
+        return t
+      })()
 
       // Stars: points sized by distance; a star smaller than a pixel dims instead of shrinking
       const STARS = program(`${HEAD}
@@ -667,7 +693,8 @@ One region at a time."""</span>
         void main() {
           vec4 v = uView * vec4(iPos.xyz, 1.0);
           float soft = (iPar.x < 0.5 || (iPar.x > 3.5 && iPar.x < 4.5)) ? 1.0 : 0.0;
-          float fade = mix(1.0, smoothstep(iPos.w * 0.6, iPos.w * 3.5, -v.z), soft);
+          float fade = mix(1.0, smoothstep(iPos.w * 0.9, iPos.w * 4.5, -v.z), soft);
+          if (fade * iCol.a < 0.004) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); vUv = vec2(0.0); vCol = vec4(0.0); vPar = iPar; return; }  // too faint to see: no pixels drawn
           v.xy += aCorner * iPos.w; gl_Position = uProj * v; vUv = aCorner; vCol = vec4(iCol.rgb, iCol.a * fade); vPar = iPar;
         }`, `${HEAD}
         in vec2 vUv; in vec4 vCol; in vec4 vPar; out vec4 o;
@@ -829,6 +856,7 @@ One region at a time."""</span>
           const spritesWith = (vao, n, gain) => {
             if (!n || gain <= .002) return
             gl.useProgram(SPRITES.p); gl.uniformMatrix4fv(SPRITES.u.uView, false, f.view); gl.uniformMatrix4fv(SPRITES.u.uProj, false, f.proj); gl.uniform1f(SPRITES.u.uTime, f.time)
+            gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, noiseTex); gl.uniform1i(SPRITES.u.uNoise, 2); gl.activeTexture(gl.TEXTURE0)
             gl.bindVertexArray(vao); gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, n)
           }
           for (const s of stills) if (s.gain > .002) { gl.blendColor(s.gain, s.gain, s.gain, 1); gl.blendFunc(gl.CONSTANT_COLOR, gl.ONE); spritesWith(s.vao, s.n, s.gain) }
@@ -855,7 +883,7 @@ One region at a time."""</span>
           mips.forEach((m, i) => {
             gl.bindFramebuffer(gl.FRAMEBUFFER, m.f); gl.viewport(0, 0, m.w, m.h)
             gl.useProgram(DOWN.p); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, src.t)
-            gl.uniform1i(DOWN.u.uTex, 0); gl.uniform2f(DOWN.u.uTexel, 1 / src.w, 1 / src.h); gl.uniform1i(DOWN.u.uFirst, i === 0 ? 1 : 0); gl.uniform1f(DOWN.u.uKnee, .55)
+            gl.uniform1i(DOWN.u.uTex, 0); gl.uniform2f(DOWN.u.uTexel, 1 / src.w, 1 / src.h); gl.uniform1i(DOWN.u.uFirst, i === 0 ? 1 : 0); gl.uniform1f(DOWN.u.uKnee, .6)
             gl.drawArrays(gl.TRIANGLES, 0, 3); src = m
           })
           gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE)
@@ -998,8 +1026,8 @@ One region at a time."""</span>
             const m = stage.length, reads = stage.every(x => x.effect === "read")
             stage.forEach((st, j) => {
               if (m === 1) pos[st.id] = place((s - (n - 1) / 2) * sx, 0, 0)
-              else if (reads) { const a = j / m * TAU + .7, r = 38 + m * 13; pos[st.id] = place((s - (n - 1) / 2) * sx, Math.sin(a) * r, Math.cos(a) * r) }
-              else pos[st.id] = place((s - (n - 1) / 2) * sx + (j - (m - 1) / 2) * sx * .22, ((m - 1) / 2 - j) * 46, (j % 2 ? 1 : -1) * 16)  // changes in a column read down
+              else if (reads) { const a = j / m * TAU + .7, r = 44 + m * 14; pos[st.id] = place((s - (n - 1) / 2) * sx, Math.sin(a) * r, Math.cos(a) * r) }
+              else pos[st.id] = place((s - (n - 1) / 2) * sx + (j - (m - 1) / 2) * sx * .22, ((m - 1) / 2 - j) * 54, (j % 2 ? 1 : -1) * 16)  // changes in a column read down
             })
           })
           pos.$ = place((-(n - 1) / 2 - 1.1) * sx, 12, 0)
@@ -1012,7 +1040,7 @@ One region at a time."""</span>
           return p
         })()
         const CLOSE3 = layout3(CLOSE, frame3(FIN, tangent(.63)), 124)
-        for (const [i, pr] of PROBLEMS.entries()) pr.pos = pr.plan === OUTAGE ? OUT3 : pr.plan === CLOSE ? CLOSE3 : layout3(pr.plan, frame3(SITES[i], tangent([.42, .49, .56, .63, .7, .77][i])), 104)
+        for (const [i, pr] of PROBLEMS.entries()) pr.pos = pr.plan === OUTAGE ? OUT3 : pr.plan === CLOSE ? CLOSE3 : layout3(pr.plan, frame3(SITES[i], tangent([.42, .49, .56, .63, .7, .77][i])), 118)
         const centre = pos => { const v = Object.values(pos); return mul(v.reduce(add, O), 1 / v.length) }
         const OUT_MID = centre(OUT3)
         // Every other reflex installed, dim around the outage's plan
@@ -1037,6 +1065,23 @@ One region at a time."""</span>
             fibres.set(key, list)
           }
           return fibres.get(key)
+        }
+        const shapes = new Map()  // each reflex's fibres as points around its centre, made once per radius and reach
+        const fibreShape = (key, r, reach, toward) => {
+          reach = Math.round(reach * 20) / 20  // a reach that changes by the frame, as a plan folds, keeps to twenty shapes
+          const id = `${key}|${r}|${reach}`
+          let s = shapes.get(id)
+          if (!s) {
+            s = []
+            for (const f of fibresOf(key, toward)) {
+              const l = r * f.l * reach, s0 = mul(f.d, r * 1.05), end = mul(f.d, l), mid = add(mix(s0, end, .5), mul(f.b, l * .18 * f.bend))
+              const pts = Array.from({ length: 9 }, (_, i) => { const t = i / 8, u = 1 - t; return add(add(mul(s0, u * u), mul(mid, 2 * u * t)), mul(end, t * t)) })
+              const forks = f.forks.map(k => { const dd = norm(add(f.d, mul(f.b, k))), q = add(end, mul(dd, l * .38)); return [end, mix(end, q, .5), q] })
+              s.push({ pts, forks })
+            }
+            shapes.set(id, s)
+          }
+          return s
         }
 
         // When each step lights, sets off, is asked and runs
@@ -1076,14 +1121,14 @@ One region at a time."""</span>
           for (let i = 0; i < 6; i++) { const a = rnd() * TAU, b = (rnd() - .5) * 1.6, d = 26 + rnd() * 30; m.extra.push(V(Math.cos(a) * Math.cos(b) * d, Math.sin(b) * d, Math.sin(a) * Math.cos(b) * d)) }
         }
         const HOME = { errors: ["monitor", V(-30, 16, -12)], logs: ["monitor", V(28, -14, 16)], deploys: ["deploy", V(-32, -12, 14)], rollback: ["deploy", V(28, 16, -14)], suspect: ["laptop", V(34, -16, 16)], post: ["chat", V(0, 0, 0)], status: ["status", V(0, 0, 0)] }
-        const home = id => add(MACHINES[HOME[id][0]].c, HOME[id][1])
+        const HOMES = Object.fromEntries(Object.entries(HOME).map(([id, [m, d]]) => [id, add(MACHINES[m].c, d)])), home = id => HOMES[id]
         const deployC = MACHINES.deploy.c, lapC = MACHINES.laptop.c, PERSON = add(deployC, V(-129, 40, 33))  // outside the membrane, where the gate's camera sees the person apart
         const ACME_MID = mul(Object.values(MACHINES).map(m => m.c).reduce(add, O), 1 / 5)
         const ROAD = Array.from({ length: 6 }, (_, i) => add(arm(.42 + i * .085, 1), V(0, 120 + i * 34, 0)))
         const HOSTS3 = [V(-980, 460, -420), V(980, 480, -380), V(-940, -380, 480), V(960, -360, 460)].map(v => add(ACME_MID, v))
 
         // The camera: keyframed shots. The look depends on the angles alone; a shot may shift its target along the view
-        let W = 0, H = 0, F = 1000, rdpr = 1, portrait = false
+        let W = 0, H = 0, F = 1000, rdpr = 1, portrait = false, scale = 1, slow = 0  // scale: the render's share of the screen's pixels, lowered when frames run slow
         const SHOTS = []
         const S = (T, target, dist, az, el, o = {}) => SHOTS.push({ T, target, dist, az: az * DEG, el: el * DEG, ox: o.ox ?? 0, oy: o.oy ?? 0, cx: o.cx ?? .5, cy: o.cy ?? .5, glide: !!o.glide, p: o.p ?? null })
         const view = (eye, target) => { const d = sub(target, eye), l = len(d); return { target, dist: l, az: Math.atan2(-d.x, -d.z) / DEG, el: Math.asin(-d.y / l) / DEG } }  // a shot from an eye to a point
@@ -1100,7 +1145,8 @@ One region at a time."""</span>
         S(at("plan", 14), mix(OUT3.post, OUT3.status, .5), 300, -6, 16, { p: TALL }); S(at("plan", 17), OUT_MID, 660, -10, 24, { p: TALL }); S(at("plan", 28), OUT_MID, 640, -16, 26, { p: TALL })
         S(at("hold", 3), OUT_MID, 430, -12, 22, { p: TALL }); S(at("hold", 10.4), OUT_MID, 600, -18, 24, { p: TALL })
         S(at("hold", 13.6), centre(CLOSE3), 600, 22, 26, { p: TALL }); S(at("hold", 30), centre(CLOSE3), 570, 32, 28, { p: TALL })
-        PROBLEMS.forEach((p, i) => { const c = centre(p.pos); S(at("six", i ? 6.4 + 6 * i : 3.2), c, 560, 26 + 4 * i, 24, { p: TALL }); if (!i) S(at("six", 6.4), c, 540, 26, 24, { p: TALL }) })
+        const SIX_P = { ...TALL, d: 1.9 }
+        PROBLEMS.forEach((p, i) => { const c = centre(p.pos); S(at("six", i ? 6.4 + 6 * i : 3.2), c, 640, 26 + 4 * i, 24, { p: SIX_P }); if (!i) S(at("six", 6.4), c, 620, 26, 24, { p: SIX_P }) })
         S(at("machines", 3.2), ACME_MID, 1180, 14, 28, { p: TALL }); S(at("machines", 11), ACME_MID, 1150, 8, 28, { p: TALL })
         const GATE_P = { d: 1.45, ox: 0, cy: .3 }  // from above deploy.acme, where no other machine stands between
         S(at("machines", 13.2), deployC, 450, 40, 55, { ox: 80, p: GATE_P }); S(at("machines", 15.4), deployC, 440, 45, 53, { ox: 80, p: GATE_P })
@@ -1167,23 +1213,33 @@ One region at a time."""</span>
 
         // Drawing in light: sprites face the camera, ribbons are built to face it
         const sprite = (p, size, col, a, kind, p1 = 0, p2 = 0, p3 = 0) => G.sprite(p.x, p.y, p.z, size, col[0], col[1], col[2], a, kind, p1, p2, p3)
-        const ribbon = (pts, width, col, alpha, bead = 0) => {  // width and alpha: a number, or a function of the way along
-          const n = pts.length
+        const SIDE = new Float64Array(768), ALONG = new Float64Array(256)  // a ribbon's sides and the way along it, reused by every ribbon
+        const ribbon = (pts, width, col, alpha, bead = 0, off = O) => {  // width and alpha: a number, or a function of the way along; off: where the points are measured from
+          const n = Math.min(pts.length, 256)
           if (n < 2 || !G.room((n - 1) * 6)) return
-          const side = [], wOf = typeof width === "function" ? width : () => width, aOf = typeof alpha === "function" ? alpha : () => alpha
+          const wf = typeof width === "function", af = typeof alpha === "function", ex = cam.eye.x - off.x, ey = cam.eye.y - off.y, ez = cam.eye.z - off.z
           let along = 0
-          const alongs = [0]
-          for (let i = 1; i < n; i++) { along += len(sub(pts[i], pts[i - 1])); alongs.push(along) }
-          for (let i = 0; i < n; i++) {
-            const p = pts[i], t = norm(sub(pts[Math.min(n - 1, i + 1)], pts[Math.max(0, i - 1)])), e = norm(sub(cam.eye, p))
-            side.push(mul(norm(cross(t, e)), wOf(i / (n - 1)) / 2))
+          for (let i = 0; i < n; i++) {  // each side faces the camera: across the tangent and the line to the eye
+            const p = pts[i], q = pts[i ? i - 1 : 0], r = pts[i < n - 1 ? i + 1 : i]
+            if (i) along += Math.hypot(p.x - q.x, p.y - q.y, p.z - q.z)
+            ALONG[i] = along
+            const tx = r.x - q.x, ty = r.y - q.y, tz = r.z - q.z, vx = ex - p.x, vy = ey - p.y, vz = ez - p.z
+            const cx = ty * vz - tz * vy, cy = tz * vx - tx * vz, cz = tx * vy - ty * vx
+            const k = (wf ? width(i / (n - 1)) : width) / 2 / (Math.hypot(cx, cy, cz) || 1)
+            SIDE[i * 3] = cx * k; SIDE[i * 3 + 1] = cy * k; SIDE[i * 3 + 2] = cz * k
           }
-          const v = (i, s) => { const p = pts[i], d = side[i], a = aOf(i / (n - 1)); G.vertex(p.x + d.x * s, p.y + d.y * s, p.z + d.z * s, col[0], col[1], col[2], a, s, alongs[i], bead) }
+          const v = (i, s) => { const p = pts[i], a = af ? alpha(i / (n - 1)) : alpha; G.vertex(off.x + p.x + SIDE[i * 3] * s, off.y + p.y + SIDE[i * 3 + 1] * s, off.z + p.z + SIDE[i * 3 + 2] * s, col[0], col[1], col[2], a, s, ALONG[i], bead) }
           for (let i = 0; i < n - 1; i++) { v(i, 1); v(i, -1); v(i + 1, 1); v(i, -1); v(i + 1, -1); v(i + 1, 1) }
         }
+        const arcs = new WeakMap()  // an arc between two fixed points is made once
         const curve = (a, b, lift = .14, n = 24) => {  // a gentle arc between two points
+          let ends = arcs.get(a); if (!ends) arcs.set(a, ends = new WeakMap())
+          const hit = ends.get(b)
+          if (hit && hit.lift === lift && hit.n === n) return hit.pts
           const d = sub(b, a), l = len(d), c1 = add(a, add(mul(d, .33), mul(UP, l * lift))), c2 = add(a, add(mul(d, .67), mul(UP, l * lift)))
-          return Array.from({ length: n + 1 }, (_, i) => { const t = i / n, u = 1 - t; return add(add(mul(a, u * u * u), mul(c1, 3 * u * u * t)), add(mul(c2, 3 * u * t * t), mul(b, t * t * t))) })
+          const pts = Array.from({ length: n + 1 }, (_, i) => { const t = i / n, u = 1 - t; return add(add(mul(a, u * u * u), mul(c1, 3 * u * u * t)), add(mul(c2, 3 * u * t * t), mul(b, t * t * t))) })
+          ends.set(b, { lift, n, pts })
+          return pts
         }
         const curve3 = (a, b, side, bend, n) => { const c = add(mix(a, b, .5), mul(side, len(sub(b, a)) * bend)); return Array.from({ length: n + 1 }, (_, i) => { const t = i / n, u = 1 - t; return add(add(mul(a, u * u), mul(c, 2 * u * t)), mul(b, t * t)) }) }
         const at3 = (pts, u) => { const f = clamp(u, 0, 1) * (pts.length - 1), i = Math.min(pts.length - 2, Math.floor(f)); return mix(pts[i], pts[i + 1], f - i) }
@@ -1206,12 +1262,12 @@ One region at a time."""</span>
           if (state === "asking") { const pulse = still ? 1 : .55 + .45 * Math.sin(T * 8); sprite(p, r * 3.1, C.mid, .9 * a * pulse, 2, 1, .05) }
           const burst = (T - fire) / 1.2
           if (burst >= 0 && burst < 1) { sprite(p, r * (2.5 + burst * 8), col, (1 - burst) ** 2 * a, 2, 1, .035); sprite(p, r * (6 + burst * 10), col, (1 - burst) * .25 * a, 0) }
-          if (o.fibres !== false) for (const f of fibresOf(key, o.toward)) {
-            const l = r * f.l * (o.reach ?? 1), s0 = add(p, mul(f.d, r * 1.05)), end = add(p, mul(f.d, l)), mid = add(mix(s0, end, .5), mul(f.b, l * .18 * f.bend))
-            const pts = Array.from({ length: 9 }, (_, i) => { const t = i / 8, u = 1 - t; return add(add(mul(s0, u * u), mul(mid, 2 * u * t)), mul(end, t * t)) })
+          if (o.fibres !== false) {
             const lit = (o.fibreLight ?? .55) * a * (state === "plan" ? .7 : 1), fw = o.fibreWidth ?? .2
-            ribbon(pts, t => r * (fw - t * fw * .75), col, t => lit * (1 - t * .75))
-            for (const k of f.forks) { const dd = norm(add(f.d, mul(f.b, k))), q = add(end, mul(dd, l * .38)); ribbon([end, mix(end, q, .5), q], t => r * (.07 - t * .05), col, t => lit * .5 * (1 - t)) }
+            for (const f of fibreShape(key, r, o.reach ?? 1, o.toward)) {
+              ribbon(f.pts, t => r * (fw - t * fw * .75), col, t => lit * (1 - t * .75), 0, p)
+              for (const fork of f.forks) ribbon(fork, t => r * (.07 - t * .05), col, t => lit * .5 * (1 - t), 0, p)
+            }
           }
         }
         const membrane = (c, r, col, a, pulse = 0, seed = 0) => { if (a < .01 || r < 1) return; sprite(c, r, col, .7 * a, 3, pulse, seed); sprite(c, r * 1.9, col, .05 * a * (1 + pulse * 2), 0) }
@@ -1249,39 +1305,67 @@ One region at a time."""</span>
 
         // Labels: HTML placed each frame from the camera; a label not placed this frame fades out
         const pool = new Map()
-        let frameNo = 0
-        const label = (key, html, x, y, cls = "", o = 1) => {
+        let frameNo = 0, capTop = 1e9  // where the caption begins, measured when its words change
+        const label = (key, html, x, y, cls = "", o = 1, width = 0) => {
           let l = pool.get(key)
-          if (!l) { l = { el: document.createElement("div"), o: 0 }; layer.append(l.el); pool.set(key, l) }
+          if (!l) { l = { el: document.createElement("div"), o: 0, w: 0, h: 0, width: 0 }; layer.append(l.el); pool.set(key, l) }
           l.frame = frameNo
-          if (l.html !== html) { l.el.innerHTML = html; l.html = html }
-          if (l.cls !== cls) { l.el.className = `lbl ${cls}`; l.cls = cls }
-          const px = Math.round(x * 2) / 2, py = Math.round(y * 2) / 2, po = Math.round(clamp(o, 0, 1) * 100) / 100
-          if (px !== l.x || py !== l.y) { l.el.style.transform = `translate(${px}px, ${py}px)`; l.x = px; l.y = py }
-          if (po !== l.o) { l.el.style.opacity = po; l.o = po }
+          if (l.html !== html) { l.el.innerHTML = html; l.html = html; l.w = 0 }
+          if (l.cls !== cls) { l.el.className = `lbl ${cls}`; l.cls = cls; l.w = 0 }
+          if (l.width !== width) { l.el.style.width = width ? `${width}px` : ""; l.width = width; l.w = 0 }
+          if (!l.w) { l.w = l.el.offsetWidth; l.h = l.el.offsetHeight }  // measured once per text, so a label can keep to the screen
+          const side = cls.includes("left") ? [l.w, 0] : cls.includes("right") ? [0, l.w] : [l.w / 2, l.w / 2]
+          o *= seg(x, -70, -16) * seg(W - x, -70, -16)  // a point that has left the screen takes its name with it
+          x = clamp(x, 8 + side[0], W - 8 - side[1])
+          const top = cls.includes("above") ? y - l.h : cls.includes("below") ? y : y - l.h / 2
+          o *= seg(top, 34, 58)  // clear of the chapter's name and the pickers
+          if (top + l.h > capTop - 6) o *= clamp((capTop - 6 - top) / Math.max(1, l.h), 0, 1)  // and of the caption
+          put(l, x, y, clamp(o, 0, 1))
           return l
+        }
+        const put = (l, x, y, o) => {  // moved by whole pixels on the compositor, so its text stays crisp and never shivers
+          const px = Math.round(x), py = Math.round(y), po = Math.round(o * 100) / 100
+          if (px !== l.x || py !== l.y) { l.el.style.transform = `translate3d(${px}px, ${py}px, 0)`; l.x = px; l.y = py }
+          if (po !== l.o) { l.el.style.opacity = po; l.o = po }
         }
         const sweep = () => { for (const l of pool.values()) if (l.frame !== frameNo && l.o !== 0) { l.el.style.opacity = 0; l.o = 0 } }
         const tag3 = (key, html, p, cls, o, dy = 0) => { const s = project(p); if (s && s.z > 2) label(key, html, s.x, s.y + dy, cls, o) }  // a label at a point in space
         const typed = (text, n) => `<span class="w">${text.slice(0, n)}</span><span class="rest">${text.slice(n)}</span>`
         const prompt = (words, t, a, b) => `<span class="p">$</span> evoke "${typed(`${words}"`, t >= b ? words.length + 1 : Math.floor(seg(t, a, b) * words.length))}`
         const nameTags = (key, plan, pos, sched, T, o = {}) => {  // each reflex's name, how sure, and what it gave back
+          const placed = []
           for (const stage of plan.stages) for (const n of stage) {
             const st = o.state?.(n) ?? stateOf(sched, n.id, T), s = project(pos[n.id]); if (!s || st === "dim") continue
             const small = st === "ran" && n.chip && o.chips !== false ? `<small>${n.chip}</small>` : st === "asking" && n.person ? `<small>waits for ${n.person}</small>` : st === "declined" ? `<small class="no">declined</small>` : st === "skipped" ? "<small>skipped</small>" : ""
-            label(`${key}-${n.id}`, `<b>${n.id}</b>${o.numbers === false ? "" : `<i>${n.p.toFixed(2)}</i>`}${small}`, s.x, s.y + Math.max(14, 4 * 4.6 * s.k * .5) + 6, "below", (o.a ?? 1) * clamp(s.k * 2.2, 0, 1))
+            placed.push(label(`${key}-${n.id}`, `<b>${n.id}</b>${o.numbers === false ? "" : `<i>${n.p.toFixed(2)}</i>`}${small}`, s.x, s.y + Math.max(14, 4 * 4.6 * s.k * .5) + 6, "below", (o.a ?? 1) * clamp(s.k * 2.2, 0, 1)))
+          }
+          for (let i = 1; i < placed.length; i++) for (let j = 0; j < i; j++) {  // a name that would cover an earlier one steps under it
+            const a = placed[j], b = placed[i]
+            if (a.o > .05 && b.o > .05 && Math.abs(a.x - b.x) < (a.w + b.w) / 2 + 8 && b.y < a.y + a.h + 4 && b.y + b.h > a.y - 4) put(b, b.x, a.y + a.h + 4, b.o)
           }
         }
         const outline = pos => { const pts = Object.values(pos).map(p => project(p)).filter(Boolean); if (!pts.length) return null; return { x0: Math.min(...pts.map(p => p.x)), x1: Math.max(...pts.map(p => p.x)), y0: Math.min(...pts.map(p => p.y)), y1: Math.max(...pts.map(p => p.y)) } }
         // Panels on the deck: shown by the clock; some hang in space beside what they describe
-        const panel = (el, o) => { const v = o > .01; el.style.opacity = o.toFixed(3); el.style.visibility = v ? "visible" : "hidden" }
+        const panel = (el, o) => {  // written only when it changes: a frame that changes nothing touches nothing
+          const op = o.toFixed(3); if (el.__o === op) return
+          el.__o = op; el.style.opacity = op; el.style.visibility = o > .01 ? "visible" : "hidden"
+        }
+        const text = (node, s) => { if (node.__s !== s) { node.__s = s; node.textContent = s } }
+        const classed = (el, c) => { if (el.className !== c) el.className = c }
         const WIDE = matchMedia("(min-width: 901px)")
-        const hang = (el, p, ax, ay, dx = 0, dy = 0, kRef = 0) => {  // a panel held at a point in space, scaled a little with its distance
-          if (!WIDE.matches) { el.style.transform = ""; return }
+        const boxes = new WeakMap()  // each panel's box, measured when it changes and never inside a frame
+        const measured = new ResizeObserver(entries => { for (const e of entries) boxes.set(e.target, [e.target.offsetWidth, e.target.offsetHeight]) })
+        const hang = (el, p, ax, ay, dx = 0, dy = 0) => {  // a panel held at a point in space, moved by fractions of a pixel so its text never shivers
+          if (!WIDE.matches) { if (el.style.transform) el.style.transform = ""; return }
           const s = project(p); if (!s) return
-          const k = kRef ? clamp(s.k / kRef, .86, 1.12) : 1, w = el.offsetWidth * k, h = el.offsetHeight * k
-          const x = clamp(s.x + dx + ax * w, 20, W - 20 - w), y = clamp(s.y + dy + ay * h, 70, H - 120 - h)
-          el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px) scale(${k.toFixed(3)})`
+          let box = boxes.get(el)
+          if (!box) { measured.observe(el); box = [el.offsetWidth, el.offsetHeight]; boxes.set(el, box) }
+          place(el, s.x + dx + ax * box[0], s.y + dy + ay * box[1], box)
+        }
+        const place = (el, x, y, box = boxes.get(el)) => {  // a panel put at a point on the screen, whole, by whole pixels
+          if (!box) { measured.observe(el); box = [el.offsetWidth, el.offsetHeight]; boxes.set(el, box) }
+          const t = `translate3d(${Math.round(clamp(x, 20, W - 20 - box[0]))}px, ${Math.round(clamp(y, 70, H - 120 - box[1]))}px, 0)`
+          if (el.__t !== t) { el.__t = t; el.style.transform = t }
         }
 
         // The captions, the chapter's name, the deck's panels
@@ -1328,6 +1412,7 @@ One region at a time."""</span>
           return "ran"
         }
         const callPath = id => curve(lapC, home(id), .2, 28)  // from the laptop that decided, across the space between
+        const BACKS = {}, backPath = id => BACKS[id] ??= [...callPath(id)].reverse()
         const crossing = (pts, c, r) => { for (let i = pts.length - 1; i > 0; i--) if (len(sub(pts[i], c)) > r) return [pts[i], i / (pts.length - 1)]; return [pts[0], 0] }
         const machines = (T, o) => {  // membranes, the steps in them, the calls from the laptop and the receipts back
           const { a = 1, lay = 1, solo = 0, lens = null, calls = true, names = true, grow = 1 } = o
@@ -1340,7 +1425,7 @@ One region at a time."""</span>
             membrane(m.c, m.r * grow, asking ? C.mid : lit ? C.acc : m.tint, al * clamp(grow * 1.4, 0, 1), pulse, m.seed)
             for (const e of m.extra) sprite(add(m.c, mul(e, grow)), 4, m.tint, .45 * al * grow, 1, m.seed * 5, .3)
             const mc = names && grow > .6 ? project(m.c) : null
-            if (mc) label(`m-${m.key}`, `${m.name}<small>${asking ? "asking its on-call" : m.sub}</small>`, mc.x, mc.y + m.r * grow * mc.k + 10, `machine below${asking ? " asking" : ""}`, al * seg(grow, .6, 1))
+            if (mc) { const rp = m.r * grow * mc.k; label(`m-${m.key}`, `${m.name}<small>${asking ? "asking its on-call" : m.sub}</small>`, mc.x, mc.y + rp + 10, `machine below${asking ? " asking" : ""}`, al * seg(grow, .6, 1) * seg(rp, 9, 22)) }  // a machine too far to see keeps its name to itself
           }
           if (calls && lay > .9) for (const [id, x] of Object.entries(RUN)) {
             if (id === "suspect") continue
@@ -1349,16 +1434,16 @@ One region at a time."""</span>
             ribbon(pts, 2.6, col, al * l, bead)
             if (!still && st !== "skipped" && !(said() === "no" && (id === "post" || id === "status"))) {
               comet(pts, seg(T, x.go, x.arrive), 7, C.acc, 6, al)
-              const [exit] = crossing([...pts].reverse(), lapC, MACHINES.laptop.r), [entry] = crossing(pts, mc.c, mc.r)
+              const [exit] = crossing(backPath(id), lapC, MACHINES.laptop.r), [entry] = crossing(pts, mc.c, mc.r)
               ripple(exit, seg(T, x.go, x.go + .9), C.acc, 40)  // sealed and signed as it leaves
               ripple(entry, seg(T, x.arrive - .12, x.arrive + .8), C.gold, 46)  // checked as it enters
             }
-            if (!still && x.back && st !== "skipped") { comet([...pts].reverse(), seg(T, x.fire, x.back), 6, st === "declined" ? C.no : C.ok, 6, al); const [back] = crossing([...pts].reverse(), lapC, MACHINES.laptop.r); ripple(back, seg(T, x.back - .1, x.back + .7), st === "declined" ? C.no : C.ok, 38) }
+            if (!still && x.back && st !== "skipped") { comet(backPath(id), seg(T, x.fire, x.back), 6, st === "declined" ? C.no : C.ok, 6, al); const [back] = crossing(backPath(id), lapC, MACHINES.laptop.r); ripple(back, seg(T, x.back - .1, x.back + .7), st === "declined" ? C.no : C.ok, 38) }
           }
           for (const id of Object.keys(HOME)) {
             const al = a * (HOME[id][0] === "deploy" ? 1 : 1 - solo), st = runState(id, T)
             cell(`m${id}`, pos[id], 4, st, T, RUN[id].fire, { a: al, reach: .8 })
-            if (names && !portrait) tag3(`mr-${id}`, `<b>${id}</b>`, pos[id], "below", al * seg(lay, .7, 1), 16)
+            if (names && !portrait) { const s = project(pos[id]); if (s) label(`mr-${id}`, `<b>${id}</b>`, s.x, s.y + 16, "below", al * seg(lay, .7, 1) * seg(s.k, .3, .6)) }
           }
           cell("m$", dec, 4.6, "plan", T, -1e9, { a: a * (1 - solo), fibres: false })
           return { pos, dec }
@@ -1436,7 +1521,7 @@ One region at a time."""</span>
           reflex(t, T) {
             web(T, .7 * (1 - seg(t, 0, 1.4)), false)
             neuron(T, t - 4.2 < 0 ? -1 : (t - 4.2) % 7.6, seg(t, 2, 3.6))
-            hang(deck.manifest, add(A, mul(cam.rt, -31)), -1, -.5, 0, 0, F / 104)
+            hang(deck.manifest, add(A, mul(cam.rt, -31)), -1, -.5)
             panel(deck.manifest, within(t, 5.2, 10.8, .8))
             return { others: 1 - seg(t, 0, 3), stars: .55, nebula: .5 }
           },
@@ -1450,8 +1535,7 @@ One region at a time."""</span>
             nameTags("p", OUTAGE, OUT3, PLAN_RUN, T)
             const box = outline(OUT3)
             if (box) {
-              const pl = label("prompt", prompt(WORDS, t, 3, 5.6), (box.x0 + box.x1) / 2, Math.max(box.y0 - 30, 110), "prompt above", within(t, 2.8, 27.6, .4) * (1 - within(t, 7.2, 16.9, .6)))
-              pl.el.style.width = `${Math.round(Math.min(700, portrait ? W - 32 : W * .56))}px`
+              label("prompt", prompt(WORDS, t, 3, 5.6), (box.x0 + box.x1) / 2, Math.max(box.y0 - 30, 110), "prompt above", within(t, 2.8, 27.6, .4) * (1 - within(t, 7.2, 16.9, .6)), Math.round(Math.min(700, portrait ? W - 32 : W * .56)))
               const x = PLAN_RUN.times.rollback, rb = project(OUT3.rollback), below = box.y1 + 64
               if (rb) label("bubble", `Roll checkout back from 4.12.0 in eu-west?<span class="keys">[y]es [n]o › <b>${T >= x.ask[1] - .6 ? "y" : ""}</b></span>`, rb.x, rb.y - 42 * clamp(rb.k, .6, 2), "bubble above", within(T, x.ask[0], x.ask[1] + .1, .25))
               label("outcome", `Errors back to normal at 14:31.<small>7 reflexes · 3 at once · 1 asked first</small>`, (box.x0 + box.x1) / 2, below, "outcome below", seg(T, PLAN_RUN.end + .6, PLAN_RUN.end + 1.2))
@@ -1472,12 +1556,12 @@ One region at a time."""</span>
                 sprite(OUT_MID, 44, C.acc, .7 * kept, 2, 1, .02)
                 for (let i = 0; i < 7; i++) { const ang = T * (.5 + i * .04) + i * TAU / 7, tilt = i * .9; sprite(add(OUT_MID, V(Math.cos(ang) * 30, Math.sin(ang) * Math.sin(tilt) * 30, Math.sin(ang) * Math.cos(tilt) * 30)), 6, i === 4 ? C.mid : C.acc, kept, 1, 0, .3) }
               }
-              hang(deck.card, add(OUT_MID, mul(cam.rt, 46)), 0, -.5, 0, 0, F / 430)
+              hang(deck.card, add(OUT_MID, mul(cam.rt, 46)), 0, -.5)
               panel(deck.card, kept)
               deck.card.classList.toggle("matched", t >= 8)
-              slots.forEach((s, i) => { const on = t >= 8.2 + i * .25; s.classList.toggle("filled", on); s.textContent = on ? ["checkout", "eu-west"][i] : s.dataset.slot })
+              slots.forEach((s, i) => { const on = t >= 8.2 + i * .25; s.classList.toggle("filled", on); text(s, on ? ["checkout", "eu-west"][i] : s.dataset.slot) })
               const c = project(OUT_MID)
-              if (c) label("short", prompt(SHORT, t, 6.2, 7.8), c.x, c.y - 70, "prompt above", within(t, 6, 10.4, .4)).el.style.width = ""
+              if (c) label("short", prompt(SHORT, t, 6.2, 7.8), c.x, c.y - 70, "prompt above", within(t, 6, 10.4, .4))
               if (unfolded) nameTags("h", OUTAGE, pos, PLAN_RUN, T, { numbers: false, state: () => "plan", a: seg(t, 9.8, 10.4) * (1 - seg(t, 10.6, 11.2)) })
             } else panel(deck.card, 0)
             let night = 0
@@ -1487,16 +1571,16 @@ One region at a time."""</span>
               nameTags("c", CLOSE, CLOSE3, CLOSE_RUN, T, { a })
               const box = outline(CLOSE3)
               if (box) {
-                label("close", prompt("close september", t, 13.8, 14.6), (box.x0 + box.x1) / 2, box.y0 - 30, "prompt above", within(t, 13.4, 29.8, .4)).el.style.width = ""
+                label("close", prompt("close september", t, 13.8, 14.6), (box.x0 + box.x1) / 2, box.y0 - 30, "prompt above", within(t, 13.4, 29.8, .4))
                 label("closed", `September closed at 09:14.<small>7 reflexes · 4 at once · 1 waited for Omar</small>`, (box.x0 + box.x1) / 2, box.y1 + 60, "outcome below", seg(T, done + .6, done + 1.2))
               }
               const lapse = seg(T, post.ask[0] + 1.1, post.ask[1] - 1.4), minutes = 18 * 60 + 42 + lapse * (14 * 60 + 30)
-              clockTime.textContent = `${String(Math.floor(minutes / 60) % 24).padStart(2, "0")}:${String(Math.floor(minutes % 60)).padStart(2, "0")}`
-              clockDay.textContent = minutes >= 24 * 60 ? "the next morning" : "the evening before"
+              text(clockTime, `${String(Math.floor(minutes / 60) % 24).padStart(2, "0")}:${String(Math.floor(minutes % 60)).padStart(2, "0")}`)
+              text(clockDay, minutes >= 24 * 60 ? "the next morning" : "the evening before")
               const okd = T >= post.ask[1] - .8
               deck.clock.classList.toggle("done", okd)
-              clockWaits.childNodes[1].textContent = okd ? "post approved by " : "post waits for a second person: "
-              hang(deck.clock, add(CLOSE3.post, add(mul(cam.rt, 60), mul(cam.up, 90))), 0, -1, 0, 0, F / 570)
+              text(clockWaits.childNodes[1], okd ? "post approved by " : "post waits for a second person: ")
+              if (WIDE.matches && box) place(deck.clock, box.x1 + 44, (box.y0 + box.y1) / 2 - 60)  // beside the plan, never over it
               panel(deck.clock, within(T, post.ask[0], done + 2.4, .5))
               night = within(T, post.ask[0] + .9, post.ask[1] - .9, 1.2)
             }
@@ -1510,7 +1594,7 @@ One region at a time."""</span>
               nameTags(`s${i}`, p.plan, p.pos, sched, T, { numbers: false, chips: false, a: active })
               const box = outline(p.pos)
               if (box && active > .01) {
-                label(`said${i}`, prompt(p.said, t, w0, w0 + .9), (box.x0 + box.x1) / 2, box.y0 - 28, "prompt above", active).el.style.width = ""
+                label(`said${i}`, prompt(p.said, t, w0, w0 + .9), (box.x0 + box.x1) / 2, box.y0 - 28, "prompt above", active)
                 label(`name${i}`, p.name, (box.x0 + box.x1) / 2, box.y1 + 50, "problem below", active)
               }
             })
@@ -1530,13 +1614,13 @@ One region at a time."""</span>
               if (!still && decided) comet(curve(PERSON, home("rollback"), -.1, 12), seg(T, GATE + .15, RUN.rollback.fire), 5, col, 3, a)
               tag3("person", decided ? (said() === "no" ? "its on-call declined" : answer === "auto" ? "its on-call approved" : "you approved") : "its on-call", PERSON, `look above${decided ? "" : ""}`, a, -18)
             }
-            hang(deck.checks, add(deployC, mul(cam.rt, MACHINES.deploy.r * 1.18)), 0, -.5, 0, 0, F / 410)
+            hang(deck.checks, add(deployC, mul(cam.rt, MACHINES.deploy.r * 1.18)), 0, -.5)
             panel(deck.checks, within(t, 12.2, 17.2, .5))
             checkRows.slice(0, 4).forEach((li, i) => li.classList.toggle("shown", t >= 12.4 + i * .5))
-            checkRows[3].className = decided ? `shown${said() === "no" ? " no" : ""}` : t >= 13.9 ? "wait shown" : "wait"
-            checkRows[3].textContent = decided ? (answer === "no" ? "Declined by you, on call" : answer === "auto" ? "Approved by its on-call" : "Approved by you, on call") : "Can't be undone: asking its on-call"
-            checkRows[4].className = decided ? `then shown${said() === "no" ? " no" : ""}` : "then"
-            checkRows[4].textContent = decided ? (said() === "no" ? "Nothing ran." : "Ran once. The receipt went back signed.") : ""
+            classed(checkRows[3], decided ? `shown${said() === "no" ? " no" : ""}` : t >= 13.9 ? "wait shown" : "wait")
+            text(checkRows[3], decided ? (answer === "no" ? "Declined by you, on call" : answer === "auto" ? "Approved by its on-call" : "Approved by you, on call") : "Can't be undone: asking its on-call")
+            classed(checkRows[4], decided ? `then shown${said() === "no" ? " no" : ""}` : "then")
+            text(checkRows[4], decided ? (said() === "no" ? "Nothing ran." : "Ran once. The receipt went back signed.") : "")
             return { others: .45 }
           },
           receipts(t, T) {
@@ -1545,12 +1629,12 @@ One region at a time."""</span>
             ;["errors", "deploys", "logs", "suspect", "rollback", "post", "status"].forEach((id, i) => {  // every receipt home, each leaving its thread
               if (id === "suspect") return
               const st = runState(id, T); if (st === "skipped") return
-              const pts = [...callPath(id)].reverse(), go = .8 + i * .45, col = st === "declined" ? C.no : C.ok
+              const pts = backPath(id), go = .8 + i * .45, col = st === "declined" ? C.no : C.ok
               if (!still) comet(pts, seg(t, go, go + 1.1), 6, col, 6)
               ribbon(pts, 2, col, .32 * seg(t, go + .9, go + 1.6) * (1 - seg(t, 6.8, 7.6) * .6))
             })
-            hang(deck.ledger, add(lapC, mul(cam.rt, -MACHINES.laptop.r * 1.3)), -1, -.5, 0, 0, F / 1200)
-            ledgerRows.forEach((li, i) => li.classList.toggle("shown", t >= 1.2 + i * .45))
+            hang(deck.ledger, add(lapC, mul(cam.rt, -MACHINES.laptop.r * 1.3)), -1, -.5)
+            ledgerRows.forEach((li, i) => li.classList.toggle("shown", t >= .9 + i * .3))
             panel(deck.ledger, within(t, .4, 7, .6))
             panel(deck.envelope, within(t, 7.4, 23.6, .6))
             if (lens) {
@@ -1570,7 +1654,7 @@ One region at a time."""</span>
               h.classList.toggle("on", on)
               for (const el of h.querySelectorAll(".type")) { const text = el.dataset.text, n = Math.floor(seg(t, s + .5, s + 1.6) * text.length); if (el.dataset.n != n) { el.innerHTML = typed(text, n); el.dataset.n = n } }  // the whole line laid out, revealed
               h.steps.forEach((el, j) => el.classList.toggle("shown", t >= s + 1.9 + j * .55))
-              if (h.dataset.host === "voice") for (const [j, bar] of [...h.querySelectorAll(".wave i")].entries()) bar.style.height = `${Math.round(14 + 70 * Math.abs(Math.sin(T * 7 + j * 1.3)) * within(t, s + .3, s + 1.8, .3) + 10 * Math.abs(Math.sin(T * 2.2 + j * .7)))}%`
+              if (h.dataset.host === "voice") for (const [j, bar] of (h.bars ??= [...h.querySelectorAll(".wave i")]).entries()) bar.style.transform = `scaleY(${(.14 + .7 * Math.abs(Math.sin(T * 7 + j * 1.3)) * within(t, s + .3, s + 1.8, .3) + .1 * Math.abs(Math.sin(T * 2.2 + j * .7))).toFixed(3)})`
               if (on) {  // the stream from where the sentence was typed to the laptop that decides
                 const pts = curve(HOSTS3[i], m.dec, .1, 40), a = seg(t, s, s + 1.2)
                 ribbon(pts, 5, C.acc, .22 * a, 18)
@@ -1596,19 +1680,17 @@ One region at a time."""</span>
           },
           road(t, T) {  // the steps to the vision as rings of light the camera flies through, the first one green: it runs today
             web(T, .3, false)
-            const path = []
-            for (let i = 0; i < 5; i++) for (const p of curve(ROAD[i], ROAD[i + 1], .02, 12).slice(i ? 1 : 0)) path.push(p)
+            const { path, rings } = ROAD_LIGHT
             ribbon(path.slice(0, 13), 1.6, C.ok, .35, 12); ribbon(path.slice(12), 1.6, C.acc, .25, 16)
             const pts = ROAD.map(p => project(p))
             const next = pts.reduce((best, p, i) => p && p.z > 240 && (best < 0 || p.z < pts[best].z) ? i : best, -1)
             ROAD.forEach((c, i) => {
-              const n = norm(sub(ROAD[Math.min(5, i + 1)], ROAD[Math.max(0, i - 1)])), u = norm(cross(n, UP)), v = cross(u, n), r = 88, col = i === 0 ? C.ok : C.acc
-              const loop = Array.from({ length: 65 }, (_, k) => add(c, add(mul(u, Math.cos(k / 64 * TAU) * r), mul(v, Math.sin(k / 64 * TAU) * r))))
+              const { loop, over } = rings[i], r = 88, col = i === 0 ? C.ok : C.acc
               ribbon(loop, i === 0 ? 5 : 4, col, i === 0 ? 1 : .8, i === 0 ? 0 : 22)
               ribbon(loop, 26, col, .08)
               sprite(c, r * 2.6, col, .08, 0)
               if (i === 0) sprite(c, 10, C.ok, 1.2, 1, 0, .6)
-              const p = pts[i], top = project(add(c, mul(v, r * 1.2)))
+              const p = pts[i], top = project(over)
               if (p && top && i === next) label(`stop${i}`, `${ROAD_STOPS[i][0]}<small>${ROAD_STOPS[i][1]}</small>`, top.x, Math.max(top.y - 6, 150), `stop above${i === 0 ? " now" : ""}`, seg(p.z, 240, 460) * (1 - seg(p.z, 1400, 2000)))
             })
             return { others: .85 }
@@ -1629,6 +1711,15 @@ One region at a time."""</span>
           ["Everywhere people act", "Apps that ship their reflexes. Chat and voice. Agents that propose while evoke decides."],
           ["Across machines", "Plans that cross machines and companies, every step signed and every gate kept."],
         ]
+        const ROAD_LIGHT = (() => {  // the road's path and its six rings, made once
+          const path = []
+          for (let i = 0; i < 5; i++) for (const p of curve(ROAD[i], ROAD[i + 1], .02, 12).slice(i ? 1 : 0)) path.push(p)
+          const rings = ROAD.map((c, i) => {
+            const n = norm(sub(ROAD[Math.min(5, i + 1)], ROAD[Math.max(0, i - 1)])), u = norm(cross(n, UP)), v = cross(u, n), r = 88
+            return { loop: Array.from({ length: 65 }, (_, k) => add(c, add(mul(u, Math.cos(k / 64 * TAU) * r), mul(v, Math.sin(k / 64 * TAU) * r)))), over: add(c, mul(v, r * 1.2)) }
+          })
+          return { path, rings }
+        })()
 
         // One frame of the film at T
         let T = 0
@@ -1662,7 +1753,7 @@ One region at a time."""</span>
           sweep()
           // the caption and the chapter's name
           const cue = captionsOn && ch.id !== "title" && ch.id !== "coda" ? ch.cues.find(c => t >= c.at && t < c.to && (!c.when || c.when === said())) : null
-          if (cue !== shownCue) { shownCue = cue; caption.classList.add("off"); clearTimeout(caption.timer); caption.timer = setTimeout(() => { caption.textContent = shownCue?.text ?? ""; caption.classList.toggle("off", !shownCue) }, 180) }
+          if (cue !== shownCue) { shownCue = cue; caption.classList.add("off"); clearTimeout(caption.timer); caption.timer = setTimeout(() => { caption.textContent = shownCue?.text ?? ""; caption.classList.toggle("off", !shownCue); capTop = shownCue ? caption.offsetTop : 1e9; if (!raf) render() }, 180) }
           const named = ch.id !== "title" && ch.id !== "coda" && t < 5.2 ? ch : null
           if (named !== shownTag) {
             shownTag = named
@@ -1688,11 +1779,11 @@ One region at a time."""</span>
         })
         let lastChapter = null
         const player = () => {
-          const p = T / TOTAL
-          if (document.activeElement !== range || !range.matches(":active")) range.value = Math.round(p * 1000)
-          range.style.setProperty("--p", `${(p * 100).toFixed(2)}%`)
-          range.setAttribute("aria-valuetext", `${clock(T)} of ${clock(TOTAL)}`)
-          nowEl.textContent = clock(T)
+          const v = Math.round(T / TOTAL * 1000), fill = `${(v / 10).toFixed(1)}%`
+          if (+range.value !== v && (document.activeElement !== range || !range.matches(":active"))) range.value = v
+          if (range.__p !== fill) { range.__p = fill; range.style.setProperty("--p", fill) }
+          const now = clock(T)
+          if (nowEl.textContent !== now) { nowEl.textContent = now; range.setAttribute("aria-valuetext", `${now} of ${clock(TOTAL)}`) }
           const ch = chapterAt(T)
           if (ch !== lastChapter) { lastChapter = ch; whereEl.textContent = ch.id === "title" ? "" : ch.title; for (const [c, b] of chapterButtons) b.setAttribute("aria-current", c === ch); sound.chapter(ch.i); if (ch.id !== "receipts") lensPick = null }
           screen.classList.toggle("playing", playing)
@@ -1702,6 +1793,10 @@ One region at a time."""</span>
           raf = 0
           const dt = last ? Math.min(.1, (now - last) / 1000) : 0
           last = now
+          if (playing && !waiting && dt > 0) {  // a second of slow frames lowers the render scale a step, down to a floor
+            slow = dt > .024 ? slow + 1 : 0
+            if (slow >= 40 && scale > .6) { scale = Math.max(.6, +(scale - .15).toFixed(2)); slow = 0; size() }
+          }
           if (playing && !waiting) {
             let next = Math.min(TOTAL, T + dt)
             if (T < GATE && next >= GATE && answer === null) { next = GATE; ask() }
@@ -1710,6 +1805,10 @@ One region at a time."""</span>
           }
           if (waiting) countdown(now)
           if (!screen.classList.contains("begun") && !still) orbit.az -= dt * .02
+          else if (!dragging && (orbit.az || orbit.el)) {  // a galaxy turned by hand eases back
+            const k = Math.exp(-dt * 1.6); orbit.az *= k; orbit.el *= k
+            if (Math.abs(orbit.az) < .0005 && Math.abs(orbit.el) < .0005) orbit.az = orbit.el = 0
+          }
           render()
           const lensMoving = lensPick && performance.now() - lensPickAt < 1700
           if (visible && !document.hidden && (playing || waiting || dragging || orbit.az || orbit.el || lensMoving || !screen.classList.contains("begun"))) raf = requestAnimationFrame(loop)
@@ -1830,17 +1929,17 @@ One region at a time."""</span>
           dragging = true; dragX = e.clientX; dragY = e.clientY; canvas.setPointerCapture?.(e.pointerId); kick()
         })
         addEventListener("pointermove", e => { if (!dragging) return; orbit.az -= (e.clientX - dragX) * .004; orbit.el = clamp(orbit.el + (e.clientY - dragY) * .003, -.5, .5); dragX = e.clientX; dragY = e.clientY; if (!playing) render() })
-        addEventListener("pointerup", () => { dragging = false })
-        setInterval(() => { if (dragging || (!orbit.az && !orbit.el) || !screen.classList.contains("begun")) return; orbit.az *= .96; orbit.el *= .96; if (Math.abs(orbit.az) < .001 && Math.abs(orbit.el) < .001) orbit.az = orbit.el = 0; kick() }, 50)
+        addEventListener("pointerup", () => { dragging = false; kick() })
         canvas.addEventListener("click", e => { if (Math.abs(orbit.az) < .01 && e.detail === 1 && screen.classList.contains("begun")) toggle() })
 
         // Size, visibility
         const size = () => {
           const r = screen.getBoundingClientRect()
           W = r.width; H = r.height; portrait = W < H * .9
-          rdpr = Math.min(devicePixelRatio || 1, W * H > 1.6e6 ? 1.25 : 1.5)
+          rdpr = Math.min(devicePixelRatio || 1, W * H > 1.6e6 ? 1.25 : 1.5) * scale
           G.resize(Math.round(W * rdpr), Math.round(H * rdpr))
           F = portrait ? H / (2 * Math.tan(22 * DEG)) : Math.min(H / (2 * Math.tan(22 * DEG)), W / (2 * Math.tan(34 * DEG)))
+          for (const l of pool.values()) l.w = 0
           render()
         }
         new ResizeObserver(size).observe(screen)
@@ -1851,7 +1950,7 @@ One region at a time."""</span>
           else if (visible) { if (resume) { resume = false; play() } else kick() }
         }, { threshold: .35 }).observe(screen)
         document.addEventListener("visibilitychange", () => { if (document.hidden && playing) pause() })
-        document.fonts?.ready.then(() => { if (!raf) render() })
+        document.fonts?.ready.then(() => { for (const l of pool.values()) l.w = 0; if (!raf) render() })
         size()
 
         // For the page's own checks, served locally: seek, play and pause from outside
