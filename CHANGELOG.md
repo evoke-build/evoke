@@ -15,6 +15,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   the utterance, the last input's.
 - `evoke add` refuses the same reflex under another name, and its theft test also names a newcomer that fits an
   installed example over the floor: `lamp: also fits "kill the lights" of lights (0.82)`.
+- The collection's `volume` sends `mute the sound` as an example of what it is not; `visit` drops the test
+  `pull up the calendar`.
 - A body's failure prints its message alone. The frames of an error a JavaScript body threw are kept in the
   log: `evoke why` shows them, and `--json` carries them as `frames`.
 

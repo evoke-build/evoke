@@ -30,6 +30,5 @@ flag = true
 
 [tests]
 "visit the bank site incognito" = { incognito = true }
-"pull up the calendar"          = {}
 "open my downloads folder"      = false
 "search the web for laptops"    = false

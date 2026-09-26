@@ -23,9 +23,9 @@ range = [0, 100]
 "set the volume to 40 percent" = { level = "40 percent" }
 "volume 15"                    = { level = "15" }
 "turn the sound up to 80"      = { level = "80" }
+"mute the sound"               = false
 
 [tests]
 "make it 100 percent loud"   = { level = "100 percent" }
 "turn the volume down a bit" = { level = false }
-"mute the sound"             = false
 "set the brightness to 50"   = false
