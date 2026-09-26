@@ -8,6 +8,7 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 - `evoke try` shows a step read with its neighbour as one request as the confirm it is, in a plan of several
   steps too.
+- The collection's `volume` drops the test `lower the volume by 20`.
 
 ## [0.8.0] - 2026-09-26
 

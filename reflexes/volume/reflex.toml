@@ -28,4 +28,3 @@ range = [0, 100]
 "turn the volume down a bit" = { level = false }
 "mute the sound"             = false
 "set the brightness to 50"   = false
-"lower the volume by 20"     = false
