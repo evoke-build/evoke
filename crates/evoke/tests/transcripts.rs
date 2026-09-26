@@ -1,7 +1,8 @@
 //! Runs `spec/transcripts/<flow>/` against the built binary, as spec/README.md specifies: a throwaway home under
 //! `target/`, the JavaScript runtime found on `PATH` recorded in its state, each `$ ` line run by `sh -c` under a
-//! pseudo-terminal unless the flow says `# no tty`, with `TERM=dumb` and `NO_COLOR=1` so the terminal shows plain
-//! text, `replay` answering from `EVOKE_ANSWERS`, remotes rebuilt from their trees by the recipe. Every line must
+//! pseudo-terminal — or, when the flow says `# no tty`, with no terminal at all, in a session of its own, so the
+//! terminal of whoever runs the suite does not reach it — with `TERM=dumb` and `NO_COLOR=1` so the terminal shows
+//! plain text, `replay` answering from `EVOKE_ANSWERS`, remotes rebuilt from their trees by the recipe. Every line must
 //! match, trailing spaces aside, JSON as JSON with `ms` aside; `[N]` is the exit code; a line `^C` is Ctrl-C typed
 //! once the line before it has shown, and the terminal's echo of it. One test per flow; each is turned on by the
 //! step that makes it pass.
@@ -12,7 +13,6 @@ mod pty;
 use std::fmt::Write as _;
 use std::fs;
 use std::io::Read;
-use std::os::unix::process::CommandExt as _;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::time::Instant;
@@ -356,16 +356,17 @@ fn prompt(line: &str) -> Option<&str> {
     None
 }
 
-/// The command with stdout and stderr on one pipe, as they came, and no terminal anywhere; in a group of its
-/// own, ended whole when the deadline runs out.
+/// The command with stdout and stderr on one pipe, as they came, and no terminal anywhere: stdin is nothing, and
+/// the session is its own, so a prompt finds no `/dev/tty` however the suite is run; ended whole when the
+/// deadline runs out.
 fn piped(mut command: Command) -> Result<(String, i32), String> {
     let (mut reader, writer) = std::io::pipe().expect("a pipe opens");
     let stderr = writer.try_clone().expect("the pipe is shared");
     command
         .stdin(Stdio::null())
         .stdout(Stdio::from(writer))
-        .stderr(Stdio::from(stderr))
-        .process_group(0);
+        .stderr(Stdio::from(stderr));
+    pty::detach(&mut command);
     let mut child = command.spawn().expect("sh spawns");
     drop(command);
     let drained = std::thread::spawn(move || {

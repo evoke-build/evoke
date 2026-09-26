@@ -116,6 +116,21 @@ pub fn code(status: ExitStatus) -> i32 {
 }
 
 /// SIGKILL to the child's process group — its own, made at spawn — and the child reaped.
+/// The command in a session of its own, with no controlling terminal, as CI or a cron job runs one: `/dev/tty`
+/// opens for nothing, so a prompt is refused where a terminal would have carried it. The session is its own
+/// group too, so `end_group` ends it whole.
+pub fn detach(command: &mut Command) {
+    // SAFETY: setsid is async-signal-safe, and it is all that runs between fork and exec.
+    unsafe {
+        command.pre_exec(|| {
+            if libc::setsid() == -1 {
+                return Err(std::io::Error::last_os_error());
+            }
+            Ok(())
+        });
+    }
+}
+
 pub fn end_group(child: &mut std::process::Child) {
     // SAFETY: killpg takes a group id and a signal; the group is the child's own.
     unsafe {
