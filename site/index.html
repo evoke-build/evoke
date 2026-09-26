@@ -81,19 +81,23 @@
 
     /* The opening, over the whole galaxy */
     .future .opening { position: relative; z-index: 1; display: grid; align-content: center; min-height: 100vh; min-height: 100svh; padding: clamp(5rem, 9vh, 7rem) 0 4.5rem; text-align: center; }
-    .future .opening h1 { margin: 0 0 1.5rem; font-size: clamp(3.2rem, 9vw, 8rem); font-weight: 600; line-height: .9; letter-spacing: -.056em; text-shadow: 0 0 60px rgba(6, 6, 8, .9); }
+    .future .opening h1 { margin: 0 0 1.4rem; font-size: clamp(3.2rem, 9vw, 8rem); font-weight: 600; line-height: .9; letter-spacing: -.056em; text-shadow: 0 0 60px rgba(6, 6, 8, .9); }
     .future .opening h1 em { display: block; font-style: normal; color: var(--accent); }
-    .future .opening .lede { max-width: 44rem; margin: 0 auto; color: var(--text); font-size: clamp(1.08rem, 1.6vw, 1.26rem); line-height: 1.55; text-shadow: 0 0 24px rgba(6, 6, 8, .95); }
+    .future .opening .stand { margin: 0 0 1.1rem; color: var(--fg); font-size: clamp(1.3rem, 2.1vw, 1.7rem); font-weight: 560; letter-spacing: -.024em; line-height: 1.25; text-shadow: 0 0 30px rgba(6, 6, 8, .95); }  /* what the whole page argues, in six words; `claim` is a panel elsewhere */
+    .future .opening .stand span { display: inline-block; }  /* a sentence breaks before the next, never inside itself */
+    @media (max-height: 760px) and (min-width: 900px) {  /* a short screen: the opening still ends above the fold */
+      .future .opening { padding-top: 4rem; }
+      .future .opening h1 { margin-bottom: 1.1rem; font-size: clamp(3rem, 7.6vw, 6.4rem); }
+      .future .opening .jobs { margin-top: 1.5rem; padding-top: .9rem; }
+      .future .opening .down { margin-top: 1.5rem; }
+    }
+    .future .opening .lede { max-width: 46rem; margin: 0 auto; color: var(--text); font-size: clamp(1.06rem, 1.55vw, 1.22rem); line-height: 1.55; text-shadow: 0 0 24px rgba(6, 6, 8, .95); }
     .future .opening .lede strong { color: var(--fg); font-weight: 560; }
-    .future .opening .honest { margin: 1.1rem 0 0; color: var(--faint); font-size: .9rem; text-shadow: 0 0 18px rgba(6, 6, 8, .95); }
     .future .onwards { display: flex; flex-wrap: wrap; justify-content: center; gap: .7rem; margin-top: 2.2rem; }
     .future .onward { display: inline-flex; align-items: center; gap: .6rem; padding: .7rem 1.25rem; border: 1px solid var(--line-strong); border-radius: 999px; background: rgba(6, 6, 8, .6); color: var(--fg); font-size: .98rem; font-weight: 500; line-height: 1.2; transition: border-color .2s, background-color .2s; }
     .future .onward:hover { border-color: var(--muted); background: rgba(6, 6, 8, .8); text-decoration: none; }
     .future .onward svg { width: 16px; height: 16px; fill: var(--accent); }
-    .future .opening .note { max-width: 36rem; margin: 1.2rem auto 0; color: var(--faint); font-size: .86rem; line-height: 1.5; text-shadow: 0 0 18px rgba(6, 6, 8, .95); }
-    .future .opening .note a { color: var(--muted); text-decoration: underline; text-underline-offset: .15em; }
-    .future .opening .note a:hover { color: var(--fg); }
-    .future .opening .jobs { justify-content: center; width: min(34rem, 100%); max-width: none; margin: 1.9rem auto 0; }
+    .future .opening .jobs { justify-content: center; width: min(34rem, 100%); max-width: none; margin: 2.6rem auto 0; }
     .future .opening .down { display: inline-flex; align-items: center; gap: .5rem; justify-self: center; margin-top: 2.4rem; padding: .4rem .2rem; color: var(--muted); font-size: .92rem; font-weight: 500; transition: color .2s; }
     .future .opening .down:hover { color: var(--fg); text-decoration: none; }
     .future .opening .down svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
@@ -209,6 +213,9 @@
     .future .today .text p strong { color: var(--fg); font-weight: 560; }
     .future .doors { list-style: none; display: grid; gap: .65rem; margin: 1.5rem 0 0; padding: 1.2rem 0 0; border-top: 1px solid var(--line); }
     .future .doors a { font-size: .97rem; font-weight: 560; }
+    .future .today .text .note { max-width: 34rem; margin: 1.6rem 0 0; color: var(--faint); font-size: .86rem; line-height: 1.5; }
+    .future .today .text .note a { color: var(--muted); text-decoration: underline; text-underline-offset: .15em; }
+    .future .today .text .note a:hover { color: var(--fg); }
 
     /* What holds at every size */
     .future .laws, .future .picture, .future .lens, .future .road, .future .coda { position: relative; z-index: 1; }
@@ -347,22 +354,19 @@
       <header class="opening">
         <div class="wrap">
           <h1>Software, <em>by reflex.</em></h1>
+          <p class="stand"><span>Take back control.</span> <span>Keep the intelligence.</span></p>
           <p class="lede"><strong>A reflex is a small program you install and ask for in your words.</strong> Type a
-            natural-language command, and evoke runs the reflex that matches, or asks you first. This is where it goes:
-            plans across machines that each keep their own gate, and a person before anything that can't be undone.</p>
-          <p class="honest">A picture of the future. The parts that run today say so.</p>
+            natural-language command, and evoke runs the reflex, or asks first.</p>
           <div class="onwards">
             <a class="button primary" href="/start.html">Get started</a>
             <a class="onward" href="/film.html"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9l7.5-4.5z"/></svg><span>Watch the film</span></a>
           </div>
-          <p class="note">evoke is free and open source. A classifier reads each sentence over the network, and its provider
-            bills <a href="/start.html#needs">your own API key</a>. Nothing you type goes to evoke.build.</p>
           <ul class="jobs" aria-label="What evoke is">
             <li><a href="/manual/use/saying-things.html"><code>$</code>a CLI</a></li>
             <li><a href="/manual/use/installing.html"><code>+</code>a package manager</a></li>
             <li><a href="/manual/sdk/getting-started.html"><code>{ }</code>a TypeScript SDK</a></li>
           </ul>
-          <a class="down" href="#one"><span>Start with one reflex</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg></a>
+          <a class="down" href="#one"><span>See where evoke is going</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg></a>
         </div>
       </header>
 
@@ -471,6 +475,8 @@
             <li><a class="more" href="/developers.html">Turn your code into natural-language commands →</a></li>
             <li><a class="more" href="/start.html">Install evoke and run your first command →</a></li>
           </ul>
+          <p class="note">evoke is free and open source. A classifier reads each sentence over the network, and its
+            provider bills <a href="/start.html#needs">your own API key</a>. Nothing you type goes to evoke.build.</p>
         </div>
         <div class="scene-col">
           <div class="walk" data-stage="5">
