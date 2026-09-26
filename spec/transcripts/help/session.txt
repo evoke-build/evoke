@@ -25,6 +25,7 @@ tune
   evoke show [<name>]                     the installed reflexes, or one as used
   evoke teach ["<utterance>"] <call>      the utterance means this call
   evoke teach ["<utterance>"] not <name>  the utterance is not this reflex
+    --forget <name>                       the overlay's line for it, removed
     ["<utterance>"] omitted means the last input
   evoke vocab <name>                      the words and their meanings
   evoke vocab <name> add <word> "<meaning>" [--value <v>]

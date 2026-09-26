@@ -17,8 +17,19 @@ $ evoke teach lights colour=blue
   lights: lights has no argument colour  →  evoke show lights
 [3]
 $ evoke teach -x lights state=off
-  -x is not a flag of teach; teach takes none  →  evoke --help
+  -x is not a flag of teach; teach takes --forget alone  →  evoke --help
 [3]
 $ evoke teach "" lights state=off
   teach needs an utterance; write it in quotes  →  evoke --help
+[3]
+# A lesson taken back: the overlay's line for the utterance goes, an example or a test; one not there is refused.
+$ evoke teach --forget "kill the lights" lights
+- overlays/lights.toml  [examples] "kill the lights"
+$ evoke teach --forget "kill the lights" lights
+  lights: "kill the lights" is not in your overlay  →  evoke show lights
+[3]
+$ evoke teach --forget lights
+- overlays/lights.toml  [examples] "dim the office"
+$ evoke teach --forget
+  teach --forget takes an utterance and a name: evoke teach --forget ["<utterance>"] <name>  →  evoke --help
 [3]

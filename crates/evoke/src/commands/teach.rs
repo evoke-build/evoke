@@ -1,11 +1,16 @@
-//! `evoke teach ["<utterance>"] <call> | not <name>`: the overlay line for an utterance. In: the utterance as
-//! given — said, left out for the last input decided, or a first word that is the utterance unless it names an
-//! installed reflex; what it teaches; the environment. Out: `Exit`. The last input of a weave is the step the
-//! lesson's reflex decided; when none or several did, the steps are named for the person to choose. The lesson is
-//! typed against the plan and held to the utterance by the core, then lands in `overlays/<name>.toml` when the
-//! file still reads.
+//! `evoke teach ["<utterance>"] <call> | not <name>`, and `evoke teach --forget ["<utterance>"] <name>`: the
+//! overlay line for an utterance, written or removed. In: the utterance as given — said, left out for the last
+//! input decided, or a first word that is the utterance unless it names an installed reflex; what it teaches, or
+//! whose line to forget; the environment. Out: `Exit`. The last input of a weave is the step the lesson's reflex
+//! decided; when none or several did, the steps are named for the person to choose. The lesson is typed against
+//! the plan and held to the utterance by the core, then lands in `overlays/<name>.toml` when the file still
+//! reads; a line forgotten is the one the overlay holds under the utterance's identity, an example or a test.
 
+use evoke_core::document::KeyPath;
+use evoke_core::edit::{Edit, Owned};
 use evoke_core::manifest::Record;
+use evoke_core::name::LocalName;
+use evoke_core::text::identity;
 use evoke_core::{Diagnostic, Fix, Lesson, Utterance, teach};
 
 use super::Exit;
@@ -66,7 +71,7 @@ fn last_input(session: &Session<'_>, lesson: &Taught) -> Result<String, Exit> {
         .map_err(|why| human(format!("the log's last line does not read: {why}")))?;
     let reflex = match lesson {
         Taught::Call(written) => &written.reflex,
-        Taught::Not(name) => name,
+        Taught::Not(name) | Taught::Forget(name) => name,
     };
     let mut named = lines
         .iter()
@@ -104,10 +109,59 @@ fn taught(session: &mut Session<'_>, text: &str, lesson: &Taught) -> Exit {
             reflex: name.clone(),
             record: Record::Never,
         },
+        Taught::Forget(name) => return forgotten(session, text, name),
     };
     let edit = match teach(&utterance, lesson, &session.plan) {
         Ok(edit) => edit,
         Err(refused) => return Exit::Human(refused),
+    };
+    match session.apply(text, &edit) {
+        Ok(_) => Exit::Ran,
+        Err(problem) => problem,
+    }
+}
+
+/// The overlay's line for the utterance removed: the one under its identity in the reflex's effective examples
+/// or tests, when it is the overlay's; else refused, with the reflex to look at.
+fn forgotten(session: &mut Session<'_>, text: &str, name: &LocalName) -> Exit {
+    let about = |message: String, fix: Fix| {
+        Exit::Human(Diagnostic {
+            reflex: Some(name.clone()),
+            at: None,
+            message,
+            fix,
+        })
+    };
+    let Some(item) = session.installed.reflexes.get(name) else {
+        return about(
+            format!("{name} is not installed"),
+            Fix::Show { reflex: None },
+        );
+    };
+    let effective = match &item.wording {
+        Ok(effective) => effective,
+        Err(problems) => return session.reporter.human(text, problems.clone()),
+    };
+    let id = identity(text);
+    let manifest = &effective.manifest;
+    let held = [("examples", &manifest.examples), ("tests", &manifest.tests)]
+        .into_iter()
+        .find_map(|(table, records)| {
+            let (utterance, _) = records.get(&id)?;
+            let path = KeyPath::new([table, utterance.as_str()]);
+            effective.yours.contains(&path).then_some(path)
+        });
+    let Some(path) = held else {
+        return about(
+            format!("{} is not in your overlay", report::quoted(text)),
+            Fix::Show {
+                reflex: Some(name.clone()),
+            },
+        );
+    };
+    let edit = Edit::Remove {
+        file: Owned::Overlay { name: name.clone() },
+        path,
     };
     match session.apply(text, &edit) {
         Ok(_) => Exit::Ran,

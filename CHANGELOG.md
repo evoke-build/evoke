@@ -11,6 +11,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - `[+] add one` at a prompt asks for the word's path when a reflex declares its value as one it reads or
   writes, and a word without one names itself in the fix: `evoke vocab places add photos "<meaning>" --value
   <path>`.
+- `evoke teach --forget "<utterance>" <name>` removes the line your overlay holds for the utterance; without
+  the utterance, the last input's.
 - A body's failure prints its message alone. The frames of an error a JavaScript body threw are kept in the
   log: `evoke why` shows them, and `--json` carries them as `frames`.
 

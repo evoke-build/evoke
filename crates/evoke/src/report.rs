@@ -1103,6 +1103,7 @@ const COMMANDS: [(&str, &[(&str, &str)]); 4] = [
                 "evoke teach [\"<utterance>\"] not <name>",
                 "the utterance is not this reflex",
             ),
+            ("  --forget <name>", "the overlay's line for it, removed"),
             ("  [\"<utterance>\"] omitted means the last input", ""),
             ("evoke vocab <name>", "the words and their meanings"),
             (
@@ -2687,7 +2688,7 @@ mod tests {
         assert!(narrow.contains("\n  evoke \"<input>\"\n      decide, gate, run\n"));
         assert!(narrow.contains("\n    --json\n      one JSON line per input, for a filter\n"));
         // One more line per described command or flag, and the exit codes on two.
-        assert_eq!(narrow.lines().count(), wide.lines().count() + 26);
+        assert_eq!(narrow.lines().count(), wide.lines().count() + 27);
         let widest = narrow.lines().map(chars).max().unwrap_or(0);
         assert!(widest <= 60, "a line is {widest} columns wide");
     }

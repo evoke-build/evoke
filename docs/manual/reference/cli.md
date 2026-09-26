@@ -31,6 +31,7 @@ tune
   evoke show [<name>]                     the installed reflexes, or one as used
   evoke teach ["<utterance>"] <call>      the utterance means this call
   evoke teach ["<utterance>"] not <name>  the utterance is not this reflex
+    --forget <name>                       the overlay's line for it, removed
     ["<utterance>"] omitted means the last input
   evoke vocab <name>                      the words and their meanings
   evoke vocab <name> add <word> "<meaning>" [--value <v>]
@@ -102,6 +103,7 @@ local reflex: [Installing reflexes](../use/installing.md#refs).
 | `evoke show <name>`                                       | The effective manifest as TOML, with `+` in the gutter of every line that is yours; for a reflex that takes whole results, which installed reflexes return each. Then its inactive lines |
 | `evoke teach "<utterance>" <call>`                        | Writes the example to `overlays/<name>.toml`, with only what the call asserts |
 | `evoke teach "<utterance>" not <name>`                    | Writes `"<utterance>" = false` to the reflex's overlay                       |
+| `evoke teach --forget "<utterance>" <name>`               | Removes the utterance's line from the reflex's overlay, an example or a test |
 | `evoke teach <call>` · `evoke teach not <name>`           | The same, for the last input the log holds; of a weave, the step the lesson's reflex decided. A first word is the utterance when a call follows it, unless it names an installed reflex |
 | `evoke vocab <name>`                                      | Lists the words. Empty exits 3, with the add line                            |
 | `evoke vocab <name> add <word> "<meaning>" [--value <v>]` | Adds or replaces a word                                                     |

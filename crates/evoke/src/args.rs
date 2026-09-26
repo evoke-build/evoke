@@ -137,6 +137,8 @@ pub enum Spoken {
 pub enum Taught {
     Call(Written),
     Not(LocalName),
+    /// `--forget`: the line the overlay holds for the utterance, removed.
+    Forget(LocalName),
 }
 
 impl fmt::Display for Taught {
@@ -144,6 +146,7 @@ impl fmt::Display for Taught {
         match self {
             Self::Call(written) => write!(f, "{written}"),
             Self::Not(name) => write!(f, "not {name}"),
+            Self::Forget(name) => write!(f, "{name}"),
         }
     }
 }
@@ -160,6 +163,10 @@ impl Command {
                 spoken: Spoken::Either { word, .. },
                 lesson,
             } => return format!("evoke teach {word} {lesson}"),
+            Self::Teach {
+                lesson: lesson @ Taught::Forget(_),
+                ..
+            } => return format!("evoke teach --forget {} {lesson}", quoted(input)),
             Self::Teach { lesson, .. } => return format!("evoke teach {} {lesson}", quoted(input)),
             _ => return self.line(),
         };
@@ -484,9 +491,12 @@ fn teach(arguments: &[String]) -> Result<Command, Diagnostic> {
     let Some((first, rest)) = arguments.split_first() else {
         return Err(usage(NEEDS));
     };
+    if first == "--forget" {
+        return forget(rest);
+    }
     if first.starts_with('-') && first.len() > 1 {
         return Err(usage(format!(
-            "{first} is not a flag of teach; teach takes none"
+            "{first} is not a flag of teach; teach takes --forget alone"
         )));
     }
     if first.trim().is_empty() {
@@ -529,6 +539,24 @@ fn teach(arguments: &[String]) -> Result<Command, Diagnostic> {
 }
 
 const NEEDS: &str = "teach needs a call or not <name>: evoke teach [\"<utterance>\"] <name> [<arg>=<value> | <flag>]… | not <name>";
+
+/// `teach --forget ["<utterance>"] <name>`: the utterance, when given, and the reflex whose overlay holds it.
+fn forget(tokens: &[String]) -> Result<Command, Diagnostic> {
+    let lesson = |name: &String| LocalName::new(name).map(Taught::Forget).map_err(usage);
+    match tokens {
+        [name] => Ok(Command::Teach {
+            spoken: Spoken::Last,
+            lesson: lesson(name)?,
+        }),
+        [utterance, name] if !utterance.trim().is_empty() => Ok(Command::Teach {
+            spoken: Spoken::Given(utterance.clone()),
+            lesson: lesson(name)?,
+        }),
+        _ => Err(usage(
+            "teach --forget takes an utterance and a name: evoke teach --forget [\"<utterance>\"] <name>",
+        )),
+    }
+}
 
 /// `<call> | not <name>`.
 fn lesson(tokens: &[String]) -> Result<Taught, Diagnostic> {
