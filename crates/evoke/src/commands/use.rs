@@ -12,6 +12,7 @@
 
 use evoke_core::call::Value;
 use evoke_core::decide::{Choices, Missing, Why};
+use evoke_core::document::Json;
 use evoke_core::manifest::{Kind, Source};
 use evoke_core::name::{ArgName, LocalName, OptionKey, VocabName, Word};
 use evoke_core::text::NonEmpty;
@@ -114,7 +115,8 @@ impl Using<'_> {
         let exit = match woven.single(&self.arguments.tags) {
             Some(decided) => {
                 let decision = decided.decision.clone();
-                self.round(input, None, &decided, decision, &[]).exit
+                self.round(input, None, &decided, decision, &[], &IndexMap::new())
+                    .exit
             }
             None => self.many(input, woven),
         };
@@ -125,8 +127,8 @@ impl Using<'_> {
     }
 
     /// One decision through the foundation's loop — abstain, ask, confirm, run — as one input takes it, or as one
-    /// round of a weave's step does, numbered `at`: the line printed under `--json` and logged, the exit
-    /// reported; what became of it, for the weave.
+    /// round of a weave's step does, numbered `at`, with the whole results the plan handed it beside it: the
+    /// line printed under `--json` and logged, the exit reported; what became of it, for the weave.
     fn round(
         &mut self,
         input: &str,
@@ -134,6 +136,7 @@ impl Using<'_> {
         decided: &Decided,
         decision: Decision,
         bound: &[Bound],
+        taken: &IndexMap<ArgName, Json>,
     ) -> Rounded {
         let json = self.arguments.json;
         let mut line = Line::of(decided);
@@ -150,9 +153,12 @@ impl Using<'_> {
             Err(rounded) => return rounded,
         };
         line.contained = Some(self.session.contained.clone());
-        let ran = self
-            .session
-            .run(&chosen, &decided.request.state.request, decided.spent());
+        let ran = self.session.run(
+            &chosen,
+            taken,
+            &decided.request.state.request,
+            decided.spent(),
+        );
         match ran {
             Ok(returned) => {
                 if !json && !returned.text.is_empty() {
@@ -246,8 +252,12 @@ impl Using<'_> {
                         match at {
                             None => terminal::note(&report::running(&chosen, &contained)),
                             // The plan showed the step; at its turn, only what the plan could not: a bound value
-                            // in its place, or a machine that does not hold the declaration.
-                            Some((n, of)) if !bound.is_empty() || !contained.is_full() => {
+                            // in its place, or a machine that does not hold the declaration. A whole result
+                            // shows nothing new: the plan named it, and it stays on its source's line.
+                            Some((n, of))
+                                if bound.iter().any(|b| b.value.is_some())
+                                    || !contained.is_full() =>
+                            {
                                 terminal::note(&report::step(
                                     n,
                                     of,
@@ -314,6 +324,23 @@ impl Using<'_> {
                 terminal::note(&report::nothing_to_do());
             }
             return Exit::Declined(Decline::Refused);
+        }
+        // Nothing a person can answer settles these: the plan shows first, then the line that names them.
+        let unsettled =
+            woven.weave.verdict.because.iter().find(|because| {
+                matches!(because, Because::Several { .. } | Because::OneOfMany { .. })
+            });
+        if let Some(because) = unsettled {
+            if !json {
+                terminal::note(&report::planned(&woven.weave));
+            }
+            let problem = Diagnostic {
+                reflex: None,
+                at: None,
+                message: report::verdict(because),
+                fix: Fix::Rerun,
+            };
+            return self.unanswered(input, &woven, problem);
         }
         let woven = match self.settled(input, woven) {
             Ok(woven) => woven,
@@ -491,22 +518,89 @@ impl Using<'_> {
         Ok(UpFront::Seeded(seeded))
     }
 
-    /// A plan refused whole: nothing runs; each step's line, the abstaining one refused, the rest skipped.
+    /// A plan refused whole: nothing runs. A part that matches nothing: each step's line, the abstaining one
+    /// refused, the rest skipped. A whole result no step before its taker hands, or several do: the line that
+    /// names the step and what it takes, with the reflex to look at; the taker refused, the rest skipped.
     fn refused(&self, input: &str, woven: &Woven) -> Exit {
-        if !self.arguments.json
-            && let Some(hint) = report::left_out(self.session.plan.inactive().keys())
-        {
-            terminal::note(&hint);
+        let json = self.arguments.json;
+        let joins: Vec<&Because> = woven
+            .weave
+            .verdict
+            .because
+            .iter()
+            .filter(|because| {
+                matches!(
+                    because,
+                    Because::NoSource { .. } | Because::SeveralSources { .. }
+                )
+            })
+            .collect();
+        if joins.is_empty() {
+            if !json && let Some(hint) = report::left_out(self.session.plan.inactive().keys()) {
+                terminal::note(&hint);
+            }
+            let exit = Exit::Declined(Decline::Abstained);
+            return self.stopped_whole(input, woven, exit, |step| {
+                if matches!(step.decision, Decision::Abstain { .. }) {
+                    (Status::Refused, Stopped::NoReflex)
+                } else {
+                    let message = "the request was refused".to_owned();
+                    (Status::Skipped, Stopped::Said { message })
+                }
+            });
         }
-        let exit = Exit::Declined(Decline::Abstained);
+        if !json {
+            let invoked = self.session.reporter.command.placeholder();
+            for because in &joins {
+                let problem = Diagnostic {
+                    reflex: None,
+                    at: None,
+                    message: report::verdict(because),
+                    fix: self.source_fix(because, woven),
+                };
+                terminal::note(&report::diagnostic(
+                    &problem,
+                    &invoked,
+                    Some(&self.session.reporter.paths),
+                ));
+            }
+        }
+        let exit = Exit::Declined(Decline::Refused);
         self.stopped_whole(input, woven, exit, |step| {
-            if matches!(step.decision, Decision::Abstain { .. }) {
-                (Status::Refused, Stopped::NoReflex)
-            } else {
+            let own: Vec<String> = joins
+                .iter()
+                .filter(|because| taker_of(because) == step.n)
+                .map(|because| report::verdict(because))
+                .collect();
+            if own.is_empty() {
                 let message = "the request was refused".to_owned();
                 (Status::Skipped, Stopped::Said { message })
+            } else {
+                let message = own.join("; ");
+                (Status::Refused, Stopped::Said { message })
             }
         })
+    }
+
+    /// The reflex to look at when a whole result stops the plan: one installed that returns the name no step
+    /// handed, else the taker itself, whose `show` says what it takes.
+    fn source_fix(&self, because: &Because, woven: &Woven) -> Fix {
+        let taker = woven
+            .weave
+            .step(taker_of(because))
+            .and_then(|step| step.reflex.clone());
+        let reflex = match because {
+            Because::NoSource { name, .. } => self
+                .session
+                .plan
+                .active()
+                .iter()
+                .find(|(_, active)| active.returns.as_ref() == Some(name))
+                .map(|(reflex, _)| reflex.clone())
+                .or(taker),
+            _ => taker,
+        };
+        Fix::Show { reflex }
     }
 
     /// A question only a person can answer, and none did: every step's line `unanswered` with it.
@@ -628,6 +722,7 @@ impl Using<'_> {
                             &decided,
                             handling.decision.clone(),
                             &handling.bound,
+                            &handling.taken,
                         );
                         progress.handled.push(Handled {
                             step: handling.step,
@@ -750,21 +845,7 @@ impl Using<'_> {
             Status::Failed => exits
                 .into_iter()
                 .find(|exit| matches!(exit, Exit::Failed(_) | Exit::Adapter(_)))
-                .unwrap_or_else(|| {
-                    let source = executed
-                        .steps
-                        .iter()
-                        .find(|s| matches!(s.why, Some(Stopped::NothingToTake)))
-                        .and_then(|s| woven.weave.binds.iter().find(|b| b.to == s.step))
-                        .and_then(|b| woven.weave.step(b.from))
-                        .and_then(|s| s.reflex.clone());
-                    let failed = Exit::Failed(Failure {
-                        what: "running the plan".to_owned(),
-                        cause: Some("a step yielded nothing the next could take".to_owned()),
-                        fix: Fix::Show { reflex: source },
-                    });
-                    self.session.reporter.exit(input, failed)
-                }),
+                .unwrap_or_else(|| self.unhanded(input, woven, executed)),
             Status::Declined => Exit::Declined(Decline::Refused),
             Status::Refused => Exit::Declined(Decline::Abstained),
             Status::Unanswered => exits
@@ -772,6 +853,37 @@ impl Using<'_> {
                 .find(|exit| matches!(exit, Exit::Human(_)))
                 .unwrap_or(Exit::Declined(Decline::Refused)),
         }
+    }
+
+    /// The whole's exit when a step was skipped for what its source returned — nothing it takes, or more than
+    /// can be handed: the source is the failure, and the line names it, with the source's reflex to look at.
+    fn unhanded(&self, input: &str, woven: &Woven, executed: &Executed) -> Exit {
+        let (cause, source) = executed
+            .steps
+            .iter()
+            .find_map(|s| match &s.why {
+                Some(Stopped::NothingToTake { from }) => Some((
+                    format!("step {from} returned nothing step {} takes", s.step),
+                    *from,
+                )),
+                Some(Stopped::TooLarge { from }) => Some((
+                    format!(
+                        "step {from} returned more than 1 MiB, which step {} cannot take",
+                        s.step
+                    ),
+                    *from,
+                )),
+                _ => None,
+            })
+            .unwrap_or_default();
+        let failed = Exit::Failed(Failure {
+            what: "running the plan".to_owned(),
+            cause: Some(cause),
+            fix: Fix::Show {
+                reflex: woven.weave.step(source).and_then(|s| s.reflex.clone()),
+            },
+        });
+        self.session.reporter.exit(input, failed)
     }
 
     /// `[t]each`: the overlay line for what the utterance stated, written when the file still reads; a refusal —
@@ -1012,7 +1124,8 @@ enum UpFront {
 /// Why the other steps never ran when one's question was declined before anything did.
 const PLAN_DECLINED: &str = "the plan was declined";
 
-/// The step's words with its bound values written in, as the run decided them again.
+/// The step's words with its bound values written in, as the run decided them again; a whole result carries no
+/// value and never reaches the words.
 fn rewritten_text(step: &Step, weave: &Weave, bound: &[Bound]) -> String {
     let values: Vec<(Binding, String)> = bound
         .iter()
@@ -1023,10 +1136,18 @@ fn rewritten_text(step: &Step, weave: &Weave, bound: &[Bound]) -> String {
                     && binding.from == b.from
                     && binding.field == b.field
             })?;
-            Some((binding.clone(), b.value.clone()))
+            Some((binding.clone(), b.value.clone()?))
         })
         .collect();
     weave::running::rewrite(step, &values)
+}
+
+/// The step a refusal is about: the one that takes what no step, or several, hand it.
+fn taker_of(because: &Because) -> usize {
+    match because {
+        Because::NoSource { step, .. } | Because::SeveralSources { step, .. } => *step,
+        _ => 0,
+    }
 }
 
 /// A step's status as its exit ranks it.

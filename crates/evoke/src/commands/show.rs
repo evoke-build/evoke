@@ -5,7 +5,7 @@
 //! that address nothing the reflex has, then that reflex's problems.
 
 use evoke_core::document::Text as Source;
-use evoke_core::name::LocalName;
+use evoke_core::name::{FieldName, LocalName};
 use evoke_core::text::NonEmpty;
 use evoke_core::{Diagnostic, Document, File, Fix, overlay};
 
@@ -67,6 +67,29 @@ fn shown(session: &Session<'_>, name: Option<&LocalName>) -> Exit {
     match &item.wording {
         Ok(effective) => {
             terminal::answer(&report::manifest(effective));
+            // A reflex that takes whole results: which installed reflexes return each name it takes.
+            if !effective.manifest.takes.is_empty() {
+                let returned: Vec<(FieldName, Vec<LocalName>)> = effective
+                    .manifest
+                    .takes
+                    .values()
+                    .map(|result| {
+                        let returners = session
+                            .installed
+                            .reflexes
+                            .iter()
+                            .filter(|(_, item)| {
+                                item.wording.as_ref().is_ok_and(|effective| {
+                                    effective.manifest.returns.as_ref() == Some(result)
+                                })
+                            })
+                            .map(|(reflex, _)| reflex.clone())
+                            .collect();
+                        (result.clone(), returners)
+                    })
+                    .collect();
+                terminal::note(&report::taken(&returned));
+            }
             match session.overlay_text(name) {
                 Ok(Some(text)) => {
                     if let Some((shipped, _)) = session.shipped.get(name)

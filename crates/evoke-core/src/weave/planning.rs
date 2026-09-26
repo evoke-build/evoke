@@ -562,6 +562,7 @@ impl Planner<'_> {
             binds,
             asks,
             because,
+            refusals,
         } = self.bind(&steps, &mut after);
         for (step, mut edges) in steps.iter_mut().zip(after) {
             edges.sort_unstable();
@@ -575,6 +576,11 @@ impl Planner<'_> {
         let exclusive = writes > 0 && steps.len() > 1;
         let stages = schedule(&steps, exclusive);
         let mut verdict = verdict_of(&steps, &binds);
+        // A whole result no step hands, or several do, is refused before anything runs: nothing answers it.
+        if !refusals.is_empty() {
+            verdict.outcome = Outcome::Refuse;
+            verdict.because.splice(0..0, refusals);
+        }
         if verdict.outcome != Outcome::Refuse && !asks.is_empty() {
             verdict.outcome = Outcome::Ask;
         }
@@ -595,19 +601,23 @@ impl Planner<'_> {
         }
     }
 
-    /// Every reference bound to what a source yields, by kind, a noun naming the field; never guessed: several
-    /// fields, or one record of several, are the layer's own questions. A pronoun or a demonstrative orders the
-    /// steps whether or not anything binds; `the <noun>` that nothing takes is plain words.
+    /// Every whole result a step takes bound by its name to the one step before it whose reflex returns it —
+    /// the words never choose it — then every reference bound to what a source yields, by kind, a noun naming
+    /// the field; never guessed: several fields, or one record of several, are the layer's own questions. A
+    /// pronoun or a demonstrative orders the steps whether or not anything binds; `the <noun>` that nothing
+    /// takes is plain words.
     fn bind(&self, steps: &[Step], after: &mut [Vec<usize>]) -> Bound {
         let mut out = Bound {
             binds: Vec::new(),
             asks: Vec::new(),
             because: Vec::new(),
+            refusals: Vec::new(),
         };
         for step in steps {
-            if step.reflex.is_none() {
+            let Some(reflex) = &step.reflex else {
                 continue;
-            }
+            };
+            self.takes(step, reflex, steps, after, &mut out);
             let receivers = self.receiving(step);
             for r in &step.refs {
                 let sources: Vec<&Step> = r
@@ -652,6 +662,58 @@ impl Planner<'_> {
             }
         }
         out
+    }
+
+    /// The whole results a step takes, each by the name its manifest gives, from the one step before it whose
+    /// reflex returns that name: none, two, or one that runs once per record stops the plan before anything
+    /// runs, since nothing a person could answer settles it.
+    fn takes(
+        &self,
+        step: &Step,
+        reflex: &LocalName,
+        steps: &[Step],
+        after: &mut [Vec<usize>],
+        out: &mut Bound,
+    ) {
+        let Some(active) = self.plan.active().get(reflex) else {
+            return;
+        };
+        for (arg, name) in &active.takes {
+            let sources: Vec<usize> = steps
+                .iter()
+                .take_while(|s| s.n < step.n)
+                .filter(|s| {
+                    s.reflex
+                        .as_ref()
+                        .and_then(|reflex| self.plan.active().get(reflex))
+                        .is_some_and(|active| active.returns.as_ref() == Some(name))
+                })
+                .map(|s| s.n)
+                .collect();
+            match sources.as_slice() {
+                [] => out.refusals.push(Because::NoSource {
+                    step: step.n,
+                    name: name.clone(),
+                }),
+                [source] if !per_record(&out.binds, *source) => {
+                    out.binds.push(Binding {
+                        from: *source,
+                        to: step.n,
+                        arg: arg.clone(),
+                        field: name.clone(),
+                        kind: None,
+                        via: Via::Takes,
+                        each: None,
+                    });
+                    follow(after, step.n, *source);
+                }
+                _ => out.refusals.push(Because::SeveralSources {
+                    step: step.n,
+                    name: name.clone(),
+                    sources,
+                }),
+            }
+        }
     }
 
     /// One reference against one source: what the source yields that a free receiver of the step could take. A
@@ -704,6 +766,15 @@ impl Planner<'_> {
         if chosen.len() == 1 && already.iter().any(|b| b.field == chosen[0].field) {
             return true;
         }
+        // A source that runs once per record returns one result per round: several, where the step takes one.
+        if per_record(&out.binds, source.n) {
+            out.refusals.push(Because::SeveralSources {
+                step: step.n,
+                name: chosen[0].field.clone(),
+                sources: vec![source.n],
+            });
+            return true;
+        }
         if chosen.len() > 1 {
             out.asks.push(Because::Several {
                 step: step.n,
@@ -731,7 +802,7 @@ impl Planner<'_> {
             to: step.n,
             arg: receiver.arg.clone(),
             field: c.field.clone(),
-            kind: c.kind,
+            kind: Some(c.kind),
             via: if receiver.required {
                 Via::Fill
             } else {
@@ -787,11 +858,13 @@ impl Planner<'_> {
     }
 }
 
-/// What binding found: the bindings, the layer's own questions, and the references nothing takes.
+/// What binding found: the bindings, the layer's own questions, the references nothing takes, and what stops
+/// the plan before anything runs.
 struct Bound {
     binds: Vec<Binding>,
     asks: Vec<Because>,
     because: Vec<Because>,
+    refusals: Vec<Because>,
 }
 
 /// A pick argument a bound value may reach.
@@ -806,6 +879,11 @@ struct Candidate {
     field: FieldName,
     kind: Recognizer,
     each: Option<FieldName>,
+}
+
+/// Whether a step runs once per record: a binding into it takes a field of a list's records.
+fn per_record(binds: &[Binding], step: usize) -> bool {
+    binds.iter().any(|b| b.to == step && b.each.is_some())
 }
 
 /// `later` follows `earlier`, once.

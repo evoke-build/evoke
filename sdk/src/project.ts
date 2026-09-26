@@ -405,24 +405,17 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
         throw new TypeError("a confirm decision runs only with { confirmed: true }")
       }
       if (outcome !== "run" && outcome !== "confirm") throw new TypeError(`a ${outcome} decision cannot run`)
-      const active = plan.active[chosen.reflex]
-      if (active === undefined) throw refused(chosen.reflex, `${chosen.reflex} is not active`, { type: "rerun" }, "run(d)")
-      const spent = chosen.trace.reduce((sum, entry) => sum + entry.ms, 0)
-      // The whole decision crosses: the core reads the fields of a Chosen and ignores the SDK's own.
-      const wire = chosen as unknown as W.Chosen
-      const envelope = call("envelope", { chosen: wire, active, input: chosen.input, deadline: Math.max(plan.deadline - spent, 0), home: homedir() })
-      const what = `running ${chosen.reflex}`
-      const body = bodies[chosen.reflex]
-      if (body !== undefined) return inline(what, body, envelope, options.signal)
-      const dir = dirs[chosen.reflex]
-      if (dir === undefined) throw refused(chosen.reflex, `${chosen.reflex} has no body to run`, { type: "sync" }, "run(d)")
-      return contained(what, chosen, active, dir, envelope, options.signal)
+      // A whole result is handed by the plan alone: a call that takes one runs only as a step of a weave.
+      taker(chosen)
+      return running(chosen, {}, options)
     },
 
     async handle(input, options = {}) {
       nonEmpty(input, "handle")
-      const readied = await ready(await project.decide(input, options), options)
-      if (readied.ready) return { outcome: "ran", decision: readied.decision, result: await bodied(readied.decision, options.signal) }
+      const decision = await project.decide(input, options)
+      if (decision.outcome !== "abstain") taker(decision)
+      const readied = await ready(decision, options)
+      if (readied.ready) return { outcome: "ran", decision: readied.decision, result: await running(readied.decision, {}, signalled(options.signal)) }
       if (readied.status === "refused") return { outcome: "abstained", decision: readied.decision }
       return { outcome: readied.status, decision: readied.decision }
     },
@@ -584,7 +577,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
           record(handling, readied.decision, { status: readied.status, why: readied.why })
           continue
         }
-        bodies.push(ran(readied.decision, signal).then(became => record(handling, readied.decision, became)))
+        bodies.push(ran(readied.decision, handling.taken ?? {}, signal).then(became => record(handling, readied.decision, became)))
       }
       await Promise.all(bodies)
     }
@@ -639,17 +632,38 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     }
   }
 
-  /** A decision ready to run, run: a confirm once confirmed. */
-  function bodied(decision: Run<AnyReflexes> | Confirm<AnyReflexes>, signal: AbortSignal | undefined): Promise<Result> {
-    const options = signal === undefined ? {} : { signal }
-    return decision.outcome === "confirm" ? project.run(decision, { ...options, confirmed: true }) : project.run(decision, options)
+  /** A reflex that takes a whole result, met outside a weave: refused before any confirm, since only a request of
+   *  several steps hands one. */
+  function taker(decision: { reflex: string }): void {
+    const takes = Object.values(plan.active[decision.reflex]?.takes ?? {})
+    if (takes.length === 0) return
+    throw refused(decision.reflex, `${decision.reflex} takes ${words(takes)}, which a step before it in the same request returns`, { type: "rerun" }, 'weave("<input>")')
   }
 
-  /** One body run for a weave: what it returned, or its failure as the step's own outcome, never the weave's; a
-   *  body the signal ended is the round cancelled. */
-  async function ran(decision: Run<AnyReflexes> | Confirm<AnyReflexes>, signal: AbortSignal | undefined): Promise<Became> {
+  /** The chosen call's body — in-process, in a child through the loader, or as an argv — with the whole results it
+   *  takes beside its values, which only the weave hands; one the plan did not hand is refused by the envelope, the
+   *  last guard. What `run` does for a call that takes none, and every step of a weave for its round. */
+  async function running(decision: Run<AnyReflexes> | Confirm<AnyReflexes>, taken: Record<string, W.Json>, options: RunOptions): Promise<Result> {
+    const chosen = own(decision, "run")
+    const active = plan.active[chosen.reflex]
+    if (active === undefined) throw refused(chosen.reflex, `${chosen.reflex} is not active`, { type: "rerun" }, "run(d)")
+    const spent = chosen.trace.reduce((sum, entry) => sum + entry.ms, 0)
+    // The whole decision crosses: the core reads the fields of a Chosen and ignores the SDK's own.
+    const wire = chosen as unknown as W.Chosen
+    const envelope = call("envelope", { chosen: wire, active, taken, input: chosen.input, deadline: Math.max(plan.deadline - spent, 0), home: homedir() }, "run(d)")
+    const what = `running ${chosen.reflex}`
+    const body = bodies[chosen.reflex]
+    if (body !== undefined) return inline(what, body, envelope, options.signal)
+    const dir = dirs[chosen.reflex]
+    if (dir === undefined) throw refused(chosen.reflex, `${chosen.reflex} has no body to run`, { type: "sync" }, "run(d)")
+    return contained(what, chosen, active, dir, envelope, options.signal)
+  }
+
+  /** One body run for a weave, the whole results its step takes beside it: what it returned, or its failure as the
+   *  step's own outcome, never the weave's; a body the signal ended is the round cancelled. */
+  async function ran(decision: Run<AnyReflexes> | Confirm<AnyReflexes>, taken: Record<string, W.Json>, signal: AbortSignal | undefined): Promise<Became> {
     try {
-      return { status: "ran", result: await bodied(decision, signal) }
+      return { status: "ran", result: await running(decision, taken, signalled(signal)) }
     } catch (error) {
       if (signal?.aborted && error === signal.reason) return CANCELLED
       if (error instanceof FailureError) {
@@ -741,6 +755,17 @@ function carrying(reason: unknown, woven: Woven<AnyReflexes>): unknown {
     Object.assign(reason, { woven })
   }
   return reason
+}
+
+/** A signal as run options: none when there is none. */
+function signalled(signal: AbortSignal | undefined): RunOptions {
+  return signal === undefined ? {} : { signal }
+}
+
+/** `a`, `a and b`, `a, b and c`. */
+function words(names: string[]): string {
+  const last = names.at(-1) ?? ""
+  return names.length < 2 ? last : `${names.slice(0, -1).join(", ")} and ${last}`
 }
 
 /** Whether two asks want the same things for the same reasons. */

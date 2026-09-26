@@ -7,6 +7,7 @@
 
 use evoke_core::plan::Millis;
 use evoke_core::{Decision, Input, Written, by_name};
+use indexmap::IndexMap;
 
 use super::needs_terminal;
 use super::session::{self, Confirmed, Opening, Session};
@@ -69,7 +70,7 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
     };
     let empty = Input::new("").expect("nothing is under the cap");
     line.contained = Some(contained);
-    let exit = match session.run(&chosen, &empty, Millis(0)) {
+    let exit = match session.run(&chosen, &IndexMap::new(), &empty, Millis(0)) {
         Ok(returned) => {
             if !json && !returned.text.is_empty() {
                 terminal::result(&returned.text);

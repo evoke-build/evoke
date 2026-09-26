@@ -1,0 +1,33 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "suspect"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Find the release most likely behind a failure.\"\neffect  = \"read\"\nconfirm = \"Find the suspect?\"\nrun     = \"suspect.mts\"\n\n[args.errors]\ntakes = \"errors\"\n\n[args.deploys]\ntakes = \"deploys\"\n\n[yields]\nrelease = \"quoted\"\n"
+    }
+  },
+  "expect": {
+    "ok": {
+      "description": "Find the release most likely behind a failure.",
+      "not_for": [],
+      "tags": [],
+      "effect": "read",
+      "confirm": "Find the suspect?",
+      "run": "suspect.mts",
+      "config": {},
+      "args": {},
+      "takes": {
+        "errors": "errors",
+        "deploys": "deploys"
+      },
+      "yields": {
+        "release": "quoted"
+      },
+      "examples": {},
+      "tests": {},
+      "unknown": []
+    }
+  }
+}

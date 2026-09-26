@@ -41,13 +41,16 @@ decisions. Everything below is what the tool guarantees around them, and what it
 
 - **State is only `{ request }`.** The adapter sees the sentence and the questions built from installed manifests.
   Nothing else of yours.
-- **Arguments are closed sets or exact spans.** A value is an author's option key, one of your vocabulary words,
-  or a piece of the input read by a recognizer and checked against its range. Injected text can choose a call. It
-  can never mint a value.
+- **Arguments are closed sets, exact spans, or an earlier step's result.** A value is an author's option key, one
+  of your vocabulary words, a piece of the input read by a recognizer and checked against its range, or, in a
+  sentence of several steps, a field of an earlier step's result or that step's whole result, bound by the plan
+  and shown on its line before anything runs. Injected text can choose a call. It can never mint a value.
 - **The effect gate covers what it chooses.** A destructive reflex always confirms, and there is no `--yes`.
   Unattended use is a threshold in a file you own and trust. A `read` or `write` reflex over its floor runs
   without asking. Whatever it does with a span it is handed, like a URL or a quoted text, an injected sentence
-  can make it do. So its effect is the author's promise about exactly that.
+  can make it do. So its effect is the author's promise about exactly that. A `write` reflex that takes an
+  earlier step's whole result runs with it over its floor, unasked; the plan prints `takes` on its line first,
+  and a destructive reflex takes none.
 - **Prompts cannot be repainted.** Control characters and bidi overrides are refused in every manifest, overlay
   and vocabulary string, and in every span. `evoke`'s own line, with the call, the effect and the weakest
   judgment, prints before the reflex's template.

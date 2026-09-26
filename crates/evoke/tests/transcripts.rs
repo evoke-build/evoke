@@ -164,6 +164,11 @@ fn cancel() {
     flow("cancel");
 }
 
+#[test]
+fn joins() {
+    flow("joins");
+}
+
 /// The recipe yields the commit `spec/transcripts/update/home/.config/evoke/evoke.lock` records.
 #[test]
 fn the_recipe_reproduces_the_locked_commit() {

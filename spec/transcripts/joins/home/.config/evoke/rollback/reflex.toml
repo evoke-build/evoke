@@ -1,0 +1,21 @@
+reflex = 1
+
+description = "Roll a service back from a release to the one before it."
+not_for     = ["listing deploys", "finding which release broke something"]
+tags        = ["ops"]
+effect      = "write"
+confirm     = "Roll back {release}?"
+run         = "rollback.mts"
+
+[args.release]
+ask  = "From which release?"
+pick = "quoted"
+
+[examples]
+"roll back \"4.12.0\""       = { release = "4.12.0" }
+"revert \"2.3.1\""           = { release = "2.3.1" }
+"undo the \"7.0.2\" release" = { release = "7.0.2" }
+
+[tests]
+"roll \"4.12.0\" back" = { release = "4.12.0" }
+"list the deploys"     = false

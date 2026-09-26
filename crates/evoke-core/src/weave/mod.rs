@@ -92,23 +92,29 @@ pub struct Step {
     pub after: Vec<usize>,
 }
 
-/// How a bound value reaches its step: answering the step's own ask, or the step decided again with the value in
-/// its words — where the receiver is optional and the classifier assigns it.
+/// How a bound value reaches its step: answering the step's own ask; the step decided again with the value in
+/// its words — where the receiver is optional and the classifier assigns it; or a whole result handed beside the
+/// decision, never through its words.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Via {
     Fill,
     Rewrite,
+    Takes,
 }
 
-/// A value of one step's result taken by a later step: which field, into which argument, how.
+/// A value of one step's result taken by a later step: which field, into which argument, how; or the whole
+/// result, by the name it goes by.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Binding {
     pub from: usize,
     pub to: usize,
     pub arg: ArgName,
+    /// The field taken; for `Takes`, the name the whole result goes by — so every reader checks `via` first.
     pub field: FieldName,
-    pub kind: Recognizer,
+    /// The recognizer the field is read with; none for a whole result.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub kind: Option<Recognizer>,
     pub via: Via,
     /// The list field of the source's result whose records carry `field`: the step runs once per record.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -139,6 +145,15 @@ pub enum Because {
     },
     /// A reference to steps whose results the step takes nothing from: run it without them, or not.
     TakesNothing { step: usize, sources: Vec<usize> },
+    /// A whole result the step takes by name that no step before it returns: refused, nothing answers it.
+    NoSource { step: usize, name: FieldName },
+    /// What the step takes one of — a whole result, or a field — that several steps return, or one step once
+    /// per record: refused, nothing answers it.
+    SeveralSources {
+        step: usize,
+        name: FieldName,
+        sources: Vec<usize>,
+    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -231,6 +246,13 @@ impl TryFrom<RawWeave> for Weave {
                     b.from, b.to
                 ));
             }
+            // A step run once per record returns one result per round: nothing takes one of them.
+            if raw.binds.iter().any(|c| c.to == b.from && c.each.is_some()) {
+                return Err(format!(
+                    "a binding from step {} takes from a step run once per record",
+                    b.from
+                ));
+            }
         }
         Ok(Self {
             input: raw.input,
@@ -252,13 +274,15 @@ impl Weave {
     }
 }
 
-/// A value bound into a step at its turn: the argument it reached and the field it came from.
+/// A value bound into a step at its turn: the argument it reached and the field it came from; a whole result
+/// carries no value here — it stays once in the log, on its source's line.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Bound {
     pub arg: ArgName,
     pub from: usize,
     pub field: FieldName,
-    pub value: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<String>,
 }
 
 /// What a body returned: its text, and data when it gave some.
@@ -270,7 +294,8 @@ pub struct Returned {
 }
 
 /// One round of a step for a host to take through the foundation's own loop — ask, confirm, run — as `handle`
-/// runs a decision: the decision with any bound values in place, and the input the body will see.
+/// runs a decision: the decision with any bound values in place, the input the body will see, and the whole
+/// results the body receives beside them.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Handling {
     pub step: usize,
@@ -280,6 +305,9 @@ pub struct Handling {
     pub input: String,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub bound: Vec<Bound>,
+    /// Per taken argument, its source's whole `data`: the same for every round of the step.
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub taken: IndexMap<ArgName, Json>,
 }
 
 /// What became of a step, or of one of its rounds.
@@ -300,8 +328,10 @@ pub enum Status {
 pub enum Why {
     /// An earlier stage did not run whole.
     EarlierStep,
-    /// A step it depends on yielded nothing it can take.
-    NothingToTake,
+    /// The step it names yielded nothing it can take: no such field, no data, or null.
+    NothingToTake { from: usize },
+    /// The step it names returned a whole result over the cap, a mebibyte of JSON.
+    TooLarge { from: usize },
     /// A step it depends on found nothing: an empty list.
     FoundNothing,
     /// Once the values were in place, the words matched no reflex.
@@ -394,10 +424,15 @@ impl Executed {
             worst
         };
         let failed = steps.iter().any(|step| {
-            step.status == Status::Skipped && matches!(step.why, Some(Why::NothingToTake))
+            step.status == Status::Skipped
+                && matches!(
+                    step.why,
+                    Some(Why::NothingToTake { .. } | Why::TooLarge { .. })
+                )
         });
-        // A step skipped because its source yielded nothing it can take is the source's failure to deliver what
-        // its manifest declares: the whole failed, unless something worse stopped it.
+        // A step skipped because its source yielded nothing it can take, or more than can be handed, is the
+        // source's failure to deliver what its manifest declares: the whole failed, unless something worse
+        // stopped it.
         let worst = if failed && rank(worst) < rank(Status::Failed) {
             Status::Failed
         } else {

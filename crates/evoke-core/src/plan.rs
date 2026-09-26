@@ -9,10 +9,10 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use crate::adapter::{Choice, Key, Limits, Question, QuestionId, Text};
 use crate::diagnostic::{Diagnostic, Fix};
 use crate::digest::Digest;
-use crate::document::{self, Diagnostics, Form, Json};
+use crate::document::{self, Diagnostics, Form, Json, KeyPath};
 use crate::manifest::{
-    self, Argument, Assertion, Effect, Kind, Lookup, Manifest, Recognizer, Record, Run, Source,
-    Template, Yield,
+    self, Argument, Assertion, Effect, Kind, Manifest, Recognizer, Record, Run, Source, Template,
+    Yield,
 };
 use crate::name::{
     AdapterId, ArgName, ConfigKey, FieldName, LocalName, Tag, VarName, VocabName, Word,
@@ -236,9 +236,16 @@ pub struct Active {
     #[serde(default, skip_serializing_if = "Needs::is_none")]
     pub needs: Needs,
     pub confirm: Template,
+    /// The arguments the classifier is asked about.
     pub args: IndexMap<ArgName, Argument>,
+    /// The arguments an earlier step's whole result fills, by the name that result goes by.
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub takes: IndexMap<ArgName, FieldName>,
     /// What the body's `data` yields for a later step to take, per field.
     pub yields: IndexMap<FieldName, Yield>,
+    /// The name the body's whole `data` goes by, for a later step to take.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub returns: Option<FieldName>,
     pub config: IndexMap<ConfigKey, Setting>,
     pub tags: Vec<Tag>,
 }
@@ -254,7 +261,9 @@ impl Active {
             needs: manifest.needs.clone(),
             confirm: manifest.confirm.clone(),
             args: manifest.args.clone(),
+            takes: manifest.takes.clone(),
             yields: manifest.yields.clone(),
+            returns: manifest.returns.clone(),
             config,
             tags: manifest.tags.clone(),
         }
@@ -305,24 +314,34 @@ fn read_active(d: &mut Diagnostics, json: &Json) -> Option<Active> {
         None
     };
     let mut unknown = Vec::new();
-    let known = top
+    let read = top
         .take("args")
-        .map_or_else(IndexMap::new, |node| manifest::args(d, node, &mut unknown));
+        .map_or_else(manifest::Args::default, |node| {
+            manifest::args(d, node, &mut unknown)
+        });
+    let takes = top
+        .take("takes")
+        .map_or_else(IndexMap::new, |node| manifest::takes(d, node));
+    let returns = top
+        .take("returns")
+        .and_then(|node| manifest::field_name(d, &node, "returns"));
     let yields = top.take("yields").map_or_else(IndexMap::new, |node| {
         manifest::yields(d, node, &mut unknown)
     });
-    let mut lookup = |name: &ArgName| match known.get_key_value(name) {
-        None => Lookup::Unknown,
-        Some((_, None)) => Lookup::Broken,
-        Some((current, Some(arg))) => Lookup::Arg(current, arg),
-    };
+    let taken_names: Vec<ArgName> = read
+        .taken()
+        .into_iter()
+        .chain(takes.keys().cloned())
+        .collect();
+    let known = read.known;
+    let mut lookup = |name: &ArgName| manifest::lookup(&known, &taken_names, name);
     let confirm = if let Some(node) = top.take("confirm") {
         manifest::template(d, &node, &mut lookup)
     } else {
         d.fail(None, "confirm is required");
         None
     };
-    let run = manifest::run_of(d, top.take("run"), Form::Wire, &known, None);
+    let run = manifest::run_of(d, top.take("run"), Form::Wire, &known, &taken_names, None);
     let config: Option<IndexMap<ConfigKey, Setting>> = match top.take("config") {
         Some(node) => match serde_json::from_value(node.json()) {
             Ok(config) => Some(config),
@@ -343,7 +362,7 @@ fn read_active(d: &mut Diagnostics, json: &Json) -> Option<Active> {
             d,
             node,
             &mut unknown,
-            Some(&manifest::named(&known, is_config)),
+            Some(&manifest::named(&known, &taken_names, is_config)),
         )
     });
     let tags = top
@@ -362,7 +381,9 @@ fn read_active(d: &mut Diagnostics, json: &Json) -> Option<Active> {
         needs,
         confirm: confirm?,
         args: args?,
+        takes,
         yields,
+        returns,
         config: config?,
         tags,
     })
@@ -584,17 +605,56 @@ fn judge<'a>(
             }
         }
     }
+    let effect = manifest.effect.max(item.consented);
+    problems.extend(taker_destructive(name, item, manifest, effect));
     match NonEmpty::try_from(problems) {
         Ok(problems) => Err(problems),
         Err(_) => Ok((
             manifest,
             Active {
-                effect: manifest.effect.max(item.consented),
+                effect,
                 needs: needs::narrowed(&manifest.needs, &item.needs),
                 ..Active::of(manifest, config)
             },
         )),
     }
+}
+
+/// A reflex that takes a whole result runs with data its confirm could not show: inactive while the effect it
+/// runs with is destructive — your overlay's, or the lock's until the looser effect upstream claims is accepted.
+fn taker_destructive(
+    name: &LocalName,
+    item: &Item,
+    manifest: &Manifest,
+    effect: Effect,
+) -> Option<Diagnostic> {
+    if manifest.takes.is_empty() || effect != Effect::Destructive {
+        return None;
+    }
+    let yours = matches!(&item.wording, Ok(effective) if effective.yours.contains(&KeyPath::new(["effect"])));
+    let (message, fix) = if yours {
+        (
+            format!("{name} takes a result, and your overlay makes it destructive"),
+            Fix::Show {
+                reflex: Some(name.clone()),
+            },
+        )
+    } else {
+        (
+            format!(
+                "{name} takes a result, and runs destructive until the effect it now claims is accepted"
+            ),
+            Fix::Accept {
+                reflex: name.clone(),
+            },
+        )
+    };
+    Some(Diagnostic {
+        reflex: Some(name.clone()),
+        at: None,
+        message,
+        fix,
+    })
 }
 
 /// The route's option for a reflex: its description, what it is not for with its `false` examples, and its examples.

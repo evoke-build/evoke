@@ -1,0 +1,38 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "suspect"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Find the release most likely behind a failure.\"\neffect  = \"read\"\nconfirm = \"Find the suspect in {errors}?\"\nrun     = \"suspect.mts\"\n\n[args.errors]\ntakes = \"errors\"\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "suspect",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "suspect"
+          },
+          "line": 5,
+          "column": 1
+        },
+        "message": "confirm names {errors}, a result the plan hands the body, which a confirm cannot show",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "suspect"
+            },
+            "line": 5,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

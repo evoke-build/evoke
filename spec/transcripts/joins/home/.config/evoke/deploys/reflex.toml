@@ -1,0 +1,24 @@
+reflex = 1
+
+description = """
+List the recent deploys of a service.
+Each release, when it went out and who shipped it."""
+not_for = ["error rates", "rolling a release back"]
+tags = ["ops"]
+effect = "read"
+confirm = "List the deploys of {service}?"
+run = "deploys.mts"
+returns = "deploys"
+
+[args.service]
+ask   = "Which service?"
+vocab = "services"
+
+[examples]
+"list the deploys for checkout"   = {}
+"what went out to payments today" = {}
+"recent releases of checkout"     = {}
+
+[tests]
+"deploys of payments" = {}
+"roll it back"        = false

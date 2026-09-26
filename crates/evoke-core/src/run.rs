@@ -1,8 +1,10 @@
 //! What a body receives: the envelope a file body reads on stdin, or the argv a program is spawned with. In: the
-//! chosen call, its active reflex, the input, the deadline and the home. Out: an `Envelope` — config still
-//! references, which the host resolves — or an argv, where a placeholder whose argument is unstated is dropped
-//! and a value starting with `-` is refused. In both, a word's value and a plain setting that name a path under
-//! the home, `~/Desktop`, are expanded to it: the body, the argv and the declaration see one path.
+//! chosen call, its active reflex, the whole results the plan handed it, the input, the deadline and the home.
+//! Out: an `Envelope` — config still references, which the host resolves; a taken argument the plan did not hand
+//! is refused, so no host runs a taker without its data — or an argv, where a placeholder whose argument is
+//! unstated is dropped and a value starting with `-` is refused. In both, a word's value and a plain setting
+//! that name a path under the home, `~/Desktop`, are expanded to it: the body, the argv and the declaration see
+//! one path.
 
 use indexmap::IndexMap;
 use serde::Serialize;
@@ -11,14 +13,15 @@ use crate::call::{Value, expand_home};
 use crate::decide::Chosen;
 use crate::diagnostic::{Diagnostic, Fix};
 use crate::document::Json;
-use crate::manifest::{Element, Run};
+use crate::manifest::{Element, Run, words};
 use crate::name::{ArgName, ConfigKey, LocalName};
 use crate::plan::{Active, Millis};
 use crate::project::Setting;
 use crate::text::Input;
 
 /// One JSON line on the loader's stdin. `args` carries values: an option key, a vocabulary word's `value` if set
-/// else the word, a pick's value, `true` for a flag. An inline body has no `run`.
+/// else the word, a pick's value, `true` for a flag, and a whole result as its source returned it. An inline
+/// body has no `run`.
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Envelope {
     pub reflex: LocalName,
@@ -30,24 +33,51 @@ pub struct Envelope {
     pub deadline: Millis,
 }
 
-/// The envelope of a chosen call, for a file body and an inline one alike.
-#[must_use]
+/// The envelope of a chosen call, for a file body and an inline one alike: the call's values, then every whole
+/// result the reflex takes, as `taken` holds it; one the plan did not hand is refused.
 pub fn envelope(
     chosen: &Chosen,
     active: &Active,
+    taken: &IndexMap<ArgName, Json>,
     input: &Input,
     deadline: Millis,
     home: &str,
-) -> Envelope {
-    Envelope {
-        reflex: chosen.call.reflex.clone(),
+) -> Result<Envelope, Diagnostic> {
+    let reflex = &chosen.call.reflex;
+    let missing: Vec<&str> = active
+        .takes
+        .iter()
+        .filter(|(arg, _)| !taken.contains_key(*arg))
+        .map(|(_, name)| name.as_str())
+        .collect();
+    if !missing.is_empty() {
+        return Err(Diagnostic {
+            reflex: Some(reflex.clone()),
+            at: None,
+            message: format!(
+                "{reflex} takes {}, which a step before it in the same request returns",
+                words(&missing)
+            ),
+            fix: Fix::Show {
+                reflex: Some(reflex.clone()),
+            },
+        });
+    }
+    let mut args: IndexMap<ArgName, Json> = chosen
+        .call
+        .args
+        .iter()
+        .map(|(name, value)| (name.clone(), value.under_home(home)))
+        .collect();
+    for arg in active.takes.keys() {
+        if let Some(data) = taken.get(arg) {
+            args.insert(arg.clone(), data.clone());
+        }
+    }
+    Ok(Envelope {
+        reflex: reflex.clone(),
         run: active.run.clone(),
-        args: chosen
-            .call
-            .args
-            .iter()
-            .map(|(name, value)| (name.clone(), value.under_home(home)))
-            .collect(),
+        args,
         input: input.clone(),
         config: active
             .config
@@ -63,7 +93,7 @@ pub fn envelope(
             })
             .collect(),
         deadline,
-    }
+    })
 }
 
 /// The argv of a chosen call: the program, then each element as written or as its argument's value.

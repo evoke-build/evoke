@@ -1,0 +1,125 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md): the outage stand-ins of the joins flow.
+# The whole sentence is asked about its connectives, `weave.split_<n>`; each part is decided alone.
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.6
+write = 0.8
+
+[answers."check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect"]
+"weave.split_0" = { yes = 0.9 }
+"weave.split_1" = { yes = 0.9 }
+"weave.split_2" = { yes = 0.9 }
+"weave.ref_2_0" = { step0 = 0.6, step1 = 0.4 }
+
+[answers."check the errors for checkout, then find the suspect"]
+"weave.split_0" = { yes = 0.9 }
+
+[answers."look up incident 311 and look up incident 312, then draft the postmortem"]
+"weave.split_0" = { yes = 0.9 }
+"weave.split_1" = { yes = 0.9 }
+
+[answers."look up incident 311, then draft the postmortem"]
+"weave.split_0" = { yes = 0.9 }
+
+[answers."check the errors for checkout"]
+route             = { errors = 0.9, deploys = 0.03, none = 0.07 }
+"fits.errors"     = { yes = 0.8 }
+"fits.deploys"    = { yes = 0.1 }
+"fits.logs"       = { yes = 0.02 }
+"fits.suspect"    = { yes = 0.02 }
+"fits.rollback"   = { yes = 0.02 }
+"fits.incidents"  = { yes = 0.02 }
+"fits.incident"   = { yes = 0.02 }
+"fits.postmortem" = { yes = 0.02 }
+"errors.service"  = { checkout = 0.9, unstated = 0.1 }
+"deploys.service" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"logs.service"    = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+
+[answers."list the checkout deploys"]
+route             = { deploys = 0.9, errors = 0.03, none = 0.07 }
+"fits.errors"     = { yes = 0.1 }
+"fits.deploys"    = { yes = 0.8 }
+"fits.logs"       = { yes = 0.02 }
+"fits.suspect"    = { yes = 0.02 }
+"fits.rollback"   = { yes = 0.02 }
+"fits.incidents"  = { yes = 0.02 }
+"fits.incident"   = { yes = 0.02 }
+"fits.postmortem" = { yes = 0.02 }
+"errors.service"  = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"deploys.service" = { checkout = 0.9, unstated = 0.1 }
+"logs.service"    = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+
+[answers."pull the checkout logs"]
+route             = { logs = 0.9, errors = 0.03, none = 0.07 }
+"fits.errors"     = { yes = 0.1 }
+"fits.deploys"    = { yes = 0.02 }
+"fits.logs"       = { yes = 0.8 }
+"fits.suspect"    = { yes = 0.02 }
+"fits.rollback"   = { yes = 0.02 }
+"fits.incidents"  = { yes = 0.02 }
+"fits.incident"   = { yes = 0.02 }
+"fits.postmortem" = { yes = 0.02 }
+"errors.service"  = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"deploys.service" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"logs.service"    = { checkout = 0.9, unstated = 0.1 }
+
+[answers."find the suspect"]
+route             = { suspect = 0.9, errors = 0.03, none = 0.07 }
+"fits.errors"     = { yes = 0.1 }
+"fits.deploys"    = { yes = 0.02 }
+"fits.logs"       = { yes = 0.02 }
+"fits.suspect"    = { yes = 0.8 }
+"fits.rollback"   = { yes = 0.02 }
+"fits.incidents"  = { yes = 0.02 }
+"fits.incident"   = { yes = 0.02 }
+"fits.postmortem" = { yes = 0.02 }
+"errors.service"  = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"deploys.service" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"logs.service"    = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+
+[answers."look up incident 311"]
+route             = { incident = 0.9, incidents = 0.03, none = 0.07 }
+"fits.errors"     = { yes = 0.02 }
+"fits.deploys"    = { yes = 0.02 }
+"fits.logs"       = { yes = 0.02 }
+"fits.suspect"    = { yes = 0.02 }
+"fits.rollback"   = { yes = 0.02 }
+"fits.incidents"  = { yes = 0.1 }
+"fits.incident"   = { yes = 0.8 }
+"fits.postmortem" = { yes = 0.02 }
+"errors.service"  = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"deploys.service" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"logs.service"    = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"incident.number" = { "17-20" = 0.9, unstated = 0.1 }
+
+[answers."look up incident 312"]
+route             = { incident = 0.9, incidents = 0.03, none = 0.07 }
+"fits.errors"     = { yes = 0.02 }
+"fits.deploys"    = { yes = 0.02 }
+"fits.logs"       = { yes = 0.02 }
+"fits.suspect"    = { yes = 0.02 }
+"fits.rollback"   = { yes = 0.02 }
+"fits.incidents"  = { yes = 0.1 }
+"fits.incident"   = { yes = 0.8 }
+"fits.postmortem" = { yes = 0.02 }
+"errors.service"  = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"deploys.service" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"logs.service"    = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"incident.number" = { "17-20" = 0.9, unstated = 0.1 }
+
+[answers."draft the postmortem"]
+route             = { postmortem = 0.9, incident = 0.03, none = 0.07 }
+"fits.errors"     = { yes = 0.02 }
+"fits.deploys"    = { yes = 0.02 }
+"fits.logs"       = { yes = 0.02 }
+"fits.suspect"    = { yes = 0.02 }
+"fits.rollback"   = { yes = 0.02 }
+"fits.incidents"  = { yes = 0.02 }
+"fits.incident"   = { yes = 0.1 }
+"fits.postmortem" = { yes = 0.8 }
+"errors.service"  = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"deploys.service" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"logs.service"    = { unstated = 0.9, checkout = 0.05, payments = 0.05 }

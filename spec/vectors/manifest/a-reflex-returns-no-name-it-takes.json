@@ -1,0 +1,38 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "filter"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Keep the errors that matter.\"\neffect  = \"read\"\nconfirm = \"Filter the errors?\"\nrun     = \"filter.mts\"\nreturns = \"errors\"\n\n[args.errors]\ntakes = \"errors\"\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "filter",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "filter"
+          },
+          "line": 10,
+          "column": 1
+        },
+        "message": "args.errors takes errors, which this reflex also returns: return a new name, so a later step has one source",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "filter"
+            },
+            "line": 10,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

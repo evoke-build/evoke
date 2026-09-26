@@ -67,14 +67,16 @@
     "home": "/Users/me"
   },
   "expect": {
-    "reflex": "timer",
-    "args": {
-      "duration": 600,
-      "label": "eggs",
-      "loud": true
-    },
-    "input": "timer for 10 minutes called \"eggs\", loud",
-    "config": {},
-    "deadline": 30000
+    "ok": {
+      "reflex": "timer",
+      "args": {
+        "duration": 600,
+        "label": "eggs",
+        "loud": true
+      },
+      "input": "timer for 10 minutes called \"eggs\", loud",
+      "config": {},
+      "deadline": 30000
+    }
   }
 }

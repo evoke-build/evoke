@@ -14,7 +14,7 @@ use evoke_core::calibrate::{self, BarRow, BinRow, Calibration, LogBlock, Miss, Q
 use evoke_core::contract::Change;
 use evoke_core::decide::{Missing, Why};
 use evoke_core::manifest::{Effect, Manifest, Run};
-use evoke_core::name::LocalName;
+use evoke_core::name::{FieldName, LocalName};
 use evoke_core::test::{Claim, Expected, Mismatch};
 use evoke_core::vocabulary::Vocabulary;
 use evoke_core::weave::{Because, Bound, Status, Step, Why as Stopped};
@@ -524,6 +524,15 @@ fn stepped(line: &Line, step: &StepLine) -> Text {
         }
         Decision::Abstain { .. } => {}
     }
+    // What the step took, as the plan printed it: a field's name, or the name a whole result goes by.
+    let takes: Vec<String> = step
+        .bound
+        .iter()
+        .map(|b| format!("{} from {}", b.field, b.from))
+        .collect();
+    if !takes.is_empty() {
+        text.push(&format!(" · takes {}", takes.join(", ")));
+    }
     if step.status != Status::Declined
         && let Some(why) = &step.why
     {
@@ -549,7 +558,8 @@ fn status_word(status: Status) -> &'static str {
 pub fn stopped(why: &Stopped) -> String {
     match why {
         Stopped::EarlierStep => "an earlier step stopped".to_owned(),
-        Stopped::NothingToTake => "its source yielded nothing it takes".to_owned(),
+        Stopped::NothingToTake { from } => format!("step {from} yielded nothing it takes"),
+        Stopped::TooLarge { from } => format!("step {from} returned more than 1 MiB"),
         Stopped::FoundNothing => "its source found nothing".to_owned(),
         Stopped::NoReflex => "no reflex".to_owned(),
         Stopped::ReadAs { reflex } => format!("read as {reflex}"),
@@ -734,8 +744,15 @@ pub fn step_body(step: &Step, weave: &Weave) -> Text {
             text
         }
     };
-    for b in weave.binds.iter().filter(|b| b.to == step.n) {
-        text.push(&format!(" · takes {} from {}", b.field, b.from));
+    // One segment for every binding, each name beside its step: a field's, or the name a whole result goes by.
+    let segments: Vec<String> = weave
+        .binds
+        .iter()
+        .filter(|b| b.to == step.n)
+        .map(|b| format!("{} from {}", b.field, b.from))
+        .collect();
+    if !segments.is_empty() {
+        text.push(&format!(" · takes {}", segments.join(", ")));
     }
     let after: Vec<String> = step
         .after
@@ -805,7 +822,51 @@ pub fn verdict(because: &Because) -> String {
                 sources.join(" and ")
             )
         }
+        Because::NoSource { step, name } => {
+            format!("step {step} takes {name}, which no step before it returns")
+        }
+        Because::SeveralSources {
+            step,
+            name,
+            sources,
+        } => {
+            if let [source] = sources.as_slice() {
+                format!(
+                    "step {step} takes one {name}, and step {source} returns one for each record"
+                )
+            } else {
+                let sources: Vec<String> = sources.iter().map(ToString::to_string).collect();
+                format!(
+                    "step {step} takes one {name}, and steps {} each return one",
+                    sources.join(" and ")
+                )
+            }
+        }
     }
+}
+
+/// `show <name>` on a reflex that takes whole results: per name, which installed reflexes return it.
+#[must_use]
+pub fn taken(takes: &[(FieldName, Vec<LocalName>)]) -> Text {
+    indented(
+        takes
+            .iter()
+            .map(|(name, returners)| {
+                let returned = match returners.as_slice() {
+                    [] => "nothing installed returns".to_owned(),
+                    [one] => format!("{one} returns"),
+                    [rest @ .., last] => format!(
+                        "{} and {last} return",
+                        rest.iter()
+                            .map(ToString::to_string)
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    ),
+                };
+                Text::from(format!("takes {name}, which {returned}"))
+            })
+            .collect(),
+    )
 }
 
 /// `evoke`'s own line before a confirm, the machine's status on its end when it does not hold the declaration.
@@ -1650,7 +1711,9 @@ pub fn checked(from: Version, contract: &ContractDiff) -> Text {
 pub fn change(change: &Change) -> (String, String) {
     match change {
         Change::ArgRenamed { from, to } => (format!("args.{from}"), format!("renamed {to}")),
-        Change::ArgRemoved { arg } => (format!("args.{arg}"), "removed".to_owned()),
+        Change::ArgRemoved { arg } | Change::TakesRemoved { arg, .. } => {
+            (format!("args.{arg}"), "removed".to_owned())
+        }
         Change::OptionRemoved { arg, key } => {
             (format!("args.{arg}.options.{key}"), "removed".to_owned())
         }
@@ -1682,6 +1745,11 @@ pub fn change(change: &Change) -> (String, String) {
         Change::YieldAdded { field } => (format!("yields.{field}"), "added".to_owned()),
         Change::YieldRemoved { field } => (format!("yields.{field}"), "removed".to_owned()),
         Change::YieldChanged { field } => (format!("yields.{field}"), "changed".to_owned()),
+        Change::TakesAdded { arg, name } => (format!("args.{arg}"), format!("added, takes {name}")),
+        Change::TakesChanged { arg, name } => (format!("args.{arg}"), format!("takes {name} now")),
+        Change::ReturnsAdded { name } => ("returns".to_owned(), format!("added: {name}")),
+        Change::ReturnsRemoved { .. } => ("returns".to_owned(), "removed".to_owned()),
+        Change::ReturnsChanged { name } => ("returns".to_owned(), format!("changed: {name}")),
     }
 }
 
@@ -1857,7 +1925,15 @@ pub fn manifest(effective: &Effective) -> Text {
             .contains(&KeyPath::new(path.iter().copied()))
     };
     let mut lines: Vec<(bool, String)> = Vec::new();
-    for key in ["description", "not_for", "tags", "effect", "confirm", "run"] {
+    for key in [
+        "description",
+        "not_for",
+        "tags",
+        "effect",
+        "confirm",
+        "run",
+        "returns",
+    ] {
         let Some(value) = manifest.get(key) else {
             continue;
         };
@@ -1888,31 +1964,7 @@ pub fn manifest(effective: &Effective) -> Text {
             lines.push((false, pair(key, &value)));
         }
     }
-    if let Some(Json::Object(args)) = manifest.get("args") {
-        for (name, argument) in args {
-            lines.push((false, String::new()));
-            lines.push((false, format!("[args.{name}]")));
-            let Json::Object(argument) = argument else {
-                continue;
-            };
-            for (key, value) in argument {
-                match (key.as_str(), value) {
-                    ("options", Json::Object(options)) => {
-                        for (option, text) in options {
-                            lines.push((
-                                yours(&["args", name, "options", option]),
-                                format!("options.{} = {}", toml_key(option), toml(text)),
-                            ));
-                        }
-                    }
-                    ("optional", Json::Bool(false)) => {}
-                    ("was", Json::Array(was)) if was.is_empty() => {}
-                    ("ask", _) => lines.push((yours(&["args", name, "ask"]), pair(key, value))),
-                    _ => lines.push((false, pair(key, value))),
-                }
-            }
-        }
-    }
+    argument_lines(&mut lines, &manifest, &yours);
     if let Some(Json::Object(yields)) = manifest.get("yields")
         && !yields.is_empty()
     {
@@ -1946,6 +1998,47 @@ pub fn manifest(effective: &Effective) -> Text {
         }
         text
     }))
+}
+
+/// The `[args.<name>]` tables of `show`: each asked argument's keys, an ask or an option marked when it is yours,
+/// then each taken argument's one line.
+fn argument_lines(
+    lines: &mut Vec<(bool, String)>,
+    manifest: &serde_json::Map<String, Json>,
+    yours: &dyn Fn(&[&str]) -> bool,
+) {
+    if let Some(Json::Object(args)) = manifest.get("args") {
+        for (name, argument) in args {
+            lines.push((false, String::new()));
+            lines.push((false, format!("[args.{name}]")));
+            let Json::Object(argument) = argument else {
+                continue;
+            };
+            for (key, value) in argument {
+                match (key.as_str(), value) {
+                    ("options", Json::Object(options)) => {
+                        for (option, text) in options {
+                            lines.push((
+                                yours(&["args", name, "options", option]),
+                                format!("options.{} = {}", toml_key(option), toml(text)),
+                            ));
+                        }
+                    }
+                    ("optional", Json::Bool(false)) => {}
+                    ("was", Json::Array(was)) if was.is_empty() => {}
+                    ("ask", _) => lines.push((yours(&["args", name, "ask"]), pair(key, value))),
+                    _ => lines.push((false, pair(key, value))),
+                }
+            }
+        }
+    }
+    if let Some(Json::Object(takes)) = manifest.get("takes") {
+        for (name, result) in takes {
+            lines.push((false, String::new()));
+            lines.push((false, format!("[args.{name}]")));
+            lines.push((false, pair("takes", result)));
+        }
+    }
 }
 
 /// `vocab <name>`: every word with its meaning, as the file writes them.

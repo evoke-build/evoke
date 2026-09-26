@@ -33,7 +33,7 @@ pub enum Level {
 }
 
 /// One change to the contract, in the order the diff walks: the previous arguments, the added ones, the body,
-/// what it may touch, config, then what the result yields.
+/// what it may touch, config, what the result yields, what the reflex takes, then what it returns.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Change {
@@ -98,12 +98,37 @@ pub enum Change {
     YieldChanged {
         field: FieldName,
     },
+    /// An argument an earlier step's whole result fills, added: a request that ran the reflex needs a source now.
+    TakesAdded {
+        arg: ArgName,
+        name: FieldName,
+    },
+    TakesRemoved {
+        arg: ArgName,
+        name: FieldName,
+    },
+    /// The name a taken argument takes moved: `name` is the new one.
+    TakesChanged {
+        arg: ArgName,
+        name: FieldName,
+    },
+    /// The body's whole result named: a later step may take it now.
+    ReturnsAdded {
+        name: FieldName,
+    },
+    ReturnsRemoved {
+        name: FieldName,
+    },
+    /// The name the whole result goes by moved: `name` is the new one; a request that took it stands no more.
+    ReturnsChanged {
+        name: FieldName,
+    },
 }
 
 impl Change {
     /// How much the change matters: major when it can break what a person wrote — an overlay, a call, an example,
-    /// a request that takes a yield into a later step; minor for an addition, a config key gone, a declaration
-    /// widened; a declaration narrowed changes nothing a person holds.
+    /// a request that takes a yield or a whole result into a later step; minor for an addition, a config key
+    /// gone, a declaration widened; a declaration narrowed changes nothing a person holds.
     fn level(&self) -> Level {
         match self {
             Self::ArgRemoved { .. }
@@ -115,7 +140,12 @@ impl Change {
             | Self::Required { .. }
             | Self::ConfigSecret { secret: true, .. }
             | Self::YieldRemoved { .. }
-            | Self::YieldChanged { .. } => Level::Major,
+            | Self::YieldChanged { .. }
+            | Self::TakesAdded { .. }
+            | Self::TakesRemoved { .. }
+            | Self::TakesChanged { .. }
+            | Self::ReturnsRemoved { .. }
+            | Self::ReturnsChanged { .. } => Level::Major,
             Self::ConfigSecret { secret: false, .. }
             | Self::ArgAdded { .. }
             | Self::Optional { .. }
@@ -123,6 +153,7 @@ impl Change {
             | Self::ConfigAdded { .. }
             | Self::ConfigRemoved { .. }
             | Self::YieldAdded { .. }
+            | Self::ReturnsAdded { .. }
             | Self::NeedsWidened { .. } => Level::Minor,
             Self::NeedsNarrowed { .. } => Level::Same,
         }
@@ -217,6 +248,7 @@ pub fn diff(previous: &Manifest, next: &Manifest) -> ContractDiff {
             });
         }
     }
+    changes.extend(joined(previous, next));
     let level = changes
         .iter()
         .map(Change::level)
@@ -227,6 +259,43 @@ pub fn diff(previous: &Manifest, next: &Manifest) -> ContractDiff {
         changes,
         violations: violations(previous, next, &renamed),
     }
+}
+
+/// The changes to what the reflex takes, per argument, and to what it returns.
+fn joined(previous: &Manifest, next: &Manifest) -> Vec<Change> {
+    let mut changes = Vec::new();
+    for (arg, before) in &previous.takes {
+        match next.takes.get(arg) {
+            None => changes.push(Change::TakesRemoved {
+                arg: arg.clone(),
+                name: before.clone(),
+            }),
+            Some(after) if after != before => changes.push(Change::TakesChanged {
+                arg: arg.clone(),
+                name: after.clone(),
+            }),
+            Some(_) => {}
+        }
+    }
+    for (arg, name) in &next.takes {
+        if !previous.takes.contains_key(arg) {
+            changes.push(Change::TakesAdded {
+                arg: arg.clone(),
+                name: name.clone(),
+            });
+        }
+    }
+    match (&previous.returns, &next.returns) {
+        (None, Some(name)) => changes.push(Change::ReturnsAdded { name: name.clone() }),
+        (Some(name), None) => changes.push(Change::ReturnsRemoved { name: name.clone() }),
+        (Some(before), Some(after)) if before != after => {
+            changes.push(Change::ReturnsChanged {
+                name: after.clone(),
+            });
+        }
+        _ => {}
+    }
+    changes
 }
 
 /// The effect a person runs under after an update: theirs, unless upstream tightened it.

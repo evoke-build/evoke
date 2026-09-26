@@ -6,6 +6,12 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A manifest names what its body returns, `returns = "deploys"`, and an argument takes an earlier step's whole
+  result by that name, `[args.deploys] takes = "deploys"`: filled by the plan alone, never asked, handed to the
+  body beside its decision. A step takes several in one call. No step before the taker returning the name, or two
+  returning it, stops the request before anything runs; so does a field taken from a step run once per record. A
+  taker is refused by `evoke run` and the SDK's `run` and `handle`; a result over 1 MiB is not handed.
+- `evoke show <name>` says which results a reflex takes and which installed reflexes return them.
 - `evoke try` shows a step read with its neighbour as one request as the confirm it is, in a plan of several
   steps too.
 - The collection's `volume` drops the test `lower the volume by 20`.

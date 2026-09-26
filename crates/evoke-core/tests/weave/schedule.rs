@@ -1,14 +1,17 @@
 //! The schedule under any plan, against the core's own planner: requests of one to seven parts joined by `and`
 //! and `then`, each part a decision the spec's fixtures made, every reflex under an effect the case chose, the
-//! engine's judgment of every split point generated — through `weave::planning::plan` as it is. Each invariant
-//! quotes the sentence of the design it checks.
+//! engine's judgment of every split point generated — through `weave::planning::plan` as it is; and, over the
+//! joins plan, requests of lookups and suspects, every suspect bound by name to the one lookup before it that
+//! returns each name, or refused when none does, or two. Each invariant quotes the sentence of the design it
+//! checks.
 
-use super::reference::{abstain, decision, exclusive, plan_with, stages};
+use super::reference::{abstain, decision, exclusive, joins, plan_with, stages};
+use evoke_core::Plan;
 use evoke_core::adapter::Raw;
 use evoke_core::manifest::Effect;
 use evoke_core::name::LocalName;
 use evoke_core::weave::planning;
-use evoke_core::weave::{Answers, Need, Order, Outcome, Planning, Weave};
+use evoke_core::weave::{Answers, Because, Need, Order, Outcome, Planning, Via, Weave};
 use indexmap::IndexMap;
 use proptest::collection::vec;
 use proptest::prelude::*;
@@ -150,17 +153,29 @@ fn planned(request: &Request) -> Weave {
         ("timer", request.effects[1]),
         ("contact", request.effects[2]),
     ]);
-    let input = request.text();
+    planned_under(&plan, &request.text(), &request.judged, |text| {
+        decision(Part::of_text(text).reflex())
+    })
+}
+
+/// A request through the planner under a plan, its needs answered: the judgments as given, each part decided
+/// by `decide`, a text narrowed to one reflex matching nothing.
+fn planned_under(
+    plan: &Plan,
+    input: &str,
+    judged: &[f64],
+    decide: impl Fn(&str) -> evoke_core::Decision,
+) -> Weave {
     let mut answers = Answers::default();
     loop {
-        match planning::plan(&plan, &input, &[], &answers).expect("the answers validate") {
+        match planning::plan(plan, input, &[], &answers).expect("the answers validate") {
             Planning::Done { weave } => return weave,
             Planning::Need { need } => match need {
                 Need::Judge { request: judge } => {
                     let mut raw = IndexMap::new();
                     for (n, id) in judge.questions.keys().enumerate() {
                         let mut answer = IndexMap::new();
-                        answer.insert("yes".to_owned(), request.judged[n]);
+                        answer.insert("yes".to_owned(), judged[n]);
                         raw.insert(id.to_string(), answer);
                     }
                     answers.judged = Some(Raw(raw));
@@ -171,7 +186,7 @@ fn planned(request: &Request) -> Weave {
                         let decided = if asked.only.is_some() {
                             abstain()
                         } else {
-                            decision(Part::of_text(&asked.text).reflex())
+                            decide(&asked.text)
                         };
                         answers.decided.push((asked, decided));
                     }
@@ -179,6 +194,136 @@ fn planned(request: &Request) -> Weave {
             },
         }
     }
+}
+
+/// A part of a request over the joins plan: a lookup that returns its name, or the suspect that takes the three.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Lookup {
+    Errors,
+    Deploys,
+    Logs,
+    Suspect,
+}
+
+impl Lookup {
+    fn text(self) -> &'static str {
+        match self {
+            Self::Errors => "errors checkout",
+            Self::Deploys => "deploys checkout",
+            Self::Logs => "logs checkout",
+            Self::Suspect => "suspect",
+        }
+    }
+
+    fn reflex(self) -> &'static str {
+        match self {
+            Self::Errors => "errors",
+            Self::Deploys => "deploys",
+            Self::Logs => "logs",
+            Self::Suspect => "suspect",
+        }
+    }
+
+    fn of_text(text: &str) -> Self {
+        [Self::Errors, Self::Deploys, Self::Logs, Self::Suspect]
+            .into_iter()
+            .find(|part| part.text() == text)
+            .unwrap_or_else(|| panic!("no part reads «{text}»"))
+    }
+}
+
+/// A request over the joins plan: lookups and suspects, joined, judged.
+#[derive(Clone, Debug)]
+struct Joined {
+    parts: Vec<Lookup>,
+    joins: Vec<Join>,
+    judged: Vec<f64>,
+}
+
+impl Joined {
+    fn text(&self) -> String {
+        let mut text = self.parts[0].text().to_owned();
+        for (join, part) in self.joins.iter().zip(&self.parts[1..]) {
+            text.push_str(join.words());
+            text.push_str(part.text());
+        }
+        text
+    }
+}
+
+fn lookup() -> impl Strategy<Value = Lookup> {
+    prop_oneof![
+        2 => Just(Lookup::Errors),
+        2 => Just(Lookup::Deploys),
+        2 => Just(Lookup::Logs),
+        3 => Just(Lookup::Suspect)
+    ]
+}
+
+/// One to six parts drawn freely; or, a third of the time, the outage's own shape — the three lookups in some
+/// order, then the suspect, then what follows — so a suspect bound over all three is drawn often.
+fn parts() -> impl Strategy<Value = Vec<Lookup>> {
+    prop_oneof![
+        2 => vec(lookup(), 1..=6),
+        1 => (0u8..6, vec(lookup(), 0..=2)).prop_map(|(order, rest)| {
+            let mut three = vec![Lookup::Errors, Lookup::Deploys, Lookup::Logs];
+            let first = three.remove(usize::from(order) % 3);
+            let second = three.remove(usize::from(order / 3) % 2);
+            let mut parts = vec![first, second, three[0], Lookup::Suspect];
+            parts.extend(rest);
+            parts
+        }),
+    ]
+}
+
+fn joined() -> impl Strategy<Value = Joined> {
+    parts().prop_flat_map(|parts| {
+        let n = parts.len();
+        (Just(parts), vec(join(), n - 1), vec(judgment(), n - 1)).prop_map(
+            |(parts, joins, judged)| Joined {
+                parts,
+                joins,
+                judged,
+            },
+        )
+    })
+}
+
+/// «A taker's argument is bound to the one step before it whose reflex returns that name … none, two, or one
+/// step run once per record: the request is refused before anything runs.» Per suspect, per name: the one
+/// source, or the refusal the plan must carry.
+fn bound_by_name(parts: &[Lookup]) -> (Vec<(usize, usize, &'static str)>, Vec<Because>) {
+    let mut binds = Vec::new();
+    let mut refusals = Vec::new();
+    for (i, part) in parts.iter().enumerate() {
+        if *part != Lookup::Suspect {
+            continue;
+        }
+        let step = i + 1;
+        for (name, returner) in [
+            ("errors", Lookup::Errors),
+            ("deploys", Lookup::Deploys),
+            ("logs", Lookup::Logs),
+        ] {
+            let sources: Vec<usize> = parts[..i]
+                .iter()
+                .enumerate()
+                .filter(|(_, p)| **p == returner)
+                .map(|(j, _)| j + 1)
+                .collect();
+            let name = evoke_core::name::FieldName::new(name).expect("a name");
+            match sources.as_slice() {
+                [] => refusals.push(Because::NoSource { step, name }),
+                [source] => binds.push((*source, step, name.as_str().to_owned().leak() as &str)),
+                _ => refusals.push(Because::SeveralSources {
+                    step,
+                    name,
+                    sources,
+                }),
+            }
+        }
+    }
+    (binds, refusals)
 }
 
 /// «`then` … order[s] the steps»: everything before a `then` before everything after it, and nothing else
@@ -250,5 +395,94 @@ proptest! {
         prop_assert_eq!(staged, (1..=weave.steps.len()).collect::<Vec<_>>());
         // «The verdict — run, ask, confirm, refuse — stands before anything runs»: every part decided, it runs.
         prop_assert_eq!(weave.verdict.outcome, Outcome::Run);
+    }
+
+    /// «Dependencies come from words or a declared name»: over the joins plan, every suspect takes each of the
+    /// three names from the one lookup before it that returns it, the edges and the stages following; none, or
+    /// two, refuses the plan before anything runs, and the words never choose.
+    #[test]
+    fn joins_bind_by_name_under_any_plan(request in joined()) {
+        let plan = joins();
+        let weave = planned_under(&plan, &request.text(), &request.judged, |text| decision(Lookup::of_text(text).reflex()));
+        prop_assert_eq!(weave.steps.len(), request.parts.len());
+        for (step, part) in weave.steps.iter().zip(&request.parts) {
+            prop_assert_eq!(step.reflex.as_ref().map(LocalName::as_str), Some(part.reflex()));
+        }
+        let (binds, refusals) = bound_by_name(&request.parts);
+        // Every binding is a whole result by name, `takes`, and none carries a kind or a list.
+        let planned: Vec<(usize, usize, &str)> = weave.binds.iter().map(|b| {
+            prop_assert_eq!(b.via, Via::Takes);
+            prop_assert!(b.kind.is_none() && b.each.is_none());
+            prop_assert_eq!(b.arg.as_str(), b.field.as_str(), "the suspect's arguments are named as the results are");
+            Ok((b.from, b.to, b.field.as_str()))
+        }).collect::<Result<_, _>>()?;
+        prop_assert_eq!(&planned, &binds);
+        // «`then` and a reference order the steps», and so does a name: a suspect follows every source it takes.
+        let mut after = ordered_by_then(&weave);
+        for (from, to, _) in &binds {
+            if !after[to - 1].contains(from) {
+                after[to - 1].push(*from);
+            }
+        }
+        for edges in &mut after {
+            edges.sort_unstable();
+        }
+        for step in &weave.steps {
+            prop_assert_eq!(&step.after, &after[step.n - 1], "step {}'s edges", step.n);
+        }
+        // Reads all: the stages are layers by longest path, together.
+        let effects: Vec<Effect> = weave.steps.iter().map(|step| step.effect.expect("every step has an effect")).collect();
+        prop_assert!(!weave.exclusive);
+        prop_assert_eq!(&weave.stages, &stages(&effects, &after));
+        // The verdict: refused for exactly the reasons the names give, in the steps' order; else it runs.
+        let carried: Vec<&Because> = weave.verdict.because.iter().filter(|b| matches!(b, Because::NoSource { .. } | Because::SeveralSources { .. })).collect();
+        prop_assert_eq!(carried, refusals.iter().collect::<Vec<_>>());
+        prop_assert_eq!(weave.verdict.outcome, if refusals.is_empty() { Outcome::Run } else { Outcome::Refuse });
+    }
+}
+
+/// The joins generator draws the shapes its invariants speak of: a suspect bound over all three, one refused for
+/// want of a source, one refused over two sources, and a chain of two suspects.
+#[test]
+fn the_joins_generator_reaches_every_shape() {
+    use proptest::strategy::ValueTree;
+    use proptest::test_runner::TestRunner;
+    let mut runner = TestRunner::deterministic();
+    let mut seen = [0usize; 4];
+    for _ in 0..300 {
+        let request = joined().new_tree(&mut runner).expect("a request").current();
+        let (binds, refusals) = bound_by_name(&request.parts);
+        let suspects: Vec<usize> = request
+            .parts
+            .iter()
+            .enumerate()
+            .filter(|(_, p)| **p == Lookup::Suspect)
+            .map(|(i, _)| i + 1)
+            .collect();
+        seen[0] += usize::from(
+            suspects
+                .iter()
+                .any(|s| binds.iter().filter(|(_, to, _)| to == s).count() == 3),
+        );
+        seen[1] += usize::from(
+            refusals
+                .iter()
+                .any(|r| matches!(r, Because::NoSource { .. })),
+        );
+        seen[2] += usize::from(
+            refusals
+                .iter()
+                .any(|r| matches!(r, Because::SeveralSources { .. })),
+        );
+        seen[3] += usize::from(suspects.len() >= 2 && refusals.is_empty());
+    }
+    let names = [
+        "a suspect over three",
+        "a name no step returns",
+        "a name two steps return",
+        "two suspects bound",
+    ];
+    for (count, name) in seen.iter().zip(names) {
+        assert!(*count >= 15, "{name} drawn {count} times of 300");
     }
 }

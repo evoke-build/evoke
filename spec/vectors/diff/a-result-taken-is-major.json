@@ -1,0 +1,80 @@
+{
+  "input": {
+    "previous": {
+      "description": "Find the release most likely behind a failure.\nWeighs a service's errors, its deploys and its logs, and names the release.",
+      "not_for": [
+        "listing deploys",
+        "rolling a release back"
+      ],
+      "tags": [
+        "ops"
+      ],
+      "effect": "read",
+      "confirm": "Find the suspect?",
+      "run": "suspect.mts",
+      "config": {},
+      "args": {},
+      "yields": {
+        "release": "quoted"
+      },
+      "takes": {
+        "errors": "errors",
+        "deploys": "deploys"
+      },
+      "examples": {
+        "find the suspect": {},
+        "which deploy broke it": {},
+        "find the release behind the outage": {}
+      },
+      "tests": {
+        "what broke checkout": {},
+        "list the deploys": false
+      },
+      "unknown": []
+    },
+    "next": {
+      "description": "Find the release most likely behind a failure.\nWeighs a service's errors, its deploys and its logs, and names the release.",
+      "not_for": [
+        "listing deploys",
+        "rolling a release back"
+      ],
+      "tags": [
+        "ops"
+      ],
+      "effect": "read",
+      "confirm": "Find the suspect?",
+      "run": "suspect.mts",
+      "config": {},
+      "args": {},
+      "yields": {
+        "release": "quoted"
+      },
+      "takes": {
+        "errors": "errors",
+        "deploys": "deploys",
+        "logs": "logs"
+      },
+      "examples": {
+        "find the suspect": {},
+        "which deploy broke it": {},
+        "find the release behind the outage": {}
+      },
+      "tests": {
+        "what broke checkout": {},
+        "list the deploys": false
+      },
+      "unknown": []
+    }
+  },
+  "expect": {
+    "level": "major",
+    "changes": [
+      {
+        "type": "takes_added",
+        "arg": "logs",
+        "name": "logs"
+      }
+    ],
+    "violations": []
+  }
+}

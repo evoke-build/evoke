@@ -1,0 +1,38 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "rollback"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Roll back whatever the suspect names.\"\nconfirm = \"Roll back?\"\nrun     = \"rollback.mts\"\n\n[args.suspect]\ntakes = \"suspect\"\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "rollback",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "rollback"
+          },
+          "line": 8,
+          "column": 1
+        },
+        "message": "args.suspect takes a result, and the reflex is destructive: a destructive step takes what it acts on as a field its confirm can show",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "rollback"
+            },
+            "line": 8,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

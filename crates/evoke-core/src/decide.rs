@@ -12,8 +12,8 @@ use crate::adapter::{
 };
 use crate::call::{Call, Value, Written, quoted, render};
 use crate::diagnostic::{Diagnostic, Fix};
-use crate::manifest::{Argument, Effect, Kind, Pick, Piece, Range, Recognizer, Source};
-use crate::name::{ArgName, LocalName, OptionKey, Tag, VocabName, Word};
+use crate::manifest::{self, Argument, Effect, Kind, Pick, Piece, Range, Recognizer, Source};
+use crate::name::{ArgName, FieldName, LocalName, OptionKey, Tag, VocabName, Word};
 use crate::plan::{Active, Plan, Slot, unstated as unstated_key, unstated_text};
 use crate::propose::{PickValue, propose};
 use crate::text::{Clean, Input, NonEmpty, Span};
@@ -1246,6 +1246,20 @@ pub fn picked(text: &str, recognizer: Recognizer) -> Option<Value> {
 pub fn by_name(plan: &Plan, written: Written) -> Result<Decision, Diagnostic> {
     let reflex = written.reflex;
     let active = plan.running(&reflex)?;
+    // A whole result is handed by the plan alone: no one types one, so a call by name never reaches a taker.
+    if !active.takes.is_empty() {
+        let names: Vec<&str> = active.takes.values().map(FieldName::as_str).collect();
+        return Err(refused(
+            &reflex,
+            format!(
+                "{reflex} takes {}, which a step before it in the same request returns",
+                manifest::words(&names)
+            ),
+            Fix::Show {
+                reflex: Some(reflex.clone()),
+            },
+        ));
+    }
     let mut given = IndexMap::new();
     for (name, text) in &written.args {
         let (current, argument) = active.argument(&reflex, name.as_str())?;

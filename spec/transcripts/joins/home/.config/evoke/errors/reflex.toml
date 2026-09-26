@@ -1,0 +1,24 @@
+reflex = 1
+
+description = """
+Show the error rate of a service.
+The rate over the last hour and when it rose."""
+not_for = ["logs of a service", "releases and deploys"]
+tags = ["ops"]
+effect = "read"
+confirm = "Check the errors of {service}?"
+run = "errors.mts"
+returns = "errors"
+
+[args.service]
+ask   = "Which service?"
+vocab = "services"
+
+[examples]
+"check the errors for checkout" = {}
+"is payments throwing errors"   = {}
+"error rate of checkout"        = {}
+
+[tests]
+"checkout errors please" = {}
+"list the deploys"       = false

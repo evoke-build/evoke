@@ -9,9 +9,9 @@
 
 use std::path::{Path, PathBuf};
 
-use evoke_core::document::Text;
+use evoke_core::document::{Json, Text};
 use evoke_core::manifest::{Effect, Run};
-use evoke_core::name::{AdapterId, ConfigKey, LocalName, Tag};
+use evoke_core::name::{AdapterId, ArgName, ConfigKey, LocalName, Tag};
 use evoke_core::needs::{self, Origin};
 use evoke_core::plan::{Held, Millis};
 use evoke_core::project::{Location, Locked, LockedAdapter, Setting};
@@ -120,9 +120,17 @@ impl Woven {
 
     /// The one decision a request read as: one step, and so nothing bound — what the foundation alone would have
     /// made of it, under the plan's cap. A part left out beside it changes nothing: what was said not to do is
-    /// no step.
+    /// no step. A step that takes a whole result no step hands is no decision but the plan's refusal.
     #[must_use]
     pub fn single(&self, tags: &[Tag]) -> Option<Decided> {
+        if self.weave.verdict.because.iter().any(|because| {
+            matches!(
+                because,
+                weave::Because::NoSource { .. } | weave::Because::SeveralSources { .. }
+            )
+        }) {
+            return None;
+        }
         match self.weave.steps.as_slice() {
             [step] => self.planned(step, tags),
             _ => None,
@@ -939,14 +947,26 @@ impl Session<'_> {
     /// prompt in between never counts. A refusal past the declaration names the path and the key, and its fix.
     /// Ctrl-C while the body runs ends its group and is the failure's cause, `interrupted`, for the command to
     /// act on.
-    pub fn run(&self, chosen: &Chosen, input: &Input, spent: Millis) -> Result<Returned, Failure> {
+    pub fn run(
+        &self,
+        chosen: &Chosen,
+        taken: &IndexMap<ArgName, Json>,
+        input: &Input,
+        spent: Millis,
+    ) -> Result<Returned, Failure> {
         let _armed = interrupt::arm();
         let reflex = &chosen.call.reflex;
         let what = format!("running {reflex}");
         let active = &self.plan.active()[reflex];
         let home = self.environment.get("HOME").unwrap_or_default();
         let deadline = Deadline::after(self.plan.deadline()).less(spent);
-        let envelope = envelope(chosen, active, input, deadline.left(), home);
+        let refused = |refused: Diagnostic| Failure {
+            what: what.clone(),
+            cause: Some(refused.message),
+            fix: refused.fix,
+        };
+        let envelope =
+            envelope(chosen, active, taken, input, deadline.left(), home).map_err(refused)?;
         let (shipped, dir) = &self.shipped[reflex];
         let dir = std::fs::canonicalize(dir).map_err(|error| Failure {
             what: what.clone(),
@@ -962,11 +982,6 @@ impl Session<'_> {
             .iter()
             .map(|(key, value)| ((*key).clone(), value.clone()))
             .collect();
-        let refused = |refused: Diagnostic| Failure {
-            what: what.clone(),
-            cause: Some(refused.message),
-            fix: refused.fix,
-        };
         let policy =
             resolve(&active.needs, &chosen.call, active, &values, home).map_err(refused)?;
         let argv = match &active.run {

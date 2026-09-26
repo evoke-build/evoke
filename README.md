@@ -106,8 +106,9 @@ records, and one line in a file you own moves a bar.
 The same rules for one reflex on a laptop and a thousand across companies. The first five hold today, pinned by
 transcripts the tests replay offline.
 
-1. **Nothing is made up.** Every value is an option the author listed, a word you taught it, or a piece of what
-   you typed, checked against its range.
+1. **Nothing is made up.** Every value is an option the author listed, a word you taught it, a piece of what
+   you typed, checked against its range, or, in a sentence of several steps, a field of an earlier step's
+   result or that step's whole result, which the plan shows.
 2. **The plan comes first.** You see every step before any of them runs. A part that fits nothing refuses the
    whole sentence.
 3. **A number on every step.** Each decision says how sure `evoke` is: the weakest of its judgments. The bar

@@ -1,11 +1,11 @@
 //! Running a weave: stage by stage, a stage's steps together; a bound step takes its values from the results of
 //! the steps it follows — answering its own ask through `fill`, or decided again with the values written into its
-//! words — then the foundation's own loop, which a host takes it through. A step bound to a list of records runs
-//! once per record, one at a time. A failure, a refusal or a decline ends the weave after the stage; what never
-//! ran is reported so. A round the host ended — the weave cancelled — ends it too: nothing more is handed, and
-//! every step that had not finished reads `skipped · cancelled`. Over the progress a host has gathered, stopping
-//! at the first thing it lacks. In: a `Plan`, the adapter's gate, the `Weave`, the `Progress` so far. Out: the
-//! `Executed`, or what is needed next.
+//! words — and the whole results it takes beside its decision, never in its words; then the foundation's own
+//! loop, which a host takes it through. A step bound to a list of records runs once per record, one at a time.
+//! A failure, a refusal or a decline ends the weave after the stage; what never ran is reported so. A round the
+//! host ended — the weave cancelled — ends it too: nothing more is handed, and every step that had not finished
+//! reads `skipped · cancelled`. Over the progress a host has gathered, stopping at the first thing it lacks. In:
+//! a `Plan`, the adapter's gate, the `Weave`, the `Progress` so far. Out: the `Executed`, or what is needed next.
 
 use indexmap::IndexMap;
 
@@ -22,6 +22,9 @@ use crate::manifest::Recognizer;
 use crate::name::ArgName;
 use crate::plan::Plan;
 
+/// The most a whole result may carry to its taker, in bytes of JSON: past it the step is skipped, `too_large`.
+pub const TAKEN_CAP: usize = 1 << 20;
+
 /// The run of a weave over the progress so far: what became of every step, or what is needed next.
 #[must_use]
 pub fn execute(plan: &Plan, gate: Option<&Gate>, weave: &Weave, progress: &Progress) -> Running {
@@ -30,6 +33,12 @@ pub fn execute(plan: &Plan, gate: Option<&Gate>, weave: &Weave, progress: &Progr
         gate,
         weave,
         progress,
+        // A round the host ended: the weave is cancelled from here on — nothing more is handed, and every step
+        // that had not finished reads skipped · cancelled.
+        cancelled: progress
+            .handled
+            .iter()
+            .any(|h| h.why == Some(Why::Cancelled)),
     };
     match runner.run() {
         Ok(executed) => Running::Done { executed },
@@ -42,10 +51,14 @@ struct Runner<'a> {
     gate: Option<&'a Gate>,
     weave: &'a Weave,
     progress: &'a Progress,
+    cancelled: bool,
 }
 
 /// The bound values one round of a step takes.
 type Values = Vec<(Binding, String)>;
+
+/// The whole results a step takes, per taken argument: a constant of every round.
+type Taken = IndexMap<ArgName, Json>;
 
 /// A step's state as the run walks it.
 struct Walk {
@@ -54,6 +67,19 @@ struct Walk {
     rounds: Vec<Handled>,
     /// The last result the step gave: what a later step takes.
     result: Option<Returned>,
+}
+
+/// What a step's turn found in its sources: its rounds, with the values bound into each and the whole results
+/// every round takes; an empty list of rounds when a source found nothing to take; or why the step is skipped.
+enum Rounds {
+    Ready {
+        rounds: Vec<Values>,
+        taken: Taken,
+        /// The whole results as the step's line shows them: the argument, the source, the name, no value.
+        held: Vec<Bound>,
+    },
+    FoundNothing,
+    Skipped(Why),
 }
 
 impl Runner<'_> {
@@ -69,13 +95,6 @@ impl Runner<'_> {
                 result: None,
             })
             .collect();
-        // A round the host ended: the weave is cancelled from here on — nothing more is handed, and every step
-        // that had not finished reads skipped · cancelled.
-        let cancelled = self
-            .progress
-            .handled
-            .iter()
-            .any(|h| h.why == Some(Why::Cancelled));
         let mut stopped: Option<Why> = None;
         for stage in &self.weave.stages {
             if let Some(why) = &stopped {
@@ -91,44 +110,32 @@ impl Runner<'_> {
                 }
                 let step = &self.weave.steps[n - 1];
                 let binds: Vec<&Binding> = self.weave.binds.iter().filter(|b| b.to == n).collect();
-                let rounds = match rounds_for(&binds, &walks) {
-                    None => {
-                        walks[n - 1].status = Some((Status::Skipped, Some(Why::NothingToTake)));
+                let (rounds, taken, held) = match rounds_for(&binds, &walks) {
+                    Rounds::Skipped(why) => {
+                        walks[n - 1].status = Some((Status::Skipped, Some(why)));
                         continue;
                     }
-                    Some(rounds) if rounds.is_empty() => {
+                    Rounds::FoundNothing => {
                         walks[n - 1].status = Some((Status::Skipped, Some(Why::FoundNothing)));
                         continue;
                     }
-                    Some(rounds) => rounds,
+                    Rounds::Ready {
+                        rounds,
+                        taken,
+                        held,
+                    } => (rounds, taken, held),
                 };
                 let mut pending = false;
                 for (i, values) in rounds.iter().enumerate() {
+                    let bound: Vec<Bound> = held.iter().cloned().chain(bound_of(values)).collect();
                     let walk = &mut walks[n - 1];
-                    if let Some(handled) = self.handled(n, i) {
-                        walk.bound.extend(bound_of(values));
-                        walk.rounds.push(handled.clone());
-                        if handled.status == Status::Ran {
-                            walk.result.clone_from(&handled.result);
-                            continue;
-                        }
-                        walk.status = Some((handled.status, handled.why.clone()));
-                        break;
-                    }
-                    if cancelled {
-                        walk.status = Some((Status::Skipped, Some(Why::Cancelled)));
-                        break;
-                    }
-                    match self.round(step, i, values)? {
-                        Prepared::Refused(why) => {
-                            walk.bound.extend(bound_of(values));
-                            walk.status = Some((Status::Refused, Some(why)));
-                        }
-                        Prepared::Handle(next) => {
-                            walk.bound.extend(bound_of(values));
+                    match self.turn(walk, step, i, values, &taken, bound)? {
+                        Turn::Ran => continue,
+                        Turn::Handed(next) => {
                             handling.push(*next);
                             pending = true;
                         }
+                        Turn::Stopped => {}
                     }
                     break;
                 }
@@ -160,6 +167,45 @@ impl Runner<'_> {
         ))
     }
 
+    /// One round at its turn: reported by the host already — its result kept for the next round and for what
+    /// takes from it, or the stop it met; cancelled, with every round after it; refused once its values were in
+    /// place; or handed to the host.
+    fn turn(
+        &self,
+        walk: &mut Walk,
+        step: &Step,
+        i: usize,
+        values: &Values,
+        taken: &Taken,
+        bound: Vec<Bound>,
+    ) -> Result<Turn, Todo> {
+        if let Some(handled) = self.handled(step.n, i) {
+            walk.bound.extend(bound);
+            walk.rounds.push(handled.clone());
+            if handled.status == Status::Ran {
+                walk.result.clone_from(&handled.result);
+                return Ok(Turn::Ran);
+            }
+            walk.status = Some((handled.status, handled.why.clone()));
+            return Ok(Turn::Stopped);
+        }
+        if self.cancelled {
+            walk.status = Some((Status::Skipped, Some(Why::Cancelled)));
+            return Ok(Turn::Stopped);
+        }
+        match self.round(step, i, values, taken, bound.clone())? {
+            Prepared::Refused(why) => {
+                walk.bound.extend(bound);
+                walk.status = Some((Status::Refused, Some(why)));
+                Ok(Turn::Stopped)
+            }
+            Prepared::Handle(next) => {
+                walk.bound.extend(bound);
+                Ok(Turn::Handed(next))
+            }
+        }
+    }
+
     /// What the host made of a round, when it has.
     fn handled(&self, step: usize, round: usize) -> Option<&Handled> {
         self.progress
@@ -169,17 +215,28 @@ impl Runner<'_> {
     }
 
     /// One round prepared for the host: the step's decision as planned, or with its bound values in place —
-    /// answering its ask, or decided again with the values in its words, which needs the host first.
-    fn round(&self, step: &Step, i: usize, values: &Values) -> Result<Prepared, Todo> {
-        let bound = bound_of(values);
-        if values.is_empty() {
-            return Ok(Prepared::Handle(Box::new(Handling {
+    /// answering its ask, or decided again with the values in its words, which needs the host first — and the
+    /// whole results it takes beside it, which never reach its words.
+    fn round(
+        &self,
+        step: &Step,
+        i: usize,
+        values: &Values,
+        taken: &Taken,
+        bound: Vec<Bound>,
+    ) -> Result<Prepared, Todo> {
+        let handling = |decision: Decision, input: String| {
+            Prepared::Handle(Box::new(Handling {
                 step: step.n,
                 round: i,
-                decision: step.decision.clone(),
-                input: step.text.clone(),
+                decision,
+                input,
                 bound,
-            })));
+                taken: taken.clone(),
+            }))
+        };
+        if values.is_empty() {
+            return Ok(handling(step.decision.clone(), step.text.clone()));
         }
         // A step bound both ways is rewritten: the rewrite reaches a required argument too; so is one whose ask
         // is gone, filled up front by the host.
@@ -188,16 +245,13 @@ impl Runner<'_> {
         {
             let given: IndexMap<ArgName, Value> = values
                 .iter()
-                .filter_map(|(b, text)| picked(text, b.kind).map(|value| (b.arg.clone(), value)))
+                .filter_map(|(b, text)| {
+                    let value = picked(text, b.kind?)?;
+                    Some((b.arg.clone(), value))
+                })
                 .collect();
             let decision = self.merged(step, fill(self.plan, asking.clone(), given, self.gate));
-            return Ok(Prepared::Handle(Box::new(Handling {
-                step: step.n,
-                round: i,
-                decision,
-                input: step.text.clone(),
-                bound,
-            })));
+            return Ok(handling(decision, step.text.clone()));
         }
         let Some(reflex) = &step.reflex else {
             return Ok(Prepared::Refused(Why::NoReflex));
@@ -225,13 +279,7 @@ impl Runner<'_> {
                 reflex: read.clone(),
             }));
         }
-        Ok(Prepared::Handle(Box::new(Handling {
-            step: step.n,
-            round: i,
-            decision: self.merged(step, decision.clone()),
-            input: text,
-            bound,
-        })))
+        Ok(handling(self.merged(step, decision.clone()), text))
     }
 
     /// A step merged back never runs unasked: its decision at its turn confirms, as the planner's did.
@@ -263,6 +311,13 @@ fn stopped_after(stage: &[usize], walks: &[Walk]) -> Option<Why> {
     (!stage.iter().all(ran)).then_some(Why::EarlierStep)
 }
 
+/// What a round's turn came to: ran, so the next round follows; handed to the host; or the step stopped here.
+enum Turn {
+    Ran,
+    Handed(Box<Handling>),
+    Stopped,
+}
+
 /// A round ready: for the host to take through the loop, or refused once the values were in place.
 enum Prepared {
     Handle(Box<Handling>),
@@ -276,17 +331,20 @@ fn bound_of(values: &Values) -> Vec<Bound> {
             arg: b.arg.clone(),
             from: b.from,
             field: b.field.clone(),
-            value: value.clone(),
+            value: Some(value.clone()),
         })
         .collect()
 }
 
 /// The rounds a step runs: one, with the bound values from the results of the steps it follows; one per record
 /// when a binding takes a field of a list's records; none when a source yielded no such field, whatever another
-/// source found; an empty list of rounds when a source found nothing to take.
-fn rounds_for(binds: &[&Binding], walks: &[Walk]) -> Option<Vec<Values>> {
+/// source found; an empty list of rounds when a source found nothing to take. A whole result is a constant of
+/// every round: no data or `null` is nothing to take, and more than the cap is not handed.
+fn rounds_for(binds: &[&Binding], walks: &[Walk]) -> Rounds {
     let mut plain: Values = Vec::new();
     let mut lists: Vec<(Binding, Vec<String>)> = Vec::new();
+    let mut taken = Taken::new();
+    let mut held = Vec::new();
     let mut found_nothing = false;
     for binding in binds {
         // A source that found nothing skipped clean; so does what takes from it — once every other source is
@@ -300,40 +358,74 @@ fn rounds_for(binds: &[&Binding], walks: &[Walk]) -> Option<Vec<Values>> {
             found_nothing = true;
             continue;
         }
-        let data = walks
+        let nothing = Rounds::Skipped(Why::NothingToTake { from: binding.from });
+        let result = walks
             .get(binding.from - 1)
             .and_then(|walk| walk.result.as_ref())
-            .and_then(|result| result.data.as_ref())
-            .and_then(Json::as_object);
+            .and_then(|result| result.data.as_ref());
+        if binding.via == Via::Takes {
+            let Some(data) = result.filter(|data| !data.is_null()) else {
+                return nothing;
+            };
+            if data.to_string().len() > TAKEN_CAP {
+                return Rounds::Skipped(Why::TooLarge { from: binding.from });
+            }
+            taken.insert(binding.arg.clone(), data.clone());
+            held.push(Bound {
+                arg: binding.arg.clone(),
+                from: binding.from,
+                field: binding.field.clone(),
+                value: None,
+            });
+            continue;
+        }
+        let data = result.and_then(Json::as_object);
         let Some(each) = &binding.each else {
-            let value = data
+            let Some(value) = data
                 .and_then(|data| data.get(binding.field.as_str()))
-                .and_then(scalar)?;
+                .and_then(scalar)
+            else {
+                return nothing;
+            };
             plain.push(((*binding).clone(), value));
             continue;
         };
-        let records = data
+        let Some(records) = data
             .and_then(|data| data.get(each.as_str()))
-            .and_then(Json::as_array)?;
+            .and_then(Json::as_array)
+        else {
+            return nothing;
+        };
         let values: Option<Vec<String>> = records
             .iter()
             .map(|record| record.get(binding.field.as_str()).and_then(scalar))
             .collect();
-        lists.push(((*binding).clone(), values?));
+        let Some(values) = values else {
+            return nothing;
+        };
+        lists.push(((*binding).clone(), values));
     }
     if found_nothing {
-        return Some(Vec::new());
+        return Rounds::FoundNothing;
     }
     if lists.is_empty() {
-        return Some(vec![plain]);
+        return Rounds::Ready {
+            rounds: vec![plain],
+            taken,
+            held,
+        };
     }
     let count = lists
         .iter()
         .map(|(_, values)| values.len())
         .min()
         .unwrap_or(0);
-    Some(
-        (0..count)
+    // A list with no record is a source that found nothing: the step skips clean.
+    if count == 0 {
+        return Rounds::FoundNothing;
+    }
+    Rounds::Ready {
+        rounds: (0..count)
             .map(|i| {
                 let mut round = plain.clone();
                 round.extend(
@@ -344,7 +436,9 @@ fn rounds_for(binds: &[&Binding], walks: &[Walk]) -> Option<Vec<Values>> {
                 round
             })
             .collect(),
-    )
+        taken,
+        held,
+    }
 }
 
 /// A string or a number of a result's data, as text; anything else is nothing to take.
@@ -366,7 +460,7 @@ fn scalar(value: &Json) -> Option<String> {
 #[must_use]
 pub fn rewrite(step: &Step, values: &Values) -> String {
     let literal = |(binding, value): &(Binding, String)| {
-        if binding.kind == Recognizer::Quoted {
+        if binding.kind == Some(Recognizer::Quoted) {
             format!("\"{value}\"")
         } else {
             value.clone()
@@ -451,5 +545,52 @@ mod tests {
             rewrite(&step, &values),
             "email dana@example.com about bob@example.com"
         );
+    }
+
+    /// The suspect's plan over the joins fixture, its three sources ran: a whole result at the cap is handed,
+    /// one byte over it skips the taker, `too_large` naming the source, and the whole counts as failed.
+    #[test]
+    fn a_whole_result_over_the_cap_is_not_handed() {
+        let plan: Plan =
+            serde_json::from_str(include_str!("../../../../spec/fixtures/plan-joins.json"))
+                .unwrap();
+        let weave: Weave =
+            serde_json::from_str(include_str!("../../../../spec/fixtures/weave-suspect.json"))
+                .unwrap();
+        let ran = |step: usize, data: Json| Handled {
+            step,
+            round: 0,
+            status: Status::Ran,
+            why: None,
+            result: Some(Returned {
+                text: "ok".to_owned(),
+                data: Some(data),
+            }),
+        };
+        // `{"logs":"<text>"}` is the text's length plus eleven bytes of JSON around it.
+        let logs = |text_len: usize| serde_json::json!({ "logs": "x".repeat(text_len) });
+        let progress_with = |logs: Json| Progress {
+            decided: Vec::new(),
+            handled: vec![
+                ran(1, serde_json::json!({ "rate": 0.084 })),
+                ran(2, serde_json::json!({ "deploys": [] })),
+                ran(3, logs),
+            ],
+        };
+        let at_cap = execute(&plan, None, &weave, &progress_with(logs(TAKEN_CAP - 11)));
+        let Running::Todo {
+            todo: Todo::Handle { handling },
+        } = at_cap
+        else {
+            panic!("a result at the cap is handed");
+        };
+        assert_eq!(handling[0].taken.len(), 3);
+        let over = execute(&plan, None, &weave, &progress_with(logs(TAKEN_CAP - 10)));
+        let Running::Done { executed } = over else {
+            panic!("a result over the cap skips the taker");
+        };
+        assert_eq!(executed.steps[3].status, Status::Skipped);
+        assert_eq!(executed.steps[3].why, Some(Why::TooLarge { from: 3 }));
+        assert_eq!(executed.worst, Status::Failed);
     }
 }

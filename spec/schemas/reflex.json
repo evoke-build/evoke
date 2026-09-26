@@ -66,6 +66,10 @@
         }
       ]
     },
+    "returns": {
+      "$ref": "#/definitions/name",
+      "description": "The name the body's whole data goes by, for a later step to take. Not with an argv run. Contract."
+    },
     "needs": {
       "type": "object",
       "description": "What the body may touch, held by the kernel: the paths it reads and writes, whether it reaches the network, the programs it runs. No key is the tightest declaration. Contract.",
@@ -138,7 +142,7 @@
     },
     "args": {
       "type": "object",
-      "description": "The arguments. Each has ask and exactly one source: options, vocab, pick or flag.",
+      "description": "The arguments. Each has ask and exactly one source: options, vocab, pick or flag; or takes alone, a whole result an earlier step returns.",
       "propertyNames": {
         "$ref": "#/definitions/arg_name"
       },
@@ -387,9 +391,6 @@
     },
     "argument": {
       "type": "object",
-      "required": [
-        "ask"
-      ],
       "additionalProperties": false,
       "properties": {
         "ask": {
@@ -445,11 +446,16 @@
         "flag": {
           "const": true,
           "description": "A yes/no switch. Optional by nature: the body receives true or nothing."
+        },
+        "takes": {
+          "$ref": "#/definitions/name",
+          "description": "The name of a result an earlier step of the same request returns, taken whole: filled by the plan alone, never asked. Alone: no ask, no source, no optional, no was, no range. Not with an argv run or a destructive effect."
         }
       },
       "oneOf": [
         {
           "required": [
+            "ask",
             "options"
           ],
           "not": {
@@ -473,12 +479,18 @@
                 "required": [
                   "range"
                 ]
+              },
+              {
+                "required": [
+                  "takes"
+                ]
               }
             ]
           }
         },
         {
           "required": [
+            "ask",
             "vocab"
           ],
           "not": {
@@ -502,12 +514,18 @@
                 "required": [
                   "range"
                 ]
+              },
+              {
+                "required": [
+                  "takes"
+                ]
               }
             ]
           }
         },
         {
           "required": [
+            "ask",
             "pick"
           ],
           "not": {
@@ -525,6 +543,11 @@
               {
                 "required": [
                   "flag"
+                ]
+              },
+              {
+                "required": [
+                  "takes"
                 ]
               }
             ]
@@ -550,6 +573,7 @@
         },
         {
           "required": [
+            "ask",
             "flag"
           ],
           "not": {
@@ -577,6 +601,60 @@
               {
                 "required": [
                   "optional"
+                ]
+              },
+              {
+                "required": [
+                  "takes"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "required": [
+            "takes"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "ask"
+                ]
+              },
+              {
+                "required": [
+                  "options"
+                ]
+              },
+              {
+                "required": [
+                  "vocab"
+                ]
+              },
+              {
+                "required": [
+                  "pick"
+                ]
+              },
+              {
+                "required": [
+                  "flag"
+                ]
+              },
+              {
+                "required": [
+                  "range"
+                ]
+              },
+              {
+                "required": [
+                  "optional"
+                ]
+              },
+              {
+                "required": [
+                  "was"
                 ]
               }
             ]

@@ -65,10 +65,21 @@ level = "number"
 | `run`         | yes      | The body: a path ending in `.mts` or `.mjs` inside the directory, or an argv. [The body](body.md) |
 | `[needs]`     | no       | What the body touches, held by the kernel: `reads`, `writes`, `hosts`, `runs`. Left out, the tightest declaration: its own directory and `TMPDIR`. [What the body touches](#what-the-body-touches) |
 | `[config]`    | no       | Settings the user provides with `evoke config`: `key = "about"` or `key = { about, secret = true }`. A secret is only ever set from an environment variable |
-| `[args.<name>]` | no     | The arguments: `ask` and exactly one source. [Arguments](arguments.md) |
+| `[args.<name>]` | no     | The arguments: an `ask` and exactly one source, or `takes` alone. [Arguments](arguments.md) |
 | `[yields]`    | no       | What the body's `data` holds, for a later step to take ([Weaving](../use/weaving.md)): per field, the kind that reads it, `number`, `duration`, `email`, `url` or `quoted`; or `{ each = { … } }` for a list of records |
+| `returns`     | no       | The name of what the body's `data` is, whole, for a later step to take: `returns = "deploys"`. Not with an argv `run`. [A result another step takes whole](#a-result-another-step-takes-whole) |
 | `[examples]`  | no       | Utterances with what they assert, sent to the classifier. [Examples and tests](records.md) |
 | `[tests]`     | no       | The same shape, held out: never sent, run by `evoke test` |
+
+## A result another step takes whole
+
+A body may name what it returns: `returns = "deploys"`. The name says what the body's `data` is, as a whole. A
+later step whose argument has `takes = "deploys"` receives that `data` as the body returned it
+([Arguments](arguments.md#a-whole-result-taken)). Two reflexes meet when their names are equal, as two arguments
+share a vocabulary by naming it: choose the noun a person would say for the data, and reuse a name only for data of
+the same shape. A reflex never returns a name it takes: a step that refines a result returns a new name, so a later
+step has one source. An argv body returns no data, so a reflex whose `run` is an argv names none, and declares no
+`[yields]` either.
 
 ## What the body touches
 
@@ -116,7 +127,7 @@ user's `evoke update --accept`, and is `minor`: [Publishing](publishing.md).
 
 | Contract: a user cannot override it, and changing it is a version bump | Wording: a user may override it, and you may improve it at any tag |
 | :---------------------------------------------------------------- | :--------------------------------------------------------- |
-| `run`; `[needs]`; argument names and their sources; option keys; `range`; `config` keys; `yields` | `description`, `not_for`, `tags`, `confirm`; every `ask`; the meaning of each option; examples and tests |
+| `run`; `[needs]`; argument names and their sources; option keys; `range`; `config` keys; `yields`; `returns`; what an argument takes | `description`, `not_for`, `tags`, `confirm`; every `ask`; the meaning of each option; examples and tests |
 
 An argument may be renamed by declaring its former names, like `was = ["state"]`. Every user's overlay and call
 then follows. [Publishing](publishing.md) says how `evoke check` diffs one tag against the next.

@@ -1,0 +1,24 @@
+reflex = 1
+
+description = """
+Search a service's logs for the last hour.
+The most frequent errors and how often each came."""
+not_for = ["error rates", "posting to a channel"]
+tags = ["ops"]
+effect = "read"
+confirm = "Search the logs of {service}?"
+run = "logs.mts"
+returns = "logs"
+
+[args.service]
+ask   = "Which service?"
+vocab = "services"
+
+[examples]
+"pull the logs for checkout"    = {}
+"search the payments logs"      = {}
+"what do the checkout logs say" = {}
+
+[tests]
+"logs for payments"      = {}
+"error rate of checkout" = false

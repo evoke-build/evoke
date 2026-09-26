@@ -347,6 +347,8 @@ pub(crate) enum Named {
     Arg,
     /// An argument that is a flag: `true` or nothing, never a path.
     Flag,
+    /// An argument an earlier step's whole result fills: data, never a path.
+    Taken,
     Config,
     Both,
     Neither,
@@ -386,6 +388,7 @@ pub(crate) fn read(
                 let problem = match named(name) {
                     Named::Arg | Named::Config => None,
                     Named::Flag => Some("a flag, which has no value"),
+                    Named::Taken => Some("a result the plan hands the body, which is no path"),
                     Named::Both => Some("which is both an argument and a config key"),
                     Named::Neither => Some("which is neither an argument nor a config key"),
                 };

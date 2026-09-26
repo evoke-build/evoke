@@ -1,0 +1,84 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "weigh"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Weigh the logs.\"\neffect  = \"read\"\nconfirm = \"Weigh them?\"\nrun     = [\"weigh\"]\nreturns = \"weight\"\n\n[args.logs]\ntakes = \"logs\"\n\n[yields]\nweight = \"number\"\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "weigh",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "weigh"
+          },
+          "line": 7,
+          "column": 1
+        },
+        "message": "returns needs a file body: an argv body returns no data",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "weigh"
+            },
+            "line": 7,
+            "column": 1
+          }
+        }
+      },
+      {
+        "reflex": "weigh",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "weigh"
+          },
+          "line": 10,
+          "column": 1
+        },
+        "message": "args.logs takes a result, which an argv body cannot receive: use a file body",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "weigh"
+            },
+            "line": 10,
+            "column": 1
+          }
+        }
+      },
+      {
+        "reflex": "weigh",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "weigh"
+          },
+          "line": 12,
+          "column": 1
+        },
+        "message": "yields needs a file body: an argv body returns no data",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "weigh"
+            },
+            "line": 12,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

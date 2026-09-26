@@ -33,7 +33,7 @@ export default (async ({ room, state, brightness = 30 }, { config, signal }) => 
 
 | Value        | Is                                                                                             |
 | :----------- | :--------------------------------------------------------------------------------------------- |
-| `args`       | Per argument: an option's key; a vocabulary word's value, or the word; a pick's value, meaning the number, the seconds, or the text; `true` for a flag. An optional argument left unstated is absent |
+| `args`       | Per argument: an option's key; a vocabulary word's value, or the word; a pick's value, meaning the number, the seconds, or the text; `true` for a flag; for an argument with `takes`, the whole `data` of the earlier step that returned it, as it was returned. An optional argument left unstated is absent |
 | `input`      | The sentence as typed. Free text, a reminder's message, arrives here as it was typed             |
 | `config`     | Each `[config]` key as a string, secrets resolved from the environment for this run only        |
 | `signal`     | Aborted at the deadline, when the user declines, and on `SIGTERM`. Stop. Never guess           |
@@ -42,8 +42,9 @@ export default (async ({ room, state, brightness = 30 }, { config, signal }) => 
 
 A string: the one line a person reads. Or `{ text, data? }`, where `data` is anything an app might use: a pid, a
 time, a path. A field of `data` that a later step of one request may take is declared under `[yields]` in the
-manifest: [The manifest](manifest.md#key-by-key). Throwing is failure: the message prints, and the exit code is
-1. Anything else returned is a failure too.
+manifest, and the whole of `data`, under a name, with `returns`:
+[The manifest](manifest.md#a-result-another-step-takes-whole). Throwing is failure: the message prints, and the
+exit code is 1. Anything else returned is a failure too.
 
 Say what happened, in one lowercase line: `volume 40%`, `locked`, `saved report.pdf to ~/Downloads (1.2 MB)`.
 
@@ -100,8 +101,9 @@ export type Reflex = (args: Args, context: Context) => Result | Promise<Result>
 ```
 
 Option keys become a union: `"on" | "off" | "dim"`. A word, a quoted text, an address and a URL are `string`. A
-number and a duration are `number`. A flag is `true`. An optional argument is marked `?`. Each member carries its
-`ask` or `about`, so an editor's hover shows the question. The file imports nothing.
+number and a duration are `number`. A flag is `true`. A taken result is `unknown`, since `evoke` checks no shape.
+An optional argument is marked `?`. Each member carries its `ask` or `about`, so an editor's hover shows the
+question. The file imports nothing.
 
 ## Testing a body
 

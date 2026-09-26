@@ -28,7 +28,8 @@ The JSON every value takes, pinned by the vectors and mirrored by hand in `sdk/s
 
 - A struct is an object with snake_case keys; an `Option` is absent when none. A collection is present even when
   empty in a decision, a request and a reading; the plan's and the run's lists — `splits`, `excluded`, `binds`,
-  `refs`, `after`, `because`, `bound`, `rounds`, the answers gathered — are absent when empty.
+  `refs`, `after`, `because`, `bound`, `rounds`, `taken`, the answers gathered — and a manifest's `takes` are absent
+  when empty.
 - A newtype is its value: a digest `"h1:<hex>"`, a version `"1.2.0"`, a question id `"lights.room"`, a probability
   `0.58`; a key path is an array of segments; a range is `[min, max]`.
 - An enum without data is its variant in snake_case, `"write"`; one with data is an object tagged by `type`,

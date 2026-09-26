@@ -1,0 +1,349 @@
+{
+  "digest": "h1:e1ee1cc26be3f89fe5f8a0635624774ef8e222893407a20a78249e36456070fb",
+  "active": {
+    "errors": {
+      "effect": "read",
+      "run": "errors.mts",
+      "confirm": "Check the errors of {service}?",
+      "args": {
+        "service": {
+          "ask": "Which service?",
+          "vocab": "services",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "ops"
+      ],
+      "returns": "errors"
+    },
+    "deploys": {
+      "effect": "read",
+      "run": "deploys.mts",
+      "confirm": "List the deploys of {service}?",
+      "args": {
+        "service": {
+          "ask": "Which service?",
+          "vocab": "services",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "ops"
+      ],
+      "returns": "deploys"
+    },
+    "logs": {
+      "effect": "read",
+      "run": "logs.mts",
+      "confirm": "Search the logs of {service}?",
+      "args": {
+        "service": {
+          "ask": "Which service?",
+          "vocab": "services",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "ops"
+      ],
+      "returns": "logs"
+    },
+    "suspect": {
+      "effect": "read",
+      "run": "suspect.mts",
+      "confirm": "Find the suspect?",
+      "args": {},
+      "yields": {
+        "release": "quoted"
+      },
+      "config": {},
+      "tags": [
+        "ops"
+      ],
+      "takes": {
+        "errors": "errors",
+        "deploys": "deploys",
+        "logs": "logs"
+      }
+    },
+    "rollback": {
+      "effect": "write",
+      "run": "rollback.mts",
+      "confirm": "Roll back {release}?",
+      "args": {
+        "release": {
+          "ask": "From which release?",
+          "pick": "quoted",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "ops"
+      ]
+    },
+    "incidents": {
+      "effect": "read",
+      "run": "incidents.mts",
+      "confirm": "List the open incidents?",
+      "args": {},
+      "yields": {
+        "incidents": {
+          "each": {
+            "number": "number"
+          }
+        }
+      },
+      "config": {},
+      "tags": [
+        "ops"
+      ]
+    },
+    "incident": {
+      "effect": "read",
+      "run": "incident.mts",
+      "confirm": "Look up incident {number}?",
+      "args": {
+        "number": {
+          "ask": "Which incident number?",
+          "pick": "number",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "ops"
+      ],
+      "returns": "incident"
+    },
+    "postmortem": {
+      "effect": "write",
+      "run": "postmortem.mts",
+      "confirm": "Draft the postmortem?",
+      "args": {},
+      "yields": {
+        "path": "quoted"
+      },
+      "config": {},
+      "tags": [
+        "ops"
+      ],
+      "takes": {
+        "record": "incident"
+      }
+    }
+  },
+  "inactive": {},
+  "slots": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "errors": {
+          "what": "Show the error rate of a service.\nThe rate over the last hour and when it rose.",
+          "not_for": [
+            "logs of a service",
+            "releases and deploys"
+          ],
+          "examples": [
+            "check the errors for checkout",
+            "is payments throwing errors",
+            "error rate of checkout"
+          ]
+        },
+        "deploys": {
+          "what": "List the recent deploys of a service.\nEach release, when it went out and who shipped it.",
+          "not_for": [
+            "error rates",
+            "rolling a release back"
+          ],
+          "examples": [
+            "list the deploys for checkout",
+            "what went out to payments today",
+            "recent releases of checkout"
+          ]
+        },
+        "logs": {
+          "what": "Search a service's logs for the last hour.\nThe most frequent errors and how often each came.",
+          "not_for": [
+            "error rates",
+            "posting to a channel"
+          ],
+          "examples": [
+            "pull the logs for checkout",
+            "search the payments logs",
+            "what do the checkout logs say"
+          ]
+        },
+        "suspect": {
+          "what": "Find the release most likely behind a failure.\nWeighs a service's errors, its deploys and its logs, and names the release.",
+          "not_for": [
+            "listing deploys",
+            "rolling a release back"
+          ],
+          "examples": [
+            "find the suspect",
+            "which deploy broke it",
+            "find the release behind the outage"
+          ]
+        },
+        "rollback": {
+          "what": "Roll a service back from a release to the one before it.",
+          "not_for": [
+            "listing deploys",
+            "finding which release broke something"
+          ],
+          "examples": [
+            "roll back \"4.12.0\"",
+            "revert \"2.3.1\"",
+            "undo the \"7.0.2\" release"
+          ]
+        },
+        "incidents": {
+          "what": "List the open incidents.\nEach with its number and the service it hit.",
+          "not_for": [
+            "one incident by its number",
+            "writing a postmortem"
+          ],
+          "examples": [
+            "list the open incidents",
+            "what incidents are open",
+            "which incidents are still going"
+          ]
+        },
+        "incident": {
+          "what": "Look up an incident by its number.\nWhat happened, when it opened, and which service it hit.",
+          "not_for": [
+            "listing every incident",
+            "writing a postmortem"
+          ],
+          "examples": [
+            "look up incident 311",
+            "what happened in incident 42",
+            "show me incident 1207"
+          ]
+        },
+        "postmortem": {
+          "what": "Draft the postmortem of an incident.\nA document from what the incident record says, saved for review.",
+          "not_for": [
+            "looking up an incident",
+            "posting to a channel"
+          ],
+          "examples": [
+            "draft the postmortem",
+            "write up the postmortem",
+            "start a postmortem"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "fits.errors": {
+      "type": "yesno",
+      "ask": "Does `errors` do the specific thing the request asks for?",
+      "yes": "Show the error rate of a service.\nThe rate over the last hour and when it rose.",
+      "no": "Something else, such as: logs of a service; releases and deploys."
+    },
+    "errors.service": {
+      "type": "choice",
+      "ask": "Which service?",
+      "options": {
+        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "payments": "The payments service: card charges and refunds.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.deploys": {
+      "type": "yesno",
+      "ask": "Does `deploys` do the specific thing the request asks for?",
+      "yes": "List the recent deploys of a service.\nEach release, when it went out and who shipped it.",
+      "no": "Something else, such as: error rates; rolling a release back."
+    },
+    "deploys.service": {
+      "type": "choice",
+      "ask": "Which service?",
+      "options": {
+        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "payments": "The payments service: card charges and refunds.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.logs": {
+      "type": "yesno",
+      "ask": "Does `logs` do the specific thing the request asks for?",
+      "yes": "Search a service's logs for the last hour.\nThe most frequent errors and how often each came.",
+      "no": "Something else, such as: error rates; posting to a channel."
+    },
+    "logs.service": {
+      "type": "choice",
+      "ask": "Which service?",
+      "options": {
+        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "payments": "The payments service: card charges and refunds.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.suspect": {
+      "type": "yesno",
+      "ask": "Does `suspect` do the specific thing the request asks for?",
+      "yes": "Find the release most likely behind a failure.\nWeighs a service's errors, its deploys and its logs, and names the release.",
+      "no": "Something else, such as: listing deploys; rolling a release back."
+    },
+    "fits.rollback": {
+      "type": "yesno",
+      "ask": "Does `rollback` do the specific thing the request asks for?",
+      "yes": "Roll a service back from a release to the one before it.",
+      "no": "Something else, such as: listing deploys; finding which release broke something."
+    },
+    "rollback.release": {
+      "type": "pick",
+      "ask": "From which release?",
+      "pick": "quoted",
+      "optional": false
+    },
+    "fits.incidents": {
+      "type": "yesno",
+      "ask": "Does `incidents` do the specific thing the request asks for?",
+      "yes": "List the open incidents.\nEach with its number and the service it hit.",
+      "no": "Something else, such as: one incident by its number; writing a postmortem."
+    },
+    "fits.incident": {
+      "type": "yesno",
+      "ask": "Does `incident` do the specific thing the request asks for?",
+      "yes": "Look up an incident by its number.\nWhat happened, when it opened, and which service it hit.",
+      "no": "Something else, such as: listing every incident; writing a postmortem."
+    },
+    "incident.number": {
+      "type": "pick",
+      "ask": "Which incident number?",
+      "pick": "number",
+      "optional": false
+    },
+    "fits.postmortem": {
+      "type": "yesno",
+      "ask": "Does `postmortem` do the specific thing the request asks for?",
+      "yes": "Draft the postmortem of an incident.\nA document from what the incident record says, saved for review.",
+      "no": "Something else, such as: looking up an incident; posting to a channel."
+    }
+  },
+  "values": {},
+  "deadline": 30000
+}

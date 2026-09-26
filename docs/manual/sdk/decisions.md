@@ -78,7 +78,9 @@ Runs the chosen call's body and resolves to `{ text, data? }`, with `contained` 
 whether this machine held it to its declaration, in the shape [`--json`](../reference/json.md#shape-by-outcome)
 prints. A reflex handed as code runs in-process. A file runs in a
 child. An argv is spawned. A body's failure is a `FailureError`. `signal` aborts the body, and `run`
-rejects with the signal's reason. A decision made under another plan is refused as misuse, with a `TypeError`.
+rejects with the signal's reason. A decision made under another plan is refused as misuse, with a `TypeError`. A
+reflex that takes an earlier step's whole result is refused with a `DiagnosticError`: only `weave` hands one, so
+a host with its own loop learns at `run` that `decide`'s decision was a taker's.
 
 ## `handle(input, { confirm?, ask?, tags?, signal? })`
 
@@ -99,7 +101,8 @@ const handled = await project.handle(input, {
 | `"unanswered"`    | A confirm or an ask was reached and no handler was given. The decision itself is the answer   |
 
 An answer that does not read is asked again once. Twice is a decline. An empty input is refused before the
-adapter is asked. Only a diagnostic, a fault or a failure throws.
+adapter is asked. A decided reflex that takes an earlier step's whole result is refused before any confirm. Only
+a diagnostic, a fault or a failure throws.
 
 ## `steps(input, { tags?, signal? })` and `weave(input, { confirm?, ask?, proceed?, tags?, signal? })`
 
@@ -114,9 +117,11 @@ plan.stages      // [[1], [2]]: a stage's steps run together; stages run in orde
 plan.verdict     // { outcome: "run" | "ask" | "confirm" | "refuse", because?: [...] }
 ```
 
-Each step carries its `decision`, the `Decision` `decide` would have made of its words alone. `weave` settles
-what the plan asks first, then runs every step under `handle`'s handlers, each told which step and round asks,
-a `Turn`:
+Each step carries its `decision`, the `Decision` `decide` would have made of its words alone. A binding whose
+`via` is `"takes"` is a whole result by the name its source returns, with no `kind`; a plan with no source for
+one, or two, has `verdict.outcome` `"refuse"` and `no_source` or `several_sources` among its `because`. `weave`
+settles what the plan asks first, then runs every step under `handle`'s handlers, each told which step and round
+asks, a `Turn`:
 
 ```ts
 const woven = await project.weave(input, {
@@ -130,7 +135,8 @@ woven.steps      // per step: { step, status, why?, bound, rounds: [{ round, inp
 
 A body's failure is the step's, with `status: "failed"`, never a throw. A step after one that stopped is
 `skipped`, with `why: { type: "earlier_step" }`. A step bound to a list of records runs once per record, one
-round each.
+round each. A step that takes whole results receives them in its body's `args`, handed by the weave alone; its
+`bound` entries name each argument, its source and the name, with no `value`.
 
 `signal` aborts the adapter's call while the plan is made, as it does in `decide`, and cancels the run once it
 is under way: every body is ended, its own `signal` aborted first, nothing starts after, and every step that did

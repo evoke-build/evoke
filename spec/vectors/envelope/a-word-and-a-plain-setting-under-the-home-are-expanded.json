@@ -2,7 +2,13 @@
   "input": {
     "chosen": {
       "reflex": "open",
-      "args": { "place": { "type": "word", "word": "desktop", "value": "~/Desktop" } },
+      "args": {
+        "place": {
+          "type": "word",
+          "word": "desktop",
+          "value": "~/Desktop"
+        }
+      },
       "call": "open place=\"desktop\"",
       "effect": "read"
     },
@@ -10,11 +16,24 @@
       "effect": "read",
       "run": "open.mts",
       "confirm": "Open {place}?",
-      "args": { "place": { "ask": "Which one?", "vocab": "places", "optional": false, "was": [] } },
+      "args": {
+        "place": {
+          "ask": "Which one?",
+          "vocab": "places",
+          "optional": false,
+          "was": []
+        }
+      },
       "yields": {},
       "config": {
-        "log": { "type": "plain", "value": "~/open.log" },
-        "token": { "type": "env", "var": "OPEN_TOKEN" }
+        "log": {
+          "type": "plain",
+          "value": "~/open.log"
+        },
+        "token": {
+          "type": "env",
+          "var": "OPEN_TOKEN"
+        }
       },
       "tags": []
     },
@@ -23,14 +42,24 @@
     "home": "/Users/me"
   },
   "expect": {
-    "reflex": "open",
-    "run": "open.mts",
-    "args": { "place": "/Users/me/Desktop" },
-    "input": "open my desktop",
-    "config": {
-      "log": { "type": "plain", "value": "/Users/me/open.log" },
-      "token": { "type": "env", "var": "OPEN_TOKEN" }
-    },
-    "deadline": 30000
+    "ok": {
+      "reflex": "open",
+      "run": "open.mts",
+      "args": {
+        "place": "/Users/me/Desktop"
+      },
+      "input": "open my desktop",
+      "config": {
+        "log": {
+          "type": "plain",
+          "value": "/Users/me/open.log"
+        },
+        "token": {
+          "type": "env",
+          "var": "OPEN_TOKEN"
+        }
+      },
+      "deadline": 30000
+    }
   }
 }

@@ -1,0 +1,81 @@
+{
+  "input": {
+    "previous": {
+      "description": "List the recent deploys of a service.\nEach release, when it went out and who shipped it.",
+      "not_for": [
+        "error rates",
+        "rolling a release back"
+      ],
+      "tags": [
+        "ops"
+      ],
+      "effect": "read",
+      "confirm": "List the deploys of {service}?",
+      "run": "deploys.mts",
+      "config": {},
+      "args": {
+        "service": {
+          "ask": "Which service?",
+          "vocab": "services",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "returns": "deploys",
+      "examples": {
+        "list the deploys for checkout": {},
+        "what went out to payments today": {},
+        "recent releases of checkout": {}
+      },
+      "tests": {
+        "deploys of payments": {},
+        "roll it back": false
+      },
+      "unknown": []
+    },
+    "next": {
+      "description": "List the recent deploys of a service.\nEach release, when it went out and who shipped it.",
+      "not_for": [
+        "error rates",
+        "rolling a release back"
+      ],
+      "tags": [
+        "ops"
+      ],
+      "effect": "read",
+      "confirm": "List the deploys of {service}?",
+      "run": "deploys.mts",
+      "config": {},
+      "args": {
+        "service": {
+          "ask": "Which service?",
+          "vocab": "services",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "examples": {
+        "list the deploys for checkout": {},
+        "what went out to payments today": {},
+        "recent releases of checkout": {}
+      },
+      "tests": {
+        "deploys of payments": {},
+        "roll it back": false
+      },
+      "unknown": []
+    }
+  },
+  "expect": {
+    "level": "major",
+    "changes": [
+      {
+        "type": "returns_removed",
+        "name": "deploys"
+      }
+    ],
+    "violations": []
+  }
+}

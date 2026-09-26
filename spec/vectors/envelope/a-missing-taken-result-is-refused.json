@@ -1,0 +1,48 @@
+{
+  "input": {
+    "chosen": {
+      "reflex": "suspect",
+      "args": {},
+      "call": "suspect",
+      "effect": "read"
+    },
+    "active": {
+      "effect": "read",
+      "run": "suspect.mts",
+      "confirm": "Find the suspect?",
+      "args": {},
+      "yields": {
+        "release": "quoted"
+      },
+      "config": {},
+      "tags": [
+        "ops"
+      ],
+      "takes": {
+        "errors": "errors",
+        "deploys": "deploys",
+        "logs": "logs"
+      }
+    },
+    "taken": {
+      "errors": {
+        "service": "checkout",
+        "rate": 0.084,
+        "since": "14:02"
+      }
+    },
+    "input": "find the suspect",
+    "deadline": 29950,
+    "home": "/home/ana"
+  },
+  "expect": {
+    "err": {
+      "reflex": "suspect",
+      "message": "suspect takes deploys and logs, which a step before it in the same request returns",
+      "fix": {
+        "type": "show",
+        "reflex": "suspect"
+      }
+    }
+  }
+}

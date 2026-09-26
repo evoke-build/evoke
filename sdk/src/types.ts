@@ -166,9 +166,14 @@ export interface Manifest {
   /** What the body may touch; absent, the tightest declaration. Contract, like `run`. */
   needs?: Needs
   config: Record<ConfigKey, ConfigSpec>
+  /** The arguments the classifier is asked about: `ask` and one source each. */
   args: Record<ArgName, Argument>
+  /** The arguments an earlier step's whole result fills, by the name that result goes by; absent when none. Contract. */
+  takes?: Record<ArgName, FieldName>
   /** What the body's `data` yields for a later step to take, per field. */
   yields: Record<FieldName, Yield>
+  /** The name the body's whole `data` goes by, for a later step to take; absent when none. Contract. */
+  returns?: FieldName
   examples: Records
   tests: Records
   /** Keys the format does not know: reported, never fatal. */
@@ -635,9 +640,14 @@ export interface Active {
   /** Absent: the tightest declaration. */
   needs?: Needs
   confirm: Template
+  /** The arguments the classifier is asked about. */
   args: Record<ArgName, Argument>
+  /** The arguments an earlier step's whole result fills, by the name that result goes by; absent when none. */
+  takes?: Record<ArgName, FieldName>
   /** What the body's `data` yields for a later step to take, per field. */
   yields: Record<FieldName, Yield>
+  /** The name the body's whole `data` goes by, for a later step to take; absent when none. */
+  returns?: FieldName
   config: Record<ConfigKey, Setting>
   tags: Tag[]
 }
@@ -808,8 +818,9 @@ export interface Envelope {
   reflex: LocalName
   /** Absent for an inline body. */
   run?: Run
-  /** An option key, a word's `value` if set else the word, a pick's value, `true` for a flag. */
-  args: Record<ArgName, string | number | true>
+  /** An option key, a word's `value` if set else the word, a pick's value, `true` for a flag, and a whole result as
+   *  its source returned it. */
+  args: Record<ArgName, Json>
   input: Input
   /** An `env` setting stays a reference; the host resolves it. */
   config: Record<ConfigKey, Setting>
@@ -893,16 +904,20 @@ export interface Step {
   after?: number[]
 }
 
-/** How a bound value reaches its step: answering its own ask, or the step decided again with the value in its words. */
-export type Via = "fill" | "rewrite"
+/** How a bound value reaches its step: answering its own ask; the step decided again with the value in its words; or a
+ *  whole result handed beside the decision, never through its words. */
+export type Via = "fill" | "rewrite" | "takes"
 
-/** A value of one step's result taken by a later step: which field, into which argument, how. */
+/** A value of one step's result taken by a later step: which field, into which argument, how; or the whole result, by
+ *  the name it goes by. */
 export interface Binding {
   from: number
   to: number
   arg: ArgName
+  /** The field taken; for `takes`, the name the whole result goes by. */
   field: FieldName
-  kind: Recognizer
+  /** The recognizer the field is read with; absent for a whole result. */
+  kind?: Recognizer
   via: Via
   /** The list field of the source's result whose records carry `field`: the step runs once per record. */
   each?: FieldName
@@ -916,6 +931,10 @@ export type Because =
   | { type: "several"; step: number; source: number; fields: FieldName[] }
   | { type: "one_of_many"; step: number; source: number; field: FieldName }
   | { type: "takes_nothing"; step: number; sources: number[] }
+  /** A whole result the step takes by name that no step before it returns: refused, nothing answers it. */
+  | { type: "no_source"; step: number; name: FieldName }
+  /** What the step takes one of that several steps return, or one step once per record: refused. */
+  | { type: "several_sources"; step: number; name: FieldName; sources: number[] }
 
 /** The verdict before anything runs, with every reason. */
 export interface Verdict {
@@ -938,12 +957,12 @@ export interface Weave {
   verdict: Verdict
 }
 
-/** A value bound into a step at its turn. */
+/** A value bound into a step at its turn; a whole result carries no value here, it stays on its source's line. */
 export interface Bound {
   arg: ArgName
   from: number
   field: FieldName
-  value: string
+  value?: string
 }
 
 /** What a body returned: its text, and data when it gave some. */
@@ -952,7 +971,8 @@ export interface Returned {
   data?: Json
 }
 
-/** One round of a step for a host to take through the foundation's loop, the bound values in place. */
+/** One round of a step for a host to take through the foundation's loop, the bound values in place and the whole
+ *  results the body receives beside them. */
 export interface Handling {
   step: number
   /** From 0; a step bound to a list runs one round per record. */
@@ -960,6 +980,8 @@ export interface Handling {
   decision: Decision
   input: string
   bound?: Bound[]
+  /** Per taken argument, its source's whole `data`: the same for every round of the step. */
+  taken?: Record<ArgName, Json>
 }
 
 /** What became of a step, or of one of its rounds. */
@@ -968,7 +990,10 @@ export type Status = "ran" | "failed" | "declined" | "refused" | "skipped" | "un
 /** Why a step did not run, or did not finish. */
 export type WeaveWhy =
   | { type: "earlier_step" }
-  | { type: "nothing_to_take" }
+  /** The step it names yielded nothing it can take: no such field, no data, or null. */
+  | { type: "nothing_to_take"; from: number }
+  /** The step it names returned a whole result over the cap, a mebibyte of JSON. */
+  | { type: "too_large"; from: number }
   | { type: "found_nothing" }
   | { type: "no_reflex" }
   | { type: "read_as"; reflex: LocalName }
@@ -1026,7 +1051,7 @@ export interface ContractDiff {
 /** `same`: nothing but wording, or a declaration narrowed. `minor`: additions, a declaration widened, and a config key gone. `major`: something a person's files or calls may not survive. */
 export type Level = "same" | "minor" | "major"
 
-/** One change to the contract, in the order the diff walks: the previous arguments, the added ones, the body, what it may touch, config, then what the result yields. */
+/** One change to the contract, in the order the diff walks: the previous arguments, the added ones, the body, what it may touch, config, what the result yields, what the reflex takes, then what it returns. */
 export type Change =
   | { type: "arg_removed"; arg: ArgName }
   | { type: "option_removed"; arg: ArgName; key: OptionKey }
@@ -1046,6 +1071,12 @@ export type Change =
   | { type: "yield_added"; field: FieldName }
   | { type: "yield_removed"; field: FieldName }
   | { type: "yield_changed"; field: FieldName }
+  | { type: "takes_added"; arg: ArgName; name: FieldName }
+  | { type: "takes_removed"; arg: ArgName; name: FieldName }
+  | { type: "takes_changed"; arg: ArgName; name: FieldName }
+  | { type: "returns_added"; name: FieldName }
+  | { type: "returns_removed"; name: FieldName }
+  | { type: "returns_changed"; name: FieldName }
 
 /** `was` is flat and cumulative: a retired name never returns as a live argument, and never leaves the lists. */
 export type WasViolation =

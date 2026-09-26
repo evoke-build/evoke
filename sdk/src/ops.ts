@@ -36,7 +36,10 @@ export interface Ops {
   values: { input: { args: Record<T.ArgName, T.Value> }; output: Record<T.ArgName, string | number | true> }
   // run
   call: { input: { text: string }; output: T.Result<T.Written, T.Diagnostic> }
-  envelope: { input: { chosen: T.Chosen; active: T.Active; input: T.Input; deadline: T.Millis; home: string }; output: T.Envelope }
+  envelope: {
+    input: { chosen: T.Chosen; active: T.Active; taken?: Record<T.ArgName, T.Json>; input: T.Input; deadline: T.Millis; home: string }
+    output: T.Result<T.Envelope, T.Diagnostic>
+  }
   argv: { input: { chosen: T.Chosen; active: T.Active; home: string }; output: T.Result<string[], T.Diagnostic> }
   // needs, contain
   "needs.resolve": {

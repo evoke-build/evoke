@@ -8,7 +8,6 @@ use std::fmt::Write as _;
 use crate::manifest::{Argument, Kind, Manifest, Pick, Source};
 use crate::name::OptionKey;
 use crate::plan::Installed;
-use crate::text::Clean;
 
 /// What every `reflex.d.ts` ends with: the body's context, result and type, bound to its `Args` and `Config`.
 const BODY: &str = "\
@@ -48,16 +47,23 @@ pub fn reflex_dts(m: &Manifest) -> String {
             ),
         };
         Member {
-            doc: &argument.ask,
+            doc: argument.ask.to_string(),
             name: name.as_str(),
             optional,
             ty,
         }
     });
-    interface(&mut text, "Args", "", args);
+    // A whole result reaches the body as its source returned it: evoke checks no shape.
+    let taken = m.takes.iter().map(|(name, result)| Member {
+        doc: format!("The whole result of an earlier step that returns {result}."),
+        name: name.as_str(),
+        optional: false,
+        ty: "unknown".to_owned(),
+    });
+    interface(&mut text, "Args", "", args.chain(taken));
     text.push('\n');
     let config = m.config.iter().map(|(key, spec)| Member {
-        doc: &spec.about,
+        doc: spec.about.to_string(),
         name: key.as_str(),
         optional: false,
         ty: "string".to_owned(),
@@ -105,7 +111,7 @@ pub fn project_dts(set: &Installed) -> String {
 
 /// One member of an interface: its doc line, its name, whether it may be absent, its type.
 struct Member<'a> {
-    doc: &'a Clean,
+    doc: String,
     name: &'a str,
     optional: bool,
     ty: String,
@@ -133,7 +139,7 @@ fn carried<'a>(argument: &'a Argument, name: &'a str) -> Member<'a> {
         ),
     };
     Member {
-        doc: &argument.ask,
+        doc: argument.ask.to_string(),
         name,
         optional,
         ty,
@@ -161,11 +167,7 @@ fn interface<'a>(
 
 /// `/** doc */` then `name?: type`.
 fn member(text: &mut String, indent: &str, m: &Member<'_>) {
-    let _ = writeln!(
-        text,
-        "{indent}/** {} */",
-        m.doc.as_str().replace("*/", "*\\/")
-    );
+    let _ = writeln!(text, "{indent}/** {} */", m.doc.replace("*/", "*\\/"));
     let mark = if m.optional { "?" } else { "" };
     let _ = writeln!(text, "{indent}{}{mark}: {}", m.name, m.ty);
 }

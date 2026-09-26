@@ -1,0 +1,22 @@
+reflex = 1
+
+description = """
+List the open incidents.
+Each with its number and the service it hit."""
+not_for = ["one incident by its number", "writing a postmortem"]
+tags = ["ops"]
+effect = "read"
+confirm = "List the open incidents?"
+run = "incidents.mts"
+
+[yields]
+incidents = { each = { number = "number" } }
+
+[examples]
+"list the open incidents"         = {}
+"what incidents are open"         = {}
+"which incidents are still going" = {}
+
+[tests]
+"open incidents"       = {}
+"look up incident 311" = false

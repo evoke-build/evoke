@@ -1,0 +1,165 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-joins.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "weave": {
+      "$ref": "fixtures/weave-suspect.json"
+    },
+    "progress": {
+      "handled": [
+        {
+          "step": 1,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "checkout: 8.4% errors since 14:02",
+            "data": {
+              "service": "checkout",
+              "rate": 0.084,
+              "since": "14:02"
+            }
+          }
+        },
+        {
+          "step": 2,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "no deploys today",
+            "data": []
+          }
+        },
+        {
+          "step": 3,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "checkout: 412 timeouts",
+            "data": {
+              "service": "checkout",
+              "count": 412,
+              "top": "timeout calling payments"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "expect": {
+    "type": "todo",
+    "todo": {
+      "type": "handle",
+      "handling": [
+        {
+          "step": 4,
+          "round": 0,
+          "decision": {
+            "outcome": "run",
+            "reflex": "suspect",
+            "args": {},
+            "call": "suspect",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "suspect",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "suspect",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.1
+            },
+            "contenders": [
+              {
+                "reflex": "suspect",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.1
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          },
+          "input": "find the suspect",
+          "bound": [
+            {
+              "arg": "errors",
+              "from": 1,
+              "field": "errors"
+            },
+            {
+              "arg": "deploys",
+              "from": 2,
+              "field": "deploys"
+            },
+            {
+              "arg": "logs",
+              "from": 3,
+              "field": "logs"
+            }
+          ],
+          "taken": {
+            "errors": {
+              "service": "checkout",
+              "rate": 0.084,
+              "since": "14:02"
+            },
+            "deploys": [],
+            "logs": {
+              "service": "checkout",
+              "count": 412,
+              "top": "timeout calling payments"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

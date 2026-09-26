@@ -48,8 +48,8 @@ $ evoke check
 | Level   | When                                                                                             |
 | :------ | :----------------------------------------------------------------------------------------------- |
 | `same`  | Wording only: description, `not_for`, `tags`, `confirm`, any `ask`, option meanings, records. Also a declaration narrowed |
-| `minor` | Additions, like an argument, an option or a config key. Also a config key removed, an argument made optional, a secret made plain, or a declaration widened |
-| `major` | Something a user's files or calls may not survive: an argument or option removed or renamed, a source or range changed, `run` changed, an argument made required, a config key made secret |
+| `minor` | Additions, like an argument, an option, a config key, a field under `[yields]` or a `returns` name. Also a config key removed, an argument made optional, a secret made plain, or a declaration widened |
+| `major` | Something a user's files or calls may not survive: an argument or option removed or renamed, a source or range changed, `run` changed, an argument made required, a config key made secret, a yield or a `returns` name removed or changed, a taken argument added, removed or changed |
 
 A `was` violation is refused outright. That means a retired name returning, or a name dropped from the list.
 With no repository, no tag, or no reflex at this directory in the tag, nothing prints.

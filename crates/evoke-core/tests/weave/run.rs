@@ -1,9 +1,10 @@
 //! The run under any plan, against the core's own runner: plans of one to six steps — reads that yield, writes
-//! that take, steps of any effect beside them — with bindings plain and over a list, edges from `then` and from
-//! what a step takes, the stages the design words, and every way a round can end: a body finishing with data or
-//! without, failing, declined, refused, unanswered; a value written into a step's words decided again as the same
-//! reflex, another, or none — and one signal mid-stage, every handed round reported as the host ended it. A
-//! proptest state machine: the reference is the design's sentences as code, the system under test
+//! that take, lookups that return a whole result, suspects that take one to three of them, steps of any effect
+//! beside them — with bindings plain, over a list and whole, edges from `then` and from what a step takes, the
+//! stages the design words, and every way a round can end: a body finishing with data or without, or with `null`,
+//! failing, declined, refused, unanswered; a value written into a step's words decided again as the same reflex,
+//! another, or none — and one signal mid-stage, every handed round reported as the host ended it. A proptest
+//! state machine: the reference is the design's sentences as code, the system under test
 //! `weave::running::execute` driven as the hosts drive it — every round of a batch reported, then the run asked
 //! again. Each invariant quotes the sentence it checks.
 
@@ -24,13 +25,16 @@ use proptest::test_runner::FileFailurePersistence;
 use proptest_state_machine::{ReferenceStateMachine, StateMachineTest, prop_state_machine};
 
 /// What a step is: a read that yields an address, a write that asks for one, a write with an optional label, a
-/// step that takes part in no binding under the effect the case chose.
+/// step that takes part in no binding under the effect the case chose; a lookup, a read whose whole result goes
+/// by a name; a suspect, which takes one to three whole results and returns one of its own.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Role {
     Contact,
     Mail,
     Timer,
     Lights,
+    Lookup,
+    Suspect,
 }
 
 impl Role {
@@ -40,11 +44,14 @@ impl Role {
             Self::Mail => "mail",
             Self::Timer => "timer",
             Self::Lights => "lights",
+            Self::Lookup => "errors",
+            Self::Suspect => "suspect",
         }
     }
 }
 
-/// What a step takes: from which step, one value or every record's, answering its ask or written into its words.
+/// What a step takes: from which step; a field's value, or every record's, answering its ask or written into its
+/// words; or the whole result, handed beside the decision.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct Takes {
     from: usize,
@@ -52,11 +59,14 @@ struct Takes {
     via: Via,
 }
 
+/// The arguments a suspect takes whole results into, in the order its sources are drawn.
+const TAKEN: [&str; 3] = ["errors", "deploys", "logs"];
+
 #[derive(Clone, Debug)]
 struct Spec {
     role: Role,
     effect: Effect,
-    takes: Option<Takes>,
+    takes: Vec<Takes>,
     then: Vec<usize>,
 }
 
@@ -64,24 +74,44 @@ impl Spec {
     /// The steps this one follows: an explicit `then`, or a binding.
     fn after(&self) -> Vec<usize> {
         let mut after = self.then.clone();
-        if let Some(takes) = self.takes
-            && !after.contains(&takes.from)
-        {
-            after.push(takes.from);
+        for takes in &self.takes {
+            if !after.contains(&takes.from) {
+                after.push(takes.from);
+            }
         }
         after.sort_unstable();
         after
     }
+
+    /// The whole results the step takes, in the order its arguments are named.
+    fn wholes(&self) -> impl Iterator<Item = &Takes> {
+        self.takes.iter().filter(|takes| takes.via == Via::Takes)
+    }
+
+    /// Whether a value is written into the step's words, so its round is decided again first.
+    fn rewritten(&self) -> bool {
+        self.takes.iter().any(|takes| takes.via == Via::Rewrite)
+    }
 }
 
-/// What a body returned: the declared field, a list of records, a result without the field, none at all.
+/// What a body returned: the declared field, a list of records, a result without the field, a whole result with
+/// no field of interest, `null`, none at all.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Data {
     None,
+    Null,
     Scalar,
     Missing,
     List(u8),
     ListMissing,
+    Whole,
+}
+
+impl Data {
+    /// «A whole result … any JSON but `null`»: what a taker of the whole receives, or nothing to take.
+    fn whole(self) -> bool {
+        !matches!(self, Self::None | Self::Null)
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -189,21 +219,34 @@ impl Model {
     }
 
     /// «A binding is a declared yield …; a source that found nothing to take, an empty list, skips its takers
-    /// clean and stops nothing; … a step skipped because its source yielded nothing to take count[s] as failed.»
+    /// clean and stops nothing; … a step skipped because its source yielded nothing to take count[s] as failed»;
+    /// «a step that takes the whole result receives it», a constant of every round, none or `null` nothing to
+    /// take — the first source yielding nothing is the failure, whatever another found.
     fn rounds_of(&self, n: usize) -> Rounds {
-        let Some(takes) = self.specs[n - 1].takes else {
-            return Rounds::Count(1);
-        };
-        match &self.st[takes.from - 1] {
-            St::Done(Status::Skipped, Some(Skip::FoundNothing)) => Rounds::FoundNothing,
-            St::Done(Status::Ran, _) => match (self.data[takes.from - 1], takes.each) {
-                (Some(Data::Scalar), false) => Rounds::Count(1),
-                (Some(Data::List(0)), true) => Rounds::FoundNothing,
-                (Some(Data::List(k)), true) => Rounds::Count(usize::from(k)),
-                _ => Rounds::NothingToTake,
-            },
-            other => unreachable!("a taker's turn came while its source stood at {other:?}"),
+        let mut count: Option<usize> = None;
+        let mut found_nothing = false;
+        for takes in &self.specs[n - 1].takes {
+            match &self.st[takes.from - 1] {
+                St::Done(Status::Skipped, Some(Skip::FoundNothing)) => {
+                    found_nothing = true;
+                    continue;
+                }
+                St::Done(Status::Ran, _) => {}
+                other => unreachable!("a taker's turn came while its source stood at {other:?}"),
+            }
+            let rounds = match (takes.via, self.data[takes.from - 1], takes.each) {
+                (Via::Takes, Some(data), _) if data.whole() => 1,
+                (Via::Takes, _, _) => return Rounds::NothingToTake,
+                (_, Some(Data::Scalar), false) => 1,
+                (_, Some(Data::List(k)), true) => usize::from(k),
+                _ => return Rounds::NothingToTake,
+            };
+            count = Some(count.map_or(rounds, |count| count.min(rounds)));
         }
+        if found_nothing || count == Some(0) {
+            return Rounds::FoundNothing;
+        }
+        Rounds::Count(count.unwrap_or(1))
     }
 
     /// The stage's next batch: «a stage's steps [run] together»; a rewritten round is decided first; a stage
@@ -233,9 +276,7 @@ impl Model {
                         Rounds::Count(k) => self.rounds[n - 1] = Some(k),
                     }
                 }
-                if let Some(takes) = self.specs[n - 1].takes
-                    && takes.via == Via::Rewrite
-                {
+                if self.specs[n - 1].rewritten() {
                     match self.decided[n - 1].get(self.round[n - 1]) {
                         None => {
                             self.awaiting = Some(n);
@@ -291,6 +332,8 @@ impl Model {
                     Became::Ran(Data::List(3)),
                     Became::Ran(Data::Missing),
                     Became::Ran(Data::ListMissing),
+                    Became::Ran(Data::Whole),
+                    Became::Ran(Data::Null),
                     Became::Ran(Data::None),
                     Became::Failed,
                     Became::Declined,
@@ -369,9 +412,11 @@ impl Model {
 fn role() -> impl Strategy<Value = Role> {
     prop_oneof![
         4 => Just(Role::Contact),
-        3 => Just(Role::Mail),
-        2 => Just(Role::Timer),
-        2 => Just(Role::Lights)
+        4 => Just(Role::Mail),
+        3 => Just(Role::Timer),
+        3 => Just(Role::Lights),
+        3 => Just(Role::Lookup),
+        3 => Just(Role::Suspect)
     ]
 }
 
@@ -383,79 +428,171 @@ fn effect() -> impl Strategy<Value = Effect> {
     ]
 }
 
-/// A plan: one to six steps, each a role; a mail or a timer may take from a contact before it, one value or each
-/// record's; a step may follow an earlier one by `then`; lights run under any effect.
+/// How a plan opens: freely; as the address weave does, a contact then a mail and a timer that may take from it;
+/// as the outage does, three lookups then a suspect; or as a chain, two lookups then a suspect and a suspect that
+/// may take from it — so every shape the invariants speak of is drawn often.
+#[derive(Clone, Copy, Debug)]
+enum Opening {
+    Free,
+    Address,
+    Outage,
+    Chain,
+}
+
+impl Opening {
+    fn roles(self) -> &'static [Role] {
+        match self {
+            Self::Free => &[],
+            Self::Address => &[Role::Contact, Role::Mail, Role::Timer],
+            Self::Outage => &[Role::Lookup, Role::Lookup, Role::Lookup, Role::Suspect],
+            Self::Chain => &[Role::Lookup, Role::Lookup, Role::Suspect, Role::Suspect],
+        }
+    }
+}
+
+fn opening() -> impl Strategy<Value = Opening> {
+    prop_oneof![
+        3 => Just(Opening::Free),
+        1 => Just(Opening::Address),
+        1 => Just(Opening::Outage),
+        1 => Just(Opening::Chain)
+    ]
+}
+
+/// A plan: one to six steps, each a role, the first four the opening's when it has them; a mail or a timer may
+/// take from a contact before it, one value or each record's; a suspect takes one to three whole results from
+/// the lookups and suspects before it, distinct, and is a lookup when none stands there; a step may follow an
+/// earlier one by `then`; lights run under any effect, a suspect reads or writes.
 fn model() -> impl Strategy<Value = Model> {
-    (1usize..=6, prop_oneof![2 => Just(false), 1 => Just(true)]).prop_flat_map(|(n, reads_only)| {
-        (
-            vec(role(), n),
-            // A mail or a timer takes from a contact before it three times in four, so takers are drawn often.
-            vec(
-                (
-                    any::<u8>(),
-                    prop_oneof![3 => Just(true), 1 => Just(false)],
-                    any::<bool>(),
-                    any::<bool>(),
-                    effect(),
+    (
+        1usize..=6,
+        prop_oneof![2 => Just(false), 1 => Just(true)],
+        opening(),
+    )
+        .prop_flat_map(|(n, reads_only, opening)| {
+            let n = n.max(opening.roles().len());
+            (
+                vec(role(), n),
+                // A mail or a timer takes from a contact before it three times in four, so takers are drawn often.
+                vec(
+                    (
+                        any::<u8>(),
+                        prop_oneof![3 => Just(true), 1 => Just(false)],
+                        any::<bool>(),
+                        any::<bool>(),
+                        effect(),
+                        any::<u8>(),
+                        prop_oneof![1 => Just(1usize), 1 => Just(2), 2 => Just(3)],
+                    ),
+                    n,
                 ),
-                n,
-            ),
-        )
-            .prop_map(move |(roles, choices)| {
-                // A third of the plans are reads alone, so «reads may [run side by side]» is drawn often.
-                let roles: Vec<Role> = roles
-                    .into_iter()
-                    .map(|role| {
-                        if reads_only && matches!(role, Role::Mail | Role::Timer) {
-                            Role::Contact
-                        } else {
-                            role
-                        }
-                    })
-                    .collect();
-                let mut specs = Vec::new();
-                for (i, (role, (pick, takes, each, then, effect))) in
-                    roles.iter().zip(choices).enumerate()
-                {
-                    let sources: Vec<usize> = roles[..i]
+            )
+                .prop_map(move |(roles, choices)| {
+                    // A third of the plans are reads alone, so «reads may [run side by side]» is drawn often.
+                    let roles: Vec<Role> = opening
+                        .roles()
                         .iter()
-                        .enumerate()
-                        .filter(|(_, r)| **r == Role::Contact)
-                        .map(|(j, _)| j + 1)
-                        .collect();
-                    let takes = match role {
-                        Role::Mail | Role::Timer if takes && !sources.is_empty() => Some(Takes {
-                            from: sources[usize::from(pick) % sources.len()],
-                            each,
-                            via: if *role == Role::Mail {
-                                Via::Fill
+                        .copied()
+                        .chain(roles.into_iter().skip(opening.roles().len()))
+                        .map(|role| {
+                            if reads_only && matches!(role, Role::Mail | Role::Timer) {
+                                Role::Contact
                             } else {
-                                Via::Rewrite
-                            },
-                        }),
-                        _ => None,
-                    };
-                    let then = if then && i > 0 {
-                        vec![usize::from(pick) % i + 1]
-                    } else {
-                        Vec::new()
-                    };
-                    let effect = match role {
-                        Role::Contact => Effect::Read,
-                        Role::Mail | Role::Timer => Effect::Write,
-                        Role::Lights if reads_only => Effect::Read,
-                        Role::Lights => effect,
-                    };
-                    specs.push(Spec {
-                        role: *role,
-                        effect,
-                        takes,
-                        then,
-                    });
-                }
-                Model::new(specs)
-            })
-    })
+                                role
+                            }
+                        })
+                        .collect();
+                    let mut specs: Vec<Spec> = Vec::new();
+                    for (i, (role, (pick, takes, each, then, effect, start, count))) in
+                        roles.iter().zip(choices).enumerate()
+                    {
+                        let drawn = Drawn {
+                            pick,
+                            takes,
+                            each,
+                            start,
+                            count,
+                        };
+                        let (role, takes) = takes_of(*role, &specs, &drawn);
+                        let then = if then && i > 0 {
+                            vec![usize::from(pick) % i + 1]
+                        } else {
+                            Vec::new()
+                        };
+                        let effect = match role {
+                            Role::Contact | Role::Lookup => Effect::Read,
+                            Role::Mail | Role::Timer => Effect::Write,
+                            Role::Lights | Role::Suspect if reads_only => Effect::Read,
+                            Role::Lights => effect,
+                            // A taker of a whole result never runs destructive: the plan makes it inactive.
+                            Role::Suspect => effect.min(Effect::Write),
+                        };
+                        specs.push(Spec {
+                            role,
+                            effect,
+                            takes,
+                            then,
+                        });
+                    }
+                    Model::new(specs)
+                })
+        })
+}
+
+/// What a step's draw says of its takes: which source, whether it takes a field or every record's, where its
+/// whole results start among the returners and how many.
+struct Drawn {
+    pick: u8,
+    takes: bool,
+    each: bool,
+    start: u8,
+    count: usize,
+}
+
+/// A step's takes from the steps before it: a mail or a timer takes a contact's field three times in four; a
+/// suspect takes one to three whole results of the lookups and suspects before it, distinct, from a drawn start
+/// — and is a lookup when none stands there.
+fn takes_of(role: Role, specs: &[Spec], drawn: &Drawn) -> (Role, Vec<Takes>) {
+    let sources: Vec<usize> = specs
+        .iter()
+        .enumerate()
+        .filter(|(_, spec)| spec.role == Role::Contact)
+        .map(|(j, _)| j + 1)
+        .collect();
+    // The steps before it whose whole result goes by a name: a lookup, or a suspect — a chain.
+    let returners: Vec<usize> = specs
+        .iter()
+        .enumerate()
+        .filter(|(_, spec)| matches!(spec.role, Role::Lookup | Role::Suspect))
+        .map(|(j, _)| j + 1)
+        .collect();
+    match role {
+        Role::Mail | Role::Timer if drawn.takes && !sources.is_empty() => (
+            role,
+            vec![Takes {
+                from: sources[usize::from(drawn.pick) % sources.len()],
+                each: drawn.each,
+                via: if role == Role::Mail {
+                    Via::Fill
+                } else {
+                    Via::Rewrite
+                },
+            }],
+        ),
+        Role::Suspect if !returners.is_empty() => {
+            let start = usize::from(drawn.start) % returners.len();
+            let wholes: Vec<Takes> = (0..drawn.count.min(returners.len()))
+                .map(|k| Takes {
+                    from: returners[(start + k) % returners.len()],
+                    each: false,
+                    via: Via::Takes,
+                })
+                .collect();
+            (Role::Suspect, wholes)
+        }
+        Role::Suspect => (Role::Lookup, Vec::new()),
+        _ => (role, Vec::new()),
+    }
 }
 
 /// The machine without a cancel: what the core keeps today.
@@ -543,22 +680,24 @@ fn weave_of(model: &Model) -> Weave {
         .specs
         .iter()
         .enumerate()
-        .filter_map(|(i, spec)| {
-            let takes = spec.takes?;
-            let (arg, kind) = match spec.role {
-                Role::Mail => ("to", Recognizer::Email),
-                _ => ("label", Recognizer::Quoted),
-            };
-            Some(Binding {
-                from: takes.from,
-                to: i + 1,
-                arg: ArgName::new(arg).expect("an argument name"),
-                field: FieldName::new("email").expect("a field name"),
-                kind,
-                via: takes.via,
-                each: takes
-                    .each
-                    .then(|| FieldName::new("people").expect("a field name")),
+        .flat_map(|(i, spec)| {
+            spec.takes.iter().enumerate().map(move |(j, takes)| {
+                let (arg, field, kind) = match (spec.role, takes.via) {
+                    (_, Via::Takes) => (TAKEN[j], TAKEN[j], None),
+                    (Role::Mail, _) => ("to", "email", Some(Recognizer::Email)),
+                    _ => ("label", "email", Some(Recognizer::Quoted)),
+                };
+                Binding {
+                    from: takes.from,
+                    to: i + 1,
+                    arg: ArgName::new(arg).expect("an argument name"),
+                    field: FieldName::new(field).expect("a field name"),
+                    kind,
+                    via: takes.via,
+                    each: takes
+                        .each
+                        .then(|| FieldName::new("people").expect("a field name")),
+                }
             })
         })
         .collect();
@@ -578,11 +717,15 @@ fn weave_of(model: &Model) -> Weave {
     }
 }
 
-/// What a body returned, as data: the address a taker takes, a list of people, or neither.
+/// What a body returned, as data: the address a taker takes, a list of people, a whole result, `null`, or none.
 fn data_of(step: usize, data: Data) -> Option<Json> {
     let email = |i: usize| format!("p{step}-{i}@example.com");
     match data {
         Data::None => None,
+        Data::Null => Some(Json::Null),
+        Data::Whole => {
+            Some(serde_json::json!({ "service": "checkout", "rate": 0.084, "step": step }))
+        }
         Data::Scalar => Some(serde_json::json!({ "email": email(0) })),
         Data::Missing => Some(serde_json::json!({ "name": "dana" })),
         Data::List(k) => Some(serde_json::json!({
@@ -723,7 +866,9 @@ impl Sut {
                 assert_eq!(outcome.status, *status, "step {}'s status", outcome.step);
                 match skip {
                     Some(Skip::EarlierStep) => assert_eq!(outcome.why, Some(Why::EarlierStep)),
-                    Some(Skip::NothingToTake) => assert_eq!(outcome.why, Some(Why::NothingToTake)),
+                    Some(Skip::NothingToTake) => {
+                        assert!(matches!(outcome.why, Some(Why::NothingToTake { .. })));
+                    }
                     Some(Skip::FoundNothing) => assert_eq!(outcome.why, Some(Why::FoundNothing)),
                     Some(Skip::Cancelled) => assert_eq!(outcome.why, Some(Why::Cancelled)),
                     None => {}
@@ -753,6 +898,38 @@ impl Sut {
                 "a handed step is of the current stage"
             );
             assert!(!model.is_done(handling.step), "a skipped step never runs");
+            // «A whole result travels to the body in the round's `taken`, never in the decision, the words or
+            // the log's `bound`»: every handled round carries every taken argument, as its source returned it,
+            // the same in every round; the words are the step's own; no value rides its line.
+            let spec = &model.specs[handling.step - 1];
+            let wholes: Vec<usize> = spec.wholes().map(|takes| takes.from).collect();
+            assert_eq!(
+                handling.taken.len(),
+                wholes.len(),
+                "step {} carries every whole result it takes",
+                handling.step
+            );
+            for (arg, from) in TAKEN.iter().zip(&wholes) {
+                let data = model.data[from - 1].expect("a source that ran returned");
+                assert_eq!(
+                    handling.taken.get(*arg),
+                    data_of(*from, data).as_ref(),
+                    "step {}'s {arg} is step {from}'s whole result",
+                    handling.step
+                );
+            }
+            if !spec.rewritten() {
+                assert_eq!(
+                    handling.input,
+                    format!("{} ({})", spec.role.reflex(), handling.step),
+                    "a whole result never enters the words"
+                );
+            }
+            assert_eq!(
+                handling.bound.iter().filter(|b| b.value.is_none()).count(),
+                wholes.len(),
+                "a whole result rides no value on the line"
+            );
         }
         if self.handed.len() > 1 {
             assert!(
@@ -863,19 +1040,19 @@ fn a_cancel_reported_for_one_round_cancels_the_rounds_beside_it() {
         Spec {
             role: Role::Contact,
             effect: Effect::Read,
-            takes: None,
+            takes: Vec::new(),
             then: Vec::new(),
         },
         Spec {
             role: Role::Contact,
             effect: Effect::Read,
-            takes: None,
+            takes: Vec::new(),
             then: Vec::new(),
         },
         Spec {
             role: Role::Contact,
             effect: Effect::Read,
-            takes: None,
+            takes: Vec::new(),
             then: vec![1],
         },
     ]);
@@ -933,19 +1110,19 @@ fn two_bindings_read_the_same_whatever_their_order() {
             Spec {
                 role: Role::Contact,
                 effect: Effect::Read,
-                takes: None,
+                takes: Vec::new(),
                 then: Vec::new(),
             },
             Spec {
                 role: Role::Contact,
                 effect: Effect::Read,
-                takes: None,
+                takes: Vec::new(),
                 then: Vec::new(),
             },
             Spec {
                 role: Role::Mail,
                 effect: Effect::Write,
-                takes: None,
+                takes: Vec::new(),
                 then: vec![1, 2],
             },
         ]);
@@ -971,7 +1148,7 @@ fn two_bindings_read_the_same_whatever_their_order() {
         to: 3,
         arg: ArgName::new(arg).expect("an argument name"),
         field: FieldName::new("email").expect("a field name"),
-        kind: Recognizer::Email,
+        kind: Some(Recognizer::Email),
         via: Via::Fill,
         each: each.then(|| FieldName::new("people").expect("a field name")),
     };
@@ -987,23 +1164,34 @@ fn the_generator_reaches_every_shape() {
     use proptest::strategy::ValueTree;
     use proptest::test_runner::TestRunner;
     let mut runner = TestRunner::deterministic();
-    let mut seen = [0usize; 6];
+    let mut seen = [0usize; 10];
     for _ in 0..300 {
         let model = model().new_tree(&mut runner).expect("a plan").current();
         let specs = &model.specs;
-        seen[0] += usize::from(
-            specs
-                .iter()
-                .any(|s| s.takes.is_some_and(|t| t.via == Via::Rewrite)),
-        );
-        seen[1] += usize::from(specs.iter().any(|s| s.takes.is_some_and(|t| t.each)));
+        seen[0] += usize::from(specs.iter().any(Spec::rewritten));
+        seen[1] += usize::from(specs.iter().any(|s| s.takes.iter().any(|t| t.each)));
         seen[2] += usize::from(specs.iter().any(|s| !s.then.is_empty()));
         seen[3] += usize::from(model.stages.iter().any(|stage| stage.len() > 1));
         seen[4] += usize::from(specs.iter().any(|s| s.effect == Effect::Destructive));
         seen[5] += usize::from(
             specs
                 .iter()
-                .any(|s| s.takes.is_some_and(|t| t.via == Via::Fill && !t.each)),
+                .any(|s| s.takes.iter().any(|t| t.via == Via::Fill && !t.each)),
+        );
+        seen[6] += usize::from(specs.iter().any(|s| s.wholes().count() == 2));
+        seen[7] += usize::from(specs.iter().any(|s| s.wholes().count() == 3));
+        // A read taker in a stage after reads side by side.
+        seen[8] += usize::from(model.stages.windows(2).any(|pair| {
+            pair[0].len() > 1
+                && pair[1].iter().any(|n| {
+                    specs[n - 1].role == Role::Suspect && specs[n - 1].effect == Effect::Read
+                })
+        }));
+        // A chain: a suspect that takes from a suspect.
+        seen[9] += usize::from(
+            specs
+                .iter()
+                .any(|s| s.wholes().any(|t| specs[t.from - 1].role == Role::Suspect)),
         );
     }
     let names = [
@@ -1013,15 +1201,22 @@ fn the_generator_reaches_every_shape() {
         "reads side by side",
         "a destructive step",
         "a filled taker",
+        "a taker over two whole results",
+        "a taker over three",
+        "a read taker after reads side by side",
+        "a chain of takers",
     ];
-    for (count, name) in seen.iter().zip(names) {
-        assert!(*count >= 15, "{name} drawn {count} times of 300");
-    }
-    eprintln!(
-        "shapes drawn of 300 plans: {:?}",
-        seen.iter()
-            .zip(names)
-            .map(|(c, n)| format!("{n} {c}"))
-            .collect::<Vec<_>>()
-    );
+    let drawn: Vec<String> = seen
+        .iter()
+        .zip(names)
+        .map(|(count, name)| format!("{name} {count}"))
+        .collect();
+    eprintln!("shapes drawn of 300 plans: {drawn:?}");
+    let short: Vec<&String> = drawn
+        .iter()
+        .zip(&seen)
+        .filter(|(_, count)| **count < 15)
+        .map(|(line, _)| line)
+        .collect();
+    assert!(short.is_empty(), "drawn under 15 times of 300: {short:?}");
 }

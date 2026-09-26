@@ -9,14 +9,14 @@ adapter, and the words of a weave.
 | **Adapter**      | The classifier behind a decision, as an object answering typed questions with probabilities. `jev` and `openjev` reach Jev, through TypeSafe AI's API or through OpenJEV; `replay` answers from a recording |
 | **Argument**     | A question about the input and a value for the body: `options`, `vocab`, `pick` or `flag`                 |
 | **Ask**          | The outcome when a required argument is missing: `evoke` asks the argument's own question                 |
-| **Binding**      | A value of one step's result taken by a later step, by kind: filled into a required argument, or written into the words for an optional one |
+| **Binding**      | A value of one step's result taken by a later step, by kind: filled into a required argument, or written into the words for an optional one; or the whole result, by the name its source returns, handed beside the decision |
 | **Body**         | What `run` names: a `.mts`/`.mjs` file exporting a function, or a program with its arguments              |
 | **Call**         | A reflex with its arguments filled, on one line: `lights room="den" state="off"`                          |
 | **Cap**          | A reason a complete call stops at confirm: destructive, no gate, under floor, an unconsumed span, two things |
 | **Collection**   | A repository of reflex directories                                                                        |
 | **Confidence**   | The lowest top probability among the route and every argument question of the winner                     |
 | **Confirm**      | The outcome when a call is complete but capped: `[y]es [n]o [t]each`                                      |
-| **Contract**     | What a user cannot override: `run`, argument names and sources, option keys, ranges, config keys          |
+| **Contract**     | What a user cannot override: `run`, argument names and sources, option keys, ranges, config keys, what a reflex yields, returns and takes |
 | **Effect**       | What running a reflex does: `read`, `write` or `destructive`. Absent means destructive                    |
 | **Effective manifest** | The shipped manifest with your overlay merged in; what `show <name>` prints                         |
 | **Fits**         | The yes/no question per reflex: does it do what was asked? Its runner-up floor marks an input asking for two things |
@@ -39,6 +39,7 @@ adapter, and the words of a weave.
 | **Recording**    | An `answers.toml`: an adapter's declaration and its answers by utterance identity                         |
 | **Ref**          | Where a reflex comes from: `owner/repo[/dir][@tag]`, a git URL, or `./dir`                                |
 | **Reflex**       | A directory: a manifest and the file or program it names. Plural: reflexes                                |
+| **Returns**      | The name a body's whole `data` goes by, `returns = "deploys"`, for a later step of one sentence to take    |
 | **Route**        | The one choice over every installed reflex plus *none*                                                    |
 | **Run**          | The outcome when a call clears its floor. Also the key naming the body                                    |
 | **Runtime**      | What runs a body: Node for a file, nothing for an argv                                                    |
@@ -46,6 +47,7 @@ adapter, and the words of a weave.
 | **Step**         | One part of a weave, decided as one input is; numbered as the plan prints it, run at its turn              |
 | **Store**        | `~/.cache/evoke/store/<h1>/`: fetched code, re-hashed before every run                                    |
 | **Tag**          | A word under `tags` for `--tag` to narrow by. Also a git version tag                                      |
+| **Takes**        | An argument an earlier step's whole result fills by that name, `takes = "deploys"`: never asked, never stated, the plan alone hands it |
 | **Trust**        | A project's four owned paths bound to their content. Required outside home                                |
 | **Unstated**     | The answer that an argument was not given in the input                                                    |
 | **Utterance**    | A sentence a record is keyed by                                                                           |

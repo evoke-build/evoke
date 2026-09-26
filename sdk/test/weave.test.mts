@@ -3,13 +3,15 @@
 // under the same handlers `handle` takes: a result threaded into a later step, a question asked before anything
 // runs, a reference that takes nothing confirmed, a refusal, a decline that ends the weave after its stage, and a
 // signal mid-run over the cancel flow's recording — the body ended, the rest cancelled, the record on the reason.
+// Over the joins flow's home: a step that takes three whole results by name, handed beside its decision; a taker
+// refused outside a weave; a plan with no source, or two, refused before anything runs.
 
 import { deepStrictEqual, equal, ok, rejects } from "node:assert/strict"
 import { test } from "node:test"
 import { fileURLToPath } from "node:url"
 
 import { status } from "../src/contain.ts"
-import { type Woven, load, reflex } from "../src/index.ts"
+import { DiagnosticError, type Woven, load, reflex } from "../src/index.ts"
 import { replay } from "../src/testing.ts"
 
 const home = fileURLToPath(new URL("../../spec/transcripts/weave/home/.config/evoke", import.meta.url))
@@ -168,4 +170,61 @@ test("a signal already aborted rejects with its reason before anything is planne
   const reason = new Error("not now")
   await rejects(project.weave("wait a while and start a 10 minute timer", { signal: AbortSignal.abort(reason) }), (error: Error & { woven?: Woven }) => error === reason && error.woven === undefined)
   equal(timers(), 0)
+})
+
+const joinsHome = fileURLToPath(new URL("../../spec/transcripts/joins/home/.config/evoke", import.meta.url))
+const joinsAnswers = new URL("../../spec/transcripts/joins/answers.toml", import.meta.url)
+const outage = "check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect"
+
+test("a step takes three whole results by name, handed to its body beside its decision", async () => {
+  const project = await load({ root: joinsHome, adapter: replay(joinsAnswers) })
+  const plan = await project.steps(outage)
+  deepStrictEqual(plan.binds, [
+    { from: 1, to: 4, arg: "errors", field: "errors", via: "takes" },
+    { from: 2, to: 4, arg: "deploys", field: "deploys", via: "takes" },
+    { from: 3, to: 4, arg: "logs", field: "logs", via: "takes" },
+  ])
+  deepStrictEqual(plan.stages, [[1, 2, 3], [4]])
+  deepStrictEqual(plan.verdict, { outcome: "run" })
+  const woven = await project.weave(outage)
+  equal(woven.status, "ran")
+  const suspect = woven.steps[3]
+  deepStrictEqual(suspect?.bound, [
+    { arg: "errors", from: 1, field: "errors" },
+    { arg: "deploys", from: 2, field: "deploys" },
+    { arg: "logs", from: 3, field: "logs" },
+  ])
+  equal(suspect?.rounds[0]?.input, "find the suspect")
+  equal(suspect?.rounds[0]?.result?.text, "4.12.0 at 13:58, four minutes before 8.4% errors and 412 timeouts")
+})
+
+test("a taker is refused outside a weave, and a plan with no source or two before anything runs", async () => {
+  const project = await load({ root: joinsHome, adapter: replay(joinsAnswers) })
+  const alone = await project.decide("find the suspect")
+  equal(alone.outcome, "run")
+  if (alone.outcome !== "run") return
+  const refusal = (error: unknown) => error instanceof DiagnosticError && error.problems[0]?.message === "suspect takes errors, deploys and logs, which a step before it in the same request returns"
+  await rejects(project.run(alone), refusal)
+  await rejects(project.handle("find the suspect"), refusal)
+  const woven = await project.weave("find the suspect")
+  equal(woven.status, "refused")
+  deepStrictEqual(woven.plan.verdict, {
+    outcome: "refuse",
+    because: [
+      { type: "no_source", step: 1, name: "errors" },
+      { type: "no_source", step: 1, name: "deploys" },
+      { type: "no_source", step: 1, name: "logs" },
+    ],
+  })
+  const two = await project.weave("look up incident 311 and look up incident 312, then draft the postmortem")
+  equal(two.status, "refused")
+  deepStrictEqual(two.plan.verdict, { outcome: "refuse", because: [{ type: "several_sources", step: 3, name: "incident", sources: [1, 2] }] })
+})
+
+test("a result reaches an argument named otherwise, by the name its source returns", async () => {
+  const project = await load({ root: joinsHome, adapter: replay(joinsAnswers) })
+  const woven = await project.weave("look up incident 311, then draft the postmortem")
+  deepStrictEqual(woven.plan.binds, [{ from: 1, to: 2, arg: "record", field: "incident", via: "takes" }])
+  equal(woven.status, "ran")
+  equal(woven.steps[1]?.rounds[0]?.result?.text, "drafted the postmortem of incident 311")
 })

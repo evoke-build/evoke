@@ -9,8 +9,9 @@ use std::path::{Path, PathBuf};
 use serde_json::{Value, json};
 
 /// The families whose function returns a `Result`, so their `expect` is already `{ ok } | { err }`.
-const RESULTS: [&str; 21] = [
+const RESULTS: [&str; 22] = [
     "manifest",
+    "envelope",
     "needs.resolve",
     "overlay",
     "vocabulary",

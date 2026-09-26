@@ -1,0 +1,82 @@
+{
+  "input": {
+    "chosen": {
+      "reflex": "suspect",
+      "args": {},
+      "call": "suspect",
+      "effect": "read"
+    },
+    "active": {
+      "effect": "read",
+      "run": "suspect.mts",
+      "confirm": "Find the suspect?",
+      "args": {},
+      "yields": {
+        "release": "quoted"
+      },
+      "config": {},
+      "tags": [
+        "ops"
+      ],
+      "takes": {
+        "errors": "errors",
+        "deploys": "deploys",
+        "logs": "logs"
+      }
+    },
+    "taken": {
+      "errors": {
+        "service": "checkout",
+        "rate": 0.084,
+        "since": "14:02"
+      },
+      "deploys": {
+        "service": "checkout",
+        "deploys": [
+          {
+            "release": "4.12.0",
+            "at": "13:58"
+          }
+        ]
+      },
+      "logs": {
+        "service": "checkout",
+        "count": 412,
+        "top": "timeout calling payments"
+      }
+    },
+    "input": "find the suspect",
+    "deadline": 29950,
+    "home": "/home/ana"
+  },
+  "expect": {
+    "ok": {
+      "reflex": "suspect",
+      "run": "suspect.mts",
+      "args": {
+        "errors": {
+          "service": "checkout",
+          "rate": 0.084,
+          "since": "14:02"
+        },
+        "deploys": {
+          "service": "checkout",
+          "deploys": [
+            {
+              "release": "4.12.0",
+              "at": "13:58"
+            }
+          ]
+        },
+        "logs": {
+          "service": "checkout",
+          "count": 412,
+          "top": "timeout calling payments"
+        }
+      },
+      "input": "find the suspect",
+      "config": {},
+      "deadline": 29950
+    }
+  }
+}

@@ -72,7 +72,7 @@ manual  https://evoke.build/manual/
 | `evoke`                | On a terminal, the REPL: `> `, line editing, history. Piped, a filter: one input per line, and the first non-zero exit is kept | as each line |
 | `evoke try "<input>"`  | Decides only: the ranking, each argument's distribution, each `fits`, the outcome and the weakest judgment; a sentence of several steps shows the plan first, then each step's judgments under its number. Never logged | 0 · 3 · 4 |
 | `evoke why`            | The last logged decision, shown as `try` would show it, and what became of it; of a weave, every step | 0 · 3 |
-| `evoke run <call>`     | Runs the call by name. No classifier. The effect policy is kept, so a destructive call confirms with `[y]es [n]o`. `--json` prints the call and its result as one line. Not logged | 0 · 2 · 3 · 1 |
+| `evoke run <call>`     | Runs the call by name. No classifier. The effect policy is kept, so a destructive call confirms with `[y]es [n]o`. A reflex that takes an earlier step's result is refused: only a sentence of several steps hands one. `--json` prints the call and its result as one line. Not logged | 0 · 2 · 3 · 1 |
 
 | Flag          | With            | Does                                                                     |
 | :------------ | :-------------- | :----------------------------------------------------------------------- |
@@ -99,7 +99,7 @@ local reflex: [Installing reflexes](../use/installing.md#refs).
 | Command                                                   | Does                                                                        |
 | :-------------------------------------------------------- | :-------------------------------------------------------------------------- |
 | `evoke show`                                              | Every installed reflex: name, ref and tag or `./dir`, effect, what it runs. Then the inactive lines |
-| `evoke show <name>`                                       | The effective manifest as TOML, with `+` in the gutter of every line that is yours. Then its inactive lines |
+| `evoke show <name>`                                       | The effective manifest as TOML, with `+` in the gutter of every line that is yours; for a reflex that takes whole results, which installed reflexes return each. Then its inactive lines |
 | `evoke teach "<utterance>" <call>`                        | Writes the example to `overlays/<name>.toml`, with only what the call asserts |
 | `evoke teach "<utterance>" not <name>`                    | Writes `"<utterance>" = false` to the reflex's overlay                       |
 | `evoke teach <call>` · `evoke teach not <name>`           | The same, for the last input the log holds; of a weave, the step the lesson's reflex decided. A first word is the utterance when a call follows it, unless it names an installed reflex |

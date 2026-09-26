@@ -139,9 +139,10 @@ fn decide(op: &str, input: &Json) -> Answer {
             arg::<Recognizer>(input, "recognizer")?,
         )),
         "call" => result(call_grammar(text(input, "text")?)),
-        "envelope" => ok(envelope(
+        "envelope" => result(envelope(
             &arg::<Chosen>(input, "chosen")?,
             &arg::<Active>(input, "active")?,
+            &opt::<IndexMap<ArgName, Json>>(input, "taken")?.unwrap_or_default(),
             &arg::<Input>(input, "input")?,
             arg::<Millis>(input, "deadline")?,
             text(input, "home")?,

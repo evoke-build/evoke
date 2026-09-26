@@ -1,0 +1,28 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "deploys"
+      },
+      "toml": "reflex = 1\n\ndescription = \"List the recent deploys of a service.\"\neffect  = \"read\"\nconfirm = \"List the deploys?\"\nrun     = \"deploys.mts\"\nreturns = \"deploys\"\n"
+    }
+  },
+  "expect": {
+    "ok": {
+      "description": "List the recent deploys of a service.",
+      "not_for": [],
+      "tags": [],
+      "effect": "read",
+      "confirm": "List the deploys?",
+      "run": "deploys.mts",
+      "config": {},
+      "args": {},
+      "yields": {},
+      "returns": "deploys",
+      "examples": {},
+      "tests": {},
+      "unknown": []
+    }
+  }
+}

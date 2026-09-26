@@ -36,24 +36,26 @@
     "home": "/Users/me"
   },
   "expect": {
-    "reflex": "lights",
-    "run": "lights.mts",
-    "args": {
-      "room": "group-7",
-      "state": "dim",
-      "brightness": 30
-    },
-    "input": "dim the office to 30 percent",
-    "config": {
-      "bridge": {
-        "type": "plain",
-        "value": "10.0.0.2"
+    "ok": {
+      "reflex": "lights",
+      "run": "lights.mts",
+      "args": {
+        "room": "group-7",
+        "state": "dim",
+        "brightness": 30
       },
-      "token": {
-        "type": "env",
-        "var": "HUE_TOKEN"
-      }
-    },
-    "deadline": 29950
+      "input": "dim the office to 30 percent",
+      "config": {
+        "bridge": {
+          "type": "plain",
+          "value": "10.0.0.2"
+        },
+        "token": {
+          "type": "env",
+          "var": "HUE_TOKEN"
+        }
+      },
+      "deadline": 29950
+    }
   }
 }

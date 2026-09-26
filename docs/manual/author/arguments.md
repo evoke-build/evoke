@@ -1,8 +1,8 @@
 # Arguments
 
-An argument is two things. It is a question the classifier answers about the input, and a value the body
-receives. Each argument has an `ask`, and exactly one **source** for its values: the author, the user, or the
-input.
+An argument is a value the body receives. Most are also a question the classifier answers about the input: each
+of those has an `ask`, and exactly one **source** for its values: the author, the user, or the input. An
+argument with `takes` has a fifth source, an earlier step's result, and no `ask`: nothing is asked.
 
 ```toml
 [args.state]
@@ -25,7 +25,7 @@ ask  = "To the clipboard instead of a file?"
 flag = true                                  # a yes/no switch
 ```
 
-## The four sources
+## The five sources
 
 | Source    | Values come from             | The body receives                                            | Asked when missing |
 | :-------- | :--------------------------- | :----------------------------------------------------------- | :----------------- |
@@ -33,6 +33,7 @@ flag = true                                  # a yes/no switch
 | `vocab`   | The user: `vocab/<name>.toml` | The word's `value` if set, else the word                    | A numbered choice, plus `[+] add one` |
 | `pick`    | The input, as typed          | `number` → the number; `duration` → whole seconds; `email`, `url`, `quoted` → the text | Typed freely, read by the recognizer |
 | `flag`    | The input                    | `true`, or nothing                                           | Never              |
+| `takes`   | An earlier step of the same request, whose reflex `returns` that name | That step's `data`, as it returned it | Never: the request stops before anything runs |
 
 **`ask`** is the question a person would be asked. The same line serves the classifier and the prompt, so write it
 as you would say it: *Which room?*, *How long?*.
@@ -81,6 +82,21 @@ A pick reads a piece of the input, word for word. Five recognizers exist:
 or nothing. A flag never appears in a `confirm` template, and it cannot be an argv element. A body that needs one
 is a file. In records, a flag is asserted as `{ clipboard = true }`.
 
+## A whole result taken
+
+```toml
+[args.deploys]
+takes = "deploys"                            # an earlier step's whole result, by the name its manifest returns
+```
+
+A `takes` argument is required, and stands alone: no `ask`, no `optional`, no `range`, no `was`. Its reflex runs
+only after a step that returns the name, in one sentence ([Weaving](../use/weaving.md#a-step-that-takes-whole-results)):
+alone, when no step before it returns the name, or when two do, the request stops before anything runs and says
+which. The argument's own name is the author's; the plan and `evoke why` print the result's. The body receives the
+`data` as its source returned it, and checks its shape itself: `reflex.d.ts` types it `unknown`. A confirm cannot
+show a whole result, so a reflex that runs destructive takes none: it takes what it acts on as a field of
+`[yields]`, which its confirm names. `evoke run` cannot give a `takes` argument, and no sentence states one.
+
 ## Names and renames
 
 An argument name matches `[a-z][a-z0-9_]*`. It is never a JavaScript reserved word, like `for`, `class` or
@@ -98,8 +114,9 @@ enforces both against the previous tag. `update` tells each user that their reco
 
 ## In the confirm line and in an argv
 
-`confirm = "Set the {room} lights {state}?"` names required arguments only. In an argv `run`, a placeholder is a
-whole element, as in `["hue", "set", "{room}", "{state}"]`. It names an `options`, `vocab` or `pick` argument. An
-element whose optional argument is unstated is dropped. Literal braces and flags need a file body.
+`confirm = "Set the {room} lights {state}?"` names required arguments only, never one with `takes`. In an argv
+`run`, a placeholder is a whole element, as in `["hue", "set", "{room}", "{state}"]`. It names an `options`, `vocab`
+or `pick` argument. An element whose optional argument is unstated is dropped. Literal braces, flags and a taken
+result need a file body.
 
 **Next:** [The body](body.md).

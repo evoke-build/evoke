@@ -1,0 +1,2 @@
+checkout = "The checkout service: cart, payment and order confirmation."
+payments = "The payments service: card charges and refunds."

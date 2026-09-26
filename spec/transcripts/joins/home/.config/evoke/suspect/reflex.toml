@@ -1,0 +1,31 @@
+reflex = 1
+
+description = """
+Find the release most likely behind a failure.
+Weighs a service's errors, its deploys and its logs, and names the release."""
+not_for = ["listing deploys", "rolling a release back"]
+tags = ["ops"]
+effect = "read"
+confirm = "Find the suspect?"
+run = "suspect.mts"
+
+[args.errors]
+takes = "errors"
+
+[args.deploys]
+takes = "deploys"
+
+[args.logs]
+takes = "logs"
+
+[yields]
+release = "quoted"
+
+[examples]
+"find the suspect"                   = {}
+"which deploy broke it"              = {}
+"find the release behind the outage" = {}
+
+[tests]
+"what broke checkout" = {}
+"list the deploys"    = false

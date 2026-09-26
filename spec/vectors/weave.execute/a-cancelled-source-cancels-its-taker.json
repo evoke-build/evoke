@@ -1,0 +1,99 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-joins.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "weave": {
+      "$ref": "fixtures/weave-suspect.json"
+    },
+    "progress": {
+      "handled": [
+        {
+          "step": 1,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "checkout: 8.4% errors since 14:02",
+            "data": {
+              "service": "checkout",
+              "rate": 0.084,
+              "since": "14:02"
+            }
+          }
+        },
+        {
+          "step": 2,
+          "round": 0,
+          "status": "skipped",
+          "why": {
+            "type": "cancelled"
+          }
+        }
+      ]
+    }
+  },
+  "expect": {
+    "type": "done",
+    "executed": {
+      "steps": [
+        {
+          "step": 1,
+          "status": "ran",
+          "rounds": [
+            {
+              "step": 1,
+              "round": 0,
+              "status": "ran",
+              "result": {
+                "text": "checkout: 8.4% errors since 14:02",
+                "data": {
+                  "service": "checkout",
+                  "rate": 0.084,
+                  "since": "14:02"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "status": "skipped",
+          "why": {
+            "type": "cancelled"
+          },
+          "rounds": [
+            {
+              "step": 2,
+              "round": 0,
+              "status": "skipped",
+              "why": {
+                "type": "cancelled"
+              }
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "status": "skipped",
+          "why": {
+            "type": "cancelled"
+          }
+        },
+        {
+          "step": 4,
+          "status": "skipped",
+          "why": {
+            "type": "cancelled"
+          }
+        }
+      ],
+      "worst": "ran"
+    }
+  }
+}

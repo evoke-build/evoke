@@ -1,0 +1,369 @@
+{
+  "reflexes": {
+    "errors": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Show the error rate of a service.\nThe rate over the last hour and when it rose.",
+            "not_for": [
+              "logs of a service",
+              "releases and deploys"
+            ],
+            "tags": [
+              "ops"
+            ],
+            "effect": "read",
+            "confirm": "Check the errors of {service}?",
+            "run": "errors.mts",
+            "config": {},
+            "args": {
+              "service": {
+                "ask": "Which service?",
+                "vocab": "services",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "returns": "errors",
+            "examples": {
+              "check the errors for checkout": {},
+              "is payments throwing errors": {},
+              "error rate of checkout": {}
+            },
+            "tests": {
+              "checkout errors please": {},
+              "list the deploys": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "deploys": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "List the recent deploys of a service.\nEach release, when it went out and who shipped it.",
+            "not_for": [
+              "error rates",
+              "rolling a release back"
+            ],
+            "tags": [
+              "ops"
+            ],
+            "effect": "read",
+            "confirm": "List the deploys of {service}?",
+            "run": "deploys.mts",
+            "config": {},
+            "args": {
+              "service": {
+                "ask": "Which service?",
+                "vocab": "services",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "returns": "deploys",
+            "examples": {
+              "list the deploys for checkout": {},
+              "what went out to payments today": {},
+              "recent releases of checkout": {}
+            },
+            "tests": {
+              "deploys of payments": {},
+              "roll it back": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "logs": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Search a service's logs for the last hour.\nThe most frequent errors and how often each came.",
+            "not_for": [
+              "error rates",
+              "posting to a channel"
+            ],
+            "tags": [
+              "ops"
+            ],
+            "effect": "read",
+            "confirm": "Search the logs of {service}?",
+            "run": "logs.mts",
+            "config": {},
+            "args": {
+              "service": {
+                "ask": "Which service?",
+                "vocab": "services",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "returns": "logs",
+            "examples": {
+              "pull the logs for checkout": {},
+              "search the payments logs": {},
+              "what do the checkout logs say": {}
+            },
+            "tests": {
+              "logs for payments": {},
+              "error rate of checkout": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "suspect": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Find the release most likely behind a failure.\nWeighs a service's errors, its deploys and its logs, and names the release.",
+            "not_for": [
+              "listing deploys",
+              "rolling a release back"
+            ],
+            "tags": [
+              "ops"
+            ],
+            "effect": "read",
+            "confirm": "Find the suspect?",
+            "run": "suspect.mts",
+            "config": {},
+            "args": {},
+            "yields": {
+              "release": "quoted"
+            },
+            "takes": {
+              "errors": "errors",
+              "deploys": "deploys",
+              "logs": "logs"
+            },
+            "examples": {
+              "find the suspect": {},
+              "which deploy broke it": {},
+              "find the release behind the outage": {}
+            },
+            "tests": {
+              "what broke checkout": {},
+              "list the deploys": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "rollback": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Roll a service back from a release to the one before it.",
+            "not_for": [
+              "listing deploys",
+              "finding which release broke something"
+            ],
+            "tags": [
+              "ops"
+            ],
+            "effect": "write",
+            "confirm": "Roll back {release}?",
+            "run": "rollback.mts",
+            "config": {},
+            "args": {
+              "release": {
+                "ask": "From which release?",
+                "pick": "quoted",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "roll back \"4.12.0\"": {
+                "release": "4.12.0"
+              },
+              "revert \"2.3.1\"": {
+                "release": "2.3.1"
+              },
+              "undo the \"7.0.2\" release": {
+                "release": "7.0.2"
+              }
+            },
+            "tests": {
+              "roll \"4.12.0\" back": {
+                "release": "4.12.0"
+              },
+              "list the deploys": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    },
+    "incidents": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "List the open incidents.\nEach with its number and the service it hit.",
+            "not_for": [
+              "one incident by its number",
+              "writing a postmortem"
+            ],
+            "tags": [
+              "ops"
+            ],
+            "effect": "read",
+            "confirm": "List the open incidents?",
+            "run": "incidents.mts",
+            "config": {},
+            "args": {},
+            "yields": {
+              "incidents": {
+                "each": {
+                  "number": "number"
+                }
+              }
+            },
+            "examples": {
+              "list the open incidents": {},
+              "what incidents are open": {},
+              "which incidents are still going": {}
+            },
+            "tests": {
+              "open incidents": {},
+              "look up incident 311": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "incident": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Look up an incident by its number.\nWhat happened, when it opened, and which service it hit.",
+            "not_for": [
+              "listing every incident",
+              "writing a postmortem"
+            ],
+            "tags": [
+              "ops"
+            ],
+            "effect": "read",
+            "confirm": "Look up incident {number}?",
+            "run": "incident.mts",
+            "config": {},
+            "args": {
+              "number": {
+                "ask": "Which incident number?",
+                "pick": "number",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "returns": "incident",
+            "examples": {
+              "look up incident 311": {
+                "number": "311"
+              },
+              "what happened in incident 42": {
+                "number": "42"
+              },
+              "show me incident 1207": {
+                "number": "1207"
+              }
+            },
+            "tests": {
+              "incident 12 please": {
+                "number": "12"
+              },
+              "list the open incidents": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "postmortem": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Draft the postmortem of an incident.\nA document from what the incident record says, saved for review.",
+            "not_for": [
+              "looking up an incident",
+              "posting to a channel"
+            ],
+            "tags": [
+              "ops"
+            ],
+            "effect": "write",
+            "confirm": "Draft the postmortem?",
+            "run": "postmortem.mts",
+            "config": {},
+            "args": {},
+            "yields": {
+              "path": "quoted"
+            },
+            "takes": {
+              "record": "incident"
+            },
+            "examples": {
+              "draft the postmortem": {},
+              "write up the postmortem": {},
+              "start a postmortem": {}
+            },
+            "tests": {
+              "postmortem please": {},
+              "look up incident 311": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    }
+  },
+  "vocab": {
+    "services": {
+      "checkout": {
+        "what": "The checkout service: cart, payment and order confirmation."
+      },
+      "payments": {
+        "what": "The payments service: card charges and refunds."
+      }
+    }
+  },
+  "adapter": "replay",
+  "evoke": "0.7.0"
+}

@@ -290,6 +290,9 @@ impl<'a> Resolver<'a> {
     }
 
     fn lookup(&mut self, name: &ArgName) -> Lookup<'a> {
+        if self.of.takes.contains_key(name) {
+            return Lookup::Taken;
+        }
         self.resolve(name.as_str())
             .map_or(Lookup::Unknown, |(current, arg)| Lookup::Arg(current, arg))
     }
@@ -339,7 +342,7 @@ fn read(d: &mut Diagnostics, root: Node, of: &Manifest, form: Form) -> Option<Ov
         }
         Some(effect)
     });
-    for (_, node) in top.take_any(&["run", "needs", "config", "yields"]) {
+    for (_, node) in top.take_any(&["run", "needs", "config", "yields", "returns", "takes"]) {
         d.fail(
             node.at.as_ref(),
             format!(
@@ -403,7 +406,9 @@ fn args(d: &mut Diagnostics, node: Node, r: &mut Resolver<'_>) -> IndexMap<ArgNa
         if let Some(node) = table.take("options") {
             options(d, node, arg, wording);
         }
-        for (_, node) in table.take_any(&["pick", "vocab", "range", "flag", "optional", "was"]) {
+        for (_, node) in
+            table.take_any(&["pick", "vocab", "range", "flag", "optional", "was", "takes"])
+        {
             d.fail(
                 node.at.as_ref(),
                 format!(

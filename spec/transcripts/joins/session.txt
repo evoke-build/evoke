@@ -1,0 +1,105 @@
+# One step takes several whole results. The sources' manifests name what they return, the taker's arguments take
+# them by that name, and the plan binds them before anything runs, whatever the words refer to. A result reaches
+# the taker's body beside its decision, never through its words, and stays once in the log, on its source's line.
+$ evoke "check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect"
+  1  errors service="checkout"  0.90
+  2  deploys service="checkout"  0.90
+  3  logs service="checkout"  0.90
+  4  suspect  0.90 · takes errors from 1, deploys from 2, logs from 3
+checkout: 8.4% errors since 14:02
+checkout: 1 deploy today, 4.12.0 at 13:58
+checkout: 412 timeouts calling payments
+4.12.0 at 13:58, four minutes before 8.4% errors and 412 timeouts
+$ evoke --json "check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect"
+{"step":1,"steps":4,"input":"check the errors for checkout","outcome":"run","reflex":"errors","args":{"service":{"type":"word","word":"checkout"}},"call":"errors service=\"checkout\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"errors","p":0.9},"judgments":[{"question":"route","top":"errors","p":0.9},{"question":"errors.service","top":"checkout","p":0.9}],"runner_up":{"reflex":"deploys","route":0.03,"fits":0.1},"contenders":[{"reflex":"errors","route":0.9,"fits":0.8},{"reflex":"deploys","route":0.03,"fits":0.1},{"reflex":"logs","route":0.0,"fits":0.02},{"reflex":"suspect","route":0.0,"fits":0.02},{"reflex":"rollback","route":0.0,"fits":0.02},{"reflex":"incidents","route":0.0,"fits":0.02},{"reflex":"incident","route":0.0,"fits":0.02},{"reflex":"postmortem","route":0.0,"fits":0.02}],"trace":[],"contained":{"type":"full"},"result":{"text":"checkout: 8.4% errors since 14:02","data":{"service":"checkout","rate":0.084,"since":"14:02"}},"status":"ran"}
+{"step":2,"steps":4,"input":"list the checkout deploys","outcome":"run","reflex":"deploys","args":{"service":{"type":"word","word":"checkout"}},"call":"deploys service=\"checkout\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"deploys","p":0.9},"judgments":[{"question":"route","top":"deploys","p":0.9},{"question":"deploys.service","top":"checkout","p":0.9}],"runner_up":{"reflex":"errors","route":0.03,"fits":0.1},"contenders":[{"reflex":"deploys","route":0.9,"fits":0.8},{"reflex":"errors","route":0.03,"fits":0.1},{"reflex":"logs","route":0.0,"fits":0.02},{"reflex":"suspect","route":0.0,"fits":0.02},{"reflex":"rollback","route":0.0,"fits":0.02},{"reflex":"incidents","route":0.0,"fits":0.02},{"reflex":"incident","route":0.0,"fits":0.02},{"reflex":"postmortem","route":0.0,"fits":0.02}],"trace":[],"contained":{"type":"full"},"result":{"text":"checkout: 1 deploy today, 4.12.0 at 13:58","data":{"service":"checkout","deploys":[{"release":"4.12.0","at":"13:58"}]}},"status":"ran"}
+{"step":3,"steps":4,"input":"pull the checkout logs","outcome":"run","reflex":"logs","args":{"service":{"type":"word","word":"checkout"}},"call":"logs service=\"checkout\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"logs","p":0.9},"judgments":[{"question":"route","top":"logs","p":0.9},{"question":"logs.service","top":"checkout","p":0.9}],"runner_up":{"reflex":"errors","route":0.03,"fits":0.1},"contenders":[{"reflex":"logs","route":0.9,"fits":0.8},{"reflex":"errors","route":0.03,"fits":0.1},{"reflex":"deploys","route":0.0,"fits":0.02},{"reflex":"suspect","route":0.0,"fits":0.02},{"reflex":"rollback","route":0.0,"fits":0.02},{"reflex":"incidents","route":0.0,"fits":0.02},{"reflex":"incident","route":0.0,"fits":0.02},{"reflex":"postmortem","route":0.0,"fits":0.02}],"trace":[],"contained":{"type":"full"},"result":{"text":"checkout: 412 timeouts calling payments","data":{"service":"checkout","count":412,"top":"timeout calling payments"}},"status":"ran"}
+{"step":4,"steps":4,"input":"find the suspect","outcome":"run","reflex":"suspect","args":{},"call":"suspect","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"suspect","p":0.9},"judgments":[{"question":"route","top":"suspect","p":0.9}],"runner_up":{"reflex":"errors","route":0.03,"fits":0.1},"contenders":[{"reflex":"suspect","route":0.9,"fits":0.8},{"reflex":"errors","route":0.03,"fits":0.1},{"reflex":"deploys","route":0.0,"fits":0.02},{"reflex":"logs","route":0.0,"fits":0.02},{"reflex":"rollback","route":0.0,"fits":0.02},{"reflex":"incidents","route":0.0,"fits":0.02},{"reflex":"incident","route":0.0,"fits":0.02},{"reflex":"postmortem","route":0.0,"fits":0.02}],"trace":[],"bound":[{"arg":"errors","from":1,"field":"errors"},{"arg":"deploys","from":2,"field":"deploys"},{"arg":"logs","from":3,"field":"logs"}],"contained":{"type":"full"},"result":{"text":"4.12.0 at 13:58, four minutes before 8.4% errors and 412 timeouts","data":{"release":"4.12.0"}},"status":"ran"}
+$ evoke why
+  1  "check the errors for checkout"
+  errors 0.90 · none 0.07 · deploys 0.03
+  service  checkout 0.90 · unstated 0.10
+  fits     errors 0.80 · deploys 0.10 · logs 0.02 · suspect 0.02 · rollback 0.02 · incidents 0.02 · incident 0.02 · postmortem 0.02
+  ran errors service="checkout" · weakest: route 0.90 · cached
+  2  "list the checkout deploys"
+  deploys 0.90 · none 0.07 · errors 0.03
+  service  checkout 0.90 · unstated 0.10
+  fits     deploys 0.80 · errors 0.10 · logs 0.02 · suspect 0.02 · rollback 0.02 · incidents 0.02 · incident 0.02 · postmortem 0.02
+  ran deploys service="checkout" · weakest: route 0.90 · cached
+  3  "pull the checkout logs"
+  logs 0.90 · none 0.07 · errors 0.03
+  service  checkout 0.90 · unstated 0.10
+  fits     logs 0.80 · errors 0.10 · deploys 0.02 · suspect 0.02 · rollback 0.02 · incidents 0.02 · incident 0.02 · postmortem 0.02
+  ran logs service="checkout" · weakest: route 0.90 · cached
+  4  "find the suspect"
+  suspect 0.90 · none 0.07 · errors 0.03
+  fits  suspect 0.80 · errors 0.10 · deploys 0.02 · logs 0.02 · rollback 0.02 · incidents 0.02 · incident 0.02 · postmortem 0.02
+  ran suspect · weakest: route 0.90 · takes errors from 1, deploys from 2, logs from 3 · cached
+$ evoke try --json "check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect"
+{"input":"check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect","splits":[{"start":29,"end":31,"word":",","order":"and","p":0.9},{"start":56,"end":61,"word":"and","order":"and","p":0.9},{"start":83,"end":90,"word":"then","order":"then","p":0.9}],"steps":[{"n":1,"text":"check the errors for checkout","end":29,"decision":{"outcome":"run","reflex":"errors","args":{"service":{"type":"word","word":"checkout"}},"call":"errors service=\"checkout\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"errors","p":0.9},"judgments":[{"question":"route","top":"errors","p":0.9},{"question":"errors.service","top":"checkout","p":0.9}],"runner_up":{"reflex":"deploys","route":0.03,"fits":0.1},"contenders":[{"reflex":"errors","route":0.9,"fits":0.8},{"reflex":"deploys","route":0.03,"fits":0.1},{"reflex":"logs","route":0.0,"fits":0.02},{"reflex":"suspect","route":0.0,"fits":0.02},{"reflex":"rollback","route":0.0,"fits":0.02},{"reflex":"incidents","route":0.0,"fits":0.02},{"reflex":"incident","route":0.0,"fits":0.02},{"reflex":"postmortem","route":0.0,"fits":0.02}]},"reflex":"errors","effect":"read"},{"n":2,"text":"list the checkout deploys","end":56,"decision":{"outcome":"run","reflex":"deploys","args":{"service":{"type":"word","word":"checkout"}},"call":"deploys service=\"checkout\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"deploys","p":0.9},"judgments":[{"question":"route","top":"deploys","p":0.9},{"question":"deploys.service","top":"checkout","p":0.9}],"runner_up":{"reflex":"errors","route":0.03,"fits":0.1},"contenders":[{"reflex":"deploys","route":0.9,"fits":0.8},{"reflex":"errors","route":0.03,"fits":0.1},{"reflex":"logs","route":0.0,"fits":0.02},{"reflex":"suspect","route":0.0,"fits":0.02},{"reflex":"rollback","route":0.0,"fits":0.02},{"reflex":"incidents","route":0.0,"fits":0.02},{"reflex":"incident","route":0.0,"fits":0.02},{"reflex":"postmortem","route":0.0,"fits":0.02}]},"reflex":"deploys","effect":"read","refs":[{"span":{"start":5,"end":17,"text":"the checkout"},"from":[0],"how":"phrase","weak":true,"noun":"checkout"}]},{"n":3,"text":"pull the checkout logs","end":83,"decision":{"outcome":"run","reflex":"logs","args":{"service":{"type":"word","word":"checkout"}},"call":"logs service=\"checkout\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"logs","p":0.9},"judgments":[{"question":"route","top":"logs","p":0.9},{"question":"logs.service","top":"checkout","p":0.9}],"runner_up":{"reflex":"errors","route":0.03,"fits":0.1},"contenders":[{"reflex":"logs","route":0.9,"fits":0.8},{"reflex":"errors","route":0.03,"fits":0.1},{"reflex":"deploys","route":0.0,"fits":0.02},{"reflex":"suspect","route":0.0,"fits":0.02},{"reflex":"rollback","route":0.0,"fits":0.02},{"reflex":"incidents","route":0.0,"fits":0.02},{"reflex":"incident","route":0.0,"fits":0.02},{"reflex":"postmortem","route":0.0,"fits":0.02}]},"reflex":"logs","effect":"read","refs":[{"span":{"start":5,"end":17,"text":"the checkout"},"from":[0],"how":"engine","weak":true,"noun":"checkout","p":0.6}]},{"n":4,"text":"find the suspect","end":106,"decision":{"outcome":"run","reflex":"suspect","args":{},"call":"suspect","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"suspect","p":0.9},"judgments":[{"question":"route","top":"suspect","p":0.9}],"runner_up":{"reflex":"errors","route":0.03,"fits":0.1},"contenders":[{"reflex":"suspect","route":0.9,"fits":0.8},{"reflex":"errors","route":0.03,"fits":0.1},{"reflex":"deploys","route":0.0,"fits":0.02},{"reflex":"logs","route":0.0,"fits":0.02},{"reflex":"rollback","route":0.0,"fits":0.02},{"reflex":"incidents","route":0.0,"fits":0.02},{"reflex":"incident","route":0.0,"fits":0.02},{"reflex":"postmortem","route":0.0,"fits":0.02}]},"reflex":"suspect","effect":"read","after":[1,2,3]}],"binds":[{"from":1,"to":4,"arg":"errors","field":"errors","via":"takes"},{"from":2,"to":4,"arg":"deploys","field":"deploys","via":"takes"},{"from":3,"to":4,"arg":"logs","field":"logs","via":"takes"}],"exclusive":false,"stages":[[1,2,3],[4]],"verdict":{"outcome":"run"},"trace":[]}
+# A result by name reaches an argument named otherwise: the postmortem's record takes the incident.
+$ evoke "look up incident 311, then draft the postmortem"
+  1  incident number="311"  0.90
+  2  postmortem  0.90 · takes incident from 1
+incident 311: checkout down since 14:02
+drafted the postmortem of incident 311
+# No step before the taker returns what it takes: the plan is refused before anything runs, and says which; a
+# taker alone is such a plan, of one step.
+$ evoke "check the errors for checkout, then find the suspect"
+  1  errors service="checkout"  0.90
+  2  suspect  0.90 · takes errors from 1
+  step 2 takes deploys, which no step before it returns  →  evoke show deploys
+  step 2 takes logs, which no step before it returns  →  evoke show logs
+[2]
+$ evoke "find the suspect"
+  1  suspect  0.90
+  step 1 takes errors, which no step before it returns  →  evoke show errors
+  step 1 takes deploys, which no step before it returns  →  evoke show deploys
+  step 1 takes logs, which no step before it returns  →  evoke show logs
+[2]
+$ evoke --json "find the suspect"
+{"step":1,"steps":1,"input":"find the suspect","outcome":"run","reflex":"suspect","args":{},"call":"suspect","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"suspect","p":0.9},"judgments":[{"question":"route","top":"suspect","p":0.9}],"runner_up":{"reflex":"errors","route":0.03,"fits":0.1},"contenders":[{"reflex":"suspect","route":0.9,"fits":0.8},{"reflex":"errors","route":0.03,"fits":0.1},{"reflex":"deploys","route":0.0,"fits":0.02},{"reflex":"logs","route":0.0,"fits":0.02},{"reflex":"rollback","route":0.0,"fits":0.02},{"reflex":"incidents","route":0.0,"fits":0.02},{"reflex":"incident","route":0.0,"fits":0.02},{"reflex":"postmortem","route":0.0,"fits":0.02}],"trace":[],"status":"refused","why":{"type":"said","message":"step 1 takes errors, which no step before it returns; step 1 takes deploys, which no step before it returns; step 1 takes logs, which no step before it returns"}}
+[2]
+# Two steps return the name: refused too, since nothing a person answers settles which.
+$ evoke "look up incident 311 and look up incident 312, then draft the postmortem"
+  1  incident number="311"  0.90
+  2  incident number="312"  0.90
+  3  postmortem  0.90 · after 1, 2
+  step 3 takes one incident, and steps 1 and 2 each return one  →  evoke show postmortem
+[2]
+# A call by name never reaches a taker: only the plan hands a whole result. show says what a taker takes, and
+# which installed reflexes return it.
+$ evoke run suspect
+  suspect: suspect takes errors, deploys and logs, which a step before it in the same request returns  →  evoke show suspect
+[3]
+$ evoke show suspect
+  description = "Find the release most likely behind a failure.\nWeighs a service's errors, its deploys and its logs, and names the release."
+  not_for = ["listing deploys", "rolling a release back"]
+  tags = ["ops"]
+  effect = "read"
+  confirm = "Find the suspect?"
+  run = "suspect.mts"
+
+  [args.errors]
+  takes = "errors"
+
+  [args.deploys]
+  takes = "deploys"
+
+  [args.logs]
+  takes = "logs"
+
+  [yields]
+  release = "quoted"
+
+  [examples]
+  "find the suspect" = {}
+  "which deploy broke it" = {}
+  "find the release behind the outage" = {}
+
+  [tests]
+  "what broke checkout" = {}
+  "list the deploys" = false
+  takes errors, which errors returns
+  takes deploys, which deploys returns
+  takes logs, which logs returns

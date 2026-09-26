@@ -16,22 +16,28 @@ export interface InlineManifest {
   effect?: Effect
   /** The one-line template a person confirms, naming required arguments only. */
   confirm: string
+  /** The arguments: a question and one source each, or a whole result an earlier step returns, taken by its name. */
   args?: Record<string, InlineArg>
   /** What the body's `data` yields for a later step to take: per field, the recognizer that reads it, or a list of
    *  records with such fields. */
   yields?: Record<string, Recognizer | { each: Record<string, Recognizer> }>
+  /** The name the body's whole `data` goes by, for a later step to take. */
+  returns?: string
   examples?: InlineRecords
   tests?: InlineRecords
 }
 
-/** An argument: its question and exactly one source; a flag is optional by nature. */
-export type InlineArg = { ask: string } & (
-  | { options: Record<string, string>; optional?: boolean }
-  | { vocab: string; optional?: boolean }
-  | { pick: "number" | "duration"; range?: [number, number]; optional?: boolean }
-  | { pick: "email" | "url" | "quoted"; optional?: boolean }
-  | { flag: true }
-)
+/** An argument: its question and exactly one source, a flag optional by nature; or `takes` alone, a whole result
+ *  an earlier step returns, by the name that result goes by — filled by the plan, never asked. */
+export type InlineArg =
+  | ({ ask: string } & (
+      | { options: Record<string, string>; optional?: boolean }
+      | { vocab: string; optional?: boolean }
+      | { pick: "number" | "duration"; range?: [number, number]; optional?: boolean }
+      | { pick: "email" | "url" | "quoted"; optional?: boolean }
+      | { flag: true }
+    ))
+  | { takes: string }
 
 /** Utterances with what they assert: a record per argument — the text, or `false` for unstated, `true` for a flag —
  *  or `false` for never this reflex. */
@@ -49,13 +55,17 @@ type Typed<A> = A extends { options: infer O }
           ? Flag
           : never
 type Absent<A> = A extends { optional: true } | { flag: true } ? true : false
+type Taken<A> = A extends { takes: string } ? true : false
 type Flat<T> = { [K in keyof T]: T[K] } & {}
 type ArgsOf<M extends InlineManifest> = NonNullable<M["args"]> extends Record<string, InlineArg> ? NonNullable<M["args"]> : Record<never, InlineArg>
+/** The asked arguments alone: a taken one never travels in a decision. */
+type AskedOf<M extends InlineManifest> = { [N in keyof ArgsOf<M> as Taken<ArgsOf<M>[N]> extends true ? never : N]: ArgsOf<M>[N] }
 
-/** What a decision carries for a reflex handed as code: its arguments as the wire types them, optional ones optional. */
+/** What a decision carries for a reflex handed as code: its asked arguments as the wire types them, optional ones
+ *  optional. */
 export type Carried<M extends InlineManifest> = Flat<
-  { [N in keyof ArgsOf<M> as Absent<ArgsOf<M>[N]> extends true ? never : N]: Typed<ArgsOf<M>[N]> } & {
-    [N in keyof ArgsOf<M> as Absent<ArgsOf<M>[N]> extends true ? N : never]?: Typed<ArgsOf<M>[N]>
+  { [N in keyof AskedOf<M> as Absent<AskedOf<M>[N]> extends true ? never : N]: Typed<AskedOf<M>[N]> } & {
+    [N in keyof AskedOf<M> as Absent<AskedOf<M>[N]> extends true ? N : never]?: Typed<AskedOf<M>[N]>
   }
 >
 
@@ -63,8 +73,11 @@ export type Carried<M extends InlineManifest> = Flat<
  *  project has installed reflexes beside them. */
 export type ReflexesOf<I> = { [K in keyof I]: I[K] extends Inline<infer S> ? S : never }
 
-/** The body's arguments, plain: what `reflex`'s body receives. */
-export type Args<M extends InlineManifest> = Values<Carried<M>>
+/** The body's arguments, plain: what `reflex`'s body receives — the asked arguments' values, and each whole result
+ *  it takes as `unknown`, since evoke checks no shape. */
+export type Args<M extends InlineManifest> = Flat<
+  Values<Carried<M>> & { [N in keyof ArgsOf<M> as Taken<ArgsOf<M>[N]> extends true ? N : never]: unknown }
+>
 
 /** What `reflex` returns and `load` takes; `shape` never holds a value — it is what a decision carries, for inference. */
 export interface Inline<S = Record<string, Value>> {

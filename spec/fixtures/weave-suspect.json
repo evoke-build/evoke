@@ -1,0 +1,396 @@
+{
+  "input": "check the errors for checkout and list the deploys for checkout and pull the logs for checkout, then find the suspect",
+  "splits": [
+    {
+      "start": 29,
+      "end": 34,
+      "word": "and",
+      "order": "and",
+      "p": 0.9
+    },
+    {
+      "start": 63,
+      "end": 68,
+      "word": "and",
+      "order": "and",
+      "p": 0.9
+    },
+    {
+      "start": 94,
+      "end": 101,
+      "word": "then",
+      "order": "then",
+      "p": 0.9
+    }
+  ],
+  "steps": [
+    {
+      "n": 1,
+      "text": "check the errors for checkout",
+      "end": 29,
+      "decision": {
+        "outcome": "run",
+        "reflex": "errors",
+        "args": {
+          "service": {
+            "type": "word",
+            "word": "checkout"
+          }
+        },
+        "call": "errors service=\"checkout\"",
+        "effect": "read",
+        "confidence": 0.9,
+        "weakest": {
+          "question": "route",
+          "top": "errors",
+          "p": 0.9
+        },
+        "judgments": [
+          {
+            "question": "route",
+            "top": "errors",
+            "p": 0.9
+          },
+          {
+            "question": "errors.service",
+            "top": "checkout",
+            "p": 0.9
+          }
+        ],
+        "runner_up": {
+          "reflex": "deploys",
+          "route": 0.03,
+          "fits": 0.1
+        },
+        "contenders": [
+          {
+            "reflex": "errors",
+            "route": 0.9,
+            "fits": 0.8
+          },
+          {
+            "reflex": "deploys",
+            "route": 0.03,
+            "fits": 0.1
+          },
+          {
+            "reflex": "logs",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "suspect",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "rollback",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "incidents",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "incident",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "postmortem",
+            "route": 0,
+            "fits": 0.02
+          }
+        ]
+      },
+      "reflex": "errors",
+      "effect": "read"
+    },
+    {
+      "n": 2,
+      "text": "list the deploys for checkout",
+      "end": 63,
+      "decision": {
+        "outcome": "run",
+        "reflex": "deploys",
+        "args": {
+          "service": {
+            "type": "word",
+            "word": "checkout"
+          }
+        },
+        "call": "deploys service=\"checkout\"",
+        "effect": "read",
+        "confidence": 0.9,
+        "weakest": {
+          "question": "route",
+          "top": "deploys",
+          "p": 0.9
+        },
+        "judgments": [
+          {
+            "question": "route",
+            "top": "deploys",
+            "p": 0.9
+          },
+          {
+            "question": "deploys.service",
+            "top": "checkout",
+            "p": 0.9
+          }
+        ],
+        "runner_up": {
+          "reflex": "errors",
+          "route": 0.03,
+          "fits": 0.1
+        },
+        "contenders": [
+          {
+            "reflex": "deploys",
+            "route": 0.9,
+            "fits": 0.8
+          },
+          {
+            "reflex": "errors",
+            "route": 0.03,
+            "fits": 0.1
+          },
+          {
+            "reflex": "logs",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "suspect",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "rollback",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "incidents",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "incident",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "postmortem",
+            "route": 0,
+            "fits": 0.02
+          }
+        ]
+      },
+      "reflex": "deploys",
+      "effect": "read"
+    },
+    {
+      "n": 3,
+      "text": "pull the logs for checkout",
+      "end": 94,
+      "decision": {
+        "outcome": "run",
+        "reflex": "logs",
+        "args": {
+          "service": {
+            "type": "word",
+            "word": "checkout"
+          }
+        },
+        "call": "logs service=\"checkout\"",
+        "effect": "read",
+        "confidence": 0.9,
+        "weakest": {
+          "question": "route",
+          "top": "logs",
+          "p": 0.9
+        },
+        "judgments": [
+          {
+            "question": "route",
+            "top": "logs",
+            "p": 0.9
+          },
+          {
+            "question": "logs.service",
+            "top": "checkout",
+            "p": 0.9
+          }
+        ],
+        "runner_up": {
+          "reflex": "errors",
+          "route": 0.03,
+          "fits": 0.1
+        },
+        "contenders": [
+          {
+            "reflex": "logs",
+            "route": 0.9,
+            "fits": 0.8
+          },
+          {
+            "reflex": "errors",
+            "route": 0.03,
+            "fits": 0.1
+          },
+          {
+            "reflex": "deploys",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "suspect",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "rollback",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "incidents",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "incident",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "postmortem",
+            "route": 0,
+            "fits": 0.02
+          }
+        ]
+      },
+      "reflex": "logs",
+      "effect": "read"
+    },
+    {
+      "n": 4,
+      "text": "find the suspect",
+      "end": 117,
+      "decision": {
+        "outcome": "run",
+        "reflex": "suspect",
+        "args": {},
+        "call": "suspect",
+        "effect": "read",
+        "confidence": 0.9,
+        "weakest": {
+          "question": "route",
+          "top": "suspect",
+          "p": 0.9
+        },
+        "judgments": [
+          {
+            "question": "route",
+            "top": "suspect",
+            "p": 0.9
+          }
+        ],
+        "runner_up": {
+          "reflex": "errors",
+          "route": 0.03,
+          "fits": 0.1
+        },
+        "contenders": [
+          {
+            "reflex": "suspect",
+            "route": 0.9,
+            "fits": 0.8
+          },
+          {
+            "reflex": "errors",
+            "route": 0.03,
+            "fits": 0.1
+          },
+          {
+            "reflex": "deploys",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "logs",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "rollback",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "incidents",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "incident",
+            "route": 0,
+            "fits": 0.02
+          },
+          {
+            "reflex": "postmortem",
+            "route": 0,
+            "fits": 0.02
+          }
+        ]
+      },
+      "reflex": "suspect",
+      "effect": "read",
+      "after": [
+        1,
+        2,
+        3
+      ]
+    }
+  ],
+  "binds": [
+    {
+      "from": 1,
+      "to": 4,
+      "arg": "errors",
+      "field": "errors",
+      "via": "takes"
+    },
+    {
+      "from": 2,
+      "to": 4,
+      "arg": "deploys",
+      "field": "deploys",
+      "via": "takes"
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "arg": "logs",
+      "field": "logs",
+      "via": "takes"
+    }
+  ],
+  "exclusive": false,
+  "stages": [
+    [
+      1,
+      2,
+      3
+    ],
+    [
+      4
+    ]
+  ],
+  "verdict": {
+    "outcome": "run"
+  }
+}

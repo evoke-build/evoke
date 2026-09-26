@@ -11,8 +11,12 @@ use evoke_core::{Decision, Gate, Plan};
 /// `spec/fixtures/plan-weave.json`: lights, timer, volume, mail — writes — and contact, a read that yields an
 /// address; the plan the weave vectors run under.
 pub const PLAN: &str = include_str!("../../../../spec/fixtures/plan-weave.json");
+/// `spec/fixtures/plan-joins.json`: errors, deploys and logs, reads that return their names; a suspect that takes
+/// the three; incidents, incident and postmortem; a rollback — the plan the join vectors run under.
+pub const JOINS: &str = include_str!("../../../../spec/fixtures/plan-joins.json");
 const LIGHTS_TIMER: &str = include_str!("../../../../spec/fixtures/weave-lights-timer.json");
 const ADDRESS_MAIL: &str = include_str!("../../../../spec/fixtures/weave-address-mail.json");
+const SUSPECT: &str = include_str!("../../../../spec/fixtures/weave-suspect.json");
 
 /// The plan as the vectors compile it.
 ///
@@ -21,6 +25,15 @@ const ADDRESS_MAIL: &str = include_str!("../../../../spec/fixtures/weave-address
 #[must_use]
 pub fn plan() -> Plan {
     serde_json::from_str(PLAN).expect("the spec's plan reads")
+}
+
+/// The joins plan as the vectors compile it.
+///
+/// # Panics
+/// When the spec's fixture does not read.
+#[must_use]
+pub fn joins() -> Plan {
+    serde_json::from_str(JOINS).expect("the spec's joins plan reads")
 }
 
 /// The same plan with one reflex's effect changed: the schedule reads effects off the plan, so a generated one
@@ -52,7 +65,8 @@ pub fn gate() -> Gate {
     Gate::new(p(0.5), Some(p(0.3)), p(0.6), p(0.8)).expect("read under write")
 }
 
-/// A step's decision from a spec fixture: `lights` and `timer` run, `contact` runs, `mail` asks for `to`.
+/// A step's decision from a spec fixture: `lights` and `timer` run, `contact` runs, `mail` asks for `to`; the
+/// three lookups of the outage run, and so does the `suspect` that takes their results.
 ///
 /// # Panics
 /// For a reflex no fixture decides, or a fixture that does not read.
@@ -63,6 +77,10 @@ pub fn decision(reflex: &str) -> Decision {
         "timer" => (LIGHTS_TIMER, 1),
         "contact" => (ADDRESS_MAIL, 0),
         "mail" => (ADDRESS_MAIL, 1),
+        "errors" => (SUSPECT, 0),
+        "deploys" => (SUSPECT, 1),
+        "logs" => (SUSPECT, 2),
+        "suspect" => (SUSPECT, 3),
         other => panic!("no fixture decides {other}"),
     };
     let json: serde_json::Value = serde_json::from_str(file).expect("the fixture reads");

@@ -1,9 +1,10 @@
 <!-- description: One sentence can ask for several reflexes. evoke shows the numbered plan before anything runs, and a step can take a value from an earlier step's result. -->
 # Weaving
 
-`evoke` reads every sentence for its steps. One step is decided as always. More than one is a *weave*: each
-part decided on its own, in the order the words give, a result of one step threaded into a later one, and the
-plan shown before anything runs.
+`evoke` reads every sentence for its steps. One step is decided as it always was, unless its reflex takes an
+earlier step's result: then the request stops before anything runs. More than one is a *weave*: each part
+decided on its own, in the order the words give, a result of one step threaded into a later one, and the plan
+shown before anything runs.
 
 ```text
 $ evoke "kill the lights in the den and start a 10 minute timer"
@@ -66,6 +67,40 @@ dana <dana@example.com>
 10 minute timer started
 ```
 
+## A step that takes whole results
+
+A step may take earlier steps' results whole. Its manifest names what it takes with `takes`; each earlier reflex
+names what it returns with `returns` ([The manifest](../author/manifest.md#a-result-another-step-takes-whole)).
+The plan binds them by that name before anything runs, whatever the words refer to, and the step waits for the
+steps it takes from:
+
+```text
+$ evoke "check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect"
+  1  errors service="checkout"  0.90
+  2  deploys service="checkout"  0.90
+  3  logs service="checkout"  0.90
+  4  suspect  0.90 · takes errors from 1, deploys from 2, logs from 3
+checkout: 8.4% errors since 14:02
+checkout: 1 deploy today, 4.12.0 at 13:58
+checkout: 412 timeouts calling payments
+4.12.0 at 13:58, four minutes before 8.4% errors and 412 timeouts
+```
+
+Steps 1 to 3 run side by side; step 4 receives their three results as its arguments, beside its decision and
+never in its words, an empty list as a list. A result over 1 MiB is not handed: the step is skipped, and the
+weave fails as it does when a source yields nothing. When no step before it returns what a step takes, or two
+steps do, the request stops before anything runs, and says which; so does a field taken from a step that runs
+once per record:
+
+```text
+$ evoke "check the errors for checkout, then find the suspect"
+  1  errors service="checkout"  0.90
+  2  suspect  0.90 · takes errors from 1
+  step 2 takes deploys, which no step before it returns  →  evoke show deploys
+  step 2 takes logs, which no step before it returns  →  evoke show logs
+[2]
+```
+
 ## Before anything runs
 
 The plan is settled first. A step whose required argument no other step provides is asked for it up front, as
@@ -85,8 +120,9 @@ den lights off
 
 An answer out of range is asked again with the reason, as one input's would be. Each line of the plan is what
 `evoke` would say of that step alone: the call and its confidence, or the confirm's own line with its weakest
-judgment. After it: `asks <arg>` for what the step still needs, `takes <field> from <n>` where a result threads
-in, `after <n>` where the words ordered it, `no reflex` where nothing matched.
+judgment. After it: `asks <arg>` for what the step still needs, `takes <name> from <n>` where a result threads
+in, the name a field's or a whole result's, `after <n>` where the words ordered it, `no reflex` where nothing
+matched.
 
 ## At each step's turn
 
@@ -120,8 +156,8 @@ $ evoke "kill the lights in the den and feed the cat"
 ```
 
 The exit code is the worst step's. `0` every step ran. `1` a body failed, or a step yielded nothing the next
-could take. `2` a step was declined, or a part matched nothing. `3` a step needed a terminal, or a question only
-you can answer.
+could take, or more than it can be handed. `2` a step was declined, a part matched nothing, or a step takes a
+result no step before it returns, or two do. `3` a step needed a terminal, or a question only you can answer.
 
 ## Stopping it
 

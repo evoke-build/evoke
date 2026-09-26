@@ -9,7 +9,7 @@ use serde::ser::SerializeMap;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::diagnostic::{At, Diagnostic};
-use crate::document::{self, Diagnostics, Document, Form, Json, KeyPath, Node, Value};
+use crate::document::{self, Diagnostics, Document, Form, Json, KeyPath, Node, Table, Value};
 use crate::name::{
     ArgName, ConfigKey, FieldName, OptionKey, RelPath, Tag, ValueName, VocabName, Word,
 };
@@ -31,9 +31,17 @@ pub struct Manifest {
     #[serde(default, skip_serializing_if = "Needs::is_none")]
     pub needs: Needs,
     pub config: IndexMap<ConfigKey, ConfigSpec>,
+    /// The arguments the classifier is asked about: `ask` and one source each.
     pub args: IndexMap<ArgName, Argument>,
+    /// The arguments an earlier step's whole result fills, by the name that result goes by: never asked, never
+    /// stated, so the foundation never meets one. Contract.
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub takes: IndexMap<ArgName, FieldName>,
     /// What the body's `data` yields for a later step to take, per field.
     pub yields: IndexMap<FieldName, Yield>,
+    /// The name the body's whole `data` goes by, for a later step to take. Contract.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub returns: Option<FieldName>,
     pub examples: Records,
     pub tests: Records,
     /// Keys the format does not know: reported, never fatal.
@@ -622,33 +630,46 @@ pub(crate) enum Owner {
     Yours,
 }
 
-/// What a placeholder's name resolves to: the current name and its argument, one that failed to read, or nothing.
+/// What a placeholder's name resolves to: the current name and its argument, one that failed to read, an
+/// argument an earlier step's result fills, or nothing.
 pub(crate) enum Lookup<'a> {
     Unknown,
     Broken,
+    Taken,
     Arg(&'a ArgName, &'a Argument),
 }
 
 /// Arguments by name; `None` for one that failed to read but still counts as named.
 pub(crate) type Known = IndexMap<ArgName, Option<Argument>>;
 
+/// An argument with `takes`, as read: the name it takes, none when the line did not read, and where it stands.
+struct Taking {
+    name: Option<FieldName>,
+    at: Option<At>,
+}
+
+/// The arguments with `takes`, by name, as `args` read them: what the checks after `run` and `effect` walk.
+type Taken = IndexMap<ArgName, Taking>;
+
+/// What `args` read: the asked arguments, and the taken ones.
+#[derive(Default)]
+pub(crate) struct Args {
+    pub(crate) known: Known,
+    taken: Taken,
+}
+
+impl Args {
+    /// The taken arguments' names, for a lookup that must know them.
+    pub(crate) fn taken(&self) -> Vec<ArgName> {
+        self.taken.keys().cloned().collect()
+    }
+}
+
 fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
     let mut top = d.table(root)?;
     let root_at = top.at.clone();
     let order = top.keys();
-    if form != Form::Wire {
-        match top.take("reflex") {
-            Some(node) if node.integer() == Some(1) => {}
-            Some(node) => d.fail(node.at.as_ref(), "reflex = 1 is required"),
-            None => d.fail(root_at.as_ref(), "reflex = 1 is required"),
-        }
-    }
-    let description = if let Some(node) = top.take("description") {
-        description(d, &node)
-    } else {
-        d.fail(root_at.as_ref(), "description is required");
-        None
-    };
+    let description = head(d, &mut top, form, root_at.as_ref());
     let not_for = top
         .take("not_for")
         .map_or_else(Vec::new, |node| list(d, node, Diagnostics::line));
@@ -660,43 +681,115 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
     let config = top
         .take("config")
         .map_or_else(IndexMap::new, |node| config(d, node, &mut unknown));
-    let known = top
+    let mut read = top
         .take("args")
-        .map_or_else(IndexMap::new, |node| args(d, node, &mut unknown));
-    let yields = top
-        .take("yields")
-        .map_or_else(IndexMap::new, |node| yields(d, node, &mut unknown));
+        .map_or_else(Args::default, |node| args(d, node, &mut unknown));
+    // The wire carries the taken arguments apart from the asked ones, as the type holds them.
+    if form == Form::Wire
+        && let Some(node) = top.take("takes")
+    {
+        takes_wire(d, node, &mut read.taken);
+    }
+    let results = results(d, &mut top, &mut unknown);
+    let taken_names = read.taken();
+    let known = &read.known;
     let needs = top.take("needs").map_or_else(Needs::default, |node| {
         needs::read(
             d,
             node,
             &mut unknown,
-            Some(&named(&known, |name| config.contains_key(name))),
+            Some(&named(known, &taken_names, |name| {
+                config.contains_key(name)
+            })),
         )
     });
-    let mut lookup = |name: &ArgName| match known.get_key_value(name) {
-        None => Lookup::Unknown,
-        Some((_, None)) => Lookup::Broken,
-        Some((current, Some(arg))) => Lookup::Arg(current, arg),
-    };
+    let mut lookup = |name: &ArgName| lookup(known, &taken_names, name);
     let confirm = if let Some(node) = top.take("confirm") {
         template(d, &node, &mut lookup)
     } else {
         d.fail(root_at.as_ref(), "confirm is required");
         None
     };
-    let run = run_of(d, top.take("run"), form, &known, root_at.as_ref());
-    let owner = if form == Form::Wire {
-        Owner::Yours
-    } else {
-        Owner::Shipped
-    };
-    let examples = top.take("examples").map_or_else(Records::default, |n| {
-        records(d, n, &known, &Records::default(), owner)
-    });
-    let tests = top.take("tests").map_or_else(Records::default, |n| {
-        records(d, n, &known, &examples, owner)
-    });
+    let run = run_of(
+        d,
+        top.take("run"),
+        form,
+        known,
+        &taken_names,
+        root_at.as_ref(),
+    );
+    let (examples, tests) = tables(d, &mut top, form, known, &taken_names);
+    let takes = taken(
+        d,
+        &read.taken,
+        Returned {
+            name: results.returns.as_ref(),
+            at: results.returns_at.as_ref(),
+        },
+        run.as_ref(),
+        effect,
+        results.yields_at.as_ref(),
+    );
+    let unknown = unknown_of(d, &mut top, form, unknown, &order);
+    let args: Option<IndexMap<ArgName, Argument>> = read
+        .known
+        .into_iter()
+        .map(|(name, arg)| Some((name, arg?)))
+        .collect();
+    Some(Manifest {
+        description: description?,
+        not_for,
+        tags,
+        effect: effect?,
+        confirm: confirm?,
+        run: run?,
+        needs,
+        config,
+        args: args?,
+        takes,
+        yields: results.yields,
+        returns: results.returns,
+        examples,
+        tests,
+        unknown,
+    })
+}
+
+/// What the body's `data` is for a later step: the name it goes by whole, and the fields it yields, each with
+/// where it stands, for the checks once `run` and `effect` are known.
+struct Results {
+    returns: Option<FieldName>,
+    returns_at: Option<At>,
+    yields: IndexMap<FieldName, Yield>,
+    /// Where a `[yields]` table with a field stands; none for no table, or an empty one.
+    yields_at: Option<At>,
+}
+
+fn results(d: &mut Diagnostics, top: &mut Table, unknown: &mut Vec<KeyPath>) -> Results {
+    let returns_node = top.take("returns");
+    let returns = returns_node
+        .as_ref()
+        .and_then(|node| field_name(d, node, "returns"));
+    let yields_node = top.take("yields");
+    let yields_at = yields_node.as_ref().and_then(|node| node.at.clone());
+    let yields = yields_node.map_or_else(IndexMap::new, |node| yields(d, node, unknown));
+    Results {
+        returns,
+        returns_at: returns_node.and_then(|node| node.at),
+        yields_at: if yields.is_empty() { None } else { yields_at },
+        yields,
+    }
+}
+
+/// The keys the format does not know, in the file's order: what reading found, and what the wire carried from
+/// an earlier read.
+fn unknown_of(
+    d: &mut Diagnostics,
+    top: &mut Table,
+    form: Form,
+    mut unknown: Vec<KeyPath>,
+    order: &[String],
+) -> Vec<KeyPath> {
     if form == Form::Wire
         && let Some(node) = top.take("unknown")
     {
@@ -711,34 +804,65 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
             .iter()
             .position(|key| Some(key) == path.segments().first())
     });
-    let args: Option<IndexMap<ArgName, Argument>> = known
-        .into_iter()
-        .map(|(name, arg)| Some((name, arg?)))
-        .collect();
-    Some(Manifest {
-        description: description?,
-        not_for,
-        tags,
-        effect: effect?,
-        confirm: confirm?,
-        run: run?,
-        needs,
-        config,
-        args: args?,
-        yields,
-        examples,
-        tests,
-        unknown,
-    })
+    unknown
 }
 
-/// What a `{name}` of `[needs]` resolves to: an argument that carries a value, a flag, a config key, both or
-/// neither. An argument that failed to read still counts as one.
+/// The manifest's head: the edition, which the wire form has shed, and the description, required.
+fn head(
+    d: &mut Diagnostics,
+    top: &mut Table,
+    form: Form,
+    root_at: Option<&At>,
+) -> Option<Description> {
+    if form != Form::Wire {
+        match top.take("reflex") {
+            Some(node) if node.integer() == Some(1) => {}
+            Some(node) => d.fail(node.at.as_ref(), "reflex = 1 is required"),
+            None => d.fail(root_at, "reflex = 1 is required"),
+        }
+    }
+    if let Some(node) = top.take("description") {
+        description(d, &node)
+    } else {
+        d.fail(root_at, "description is required");
+        None
+    }
+}
+
+/// The records: `[examples]`, then `[tests]` against them. A shipped manifest may not assert a vocabulary
+/// argument; a wire value was typed at its file already.
+fn tables(
+    d: &mut Diagnostics,
+    top: &mut Table,
+    form: Form,
+    known: &Known,
+    taken: &[ArgName],
+) -> (Records, Records) {
+    let owner = if form == Form::Wire {
+        Owner::Yours
+    } else {
+        Owner::Shipped
+    };
+    let examples = top.take("examples").map_or_else(Records::default, |n| {
+        records(d, n, known, taken, &Records::default(), owner)
+    });
+    let tests = top.take("tests").map_or_else(Records::default, |n| {
+        records(d, n, known, taken, &examples, owner)
+    });
+    (examples, tests)
+}
+
+/// What a `{name}` of `[needs]` resolves to: an argument that carries a value, a flag, one an earlier step's
+/// result fills, a config key, both or neither. An argument that failed to read still counts as one.
 pub(crate) fn named<'a>(
     known: &'a Known,
+    taken: &'a [ArgName],
     is_config: impl Fn(&str) -> bool + 'a,
 ) -> impl Fn(&ValueName) -> Named + 'a {
     move |name: &ValueName| {
+        if taken.iter().any(|arg| arg.as_str() == name.as_str()) {
+            return Named::Taken;
+        }
         let argument = known.get(name.as_str());
         let flag = matches!(
             argument,
@@ -961,10 +1085,137 @@ fn recognizer(d: &mut Diagnostics, node: &Node) -> Option<Recognizer> {
     }
 }
 
-pub(crate) fn args(d: &mut Diagnostics, node: Node, unknown: &mut Vec<KeyPath>) -> Known {
-    let mut known = Known::new();
+/// What a placeholder's name resolves to among the asked and the taken arguments.
+pub(crate) fn lookup<'a>(known: &'a Known, taken: &[ArgName], name: &ArgName) -> Lookup<'a> {
+    if taken.contains(name) {
+        return Lookup::Taken;
+    }
+    match known.get_key_value(name) {
+        None => Lookup::Unknown,
+        Some((_, None)) => Lookup::Broken,
+        Some((current, Some(arg))) => Lookup::Arg(current, arg),
+    }
+}
+
+/// The wire's `takes` as the type holds it: per taken argument, the name of the result that fills it.
+pub(crate) fn takes(d: &mut Diagnostics, node: Node) -> IndexMap<ArgName, FieldName> {
+    let mut taken = Taken::new();
+    takes_wire(d, node, &mut taken);
+    taken
+        .into_iter()
+        .filter_map(|(arg, taking)| Some((arg, taking.name?)))
+        .collect()
+}
+
+/// A result's name — `returns`, or what an argument takes — in a field's grammar.
+pub(crate) fn field_name(d: &mut Diagnostics, node: &Node, what: &str) -> Option<FieldName> {
+    let text = d.str(node)?.to_owned();
+    match FieldName::new(&text) {
+        Ok(name) => Some(name),
+        Err(why) => {
+            d.fail(node.at.as_ref(), format!("{what}: {why}"));
+            None
+        }
+    }
+}
+
+/// The wire's `takes`: per taken argument, the name of the result that fills it.
+fn takes_wire(d: &mut Diagnostics, node: Node, taken: &mut Taken) {
     let Some(table) = d.table(node) else {
-        return known;
+        return;
+    };
+    for (key, node) in table.entries() {
+        let arg = match ArgName::new(&key) {
+            Ok(arg) => arg,
+            Err(why) => {
+                d.fail(node.at.as_ref(), format!("takes.{key}: {why}"));
+                continue;
+            }
+        };
+        let at = node.at.clone();
+        let name = field_name(d, &node, &format!("takes.{key}"));
+        taken.insert(arg, Taking { name, at });
+    }
+}
+
+/// `returns` as read: the name, and where it stands.
+#[derive(Clone, Copy)]
+struct Returned<'a> {
+    name: Option<&'a FieldName>,
+    at: Option<&'a At>,
+}
+
+/// The taken arguments against the rest of the manifest, once `run` and `effect` are known: a name two
+/// arguments take, a name the reflex itself returns, a result an argv body can neither receive nor return, a
+/// destructive reflex — whose confirm could not show what it acts on — taking one. What read, by name.
+fn taken(
+    d: &mut Diagnostics,
+    taken: &Taken,
+    returns: Returned<'_>,
+    run: Option<&Run>,
+    effect: Option<Effect>,
+    yields_at: Option<&At>,
+) -> IndexMap<ArgName, FieldName> {
+    let argv = matches!(run, Some(Run::Argv { .. }));
+    if argv {
+        if returns.name.is_some() {
+            d.fail(
+                returns.at,
+                "returns needs a file body: an argv body returns no data",
+            );
+        }
+        if let Some(at) = yields_at {
+            d.fail(
+                Some(at),
+                "yields needs a file body: an argv body returns no data",
+            );
+        }
+    }
+    let mut named: IndexMap<ArgName, FieldName> = IndexMap::new();
+    for (arg, taking) in taken {
+        let Some(name) = &taking.name else {
+            continue;
+        };
+        let at = taking.at.as_ref();
+        if let Some((first, _)) = named.iter().find(|(_, result)| *result == name) {
+            d.fail(
+                at,
+                format!("args.{arg} takes {name}, which args.{first} takes already"),
+            );
+            continue;
+        }
+        if returns.name == Some(name) {
+            d.fail(
+                at,
+                format!(
+                    "args.{arg} takes {name}, which this reflex also returns: return a new name, so a later step has one source"
+                ),
+            );
+        }
+        if argv {
+            d.fail(
+                at,
+                format!(
+                    "args.{arg} takes a result, which an argv body cannot receive: use a file body"
+                ),
+            );
+        } else if effect == Some(Effect::Destructive) {
+            d.fail(
+                at,
+                format!(
+                    "args.{arg} takes a result, and the reflex is destructive: a destructive step takes what it acts on as a field its confirm can show"
+                ),
+            );
+        }
+        named.insert(arg.clone(), name.clone());
+    }
+    named
+}
+
+pub(crate) fn args(d: &mut Diagnostics, node: Node, unknown: &mut Vec<KeyPath>) -> Args {
+    let mut args = Args::default();
+    let Some(table) = d.table(node) else {
+        return args;
     };
     let mut named = Vec::new();
     for (key, node) in table.entries() {
@@ -976,10 +1227,22 @@ pub(crate) fn args(d: &mut Diagnostics, node: Node, unknown: &mut Vec<KeyPath>) 
     let live: Vec<ArgName> = named.iter().map(|(name, _)| name.clone()).collect();
     let mut former = IndexMap::new();
     for (name, node) in named {
-        let arg = argument(d, node, &name, &live, &mut former, unknown);
-        known.insert(name, arg);
+        match argument(d, node, &name, &live, &mut former, unknown) {
+            Read::Asked(arg) => {
+                args.known.insert(name, arg);
+            }
+            Read::Taken(taking) => {
+                args.taken.insert(name, taking);
+            }
+        }
     }
-    known
+    args
+}
+
+/// An argument as `args` read it: one the classifier is asked about, or one an earlier step's result fills.
+enum Read {
+    Asked(Option<Argument>),
+    Taken(Taking),
 }
 
 const SOURCES: [&str; 4] = ["options", "vocab", "pick", "flag"];
@@ -992,9 +1255,14 @@ fn argument(
     live: &[ArgName],
     former: &mut IndexMap<ArgName, ArgName>,
     unknown: &mut Vec<KeyPath>,
-) -> Option<Argument> {
-    let mut table = d.table(node)?;
+) -> Read {
+    let Some(mut table) = d.table(node) else {
+        return Read::Asked(None);
+    };
     let path = table.path.clone();
+    if let Some(node) = table.take("takes") {
+        return Read::Taken(taking(d, table, &path, &node, unknown));
+    }
     let ask = if let Some(node) = table.take("ask") {
         d.line(&node)
     } else {
@@ -1030,15 +1298,47 @@ fn argument(
             None
         }
     };
-    Some(Argument {
-        ask: ask?,
-        kind: kind?,
-        was,
-    })
+    Read::Asked(ask.zip(kind).map(|(ask, kind)| Argument { ask, kind, was }))
+}
+
+/// The keys an asked argument may carry, and why each is out of place beside `takes`.
+const BESIDE_TAKES: [(&str, &str); 8] = [
+    ("ask", "which no one is asked for"),
+    ("options", "which has its source"),
+    ("vocab", "which has its source"),
+    ("pick", "which has its source"),
+    ("flag", "which has its source"),
+    ("range", "which has no range"),
+    ("optional", "which is required"),
+    ("was", "which no file names"),
+];
+
+/// `takes` alone: the name of a result an earlier step returns, which the plan fills. Every other key of an
+/// argument is a line to remove.
+fn taking(
+    d: &mut Diagnostics,
+    mut table: Table,
+    path: &KeyPath,
+    node: &Node,
+    unknown: &mut Vec<KeyPath>,
+) -> Taking {
+    for (key, why) in BESIDE_TAKES {
+        if let Some(other) = table.take(key) {
+            d.fail(
+                other.at.as_ref(),
+                format!("{path} takes a result, {why}: remove {key}"),
+            );
+        }
+    }
+    unknown.extend(table.unknown());
+    Taking {
+        name: field_name(d, node, &format!("{path}.takes")),
+        at: node.at.clone(),
+    }
 }
 
 /// `a`, `a and b`, `a, b and c`.
-fn words(names: &[&str]) -> String {
+pub(crate) fn words(names: &[&str]) -> String {
     match names.split_last() {
         Some((last, [])) => (*last).to_owned(),
         Some((last, rest)) => format!("{} and {last}", rest.join(", ")),
@@ -1253,6 +1553,10 @@ pub(crate) fn template<'k>(
         let (current, problem) = match lookup(name) {
             Lookup::Unknown => (name, Some("which is not an argument")),
             Lookup::Broken => (name, None),
+            Lookup::Taken => (
+                name,
+                Some("a result the plan hands the body, which a confirm cannot show"),
+            ),
             Lookup::Arg(current, arg) => match arg.kind {
                 Kind::Flag => (current, Some("a flag")),
                 Kind::Value { optional: true, .. } => (current, Some("an optional argument")),
@@ -1278,6 +1582,7 @@ pub(crate) fn run_of(
     node: Option<Node>,
     form: Form,
     known: &Known,
+    taken: &[ArgName],
     root_at: Option<&At>,
 ) -> Option<Run> {
     let Some(node) = node else {
@@ -1295,7 +1600,7 @@ pub(crate) fn run_of(
                 None
             }
         },
-        Value::Array(_) => argv(d, node, known),
+        Value::Array(_) => argv(d, node, known, taken),
         _ => {
             d.fail(node.at.as_ref(), "run must be an entrypoint or an argv");
             None
@@ -1303,7 +1608,7 @@ pub(crate) fn run_of(
     }
 }
 
-fn argv(d: &mut Diagnostics, node: Node, known: &Known) -> Option<Run> {
+fn argv(d: &mut Diagnostics, node: Node, known: &Known, taken: &[ArgName]) -> Option<Run> {
     let at = node.at.clone();
     let at = at.as_ref();
     let items = d.array(node)?;
@@ -1339,6 +1644,15 @@ fn argv(d: &mut Diagnostics, node: Node, known: &Known) -> Option<Run> {
         };
         let element = match placeholder(text).map(ArgName::new) {
             Some(Ok(name)) => match known.get(&name) {
+                None if taken.contains(&name) => {
+                    d.fail(
+                        at,
+                        format!(
+                            "run names {{{name}}}, a result the plan hands the body; an argv cannot carry it"
+                        ),
+                    );
+                    None
+                }
                 None => {
                     d.fail(
                         at,
@@ -1397,6 +1711,7 @@ fn records(
     d: &mut Diagnostics,
     node: Node,
     known: &Known,
+    taken: &[ArgName],
     other: &Records,
     owner: Owner,
 ) -> Records {
@@ -1405,6 +1720,15 @@ fn records(
         node,
         other,
         &mut |d, utterance, name, node| match known.get_key_value(name) {
+            None if taken.iter().any(|arg| arg.as_str() == name) => {
+                d.fail(
+                    node.at.as_ref(),
+                    format!(
+                        "\"{utterance}\" asserts {name}, a result the plan hands the body; no sentence states one"
+                    ),
+                );
+                None
+            }
             None => {
                 d.fail(
                     node.at.as_ref(),
