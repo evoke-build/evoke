@@ -1,15 +1,20 @@
 //! `evoke config <name> <key> <value> | --env VAR`: one setting of one reflex. In: the reflex, the key, the setting,
 //! the environment. Out: `Exit`. The key must be one the manifest declares, and a secret is set only from a
-//! variable; the setting lands under `[config.<name>]` in `evoke.toml` when the file still reads.
+//! variable; the setting lands under `[config.<name>]` in `evoke.toml` when the file still reads. A path the
+//! declaration reads or writes that is not there yet is said, since the body will not start without it.
+
+use std::path::Path;
 
 use evoke_core::name::{ConfigKey, LocalName};
+use evoke_core::needs::{self, Entry};
 use evoke_core::project::Setting;
 use evoke_core::{Diagnostic, Fix, set_config};
 
 use super::Exit;
 use super::session::{self, Opening, Session};
 use crate::args::Command;
-use crate::hosts::Environment;
+use crate::hosts::{Environment, terminal};
+use crate::report;
 
 pub fn run(
     command: &Command,
@@ -64,11 +69,37 @@ fn set(
             },
         });
     };
+    let declared = manifest
+        .needs
+        .reads
+        .iter()
+        .chain(&manifest.needs.writes)
+        .any(|entry| matches!(entry, Entry::Value(name) if name.as_str() == key.as_str()));
     match set_config(reflex.clone(), key.clone(), setting.clone(), spec) {
         Ok(edit) => match session.apply(input, &edit) {
-            Ok(_) => Exit::Ran,
+            Ok(_) => {
+                if let Setting::Plain { value } = setting
+                    && declared
+                    && let Some(shown) = not_there(value, session.environment())
+                {
+                    terminal::note(&report::not_there_yet(reflex, &shown));
+                }
+                Exit::Ran
+            }
             Err(problem) => problem,
         },
         Err(refused) => Exit::Human(refused),
     }
+}
+
+/// A path a declaration reads or writes, set to somewhere that is not there yet: the path as shown. A value that
+/// is no path is the run's own refusal, not this line's.
+fn not_there(value: &str, environment: &Environment) -> Option<String> {
+    let home = environment.get("HOME")?;
+    let path = match value.strip_prefix("~/") {
+        Some(rest) => format!("{home}/{rest}"),
+        None if value.starts_with('/') => value.to_owned(),
+        None => return None,
+    };
+    (!Path::new(&path).exists()).then(|| needs::shown(&path, home))
 }

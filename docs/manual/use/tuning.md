@@ -140,7 +140,8 @@ $ evoke config lights token --env HUE_TOKEN
 + evoke.toml  [config.lights] token = { env = "HUE_TOKEN" }
 ```
 
-A **secret** is only ever set with `--env <VAR>`. Your file names the variable. The value reaches the program
+A setting a declaration reads or writes as a path, `writes = ["{file}"]`, is looked for: one that is not there
+yet is said, and the body waits for it. A **secret** is only ever set with `--env <VAR>`. Your file names the variable. The value reaches the program
 from the environment at run time, and nowhere else. `--env` works for any key. An undeclared key is refused, with
 `evoke show <name>`, which lists what the reflex declares.
 

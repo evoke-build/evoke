@@ -20,6 +20,7 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - A diagnostic names its reflex once, `lamps: is not installed`. A call by name with a value out of range
   points at `evoke show`, and `evoke update --accept` of a name not installed says so.
 - A folder a body writes into that is not there ends in `mkdir -p ~/Downloads`.
+- `evoke config` says when a path the declaration reads or writes is not there yet.
 - A body's failure prints its message alone. The frames of an error a JavaScript body threw are kept in the
   log: `evoke why` shows them, and `--json` carries them as `frames`.
 

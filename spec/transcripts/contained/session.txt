@@ -40,6 +40,11 @@ $ evoke run outbox
   outbox
   running outbox: [needs] writes names ~/outbox, which is not there  →  mkdir -p ~/outbox
 [1]
+$ evoke config notes file "~/notes/later.txt"
++ evoke.toml  [config.notes] file = "~/notes/later.txt"
+  notes: ~/notes/later.txt is not there yet; the body needs it to exist
+$ evoke config notes file "~/notes/today.txt"
++ evoke.toml  [config.notes] file = "~/notes/today.txt"
 $ evoke run list place=shell
   list place="shell"
 /bin/sh

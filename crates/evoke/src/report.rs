@@ -982,6 +982,14 @@ pub fn because(why: &Why) -> String {
     }
 }
 
+/// After `config`: a path the declaration reads or writes, which is not there yet.
+#[must_use]
+pub fn not_there_yet(reflex: &LocalName, path: &str) -> Text {
+    Text::from(format!(
+        "  {reflex}: {path} is not there yet; the body needs it to exist"
+    ))
+}
+
 /// `[+] add one`, first prompt: the word; `retry` says why the last one did not do.
 #[must_use]
 pub fn word_prompt(retry: Option<&str>) -> String {
