@@ -37,6 +37,24 @@ use crate::hosts::{Deadline, Environment, Failure};
 use crate::hosts::{contain, interrupt};
 use crate::report::{self, Paths, Row};
 
+/// A body that gave no result: what failed and its fix, and the frames of an error a file body threw, none for
+/// a program or a body that gave no line.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Failed {
+    pub failure: Failure,
+    pub frames: Vec<String>,
+}
+
+impl From<Failure> for Failed {
+    /// A failure before the body ran, or a program's: no frames.
+    fn from(failure: Failure) -> Self {
+        Self {
+            failure,
+            frames: Vec::new(),
+        }
+    }
+}
+
 pub struct Session<'a> {
     pub root: Root,
     pub project: Project,
@@ -946,14 +964,14 @@ impl Session<'_> {
     /// the layers around it. Timed from now — the plan's deadline less what the adapter spent of it — so a
     /// prompt in between never counts. A refusal past the declaration names the path and the key, and its fix.
     /// Ctrl-C while the body runs ends its group and is the failure's cause, `interrupted`, for the command to
-    /// act on.
+    /// act on. A failure carries the frames of an error a file body threw, for the line to keep.
     pub fn run(
         &self,
         chosen: &Chosen,
         taken: &IndexMap<ArgName, Json>,
         input: &Input,
         spent: Millis,
-    ) -> Result<Returned, Failure> {
+    ) -> Result<Returned, Failed> {
         let _armed = interrupt::arm();
         let reflex = &chosen.call.reflex;
         let what = format!("running {reflex}");
@@ -1004,9 +1022,9 @@ impl Session<'_> {
             Ok(facts) => facts,
             Err(lacking) => {
                 let origin = self.origin(reflex, &dir);
-                return Err(refused(needs::lacking(
-                    &lacking, reflex, active, &origin, home,
-                )));
+                return Err(
+                    refused(needs::lacking(&lacking, reflex, active, &origin, home)).into(),
+                );
             }
         };
         let body = Body {
@@ -1024,25 +1042,26 @@ impl Session<'_> {
             (None, None) => unreachable!("a file body has its runtime"),
         };
         ran.map_err(|ended| match ended {
-            Ended::Failed(failure) => failure,
-            Ended::Refused { error, refused } => {
+            Ended::Failed { failure, frames } => Failed { failure, frames },
+            Ended::Refused {
+                error,
+                refused,
+                frames,
+            } => {
                 let origin = self.origin(reflex, &dir);
                 // A fetched reflex's own declaration, resolved: `--accept` is the fix when it reaches what was refused.
                 let upstream = matches!(origin, Origin::Fetched)
                     .then(|| resolve(&shipped.needs, &chosen.call, active, &values, home).ok())
                     .flatten();
-                match needs::refusal(&policy, upstream.as_ref(), reflex, &origin, &refused, home) {
-                    Some(named) => Failure {
-                        what: what.clone(),
-                        cause: Some(named.message),
-                        fix: named.fix,
-                    },
-                    None => Failure {
-                        what: what.clone(),
-                        cause: Some(error),
-                        fix: Fix::Rerun,
-                    },
-                }
+                let named =
+                    needs::refusal(&policy, upstream.as_ref(), reflex, &origin, &refused, home);
+                let (cause, fix) = named.map_or((error, Fix::Rerun), |n| (n.message, n.fix));
+                let failure = Failure {
+                    what: what.clone(),
+                    cause: Some(cause),
+                    fix,
+                };
+                Failed { failure, frames }
             }
         })
     }

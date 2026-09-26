@@ -211,8 +211,8 @@ pub fn plain(text: &str) -> String {
 
 /// One decision's line. `json` is what `--json` prints and a filter reads: the input, the decision's fields, the
 /// trace — one `{ adapter, questions, ms }` per call, none when the cache answered — the result when a body ran,
-/// the error when it failed. `log` is the same line with the adapter's answers and the input's candidates beside
-/// it, which `why` reads back.
+/// the error when it failed with the frames of an error a file body threw. `log` is the same line with the
+/// adapter's answers and the input's candidates beside it, which `why` reads back.
 pub struct Line {
     pub input: Input,
     pub decision: Decision,
@@ -221,6 +221,8 @@ pub struct Line {
     pub proposed: Vec<Proposed>,
     pub result: Option<Returned>,
     pub error: Option<String>,
+    /// The frames of the error a file body threw, from its first, when it threw one.
+    pub frames: Vec<String>,
     /// Whether the machine held the body's declaration, when a body was run.
     pub contained: Option<Contained>,
     /// A weave's step: which of how many, what became of it, the values bound into it. None for one decision.
@@ -248,6 +250,7 @@ impl Line {
             proposed: decided.request.proposed.clone(),
             result: None,
             error: None,
+            frames: Vec::new(),
             contained: None,
             step: None,
         }
@@ -264,6 +267,7 @@ impl Line {
             proposed: Vec::new(),
             result: None,
             error: None,
+            frames: Vec::new(),
             contained: None,
             step: None,
         }
@@ -320,6 +324,12 @@ impl Line {
         if let Some(error) = &self.error {
             line.insert("error".to_owned(), Json::String(error.clone()));
         }
+        if !self.frames.is_empty() {
+            line.insert(
+                "frames".to_owned(),
+                serde_json::to_value(&self.frames).expect("frames serialize"),
+            );
+        }
         if let Some(step) = &self.step {
             line.insert(
                 "status".to_owned(),
@@ -359,6 +369,7 @@ impl Line {
         let proposed = field("proposed", take("proposed"))?;
         let result = field("result", take("result"))?;
         let error = field("error", take("error"))?;
+        let frames = field("frames", take("frames")).unwrap_or_default();
         let contained = field("contained", take("contained"))?;
         let step = match (take("step"), take("steps")) {
             (Json::Null, _) => None,
@@ -379,6 +390,7 @@ impl Line {
             proposed,
             result,
             error,
+            frames,
             contained,
             step,
         })
@@ -435,7 +447,7 @@ pub fn tried(decided: &Decided, route_floor: Option<evoke_core::Prob>) -> Text {
 }
 
 /// `why`: the last input's lines — one decision's, or a weave's steps each under its number — as the input, the
-/// block `try` shows, and what came of it.
+/// block `try` shows, what came of it, and the frames of an error the body threw, each under it.
 #[must_use]
 pub fn why(lines: &[Line]) -> Text {
     let mut shown = Vec::new();
@@ -453,6 +465,9 @@ pub fn why(lines: &[Line]) -> Text {
             None,
         ));
         shown.push(became(line));
+        for frame in &line.frames {
+            shown.push(Text::from(format!("  {}", plain(frame))));
+        }
     }
     indented(shown)
 }

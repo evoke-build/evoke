@@ -54,17 +54,16 @@ $ evoke run fail
   fail
   running fail: exited 1  →  evoke run fail
 [1]
-# A file body's result of any size arrives whole; a thrown error prints its frames, then one line.
+# A file body's result of any size arrives whole; a thrown error is one line, its frames on the JSON line.
 $ evoke run big
   big
 ok
 $ evoke run throws
   throws
-    at body (throws.mts:1:1)
   running throws: first line\nsecond line of the message  →  evoke run throws
 [1]
 $ evoke run --json throws 2>/dev/null
-{"input":"","outcome":"run","reflex":"throws","args":{},"call":"throws","effect":"read","trace":[],"contained":{"type":"full"},"error":"running throws: first line\\nsecond line of the message"}
+{"input":"","outcome":"run","reflex":"throws","args":{},"call":"throws","effect":"read","trace":[],"contained":{"type":"full"},"error":"running throws: first line\\nsecond line of the message","frames":["at body (throws.mts:1:1)"]}
 [1]
 $ evoke run --json power action=restart
   power action="restart" · destructive

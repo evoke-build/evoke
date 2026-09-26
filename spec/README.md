@@ -38,8 +38,9 @@ The JSON every value takes, pinned by the vectors and mirrored by hand in `sdk/s
 - A manifest, an overlay and a vocabulary take their file form, normalized — `effect` explicit, lists and tables
   present, no `reflex` key — plus what reading found: `unknown` keys, an overlay's `renamed` and `orphaned`. A project
   and a lock are typed, their refs parsed.
-- The decision's line, which `--json` prints: `input`, the decision's fields, `trace`, then `result` or `error`; the
-  log keeps the same line with `answers` and `proposed` beside it, which `why` reads back.
+- The decision's line, which `--json` prints: `input`, the decision's fields, `trace`, then `result`, or `error`
+  with the `frames` a file body's error carried; the log keeps the same line with `answers` and `proposed` beside
+  it, which `why` reads back.
 
 ## Transcripts
 

@@ -43,18 +43,21 @@ export class FaultError extends EvokeError {
   }
 }
 
-/** A host or a body failed: what was attempted, why, and what to do; a body's own error is the `cause`. */
+/** A host or a body failed: what was attempted, why, and what to do; a body's own error is the `cause`, and the
+ *  frames of an error a file body threw are `frames`, from the first. */
 export class FailureError extends EvokeError {
   override readonly kind = "failure"
   readonly what: string
   readonly why: string | undefined
   readonly fix: Fix
+  readonly frames: readonly string[]
 
-  constructor(what: string, why: string | undefined, fix: Fix, command: string, options?: ErrorOptions) {
+  constructor(what: string, why: string | undefined, fix: Fix, command: string, options?: ErrorOptions, frames: readonly string[] = []) {
     super(`${what}${why === undefined ? "" : `: ${why}`}  →  ${command}`, command, options)
     this.what = what
     this.why = why
     this.fix = fix
+    this.frames = frames
   }
 }
 

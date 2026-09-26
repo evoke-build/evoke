@@ -136,7 +136,8 @@ export async function child(
     if (refused !== null && typeof refused === "object" && "what" in refused && "path" in refused) {
       throw new Refusal(String(parsed.error), { what: String(refused.what), path: String(refused.path) })
     }
-    throw failed(what, String(parsed.error))
+    const frames = "frames" in parsed && Array.isArray(parsed.frames) ? parsed.frames.map(String) : []
+    throw failed(what, String(parsed.error), undefined, undefined, frames)
   }
   return result(what, parsed)
 }
@@ -283,6 +284,6 @@ function ended(code: number | null): string {
   return code === null ? "was killed" : `exited ${code}`
 }
 
-function failed(what: string, why: string, fix: Fix = { type: "rerun" }, cause?: unknown): FailureError {
-  return new FailureError(what, why, fix, command(fix, `run(d)`), cause === undefined ? undefined : { cause })
+function failed(what: string, why: string, fix: Fix = { type: "rerun" }, cause?: unknown, frames: readonly string[] = []): FailureError {
+  return new FailureError(what, why, fix, command(fix, `run(d)`), cause === undefined ? undefined : { cause }, frames)
 }

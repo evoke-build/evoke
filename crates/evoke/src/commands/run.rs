@@ -10,7 +10,7 @@ use evoke_core::{Decision, Input, Written, by_name};
 use indexmap::IndexMap;
 
 use super::needs_terminal;
-use super::session::{self, Confirmed, Opening, Session};
+use super::session::{self, Confirmed, Failed, Opening, Session};
 use super::{Decline, Exit};
 use crate::args::Command;
 use crate::hosts::{Environment, interrupt, terminal};
@@ -78,8 +78,9 @@ fn called(session: &mut Session<'_>, written: &Written, json: bool) -> Exit {
             line.result = Some(returned);
             Exit::Ran
         }
-        Err(failure) => {
+        Err(Failed { failure, frames }) => {
             line.error = Some(report::failure(&failure));
+            line.frames = frames;
             Exit::Failed(failure)
         }
     };

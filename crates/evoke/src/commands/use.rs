@@ -27,7 +27,7 @@ use evoke_core::{
 };
 use indexmap::IndexMap;
 
-use super::session::{self, Confirmed, Decided, Opening, Session, Woven};
+use super::session::{self, Confirmed, Decided, Failed, Opening, Session, Woven};
 use super::{Decline, Exit};
 use super::{each_line, needs_terminal};
 use crate::adapter::Adapter;
@@ -169,8 +169,9 @@ impl Using<'_> {
                 rounded.result = Some(returned);
                 rounded
             }
-            Err(failure) => {
+            Err(Failed { failure, frames }) => {
                 line.error = Some(report::failure(&failure));
+                line.frames = frames;
                 self.stopped(input, &mut line, Exit::Failed(failure), None)
             }
         }

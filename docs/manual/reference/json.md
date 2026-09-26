@@ -30,6 +30,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `result`     | ○   |         |     |         | `{ text, data? }` when the body ran                             |
 | `contained`  | ○   |         |     |         | Whenever the body ran, with `result` or `error`: whether this machine held it to its declaration, `{ "type": "full" }`, or `"partial"` or `"none"` with `why`, one sentence |
 | `error`      | ○   |         |     |         | The failure's message when it did not. The line is all that prints; the exit is 1 |
+| `frames`     | ○   |         |     |         | With `error`, the frames of the error a JavaScript body threw, from its first: `at body (throws.mts:1:1)` |
 
 A sentence read as several steps ([Weaving](../use/weaving.md)) prints one line per step, as each runs, the
 line of its decision with four fields more: `step` and `steps` first, the step's number and the count; `bound`

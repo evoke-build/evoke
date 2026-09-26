@@ -1,11 +1,11 @@
 // The loader: one envelope line on stdin — { run, args, input, config, deadline } — the body `run` names imported
 // and its default export called with (args, { input, config, signal }), then one result line on stdout:
-// { text, data? } or { error, refused? } — `refused` when the error is a refusal by Node's permission model or the
-// kernel: what was refused, a permission or a syscall, and the path, so the host names the declaration's key. It
-// exits when stdin closes before a body, and during one aborts the body's `signal` first, so its life is bounded
-// by its parent's and the body still hears the end. The body's console and stdout go to stderr, as do the frames
-// of an error it throws — the frames alone, without the message the host reports, and without the frames inside
-// Node itself; an error thrown from a callback ends the body as a rejection does. SIGTERM, the deadline and
+// { text, data? } or { error, refused?, frames? } — `refused` when the error is a refusal by Node's permission
+// model or the kernel: what was refused, a permission or a syscall, and the path, so the host names the
+// declaration's key; `frames` the frames of an error the body threw, without the message and without the frames
+// inside Node itself, for the host to keep. It exits when stdin closes before a body, and during one aborts the
+// body's `signal` first, so its life is bounded by its parent's and the body still hears the end. The body's
+// console and stdout go to stderr; an error thrown from a callback ends the body as a rejection does. SIGTERM, the deadline and
 // stdin's end abort `signal`; a body that has not settled a second later is abandoned. The SDK ships this same
 // file.
 import { writeSync } from "node:fs";
@@ -43,8 +43,8 @@ const out = (value) => {
     }
   }
 };
-const fail = (message, refused) => {
-  out(refused === undefined ? { error: message } : { error: message, refused });
+const fail = (message, refused, frames) => {
+  out({ error: message, ...(refused === undefined ? {} : { refused }), ...(frames?.length ? { frames } : {}) });
   process.exit(1);
 };
 
@@ -94,12 +94,11 @@ async function run(line) {
   }
 }
 
-// A body's error, whether its promise rejected with it or a callback threw it: the frames on stderr, then the
-// message and what refused the body, when something did, as the one line.
+// A body's error, whether its promise rejected with it or a callback threw it: the message, what refused the
+// body, when something did, and its frames, as the one line.
 function thrown(error) {
-  const frames = error instanceof Error && error.stack ? where(error.stack) : "";
-  if (frames) process.stderr.write(`${frames}\n`);
-  fail(error instanceof Error ? error.message : String(error), refusal(error));
+  const frames = error instanceof Error && error.stack ? where(error.stack) : [];
+  fail(error instanceof Error ? error.message : String(error), refusal(error), frames);
 }
 
 // What refused the body, when something did. A lookup names the host, whether Node's permission model refused it
@@ -117,12 +116,13 @@ function refusal(error) {
   return { what: text(e.syscall), path: text(e.path) || address };
 }
 
+// The frames of a stack, from the first, each without its indent; none from inside Node.
 function where(stack) {
   const lines = stack.split("\n");
   const first = lines.findIndex((line) => line.startsWith("    at "));
   return (first < 0 ? [] : lines.slice(first))
     .filter((line) => !/[( ]node:/.test(line) && !line.includes("[eval"))
-    .join("\n");
+    .map((line) => line.trim());
 }
 
 function describe(value) {

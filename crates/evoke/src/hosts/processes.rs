@@ -120,11 +120,29 @@ pub struct Returned {
     pub data: Option<Json>,
 }
 
-/// Why a body gave no result: the run failed, or the loader named what refused the body.
+/// Why a body gave no result: the run failed, or the loader named what refused the body; with it, the frames
+/// of an error a file body threw, for the host to keep.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Ended {
-    Failed(Failure),
-    Refused { error: String, refused: Refused },
+    Failed {
+        failure: Failure,
+        frames: Vec<String>,
+    },
+    Refused {
+        error: String,
+        refused: Refused,
+        frames: Vec<String>,
+    },
+}
+
+impl Ended {
+    /// A failure with no frames: a body that gave no line, or a program.
+    fn failed(failure: Failure) -> Self {
+        Self::Failed {
+            failure,
+            frames: Vec::new(),
+        }
+    }
 }
 
 /// The loader's one line: a result, or why there is none.
@@ -136,6 +154,8 @@ enum Line {
         error: String,
         #[serde(default)]
         refused: Option<Refused>,
+        #[serde(default)]
+        frames: Vec<String>,
     },
 }
 
@@ -192,7 +212,7 @@ pub fn config_values<'a>(
 /// its real path.
 pub fn file(body: &Body<'_>, runtime: &Path, dir: &Path) -> Result<Returned, Ended> {
     let Run::File(entrypoint) = &body.envelope.run else {
-        return Err(Ended::Failed(failed(
+        return Err(Ended::failed(failed(
             body.what,
             "the reflex has no file to run",
         )));
@@ -206,18 +226,18 @@ pub fn file(body: &Body<'_>, runtime: &Path, dir: &Path) -> Result<Returned, End
         deadline: body.envelope.deadline,
     })
     .expect("the envelope serializes");
-    let mut command = loader(body, runtime, dir).map_err(Ended::Failed)?;
+    let mut command = loader(body, runtime, dir).map_err(Ended::failed)?;
     command
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::inherit());
     // Ctrl-C already noted: nothing starts after it.
     if interrupt::interrupted() {
-        return Err(Ended::Failed(failed(body.what, INTERRUPTED)));
+        return Err(Ended::failed(failed(body.what, INTERRUPTED)));
     }
     let mut child = command
         .spawn()
-        .map_err(|error| Ended::Failed(not_started(runtime, &error)))?;
+        .map_err(|error| Ended::failed(not_started(runtime, &error)))?;
     let mut stdin = child.stdin.take().expect("stdin is piped");
     let stdout = child.stdout.take().expect("stdout is piped");
     let fed = stdin
@@ -227,7 +247,7 @@ pub fn file(body: &Body<'_>, runtime: &Path, dir: &Path) -> Result<Returned, End
     if let Err(error) = fed {
         drop(stdin);
         end(&mut child, GRACE);
-        return Err(Ended::Failed(failed(
+        return Err(Ended::failed(failed(
             body.what,
             &format!("feeding the envelope: {error}"),
         )));
@@ -235,20 +255,28 @@ pub fn file(body: &Body<'_>, runtime: &Path, dir: &Path) -> Result<Returned, End
     let read = collect(stdout, &mut child, body.deadline);
     // Stdin stays open until the child is gone: a body's life is bounded by its parent's.
     drop(stdin);
-    let (output, status) = read.map_err(|why| Ended::Failed(failed(body.what, &why)))?;
+    let (output, status) = read.map_err(|why| Ended::failed(failed(body.what, &why)))?;
     let line = output.lines().next().unwrap_or_default();
     match serde_json::from_str::<Line>(line) {
         Ok(Line::Returned(returned)) => Ok(returned),
         Ok(Line::Error {
             error,
             refused: Some(refused),
-        }) => Err(Ended::Refused { error, refused }),
-        Ok(Line::Error { error, .. }) => Err(Ended::Failed(failed(body.what, &error))),
-        Err(_) if line.is_empty() => Err(Ended::Failed(
+            frames,
+        }) => Err(Ended::Refused {
+            error,
+            refused,
+            frames,
+        }),
+        Ok(Line::Error { error, frames, .. }) => Err(Ended::Failed {
+            failure: failed(body.what, &error),
+            frames,
+        }),
+        Err(_) if line.is_empty() => Err(Ended::failed(
             unprofiled(body.what, status)
                 .unwrap_or_else(|| failed(body.what, &ended(status, "without a result"))),
         )),
-        Err(_) => Err(Ended::Failed(failed(
+        Err(_) => Err(Ended::failed(failed(
             body.what,
             &format!("the result line is not JSON: {}", shortened(line)),
         ))),
@@ -308,7 +336,7 @@ pub fn probe(body: &Body<'_>, runtime: &Path, dir: &Path, run: &str) -> Result<P
 /// `EVOKE_CONFIG_<KEY>` and the input as `EVOKE_INPUT`; its stdout is the text.
 pub fn program(body: &Body<'_>, argv: &[String], dir: &Path) -> Result<Returned, Ended> {
     let (program, rest) = argv.split_first().expect("an argv has a program");
-    let mut command = contained(Path::new(program), body, dir).map_err(Ended::Failed)?;
+    let mut command = contained(Path::new(program), body, dir).map_err(Ended::failed)?;
     command
         .args(rest)
         .envs(body.config.iter().map(|(key, value)| {
@@ -322,19 +350,19 @@ pub fn program(body: &Body<'_>, argv: &[String], dir: &Path) -> Result<Returned,
         .stdout(Stdio::piped())
         .stderr(Stdio::inherit());
     if interrupt::interrupted() {
-        return Err(Ended::Failed(failed(body.what, INTERRUPTED)));
+        return Err(Ended::failed(failed(body.what, INTERRUPTED)));
     }
     let mut child = command.spawn().map_err(|error| {
-        Ended::Failed(failed(
+        Ended::failed(failed(
             body.what,
             &format!("{program}: {}", super::cause(&error)),
         ))
     })?;
     let stdout = child.stdout.take().expect("stdout is piped");
     let (output, status) = collect(stdout, &mut child, body.deadline)
-        .map_err(|why| Ended::Failed(failed(body.what, &why)))?;
+        .map_err(|why| Ended::failed(failed(body.what, &why)))?;
     if !status.success() {
-        return Err(Ended::Failed(
+        return Err(Ended::failed(
             unprofiled(body.what, status).unwrap_or_else(|| failed(body.what, &ended(status, ""))),
         ));
     }

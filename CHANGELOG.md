@@ -6,6 +6,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A body's failure prints its message alone. The frames of an error a JavaScript body threw are kept in the
+  log: `evoke why` shows them, and `--json` carries them as `frames`.
+
 ## [0.9.0] - 2026-09-26
 
 - A manifest names what its body returns, `returns = "deploys"`, and an argument takes an earlier step's whole
