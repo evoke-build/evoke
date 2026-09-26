@@ -13,8 +13,8 @@ use evoke_core::document::Text;
 use evoke_core::name::LocalName;
 use evoke_core::project::{Location, Locked, Reference};
 use evoke_core::{
-    Case, Diagnostic, Document, File, Finding, Fix, Item, Manifest, Scope, Table, Theft, Version,
-    add_entry, cases, compile, effective, lint, manifest, read, request, thieves,
+    Case, Diagnostic, Document, File, Finding, Fix, Gate, Item, Manifest, Routed, Scope, Table,
+    Theft, Version, add_entry, cases, compile, effective, lint, manifest, read, request, thieves,
 };
 
 use super::session::{self, Opening, Session};
@@ -334,6 +334,22 @@ fn conflict(
             fix: choose,
         });
     }
+    // The same tree the lock already holds, by content: the reflex is installed, under its other name.
+    if let (Some(lock), Some(entry)) = (session.lock.as_ref(), newcomer.locked.as_ref())
+        && let Some((other, _)) = lock
+            .reflexes
+            .iter()
+            .find(|(name, held)| *name != &newcomer.name && held.h1 == entry.h1)
+    {
+        return Some(Diagnostic {
+            reflex: Some(newcomer.name.clone()),
+            at: None,
+            message: format!("is {other} under another name"),
+            fix: Fix::Show {
+                reflex: Some(other.clone()),
+            },
+        });
+    }
     let locked = session
         .lock
         .as_ref()
@@ -359,8 +375,9 @@ fn conflict(
     })
 }
 
-/// The route-only conflict test: every installed example routed over the set with the newcomers in it, through
-/// the adapter, a few at a time; nothing is asked when nothing is installed or no newcomer is active.
+/// The conflict test: every installed example routed over the set with the newcomers in it, each reflex's fit
+/// asked with the route, through the adapter, a few at a time; nothing is asked when nothing is installed or no
+/// newcomer is active.
 fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<Vec<Theft>, Exit> {
     let names: Vec<LocalName> = newcomers
         .iter()
@@ -398,7 +415,7 @@ fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<
     )
     .map_err(|problems| session.reporter.human(input, problems))?;
     adapter.accepts(&plan.digest()).map_err(Exit::Human)?;
-    let winners = {
+    let readings = {
         let busy = terminal::busy_over("checking for thefts", examples.len());
         threads::try_each(&examples, |case| {
             let request = request(
@@ -406,7 +423,7 @@ fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<
                 case.utterance.text().as_str(),
                 &[],
                 None,
-                Scope::Route,
+                Scope::Fits,
             )
             .map_err(Exit::Human)?;
             let raw = adapter
@@ -414,19 +431,38 @@ fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<
                 .map_err(Exit::Adapter)?;
             let reading = read(&plan, &request, raw).map_err(Exit::Adapter)?;
             busy.tick();
-            Ok(reading.winner.map(|winner| winner.reflex))
+            Ok(reading)
         })?
     };
-    let routed: Vec<(Case, Option<LocalName>)> = examples.into_iter().zip(winners).collect();
-    Ok(thieves(&names, &routed))
+    let routed: Vec<Routed> = examples
+        .into_iter()
+        .zip(readings)
+        .map(|(case, reading)| Routed {
+            case,
+            winner: reading.winner.map(|winner| winner.reflex),
+            ranking: reading.ranking,
+        })
+        .collect();
+    let floor = adapter.declared().gate.as_ref().and_then(Gate::fits);
+    Ok(thieves(&names, &routed, floor))
 }
 
-/// A theft as a line: the thief, the phrase and its owner, and the lesson that settles it.
+/// A theft as a line: the thief, the phrase and its owner — won, or fitted over the floor — and the lesson that
+/// settles it.
 fn stolen_line(theft: &Theft) -> Diagnostic {
+    let message = match theft.fits {
+        None => format!("steals \"{}\" from {}", theft.phrase.text(), theft.owner),
+        Some(fits) => format!(
+            "also fits \"{}\" of {} ({:.2})",
+            theft.phrase.text(),
+            theft.owner,
+            fits.get()
+        ),
+    };
     Diagnostic {
         reflex: Some(theft.thief.clone()),
         at: None,
-        message: format!("steals \"{}\" from {}", theft.phrase.text(), theft.owner),
+        message,
         fix: Fix::TeachNot {
             utterance: theft.phrase.text().to_string(),
             reflex: theft.thief.clone(),

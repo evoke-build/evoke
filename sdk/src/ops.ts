@@ -78,7 +78,7 @@ export interface Ops {
   judge: { input: { case: T.Case; decision: T.Decision }; output: T.CaseVerdict }
   regressions: { input: { before: T.Baseline; judged: [T.Case, T.NonEmpty<T.CaseVerdict>][] }; output: T.Regression[] }
   baseline: { input: { before: T.Baseline; judged: [T.Case, T.NonEmpty<T.CaseVerdict>][] }; output: T.Baseline }
-  thieves: { input: { newcomers: T.LocalName[]; routed: [T.Case, T.LocalName | null][] }; output: T.Theft[] }
+  thieves: { input: { newcomers: T.LocalName[]; routed: T.Routed[]; floor?: T.Prob }; output: T.Theft[] }
   calibrate: {
     input: { adapter: T.AdapterId; gate?: T.Gate; plan: T.Plan; judged: [T.Case, T.NonEmpty<T.Decision>][] }
     output: T.Calibration

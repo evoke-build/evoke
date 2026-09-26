@@ -28,7 +28,7 @@ The set of fixing commands is closed. Each line ends in one of these:
 | `evoke config <reflex> <key> <value>`      | A declared setting is not set                                               |
 | `evoke config <reflex> <key> --env <VAR>`  | A secret is not set, or was set plain                                       |
 | `evoke show [<reflex>]`                    | Something answered by looking: an unknown argument, an option not offered, an undeclared key, a reflex not installed |
-| `evoke teach "<phrase>" not <reflex>`      | A newcomer steals a phrase an installed reflex claims                       |
+| `evoke teach "<phrase>" not <reflex>`      | A newcomer steals a phrase an installed reflex claims, or fits it over the floor |
 | `evoke update [<reflex>]`                  | A name is already locked, a tag moved or vanished, or a retired adapter     |
 | `evoke update --accept <reflex>`           | An effect upstream loosened, or a declaration it widened, since you consented |
 | `evoke sync`                               | A reflex is not in the store, or no runtime is recorded                     |

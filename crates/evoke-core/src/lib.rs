@@ -56,8 +56,8 @@ pub use project::{Lock, Project, Reference, Version, lock, project, reference, r
 pub use propose::{PickValue, Proposed, propose};
 pub use run::{Envelope, argv, envelope};
 pub use test::{
-    Baseline, Case, Claim, Expected, Mismatch, Regression, Table, Theft, Verdict, baseline, cases,
-    judge, regressions, thieves,
+    Baseline, Case, Claim, Expected, Mismatch, Regression, Routed, Table, Theft, Verdict, baseline,
+    cases, judge, regressions, thieves,
 };
 pub use text::{Clean, Identity, Input, Span, Utterance, identity};
 pub use vocabulary::{Vocabulary, vocabulary};

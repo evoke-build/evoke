@@ -44,17 +44,20 @@ row without one declares nothing.
    until every newcomer is in hand. Lint only reports; it never refuses. It flags a summary over 100 characters, a
    description over 1 000, more than eight `not_for` entries, more than 24 options, more than 40 records per
    table, an utterance over 200 characters, or text that addresses a model instead of describing an action.
-3. **Tests for theft.** The examples already installed are routed over the new set, a few at a time. A phrase a
-   newcomer wins prints as `<thief>: steals "<phrase>" from <owner>  →  evoke teach "<phrase>" not <thief>`. The
-   add still proceeds. The fix is one line in your overlay. When the classifier cannot answer, or has no key yet,
-   the line says the test did not finish, and `evoke test` runs it again.
+3. **Tests for theft.** The examples already installed are routed over the new set, a few at a time, each
+   newcomer's fit asked too. A phrase a newcomer wins prints as `<thief>: steals "<phrase>" from <owner>  →  evoke
+   teach "<phrase>" not <thief>`; one it fits over the floor, so that every such request would stop at confirm, as
+   `<thief>: also fits "<phrase>" of <owner> (0.82)`, with the same fix. The add still proceeds. The fix is one
+   line in your overlay. When the classifier cannot answer, or has no key yet, the line says the test did not
+   finish, and `evoke test` runs it again.
 4. **Writes** the `[reflexes]` lines to `evoke.toml`, the lock, and `evoke.d.ts`. It records the JavaScript runtime
    when a newcomer runs a file. Then it prints one row per newcomer behind `+`, then the lint lines, the theft
    lines, and each newcomer's inactive lines.
 
 The **local name** is the ref's last segment. `--as <name>` picks another, for a single ref. The local name is
 what the classifier reads, and your overlay file is named after it. A name already taken is refused. For one ref,
-the fix is the `--as` line; for a collection, the line that adds the rest.
+the fix is the `--as` line; for a collection, the line that adds the rest. So is the same reflex under another
+name, the one the lock already holds by content: `clock: is timer under another name  →  evoke show timer`.
 
 ## `remove`
 

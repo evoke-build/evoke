@@ -681,7 +681,7 @@ export type PickValue =
 // decide.rs
 
 /** What a request asks: everything, or the route alone — the conflict test at `add`. */
-export type Scope = "full" | "route"
+export type Scope = "full" | "route" | "fits"
 
 /** What the answers said: the reflexes ranked, every choice read, and the winner with its values. */
 export interface Reading {
@@ -1178,6 +1178,15 @@ export interface Theft {
   phrase: Utterance
   owner: LocalName
   thief: LocalName
+  /** Present when the newcomer did not win the phrase but fits it at or over the floor. */
+  fits?: Prob
+}
+
+/** An installed case routed over the new set at `add`: who won, and every reflex offered with its `fits`. */
+export interface Routed {
+  case: Case
+  winner?: LocalName
+  ranking?: Contender[]
 }
 
 // calibrate

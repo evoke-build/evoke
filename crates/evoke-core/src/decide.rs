@@ -24,6 +24,8 @@ use crate::text::{Clean, Input, NonEmpty, Span};
 pub enum Scope {
     Full,
     Route,
+    /// The route and every reflex's `fits`: what the thief test at `add` asks.
+    Fits,
 }
 
 /// What the answers said: the reflexes ranked, every choice read, and the winner with its values.
@@ -416,6 +418,15 @@ pub fn request(
     } else {
         Vec::new()
     };
+    if scope == Scope::Fits {
+        for (id, slot) in plan.slots() {
+            if let (QuestionId::Fits(name), Slot::Ready(question)) = (id, slot)
+                && narrowed.contains(&name)
+            {
+                questions.insert(id.clone(), question.clone());
+            }
+        }
+    }
     if scope == Scope::Full {
         for (id, slot) in plan.slots() {
             if !id.reflex().is_some_and(|name| narrowed.contains(&name)) {

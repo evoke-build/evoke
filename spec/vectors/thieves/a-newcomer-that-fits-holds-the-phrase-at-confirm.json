@@ -1,0 +1,130 @@
+{
+  "input": {
+    "newcomers": [
+      "lamp"
+    ],
+    "floor": 0.3,
+    "routed": [
+      {
+        "case": {
+          "reflex": "lights",
+          "utterance": {
+            "text": "kill the lights",
+            "id": "kill the lights"
+          },
+          "expect": {
+            "state": "off"
+          },
+          "from": "examples"
+        },
+        "winner": "lights",
+        "ranking": [
+          {
+            "reflex": "lights",
+            "route": 0.94,
+            "fits": 0.8
+          },
+          {
+            "reflex": "lamp",
+            "route": 0.06,
+            "fits": 0.82
+          }
+        ]
+      },
+      {
+        "case": {
+          "reflex": "lights",
+          "utterance": {
+            "text": "light a candle",
+            "id": "light a candle"
+          },
+          "expect": false,
+          "from": "tests"
+        },
+        "ranking": [
+          {
+            "reflex": "lights",
+            "route": 0.2,
+            "fits": 0.1
+          },
+          {
+            "reflex": "lamp",
+            "route": 0.2,
+            "fits": 0.9
+          }
+        ]
+      },
+      {
+        "case": {
+          "reflex": "timer",
+          "utterance": {
+            "text": "set a timer for 10 minutes",
+            "id": "set a timer for 10 minutes"
+          },
+          "expect": {
+            "duration": "10 minutes"
+          },
+          "from": "examples"
+        },
+        "winner": "timer",
+        "ranking": [
+          {
+            "reflex": "timer",
+            "route": 0.9,
+            "fits": 0.85
+          },
+          {
+            "reflex": "lamp",
+            "route": 0.05,
+            "fits": 0.1
+          }
+        ]
+      },
+      {
+        "case": {
+          "reflex": "lights",
+          "utterance": {
+            "text": "dim the office to 30 percent",
+            "id": "dim the office to 30 percent"
+          },
+          "expect": {
+            "state": "dim"
+          },
+          "from": "examples"
+        },
+        "winner": "lamp",
+        "ranking": [
+          {
+            "reflex": "lamp",
+            "route": 0.6,
+            "fits": 0.9
+          },
+          {
+            "reflex": "lights",
+            "route": 0.4,
+            "fits": 0.8
+          }
+        ]
+      }
+    ]
+  },
+  "expect": [
+    {
+      "phrase": {
+        "text": "kill the lights",
+        "id": "kill the lights"
+      },
+      "owner": "lights",
+      "thief": "lamp",
+      "fits": 0.82
+    },
+    {
+      "phrase": {
+        "text": "dim the office to 30 percent",
+        "id": "dim the office to 30 percent"
+      },
+      "owner": "lights",
+      "thief": "lamp"
+    }
+  ]
+}

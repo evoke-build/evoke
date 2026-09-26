@@ -14,13 +14,13 @@ use evoke_core::project::Location;
 use evoke_core::text::NonEmpty;
 use evoke_core::{
     Active, Baseline, Call, Case, Chosen, Decision, Digest, Document, Facts, Fault, Fix, Gate,
-    Input, Installed, Lesson, Limits, Lock, Logged, Manifest, Needs, Overlay, Plan, Policy, Raw,
-    Request, Scope, Utterance, Value, Verdict, Weave, Written, add_entry, argv, baseline, by_name,
-    calibrate, call as call_grammar, cases, compile, compose, consent, diff, effective, envelope,
-    fill, gate, identity, judge, landlock, lint, lock, log_block, manifest, needs, node_flags,
-    overlay, picked, project, project_dts, propose, read, reference, reflex_dts, regressions,
-    remove_entry, render_lock, report, request, resolve, seatbelt, set_config, teach, thieves,
-    vocab_edit, vocabulary, weave, widens,
+    Input, Installed, Lesson, Limits, Lock, Logged, Manifest, Needs, Overlay, Plan, Policy, Prob,
+    Raw, Request, Routed, Scope, Utterance, Value, Verdict, Weave, Written, add_entry, argv,
+    baseline, by_name, calibrate, call as call_grammar, cases, compile, compose, consent, diff,
+    effective, envelope, fill, gate, identity, judge, landlock, lint, lock, log_block, manifest,
+    needs, node_flags, overlay, picked, project, project_dts, propose, read, reference, reflex_dts,
+    regressions, remove_entry, render_lock, report, request, resolve, seatbelt, set_config, teach,
+    thieves, vocab_edit, vocabulary, weave, widens,
 };
 use indexmap::IndexMap;
 use serde::Serialize;
@@ -255,7 +255,8 @@ fn tune(op: &str, input: &Json) -> Answer {
         )),
         "thieves" => ok(thieves(
             &arg::<Vec<LocalName>>(input, "newcomers")?,
-            &arg::<Vec<(Case, Option<LocalName>)>>(input, "routed")?,
+            &arg::<Vec<Routed>>(input, "routed")?,
+            opt::<Prob>(input, "floor")?,
         )),
         "calibrate" => ok(calibrate(
             &arg::<AdapterId>(input, "adapter")?,

@@ -7,8 +7,9 @@ use indexmap::IndexMap;
 use serde::de::Error as _;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
+use crate::adapter::Prob;
 use crate::call::Value;
-use crate::decide::Decision;
+use crate::decide::{Contender, Decision};
 use crate::manifest::{Assertion, Record};
 use crate::name::{ArgName, LocalName};
 use crate::plan::Installed;
@@ -79,12 +80,25 @@ pub struct Regression {
     pub now: Mismatch,
 }
 
-/// A phrase an installed reflex claims that a newcomer wins at `add`.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+/// A phrase an installed reflex claims that a newcomer wins at `add` — or, with `fits`, one the newcomer fits
+/// over the floor, so every such request would stop at confirm.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Theft {
     pub phrase: Utterance,
     pub owner: LocalName,
     pub thief: LocalName,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fits: Option<Prob>,
+}
+
+/// An installed case routed over the new set at `add`: who won, and every reflex offered with its `fits`.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Routed {
+    pub case: Case,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub winner: Option<LocalName>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ranking: Vec<Contender>,
 }
 
 /// Every record of every reflex with wording: examples then tests, in file order.
@@ -194,23 +208,41 @@ pub fn baseline(before: &Baseline, judged: &[(Case, NonEmpty<Verdict>)]) -> Base
     next
 }
 
-/// Every installed phrase a newcomer stole: an asserted case of a reflex that is not a newcomer, routed to one.
+/// Every installed phrase a newcomer stole — an asserted case of a reflex that is not a newcomer, routed to one —
+/// and, under `floor`, every one a newcomer fits at or over it without winning, which holds the phrase at
+/// confirm; a phrase reports each thief once.
 #[must_use]
-pub fn thieves(newcomers: &[LocalName], routed: &[(Case, Option<LocalName>)]) -> Vec<Theft> {
-    routed
-        .iter()
-        .filter_map(|(case, winner)| {
-            let thief = winner.as_ref()?;
-            let stolen = newcomers.contains(thief)
-                && !newcomers.contains(&case.reflex)
-                && matches!(case.expect, Expected::Asserts(_));
-            stolen.then(|| Theft {
-                phrase: case.utterance.clone(),
-                owner: case.reflex.clone(),
-                thief: thief.clone(),
-            })
-        })
-        .collect()
+pub fn thieves(newcomers: &[LocalName], routed: &[Routed], floor: Option<Prob>) -> Vec<Theft> {
+    let mut thefts = Vec::new();
+    for routed in routed {
+        let case = &routed.case;
+        if newcomers.contains(&case.reflex) || !matches!(case.expect, Expected::Asserts(_)) {
+            continue;
+        }
+        let theft = |thief: &LocalName, fits: Option<Prob>| Theft {
+            phrase: case.utterance.clone(),
+            owner: case.reflex.clone(),
+            thief: thief.clone(),
+            fits,
+        };
+        if let Some(winner) = routed.winner.as_ref().filter(|w| newcomers.contains(w)) {
+            thefts.push(theft(winner, None));
+        }
+        let Some(floor) = floor else { continue };
+        for contender in &routed.ranking {
+            if !newcomers.contains(&contender.reflex)
+                || routed.winner.as_ref() == Some(&contender.reflex)
+            {
+                continue;
+            }
+            if let Some(fits) = contender.fits
+                && fits.get() >= floor.get()
+            {
+                thefts.push(theft(&contender.reflex, Some(fits)));
+            }
+        }
+    }
+    thefts
 }
 
 impl Baseline {

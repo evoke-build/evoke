@@ -4,8 +4,8 @@
       "awake"
     ],
     "routed": [
-      [
-        {
+      {
+        "case": {
           "reflex": "timer",
           "utterance": {
             "text": "count down 90 seconds",
@@ -16,10 +16,10 @@
           },
           "from": "examples"
         },
-        "timer"
-      ],
-      [
-        {
+        "winner": "timer"
+      },
+      {
+        "case": {
           "reflex": "awake",
           "utterance": {
             "text": "keep the laptop awake",
@@ -28,8 +28,8 @@
           "expect": {},
           "from": "examples"
         },
-        "awake"
-      ]
+        "winner": "awake"
+      }
     ]
   },
   "expect": []
