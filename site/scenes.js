@@ -133,22 +133,22 @@
     ] },
     woven: { final: { names: "1", n1: "ran", n2: "ran", wire: "on" }, step: 0, scenes: [
       { step: 0, say: 'evoke "look up dana\'s address and email them"', busy: "", before: { names: "1", n1: "off", n2: "off", wire: "off" }, lines: [
-        { text: '  1  {n:contact} name="dana"  {hi:0.90}' },
+        { text: '  1  {n:contact} name="dana"  {hi:0.98}' },
         { text: "  2  {n:mail} · takes email from 1", pause: 500 },
-        { cls: "out", text: "dana <dana@example.com>", set: { n1: "ran", wire: "on" }, pause: 700 },
-        { text: '  2  {n:mail} to="dana@example.com"  {hi:0.88}' },
-        { cls: "out", text: "drafted to dana@example.com", set: { n2: "ran" } },
+        { cls: "out", text: "found dana@example.com", set: { n1: "ran", wire: "on" }, pause: 700 },
+        { text: '  2  {n:mail} to="dana@example.com"  {hi:0.99}' },
+        { cls: "out", text: "new mail to dana@example.com", set: { n2: "ran" } },
       ], hold: 3400 },
-      { step: 1, say: 'evoke "start a 25 minute timer and kill the lights in the den"', busy: "", before: { names: "2", n1: "off", n2: "off", wire: "off" }, lines: [
-        { text: '  1  {n:timer} duration="25 minute" · write · weakest: duration {mid:0.70}' },
-        { text: '  2  {n:lights} room="den" state="off"  {hi:0.85}', pause: 500 },
-        { text: '  1  {n:timer} duration="25 minute" · write · weakest: duration {mid:0.70}', set: { n1: "confirm" } },
-        { ask: "  Start a 25 minute timer?  [y]es [n]o [t]each > ", answer: "n", after: { n1: "declined" } },
-        { text: '  2  {n:lights} room="den" state="off"  {hi:0.85} · skipped', set: { n2: "skipped" } },
+      { step: 1, say: 'evoke "empty the trash and lock the screen"', busy: "", before: { names: "2", n1: "off", n2: "off", wire: "off" }, lines: [
+        { text: "  1  {n:trash} · destructive · weakest: route {hi:1.00}" },
+        { text: "  2  {n:lock}  {hi:1.00}", pause: 500 },
+        { text: "  1  {n:trash} · destructive · weakest: route {hi:1.00}", set: { n1: "confirm" } },
+        { ask: "  Empty the trash?  [y]es [n]o [t]each > ", answer: "n", after: { n1: "declined" } },
+        { text: "  2  {n:lock}  {hi:1.00} · skipped", set: { n2: "skipped" } },
         { text: "[2]" },
       ], hold: 3200 },
-      { step: 2, say: 'evoke "kill the lights in the den and feed the cat"', busy: "", before: { names: "3", n1: "off", n2: "off", wire: "off" }, lines: [
-        { text: '  1  {n:lights} room="den" state="off"  {hi:0.85}' },
+      { step: 2, say: 'evoke "lock the screen and feed the cat"', busy: "", before: { names: "3", n1: "off", n2: "off", wire: "off" }, lines: [
+        { text: "  1  {n:lock}  {hi:1.00}" },
         { text: '  2  "feed the cat" · no reflex', set: { n2: "none" } },
         { text: "[2]" },
       ], hold: 3200 },
