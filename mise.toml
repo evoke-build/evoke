@@ -17,7 +17,7 @@ taplo                     = "0.10.0"
 
 [tasks.lint]
 depends = ["sdk", "reflexes"]
-description = "Lint everything: shell, TOML, the spec's shapes, the manual's links and the site build, Rust format and clippy with warnings denied, the wasm32 build of the boundary over the pure crates, the dependency audit, the SDK's and the collection's type checks"
+description = "Lint everything: shell, TOML, the changelog's headings, the spec's shapes, the manual's links and the site build, Rust format and clippy with warnings denied, the wasm32 build of the boundary over the pure crates, the dependency audit, the SDK's and the collection's type checks"
 env = { RUST_LOG = "warn" }
 run = [
   "shellcheck bin/* site/install.sh mise-tasks/formula mise-tasks/package mise-tasks/publish-reflexes mise-tasks/release",
@@ -25,6 +25,7 @@ run = [
   "ruff format --check mise-tasks/changelog mise-tasks/lint-spec mise-tasks/site .github/annotate",
   "taplo fmt --check",
   "taplo check",
+  "mise run changelog --check",
   "mise run lint-spec",
   "mise run site",
   "cargo fmt --all --check",

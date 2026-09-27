@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-# MISE description="Read CHANGELOG.md: print a version's section, or cut the Unreleased section as a version dated today"
+# MISE description="Read CHANGELOG.md: print a version's section, check its headings, or cut the Unreleased section as a version dated today"
 """Usage: mise run changelog <version>          the section of that version, for a release's notes; none is an error
+mise run changelog --check            `## [Unreleased]` first and every heading once; lint runs it
 mise run changelog --cut <version>    the Unreleased section becomes `## [<version>] - <today>`, and a new
                                       empty Unreleased section is opened above it"""
 
@@ -27,11 +28,26 @@ def sections(text):
     ]
 
 
+def entries(text):
+    """version → body, once `## [Unreleased]` opens the file and no heading is given twice: a second heading
+    would hide the first's body, and a cut over the first would date an empty section."""
+    found = sections(text)
+    if not found or found[0][0] != "Unreleased":
+        fail("CHANGELOG.md does not open with `## [Unreleased]`")
+    versions = [version for version, _ in found]
+    for version in versions:
+        if versions.count(version) > 1:
+            fail(f"CHANGELOG.md has `## [{version}]` twice")
+    return dict(found)
+
+
 args = sys.argv[1:]
 text = CHANGELOG.read_text()
-if len(args) == 1:
+if args == ["--check"]:
+    entries(text)
+elif len(args) == 1:
     version = args[0]
-    body = dict(sections(text)).get(version)
+    body = entries(text).get(version)
     if body is None:
         fail(f"CHANGELOG.md has no section `## [{version}]`")
     print(body)
@@ -39,12 +55,10 @@ elif len(args) == 2 and args[0] == "--cut":
     version = args[1]
     if not re.fullmatch(r"\d+\.\d+\.\d+", version):
         fail(f"a version is X.Y.Z, not `{version}`")
-    entries = dict(sections(text))
-    if version in entries:
+    found = entries(text)
+    if version in found:
         fail(f"CHANGELOG.md already has `## [{version}]`")
-    if "Unreleased" not in entries:
-        fail("CHANGELOG.md has no `## [Unreleased]` section")
-    if not entries["Unreleased"]:
+    if not found["Unreleased"]:
         fail("the `## [Unreleased]` section is empty; write what changed first")
     today = datetime.datetime.now(tz=datetime.UTC).date().isoformat()
     # The whole heading line goes, whatever followed the brackets, so nothing of it rides onto the version.
