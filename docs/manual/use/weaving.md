@@ -40,8 +40,9 @@ den lights off
   optional word takes the one said once in its part of the sentence, before any `then`, written into its words
   and decided again under the same gate. A step whose own words name a word of that kind keeps its own, and a
   sentence that names two, "checkout" and "payments", carries neither. Only a word from a vocabulary is carried:
-  never a number, an address, a quoted value or an option. The plan shows the word on each step it reached, and
-  `evoke why` says which words were shared.
+  never a number, an address, a quoted value or an option. And only a word no one reflex owns: a vocabulary one
+  reflex alone asks for, the folder `open` opens, is that reflex's own and never reaches another step. The plan
+  shows the word on each step it reached, and `evoke why` says which words were shared.
 - Two items the classifier read as one thing, "invoices, card expenses", are two steps when each is a reflex of
   its own: the joint is split, and a word the sentence says once reaches both. A joint it read firmly as one
   task stays one.

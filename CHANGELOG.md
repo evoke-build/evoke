@@ -6,6 +6,10 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [Unreleased]
+
+- A word of a vocabulary one reflex alone asks for is that reflex's own: it never reaches another step.
+
 ## [0.10.0] - 2026-09-27
 
 - A word a sentence says once for several steps reaches each of them: `check checkout's errors, deploys and

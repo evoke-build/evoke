@@ -688,7 +688,10 @@ impl<'a> Planner<'a> {
     /// The one word of a vocabulary the scope's words state: in the request's own words with no other word of
     /// the vocabulary beside it — once, for an optional argument; however often, for a required one — and read by
     /// some step of the scope, from its own words, as an argument of that vocabulary. None otherwise: two words
-    /// stated, nothing is carried, and a word the person placed twice for two steps was placed.
+    /// stated, nothing is carried, and a word the person placed twice for two steps was placed. None either from
+    /// a vocabulary one reflex alone asks for: that is the reflex's own object — a folder to open, a channel to
+    /// tell — never another step's; a vocabulary several reflexes ask for is what the set is about, and one none
+    /// asks for is a qualifier, and both are the sentence's to share.
     fn stated(
         &self,
         original: &[String],
@@ -698,6 +701,9 @@ impl<'a> Planner<'a> {
         vocabulary: &IndexMap<Word, Clean>,
         once: bool,
     ) -> Option<Word> {
+        if self.owned(vocab) {
+            return None;
+        }
         let members: Vec<(&str, &Decision)> = scope
             .iter()
             .map(|&k| (original[k].as_str(), &decisions[k]))
@@ -735,6 +741,25 @@ impl<'a> Planner<'a> {
             })
         });
         read.then(|| (*word).clone())
+    }
+
+    /// Whether exactly one active reflex asks for a word of the vocabulary as a required argument: the vocabulary
+    /// is that reflex's own.
+    fn owned(&self, vocab: &VocabName) -> bool {
+        let asking = self
+            .plan
+            .active()
+            .values()
+            .filter(|active| {
+                active.args.values().any(|argument| {
+                    matches!(
+                        &argument.kind,
+                        Kind::Value { source: Source::Vocab(of), optional: false } if of == vocab
+                    )
+                })
+            })
+            .count();
+        asking == 1
     }
 
     /// The reflex a decision is about and its manifest as compiled, when it is about one.
