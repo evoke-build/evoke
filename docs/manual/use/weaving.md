@@ -34,6 +34,8 @@ den lights off
 - `then`, `after that` and `next` order the steps. `after you X, Y` and `Y after you X` read as `X, then Y`.
   `before you X, Y` and `Y before you X` read as `Y, then X`. When a write is among the steps, every step runs
   alone. A plan of reads may run them side by side.
+- A sentence reads most surely when it asks for a few steps. The plan is settled before anything runs, so the
+  longer a sentence grows, the more often one of its steps stops to ask.
 
 ## What a step takes from another
 
