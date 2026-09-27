@@ -205,6 +205,11 @@ fn new_colleague() {
     flow("new-colleague");
 }
 
+#[test]
+fn plans() {
+    flow("plans");
+}
+
 /// The recipe yields the commit `spec/transcripts/update/home/.config/evoke/evoke.lock` records.
 #[test]
 fn the_recipe_reproduces_the_locked_commit() {
@@ -465,15 +470,15 @@ fn compare(step: &Step, output: &str, code: i32) {
     );
 }
 
-/// Exactly but for trailing spaces, or as JSON with every `ms` ignored and every number one kind, so `0.85` and
-/// `0.850`, `1` and `1.0`, are one value, as the spec states.
+/// Exactly but for trailing spaces, or as JSON with every `ms` and a plan file's `pinned.id` ignored and every
+/// number one kind, so `0.85` and `0.850`, `1` and `1.0`, are one value, as the spec states.
 fn same(expected: &str, actual: &str) -> bool {
     if expected.starts_with('{') {
         match (
             serde_json::from_str::<Json>(expected),
             serde_json::from_str::<Json>(actual),
         ) {
-            (Ok(expected), Ok(actual)) => normalized(expected) == normalized(actual),
+            (Ok(expected), Ok(actual)) => normalized(expected, "") == normalized(actual, ""),
             _ => false,
         }
     } else {
@@ -481,15 +486,22 @@ fn same(expected: &str, actual: &str) -> bool {
     }
 }
 
-/// Every `ms` dropped, every number an `f64`.
-fn normalized(value: Json) -> Json {
+/// Every `ms` dropped, the `id` under `pinned` too — a plan file written in a flow carries the release's version,
+/// so its digest moves with it — every number an `f64`. `under` is the key the value sits under.
+fn normalized(value: Json, under: &str) -> Json {
     match value {
         Json::Object(fields) => fields
             .into_iter()
-            .filter(|(key, _)| key != "ms")
-            .map(|(key, value)| (key, normalized(value)))
+            .filter(|(key, _)| key != "ms" && !(under == "pinned" && key == "id"))
+            .map(|(key, value)| {
+                let inner = normalized(value, &key);
+                (key, inner)
+            })
             .collect(),
-        Json::Array(items) => items.into_iter().map(normalized).collect(),
+        Json::Array(items) => items
+            .into_iter()
+            .map(|item| normalized(item, under))
+            .collect(),
         Json::Number(n) => n.as_f64().map_or(Json::Null, Json::from),
         other => other,
     }

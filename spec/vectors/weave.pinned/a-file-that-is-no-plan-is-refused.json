@@ -1,0 +1,17 @@
+{
+  "input": {
+    "path": "evoke.lock",
+    "json": {
+      "lock": 1,
+      "evoke": "0.1.0"
+    }
+  },
+  "expect": {
+    "err": {
+      "message": "plan = 1 is required",
+      "fix": {
+        "type": "help"
+      }
+    }
+  }
+}

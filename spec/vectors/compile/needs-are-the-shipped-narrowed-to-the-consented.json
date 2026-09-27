@@ -7,25 +7,46 @@
             "ok": {
               "manifest": {
                 "description": "Append a line to your notes file.\nPlain text, dated, one note per line.",
-                "not_for": ["reading notes back"],
-                "tags": ["text"],
+                "not_for": [
+                  "reading notes back"
+                ],
+                "tags": [
+                  "text"
+                ],
                 "effect": "write",
                 "confirm": "Note \"{text}\"?",
                 "run": "note.mts",
                 "needs": {
-                  "writes": ["{file}", "~/notes"],
-                  "hosts": ["*"],
-                  "runs": ["open"]
+                  "writes": [
+                    "{file}",
+                    "~/notes"
+                  ],
+                  "hosts": [
+                    "*"
+                  ],
+                  "runs": [
+                    "open"
+                  ]
                 },
                 "config": {
-                  "file": { "about": "Path of the notes file", "secret": false }
+                  "file": {
+                    "about": "Path of the notes file",
+                    "secret": false
+                  }
                 },
                 "args": {
-                  "text": { "ask": "What should the note say?", "pick": "quoted", "optional": false, "was": [] }
+                  "text": {
+                    "ask": "What should the note say?",
+                    "pick": "quoted",
+                    "optional": false,
+                    "was": []
+                  }
                 },
                 "yields": {},
                 "examples": {
-                  "note \"buy milk\"": { "text": "buy milk" }
+                  "note \"buy milk\"": {
+                    "text": "buy milk"
+                  }
                 },
                 "tests": {},
                 "unknown": []
@@ -34,34 +55,66 @@
             }
           },
           "consented": "write",
-          "needs": { "writes": ["{file}"], "runs": ["open", "plutil"] },
+          "needs": {
+            "writes": [
+              "{file}"
+            ],
+            "runs": [
+              "open",
+              "plutil"
+            ]
+          },
           "configured": {
-            "file": { "type": "plain", "value": "~/notes.txt" }
+            "file": {
+              "type": "plain"
+            }
           }
         }
       },
       "vocab": {},
       "adapter": "replay",
       "evoke": "0.1.0"
+    },
+    "values": {
+      "note": {
+        "file": "~/notes.txt"
+      }
     }
   },
   "expect": {
     "ok": {
-      "digest": "h1:0fc814d591f9e210e6b4f5546a9ddf464c59e9b133e73bbf4f87c949b5ba4c13",
+      "digest": "h1:a8a88373bc25cb14d7ba7f082e94fe9fd02b5d4ef0b35fcd689d3ecaf0772ad8",
       "active": {
         "note": {
           "effect": "write",
           "run": "note.mts",
-          "needs": { "writes": ["{file}"], "runs": ["open"] },
+          "needs": {
+            "writes": [
+              "{file}"
+            ],
+            "runs": [
+              "open"
+            ]
+          },
           "confirm": "Note \"{text}\"?",
           "args": {
-            "text": { "ask": "What should the note say?", "pick": "quoted", "optional": false, "was": [] }
+            "text": {
+              "ask": "What should the note say?",
+              "pick": "quoted",
+              "optional": false,
+              "was": []
+            }
           },
           "yields": {},
           "config": {
-            "file": { "type": "plain", "value": "~/notes.txt" }
+            "file": {
+              "type": "plain",
+              "value": "~/notes.txt"
+            }
           },
-          "tags": ["text"]
+          "tags": [
+            "text"
+          ]
         }
       },
       "inactive": {},
@@ -72,8 +125,12 @@
           "options": {
             "note": {
               "what": "Append a line to your notes file.\nPlain text, dated, one note per line.",
-              "not_for": ["reading notes back"],
-              "examples": ["note \"buy milk\""]
+              "not_for": [
+                "reading notes back"
+              ],
+              "examples": [
+                "note \"buy milk\""
+              ]
             },
             "none": "None of these."
           },

@@ -1,4 +1,4 @@
-<!-- description: One sentence can ask for several reflexes. evoke shows the numbered plan before anything runs, and a step can take a value from an earlier step's result. -->
+<!-- description: One sentence can ask for several reflexes: the plan shown before anything runs, results threaded between steps, a plan saved as a file for someone else. -->
 # Weaving
 
 `evoke` reads every sentence for its steps. One step is decided as it always was, unless its reflex takes an
@@ -135,8 +135,9 @@ den lights off
 An answer out of range is asked again with the reason, as one input's would be. Each line of the plan is what
 `evoke` would say of that step alone: the call and its confidence, or the confirm's own line with its weakest
 judgment. After it: `asks <arg>` for what the step still needs, `takes <name> from <n>` where a result threads
-in, the name a field's or a whole result's, `after <n>` where the words ordered it, `no reflex` where nothing
-matched.
+in, the name a field's or a whole result's, `after <n>` where the words ordered it, `with <n>` where the step
+runs beside earlier ones, `no reflex` where nothing matched. Under the plan, `left out "…"` names a part that
+said what not to do.
 
 ## At each step's turn
 
@@ -203,6 +204,64 @@ line of one decision, with `step` and `steps` first, `bound` where a value came 
 at the end, with `why` when the step stopped ([The JSON line](../reference/json.md)). A plan stopped before any
 step ran, refused, its question or its prompt declined, or with no terminal to ask, prints every step's line at
 once, with what stopped it.
+
+## Saving a plan, and running it for someone else
+
+`evoke try --save <file> "<sentence>"` writes the plan as a file, and runs nothing. The file holds the sentence as
+you typed it, the plan as `try --json` prints it, and every answer the classifier gave, in clear; and the pins the
+plan was decided under: the `evoke` version, the adapter and its gate, the installed set's digest, each reflex and
+vocabulary by its own hash, a remote reflex by the lock's `h1`. It carries no time and no name. A plan that asks
+cannot be saved: a file holds no one's answers, so the sentence must say the value, `kill the lights in the den`
+rather than `kill the lights`. The name `<name>.plan.json` is recommended, not required.
+
+```text
+$ evoke try --save ~/month.plan.json "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"
+  1  bank month="september"  0.90
+  2  invoices month="september"  0.90
+  3  cards month="september"  0.90
+  4  payroll month="september"  0.90
+  5  reconcile  0.90 · takes transactions from 1, invoices from 2, expenses from 3, payroll from 4
+  6  ledger month="september" · write · weakest: route 0.78
+  7  send to="cfo@example.com"  0.90 · after 1, 2, 3, 4, 5, 6
++ ~/month.plan.json
+```
+
+`evoke run <file>` runs it, on your machine or another with the same project: the same reflexes at the same
+content, the same words, the same adapter and gate. `run` tells a file from a call by its first word, which is no
+reflex name. The plan is made again from the file's answers alone, so the classifier is asked for nothing, and a
+plan that does not read the same as the file is refused. The plan prints, one yes over the whole plan is asked at
+your terminal, whatever its verdict, then each step goes through the gate at its turn as any sentence's does: a
+confirm asks you, a value bound at run time is decided again by your adapter under the same gate. Every step's line
+in your log names the file, and `evoke why` shows it as `from ~/month.plan.json`.
+
+```text
+$ evoke run ~/month.plan.json
+  1  bank month="september"  0.90
+  …
+  7  send to="cfo@example.com"  0.90 · after 1, 2, 3, 4, 5, 6
+  the plan of ~/month.plan.json
+  Run the plan as it stands?  [y]es [n]o > y
+september: 214 transactions, 18 204.55 at the close
+…
+  6  ledger month="september" · write · weakest: route 0.78
+  Post september to the ledger?  [y]es [n]o [t]each > y
+september posted to the ledger
+sent to cfo@example.com
+```
+
+A pin that moved refuses the file with one line naming it, exit 3, and the command that mends it: a plan written
+by another `evoke`, decided by another engine or under another gate, a reflex not installed here or inactive here,
+a remote reflex whose body moved, a reflex or a vocabulary whose wording moved, a reflex installed here the plan
+never saw, or the project's files differing at all. A file edited by hand does not read the same as its answers,
+and is refused too. The fix is to make the plan again here and read it again:
+
+```text
+$ evoke run ~/month.plan.json
+  months differs here from the plan's  →  evoke try --save ~/month.plan.json "pull september's …"
+[3]
+```
+
+In the SDK, `steps` returns the same object and `weave` takes it ([Decisions](../sdk/decisions.md#stepsinput--tags-signal--and-weaveinput--confirm-ask-proceed-tags-signal-)).
 
 ## Afterwards
 

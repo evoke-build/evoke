@@ -1,17 +1,20 @@
 // Closing the month through the SDK, over its flow's home and recording: the long sentence planned, the month
 // stated once reaching every lookup and the ledger, and the ledger post — under the write floor — waiting in a
 // queue for a second person, who reads the decision as plain data and answers it; the weave picks up where it
-// waited, and nothing ran twice. The pattern of the maker-checker example, inside one plan.
+// waited, and nothing ran twice. The pattern of the maker-checker example, inside one plan. Then the whole plan
+// handed over: the maker seals it with `steps`, the checker reads it back with `weave` over the same project, says
+// yes to the plan and to the ledger, and a checker whose engine is another is refused.
 
-import { deepStrictEqual, equal, ok } from "node:assert/strict"
+import { deepStrictEqual, equal, ok, rejects } from "node:assert/strict"
 import { test } from "node:test"
 import { fileURLToPath } from "node:url"
 
-import { type Confirm, load } from "../src/index.ts"
+import { type Confirm, DiagnosticError, type Pinned, load } from "../src/index.ts"
 import { replay } from "../src/testing.ts"
 
 const home = fileURLToPath(new URL("../../spec/transcripts/month-end/home/.config/evoke", import.meta.url))
 const answers = new URL("../../spec/transcripts/month-end/answers.toml", import.meta.url)
+const otherEngine = new URL("../../spec/transcripts/plans/home/runner/other.toml", import.meta.url)
 const sentence = "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"
 
 /** A decision waiting for a person, as plain data, and the answer they give. */
@@ -23,7 +26,7 @@ interface Waiting {
 
 test("the month stated once reaches every lookup and the ledger, and a joint the engine kept whole is two steps", async () => {
   const project = await load({ root: home, adapter: replay(answers) })
-  const plan = await project.steps(sentence)
+  const { weave: plan } = await project.steps(sentence)
   deepStrictEqual(
     plan.steps.map(step => [step.reflex, step.decision.outcome, step.repair, Object.fromEntries(Object.entries(step.shared ?? {}).map(([arg, shared]) => [arg, `${shared.word} by ${shared.via}`]))]),
     [
@@ -93,4 +96,60 @@ test("a second person's no ends the weave at the ledger, and nothing after it ru
       [7, "skipped", "earlier_step"],
     ],
   )
+})
+
+test("the maker seals the plan as a file, and the checker runs it whole from the file, answering the ledger", async () => {
+  const maker = await load({ root: home, adapter: replay(answers) })
+  const pinned = await maker.steps(sentence)
+  equal(pinned.plan, 1)
+  equal(pinned.input, sentence)
+  equal(pinned.set, maker.plan)
+  deepStrictEqual(pinned.adapter, { name: "replay", id: "replay" })
+  deepStrictEqual(pinned.gate, { route: 0.5, fits: 0.3, read: 0.6, write: 0.8 })
+  deepStrictEqual(Object.keys(pinned.reflexes), ["bank", "invoices", "cards", "payroll", "reconcile", "ledger", "send"])
+  deepStrictEqual(Object.keys(pinned.vocab), ["months"])
+  // The weave's own questions under the sentence, then each text decided: nine entries, none the engine's numbers.
+  equal(pinned.answers.length, 9)
+  equal(pinned.answers[0]?.text, sentence)
+  // The file travels however files do: here as the text JSON.stringify writes.
+  const file = JSON.stringify(pinned)
+  // The checker: the same project on another load, an engine that would have to be asked for nothing.
+  const checker = await load({ root: home, adapter: replay(answers) })
+  const confirmed: number[] = []
+  const woven = await checker.weave(JSON.parse(file) as Pinned, {
+    proceed: (plan: Pinned) => plan.input === sentence,
+    confirm: (decision: Confirm, turn) => {
+      confirmed.push(turn.step)
+      return decision.reflex === "ledger"
+    },
+  })
+  equal(woven.status, "ran")
+  deepStrictEqual(confirmed, [6])
+  deepStrictEqual(
+    woven.steps.map(step => [step.step, step.status, step.rounds[0]?.result?.text]),
+    [
+      [1, "ran", "september: 214 transactions, 18 204.55 at the close"],
+      [2, "ran", "september: 38 invoices, 35 paid"],
+      [3, "ran", "september: 57 card charges, 2 without a receipt"],
+      [4, "ran", "september: payroll 48 300.00"],
+      [5, "ran", "3 transactions to review"],
+      [6, "ran", "september posted to the ledger"],
+      [7, "ran", "sent to cfo@example.com"],
+    ],
+  )
+  // No yes over the plan, nothing runs; a no over the plan, nothing runs.
+  equal((await checker.weave(pinned, {})).status, "unanswered")
+  equal((await checker.weave(pinned, { proceed: () => false })).status, "declined")
+})
+
+test("a checker whose engine is another is refused with the pin that moved", async () => {
+  const maker = await load({ root: home, adapter: replay(answers) })
+  const pinned = await maker.steps(sentence)
+  const checker = await load({ root: home, adapter: replay(otherEngine) })
+  await rejects(
+    checker.weave(pinned, { proceed: () => true }),
+    (error: DiagnosticError) => error.message === `the plan was decided by replay; this project's adapter is replay-2  →  steps(${JSON.stringify(`${sentence.slice(0, 59)}…`)})`,
+  )
+  // A file of another revision, or one whose answers were edited, is refused before anything runs.
+  await rejects(checker.weave({ ...pinned, plan: 2 } as unknown as Pinned, { proceed: () => true }), (error: DiagnosticError) => error.message.startsWith("plan must be 1, not 2"))
 })

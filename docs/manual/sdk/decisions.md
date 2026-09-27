@@ -107,14 +107,18 @@ a diagnostic, a fault or a failure throws.
 ## `steps(input, { tags?, signal? })` and `weave(input, { confirm?, ask?, proceed?, tags?, signal? })`
 
 A sentence that asks for several things is a weave ([Weaving](../use/weaving.md)). `steps` reads one into its
-plan and runs nothing:
+plan, runs nothing, and returns it sealed as a plan file — the sentence, the plan, every answer the classifier
+gave, and the pins it was decided under — the object `evoke try --save` writes and `evoke run <file>` reads
+([The plan file](../reference/json.md#the-plan-file)):
 
 ```ts
-const plan = await project.steps("look up dana's address and email them")
+const pinned = await project.steps("look up dana's address and email them")
+const plan = pinned.weave
 plan.steps       // [{ n: 1, text, decision, reflex: "contact", effect: "read", ... }, { n: 2, ... }]
 plan.binds       // [{ from: 1, to: 2, arg: "to", field: "email", kind: "email", via: "fill" }]
 plan.stages      // [[1], [2]]: a stage's steps run together; stages run in order
 plan.verdict     // { outcome: "run" | "ask" | "confirm" | "refuse", because?: [...] }
+pinned.set       // the plan digest it was decided over; pinned.answers, every answer the plan took
 ```
 
 Each step carries its `decision`, the `Decision` `decide` would have made of its words alone; `shared` names
@@ -136,7 +140,21 @@ woven.steps      // per step: { step, status, why?, bound, rounds: [{ round, inp
 ```
 
 A `confirm` handler may wait: hand the decision, plain JSON, to a queue a second person reads, and resolve
-with their answer; the weave goes on where it waited, and nothing that ran runs twice. A body's failure is the
+with their answer; the weave goes on where it waited, and nothing that ran runs twice. The whole plan may travel
+instead: `JSON.stringify(pinned)` is the file, and `weave(pinned, { proceed, confirm?, ask?, signal? })` runs it
+on the same project, here or on another machine — its pins checked first, a `DiagnosticError` naming the first
+that moved and the call that makes the plan again; the plan made again from the file's answers under its gate
+and refused when it does not read the same; then `proceed(pinned)`, required whatever the verdict, since a
+file's numbers are whoever wrote them; then every step under the handlers, a value bound at run time decided by
+this project's adapter. A plan that asks or refuses runs nothing.
+
+```ts
+const checker = await load({ root, adapter: jev() })
+const woven = await checker.weave(JSON.parse(file) as Pinned, {
+  proceed: pinned => ui.confirm(`Run the plan of ${JSON.stringify(pinned.input)}?`),
+  confirm: (d, turn) => ui.confirm(d.prompt.template),
+})
+``` A body's failure is the
 step's, with `status: "failed"`, never a throw. A step after one that stopped is `skipped`, with `why: { type:
 "earlier_step" }`. A step bound to a list of records runs once per record, one
 round each. A step that takes whole results receives them in its body's `args`, handed by the weave alone; its

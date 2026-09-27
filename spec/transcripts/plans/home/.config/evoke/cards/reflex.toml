@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+List the company card expenses of a month.
+Every charge, with its receipt when there is one."""
+not_for = ["bank transactions", "invoices", "payroll"]
+tags = ["cards"]
+effect = "read"
+confirm = "List the card expenses of {month}?"
+run = "cards.mts"
+returns = "expenses"
+
+[args.month]
+ask   = "Which month?"
+vocab = "months"
+
+[examples]
+"card expenses for september"          = {}
+"what did we spend on cards in august" = {}
+"pull the october card charges"        = {}

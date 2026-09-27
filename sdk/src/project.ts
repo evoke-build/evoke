@@ -2,18 +2,21 @@
 // once; never fetched, never written. On it: `with`, the same project over a vocabulary of the call's own — a
 // tenant's words, their own plan in milliseconds; `decide`, one input asked, answered, read and gated; `fill`, an
 // ask answered and gated again; `run`, the chosen call's body; `handle`, the whole loop; `steps`, one request
-// read into steps, and `weave`, the steps run stage by stage under the same handlers. In: LoadOptions; inputs;
-// decisions. Out: a Project, decisions, results, plans.
+// read into steps and sealed as a plan file — the sentence, the answers, the pins — and `weave`, the steps run
+// stage by stage under the same handlers, from a sentence or from such a file, whose pins are checked and whose
+// plan is made again from its answers. In: LoadOptions; inputs; decisions; plan files. Out: a Project, decisions,
+// results, plans.
 
 import { realpathSync, statSync } from "node:fs"
 import { homedir } from "node:os"
 
 import { type Adapter, type Trace, answered } from "./adapter.ts"
 import { PLATFORM, facts, scratch, status } from "./contain.ts"
-import { bug, call, command, fromCode, misnamed, problem, reply } from "./core.ts"
+import { type Ok, bug, call, command, fromCode, misnamed, problem, reply } from "./core.ts"
 import type { Abstain, AnyReflexes, Ask, Confirm, Decision, Given, Handled, Line, Run } from "./decision.ts"
 import { DiagnosticError, FailureError, type Problem } from "./errors.ts"
 import { entry, snapshot, text } from "./files.ts"
+import type { Op, Ops } from "./ops.ts"
 import type { Inline } from "./reflex.ts"
 import { type Reflex, type Result, Refusal, child, inline, program, resolved } from "./runtime.ts"
 import type * as W from "./types.ts"
@@ -76,6 +79,16 @@ export interface WeaveOptions<R = AnyReflexes> extends DecideOptions {
   proceed?: ((plan: W.Weave) => boolean | Promise<boolean>) | undefined
 }
 
+/** What `weave` takes for a plan read from a file — a `Pinned`, as `steps` returned it or as `JSON.parse` read it
+ *  back — beside a step's handlers: the yes over the whole plan, asked whatever its verdict, since a file's numbers
+ *  are whoever wrote them. Absent and reached: nothing runs, `unanswered`. The tags are the file's. */
+export interface PinnedOptions<R = AnyReflexes> {
+  confirm?: WeaveOptions<R>["confirm"]
+  ask?: WeaveOptions<R>["ask"]
+  proceed?: ((pinned: W.Pinned) => boolean | Promise<boolean>) | undefined
+  signal?: AbortSignal | undefined
+}
+
 /** One round of a step as it ran: the decision the loop settled, the input its body saw, what became of it. */
 export interface WovenRound<R = AnyReflexes> {
   round: number
@@ -131,19 +144,30 @@ export interface Project<R = AnyReflexes> {
   /** The whole loop: decide; ask and fill until nothing is missing; confirm; run. */
   handle(input: string, options?: DecideOptions & Handlers<R>): Promise<Handled<R>>
   /** One request read into its steps, each decided as `decide` decides one, ordered by the words, a result of
-   *  one threaded into a later one: the plan alone, its verdict before anything runs. Runs nothing. */
-  steps(input: string, options?: DecideOptions): Promise<W.Weave>
+   *  one threaded into a later one, sealed as a plan file: the sentence, the plan with its verdict before anything
+   *  runs, every answer the plan took and the pins they were gathered under. `JSON.stringify` writes it; `weave`
+   *  takes it, here or on another machine with the same project. Runs nothing. */
+  steps(input: string, options?: DecideOptions): Promise<W.Pinned>
   /** The steps, what the plan asks first answered, then every step run stage by stage under the same handlers. */
   weave(input: string, options?: WeaveOptions<R>): Promise<Woven<R>>
+  /** A plan file run exactly: its pins checked against this project — a `DiagnosticError` names the first that
+   *  moved and its fix — the plan made again from the file's answers under the file's gate and refused when it does
+   *  not read the same, `proceed` asked, then every step run under the same handlers, a value bound at run time
+   *  decided by this project's adapter. */
+  weave(pinned: W.Pinned, options?: PinnedOptions<R>): Promise<Woven<R>>
 }
 
 /** The home project as the CLI writes it on first use: what a root without evoke.toml means. */
 const DEFAULT: W.Project = { adapter: "jev", reflexes: {}, config: {}, adapters: {} }
 
-/** What a project is made of, before its plan: the installed set, who answers, where each body lives, each
- *  shipped manifest and which reflexes are local — whose declaration is their own file's. */
+/** What a project is made of, before its plan: the installed set, the plain settings' values beside it, the
+ *  project and its lock as the pins read them, who answers, where each body lives, each shipped manifest and which
+ *  reflexes are local — whose declaration is their own file's. */
 interface Ground {
   installed: W.Installed
+  values: W.Values
+  project: W.Project
+  lock: W.Lock | undefined
   adapter: Adapter
   /** The platform the plan judges a manifest's `platforms` by. */
   platform: W.Platform
@@ -173,6 +197,7 @@ export async function load<R extends object = AnyReflexes>(options: LoadOptions<
     files.lock === undefined ? undefined : call("lock", { doc: { file: { type: "lock" }, toml: files.lock } }, "load()")
   const adapter = options.adapter ?? (await named(project, root))
   const reflexes: Record<string, W.Item> = {}
+  const values: W.Values = {}
   const dirs: Record<string, string> = {}
   const bodies: Ground["bodies"] = {}
   const shipped: Record<string, W.Manifest> = {}
@@ -187,6 +212,9 @@ export async function load<R extends object = AnyReflexes>(options: LoadOptions<
       throw refused(name, `${name} is both in evoke.toml and passed to load`, { type: "remove", reflex: name })
     }
     const configured = held(project.config[name] ?? {})
+    for (const [key, setting] of Object.entries(project.config[name] ?? {})) {
+      if (setting.type === "plain") (values[name] ??= {})[key] = setting.value
+    }
     if (location.type === "local") {
       if (root === undefined) throw refused(name, `${name} is a local reflex, but load has no root`, { type: "remove", reflex: name })
       const dir = `${root}/${location.path}`
@@ -235,7 +263,7 @@ export async function load<R extends object = AnyReflexes>(options: LoadOptions<
   }
   const installed: W.Installed = { reflexes, vocab, adapter: adapter.id, evoke: call("version", {}) }
   const platform = options.platform ?? PLATFORM
-  return make({ installed, adapter, platform, dirs, bodies, shipped, local }, "load()") as unknown as Project<R>
+  return make({ installed, values, project, lock, adapter, platform, dirs, bodies, shipped, local }, "load()") as unknown as Project<R>
 }
 
 /** The adapter evoke.toml names, from its own subpath; a recording is never resolved by name. */
@@ -276,11 +304,12 @@ function word(
   return { wording: { ok: effective }, manifest }
 }
 
-/** How each configured key is held: the value, or a variable and whether it is set — never a secret's value. */
+/** How each configured key is held: plain, its value handed beside the set, or a variable and whether it is set —
+ *  never a value, never a secret. */
 function held(settings: Record<string, W.Setting>): Record<string, W.Held> {
   const held: Record<string, W.Held> = {}
   for (const [key, setting] of Object.entries(settings)) {
-    held[key] = setting.type === "plain" ? setting : { type: "env", var: setting.var, set: process.env[setting.var] !== undefined }
+    held[key] = setting.type === "plain" ? { type: "plain" } : { type: "env", var: setting.var, set: process.env[setting.var] !== undefined }
   }
   return held
 }
@@ -329,6 +358,18 @@ function askedFor(step: W.Step, tags: string[]): W.Asked {
 /** The answers a plan gathers: what it decided is always there to push to. */
 type Gathered = W.Answers & { decided: [W.Asked, W.Decision][] }
 
+/** Everything a plan gathers on its way: the answers the planner reads, each text's trace by what was asked, and
+ *  every engine answer as the plan file keeps them — the weave's own questions under the request's text. */
+interface Gathering {
+  answers: Gathered
+  traces: Map<string, Trace[]>
+  entries: W.Answer[]
+}
+
+function gathering(): Gathering {
+  return { answers: { decided: [] }, traces: new Map(), entries: [] }
+}
+
 /** What became of one round: its status, why it stopped, what its body returned. */
 interface Became {
   status: W.Status
@@ -345,8 +386,8 @@ type Readied =
 /** The project over its ground: the set compiled, every reflex's status read off the plan. The implementation
  *  speaks the wire's shapes; the app's R lives on the interface alone. */
 function make(ground: Ground, invoked: string): Project<AnyReflexes> {
-  const { installed, adapter, platform, dirs, bodies, shipped, local } = ground
-  const plan: W.Plan = call("compile", { set: installed, platform, ...(adapter.limits === undefined ? {} : { limits: adapter.limits }) }, invoked)
+  const { installed, values, project: owned, lock, adapter, platform, dirs, bodies, shipped, local } = ground
+  const plan: W.Plan = call("compile", { set: installed, values, platform, ...(adapter.limits === undefined ? {} : { limits: adapter.limits }) }, invoked)
   if (adapter.plan !== undefined && adapter.plan !== plan.digest) {
     const message = `the recording was made against plan ${adapter.plan}, not ${plan.digest}`
     throw new DiagnosticError([{ message, fix: { type: "rerun" }, command: "replay(file, { record: jev() })" }])
@@ -361,6 +402,8 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     }
   }
   const gate = adapter.gate === undefined ? {} : { gate: adapter.gate }
+  const declared: W.Declared = { id: adapter.id, ...(adapter.limits === undefined ? {} : { limits: adapter.limits }), ...gate }
+  const locked = lock === undefined ? {} : { lock }
   const project: Project<AnyReflexes> = {
     reflexes,
     plan: plan.digest,
@@ -380,12 +423,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
 
     async decide(input, options = {}) {
       nonEmpty(input, "decide")
-      const invoked = invocation(input)
-      const request = call("request", { plan, input, tags: options.tags ?? [], ...(options.only === undefined ? {} : { only: options.only }), scope: "full" }, invoked)
-      const { raw, trace } = await answered(adapter, request, plan.deadline, options.signal, invoked)
-      const reading = call("read", { plan, request, raw }, invoked)
-      const decision = call("gate", { plan, reading, ...gate })
-      return lined(decision, { input, plan: plan.digest, trace: [trace] })
+      return (await decidedText(input, options)).decision
     },
 
     fill(decision, given) {
@@ -430,59 +468,113 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
 
     async steps(input, options = {}) {
       nonEmpty(input, "steps")
-      return planned(input, options, { decided: [] }, new Map())
+      const gathered = gathering()
+      const weave = await planned(input, options, gathered)
+      return call("weave.pin", { installed, plan, project: owned, ...locked, declared, input, tags: options.tags ?? [], weave, answers: gathered.entries })
     },
 
-    async weave(input, options = {}) {
+    async weave(input: string | W.Pinned, options: WeaveOptions<AnyReflexes> | PinnedOptions<AnyReflexes> = {}) {
+      if (typeof input !== "string") return pinnedRun(input, options as PinnedOptions<AnyReflexes>)
+      const handlers = options as WeaveOptions<AnyReflexes>
       nonEmpty(input, "weave")
-      const traces = new Map<string, Trace[]>()
-      const answers: Gathered = { decided: [] }
-      let woven = await planned(input, options, answers, traces)
+      const gathered = gathering()
+      let woven = await planned(input, handlers, gathered)
       // What the plan asks before anything runs: a step's own question, answered, and the plan made again.
       while (woven.verdict.outcome === "ask") {
-        const filled = await askedUpFront(woven, answers, options, traces)
+        const filled = await askedUpFront(woven, gathered.answers, handlers, gathered.traces)
         if (filled !== "filled") return { plan: woven, status: filled, steps: [] }
-        const again = await planned(input, options, answers, traces)
+        const again = await planned(input, handlers, gathered)
         // A plan that asks the same again could not take the answer: unanswered, never a loop.
         if (JSON.stringify(again.verdict) === JSON.stringify(woven.verdict)) return { plan: again, status: "unanswered", steps: [] }
         woven = again
       }
       if (woven.verdict.outcome === "refuse") return { plan: woven, status: "refused", steps: [] }
       if (woven.verdict.outcome === "confirm") {
-        if (options.proceed === undefined) return { plan: woven, status: "unanswered", steps: [] }
-        if (!(await options.proceed(woven))) return { plan: woven, status: "declined", steps: [] }
+        if (handlers.proceed === undefined) return { plan: woven, status: "unanswered", steps: [] }
+        if (!(await handlers.proceed(woven))) return { plan: woven, status: "declined", steps: [] }
       }
-      return executed(woven, options, traces)
+      return executed(woven, handlers, gathered)
     },
   }
 
-  /** The plan over the answers gathered so far: the adapter asked and texts decided until it stands. */
-  async function planned(input: string, options: DecideOptions, answers: Gathered, traces: Map<string, Trace[]>): Promise<W.Weave> {
+  /** One text asked, answered, read and gated, its raw answers kept beside the decision — for the plan file. */
+  async function decidedText(input: string, options: DecideOptions): Promise<{ decision: Decision<AnyReflexes>; raw: W.Raw }> {
+    const invoked = invocation(input)
+    const request = call("request", { plan, input, tags: options.tags ?? [], ...(options.only === undefined ? {} : { only: options.only }), scope: "full" }, invoked)
+    const { raw, trace } = await answered(adapter, request, plan.deadline, options.signal, invoked)
+    const reading = call("read", { plan, request, raw }, invoked)
+    const decision = call("gate", { plan, reading, ...gate })
+    return { decision: lined(decision, { input, plan: plan.digest, trace: [trace] }), raw }
+  }
+
+  /** The plan over the answers gathered so far: the adapter asked and texts decided until it stands, every answer
+   *  kept as an entry of the plan file. */
+  async function planned(input: string, options: DecideOptions, gathered: Gathering): Promise<W.Weave> {
     const invoked = `steps(${JSON.stringify(shown(input))})`
+    const { answers, entries } = gathered
     for (;;) {
       const planning = call("weave.plan", { plan, ...gate, input, tags: options.tags ?? [], answers }, invoked)
       if (planning.type === "done") return planning.weave
       const { need } = planning
       if (need.type === "decide") {
         // Side by side: each text is its own adapter call.
-        answers.decided.push(...(await Promise.all(need.asked.map(async (asked): Promise<[W.Asked, W.Decision]> => [asked, await decided(asked, options, traces)]))))
+        const decisions = await Promise.all(need.asked.map(async (asked): Promise<[W.Asked, W.Decision]> => [asked, await decided(asked, options, gathered)]))
+        answers.decided.push(...decisions)
         continue
       }
       const { raw } = await answered(adapter, need.request, plan.deadline, options.signal, invoked)
+      entries.push({ text: need.request.state.request, raw })
       if (need.type === "judge") answers.judged = raw
       else answers.referred = raw
     }
   }
 
-  /** One text decided as the plan asks — over the tags, or one reflex alone — its trace kept by what was asked. */
-  async function decided(asked: W.Asked, options: DecideOptions, traces: Map<string, Trace[]>): Promise<W.Decision> {
-    const decision = await project.decide(asked.text, {
+  /** One text decided as the plan asks — over the tags, or one reflex alone — its trace kept by what was asked and
+   *  its raw answers as an entry. */
+  async function decided(asked: W.Asked, options: DecideOptions, gathered: Gathering): Promise<W.Decision> {
+    const { decision, raw } = await decidedText(asked.text, {
       ...(asked.only === undefined ? { tags: asked.tags ?? [] } : { only: asked.only }),
       ...(options.signal === undefined ? {} : { signal: options.signal }),
     })
-    traces.set(key(asked), decision.trace)
+    gathered.traces.set(key(asked), decision.trace)
+    gathered.entries.push({ text: asked.text, raw })
     // The whole decision crosses: the core reads its own fields and ignores the SDK's.
     return decision as unknown as W.Decision
+  }
+
+  /** A plan file run: read through the core, `plan = 1` required; its pins against this project, the first that
+   *  moved refused; the plan made again from its answers under its gate, refused when it does not read the same;
+   *  a plan that asks or refuses runs nothing, since a file holds no one's answers; then the yes over the whole
+   *  plan, and every step under the handlers, a value bound at run time decided by this project's adapter. */
+  async function pinnedRun(json: W.Pinned, options: PinnedOptions<AnyReflexes>): Promise<Woven<AnyReflexes>> {
+    const path = "plan"
+    const sentence = typeof json === "object" && json !== null && typeof json.input === "string" ? json.input : "<input>"
+    const pinned = planFile("weave.pinned", { path, json }, sentence)
+    planFile("weave.stale", { path, pinned, installed, plan, ...locked, declared }, pinned.input)
+    const replanned = planFile("weave.replan", { path, pinned, plan }, pinned.input)
+    const woven = replanned.weave
+    if (woven.verdict.outcome === "ask") return { plan: woven, status: "unanswered", steps: [] }
+    if (woven.verdict.outcome === "refuse") return { plan: woven, status: "refused", steps: [] }
+    if (options.proceed === undefined) return { plan: woven, status: "unanswered", steps: [] }
+    if (!(await options.proceed(pinned))) return { plan: woven, status: "declined", steps: [] }
+    const handlers: WeaveOptions<AnyReflexes> = {
+      tags: pinned.tags ?? [],
+      ...(options.confirm === undefined ? {} : { confirm: options.confirm }),
+      ...(options.ask === undefined ? {} : { ask: options.ask }),
+      ...(options.signal === undefined ? {} : { signal: options.signal }),
+    }
+    return executed(woven, handlers, gathering())
+  }
+
+  /** One op over a plan file: its refusal a `DiagnosticError` whose save line reads as the call that makes the
+   *  plan again here. */
+  function planFile<O extends Op>(op: O, input: Ops[O]["input"], sentence: string): Ok<O> {
+    const answer = reply(op, input)
+    if ("ok" in answer) return answer.ok as Ok<O>
+    if ("bug" in answer) throw bug(answer.bug)
+    const diagnostic = answer.err as W.Diagnostic
+    const fixed = diagnostic.fix.type === "save" ? `steps(${JSON.stringify(shown(sentence))})` : command(diagnostic.fix)
+    throw new DiagnosticError([{ ...diagnostic, command: fixed }])
   }
 
   /** The plan's own questions before anything runs. A step's required argument no binding covers is asked as
@@ -526,9 +618,10 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
    *  signal aborted mid-run is a cancel: every body's group ended, the rounds under way and every round after
    *  reported `skipped · cancelled`, and the rejection — the signal's reason — carrying the record once it is
    *  whole. */
-  async function executed(woven: W.Weave, options: WeaveOptions<AnyReflexes>, traces: Map<string, Trace[]>): Promise<Woven<AnyReflexes>> {
+  async function executed(woven: W.Weave, options: WeaveOptions<AnyReflexes>, gathered: Gathering): Promise<Woven<AnyReflexes>> {
     const invoked = `weave(${JSON.stringify(shown(woven.input))})`
     const { signal } = options
+    const { traces } = gathered
     const progress: Required<W.Progress> = { decided: [], handled: [] }
     const rounds = new Map<number, WovenRound<AnyReflexes>[]>()
     const record = (handling: W.Handling, decision: Decision<AnyReflexes>, became: Became) => {
@@ -560,7 +653,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
       const { todo } = running
       if (todo.type === "decide") {
         try {
-          progress.decided.push([todo.asked, await decided(todo.asked, options, traces)])
+          progress.decided.push([todo.asked, await decided(todo.asked, options, gathered)])
         } catch (error) {
           // The signal aborted the decision's call: the round it was for never starts.
           if (!signal?.aborted || error !== signal.reason) throw error

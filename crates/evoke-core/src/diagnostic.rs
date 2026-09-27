@@ -115,6 +115,11 @@ pub enum Fix {
     Test,
     /// `evoke --help`: the arguments did not spell a command.
     Help,
+    /// `evoke try --save <file> "<input>"`: a plan file to make again here, from its own sentence.
+    Save {
+        file: String,
+        input: String,
+    },
 }
 
 impl Fix {
@@ -164,6 +169,10 @@ impl Fix {
             Self::New => "evoke new <name>".to_owned(),
             Self::Test => "evoke test".to_owned(),
             Self::Help => "evoke --help".to_owned(),
+            Self::Save { file, input } => format!(
+                "evoke try --save {file} {}",
+                serde_json::Value::String(input.clone())
+            ),
         }
     }
 }
@@ -333,6 +342,14 @@ mod tests {
     fn the_tests_and_the_help_are_commands_too() {
         assert_eq!(Fix::Test.command(""), "evoke test");
         assert_eq!(Fix::Help.command("evoke x"), "evoke --help");
+        assert_eq!(
+            Fix::Save {
+                file: "~/timer.plan.json".to_owned(),
+                input: "set a \"laundry\" timer".to_owned(),
+            }
+            .command(""),
+            "evoke try --save ~/timer.plan.json \"set a \\\"laundry\\\" timer\""
+        );
     }
 
     #[test]

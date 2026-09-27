@@ -1,0 +1,27 @@
+reflex = 1
+
+description = """
+Reconcile a month's books.
+Matches its bank transactions against its invoices, card expenses and payroll, and lists what is left to review."""
+not_for = ["posting to the ledger", "sending a report", "pulling transactions"]
+tags = ["reconcile"]
+effect = "read"
+confirm = "Reconcile the month?"
+run = "reconcile.mts"
+
+[args.transactions]
+takes = "transactions"
+
+[args.invoices]
+takes = "invoices"
+
+[args.expenses]
+takes = "expenses"
+
+[args.payroll]
+takes = "payroll"
+
+[examples]
+"reconcile them"      = {}
+"reconcile the books" = {}
+"match everything up" = {}

@@ -1,0 +1,135 @@
+# One person writes the month's plan as a file; another runs it, answering the yes over the plan and the ledger's
+# confirm themselves — here a second project under the same home, whose engine holds no answer at all, so a run
+# that completes proves the file answered every question. A pin that moved refuses the file and says which.
+$ evoke try --save ~/month.plan.json "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"
+  1  bank month="september"  0.90
+  2  invoices month="september"  0.90
+  3  cards month="september"  0.90
+  4  payroll month="september"  0.90
+  5  reconcile  0.90 · takes transactions from 1, invoices from 2, expenses from 3, payroll from 4
+  6  ledger month="september" · write · weakest: route 0.78
+  7  send to="cfo@example.com"  0.90 · after 1, 2, 3, 4, 5, 6
++ ~/month.plan.json
+$ sed -n 2,3p ~/month.plan.json
+  "note": "Written by evoke try --save: the sentence and the classifier's answers, in clear. evoke run runs it exactly, or says which pin moved.",
+  "plan": 1,
+$ grep '"call"' ~/month.plan.json
+          "call": "bank month=\"september\"",
+          "call": "invoices month=\"september\"",
+          "call": "cards month=\"september\"",
+          "call": "payroll month=\"september\"",
+          "call": "reconcile",
+          "call": "ledger month=\"september\"",
+          "call": "send to=\"cfo@example.com\"",
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/none.toml evoke sync
+  up to date
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/none.toml evoke run ~/month.plan.json
+  1  bank month="september"  0.90
+  2  invoices month="september"  0.90
+  3  cards month="september"  0.90
+  4  payroll month="september"  0.90
+  5  reconcile  0.90 · takes transactions from 1, invoices from 2, expenses from 3, payroll from 4
+  6  ledger month="september" · write · weakest: route 0.78
+  7  send to="cfo@example.com"  0.90 · after 1, 2, 3, 4, 5, 6
+  the plan of ~/month.plan.json
+  Run the plan as it stands?  [y]es [n]o > y
+september: 214 transactions, 18 204.55 at the close
+september: 38 invoices, 35 paid
+september: 57 card charges, 2 without a receipt
+september: payroll 48 300.00
+3 transactions to review
+  6  ledger month="september" · write · weakest: route 0.78
+  Post september to the ledger?  [y]es [n]o [t]each > y
+september posted to the ledger
+sent to cfo@example.com
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/none.toml evoke why
+  1  "pull september's bank transactions"
+  bank 0.90 · none 0.07 · invoices 0.03
+  month  september 0.90 · unstated 0.10
+  fits   bank 0.80 · invoices 0.02 · cards 0.02 · payroll 0.02 · reconcile 0.02 · ledger 0.02 · send 0.02
+  ran bank month="september" · weakest: route 0.90 · from ~/month.plan.json
+  2  "invoices"
+  invoices 0.90 · none 0.07 · bank 0.03
+  month  unstated 0.90 · august 0.05 · september 0.05
+  fits   invoices 0.80 · bank 0.02 · cards 0.02 · payroll 0.02 · reconcile 0.02 · ledger 0.02 · send 0.02
+  ran invoices month="september" · weakest: route 0.90 · shared month = september · from ~/month.plan.json
+  3  "card expenses"
+  cards 0.90 · none 0.07 · bank 0.03
+  month  unstated 0.90 · august 0.05 · september 0.05
+  fits   cards 0.80 · bank 0.02 · invoices 0.02 · payroll 0.02 · reconcile 0.02 · ledger 0.02 · send 0.02
+  ran cards month="september" · weakest: route 0.90 · shared month = september · from ~/month.plan.json
+  4  "payroll"
+  payroll 0.90 · none 0.07 · bank 0.03
+  month  unstated 0.90 · august 0.05 · september 0.05
+  fits   payroll 0.80 · bank 0.02 · invoices 0.02 · cards 0.02 · reconcile 0.02 · ledger 0.02 · send 0.02
+  ran payroll month="september" · weakest: route 0.90 · shared month = september · from ~/month.plan.json
+  5  "reconcile them"
+  reconcile 0.90 · none 0.07 · bank 0.03
+  fits  reconcile 0.80 · bank 0.02 · invoices 0.02 · cards 0.02 · payroll 0.02 · ledger 0.02 · send 0.02
+  ran reconcile · weakest: route 0.90 · takes transactions from 1, invoices from 2, expenses from 3, payroll from 4 · from ~/month.plan.json
+  6  "post the closing entries to the ledger"
+  ledger 0.78 · none 0.19 · bank 0.03
+  month  unstated 0.90 · august 0.05 · september 0.05
+  fits   ledger 0.80 · bank 0.02 · invoices 0.02 · cards 0.02 · payroll 0.02 · reconcile 0.02 · send 0.02
+  ran ledger month="september" · weakest: route 0.78 · shared month = september · from ~/month.plan.json
+  7  "send the report to cfo@example.com"
+  send 0.90 · none 0.07 · bank 0.03
+  to    "cfo@example.com" 0.90 · unstated 0.10
+  fits  send 0.80 · bank 0.02 · invoices 0.02 · cards 0.02 · payroll 0.02 · reconcile 0.02 · ledger 0.02
+  ran send to="cfo@example.com" · weakest: route 0.90 · from ~/month.plan.json
+# The reviewer's look: the plan printed from the file, and nothing run.
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/none.toml evoke run ~/month.plan.json
+  1  bank month="september"  0.90
+  2  invoices month="september"  0.90
+  3  cards month="september"  0.90
+  4  payroll month="september"  0.90
+  5  reconcile  0.90 · takes transactions from 1, invoices from 2, expenses from 3, payroll from 4
+  6  ledger month="september" · write · weakest: route 0.78
+  7  send to="cfo@example.com"  0.90 · after 1, 2, 3, 4, 5, 6
+  the plan of ~/month.plan.json
+  Run the plan as it stands?  [y]es [n]o > n
+[2]
+# Every step's line names the file and its digest; the prompts stay on the terminal.
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/none.toml evoke run --json ~/month.plan.json
+  the plan of ~/month.plan.json
+  Run the plan as it stands?  [y]es [n]o > y
+{"step":1,"steps":7,"input":"pull september's bank transactions","outcome":"run","reflex":"bank","args":{"month":{"type":"word","word":"september"}},"call":"bank month=\"september\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"bank","p":0.9},"judgments":[{"question":"route","top":"bank","p":0.9},{"question":"bank.month","top":"september","p":0.9}],"runner_up":{"reflex":"invoices","route":0.03,"fits":0.02},"contenders":[{"reflex":"bank","route":0.9,"fits":0.8},{"reflex":"invoices","route":0.03,"fits":0.02},{"reflex":"cards","route":0.0,"fits":0.02},{"reflex":"payroll","route":0.0,"fits":0.02},{"reflex":"reconcile","route":0.0,"fits":0.02},{"reflex":"ledger","route":0.0,"fits":0.02},{"reflex":"send","route":0.0,"fits":0.02}],"trace":[],"pinned":{"file":"~/month.plan.json","id":"h1:2f01bd45067e1f44ca33db3609147dae7c2f1dc43aa0e74e257bd08d3d9524a5"},"contained":{"type":"full"},"result":{"text":"september: 214 transactions, 18 204.55 at the close","data":{"month":"september","transactions":214,"balance":18204.55}},"status":"ran"}
+{"step":2,"steps":7,"input":"invoices","outcome":"run","reflex":"invoices","args":{"month":{"type":"word","word":"september"}},"call":"invoices month=\"september\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"invoices","p":0.9},"judgments":[{"question":"route","top":"invoices","p":0.9}],"runner_up":{"reflex":"bank","route":0.03,"fits":0.02},"contenders":[{"reflex":"invoices","route":0.9,"fits":0.8},{"reflex":"bank","route":0.03,"fits":0.02},{"reflex":"cards","route":0.0,"fits":0.02},{"reflex":"payroll","route":0.0,"fits":0.02},{"reflex":"reconcile","route":0.0,"fits":0.02},{"reflex":"ledger","route":0.0,"fits":0.02},{"reflex":"send","route":0.0,"fits":0.02}],"trace":[],"shared":{"month":{"word":"september","via":"fill"}},"pinned":{"file":"~/month.plan.json","id":"h1:2f01bd45067e1f44ca33db3609147dae7c2f1dc43aa0e74e257bd08d3d9524a5"},"contained":{"type":"full"},"result":{"text":"september: 38 invoices, 35 paid","data":{"month":"september","issued":38,"paid":35}},"status":"ran"}
+{"step":3,"steps":7,"input":"card expenses","outcome":"run","reflex":"cards","args":{"month":{"type":"word","word":"september"}},"call":"cards month=\"september\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"cards","p":0.9},"judgments":[{"question":"route","top":"cards","p":0.9}],"runner_up":{"reflex":"bank","route":0.03,"fits":0.02},"contenders":[{"reflex":"cards","route":0.9,"fits":0.8},{"reflex":"bank","route":0.03,"fits":0.02},{"reflex":"invoices","route":0.0,"fits":0.02},{"reflex":"payroll","route":0.0,"fits":0.02},{"reflex":"reconcile","route":0.0,"fits":0.02},{"reflex":"ledger","route":0.0,"fits":0.02},{"reflex":"send","route":0.0,"fits":0.02}],"trace":[],"shared":{"month":{"word":"september","via":"fill"}},"pinned":{"file":"~/month.plan.json","id":"h1:2f01bd45067e1f44ca33db3609147dae7c2f1dc43aa0e74e257bd08d3d9524a5"},"contained":{"type":"full"},"result":{"text":"september: 57 card charges, 2 without a receipt","data":{"month":"september","charges":57,"missing":2}},"status":"ran"}
+{"step":4,"steps":7,"input":"payroll","outcome":"run","reflex":"payroll","args":{"month":{"type":"word","word":"september"}},"call":"payroll month=\"september\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"payroll","p":0.9},"judgments":[{"question":"route","top":"payroll","p":0.9}],"runner_up":{"reflex":"bank","route":0.03,"fits":0.02},"contenders":[{"reflex":"payroll","route":0.9,"fits":0.8},{"reflex":"bank","route":0.03,"fits":0.02},{"reflex":"invoices","route":0.0,"fits":0.02},{"reflex":"cards","route":0.0,"fits":0.02},{"reflex":"reconcile","route":0.0,"fits":0.02},{"reflex":"ledger","route":0.0,"fits":0.02},{"reflex":"send","route":0.0,"fits":0.02}],"trace":[],"shared":{"month":{"word":"september","via":"fill"}},"pinned":{"file":"~/month.plan.json","id":"h1:2f01bd45067e1f44ca33db3609147dae7c2f1dc43aa0e74e257bd08d3d9524a5"},"contained":{"type":"full"},"result":{"text":"september: payroll 48 300.00","data":{"month":"september","total":48300}},"status":"ran"}
+{"step":5,"steps":7,"input":"reconcile them","outcome":"run","reflex":"reconcile","args":{},"call":"reconcile","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"reconcile","p":0.9},"judgments":[{"question":"route","top":"reconcile","p":0.9}],"runner_up":{"reflex":"bank","route":0.03,"fits":0.02},"contenders":[{"reflex":"reconcile","route":0.9,"fits":0.8},{"reflex":"bank","route":0.03,"fits":0.02},{"reflex":"invoices","route":0.0,"fits":0.02},{"reflex":"cards","route":0.0,"fits":0.02},{"reflex":"payroll","route":0.0,"fits":0.02},{"reflex":"ledger","route":0.0,"fits":0.02},{"reflex":"send","route":0.0,"fits":0.02}],"trace":[],"bound":[{"arg":"transactions","from":1,"field":"transactions"},{"arg":"invoices","from":2,"field":"invoices"},{"arg":"expenses","from":3,"field":"expenses"},{"arg":"payroll","from":4,"field":"payroll"}],"pinned":{"file":"~/month.plan.json","id":"h1:2f01bd45067e1f44ca33db3609147dae7c2f1dc43aa0e74e257bd08d3d9524a5"},"contained":{"type":"full"},"result":{"text":"3 transactions to review","data":{"unmatched":3}},"status":"ran"}
+  6  ledger month="september" · write · weakest: route 0.78
+  Post september to the ledger?  [y]es [n]o [t]each > y
+{"step":6,"steps":7,"input":"post the closing entries to the ledger","outcome":"confirm","reflex":"ledger","args":{"month":{"type":"word","word":"september"}},"call":"ledger month=\"september\"","effect":"write","confidence":0.78,"weakest":{"question":"route","top":"ledger","p":0.78},"judgments":[{"question":"route","top":"ledger","p":0.78}],"runner_up":{"reflex":"bank","route":0.03,"fits":0.02},"contenders":[{"reflex":"ledger","route":0.78,"fits":0.8},{"reflex":"bank","route":0.03,"fits":0.02},{"reflex":"invoices","route":0.0,"fits":0.02},{"reflex":"cards","route":0.0,"fits":0.02},{"reflex":"payroll","route":0.0,"fits":0.02},{"reflex":"reconcile","route":0.0,"fits":0.02},{"reflex":"send","route":0.0,"fits":0.02}],"prompt":{"own":"ledger month=\"september\" · write · weakest: route 0.78","template":"Post september to the ledger?"},"because":[{"type":"under_floor","judgment":{"question":"route","top":"ledger","p":0.78},"floor":0.8}],"trace":[],"shared":{"month":{"word":"september","via":"fill"}},"pinned":{"file":"~/month.plan.json","id":"h1:2f01bd45067e1f44ca33db3609147dae7c2f1dc43aa0e74e257bd08d3d9524a5"},"contained":{"type":"full"},"result":{"text":"september posted to the ledger","data":{"month":"september"}},"status":"ran"}
+{"step":7,"steps":7,"input":"send the report to cfo@example.com","outcome":"run","reflex":"send","args":{"to":{"type":"pick","span":{"start":19,"end":34,"text":"cfo@example.com"},"value":{"type":"email","value":"cfo@example.com"}}},"call":"send to=\"cfo@example.com\"","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"send","p":0.9},"judgments":[{"question":"route","top":"send","p":0.9},{"question":"send.to","top":"19-34","p":0.9}],"runner_up":{"reflex":"bank","route":0.03,"fits":0.02},"contenders":[{"reflex":"send","route":0.9,"fits":0.8},{"reflex":"bank","route":0.03,"fits":0.02},{"reflex":"invoices","route":0.0,"fits":0.02},{"reflex":"cards","route":0.0,"fits":0.02},{"reflex":"payroll","route":0.0,"fits":0.02},{"reflex":"reconcile","route":0.0,"fits":0.02},{"reflex":"ledger","route":0.0,"fits":0.02}],"trace":[],"pinned":{"file":"~/month.plan.json","id":"h1:2f01bd45067e1f44ca33db3609147dae7c2f1dc43aa0e74e257bd08d3d9524a5"},"contained":{"type":"full"},"result":{"text":"sent to cfo@example.com","data":{"to":"cfo@example.com"}},"status":"ran"}
+# A vocabulary that moved: the file refuses, and the fix is to make the plan again here.
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/none.toml evoke vocab months add november "The month after october."
++ vocab/months.toml  november = "The month after october."
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/none.toml evoke run ~/month.plan.json
+  months differs here from the plan's  →  evoke try --save ~/month.plan.json "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"
+[3]
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/none.toml evoke vocab months remove november
+- vocab/months.toml  november
+# Another engine, and a looser gate: the plan was decided under neither.
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/other.toml evoke run ~/month.plan.json
+  the plan was decided by replay; this project's adapter is replay-2  →  evoke try --save ~/month.plan.json "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"
+[3]
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/looser.toml evoke run ~/month.plan.json
+  the plan was decided under another gate: read 0.6, here 0.5  →  evoke try --save ~/month.plan.json "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"
+[3]
+# An edited file does not read the same as its answers — here the ledger's route lifted over the floor in the
+# answers, the steps left as they were; a file of another revision is refused before its shape.
+$ sed 's/"ledger": 0.78/"ledger": 0.96/; s/"none": 0.19/"none": 0.01/' ~/month.plan.json > ~/edited.plan.json
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/none.toml evoke run ~/edited.plan.json
+  the plan does not read the same as the file: step 6  →  evoke try --save ~/edited.plan.json "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"
+[3]
+$ sed 's/"plan": 1,/"plan": 2,/' ~/month.plan.json > ~/later.plan.json
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/none.toml evoke run ~/later.plan.json
+  plan must be 1, not 2  →  evoke try --save ~/later.plan.json "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"
+[3]
+# A reflex the plan runs, removed here.
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/none.toml evoke remove send
+- send  ./send  write  runs send.mts
+$ XDG_CONFIG_HOME=$HOME/runner/config XDG_STATE_HOME=$HOME/runner/state XDG_CACHE_HOME=$HOME/runner/cache EVOKE_ANSWERS=$HOME/runner/none.toml evoke run ~/month.plan.json
+  step 7's reflex send is not installed here  →  evoke try --save ~/month.plan.json "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"
+[3]

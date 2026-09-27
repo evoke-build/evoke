@@ -6,6 +6,7 @@
 //! answers or the progress. Out: a `Weave` — steps, bindings, stages, a verdict before anything runs — and an
 //! `Executed`, per step what became of it.
 
+pub mod pinned;
 pub mod planning;
 pub mod reading;
 pub mod running;
@@ -188,25 +189,26 @@ pub struct Verdict {
     pub because: Vec<Because>,
 }
 
-/// The plan: the request in the words' own order, its split points as judged, the steps, what was left out, the
-/// bindings, the schedule and the verdict.
+/// The plan: the request in the words' own order, the steps, the bindings, the schedule and the verdict, then what
+/// was left out and the split points as judged — in the order a person reading a plan file meets them, the sentence
+/// and the first call before the numbers.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(try_from = "RawWeave")]
 pub struct Weave {
     pub input: String,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub splits: Vec<Split>,
     pub steps: Vec<Step>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub binds: Vec<Binding>,
+    /// A stage's steps run together; stages run in order.
+    pub stages: Vec<Vec<usize>>,
+    pub verdict: Verdict,
+    /// Whether a write is among the steps, so none may run beside another.
+    pub exclusive: bool,
     /// Fragments left out because they begin with a negation: never decided, never run.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub excluded: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub binds: Vec<Binding>,
-    /// Whether a write is among the steps, so none may run beside another.
-    pub exclusive: bool,
-    /// A stage's steps run together; stages run in order.
-    pub stages: Vec<Vec<usize>>,
-    pub verdict: Verdict,
+    pub splits: Vec<Split>,
 }
 
 #[derive(Deserialize)]
@@ -271,13 +273,13 @@ impl TryFrom<RawWeave> for Weave {
         }
         Ok(Self {
             input: raw.input,
-            splits: raw.splits,
             steps: raw.steps,
-            excluded: raw.excluded,
             binds: raw.binds,
-            exclusive: raw.exclusive,
             stages: raw.stages,
             verdict: raw.verdict,
+            exclusive: raw.exclusive,
+            excluded: raw.excluded,
+            splits: raw.splits,
         })
     }
 }

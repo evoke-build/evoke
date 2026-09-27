@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+List the invoices of a month.
+What was billed, and what was paid."""
+not_for = ["bank transactions", "card expenses", "sending an invoice"]
+tags = ["invoices"]
+effect = "read"
+confirm = "List the invoices of {month}?"
+run = "invoices.mts"
+returns = "invoices"
+
+[args.month]
+ask   = "Which month?"
+vocab = "months"
+
+[examples]
+"list september's invoices"         = {}
+"which invoices went out in august" = {}
+"invoices for october"              = {}

@@ -6,6 +6,15 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- `evoke try --save <file> "<sentence>"` writes the plan as a file: the sentence, the classifier's answers and
+  the pins it was decided under, in clear. `evoke run <file>` runs it exactly, here or on another machine with
+  the same project, after one yes over the whole plan; a pin that moved refuses it and names the fix. Every step's
+  line names the file, and `evoke why` shows it.
+- The SDK's `steps` returns the plan file, and `weave` takes one.
+- A plan's line says which earlier steps run beside it, `with 1, 2`, and a part that said what not to do prints
+  under the plan as `left out "…"`.
+- A plain setting's value no longer moves the plan digest: two machines with different values share one.
+
 ## [0.10.1] - 2026-09-27
 
 - A word of a vocabulary one reflex alone asks for is that reflex's own: it never reaches another step.

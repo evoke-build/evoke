@@ -25,7 +25,7 @@ export interface Ops {
   effective: { input: { shipped: T.Manifest; yours?: T.Overlay }; output: T.Effective }
   report: { input: { previous: T.Manifest; next: T.Manifest; yours?: T.Overlay }; output: T.Report }
   // decide
-  compile: { input: { set: T.Installed; limits?: T.Limits; platform?: T.Platform }; output: T.Result<T.Plan, T.Diagnostic> }
+  compile: { input: { set: T.Installed; values?: T.Values; limits?: T.Limits; platform?: T.Platform }; output: T.Result<T.Plan, T.Diagnostic> }
   propose: { input: { input: T.Input }; output: T.Proposed[] }
   request: { input: { plan: T.Plan; input: string; tags: T.Tag[]; only?: T.LocalName; scope: T.Scope }; output: T.Result<T.Request, T.Diagnostic> }
   read: { input: { plan: T.Plan; request: T.Request; raw: T.Raw }; output: T.Result<T.Reading, T.Fault> }
@@ -90,6 +90,16 @@ export interface Ops {
   // weave
   "weave.plan": { input: { plan: T.Plan; gate?: T.Gate; input: string; tags: T.Tag[]; answers: T.Answers }; output: T.Result<T.Planning, T.Fault> }
   "weave.execute": { input: { plan: T.Plan; gate?: T.Gate; weave: T.Weave; progress: T.Progress }; output: T.Running }
+  "weave.pin": {
+    input: { installed: T.Installed; plan: T.Plan; project: T.Project; lock?: T.Lock; declared: T.Declared; input: string; tags: T.Tag[]; weave: T.Weave; answers: T.Answer[] }
+    output: T.Pinned
+  }
+  "weave.pinned": { input: { path: string; json: T.Json }; output: T.Result<T.Pinned, T.Diagnostic> }
+  "weave.stale": {
+    input: { path: string; pinned: T.Pinned; installed: T.Installed; plan: T.Plan; lock?: T.Lock; declared: T.Declared }
+    output: T.Result<null, T.Diagnostic>
+  }
+  "weave.replan": { input: { path: string; pinned: T.Pinned; plan: T.Plan }; output: T.Result<T.Replanned, T.Diagnostic> }
   // the adapters
   "systemone.settings": { input: { door: T.Door; table?: T.Json }; output: T.Result<T.Settings, T.Diagnostic[]> }
   "systemone.request": { input: { request: T.Request }; output: T.Json }

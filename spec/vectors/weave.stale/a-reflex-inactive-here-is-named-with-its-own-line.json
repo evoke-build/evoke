@@ -1,0 +1,33 @@
+{
+  "input": {
+    "path": "~/month.plan.json",
+    "pinned": {
+      "$ref": "fixtures/pinned-month.json"
+    },
+    "installed": {
+      "$ref": "fixtures/installed-month-send-linux.json"
+    },
+    "plan": {
+      "$ref": "fixtures/plan-month-send-linux.json"
+    },
+    "declared": {
+      "id": "replay",
+      "gate": {
+        "route": 0.5,
+        "fits": 0.3,
+        "read": 0.6,
+        "write": 0.8
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "reflex": "send",
+      "message": "runs on Linux only",
+      "fix": {
+        "type": "remove",
+        "reflex": "send"
+      }
+    }
+  }
+}

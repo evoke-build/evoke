@@ -89,8 +89,7 @@
           "consented": "write",
           "configured": {
             "bridge": {
-              "type": "plain",
-              "value": "10.0.0.2"
+              "type": "plain"
             },
             "token": {
               "type": "env",
@@ -113,11 +112,16 @@
       },
       "adapter": "jev-1.13.0",
       "evoke": "0.1.0"
+    },
+    "values": {
+      "lights": {
+        "bridge": "10.0.0.2"
+      }
     }
   },
   "expect": {
     "ok": {
-      "digest": "h1:89f18bee92bbce53333f58ad93a0e28a02b653929985de607a6779127c0f023a",
+      "digest": "h1:ebd71e242c430a69a75c01461520c2c3d3ddbee2465520d5264f7e2a951aa083",
       "active": {
         "lights": {
           "effect": "write",

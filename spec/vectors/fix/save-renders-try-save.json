@@ -1,0 +1,10 @@
+{
+  "input": {
+    "fix": {
+      "type": "save",
+      "file": "~/month.plan.json",
+      "input": "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"
+    }
+  },
+  "expect": "evoke try --save ~/month.plan.json \"pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com\""
+}

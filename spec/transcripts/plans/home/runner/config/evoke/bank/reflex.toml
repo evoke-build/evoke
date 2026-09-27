@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+Pull the bank transactions of a month.
+Every debit and credit on the business account."""
+not_for = ["invoices", "card expenses", "payroll"]
+tags = ["bank"]
+effect = "read"
+confirm = "Pull the bank transactions for {month}?"
+run = "bank.mts"
+returns = "transactions"
+
+[args.month]
+ask   = "Which month?"
+vocab = "months"
+
+[examples]
+"pull the bank transactions for september" = {}
+"get august's bank feed"                   = {}
+"what went through the bank in october"    = {}

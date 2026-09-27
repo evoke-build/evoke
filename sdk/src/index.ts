@@ -12,6 +12,7 @@ export type { Adapter, Trace } from "./adapter.ts"
 export { DiagnosticError, EvokeError, FailureError, FaultError } from "./errors.ts"
 export type { Problem } from "./errors.ts"
 export type {
+  Answer,
   Because,
   Binding,
   Bound,
@@ -28,6 +29,8 @@ export type {
   Limits,
   Missing,
   Needs,
+  Pinned,
+  PinnedReflex,
   Prompt,
   Question,
   NonEmpty,

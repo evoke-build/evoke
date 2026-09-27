@@ -1,5 +1,5 @@
 <!-- title: Project files -->
-<!-- description: Every file evoke reads or writes in a project, from evoke.toml and evoke.lock to overlays, vocabularies and generated types, and who owns each one. -->
+<!-- description: Every file evoke reads or writes: evoke.toml, evoke.lock, overlays, vocabularies, generated types and a saved plan, and who owns each. -->
 # Files
 
 Everything `evoke` reads or writes in a project, and who owns each file.
@@ -159,6 +159,31 @@ export type Reflex = (args: Args, context: Context) => Result | Promise<Result>
 ```
 
 Written for a file body only, and only when it changed.
+
+## A plan file
+
+`evoke try --save <file>` writes one; `evoke run <file>` runs it. It is yours, wherever you put it; `<name>.plan.json`
+is the recommended name. Written whole as JSON, its second line says what it holds:
+
+```json
+{
+  "note": "Written by evoke try --save: the sentence and the classifier's answers, in clear. evoke run runs it exactly, or says which pin moved.",
+  "plan": 1,
+  "input": "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com",
+  "weave": { "input": "…", "steps": [ { "n": 1, "text": "pull september's bank transactions", "decision": { "call": "bank month=\"september\"", … } }, … ], … },
+  "evoke": "0.10.1",
+  "adapter": { "name": "jev", "id": "jev-1.13.0" },
+  "gate": { "route": 0.5, "fits": 0.3, "read": 0.6, "write": 0.8 },
+  "set": "h1:…",
+  "reflexes": { "bank": { "item": "h1:…", "path": "./bank" }, "ledger": { "item": "h1:…", "ref": "acme/books/ledger", "tag": "1.2.0", "h1": "h1:…" }, … },
+  "vocab": { "months": "h1:…" },
+  "answers": [ { "text": "pull september's …", "raw": { "weave.split_0": { "yes": 0.9 }, … } }, … ]
+}
+```
+
+The file holds, in clear, the sentence, the words it used, and every number the classifier answered; it holds no
+setting's value, no variable and no key, and no time and no name. A remote reflex is pinned by the lock's `h1`; a
+local reflex's body is not pinned, as it is not locked. `grep '"call"'` lists the calls.
 
 ## Machine-local files
 

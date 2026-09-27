@@ -13,14 +13,15 @@ use evoke_core::plan::Millis;
 use evoke_core::project::Location;
 use evoke_core::text::NonEmpty;
 use evoke_core::{
-    Active, Baseline, Call, Case, Chosen, Decision, Digest, Document, Facts, Fault, Fix, Gate,
-    Input, Installed, Lesson, Limits, Lock, Logged, Manifest, Needs, Overlay, Plan, Policy, Prob,
-    Raw, Request, Routed, Scope, Utterance, Value, Verdict, Weave, Written, add_entry, argv,
-    baseline, by_name, calibrate, call as call_grammar, cases, compile, compose, consent, diff,
-    effective, envelope, fill, gate, identity, judge, landlock, lint, lock, log_block, manifest,
-    needs, node_flags, overlay, picked, project, project_dts, propose, read, reference, reflex_dts,
-    regressions, remove_entry, render_lock, report, request, resolve, seatbelt, set_config, teach,
-    thieves, vocab_edit, vocabulary, weave, widens,
+    Active, Answer, Baseline, Call, Case, Chosen, Decision, Declared, Digest, Document, Facts,
+    Fault, Fix, Gate, Input, Installed, Lesson, Limits, Lock, Logged, Manifest, Needs, Overlay,
+    Pinned, Plan, Policy, Prob, Project, Raw, Request, Routed, Scope, Utterance, Value, Values,
+    Verdict, Weave, Written, add_entry, argv, baseline, by_name, calibrate, call as call_grammar,
+    cases, compile, compose, consent, diff, effective, envelope, fill, gate, identity, judge,
+    landlock, lint, lock, log_block, manifest, needs, node_flags, overlay, picked, pin, pinned,
+    project, project_dts, propose, read, reference, reflex_dts, regressions, remove_entry,
+    render_lock, replan, report, request, resolve, seatbelt, set_config, stale, teach, thieves,
+    vocab_edit, vocabulary, weave, widens,
 };
 use indexmap::IndexMap;
 use serde::Serialize;
@@ -40,11 +41,11 @@ pub fn call(op: &str, input: &Json) -> Json {
 /// arguments.
 struct Bug(String);
 
-type Answer = Result<Json, Bug>;
+type Reply = Result<Json, Bug>;
 
-/// The op table in five parts — parse and customize, decide and run, needs and containment, tune and author,
-/// the adapters — each falling through to the next.
-fn answer(op: &str, input: &Json) -> Answer {
+/// The op table in six parts — parse and customize, decide and run, the weave and its plan files, needs and
+/// containment, tune and author, the adapters — each falling through to the next.
+fn answer(op: &str, input: &Json) -> Reply {
     Ok(match op {
         "identity" => ok(identity(text(input, "text")?)),
         "manifest" => result(manifest(document(input, "doc")?)),
@@ -85,10 +86,11 @@ fn answer(op: &str, input: &Json) -> Answer {
     })
 }
 
-fn decide(op: &str, input: &Json) -> Answer {
+fn decide(op: &str, input: &Json) -> Reply {
     Ok(match op {
         "compile" => result(compile(
             &arg::<Installed>(input, "set")?,
+            &opt::<Values>(input, "values")?.unwrap_or_default(),
             opt::<Limits>(input, "limits")?.as_ref(),
             opt::<Platform>(input, "platform")?,
         )),
@@ -99,19 +101,6 @@ fn decide(op: &str, input: &Json) -> Answer {
             &arg::<Vec<Tag>>(input, "tags")?,
             opt::<LocalName>(input, "only")?.as_ref(),
             arg::<Scope>(input, "scope")?,
-        )),
-        "weave.plan" => result(weave::planning::plan(
-            &arg::<Plan>(input, "plan")?,
-            opt::<Gate>(input, "gate")?.as_ref(),
-            text(input, "input")?,
-            &arg::<Vec<Tag>>(input, "tags")?,
-            &arg::<weave::Answers>(input, "answers")?,
-        )),
-        "weave.execute" => ok(weave::running::execute(
-            &arg::<Plan>(input, "plan")?,
-            opt::<Gate>(input, "gate")?.as_ref(),
-            &arg::<Weave>(input, "weave")?,
-            &arg::<weave::Progress>(input, "progress")?,
         )),
         "read" => result(read(
             &arg::<Plan>(input, "plan")?,
@@ -155,11 +144,61 @@ fn decide(op: &str, input: &Json) -> Answer {
             &arg::<Active>(input, "active")?,
             text(input, "home")?,
         )),
+        _ => return weaving(op, input),
+    })
+}
+
+fn weaving(op: &str, input: &Json) -> Reply {
+    Ok(match op {
+        "weave.plan" => result(weave::planning::plan(
+            &arg::<Plan>(input, "plan")?,
+            opt::<Gate>(input, "gate")?.as_ref(),
+            text(input, "input")?,
+            &arg::<Vec<Tag>>(input, "tags")?,
+            &arg::<weave::Answers>(input, "answers")?,
+        )),
+        "weave.execute" => ok(weave::running::execute(
+            &arg::<Plan>(input, "plan")?,
+            opt::<Gate>(input, "gate")?.as_ref(),
+            &arg::<Weave>(input, "weave")?,
+            &arg::<weave::Progress>(input, "progress")?,
+        )),
+        "weave.pin" => ok(pin(
+            &arg::<Installed>(input, "installed")?,
+            &arg::<Plan>(input, "plan")?,
+            &arg::<Project>(input, "project")?,
+            opt::<Lock>(input, "lock")?.as_ref(),
+            &arg::<Declared>(input, "declared")?,
+            text(input, "input")?,
+            &arg::<Vec<Tag>>(input, "tags")?,
+            arg::<Weave>(input, "weave")?,
+            arg::<Vec<Answer>>(input, "answers")?,
+        )),
+        "weave.pinned" => result(pinned(
+            text(input, "path")?,
+            input
+                .get("json")
+                .cloned()
+                .ok_or_else(|| Bug("json is missing".to_owned()))?,
+        )),
+        "weave.stale" => result(stale(
+            text(input, "path")?,
+            &arg::<Pinned>(input, "pinned")?,
+            &arg::<Installed>(input, "installed")?,
+            &arg::<Plan>(input, "plan")?,
+            opt::<Lock>(input, "lock")?.as_ref(),
+            &arg::<Declared>(input, "declared")?,
+        )),
+        "weave.replan" => result(replan(
+            text(input, "path")?,
+            &arg::<Pinned>(input, "pinned")?,
+            &arg::<Plan>(input, "plan")?,
+        )),
         _ => return needs_and_contain(op, input),
     })
 }
 
-fn needs_and_contain(op: &str, input: &Json) -> Answer {
+fn needs_and_contain(op: &str, input: &Json) -> Reply {
     Ok(match op {
         "needs.resolve" => result(resolve(
             &arg::<Needs>(input, "needs")?,
@@ -200,7 +239,7 @@ fn needs_and_contain(op: &str, input: &Json) -> Answer {
     })
 }
 
-fn tune(op: &str, input: &Json) -> Answer {
+fn tune(op: &str, input: &Json) -> Reply {
     Ok(match op {
         "teach" => {
             let plan: Plan = arg(input, "plan")?;
@@ -276,7 +315,7 @@ fn tune(op: &str, input: &Json) -> Answer {
     })
 }
 
-fn adapters(op: &str, input: &Json) -> Answer {
+fn adapters(op: &str, input: &Json) -> Reply {
     Ok(match op {
         "systemone.settings" => result(systemone::settings(
             arg::<Door>(input, "door")?,

@@ -1,0 +1,56 @@
+{
+  "input": {
+    "path": "~/month.plan.json",
+    "pinned": {
+      "$ref": "fixtures/pinned-month-ledger-remote.json"
+    },
+    "installed": {
+      "$ref": "fixtures/installed-month.json"
+    },
+    "plan": {
+      "$ref": "fixtures/plan-month.json"
+    },
+    "declared": {
+      "id": "replay",
+      "gate": {
+        "route": 0.5,
+        "fits": 0.3,
+        "read": 0.6,
+        "write": 0.8
+      }
+    },
+    "lock": {
+      "evoke": "0.1.0",
+      "adapter": {
+        "name": "replay",
+        "id": "replay"
+      },
+      "reflexes": {
+        "ledger": {
+          "reference": {
+            "repo": {
+              "type": "github",
+              "owner": "acme",
+              "name": "books"
+            },
+            "dir": "ledger"
+          },
+          "tag": "1.3.0",
+          "commit": "7a498d11d5375f3cb65c575c3186bc64ecac7f52",
+          "h1": "h1:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "effect": "write"
+        }
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "message": "ledger is at 1.3.0 here; the plan was made over 1.2.0",
+      "fix": {
+        "type": "add_ref",
+        "reference": "acme/books/ledger@1.2.0",
+        "name": "ledger"
+      }
+    }
+  }
+}

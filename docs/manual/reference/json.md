@@ -41,9 +41,10 @@ several steps and this one took it, `{ "<arg>": { "word", "via" } }`, `via` `fil
 `rewrite` for an optional one written into the step's words; and `status` last, with `why` when the step stopped.
 A request that is only what not to do prints one `abstain` line over the whole input, with no judgments and no
 contenders. A plan stopped before any step ran prints every step's line at once, its `status` `refused`,
-`skipped`, `declined` or `unanswered`. `evoke try --json` prints the plan whole instead, on one line:
-`input`, `splits`, `steps` with each step's decision, `binds`, `stages`, `verdict`, and `trace`, every adapter
-call the plan took.
+`skipped`, `declined` or `unanswered`. A step run from a plan file carries `pinned` too, `{ "file", "id" }`: the
+file as shown, `~/month.plan.json`, and the SHA-256 of what was read, `h1:…`. `evoke try --json` prints the plan
+whole instead, on one line: `input`, `steps` with each step's decision, `binds`, `stages`, `verdict`, `exclusive`,
+`excluded`, `splits`, and `trace`, every adapter call the plan took.
 
 | Field    | Holds                                                                                                   |
 | :------- | :------------------------------------------------------------------------------------------------------ |
@@ -60,6 +61,17 @@ names `no_source` and `several_sources` where such a result stops the plan.
 A call by name, `evoke run --json`, prints the same line with nothing judged: `input` is empty, there is no
 `confidence`, `weakest`, `judgments` or `contenders`, `trace` is empty, and `result` or `error` says what the body
 did. A destructive call carries `prompt` and `because` like any confirm. Nothing was decided.
+
+## The plan file
+
+`evoke try --save <file>` writes the plan whole as JSON, readable without a tool
+([Files](files.md#a-plan-file)): `note`, fixed text; `plan`, `1`; `input`, the sentence as typed; `tags`, when
+any; `weave`, the plan as `try --json` prints it less `trace`; `evoke`, the version that wrote it; `adapter`, the
+lock's `{ name, id }`; `gate`, the adapter's floors, absent when it declares none; `set`, the plan digest;
+`reflexes`, per active reflex `item`, the hash of its wording, consent and settings, with `path` for a local
+one, or `ref`, `tag` and `h1` for a remote one, or nothing more for one handed to the SDK as code; `vocab`, each
+vocabulary's hash; `answers`, every classifier answer the plan took, `{ text, raw }` each, the whole sentence's
+own questions first. `run <file>` refuses the file when any of these differs here, with the line and the fix.
 
 ## Values
 

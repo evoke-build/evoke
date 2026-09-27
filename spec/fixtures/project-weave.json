@@ -1,0 +1,27 @@
+{
+  "adapter": "replay",
+  "reflexes": {
+    "lights": {
+      "type": "local",
+      "path": "./lights"
+    },
+    "timer": {
+      "type": "local",
+      "path": "./timer"
+    },
+    "volume": {
+      "type": "local",
+      "path": "./volume"
+    },
+    "contact": {
+      "type": "local",
+      "path": "./contact"
+    },
+    "mail": {
+      "type": "local",
+      "path": "./mail"
+    }
+  },
+  "config": {},
+  "adapters": {}
+}

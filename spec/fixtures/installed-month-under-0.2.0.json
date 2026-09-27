@@ -1,0 +1,308 @@
+{
+  "reflexes": {
+    "bank": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Pull the bank transactions of a month.\nEvery debit and credit on the business account.",
+            "not_for": [
+              "invoices",
+              "card expenses",
+              "payroll"
+            ],
+            "tags": [
+              "bank"
+            ],
+            "effect": "read",
+            "confirm": "Pull the bank transactions for {month}?",
+            "run": "bank.mts",
+            "config": {},
+            "args": {
+              "month": {
+                "ask": "Which month?",
+                "vocab": "months",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "returns": "transactions",
+            "examples": {
+              "pull the bank transactions for september": {},
+              "get august's bank feed": {},
+              "what went through the bank in october": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "invoices": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "List the invoices of a month.\nWhat was billed, and what was paid.",
+            "not_for": [
+              "bank transactions",
+              "card expenses",
+              "sending an invoice"
+            ],
+            "tags": [
+              "invoices"
+            ],
+            "effect": "read",
+            "confirm": "List the invoices of {month}?",
+            "run": "invoices.mts",
+            "config": {},
+            "args": {
+              "month": {
+                "ask": "Which month?",
+                "vocab": "months",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "returns": "invoices",
+            "examples": {
+              "list september's invoices": {},
+              "which invoices went out in august": {},
+              "invoices for october": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "cards": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "List the company card expenses of a month.\nEvery charge, with its receipt when there is one.",
+            "not_for": [
+              "bank transactions",
+              "invoices",
+              "payroll"
+            ],
+            "tags": [
+              "cards"
+            ],
+            "effect": "read",
+            "confirm": "List the card expenses of {month}?",
+            "run": "cards.mts",
+            "config": {},
+            "args": {
+              "month": {
+                "ask": "Which month?",
+                "vocab": "months",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "returns": "expenses",
+            "examples": {
+              "card expenses for september": {},
+              "what did we spend on cards in august": {},
+              "pull the october card charges": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "payroll": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Show the payroll run of a month.\nSalaries, taxes and the total paid.",
+            "not_for": [
+              "bank transactions",
+              "card expenses",
+              "invoices"
+            ],
+            "tags": [
+              "payroll"
+            ],
+            "effect": "read",
+            "confirm": "Show the payroll of {month}?",
+            "run": "payroll.mts",
+            "config": {},
+            "args": {
+              "month": {
+                "ask": "Which month?",
+                "vocab": "months",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "returns": "payroll",
+            "examples": {
+              "show september's payroll": {},
+              "what did payroll cost in august": {},
+              "the october payroll run": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "reconcile": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Reconcile a month's books.\nMatches its bank transactions against its invoices, card expenses and payroll, and lists what is left to review.",
+            "not_for": [
+              "posting to the ledger",
+              "sending a report",
+              "pulling transactions"
+            ],
+            "tags": [
+              "reconcile"
+            ],
+            "effect": "read",
+            "confirm": "Reconcile the month?",
+            "run": "reconcile.mts",
+            "config": {},
+            "args": {},
+            "takes": {
+              "transactions": "transactions",
+              "invoices": "invoices",
+              "expenses": "expenses",
+              "payroll": "payroll"
+            },
+            "yields": {},
+            "examples": {
+              "reconcile them": {},
+              "reconcile the books": {},
+              "match everything up": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "ledger": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Post a month's closing entries to the ledger.\nOnce posted, the month is closed.",
+            "not_for": [
+              "reconciling",
+              "sending a report",
+              "chat messages"
+            ],
+            "tags": [
+              "ledger"
+            ],
+            "effect": "write",
+            "confirm": "Post {month} to the ledger?",
+            "run": "ledger.mts",
+            "config": {},
+            "args": {
+              "month": {
+                "ask": "Which month?",
+                "vocab": "months",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "post september to the ledger": {},
+              "close august in the books": {},
+              "book the october entries": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    },
+    "send": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Email the month's closing report.\nTo one address.",
+            "not_for": [
+              "posting to the ledger",
+              "chat messages",
+              "reconciling"
+            ],
+            "tags": [
+              "send"
+            ],
+            "effect": "write",
+            "confirm": "Send the report to {to}?",
+            "run": "send.mts",
+            "config": {},
+            "args": {
+              "to": {
+                "ask": "To which address?",
+                "pick": "email",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "send the report to cfo@example.com": {
+                "to": "cfo@example.com"
+              },
+              "email the close to omar@example.com": {
+                "to": "omar@example.com"
+              },
+              "mail the month's report to board@example.com": {
+                "to": "board@example.com"
+              }
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    }
+  },
+  "vocab": {
+    "months": {
+      "august": {
+        "what": "August, the month before last."
+      },
+      "september": {
+        "what": "September, last month."
+      },
+      "october": {
+        "what": "October, this month."
+      }
+    }
+  },
+  "adapter": "replay",
+  "evoke": "0.2.0"
+}

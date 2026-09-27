@@ -1,0 +1,10 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md): another engine, by its id alone.
+id = "replay-2"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.6
+write = 0.8
+
+[answers]

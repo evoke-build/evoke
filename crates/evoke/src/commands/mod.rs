@@ -9,6 +9,7 @@ pub mod config;
 pub mod help;
 pub mod new;
 pub mod remove;
+pub mod rounds;
 pub mod run;
 pub mod session;
 pub mod show;
@@ -65,7 +66,7 @@ pub fn dispatch(command: &Command, environment: &Environment) -> Exit {
         Command::Use(arguments) => r#use::run(command, arguments, environment),
         Command::Try(arguments) => r#try::run(command, arguments, environment),
         Command::Why => why::run(environment),
-        Command::Run { written, json } => run::run(command, written, *json, environment),
+        Command::Run { target, json } => run::run(command, target, *json, environment),
         Command::Teach { spoken, lesson } => teach::run(command, spoken, lesson, environment),
         Command::Show(name) => show::run(command, name.as_ref(), environment),
         Command::Vocab { name, change } => vocab::run(command, name, change.as_ref(), environment),

@@ -135,11 +135,12 @@ pub struct Edited {
     pub landed: Landed,
 }
 
-/// What the edit left: the line as it lands, `[examples] "kill the lights" = { state = "off" }`, or the key that
-/// went, `[config.lights] bridge`.
+/// What a write left: the line as it lands, `[examples] "kill the lights" = { state = "off" }`, the key that
+/// went, `[config.lights] bridge`, or a file written whole.
 pub enum Landed {
     Set(String),
     Removed(String),
+    Whole,
 }
 
 /// The edit applied to the file's current text, or to an empty file; the shape of what was there is kept.

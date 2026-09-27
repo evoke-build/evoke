@@ -1,0 +1,33 @@
+{
+  "input": {
+    "path": "~/month.plan.json",
+    "pinned": {
+      "$ref": "fixtures/pinned-month.json"
+    },
+    "installed": {
+      "$ref": "fixtures/installed-month-november.json"
+    },
+    "plan": {
+      "$ref": "fixtures/plan-month-november.json"
+    },
+    "declared": {
+      "id": "replay",
+      "gate": {
+        "route": 0.5,
+        "fits": 0.3,
+        "read": 0.6,
+        "write": 0.8
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "message": "months differs here from the plan's",
+      "fix": {
+        "type": "save",
+        "file": "~/month.plan.json",
+        "input": "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"
+      }
+    }
+  }
+}

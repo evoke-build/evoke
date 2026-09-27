@@ -41,12 +41,12 @@ const WORDS: [&str; 21] = [
 pub enum Command {
     /// `evoke [--json] [--tag <tag>]… ["<input>"]`: decide, gate, run.
     Use(Arguments),
-    /// `evoke try [--json] [--tag <tag>]… "<input>"`: decide only.
+    /// `evoke try [--json] [--tag <tag>]… [--save <file>] "<input>"`: decide only; `--save` writes the plan.
     Try(Arguments),
     /// `evoke why`: the last decision, explained from the log.
     Why,
-    /// `evoke run [--json] <call>`: no classifier; the effect policy holds.
-    Run { written: Written, json: bool },
+    /// `evoke run [--json] <call> | <file>`: a call by name, no classifier; or a plan file, run exactly.
+    Run { target: Target, json: bool },
     /// `evoke teach ["<utterance>"] <call> | not <name>`: the utterance omitted means the last input.
     Teach { spoken: Spoken, lesson: Taught },
     /// `evoke show [name]`: what is installed, or one effective manifest.
@@ -106,11 +106,29 @@ pub struct Ref {
     pub location: Location,
 }
 
+/// What `run` runs: a call as typed, or a plan file — told by its first word, which is no local name.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Target {
+    Call(Written),
+    File(String),
+}
+
+impl fmt::Display for Target {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Call(written) => write!(f, "{written}"),
+            Self::File(file) => f.write_str(&word(file)),
+        }
+    }
+}
+
 /// What `use` and `try` take.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Arguments {
     pub json: bool,
     pub tags: Vec<Tag>,
+    /// `try --save <file>`: the plan written as a file for `run`.
+    pub save: Option<String>,
     pub input: Inputs,
 }
 
@@ -181,6 +199,9 @@ impl Command {
         for tag in &arguments.tags {
             let _ = write!(line, " --tag {tag}");
         }
+        if let Some(file) = &arguments.save {
+            let _ = write!(line, " --save {}", self::word(file));
+        }
         line.push(' ');
         // An input over the cap is refused whole: the line to run is one with a shorter input.
         let shown = if input.chars().count() > Input::CAP {
@@ -203,9 +224,9 @@ impl Command {
                 unreachable!("a deciding command's line takes its input")
             }
             Self::Why => "evoke why".to_owned(),
-            Self::Run { written, json } => {
+            Self::Run { target, json } => {
                 let flag = if *json { " --json" } else { "" };
-                format!("evoke run{flag} {written}")
+                format!("evoke run{flag} {target}")
             }
             Self::Show(name) => format!("evoke show{}", named(name)),
             Self::Vocab { name, change } => {
@@ -311,12 +332,13 @@ fn quoted(text: &str) -> String {
     serde_json::Value::String(text.to_owned()).to_string()
 }
 
-/// A word as a shell would need it: bare when it is one plain word, else a JSON string.
+/// A word as a shell would need it: bare when it is one plain word — a path under the home, `~/…`, among them —
+/// else a JSON string.
 fn word(text: &str) -> String {
     let plain = !text.is_empty()
-        && text
-            .chars()
-            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-' | '/' | ':' | '@'));
+        && text.chars().all(|c| {
+            c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-' | '/' | ':' | '@' | '~')
+        });
     if plain { text.to_owned() } else { quoted(text) }
 }
 
@@ -395,9 +417,9 @@ pub fn parse(
     }
 }
 
-/// `[--json] [--tag <tag>]… [--] [<input>…]`: the bare words are one input, joined by a space, so a sentence
-/// needs no quotes; after `--` even a flag is a word. A command word behind a flag — `evoke --json try …` — is
-/// refused rather than decided, since it was meant as the command.
+/// `[--json] [--tag <tag>]… [--] [<input>…]`, and for `try` `[--save <file>]`: the bare words are one input,
+/// joined by a space, so a sentence needs no quotes; after `--` even a flag is a word. A command word behind a
+/// flag — `evoke --json try …` — is refused rather than decided, since it was meant as the command.
 fn deciding(
     word: &str,
     arguments: &[String],
@@ -405,6 +427,7 @@ fn deciding(
 ) -> Result<Arguments, Diagnostic> {
     let mut json = false;
     let mut tags = Vec::new();
+    let mut save = None;
     let mut words: Vec<&str> = Vec::new();
     let mut rest = arguments.iter();
     while let Some(argument) = rest.next() {
@@ -417,10 +440,22 @@ fn deciding(
                 }
                 tags.push(Tag::new(tag).map_err(usage)?);
             }
+            "--save" if word == "try" => {
+                let file = rest.next().ok_or_else(|| usage("--save needs a file"))?;
+                if file.starts_with('-') && file.len() > 1 {
+                    return Err(usage(format!("--save needs a file, and {file} is a flag")));
+                }
+                save = Some(file.clone());
+            }
             "--" => words.extend(rest.by_ref().map(String::as_str)),
             flag if flag.starts_with('-') && flag.len() > 1 => {
+                let flags = if word == "try" {
+                    "--json, --tag <tag> and --save <file>"
+                } else {
+                    "--json and --tag <tag>"
+                };
                 return Err(usage(format!(
-                    "{flag} is not a flag of {word}; the flags are --json and --tag <tag>, and -- ends them"
+                    "{flag} is not a flag of {word}; the flags are {flags}, and -- ends them"
                 )));
             }
             input if word == "evoke" && words.is_empty() && WORDS.contains(&input) => {
@@ -444,7 +479,17 @@ fn deciding(
         }
         Inputs::One(joined)
     };
-    Ok(Arguments { json, tags, input })
+    if save.is_some() && input == Inputs::Stdin {
+        return Err(usage(
+            "--save takes one input, not stdin: one file, one plan",
+        ));
+    }
+    Ok(Arguments {
+        json,
+        tags,
+        save,
+        input,
+    })
 }
 
 /// A command's one name: a flag in its place is refused as a flag, not as a malformed name.
@@ -455,7 +500,8 @@ fn named(command: &str, token: &str) -> Result<LocalName, Diagnostic> {
     LocalName::new(token).map_err(usage)
 }
 
-/// `[--json] <call>`: the flag first, then the call as one argument or as its words.
+/// `[--json] <call> | <file>`: the flag first, then the call as one argument or as its words — or a plan file,
+/// told from a call by its first word, which is no local name.
 fn run(arguments: &[String]) -> Result<Command, Diagnostic> {
     let mut json = false;
     let mut rest = arguments;
@@ -471,16 +517,29 @@ fn run(arguments: &[String]) -> Result<Command, Diagnostic> {
         }
         rest = after;
     }
-    if rest.is_empty() {
+    let Some((first, after)) = rest.split_first() else {
         return Err(usage(
-            "run needs a call: evoke run [--json] <name> [<arg>=<value> | <flag>]…",
+            "run needs a call or a plan file: evoke run [--json] <name> [<arg>=<value> | <flag>]… | <file>",
         ));
-    }
+    };
     if let Some(flag) = rest.iter().find(|argument| argument.starts_with("--")) {
         return Err(usage(format!("run takes {flag} before the call")));
     }
+    let head = first.split_whitespace().next().unwrap_or_default();
+    if LocalName::new(head).is_err() {
+        if !after.is_empty() {
+            return Err(usage("run takes one plan file: evoke run [--json] <file>"));
+        }
+        return Ok(Command::Run {
+            target: Target::File(first.clone()),
+            json,
+        });
+    }
     let written = call(&line(rest)).map_err(help)?;
-    Ok(Command::Run { written, json })
+    Ok(Command::Run {
+        target: Target::Call(written),
+        json,
+    })
 }
 
 /// `["<utterance>"] (<call> | not <name>)`: the first argument is the utterance when it could not name a reflex,
@@ -1088,8 +1147,10 @@ mod tests {
 
     #[test]
     fn run_takes_its_flag_first_and_the_call_after() {
-        let Ok(Command::Run { written, json }) =
-            parsed(&["run", "--json", "lights", "room=den"], false)
+        let Ok(Command::Run {
+            target: Target::Call(written),
+            json,
+        }) = parsed(&["run", "--json", "lights", "room=den"], false)
         else {
             panic!("a run");
         };
@@ -1106,6 +1167,82 @@ mod tests {
                 .unwrap_err()
                 .message,
             "--loud is not a flag of run; the flag is --json"
+        );
+    }
+
+    /// A first word that is no local name is a plan file: a dot, a slash or a capital tells one from a call.
+    #[test]
+    fn run_takes_a_plan_file_by_its_first_word() {
+        for (arguments, file, line) in [
+            (
+                &["run", "month.plan.json"][..],
+                "month.plan.json",
+                "evoke run month.plan.json",
+            ),
+            (
+                &["run", "--json", "~/month.plan.json"],
+                "~/month.plan.json",
+                "evoke run --json ~/month.plan.json",
+            ),
+            (&["run", "./month"], "./month", "evoke run ./month"),
+            (&["run", "Lights"], "Lights", "evoke run Lights"),
+        ] {
+            let command = parsed(arguments, false).unwrap();
+            assert_eq!(
+                command,
+                Command::Run {
+                    target: Target::File(file.to_owned()),
+                    json: arguments.contains(&"--json"),
+                },
+                "{arguments:?}"
+            );
+            assert_eq!(command.placeholder(), line, "{arguments:?}");
+        }
+        assert_eq!(
+            parsed(&["run", "month.plan.json", "now"], false)
+                .unwrap_err()
+                .message,
+            "run takes one plan file: evoke run [--json] <file>"
+        );
+        assert!(matches!(
+            parsed(&["run", "note text=v1.2"], false),
+            Ok(Command::Run {
+                target: Target::Call(_),
+                ..
+            })
+        ));
+    }
+
+    /// `try --save <file>` writes the plan; the flag is `try`'s alone and takes one input, never stdin.
+    #[test]
+    fn try_saves_a_plan_to_a_file() {
+        let saved = parsed(
+            &["try", "--save", "month.plan.json", "close the month"],
+            false,
+        )
+        .unwrap();
+        let Command::Try(arguments) = &saved else {
+            panic!("a try");
+        };
+        assert_eq!(arguments.save.as_deref(), Some("month.plan.json"));
+        assert_eq!(arguments.input, Inputs::One("close the month".to_owned()));
+        assert_eq!(
+            saved.placeholder(),
+            "evoke try --save month.plan.json \"close the month\""
+        );
+        let refused = |arguments: &[&str], pipe: bool| parsed(arguments, pipe).unwrap_err().message;
+        assert_eq!(refused(&["try", "--save"], false), "--save needs a file");
+        assert_eq!(
+            refused(&["try", "--save", "--json", "x"], false),
+            "--save needs a file, and --json is a flag"
+        );
+        assert_eq!(
+            refused(&["try", "--save", "month.plan.json"], true),
+            "--save takes one input, not stdin: one file, one plan"
+        );
+        assert_eq!(
+            refused(&["--save", "month.plan.json", "x"], false),
+            "--save is not a flag of evoke; the flags are --json and --tag <tag>, and -- ends them"
         );
     }
 
@@ -1285,7 +1422,6 @@ mod tests {
             &[""],
             &["--tag"],
             &["run"],
-            &["run", "Lights"],
             &["run", "--json"],
             &["run", "--loud", "lights"],
             &["run", "lights", "--json"],

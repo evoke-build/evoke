@@ -1,0 +1,35 @@
+{
+  "adapter": "replay",
+  "reflexes": {
+    "bank": {
+      "type": "local",
+      "path": "./bank"
+    },
+    "invoices": {
+      "type": "local",
+      "path": "./invoices"
+    },
+    "cards": {
+      "type": "local",
+      "path": "./cards"
+    },
+    "payroll": {
+      "type": "local",
+      "path": "./payroll"
+    },
+    "reconcile": {
+      "type": "local",
+      "path": "./reconcile"
+    },
+    "ledger": {
+      "type": "local",
+      "path": "./ledger"
+    },
+    "send": {
+      "type": "local",
+      "path": "./send"
+    }
+  },
+  "config": {},
+  "adapters": {}
+}

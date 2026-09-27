@@ -939,13 +939,13 @@ impl<'a> Planner<'a> {
         verdict.because.extend(because);
         Weave {
             input: self.request.clone(),
-            splits,
             steps,
-            excluded,
             binds,
-            exclusive,
             stages,
             verdict,
+            exclusive,
+            excluded,
+            splits,
         }
     }
 

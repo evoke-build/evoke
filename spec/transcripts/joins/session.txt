@@ -1,10 +1,11 @@
 # One step takes several whole results. The sources' manifests name what they return, the taker's arguments take
 # them by that name, and the plan binds them before anything runs, whatever the words refer to. A result reaches
 # the taker's body beside its decision, never through its words, and stays once in the log, on its source's line.
+# Reads alone run side by side: a step's line says which earlier steps run with it.
 $ evoke "check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect"
   1  errors service="checkout"  0.90
-  2  deploys service="checkout"  0.90
-  3  logs service="checkout"  0.90
+  2  deploys service="checkout"  0.90 · with 1
+  3  logs service="checkout"  0.90 · with 1, 2
   4  suspect  0.90 · takes errors from 1, deploys from 2, logs from 3
 checkout: 8.4% errors since 14:02
 checkout: 1 deploy today, 4.12.0 at 13:58

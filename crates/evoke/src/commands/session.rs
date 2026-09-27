@@ -18,11 +18,11 @@ use evoke_core::project::{Location, Locked, LockedAdapter, Setting};
 use evoke_core::text::NonEmpty;
 use evoke_core::weave::{self, Asked, Need, Step};
 use evoke_core::{
-    Chosen, Contained, Decision, Declared, Diagnostic, Document, Edit, Effective, File, Fix, Input,
-    Installed, Item, Lesson, Lock, Manifest, Needs, Owned, Plan, Planning, Project, Prompt, Raw,
-    Reading, Request, Scope, Version, Weave, argv, compile, effective, envelope, gate, lock,
-    manifest, overlay, project, project_dts, read, render_lock, request, resolve, validated,
-    vocabulary,
+    Answer, Chosen, Contained, Decision, Declared, Diagnostic, Document, Edit, Effective, File,
+    Fix, Input, Installed, Item, Lesson, Lock, Manifest, Needs, Owned, Plan, Planning, Project,
+    Prompt, Proposed, Raw, Replanned, Request, Scope, Values, Version, Weave, argv, compile,
+    effective, envelope, gate, lock, manifest, overlay, project, project_dts, read, render_lock,
+    request, resolve, validated, vocabulary,
 };
 use indexmap::IndexMap;
 
@@ -94,12 +94,13 @@ pub enum Confirmed {
     Teach,
 }
 
-/// One input decided: what was asked, what was answered, how it read, and the outcome.
+/// One input decided: the input as decided and its candidates, what was answered, the outcome, and the adapter
+/// calls it took — what a line is rendered from.
 #[derive(Clone)]
 pub struct Decided {
-    pub request: Request,
+    pub input: Input,
+    pub proposed: Vec<Proposed>,
     pub answers: Raw,
-    pub reading: Reading,
     pub decision: Decision,
     pub trace: Vec<Trace>,
 }
@@ -116,16 +117,64 @@ impl Decided {
     }
 }
 
-/// One request read into its steps: the plan, and what each text decided — the request, the answers, the
-/// reading — for the lines a host prints and logs.
+/// One request read into its steps: the plan, what each text decided — the input, the answers, the decision —
+/// for the lines a host prints and logs, and the weave's own answers, for a plan file to keep.
 pub struct Woven {
     pub weave: Weave,
     pub decided: Vec<(Asked, Decided)>,
     /// Every adapter call the plan took: the weave's own questions, then each text decided, in order.
     pub trace: Vec<Trace>,
+    /// The engine's answers to the split points, when it was asked.
+    pub judged: Option<Raw>,
+    /// The engine's answers to which earlier step each reference names, when it was asked.
+    pub referred: Option<Raw>,
 }
 
 impl Woven {
+    /// A plan made again from a file: what the core decided from the file's answers, no adapter called.
+    #[must_use]
+    pub fn replanned(replanned: Replanned) -> Self {
+        let decided = replanned
+            .decided
+            .into_iter()
+            .map(|decided| {
+                let line = Decided {
+                    input: Input::new(&decided.asked.text).expect("the core decided the text"),
+                    proposed: decided.proposed,
+                    answers: decided.raw,
+                    decision: decided.decision,
+                    trace: Vec::new(),
+                };
+                (decided.asked, line)
+            })
+            .collect();
+        Self {
+            weave: replanned.weave,
+            decided,
+            trace: Vec::new(),
+            judged: None,
+            referred: None,
+        }
+    }
+
+    /// Every engine answer the plan took, as a plan file keeps them: the weave's own questions under the
+    /// request's text, then each text decided, in order.
+    #[must_use]
+    pub fn answers(&self) -> Vec<Answer> {
+        self.judged
+            .iter()
+            .chain(&self.referred)
+            .map(|raw| Answer {
+                text: self.weave.input.clone(),
+                raw: raw.clone(),
+            })
+            .chain(self.decided.iter().map(|(asked, decided)| Answer {
+                text: asked.text.clone(),
+                raw: decided.answers.clone(),
+            }))
+            .collect()
+    }
+
     /// A step as a host shows or runs it: its words' request, answers and reading, under the decision the plan
     /// holds for the step, caps included — a part merged back confirms wherever the step is shown. The run puts
     /// the plan's cap on again at the turn, to a decision filled or rewritten there.
@@ -300,8 +349,13 @@ fn prepare(
         })
         .collect();
     let platform = contain::judged(ground.environment).map_err(Exit::Human)?;
-    let plan =
-        compile(&installed, declared.limits.as_ref(), Some(platform)).map_err(Exit::Human)?;
+    let plan = compile(
+        &installed,
+        &plain_values(&project),
+        declared.limits.as_ref(),
+        Some(platform),
+    )
+    .map_err(Exit::Human)?;
     Ok(Prepared {
         project,
         lock,
@@ -541,7 +595,7 @@ fn worded(
     (wording, shipped)
 }
 
-/// How each configured key is held: the value, or a variable and whether it is set — never a secret's value.
+/// How each configured key is held: plain, or a variable and whether it is set — never a value, never a secret.
 fn held(
     settings: &IndexMap<ConfigKey, Setting>,
     environment: &Environment,
@@ -550,9 +604,7 @@ fn held(
         .iter()
         .map(|(key, setting)| {
             let held = match setting {
-                Setting::Plain { value } => Held::Plain {
-                    value: value.clone(),
-                },
+                Setting::Plain { .. } => Held::Plain,
                 Setting::Env { var } => Held::Env {
                     var: var.clone(),
                     set: environment.get(var.as_str()).is_some(),
@@ -560,6 +612,27 @@ fn held(
             };
             (key.clone(), held)
         })
+        .collect()
+}
+
+/// The plain settings' values, per reflex and key, as `evoke.toml` holds them: handed to `compile` beside the set,
+/// so the digest holds no value.
+#[must_use]
+pub fn plain_values(project: &Project) -> Values {
+    project
+        .config
+        .iter()
+        .map(|(name, settings)| {
+            let plain = settings
+                .iter()
+                .filter_map(|(key, setting)| match setting {
+                    Setting::Plain { value } => Some((key.clone(), value.clone())),
+                    Setting::Env { .. } => None,
+                })
+                .collect::<IndexMap<ConfigKey, String>>();
+            (name.clone(), plain)
+        })
+        .filter(|(_, plain)| !plain.is_empty())
         .collect()
 }
 
@@ -812,6 +885,8 @@ impl Session<'_> {
                         weave,
                         decided,
                         trace,
+                        judged: answers.judged,
+                        referred: answers.referred,
                     });
                 }
                 Planning::Need { need } => need,
@@ -923,15 +998,11 @@ impl Session<'_> {
             }
             (answers, reading, vec![trace])
         };
-        let decision = gate(
-            &self.plan,
-            reading.clone(),
-            adapter.declared().gate.as_ref(),
-        );
+        let decision = gate(&self.plan, reading, adapter.declared().gate.as_ref());
         Ok(Decided {
-            request,
+            input: request.state.request,
+            proposed: request.proposed,
             answers,
-            reading,
             decision,
             trace,
         })
@@ -941,7 +1012,7 @@ impl Session<'_> {
     pub fn apply(&mut self, input: &str, edit: &Edit) -> Result<Edited, Exit> {
         let edited = self.land(input, edit)?;
         // Under `--json` stderr keeps quiet, so the line goes to the terminal itself, as a prompt's own line does.
-        let written = report::written(&edited);
+        let written = report::written(&edited.shown, &edited.landed);
         if self.reporter.json {
             self.show(&written)?;
         } else {

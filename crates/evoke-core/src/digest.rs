@@ -39,8 +39,9 @@ pub fn compose(hashed: &[(RelPath, Digest)]) -> Digest {
 }
 
 impl Digest {
-    /// The SHA-256 of bytes: a file's line in `h1`, the plan's over its JSON.
-    pub(crate) fn of(bytes: &[u8]) -> Self {
+    /// The SHA-256 of bytes: a file's line in `h1`, the plan's over its JSON, a plan file's over what was read.
+    #[must_use]
+    pub fn of(bytes: &[u8]) -> Self {
         Self(Sha256::digest(bytes).into())
     }
 

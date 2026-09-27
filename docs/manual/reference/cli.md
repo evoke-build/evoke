@@ -13,9 +13,11 @@ use
   evoke try "<input>"                     decide only, and show every judgment
     --json                                one JSON line per input, for a filter
     --tag <tag>                           only the reflexes carrying the tag
+    --save <file>                         the plan as a file, for run
     --                                    the rest is input, even a command word
   evoke why                               the last decision, explained
   evoke run <call>                        by name, without the classifier
+  evoke run <file>                        a saved plan, run as it stands
     --json                                one JSON line: the call and its result
     <call> is <name> [<arg>=<value> | <flag>]…
 
@@ -63,7 +65,8 @@ manual  https://evoke.build/manual/
 - Commands validate every argument before acting. Arguments that spell no command end in `evoke --help`. The
   reserved words `edit`, `search`, `publish` and `adapter` are refused by name until they exist.
 - A **call** is `name arg=value…`. A value is bare or a JSON string, like `duration="10 minutes"`. A flag is its
-  bare name. `run` and `teach` take a call as one argument or as separate words.
+  bare name. `run` and `teach` take a call as one argument or as separate words. An argument to `run` whose first
+  word is no reflex name, `month.plan.json` or `~/month.plan.json`, is a plan file.
 
 ## Use
 
@@ -72,14 +75,17 @@ manual  https://evoke.build/manual/
 | `evoke "<input>"`      | Decides, gates, runs. Prints the call and confidence on stderr, and the result on stdout. Logged | 0 · 2 · 3 · 1 · 4 |
 | `evoke`                | On a terminal, the REPL: `> `, line editing, history. Piped, a filter: one input per line, and the first non-zero exit is kept | as each line |
 | `evoke try "<input>"`  | Decides only: the ranking, each argument's distribution, each `fits`, the outcome and the weakest judgment; a sentence of several steps shows the plan first, then each step's judgments under its number. Never logged | 0 · 3 · 4 |
-| `evoke why`            | The last logged decision, shown as `try` would show it, and what became of it; of a weave, every step | 0 · 3 |
+| `evoke try --save <file> "<input>"` | The plan's lines, then the plan written as a file for `run <file>`: the sentence, the classifier's answers and the pins it was decided under, in clear. A plan that asks is refused with the step's question, exit 3; one that refuses, exit 2; nothing written either way. Never logged: [Weaving](../use/weaving.md#saving-a-plan-and-running-it-for-someone-else) | 0 · 2 · 3 · 4 |
+| `evoke why`            | The last logged decision, shown as `try` would show it, and what became of it; of a weave, every step, `from <file>` where a plan ran from one | 0 · 3 |
 | `evoke run <call>`     | Runs the call by name. No classifier. The effect policy is kept, so a destructive call confirms with `[y]es [n]o`. A reflex that takes an earlier step's result is refused: only a sentence of several steps hands one. `--json` prints the call and its result as one line. Not logged | 0 · 2 · 3 · 1 |
+| `evoke run <file>`     | Runs a plan `try --save` wrote, exactly: a file, since its first word is no reflex name. A pin that moved refuses it with the line that names it and the command that mends it; so does a file that does not read the same as its answers. The plan prints, one yes over it is asked whatever its verdict, then each step at its turn as a sentence's is. Every step's line names the file. Logged | 0 · 1 · 2 · 3 · 4 |
 
-| Flag          | With            | Does                                                                     |
-| :------------ | :-------------- | :----------------------------------------------------------------------- |
-| `--json`      | input, `try`, `run` | One JSON line per input, per step of a weave, or per call; `try` prints a weave's plan whole: [The JSON line](json.md) |
-| `--tag <tag>` | input, `try`    | Only reflexes carrying the tag; repeatable                                |
-| `--`          | input           | The rest is input                                                        |
+| Flag            | With            | Does                                                                     |
+| :-------------- | :-------------- | :----------------------------------------------------------------------- |
+| `--json`        | input, `try`, `run` | One JSON line per input, per step of a weave, or per call; `try` prints a weave's plan whole: [The JSON line](json.md) |
+| `--tag <tag>`   | input, `try`    | Only reflexes carrying the tag; repeatable                                |
+| `--save <file>` | `try`           | The plan written as a file for `run <file>`; one input, never stdin       |
+| `--`            | input           | The rest is input                                                        |
 
 ## Install
 

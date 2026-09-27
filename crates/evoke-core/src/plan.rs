@@ -45,13 +45,19 @@ pub struct Item {
     pub configured: IndexMap<ConfigKey, Held>,
 }
 
-/// How a set config key is held: the value itself, or a variable that is set or not. Never a secret's value.
+/// How a set config key is held: plain, its value handed to `compile` beside the set and never in it, or a
+/// variable that is set or not. Never a value, never a secret: the digest keys what is derived from the set, and a
+/// value is the machine's own.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Held {
-    Plain { value: String },
+    Plain,
     Env { var: VarName, set: bool },
 }
+
+/// The plain settings' values, per reflex and key, as `evoke.toml` holds them: what a body receives, handed beside
+/// the set so that two machines with different values compile one digest.
+pub type Values = IndexMap<LocalName, IndexMap<ConfigKey, String>>;
 
 /// A duration in milliseconds; the host makes it an instant.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -449,10 +455,12 @@ impl<'de> Deserialize<'de> for Slot {
     }
 }
 
-/// The plan of an installed set on `platform`, when the host names one — a reflex whose manifest names other
-/// platforms is inactive there; over `limits.options`, a diagnostic naming what to remove.
+/// The plan of an installed set with its plain settings' values, on `platform` when the host names one — a reflex
+/// whose manifest names other platforms is inactive there; over `limits.options`, a diagnostic naming what to
+/// remove.
 pub fn compile(
     set: &Installed,
+    values: &Values,
     limits: Option<&Limits>,
     platform: Option<Platform>,
 ) -> Result<Plan, Diagnostic> {
@@ -468,7 +476,8 @@ pub fn compile(
     let mut route = IndexMap::new();
     let mut own = Vec::new();
     for (name, item) in &set.reflexes {
-        match judge(name, item, &set.vocab, platform) {
+        let plain = values.get(name);
+        match judge(name, item, plain, &set.vocab, platform) {
             Err(problems) => {
                 if let Ok(effective) = &item.wording
                     && !effective.manifest.tags.is_empty()
@@ -507,11 +516,11 @@ pub fn compile(
         .vocab
         .iter()
         .filter_map(|(name, words)| {
-            let valued: IndexMap<Word, String> = words
+            let carrying: IndexMap<Word, String> = words
                 .iter()
                 .filter_map(|(word, meaning)| Some((word.clone(), meaning.value.clone()?)))
                 .collect();
-            (!valued.is_empty()).then(|| (name.clone(), valued))
+            (!carrying.is_empty()).then(|| (name.clone(), carrying))
         })
         .collect();
     Ok(Plan {
@@ -525,10 +534,12 @@ pub fn compile(
     })
 }
 
-/// Active with what the decision needs, or every problem with its fix.
+/// Active with what the decision needs, or every problem with its fix. `plain` holds the values of the settings
+/// held plain; one held plain whose value the host did not hand is not set.
 fn judge<'a>(
     name: &LocalName,
     item: &'a Item,
+    plain: Option<&IndexMap<ConfigKey, String>>,
     vocab: &IndexMap<VocabName, Vocabulary>,
     platform: Option<Platform>,
 ) -> Result<(&'a Manifest, Active), NonEmpty<Diagnostic>> {
@@ -580,8 +591,9 @@ fn judge<'a>(
             reflex: name.clone(),
             key: key.clone(),
         };
-        match item.configured.get(key) {
-            None => problems.push(problem(
+        let value = plain.and_then(|plain| plain.get(key));
+        match (item.configured.get(key), value) {
+            (None, _) | (Some(Held::Plain), None) => problems.push(problem(
                 format!("config \"{key}\" is not set"),
                 if spec.secret {
                     by_env
@@ -592,15 +604,15 @@ fn judge<'a>(
                     }
                 },
             )),
-            Some(Held::Plain { .. }) if spec.secret => problems.push(problem(
+            (Some(Held::Plain), Some(_)) if spec.secret => problems.push(problem(
                 format!("config \"{key}\" is a secret held plain; set it from a variable"),
                 by_env,
             )),
-            Some(Held::Env { var, set: false }) => problems.push(problem(
+            (Some(Held::Env { var, set: false }), _) => problems.push(problem(
                 format!("{var} is not set"),
                 Fix::ExportKey { var: var.clone() },
             )),
-            Some(Held::Plain { value }) => {
+            (Some(Held::Plain), Some(value)) => {
                 config.insert(
                     key.clone(),
                     Setting::Plain {
@@ -608,7 +620,7 @@ fn judge<'a>(
                     },
                 );
             }
-            Some(Held::Env { var, set: true }) => {
+            (Some(Held::Env { var, set: true }), _) => {
                 config.insert(key.clone(), Setting::Env { var: var.clone() });
             }
         }

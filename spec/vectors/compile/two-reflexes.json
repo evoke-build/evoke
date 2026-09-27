@@ -2,6 +2,11 @@
   "input": {
     "set": {
       "$ref": "fixtures/installed.json"
+    },
+    "values": {
+      "lights": {
+        "bridge": "10.0.0.2"
+      }
     }
   },
   "expect": {

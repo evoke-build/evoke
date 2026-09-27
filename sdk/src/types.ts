@@ -142,6 +142,7 @@ export type Fix =
   | { type: "new" } // evoke new <name>
   | { type: "test" } // evoke test
   | { type: "help" } // evoke --help
+  | { type: "save"; file: string; input: string } // evoke try --save <file> "<input>"
 
 // document.rs
 
@@ -611,10 +612,13 @@ export interface Item {
   configured: Record<ConfigKey, Held>
 }
 
-/** How a set config key is held: the value itself, or a variable that is set or not. Never a secret's value. */
+/** How a set config key is held: plain, its value handed to `compile` beside the set and never in it, or a variable that is set or not. Never a value, never a secret. */
 export type Held =
-  | { type: "plain"; value: string }
+  | { type: "plain" }
   | { type: "env"; var: VarName; set: boolean }
+
+/** The plain settings' values, per reflex and key, as `evoke.toml` holds them: handed to `compile` beside the set, so the digest holds no value. */
+export type Values = Record<LocalName, Record<ConfigKey, string>>
 
 /** A duration in milliseconds; the host makes it an instant. */
 export type Millis = number
@@ -1050,6 +1054,64 @@ export interface StepOutcome {
 export interface Executed {
   steps: StepOutcome[]
   worst: Status
+}
+
+// weave/pinned.rs
+
+/** A plan file: the sentence as typed, the plan, the pins it was decided under, and every engine answer it took. What
+ *  `steps` returns and `weave` takes; `JSON.stringify` writes it. No time, no name, no trace. */
+export interface Pinned {
+  /** Fixed text, ignored on read. */
+  note: string
+  /** The format revision: `1`. */
+  plan: 1
+  /** The sentence as typed: what a re-plan plans, since the request as read is not always read the same. */
+  input: string
+  /** Absent when none. */
+  tags?: Tag[]
+  weave: Weave
+  /** The evoke that wrote it. */
+  evoke: Version
+  adapter: LockedAdapter
+  /** The floors the plan was decided under; absent when the adapter declared none. */
+  gate?: Gate
+  /** The plan digest of the set it was decided over. */
+  set: Digest
+  /** Every active reflex, by the hash of its item and its pin. */
+  reflexes: Record<LocalName, PinnedReflex>
+  /** Every vocabulary, by the hash of its words. */
+  vocab: Record<VocabName, Digest>
+  /** Every engine answer the plan took, one per text and question set. */
+  answers: Answer[]
+}
+
+/** One reflex of the plan's set: the hash of its item — wording, consent, settings — and its pin: a remote one's
+ *  ref as the lock writes it, its tag and `h1`; a local one's path as written; a reflex handed as code its item alone. */
+export type PinnedReflex =
+  | { item: Digest; ref: string; tag: Version; h1: Digest }
+  | { item: Digest; path: string }
+  | { item: Digest }
+
+/** One engine answer the plan took: the text it was asked about and the `Raw` as the engine gave it; the weave's own
+ *  questions stand under the whole request's text. */
+export interface Answer {
+  text: string
+  raw: Raw
+}
+
+/** The plan made again from a file: the weave, and per text what a line is rendered from. */
+export interface Replanned {
+  weave: Weave
+  decided: Decided[]
+}
+
+/** One text decided from a file's answers: what was asked, the input's candidates, the raw answers, the decision. */
+export interface Decided {
+  asked: Asked
+  /** Absent when none. */
+  proposed?: Proposed[]
+  raw: Raw
+  decision: Decision
 }
 
 // ---- contract, edit, test; the adapters' systemone and replay ----

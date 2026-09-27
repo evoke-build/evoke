@@ -1,0 +1,26 @@
+{
+  "input": {
+    "path": "~/month.plan.json",
+    "pinned": {
+      "$ref": "fixtures/pinned-month.json"
+    },
+    "installed": {
+      "$ref": "fixtures/installed-month.json"
+    },
+    "plan": {
+      "$ref": "fixtures/plan-month.json"
+    },
+    "declared": {
+      "id": "replay",
+      "gate": {
+        "route": 0.5,
+        "fits": 0.3,
+        "read": 0.6,
+        "write": 0.8
+      }
+    }
+  },
+  "expect": {
+    "ok": null
+  }
+}

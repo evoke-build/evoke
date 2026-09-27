@@ -14,8 +14,7 @@
           "consented": "destructive",
           "configured": {
             "bridge": {
-              "type": "plain",
-              "value": "10.0.0.2"
+              "type": "plain"
             },
             "token": {
               "type": "env",
@@ -50,11 +49,16 @@
       },
       "adapter": "jev-1.13.0",
       "evoke": "0.1.0"
+    },
+    "values": {
+      "lights": {
+        "bridge": "10.0.0.2"
+      }
     }
   },
   "expect": {
     "ok": {
-      "digest": "h1:0890337c165cc8ca55f00933cdd2684733302a598b455e07db1f63d14a9a3489",
+      "digest": "h1:1d716ead9e5aaed5629fd7fb89080a4b0b5d4dc614b11850c3ea5d6919359a13",
       "active": {
         "lights": {
           "effect": "destructive",

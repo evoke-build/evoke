@@ -1,0 +1,33 @@
+{
+  "input": {
+    "path": "~/month.plan.json",
+    "pinned": {
+      "$ref": "fixtures/pinned-month-ledger-remote.json"
+    },
+    "installed": {
+      "$ref": "fixtures/installed-month-without-ledger.json"
+    },
+    "plan": {
+      "$ref": "fixtures/plan-month-without-ledger.json"
+    },
+    "declared": {
+      "id": "replay",
+      "gate": {
+        "route": 0.5,
+        "fits": 0.3,
+        "read": 0.6,
+        "write": 0.8
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "message": "step 6's reflex ledger is not installed here",
+      "fix": {
+        "type": "add_ref",
+        "reference": "acme/books/ledger@1.2.0",
+        "name": "ledger"
+      }
+    }
+  }
+}

@@ -413,8 +413,13 @@ fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<
         );
     }
     let platform = contain::judged(session.environment()).map_err(Exit::Human)?;
-    let plan =
-        compile(&set, session.declared.limits.as_ref(), Some(platform)).map_err(Exit::Human)?;
+    let plan = compile(
+        &set,
+        &session::plain_values(&session.project),
+        session.declared.limits.as_ref(),
+        Some(platform),
+    )
+    .map_err(Exit::Human)?;
     if !plan.active().keys().any(|name| names.contains(name)) {
         return Ok(Vec::new());
     }

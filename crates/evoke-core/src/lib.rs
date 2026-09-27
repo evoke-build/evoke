@@ -51,7 +51,7 @@ pub use edit::{
 pub use manifest::{Manifest, manifest};
 pub use needs::{Needs, Policy, resolve, widens};
 pub use overlay::{Effective, Overlay, Report, effective, overlay, report};
-pub use plan::{Active, Held, Installed, Item, Millis, Plan, Slot, compile};
+pub use plan::{Active, Held, Installed, Item, Millis, Plan, Slot, Values, compile};
 pub use project::{Lock, Project, Reference, Version, lock, project, reference, render_lock};
 pub use propose::{PickValue, Proposed, propose};
 pub use run::{Envelope, argv, envelope};
@@ -61,4 +61,7 @@ pub use test::{
 };
 pub use text::{Clean, Identity, Input, Span, Utterance, identity};
 pub use vocabulary::{Vocabulary, vocabulary};
+pub use weave::pinned::{
+    Answer, Decided, Pinned, PinnedReflex, Replanned, pin, pinned, replan, stale,
+};
 pub use weave::{Executed, Planning, Running, Weave};

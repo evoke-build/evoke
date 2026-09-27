@@ -19,7 +19,7 @@ const answers = new URL("../../spec/transcripts/weave/answers.toml", import.meta
 
 test("steps reads a sentence into its steps, each decided as decide decides one", async () => {
   const project = await load({ root: home, adapter: replay(answers) })
-  const plan = await project.steps("kill the lights in the den and start a 10 minute timer")
+  const { weave: plan } = await project.steps("kill the lights in the den and start a 10 minute timer")
   deepStrictEqual(plan.steps.map(step => [step.n, step.text, step.reflex, step.decision.outcome]), [
     [1, "kill the lights in the den", "lights", "run"],
     [2, "start a 10 minute timer", "timer", "run"],
@@ -178,7 +178,7 @@ const outage = "check the errors for checkout, list the checkout deploys and pul
 
 test("a step takes three whole results by name, handed to its body beside its decision", async () => {
   const project = await load({ root: joinsHome, adapter: replay(joinsAnswers) })
-  const plan = await project.steps(outage)
+  const { weave: plan } = await project.steps(outage)
   deepStrictEqual(plan.binds, [
     { from: 1, to: 4, arg: "errors", field: "errors", via: "takes" },
     { from: 2, to: 4, arg: "deploys", field: "deploys", via: "takes" },

@@ -1,0 +1,19 @@
+reflex = 1
+
+description = """
+Post a month's closing entries to the ledger.
+Once posted, the month is closed."""
+not_for = ["reconciling", "sending a report", "chat messages"]
+tags = ["ledger"]
+effect = "write"
+confirm = "Post {month} to the ledger?"
+run = "ledger.mts"
+
+[args.month]
+ask   = "Which month?"
+vocab = "months"
+
+[examples]
+"post september to the ledger" = {}
+"close august in the books"    = {}
+"book the october entries"     = {}

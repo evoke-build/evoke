@@ -1,0 +1,137 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md): closing the month's stand-ins, one sentence over all seven, the ledger post under the write floor.
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.6
+write = 0.8
+
+[answers."pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"]
+"weave.split_0" = { yes = 0.9 }
+"weave.split_1" = { yes = 0.2 }
+"weave.split_2" = { yes = 0.9 }
+"weave.split_3" = { yes = 0.9 }
+"weave.split_4" = { yes = 0.9 }
+"weave.split_5" = { yes = 0.9 }
+
+[answers."pull september's bank transactions"]
+route            = { bank = 0.9, invoices = 0.03, none = 0.07 }
+"fits.bank"      = { yes = 0.8 }
+"bank.month"     = { september = 0.9, unstated = 0.1 }
+"fits.invoices"  = { yes = 0.02 }
+"invoices.month" = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.cards"     = { yes = 0.02 }
+"cards.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.payroll"   = { yes = 0.02 }
+"payroll.month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.reconcile" = { yes = 0.02 }
+"fits.ledger"    = { yes = 0.02 }
+"ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.send"      = { yes = 0.02 }
+
+[answers."invoices, card expenses"]
+route            = { invoices = 0.55, cards = 0.03, none = 0.42 }
+"fits.bank"      = { yes = 0.02 }
+"bank.month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.invoices"  = { yes = 0.8 }
+"invoices.month" = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.cards"     = { yes = 0.1 }
+"cards.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.payroll"   = { yes = 0.02 }
+"payroll.month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.reconcile" = { yes = 0.02 }
+"fits.ledger"    = { yes = 0.02 }
+"ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.send"      = { yes = 0.02 }
+
+[answers."payroll"]
+route            = { payroll = 0.9, bank = 0.03, none = 0.07 }
+"fits.bank"      = { yes = 0.02 }
+"bank.month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.invoices"  = { yes = 0.02 }
+"invoices.month" = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.cards"     = { yes = 0.02 }
+"cards.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.payroll"   = { yes = 0.8 }
+"payroll.month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.reconcile" = { yes = 0.02 }
+"fits.ledger"    = { yes = 0.02 }
+"ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.send"      = { yes = 0.02 }
+
+[answers."reconcile them"]
+route            = { reconcile = 0.9, bank = 0.03, none = 0.07 }
+"fits.bank"      = { yes = 0.02 }
+"bank.month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.invoices"  = { yes = 0.02 }
+"invoices.month" = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.cards"     = { yes = 0.02 }
+"cards.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.payroll"   = { yes = 0.02 }
+"payroll.month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.reconcile" = { yes = 0.8 }
+"fits.ledger"    = { yes = 0.02 }
+"ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.send"      = { yes = 0.02 }
+
+[answers."post the closing entries to the ledger"]
+route            = { ledger = 0.78, bank = 0.03, none = 0.19 }
+"fits.bank"      = { yes = 0.02 }
+"bank.month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.invoices"  = { yes = 0.02 }
+"invoices.month" = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.cards"     = { yes = 0.02 }
+"cards.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.payroll"   = { yes = 0.02 }
+"payroll.month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.reconcile" = { yes = 0.02 }
+"fits.ledger"    = { yes = 0.8 }
+"ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.send"      = { yes = 0.02 }
+
+[answers."send the report to cfo@example.com"]
+route            = { send = 0.9, bank = 0.03, none = 0.07 }
+"fits.bank"      = { yes = 0.02 }
+"bank.month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.invoices"  = { yes = 0.02 }
+"invoices.month" = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.cards"     = { yes = 0.02 }
+"cards.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.payroll"   = { yes = 0.02 }
+"payroll.month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.reconcile" = { yes = 0.02 }
+"fits.ledger"    = { yes = 0.02 }
+"ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.send"      = { yes = 0.8 }
+"send.to"        = { 19-34 = 0.9, unstated = 0.1 }
+
+[answers."invoices"]
+route            = { invoices = 0.9, bank = 0.03, none = 0.07 }
+"fits.bank"      = { yes = 0.02 }
+"bank.month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.invoices"  = { yes = 0.8 }
+"invoices.month" = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.cards"     = { yes = 0.02 }
+"cards.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.payroll"   = { yes = 0.02 }
+"payroll.month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.reconcile" = { yes = 0.02 }
+"fits.ledger"    = { yes = 0.02 }
+"ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.send"      = { yes = 0.02 }
+
+[answers."card expenses"]
+route            = { cards = 0.9, bank = 0.03, none = 0.07 }
+"fits.bank"      = { yes = 0.02 }
+"bank.month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.invoices"  = { yes = 0.02 }
+"invoices.month" = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.cards"     = { yes = 0.8 }
+"cards.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.payroll"   = { yes = 0.02 }
+"payroll.month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.reconcile" = { yes = 0.02 }
+"fits.ledger"    = { yes = 0.02 }
+"ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"fits.send"      = { yes = 0.02 }

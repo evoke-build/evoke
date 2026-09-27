@@ -20,16 +20,17 @@ use evoke_core::vocabulary::Vocabulary;
 use evoke_core::weave::{Because, Bound, Shared, Status, Step, Why as Stopped};
 use evoke_core::{
     At, Call, Case, Chosen, Clean, Contained, Contender, ContractDiff, Decision, Diagnostic,
-    Effective, File, Finding, Fix, Gate, Input, Json, KeyPath, Level, Needs, Prompt, Proposed, Raw,
-    Regression, Verdict, Version, Weave, render,
+    Digest, Effective, File, Finding, Fix, Gate, Input, Json, KeyPath, Level, Needs, Prompt,
+    Proposed, Raw, Regression, Verdict, Version, Weave, render,
 };
 use indexmap::IndexMap;
+use serde::{Deserialize, Serialize};
 
 use crate::adapter::Trace;
 use crate::commands::Exit;
 use crate::commands::session::{Decided, Woven};
 use crate::hosts::Failure;
-use crate::hosts::files::{Edited, Landed};
+use crate::hosts::files::Landed;
 use crate::hosts::processes::Returned;
 use crate::hosts::terminal::{Role, Text};
 
@@ -231,6 +232,15 @@ pub struct Line {
     pub contained: Option<Contained>,
     /// A weave's step: which of how many, what became of it, the values bound into it. None for one decision.
     pub step: Option<StepLine>,
+    /// The plan file the step came from, when it was run from one.
+    pub pinned: Option<PinnedAt>,
+}
+
+/// The plan file a line's step came from: the path as shown, and the SHA-256 of the bytes read.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PinnedAt {
+    pub file: String,
+    pub id: Digest,
 }
 
 /// A step of a weave as its line says it.
@@ -249,17 +259,18 @@ impl Line {
     #[must_use]
     pub fn of(decided: &Decided) -> Self {
         Self {
-            input: decided.request.state.request.clone(),
+            input: decided.input.clone(),
             decision: decided.decision.clone(),
             trace: decided.trace.clone(),
             answers: decided.answers.clone(),
-            proposed: decided.request.proposed.clone(),
+            proposed: decided.proposed.clone(),
             result: None,
             error: None,
             frames: Vec::new(),
             cancelled: false,
             contained: None,
             step: None,
+            pinned: None,
         }
     }
 
@@ -278,6 +289,7 @@ impl Line {
             cancelled: false,
             contained: None,
             step: None,
+            pinned: None,
         }
     }
 
@@ -323,6 +335,12 @@ impl Line {
             line.insert(
                 "shared".to_owned(),
                 serde_json::to_value(&step.shared).expect("shared words serialize"),
+            );
+        }
+        if let Some(pinned) = &self.pinned {
+            line.insert(
+                "pinned".to_owned(),
+                serde_json::to_value(pinned).expect("a plan file's pin serializes"),
             );
         }
         if let Some(contained) = &self.contained {
@@ -391,6 +409,7 @@ impl Line {
         let frames = field("frames", take("frames")).unwrap_or_default();
         let cancelled = field("cancelled", take("cancelled")).unwrap_or_default();
         let contained = field("contained", take("contained"))?;
+        let pinned = field("pinned", take("pinned"))?;
         let step = match (take("step"), take("steps")) {
             (Json::Null, _) => None,
             (n, of) => Some(StepLine {
@@ -415,6 +434,7 @@ impl Line {
             cancelled,
             contained,
             step,
+            pinned,
         })
     }
 
@@ -429,16 +449,32 @@ impl Line {
             Decision::Ask { asking, .. } => Some(&asking.reflex),
         }
     }
+}
 
-    fn contenders(&self) -> &[Contender] {
-        match &self.decision {
-            Decision::Abstain { contenders, .. } => contenders,
-            Decision::Run { chosen } | Decision::Confirm { chosen, .. } => chosen
-                .judged
-                .as_ref()
-                .map_or(&[], |judged| judged.contenders()),
-            Decision::Ask { asking, .. } => asking.judged.contenders(),
+/// The ranking a decision rests on.
+fn contenders(decision: &Decision) -> &[Contender] {
+    match decision {
+        Decision::Abstain { contenders, .. } => contenders,
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => chosen
+            .judged
+            .as_ref()
+            .map_or(&[], |judged| judged.contenders()),
+        Decision::Ask { asking, .. } => asking.judged.contenders(),
+    }
+}
+
+/// The reflex that won the route: the decision's own, or — for an abstain — the one the route named when the
+/// gate still refused it, since `none` is no name.
+fn winner_of(decision: &Decision) -> Option<LocalName> {
+    match decision {
+        Decision::Abstain { judgments, .. } => judgments
+            .iter()
+            .find(|judgment| judgment.question == QuestionId::Route)
+            .and_then(|judgment| LocalName::new(judgment.top.as_str()).ok()),
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
+            Some(chosen.call.reflex.clone())
         }
+        Decision::Ask { asking, .. } => Some(asking.reflex.clone()),
     }
 }
 
@@ -451,17 +487,17 @@ fn field<T: serde::de::DeserializeOwned>(what: &str, value: Json) -> Result<T, S
 /// judgment.
 #[must_use]
 pub fn tried(decided: &Decided, route_floor: Option<evoke_core::Prob>) -> Text {
-    let winner = decided.reading.winner.as_ref().map(|winner| &winner.reflex);
+    let winner = winner_of(&decided.decision);
     // A winner that the gate still abstained on was under the route floor.
-    let under = match (&decided.decision, winner, route_floor) {
+    let under = match (&decided.decision, &winner, route_floor) {
         (Decision::Abstain { .. }, Some(_), Some(floor)) => Some(floor),
         _ => None,
     };
     let mut lines = block(
-        winner,
+        winner.as_ref(),
         &decided.answers,
-        &decided.request.proposed,
-        &decided.reading.ranking,
+        &decided.proposed,
+        contenders(&decided.decision),
         under,
     );
     lines.push(outcome(&decided.decision));
@@ -483,7 +519,7 @@ pub fn why(lines: &[Line]) -> Text {
             line.reflex(),
             &line.answers,
             &line.proposed,
-            line.contenders(),
+            contenders(&line.decision),
             None,
         ));
         shown.push(became(line));
@@ -494,17 +530,23 @@ pub fn why(lines: &[Line]) -> Text {
     indented(shown)
 }
 
-/// What came of a decision, then the adapter calls it took, or `cached`.
+/// What came of a decision, then where its answers came from: the plan file, the adapter calls it took, or
+/// `cached`.
 fn became(line: &Line) -> Text {
     let mut what = match &line.step {
         Some(step) => stepped(line, step),
         None => alone(line),
     };
-    let calls: Vec<String> = line
-        .trace
+    let mut calls: Vec<String> = line
+        .pinned
         .iter()
-        .map(|trace| format!("{}, {} questions", trace.adapter, trace.questions))
+        .map(|pinned| format!("from {}", pinned.file))
         .collect();
+    calls.extend(
+        line.trace
+            .iter()
+            .map(|trace| format!("{}, {} questions", trace.adapter, trace.questions)),
+    );
     let calls = if calls.is_empty() {
         "cached".to_owned()
     } else {
@@ -627,7 +669,7 @@ pub fn stopped(why: &Stopped) -> String {
 /// The ranking alone, as an abstain shows it.
 #[must_use]
 pub fn abstained(decided: &Decided, floors: Option<&Gate>) -> Text {
-    let under = decided.reading.winner.as_ref().and(floors.map(Gate::route));
+    let under = winner_of(&decided.decision).and(floors.map(Gate::route));
     indented(vec![ranking(&decided.answers, under)])
 }
 
@@ -696,16 +738,20 @@ fn run_line(chosen: &Chosen) -> Text {
 
 /// The plan, one line per step, numbered as the run refers to them: a call with its confidence; the own line of
 /// a step that will confirm; `asks <arg>` for what a step still needs; `takes <field> from <n>` where a result
-/// threads in; `after <n>` where the words order it; `no reflex` where nothing matched.
+/// threads in; `after <n>` where the words order it; `with <n>` where the step runs beside earlier ones; `no
+/// reflex` where nothing matched. Then what was left out, when the request said what not to do.
 #[must_use]
 pub fn planned(weave: &Weave) -> Text {
-    indented(
-        weave
-            .steps
-            .iter()
-            .map(|step| numbered(step.n, weave.steps.len(), step_body(step, weave)))
-            .collect(),
-    )
+    let mut lines: Vec<Text> = weave
+        .steps
+        .iter()
+        .map(|step| numbered(step.n, weave.steps.len(), step_body(step, weave)))
+        .collect();
+    if !weave.excluded.is_empty() {
+        let parts: Vec<String> = weave.excluded.iter().map(|part| quoted(part)).collect();
+        lines.push(Text::from(format!("left out {}", parts.join(", "))));
+    }
+    indented(lines)
 }
 
 /// One line of a weave at its turn, numbered as the plan numbers it, with what the plan could not show: a
@@ -818,6 +864,22 @@ pub fn step_body(step: &Step, weave: &Weave) -> Text {
         .collect();
     if !after.is_empty() {
         text.push(&format!(" · after {}", after.join(", ")));
+    }
+    // The earlier steps of its stage: what runs beside it, which the lines alone would not show.
+    let with: Vec<String> = weave
+        .stages
+        .iter()
+        .find(|stage| stage.contains(&step.n))
+        .map(|stage| {
+            stage
+                .iter()
+                .filter(|n| **n < step.n)
+                .map(ToString::to_string)
+                .collect()
+        })
+        .unwrap_or_default();
+    if !with.is_empty() {
+        text.push(&format!(" · with {}", with.join(", ")));
     }
     text
 }
@@ -1119,9 +1181,11 @@ const COMMANDS: [(&str, &[(&str, &str)]); 4] = [
             ),
             ("  --json", "one JSON line per input, for a filter"),
             ("  --tag <tag>", "only the reflexes carrying the tag"),
+            ("  --save <file>", "the plan as a file, for run"),
             ("  --", "the rest is input, even a command word"),
             ("evoke why", "the last decision, explained"),
             ("evoke run <call>", "by name, without the classifier"),
+            ("evoke run <file>", "a saved plan, run as it stands"),
             ("  --json", "one JSON line: the call and its result"),
             ("  <call> is <name> [<arg>=<value> | <flag>]…", ""),
         ],
@@ -1191,17 +1255,19 @@ const COMMANDS: [(&str, &[(&str, &str)]); 4] = [
     ),
 ];
 
-/// The line of a write: `+` the file and the line as it landed, or `-` the file and the key that went.
+/// The line of a write: `+` the file and the line as it landed, `-` the file and the key that went, or `+` the
+/// file alone when it was written whole.
 #[must_use]
-pub fn written(edited: &Edited) -> Text {
+pub fn written(shown: &str, landed: &Landed) -> Text {
     let mut text = Text::new();
-    match &edited.landed {
+    match landed {
         Landed::Set(line) => text
             .roled(Role::Added, "+")
-            .push(&format!(" {}  {line}", edited.shown)),
+            .push(&format!(" {shown}  {line}")),
         Landed::Removed(key) => text
             .roled(Role::Removed, "-")
-            .push(&format!(" {}  {key}", edited.shown)),
+            .push(&format!(" {shown}  {key}")),
+        Landed::Whole => text.roled(Role::Added, "+").push(&format!(" {shown}")),
     };
     text
 }
@@ -2754,21 +2820,19 @@ mod tests {
         assert!(narrow.contains("\n  evoke \"<input>\"\n      decide, gate, run\n"));
         assert!(narrow.contains("\n    --json\n      one JSON line per input, for a filter\n"));
         // One more line per described command or flag, and the exit codes on two.
-        assert_eq!(narrow.lines().count(), wide.lines().count() + 27);
+        assert_eq!(narrow.lines().count(), wide.lines().count() + 29);
         let widest = narrow.lines().map(chars).max().unwrap_or(0);
         assert!(widest <= 60, "a line is {widest} columns wide");
     }
 
     #[test]
     fn a_write_is_signed_and_a_label_warns() {
-        let removed = written(&Edited {
-            path: std::path::PathBuf::from("/x/vocab/rooms.toml"),
-            shown: "vocab/rooms.toml".to_owned(),
-            text: String::new(),
-            landed: Landed::Removed("attic".to_owned()),
-        });
+        let removed = written("vocab/rooms.toml", &Landed::Removed("attic".to_owned()));
         assert_eq!(removed.to_string(), "- vocab/rooms.toml  attic");
         assert_eq!(removed.roles(), vec![(Role::Removed, "-")]);
+        let whole = written("~/month.plan.json", &Landed::Whole);
+        assert_eq!(whole.to_string(), "+ ~/month.plan.json");
+        assert_eq!(whole.roles(), vec![(Role::Added, "+")]);
         assert_eq!(created("reflex.d.ts").roles(), vec![(Role::Added, "+")]);
         let lint = finding(
             &LocalName::new("lights").unwrap(),

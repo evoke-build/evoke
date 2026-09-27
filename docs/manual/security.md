@@ -88,6 +88,10 @@ decisions. Everything below is what the tool guarantees around them, and what it
   platform's, and the SDK trusts what your Node trusts.
 - **The SDK never searches.** `load` takes an explicit root, never fetches, and never writes. It hands each
   tenant their own vocabulary. So a server cannot be hijacked by whatever project a working directory holds.
+- **A plan file holds the sentence and the classifier's numbers, in clear**, and no setting's value, variable
+  or key. It can choose among your installed reflexes and your words, never mint a value, and it runs only after
+  your yes over the whole plan and each step's own confirm; a file whose pins moved is refused before anything
+  runs.
 
 ## Check it yourself
 

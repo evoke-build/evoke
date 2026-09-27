@@ -33,7 +33,9 @@ adapter, and the words of a weave.
 | **Manifest**     | `reflex.toml`: what the classifier reads and what the body receives                                       |
 | **Overlay**      | `overlays/<name>.toml`: your wording for one reflex, merged over the shipped one                          |
 | **Pick**         | An argument read from an exact span of the input: `number`, `duration`, `email`, `url`, `quoted`           |
+| **Pin**          | What a plan file is checked against before it runs: the `evoke` version, the adapter's id and gate, the set's digest, each reflex and vocabulary by hash, a remote reflex's `h1` |
 | **Plan**         | The installed set compiled to questions. Its digest keys the cache, the baselines and every decision      |
+| **Plan file**    | A weave saved by `try --save`: the sentence, the classifier's answers and the pins it was decided under; `run <file>` runs it exactly, or names the pin that moved |
 | **Project**      | A directory of files you own: `evoke.toml`, `evoke.lock`, `overlays/`, `vocab/`                            |
 | **Record**       | One line of `[examples]` or `[tests]`: `"utterance" = { assertions } | false`                              |
 | **Recording**    | An `answers.toml`: an adapter's declaration and its answers by utterance identity                         |

@@ -1,0 +1,314 @@
+{
+  "digest": "h1:3653933e479fa8b3b968f224bd53ab248abe5a2107c9b61c98c8782bbbd38c0f",
+  "active": {
+    "bank": {
+      "effect": "read",
+      "run": "bank.mts",
+      "confirm": "Pull the bank transactions for {month}?",
+      "args": {
+        "month": {
+          "ask": "Which month?",
+          "vocab": "months",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "returns": "transactions",
+      "config": {},
+      "tags": [
+        "bank"
+      ]
+    },
+    "invoices": {
+      "effect": "read",
+      "run": "invoices.mts",
+      "confirm": "List the invoices of {month}?",
+      "args": {
+        "month": {
+          "ask": "Which month?",
+          "vocab": "months",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "returns": "invoices",
+      "config": {},
+      "tags": [
+        "invoices"
+      ]
+    },
+    "cards": {
+      "effect": "read",
+      "run": "cards.mts",
+      "confirm": "List the card expenses of {month}?",
+      "args": {
+        "month": {
+          "ask": "Which month?",
+          "vocab": "months",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "returns": "expenses",
+      "config": {},
+      "tags": [
+        "cards"
+      ]
+    },
+    "payroll": {
+      "effect": "read",
+      "run": "payroll.mts",
+      "confirm": "Show the payroll of {month}?",
+      "args": {
+        "month": {
+          "ask": "Which month?",
+          "vocab": "months",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "returns": "payroll",
+      "config": {},
+      "tags": [
+        "payroll"
+      ]
+    },
+    "reconcile": {
+      "effect": "read",
+      "run": "reconcile.mts",
+      "confirm": "Reconcile the month?",
+      "args": {},
+      "takes": {
+        "transactions": "transactions",
+        "invoices": "invoices",
+        "expenses": "expenses",
+        "payroll": "payroll"
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "reconcile"
+      ]
+    },
+    "ledger": {
+      "effect": "write",
+      "run": "ledger.mts",
+      "confirm": "Post {month} to the ledger?",
+      "args": {
+        "month": {
+          "ask": "Which month?",
+          "vocab": "months",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "ledger"
+      ]
+    }
+  },
+  "inactive": {
+    "send": [
+      {
+        "reflex": "send",
+        "message": "runs on Linux only",
+        "fix": {
+          "type": "remove",
+          "reflex": "send"
+        }
+      }
+    ]
+  },
+  "tagged": {
+    "send": [
+      "send"
+    ]
+  },
+  "slots": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "bank": {
+          "what": "Pull the bank transactions of a month.\nEvery debit and credit on the business account.",
+          "not_for": [
+            "invoices",
+            "card expenses",
+            "payroll"
+          ],
+          "examples": [
+            "pull the bank transactions for september",
+            "get august's bank feed",
+            "what went through the bank in october"
+          ]
+        },
+        "invoices": {
+          "what": "List the invoices of a month.\nWhat was billed, and what was paid.",
+          "not_for": [
+            "bank transactions",
+            "card expenses",
+            "sending an invoice"
+          ],
+          "examples": [
+            "list september's invoices",
+            "which invoices went out in august",
+            "invoices for october"
+          ]
+        },
+        "cards": {
+          "what": "List the company card expenses of a month.\nEvery charge, with its receipt when there is one.",
+          "not_for": [
+            "bank transactions",
+            "invoices",
+            "payroll"
+          ],
+          "examples": [
+            "card expenses for september",
+            "what did we spend on cards in august",
+            "pull the october card charges"
+          ]
+        },
+        "payroll": {
+          "what": "Show the payroll run of a month.\nSalaries, taxes and the total paid.",
+          "not_for": [
+            "bank transactions",
+            "card expenses",
+            "invoices"
+          ],
+          "examples": [
+            "show september's payroll",
+            "what did payroll cost in august",
+            "the october payroll run"
+          ]
+        },
+        "reconcile": {
+          "what": "Reconcile a month's books.\nMatches its bank transactions against its invoices, card expenses and payroll, and lists what is left to review.",
+          "not_for": [
+            "posting to the ledger",
+            "sending a report",
+            "pulling transactions"
+          ],
+          "examples": [
+            "reconcile them",
+            "reconcile the books",
+            "match everything up"
+          ]
+        },
+        "ledger": {
+          "what": "Post a month's closing entries to the ledger.\nOnce posted, the month is closed.",
+          "not_for": [
+            "reconciling",
+            "sending a report",
+            "chat messages"
+          ],
+          "examples": [
+            "post september to the ledger",
+            "close august in the books",
+            "book the october entries"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "fits.bank": {
+      "type": "yesno",
+      "ask": "Does `bank` do the specific thing the request asks for?",
+      "yes": "Pull the bank transactions of a month.\nEvery debit and credit on the business account.",
+      "no": "Something else, such as: invoices; card expenses; payroll."
+    },
+    "bank.month": {
+      "type": "choice",
+      "ask": "Which month?",
+      "options": {
+        "august": "August, the month before last.",
+        "september": "September, last month.",
+        "october": "October, this month.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.invoices": {
+      "type": "yesno",
+      "ask": "Does `invoices` do the specific thing the request asks for?",
+      "yes": "List the invoices of a month.\nWhat was billed, and what was paid.",
+      "no": "Something else, such as: bank transactions; card expenses; sending an invoice."
+    },
+    "invoices.month": {
+      "type": "choice",
+      "ask": "Which month?",
+      "options": {
+        "august": "August, the month before last.",
+        "september": "September, last month.",
+        "october": "October, this month.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.cards": {
+      "type": "yesno",
+      "ask": "Does `cards` do the specific thing the request asks for?",
+      "yes": "List the company card expenses of a month.\nEvery charge, with its receipt when there is one.",
+      "no": "Something else, such as: bank transactions; invoices; payroll."
+    },
+    "cards.month": {
+      "type": "choice",
+      "ask": "Which month?",
+      "options": {
+        "august": "August, the month before last.",
+        "september": "September, last month.",
+        "october": "October, this month.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.payroll": {
+      "type": "yesno",
+      "ask": "Does `payroll` do the specific thing the request asks for?",
+      "yes": "Show the payroll run of a month.\nSalaries, taxes and the total paid.",
+      "no": "Something else, such as: bank transactions; card expenses; invoices."
+    },
+    "payroll.month": {
+      "type": "choice",
+      "ask": "Which month?",
+      "options": {
+        "august": "August, the month before last.",
+        "september": "September, last month.",
+        "october": "October, this month.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.reconcile": {
+      "type": "yesno",
+      "ask": "Does `reconcile` do the specific thing the request asks for?",
+      "yes": "Reconcile a month's books.\nMatches its bank transactions against its invoices, card expenses and payroll, and lists what is left to review.",
+      "no": "Something else, such as: posting to the ledger; sending a report; pulling transactions."
+    },
+    "fits.ledger": {
+      "type": "yesno",
+      "ask": "Does `ledger` do the specific thing the request asks for?",
+      "yes": "Post a month's closing entries to the ledger.\nOnce posted, the month is closed.",
+      "no": "Something else, such as: reconciling; sending a report; chat messages."
+    },
+    "ledger.month": {
+      "type": "choice",
+      "ask": "Which month?",
+      "options": {
+        "august": "August, the month before last.",
+        "september": "September, last month.",
+        "october": "October, this month.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    }
+  },
+  "values": {},
+  "deadline": 30000
+}

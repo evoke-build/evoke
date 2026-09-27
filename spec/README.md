@@ -19,8 +19,8 @@ the op table in `crates/evoke-wasm/src/ops.rs` takes them, one op per function o
 result, `{ "ok": … }` or `{ "err": … }` for a `Result`. Every op has a family but `version`, which answers the
 build's own number; a family the runners do not list fails their check. Values take the [wire form](#wire);
 `{ "$ref": "fixtures/<name>.json" }`, a path under `spec/`, stands for that file's value. A file goes in as
-`{ "file": …, "toml": "…" }` or `{ "file": …, "json": … }`. A runner compares typed values, so `40` and `40.0` are
-one number.
+`{ "file": …, "toml": "…" }` or `{ "file": …, "json": … }`; a plan file, which is no owned file, as `{ "path": …,
+"json": … }`, its `path` the path as shown. A runner compares typed values, so `40` and `40.0` are one number.
 
 ## Wire
 
@@ -53,7 +53,8 @@ and the seeds test read those directory names as owned files:
   or a question two spaces in, ending in `?  ` and its choices; it ends with `> ` and what was typed follows on
   the same line; a prompt with nothing after its `>` gets the end of input, so `>` alone ends a REPL. `[N]` alone
   on a line is a non-zero exit code; absent, the command exited 0. Lines compare exactly but for trailing spaces;
-  a line that is JSON is compared as JSON, `ms` values aside and every number one kind. A line starting with `#`
+  a line that is JSON is compared as JSON, every number one kind, `ms` values and a plan file's `pinned.id` aside,
+  since a file written in the flow carries the release's version. A line starting with `#`
   is a note for the reader; the note `# no tty` runs the flow's commands without a terminal, and `# platform macos`
   or `# platform linux` runs them as that machine, `EVOKE_PLATFORM` set, so a flow over the collection replays
   anywhere. A step that has not

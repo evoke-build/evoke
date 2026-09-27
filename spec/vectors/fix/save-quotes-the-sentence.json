@@ -1,0 +1,10 @@
+{
+  "input": {
+    "fix": {
+      "type": "save",
+      "file": "timer.plan.json",
+      "input": "set a \"laundry\" timer"
+    }
+  },
+  "expect": "evoke try --save timer.plan.json \"set a \\\"laundry\\\" timer\""
+}

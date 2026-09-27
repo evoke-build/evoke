@@ -1,0 +1,1252 @@
+{
+  "input": {
+    "path": "~/month.plan.json",
+    "pinned": {
+      "note": "Written by evoke try --save: the sentence and the classifier's answers, in clear. evoke run runs it exactly, or says which pin moved.",
+      "plan": 1,
+      "input": "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com",
+      "weave": {
+        "input": "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com",
+        "steps": [
+          {
+            "n": 1,
+            "text": "pull september's bank transactions",
+            "end": 34,
+            "decision": {
+              "outcome": "run",
+              "reflex": "bank",
+              "args": {
+                "month": {
+                  "type": "word",
+                  "word": "september"
+                }
+              },
+              "call": "bank month=\"september\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "bank",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "bank",
+                  "p": 0.9
+                },
+                {
+                  "question": "bank.month",
+                  "top": "september",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "invoices",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "bank",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "invoices",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "cards",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "payroll",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "reconcile",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ledger",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "send",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "bank",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "invoices",
+            "end": 44,
+            "decision": {
+              "outcome": "run",
+              "reflex": "invoices",
+              "args": {
+                "month": {
+                  "type": "word",
+                  "word": "september"
+                }
+              },
+              "call": "invoices month=\"september\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "invoices",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "invoices",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "invoices",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "bank",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "cards",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "payroll",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "reconcile",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ledger",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "send",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "invoices",
+            "effect": "read",
+            "repair": "split",
+            "shared": {
+              "month": {
+                "word": "september",
+                "via": "fill"
+              }
+            }
+          },
+          {
+            "n": 3,
+            "text": "card expenses",
+            "end": 59,
+            "decision": {
+              "outcome": "run",
+              "reflex": "cards",
+              "args": {
+                "month": {
+                  "type": "word",
+                  "word": "september"
+                }
+              },
+              "call": "cards month=\"september\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "cards",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "cards",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "cards",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "bank",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "invoices",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "payroll",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "reconcile",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ledger",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "send",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "cards",
+            "effect": "read",
+            "repair": "split",
+            "shared": {
+              "month": {
+                "word": "september",
+                "via": "fill"
+              }
+            }
+          },
+          {
+            "n": 4,
+            "text": "payroll",
+            "end": 71,
+            "decision": {
+              "outcome": "run",
+              "reflex": "payroll",
+              "args": {
+                "month": {
+                  "type": "word",
+                  "word": "september"
+                }
+              },
+              "call": "payroll month=\"september\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "payroll",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "payroll",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "payroll",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "bank",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "invoices",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "cards",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "reconcile",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ledger",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "send",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "payroll",
+            "effect": "read",
+            "shared": {
+              "month": {
+                "word": "september",
+                "via": "fill"
+              }
+            }
+          },
+          {
+            "n": 5,
+            "text": "reconcile them",
+            "end": 87,
+            "decision": {
+              "outcome": "run",
+              "reflex": "reconcile",
+              "args": {},
+              "call": "reconcile",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "reconcile",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "reconcile",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "reconcile",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "bank",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "invoices",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "cards",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "payroll",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ledger",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "send",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "reconcile",
+            "effect": "read",
+            "refs": [
+              {
+                "span": {
+                  "start": 10,
+                  "end": 14,
+                  "text": "them"
+                },
+                "from": [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "how": "pronoun",
+                "many": true
+              }
+            ],
+            "after": [
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          {
+            "n": 6,
+            "text": "post the closing entries to the ledger",
+            "end": 127,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "ledger",
+              "args": {
+                "month": {
+                  "type": "word",
+                  "word": "september"
+                }
+              },
+              "call": "ledger month=\"september\"",
+              "effect": "write",
+              "confidence": 0.78,
+              "weakest": {
+                "question": "route",
+                "top": "ledger",
+                "p": 0.78
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "ledger",
+                  "p": 0.78
+                }
+              ],
+              "runner_up": {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "ledger",
+                  "route": 0.78,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "bank",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "invoices",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "cards",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "payroll",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "reconcile",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "send",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "prompt": {
+                "own": "ledger month=\"september\" · write · weakest: route 0.78",
+                "template": "Post september to the ledger?"
+              },
+              "because": [
+                {
+                  "type": "under_floor",
+                  "judgment": {
+                    "question": "route",
+                    "top": "ledger",
+                    "p": 0.78
+                  },
+                  "floor": 0.8
+                }
+              ]
+            },
+            "reflex": "ledger",
+            "effect": "write",
+            "shared": {
+              "month": {
+                "word": "september",
+                "via": "fill"
+              }
+            }
+          },
+          {
+            "n": 7,
+            "text": "send the report to cfo@example.com",
+            "end": 168,
+            "decision": {
+              "outcome": "run",
+              "reflex": "send",
+              "args": {
+                "to": {
+                  "type": "pick",
+                  "span": {
+                    "start": 19,
+                    "end": 34,
+                    "text": "cfo@example.com"
+                  },
+                  "value": {
+                    "type": "email",
+                    "value": "cfo@example.com"
+                  }
+                }
+              },
+              "call": "send to=\"cfo@example.com\"",
+              "effect": "write",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "send",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "send",
+                  "p": 0.9
+                },
+                {
+                  "question": "send.to",
+                  "top": "19-34",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "send",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "bank",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "invoices",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "cards",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "payroll",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "reconcile",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ledger",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "send",
+            "effect": "write",
+            "after": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        ],
+        "binds": [
+          {
+            "from": 1,
+            "to": 5,
+            "arg": "transactions",
+            "field": "transactions",
+            "via": "takes"
+          },
+          {
+            "from": 2,
+            "to": 5,
+            "arg": "invoices",
+            "field": "invoices",
+            "via": "takes"
+          },
+          {
+            "from": 3,
+            "to": 5,
+            "arg": "expenses",
+            "field": "expenses",
+            "via": "takes"
+          },
+          {
+            "from": 4,
+            "to": 5,
+            "arg": "payroll",
+            "field": "payroll",
+            "via": "takes"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ],
+          [
+            5
+          ],
+          [
+            6
+          ],
+          [
+            7
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 34,
+            "end": 36,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 44,
+            "end": 46,
+            "word": ",",
+            "order": "and",
+            "p": 0.2
+          },
+          {
+            "start": 59,
+            "end": 64,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 71,
+            "end": 73,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 87,
+            "end": 89,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 127,
+            "end": 134,
+            "word": "then",
+            "order": "then",
+            "p": 0.9
+          }
+        ]
+      },
+      "evoke": "0.1.0",
+      "adapter": {
+        "name": "replay",
+        "id": "replay"
+      },
+      "gate": {
+        "route": 0.5,
+        "fits": 0.3,
+        "read": 0.6,
+        "write": 0.8
+      },
+      "set": "h1:0269ef759b443af71f94e363acd388921ea3adb90b2569d1e06336b3b4dbe4b7",
+      "reflexes": {
+        "bank": {
+          "item": "h1:634ab46701e191fa8909fd6f76e83e84e4c4c453861d79fe8fec2e2af5897e52",
+          "path": "./bank"
+        },
+        "invoices": {
+          "item": "h1:59b7af7d0a41068c365dac6b8e54a2de77bf685e1f1805986c808d53717d92c9",
+          "path": "./invoices"
+        },
+        "cards": {
+          "item": "h1:5d5c1cc2c1275b36bb812fad8c8d14531c6ca7ec44116b9fdc2fe68e46a06812",
+          "path": "./cards"
+        },
+        "payroll": {
+          "item": "h1:fa1646e1742c8d7133cc7aa97966f6892711698b9c2f28e64a0e852ff2862d03",
+          "path": "./payroll"
+        },
+        "reconcile": {
+          "item": "h1:d734361956482631cb6312ec5eeed2be6f067bd3e87053a0b50183609e75965c",
+          "path": "./reconcile"
+        },
+        "ledger": {
+          "item": "h1:6a0a5d0596032969b672ef100806e83bcf2ac5f3e9ed18c1697a5d38fb9ad0ed",
+          "path": "./ledger"
+        },
+        "send": {
+          "item": "h1:ebfebd049702fb4525e8fcd88dd570a1bb377c60c78354967ef39057e82b524f",
+          "path": "./send"
+        }
+      },
+      "vocab": {
+        "months": "h1:0ece05e677ed64a2b4cdf0766f87dfddb2762ed1790845eb3200227bd0f9adcf"
+      },
+      "answers": [
+        {
+          "text": "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com",
+          "raw": {
+            "weave.split_0": {
+              "yes": 0.9
+            },
+            "weave.split_1": {
+              "yes": 0.2
+            },
+            "weave.split_2": {
+              "yes": 0.9
+            },
+            "weave.split_3": {
+              "yes": 0.9
+            },
+            "weave.split_4": {
+              "yes": 0.9
+            },
+            "weave.split_5": {
+              "yes": 0.9
+            }
+          }
+        },
+        {
+          "text": "pull september's bank transactions",
+          "raw": {
+            "route": {
+              "bank": 0.9,
+              "invoices": 0.03,
+              "none": 0.07
+            },
+            "fits.bank": {
+              "yes": 0.8
+            },
+            "bank.month": {
+              "september": 0.9,
+              "unstated": 0.1
+            },
+            "fits.invoices": {
+              "yes": 0.02
+            },
+            "invoices.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.cards": {
+              "yes": 0.02
+            },
+            "cards.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.payroll": {
+              "yes": 0.02
+            },
+            "payroll.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.reconcile": {
+              "yes": 0.02
+            },
+            "fits.ledger": {
+              "yes": 0.02
+            },
+            "ledger.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.send": {
+              "yes": 0.02
+            }
+          }
+        },
+        {
+          "text": "invoices, card expenses",
+          "raw": {
+            "route": {
+              "invoices": 0.55,
+              "cards": 0.03,
+              "none": 0.42
+            },
+            "fits.bank": {
+              "yes": 0.02
+            },
+            "bank.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.invoices": {
+              "yes": 0.8
+            },
+            "invoices.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.cards": {
+              "yes": 0.1
+            },
+            "cards.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.payroll": {
+              "yes": 0.02
+            },
+            "payroll.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.reconcile": {
+              "yes": 0.02
+            },
+            "fits.ledger": {
+              "yes": 0.02
+            },
+            "ledger.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.send": {
+              "yes": 0.02
+            }
+          }
+        },
+        {
+          "text": "payroll",
+          "raw": {
+            "route": {
+              "timer": 0.9,
+              "none": 0.1
+            },
+            "fits.bank": {
+              "yes": 0.02
+            },
+            "bank.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.invoices": {
+              "yes": 0.02
+            },
+            "invoices.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.cards": {
+              "yes": 0.02
+            },
+            "cards.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.payroll": {
+              "yes": 0.8
+            },
+            "payroll.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.reconcile": {
+              "yes": 0.02
+            },
+            "fits.ledger": {
+              "yes": 0.02
+            },
+            "ledger.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.send": {
+              "yes": 0.02
+            }
+          }
+        },
+        {
+          "text": "reconcile them",
+          "raw": {
+            "route": {
+              "reconcile": 0.9,
+              "bank": 0.03,
+              "none": 0.07
+            },
+            "fits.bank": {
+              "yes": 0.02
+            },
+            "bank.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.invoices": {
+              "yes": 0.02
+            },
+            "invoices.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.cards": {
+              "yes": 0.02
+            },
+            "cards.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.payroll": {
+              "yes": 0.02
+            },
+            "payroll.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.reconcile": {
+              "yes": 0.8
+            },
+            "fits.ledger": {
+              "yes": 0.02
+            },
+            "ledger.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.send": {
+              "yes": 0.02
+            }
+          }
+        },
+        {
+          "text": "post the closing entries to the ledger",
+          "raw": {
+            "route": {
+              "ledger": 0.78,
+              "bank": 0.03,
+              "none": 0.19
+            },
+            "fits.bank": {
+              "yes": 0.02
+            },
+            "bank.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.invoices": {
+              "yes": 0.02
+            },
+            "invoices.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.cards": {
+              "yes": 0.02
+            },
+            "cards.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.payroll": {
+              "yes": 0.02
+            },
+            "payroll.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.reconcile": {
+              "yes": 0.02
+            },
+            "fits.ledger": {
+              "yes": 0.8
+            },
+            "ledger.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.send": {
+              "yes": 0.02
+            }
+          }
+        },
+        {
+          "text": "send the report to cfo@example.com",
+          "raw": {
+            "route": {
+              "send": 0.9,
+              "bank": 0.03,
+              "none": 0.07
+            },
+            "fits.bank": {
+              "yes": 0.02
+            },
+            "bank.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.invoices": {
+              "yes": 0.02
+            },
+            "invoices.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.cards": {
+              "yes": 0.02
+            },
+            "cards.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.payroll": {
+              "yes": 0.02
+            },
+            "payroll.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.reconcile": {
+              "yes": 0.02
+            },
+            "fits.ledger": {
+              "yes": 0.02
+            },
+            "ledger.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.send": {
+              "yes": 0.8
+            },
+            "send.to": {
+              "19-34": 0.9,
+              "unstated": 0.1
+            }
+          }
+        },
+        {
+          "text": "invoices",
+          "raw": {
+            "route": {
+              "invoices": 0.9,
+              "bank": 0.03,
+              "none": 0.07
+            },
+            "fits.bank": {
+              "yes": 0.02
+            },
+            "bank.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.invoices": {
+              "yes": 0.8
+            },
+            "invoices.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.cards": {
+              "yes": 0.02
+            },
+            "cards.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.payroll": {
+              "yes": 0.02
+            },
+            "payroll.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.reconcile": {
+              "yes": 0.02
+            },
+            "fits.ledger": {
+              "yes": 0.02
+            },
+            "ledger.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.send": {
+              "yes": 0.02
+            }
+          }
+        },
+        {
+          "text": "card expenses",
+          "raw": {
+            "route": {
+              "cards": 0.9,
+              "bank": 0.03,
+              "none": 0.07
+            },
+            "fits.bank": {
+              "yes": 0.02
+            },
+            "bank.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.invoices": {
+              "yes": 0.02
+            },
+            "invoices.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.cards": {
+              "yes": 0.8
+            },
+            "cards.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.payroll": {
+              "yes": 0.02
+            },
+            "payroll.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.reconcile": {
+              "yes": 0.02
+            },
+            "fits.ledger": {
+              "yes": 0.02
+            },
+            "ledger.month": {
+              "unstated": 0.9,
+              "august": 0.05,
+              "september": 0.05
+            },
+            "fits.send": {
+              "yes": 0.02
+            }
+          }
+        }
+      ]
+    },
+    "plan": {
+      "$ref": "fixtures/plan-month.json"
+    }
+  },
+  "expect": {
+    "err": {
+      "message": "the file's answer for \"payroll\" names timer, which the set does not offer",
+      "fix": {
+        "type": "save",
+        "file": "~/month.plan.json",
+        "input": "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"
+      }
+    }
+  }
+}

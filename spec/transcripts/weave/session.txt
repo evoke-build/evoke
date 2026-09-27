@@ -59,6 +59,12 @@ $ evoke "look up dana's address and start a 10 minute timer for them"
   Run the plan as it stands?  [y]es [n]o > y
 dana <dana@example.com>
 10 minute timer started
+# A plan that asks cannot be saved: a file holds no one's answers, so the sentence must say it.
+$ evoke try --save lights.plan.json "kill the lights and start a 10 minute timer"
+  1  lights state="off" · asks room
+  2  timer duration="10 minute"  0.90
+  step 1 asks room; say it in the sentence  →  evoke try --save lights.plan.json "kill the lights and start a 10 minute timer"
+[3]
 $ evoke "kill the lights in the den and feed the cat"
   1  lights room="den" state="off"  0.85
   2  "feed the cat" · no reflex

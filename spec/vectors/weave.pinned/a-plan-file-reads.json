@@ -1,0 +1,13 @@
+{
+  "input": {
+    "path": "~/month.plan.json",
+    "json": {
+      "$ref": "fixtures/pinned-month.json"
+    }
+  },
+  "expect": {
+    "ok": {
+      "$ref": "fixtures/pinned-month.json"
+    }
+  }
+}
