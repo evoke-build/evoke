@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-09-27
+
 - `evoke try --save <file> "<sentence>"` writes the plan as a file: the sentence, the classifier's answers and
   the pins it was decided under, in clear. `evoke run <file>` runs it exactly, here or on another machine with
   the same project, after one yes over the whole plan; a pin that moved refuses it and names the fix. Every step's
