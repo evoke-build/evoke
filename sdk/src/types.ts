@@ -889,8 +889,17 @@ export interface Ref {
   p?: Prob
 }
 
-/** How a segment that matched nothing on its own was settled. */
-export type Repair = "narrowed" | "spliced" | "merged"
+/** How a step came to be that is not one part decided on its own: a segment that matched nothing settled narrowed to
+ *  its neighbour's reflex, spliced into its words, or merged back; or a part the engine kept whole split, its parts each
+ *  a reflex of their own. */
+export type Repair = "narrowed" | "spliced" | "merged" | "split"
+
+/** A word of a vocabulary the request stated for several steps, as it reached one of them: a required argument filled
+ *  as a person's answer would fill it, or an optional one written into the step's words and decided again narrowed. */
+export interface Shared {
+  word: Word
+  via: Via
+}
 
 /** One step of the plan: a segment's text and the foundation's decision on it, in the order it is to happen. */
 export interface Step {
@@ -904,6 +913,8 @@ export interface Step {
   effect?: Effect
   refs?: Ref[]
   repair?: Repair
+  /** The words the request stated once for several steps that reached this one's arguments, by argument. */
+  shared?: Record<ArgName, Shared>
   /** The steps this one must follow: an explicit `then`, or a binding. */
   after?: number[]
 }

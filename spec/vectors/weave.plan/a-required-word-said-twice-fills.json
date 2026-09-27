@@ -1,0 +1,992 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-month.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "input": "grab the september bank transactions, the invoices and the card expenses, then the payroll run for september, and reconcile the month",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "grab the september bank transactions"
+          },
+          {
+            "outcome": "run",
+            "reflex": "bank",
+            "args": {
+              "month": {
+                "type": "word",
+                "word": "september"
+              }
+            },
+            "call": "bank month=\"september\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "bank",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "bank",
+                "p": 0.9
+              },
+              {
+                "question": "bank.month",
+                "top": "september",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "invoices",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "bank",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "invoices",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "cards",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "payroll",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "reconcile",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ledger",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "send",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "the invoices"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "invoices",
+            "args": {},
+            "unconsumed": [],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "invoices",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "invoices",
+                "p": 0.9
+              },
+              {
+                "question": "invoices.month",
+                "top": "unstated",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "bank",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "invoices",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "cards",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "payroll",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "reconcile",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ledger",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "send",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "month",
+                "ask": "Which month?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "august": "August, the month before last.",
+                    "september": "September, last month.",
+                    "october": "October, this month."
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "the card expenses"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "cards",
+            "args": {},
+            "unconsumed": [],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "cards",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "cards",
+                "p": 0.9
+              },
+              {
+                "question": "cards.month",
+                "top": "unstated",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "bank",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "cards",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "invoices",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "payroll",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "reconcile",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ledger",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "send",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "month",
+                "ask": "Which month?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "august": "August, the month before last.",
+                    "september": "September, last month.",
+                    "october": "October, this month."
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "the payroll run for september"
+          },
+          {
+            "outcome": "run",
+            "reflex": "payroll",
+            "args": {
+              "month": {
+                "type": "word",
+                "word": "september"
+              }
+            },
+            "call": "payroll month=\"september\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "payroll",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "payroll",
+                "p": 0.9
+              },
+              {
+                "question": "payroll.month",
+                "top": "september",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "bank",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "payroll",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "invoices",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "cards",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "reconcile",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ledger",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "send",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "reconcile the month"
+          },
+          {
+            "outcome": "run",
+            "reflex": "reconcile",
+            "args": {},
+            "call": "reconcile",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "reconcile",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "reconcile",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "bank",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "reconcile",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "invoices",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "cards",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "payroll",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ledger",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "send",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "the invoices",
+            "only": "bank"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "bank",
+                "route": 0.1,
+                "fits": 0.02
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.9
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "grab the invoices bank transactions",
+            "only": "bank"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "bank",
+            "args": {},
+            "unconsumed": [],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "bank",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "bank",
+                "p": 0.9
+              },
+              {
+                "question": "bank.month",
+                "top": "unstated",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "bank",
+                "route": 0.9,
+                "fits": 0.8
+              }
+            ],
+            "missing": [
+              {
+                "arg": "month",
+                "ask": "Which month?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "august": "August, the month before last.",
+                    "september": "September, last month.",
+                    "october": "October, this month."
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        },
+        "weave.split_1": {
+          "yes": 0.9
+        },
+        "weave.split_2": {
+          "yes": 0.9
+        },
+        "weave.split_3": {
+          "yes": 0.9
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "grab the september bank transactions, the invoices and the card expenses, then the payroll run for september, and reconcile the month",
+        "splits": [
+          {
+            "start": 36,
+            "end": 38,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 50,
+            "end": 55,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 72,
+            "end": 79,
+            "word": "then",
+            "order": "then",
+            "p": 0.9
+          },
+          {
+            "start": 108,
+            "end": 114,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          }
+        ],
+        "steps": [
+          {
+            "n": 1,
+            "text": "grab the september bank transactions",
+            "end": 36,
+            "decision": {
+              "outcome": "run",
+              "reflex": "bank",
+              "args": {
+                "month": {
+                  "type": "word",
+                  "word": "september"
+                }
+              },
+              "call": "bank month=\"september\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "bank",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "bank",
+                  "p": 0.9
+                },
+                {
+                  "question": "bank.month",
+                  "top": "september",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "invoices",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "bank",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "invoices",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "cards",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "payroll",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "reconcile",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ledger",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "send",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "bank",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "the invoices",
+            "end": 50,
+            "decision": {
+              "outcome": "run",
+              "reflex": "invoices",
+              "args": {
+                "month": {
+                  "type": "word",
+                  "word": "september"
+                }
+              },
+              "call": "invoices month=\"september\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "invoices",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "invoices",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "invoices",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "bank",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "cards",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "payroll",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "reconcile",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ledger",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "send",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "invoices",
+            "effect": "read",
+            "shared": {
+              "month": {
+                "word": "september",
+                "via": "fill"
+              }
+            }
+          },
+          {
+            "n": 3,
+            "text": "the card expenses",
+            "end": 72,
+            "decision": {
+              "outcome": "run",
+              "reflex": "cards",
+              "args": {
+                "month": {
+                  "type": "word",
+                  "word": "september"
+                }
+              },
+              "call": "cards month=\"september\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "cards",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "cards",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "cards",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "bank",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "invoices",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "payroll",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "reconcile",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ledger",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "send",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "cards",
+            "effect": "read",
+            "shared": {
+              "month": {
+                "word": "september",
+                "via": "fill"
+              }
+            }
+          },
+          {
+            "n": 4,
+            "text": "the payroll run for september",
+            "end": 108,
+            "decision": {
+              "outcome": "run",
+              "reflex": "payroll",
+              "args": {
+                "month": {
+                  "type": "word",
+                  "word": "september"
+                }
+              },
+              "call": "payroll month=\"september\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "payroll",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "payroll",
+                  "p": 0.9
+                },
+                {
+                  "question": "payroll.month",
+                  "top": "september",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "payroll",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "bank",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "invoices",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "cards",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "reconcile",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ledger",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "send",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "payroll",
+            "effect": "read",
+            "after": [
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "n": 5,
+            "text": "reconcile the month",
+            "end": 133,
+            "decision": {
+              "outcome": "run",
+              "reflex": "reconcile",
+              "args": {},
+              "call": "reconcile",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "reconcile",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "reconcile",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "bank",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "reconcile",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "bank",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "invoices",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "cards",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "payroll",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ledger",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "send",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "reconcile",
+            "effect": "read",
+            "after": [
+              1,
+              2,
+              3,
+              4
+            ]
+          }
+        ],
+        "binds": [
+          {
+            "from": 1,
+            "to": 5,
+            "arg": "transactions",
+            "field": "transactions",
+            "via": "takes"
+          },
+          {
+            "from": 2,
+            "to": 5,
+            "arg": "invoices",
+            "field": "invoices",
+            "via": "takes"
+          },
+          {
+            "from": 3,
+            "to": 5,
+            "arg": "expenses",
+            "field": "expenses",
+            "via": "takes"
+          },
+          {
+            "from": 4,
+            "to": 5,
+            "arg": "payroll",
+            "field": "payroll",
+            "via": "takes"
+          }
+        ],
+        "exclusive": false,
+        "stages": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4
+          ],
+          [
+            5
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        }
+      }
+    }
+  }
+}

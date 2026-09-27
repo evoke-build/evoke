@@ -14,6 +14,9 @@ pub const PLAN: &str = include_str!("../../../../spec/fixtures/plan-weave.json")
 /// `spec/fixtures/plan-joins.json`: errors, deploys and logs, reads that return their names; a suspect that takes
 /// the three; incidents, incident and postmortem; a rollback — the plan the join vectors run under.
 pub const JOINS: &str = include_str!("../../../../spec/fixtures/plan-joins.json");
+/// `spec/fixtures/plan-outage.json`: the outage's ten stand-ins, the lookups asking a service from a vocabulary
+/// of three — the plan the shared value's vectors run under.
+pub const OUTAGE: &str = include_str!("../../../../spec/fixtures/plan-outage.json");
 const LIGHTS_TIMER: &str = include_str!("../../../../spec/fixtures/weave-lights-timer.json");
 const ADDRESS_MAIL: &str = include_str!("../../../../spec/fixtures/weave-address-mail.json");
 const SUSPECT: &str = include_str!("../../../../spec/fixtures/weave-suspect.json");
@@ -34,6 +37,15 @@ pub fn plan() -> Plan {
 #[must_use]
 pub fn joins() -> Plan {
     serde_json::from_str(JOINS).expect("the spec's joins plan reads")
+}
+
+/// The outage's plan as the vectors compile it.
+///
+/// # Panics
+/// When the spec's fixture does not read.
+#[must_use]
+pub fn outage() -> Plan {
+    serde_json::from_str(OUTAGE).expect("the spec's outage plan reads")
 }
 
 /// The same plan with one reflex's effect changed: the schedule reads effects off the plan, so a generated one
@@ -135,22 +147,15 @@ pub fn exclusive(effects: &[Effect]) -> bool {
     effects.len() > 1 && effects.iter().any(|effect| *effect != Effect::Read)
 }
 
-/// The stages: «`then` and a reference order the steps; a write never runs beside anything, reads may» — layers by
-/// longest path, a layer of reads together when no write is among the steps, else one step at a time in the
-/// words' order.
+/// The stages: «`then` and a reference order the steps; a write never runs beside anything, and a plan holding
+/// one runs its steps in the words' order; reads alone may run side by side» — reads alone are layers by longest
+/// path, each together; a write among the steps puts every step at its turn in the words' order, alone.
 #[must_use]
 pub fn stages(effects: &[Effect], after: &[Vec<usize>]) -> Vec<Vec<usize>> {
-    let exclusive = exclusive(effects);
-    let mut stages = Vec::new();
-    for layer in layers(after) {
-        let reads = layer.iter().all(|n| effects[n - 1] == Effect::Read);
-        if !exclusive && reads {
-            stages.push(layer);
-        } else {
-            stages.extend(layer.into_iter().map(|n| vec![n]));
-        }
+    if exclusive(effects) {
+        return (1..=effects.len()).map(|n| vec![n]).collect();
     }
-    stages
+    layers(after)
 }
 
 /// «The exit is the worst step's, a step skipped because its source yielded nothing to take counting as failed»:

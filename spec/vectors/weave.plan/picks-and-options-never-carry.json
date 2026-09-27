@@ -1,0 +1,923 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "input": "look up incident 311, mark checkout as resolved on the status page, update the status page for checkout and look up the incident",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "look up incident 311"
+          },
+          {
+            "outcome": "run",
+            "reflex": "incident",
+            "args": {
+              "number": {
+                "type": "pick",
+                "span": {
+                  "start": 17,
+                  "end": 20,
+                  "text": "311"
+                },
+                "value": {
+                  "type": "number",
+                  "value": 311
+                }
+              }
+            },
+            "call": "incident number=\"311\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "incident",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "incident",
+                "p": 0.9
+              },
+              {
+                "question": "incident.number",
+                "top": "17-20",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "incident",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "mark checkout as resolved on the status page"
+          },
+          {
+            "outcome": "run",
+            "reflex": "status",
+            "args": {
+              "component": {
+                "type": "word",
+                "word": "checkout"
+              },
+              "state": {
+                "type": "option",
+                "key": "resolved"
+              }
+            },
+            "call": "status component=\"checkout\" state=\"resolved\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "status",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "status",
+                "p": 0.9
+              },
+              {
+                "question": "status.component",
+                "top": "checkout",
+                "p": 0.9
+              },
+              {
+                "question": "status.state",
+                "top": "resolved",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "status",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "update the status page for checkout"
+          },
+          {
+            "outcome": "run",
+            "reflex": "status",
+            "args": {
+              "component": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "status component=\"checkout\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "status",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "status",
+                "p": 0.9
+              },
+              {
+                "question": "status.component",
+                "top": "checkout",
+                "p": 0.9
+              },
+              {
+                "question": "status.state",
+                "top": "unstated",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "status",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "look up the incident"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "incident",
+            "args": {},
+            "unconsumed": [],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "incident",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "incident",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "incident",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "number",
+                "ask": "Which incident number?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "pick",
+                  "pick": "number"
+                }
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        },
+        "weave.split_1": {
+          "yes": 0.9
+        },
+        "weave.split_2": {
+          "yes": 0.9
+        }
+      },
+      "referred": {
+        "weave.ref_2_0": {
+          "step1": 0.9,
+          "step0": 0.1
+        },
+        "weave.ref_3_0": {
+          "step0": 0.9,
+          "step1": 0.05,
+          "step2": 0.05
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "look up incident 311, mark checkout as resolved on the status page, update the status page for checkout and look up the incident",
+        "splits": [
+          {
+            "start": 20,
+            "end": 22,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 66,
+            "end": 68,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 103,
+            "end": 108,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          }
+        ],
+        "steps": [
+          {
+            "n": 1,
+            "text": "look up incident 311",
+            "end": 20,
+            "decision": {
+              "outcome": "run",
+              "reflex": "incident",
+              "args": {
+                "number": {
+                  "type": "pick",
+                  "span": {
+                    "start": 17,
+                    "end": 20,
+                    "text": "311"
+                  },
+                  "value": {
+                    "type": "number",
+                    "value": 311
+                  }
+                }
+              },
+              "call": "incident number=\"311\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "incident",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "incident",
+                  "p": 0.9
+                },
+                {
+                  "question": "incident.number",
+                  "top": "17-20",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "incident",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "status",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "incident",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "mark checkout as resolved on the status page",
+            "end": 66,
+            "decision": {
+              "outcome": "run",
+              "reflex": "status",
+              "args": {
+                "component": {
+                  "type": "word",
+                  "word": "checkout"
+                },
+                "state": {
+                  "type": "option",
+                  "key": "resolved"
+                }
+              },
+              "call": "status component=\"checkout\" state=\"resolved\"",
+              "effect": "write",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "status",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "status",
+                  "p": 0.9
+                },
+                {
+                  "question": "status.component",
+                  "top": "checkout",
+                  "p": 0.9
+                },
+                {
+                  "question": "status.state",
+                  "top": "resolved",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "status",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "status",
+            "effect": "write"
+          },
+          {
+            "n": 3,
+            "text": "update the status page for checkout",
+            "end": 103,
+            "decision": {
+              "outcome": "run",
+              "reflex": "status",
+              "args": {
+                "component": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "status component=\"checkout\"",
+              "effect": "write",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "status",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "status",
+                  "p": 0.9
+                },
+                {
+                  "question": "status.component",
+                  "top": "checkout",
+                  "p": 0.9
+                },
+                {
+                  "question": "status.state",
+                  "top": "unstated",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "status",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "status",
+            "effect": "write",
+            "refs": [
+              {
+                "span": {
+                  "start": 7,
+                  "end": 17,
+                  "text": "the status"
+                },
+                "from": [
+                  1
+                ],
+                "how": "engine",
+                "weak": true,
+                "noun": "statu",
+                "p": 0.9
+              }
+            ]
+          },
+          {
+            "n": 4,
+            "text": "look up the incident",
+            "end": 128,
+            "decision": {
+              "outcome": "ask",
+              "reflex": "incident",
+              "args": {},
+              "unconsumed": [],
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "incident",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "incident",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "incident",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "status",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "missing": [
+                {
+                  "arg": "number",
+                  "ask": "Which incident number?",
+                  "because": {
+                    "type": "unstated"
+                  },
+                  "choices": {
+                    "type": "pick",
+                    "pick": "number"
+                  }
+                }
+              ]
+            },
+            "reflex": "incident",
+            "effect": "read",
+            "refs": [
+              {
+                "span": {
+                  "start": 8,
+                  "end": 20,
+                  "text": "the incident"
+                },
+                "from": [
+                  0
+                ],
+                "how": "engine",
+                "weak": true,
+                "noun": "incident",
+                "p": 0.9
+              }
+            ]
+          }
+        ],
+        "exclusive": true,
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ]
+        ],
+        "verdict": {
+          "outcome": "ask",
+          "because": [
+            {
+              "type": "needs",
+              "step": 4,
+              "arg": "number"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

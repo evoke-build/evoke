@@ -102,6 +102,7 @@ fn decide(op: &str, input: &Json) -> Answer {
         )),
         "weave.plan" => result(weave::planning::plan(
             &arg::<Plan>(input, "plan")?,
+            opt::<Gate>(input, "gate")?.as_ref(),
             text(input, "input")?,
             &arg::<Vec<Tag>>(input, "tags")?,
             &arg::<weave::Answers>(input, "answers")?,

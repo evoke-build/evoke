@@ -88,7 +88,7 @@ export interface Ops {
     output: T.LogBlock
   }
   // weave
-  "weave.plan": { input: { plan: T.Plan; input: string; tags: T.Tag[]; answers: T.Answers }; output: T.Result<T.Planning, T.Fault> }
+  "weave.plan": { input: { plan: T.Plan; gate?: T.Gate; input: string; tags: T.Tag[]; answers: T.Answers }; output: T.Result<T.Planning, T.Fault> }
   "weave.execute": { input: { plan: T.Plan; gate?: T.Gate; weave: T.Weave; progress: T.Progress }; output: T.Running }
   // the adapters
   "systemone.settings": { input: { door: T.Door; table?: T.Json }; output: T.Result<T.Settings, T.Diagnostic[]> }

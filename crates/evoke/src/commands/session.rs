@@ -803,8 +803,9 @@ impl Session<'_> {
         let mut decided = seeded;
         let mut trace = Vec::new();
         loop {
-            let planning =
-                weave::planning::plan(&self.plan, input, tags, &answers).map_err(Exit::Adapter)?;
+            let gate = adapter.declared().gate.as_ref();
+            let planning = weave::planning::plan(&self.plan, gate, input, tags, &answers)
+                .map_err(Exit::Adapter)?;
             let need = match planning {
                 Planning::Done { weave } => {
                     return Ok(Woven {

@@ -18,6 +18,7 @@ use evoke_core::weave::{
     Asked, Binding, Executed, Handled, Handling, Outcome, Progress, Returned, Running, Status,
     Step, Todo, Verdict, Via, Weave, Why,
 };
+use indexmap::IndexMap;
 use proptest::collection::vec;
 use proptest::prelude::*;
 use proptest::sample::select;
@@ -673,6 +674,7 @@ fn weave_of(model: &Model) -> Weave {
             effect: Some(spec.effect),
             refs: Vec::new(),
             repair: None,
+            shared: IndexMap::new(),
             after: spec.after(),
         })
         .collect();

@@ -1,0 +1,575 @@
+{
+  "digest": "h1:136fb678c9ae6e04f653aecefe4e7c8451ff343d4a4ddd96193789e17f2b571c",
+  "active": {
+    "errors": {
+      "effect": "read",
+      "run": "errors.mts",
+      "confirm": "Check the errors of {service}?",
+      "args": {
+        "service": {
+          "ask": "Which service?",
+          "vocab": "services",
+          "optional": false,
+          "was": []
+        },
+        "region": {
+          "ask": "In which region?",
+          "vocab": "regions",
+          "optional": true,
+          "was": []
+        }
+      },
+      "yields": {},
+      "returns": "errors",
+      "config": {},
+      "tags": [
+        "errors"
+      ]
+    },
+    "deploys": {
+      "effect": "read",
+      "run": "deploys.mts",
+      "confirm": "List the deploys of {service}?",
+      "args": {
+        "service": {
+          "ask": "Which service?",
+          "vocab": "services",
+          "optional": false,
+          "was": []
+        },
+        "region": {
+          "ask": "In which region?",
+          "vocab": "regions",
+          "optional": true,
+          "was": []
+        }
+      },
+      "yields": {
+        "deploys": {
+          "each": {
+            "release": "quoted"
+          }
+        }
+      },
+      "returns": "deploys",
+      "config": {},
+      "tags": [
+        "deploys"
+      ]
+    },
+    "logs": {
+      "effect": "read",
+      "run": "logs.mts",
+      "confirm": "Search the logs of {service}?",
+      "args": {
+        "service": {
+          "ask": "Which service?",
+          "vocab": "services",
+          "optional": false,
+          "was": []
+        },
+        "region": {
+          "ask": "In which region?",
+          "vocab": "regions",
+          "optional": true,
+          "was": []
+        }
+      },
+      "yields": {},
+      "returns": "logs",
+      "config": {},
+      "tags": [
+        "logs"
+      ]
+    },
+    "suspect": {
+      "effect": "read",
+      "run": "suspect.mts",
+      "confirm": "Find the suspect?",
+      "args": {},
+      "takes": {
+        "errors": "errors",
+        "deploys": "deploys",
+        "logs": "logs"
+      },
+      "yields": {
+        "release": "quoted"
+      },
+      "config": {},
+      "tags": [
+        "suspect"
+      ]
+    },
+    "rollback": {
+      "effect": "destructive",
+      "run": "rollback.mts",
+      "confirm": "Roll back {release}?",
+      "args": {
+        "service": {
+          "ask": "Which service?",
+          "vocab": "services",
+          "optional": true,
+          "was": []
+        },
+        "release": {
+          "ask": "From which release?",
+          "pick": "quoted",
+          "optional": false,
+          "was": []
+        },
+        "region": {
+          "ask": "In which region?",
+          "vocab": "regions",
+          "optional": true,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "rollback"
+      ]
+    },
+    "post": {
+      "effect": "write",
+      "run": "post.mts",
+      "confirm": "Post to {channel}?",
+      "args": {
+        "channel": {
+          "ask": "Which channel?",
+          "vocab": "channels",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "post"
+      ]
+    },
+    "incidents": {
+      "effect": "read",
+      "run": "incidents.mts",
+      "confirm": "List the open incidents?",
+      "args": {},
+      "yields": {
+        "incidents": {
+          "each": {
+            "number": "number"
+          }
+        }
+      },
+      "config": {},
+      "tags": [
+        "incidents"
+      ]
+    },
+    "incident": {
+      "effect": "read",
+      "run": "incident.mts",
+      "confirm": "Look up incident {number}?",
+      "args": {
+        "number": {
+          "ask": "Which incident number?",
+          "pick": "number",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "returns": "incident",
+      "config": {},
+      "tags": [
+        "incident"
+      ]
+    },
+    "postmortem": {
+      "effect": "write",
+      "run": "postmortem.mts",
+      "confirm": "Draft the postmortem?",
+      "args": {},
+      "takes": {
+        "incident": "incident"
+      },
+      "yields": {
+        "path": "quoted"
+      },
+      "config": {},
+      "tags": [
+        "postmortem"
+      ]
+    },
+    "status": {
+      "effect": "write",
+      "run": "status.mts",
+      "confirm": "Update the status page for {component}?",
+      "args": {
+        "component": {
+          "ask": "Which service?",
+          "vocab": "services",
+          "optional": false,
+          "was": []
+        },
+        "state": {
+          "ask": "Which state?",
+          "options": {
+            "investigating": "Looking into a problem.",
+            "identified": "The cause is known.",
+            "monitoring": "A fix is out; watching.",
+            "resolved": "Back to normal."
+          },
+          "optional": true,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "status"
+      ]
+    }
+  },
+  "inactive": {},
+  "slots": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "errors": {
+          "what": "Show the error rate of a service.\nThe rate over the last hour and when it rose, in one region or all.",
+          "not_for": [
+            "logs of a service",
+            "releases and deploys",
+            "the status page"
+          ],
+          "examples": [
+            "check the errors for checkout",
+            "error rate of payments in eu-west",
+            "is search throwing errors"
+          ]
+        },
+        "deploys": {
+          "what": "List the recent deploys of a service.\nEach release, when it went out and who shipped it.",
+          "not_for": [
+            "error rates",
+            "logs of a service",
+            "rolling a release back"
+          ],
+          "examples": [
+            "what was deployed to checkout today",
+            "list the deploys of payments",
+            "recent releases of search in us-east"
+          ]
+        },
+        "logs": {
+          "what": "Search a service's logs for the last hour.\nThe most frequent errors and how often each came.",
+          "not_for": [
+            "error rates",
+            "releases and deploys",
+            "posting to a channel"
+          ],
+          "examples": [
+            "pull the logs for checkout",
+            "search the payments logs in eu-west",
+            "what do the search logs say"
+          ]
+        },
+        "suspect": {
+          "what": "Find the release most likely behind a failure.\nWeighs a service's errors, its deploys and its logs, and names the release.",
+          "not_for": [
+            "listing deploys",
+            "rolling a release back",
+            "error rates alone"
+          ],
+          "examples": [
+            "find the suspect",
+            "which deploy broke it",
+            "find the release behind the outage"
+          ]
+        },
+        "rollback": {
+          "what": "Roll a service back from a release to the one before it.\nEverywhere, or in one region.",
+          "not_for": [
+            "listing deploys",
+            "finding which release broke something",
+            "restarting a service"
+          ],
+          "examples": [
+            "roll checkout back from \"4.12.0\"",
+            "revert payments from \"2.3.1\" in eu-west",
+            "undo the \"7.0.2\" release of search"
+          ]
+        },
+        "post": {
+          "what": "Post a message to a chat channel.\nThe message is what you typed about it.",
+          "not_for": [
+            "email",
+            "the status page",
+            "reading a channel"
+          ],
+          "examples": [
+            "post to #incident that we are on it",
+            "tell #ops the deploy is done",
+            "let #incident know it is fixed"
+          ]
+        },
+        "incidents": {
+          "what": "List the open incidents.\nEach with its number and the service it hit.",
+          "not_for": [
+            "one incident by its number",
+            "error rates",
+            "the status page"
+          ],
+          "examples": [
+            "list the open incidents",
+            "what incidents are open",
+            "which incidents are still going"
+          ]
+        },
+        "incident": {
+          "what": "Look up an incident by its number.\nWhat happened, when it opened, and which service it hit.",
+          "not_for": [
+            "listing every incident",
+            "writing a postmortem",
+            "error rates"
+          ],
+          "examples": [
+            "look up incident 311",
+            "what happened in incident 42",
+            "show me incident 1207"
+          ]
+        },
+        "postmortem": {
+          "what": "Draft the postmortem of an incident.\nA document from what the incident record says, saved for review.",
+          "not_for": [
+            "looking up an incident",
+            "posting to a channel",
+            "the status page"
+          ],
+          "examples": [
+            "draft the postmortem",
+            "write up the postmortem",
+            "start a postmortem for it"
+          ]
+        },
+        "status": {
+          "what": "Update the status page for a service.\nIts state as customers see it.",
+          "not_for": [
+            "chat channels",
+            "email",
+            "error rates"
+          ],
+          "examples": [
+            "update the status page for checkout",
+            "mark payments as resolved on the status page",
+            "set the search status to investigating"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "fits.errors": {
+      "type": "yesno",
+      "ask": "Does `errors` do the specific thing the request asks for?",
+      "yes": "Show the error rate of a service.\nThe rate over the last hour and when it rose, in one region or all.",
+      "no": "Something else, such as: logs of a service; releases and deploys; the status page."
+    },
+    "errors.service": {
+      "type": "choice",
+      "ask": "Which service?",
+      "options": {
+        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "payments": "The payments service: card charges and refunds.",
+        "search": "The search service: product search and suggestions.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "errors.region": {
+      "type": "choice",
+      "ask": "In which region?",
+      "options": {
+        "eu-west": "Europe, the Ireland region.",
+        "us-east": "The United States, the Virginia region.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.deploys": {
+      "type": "yesno",
+      "ask": "Does `deploys` do the specific thing the request asks for?",
+      "yes": "List the recent deploys of a service.\nEach release, when it went out and who shipped it.",
+      "no": "Something else, such as: error rates; logs of a service; rolling a release back."
+    },
+    "deploys.service": {
+      "type": "choice",
+      "ask": "Which service?",
+      "options": {
+        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "payments": "The payments service: card charges and refunds.",
+        "search": "The search service: product search and suggestions.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "deploys.region": {
+      "type": "choice",
+      "ask": "In which region?",
+      "options": {
+        "eu-west": "Europe, the Ireland region.",
+        "us-east": "The United States, the Virginia region.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.logs": {
+      "type": "yesno",
+      "ask": "Does `logs` do the specific thing the request asks for?",
+      "yes": "Search a service's logs for the last hour.\nThe most frequent errors and how often each came.",
+      "no": "Something else, such as: error rates; releases and deploys; posting to a channel."
+    },
+    "logs.service": {
+      "type": "choice",
+      "ask": "Which service?",
+      "options": {
+        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "payments": "The payments service: card charges and refunds.",
+        "search": "The search service: product search and suggestions.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "logs.region": {
+      "type": "choice",
+      "ask": "In which region?",
+      "options": {
+        "eu-west": "Europe, the Ireland region.",
+        "us-east": "The United States, the Virginia region.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.suspect": {
+      "type": "yesno",
+      "ask": "Does `suspect` do the specific thing the request asks for?",
+      "yes": "Find the release most likely behind a failure.\nWeighs a service's errors, its deploys and its logs, and names the release.",
+      "no": "Something else, such as: listing deploys; rolling a release back; error rates alone."
+    },
+    "fits.rollback": {
+      "type": "yesno",
+      "ask": "Does `rollback` do the specific thing the request asks for?",
+      "yes": "Roll a service back from a release to the one before it.\nEverywhere, or in one region.",
+      "no": "Something else, such as: listing deploys; finding which release broke something; restarting a service."
+    },
+    "rollback.service": {
+      "type": "choice",
+      "ask": "Which service?",
+      "options": {
+        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "payments": "The payments service: card charges and refunds.",
+        "search": "The search service: product search and suggestions.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "rollback.release": {
+      "type": "pick",
+      "ask": "From which release?",
+      "pick": "quoted",
+      "optional": false
+    },
+    "rollback.region": {
+      "type": "choice",
+      "ask": "In which region?",
+      "options": {
+        "eu-west": "Europe, the Ireland region.",
+        "us-east": "The United States, the Virginia region.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.post": {
+      "type": "yesno",
+      "ask": "Does `post` do the specific thing the request asks for?",
+      "yes": "Post a message to a chat channel.\nThe message is what you typed about it.",
+      "no": "Something else, such as: email; the status page; reading a channel."
+    },
+    "post.channel": {
+      "type": "choice",
+      "ask": "Which channel?",
+      "options": {
+        "#incident": "Where an outage is handled.",
+        "#ops": "The operations team's channel.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.incidents": {
+      "type": "yesno",
+      "ask": "Does `incidents` do the specific thing the request asks for?",
+      "yes": "List the open incidents.\nEach with its number and the service it hit.",
+      "no": "Something else, such as: one incident by its number; error rates; the status page."
+    },
+    "fits.incident": {
+      "type": "yesno",
+      "ask": "Does `incident` do the specific thing the request asks for?",
+      "yes": "Look up an incident by its number.\nWhat happened, when it opened, and which service it hit.",
+      "no": "Something else, such as: listing every incident; writing a postmortem; error rates."
+    },
+    "incident.number": {
+      "type": "pick",
+      "ask": "Which incident number?",
+      "pick": "number",
+      "optional": false
+    },
+    "fits.postmortem": {
+      "type": "yesno",
+      "ask": "Does `postmortem` do the specific thing the request asks for?",
+      "yes": "Draft the postmortem of an incident.\nA document from what the incident record says, saved for review.",
+      "no": "Something else, such as: looking up an incident; posting to a channel; the status page."
+    },
+    "fits.status": {
+      "type": "yesno",
+      "ask": "Does `status` do the specific thing the request asks for?",
+      "yes": "Update the status page for a service.\nIts state as customers see it.",
+      "no": "Something else, such as: chat channels; email; error rates."
+    },
+    "status.component": {
+      "type": "choice",
+      "ask": "Which service?",
+      "options": {
+        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "payments": "The payments service: card charges and refunds.",
+        "search": "The search service: product search and suggestions.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "status.state": {
+      "type": "choice",
+      "ask": "Which state?",
+      "options": {
+        "investigating": {
+          "what": "Looking into a problem.",
+          "examples": [
+            "set the search status to investigating"
+          ]
+        },
+        "identified": "The cause is known.",
+        "monitoring": "A fix is out; watching.",
+        "resolved": {
+          "what": "Back to normal.",
+          "examples": [
+            "mark payments as resolved on the status page"
+          ]
+        },
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    }
+  },
+  "values": {},
+  "deadline": 30000
+}

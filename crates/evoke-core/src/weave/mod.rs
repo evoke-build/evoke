@@ -17,7 +17,7 @@ use crate::adapter::Request;
 use crate::decide::Decision;
 use crate::document::Json;
 use crate::manifest::{Effect, Recognizer};
-use crate::name::{ArgName, FieldName, LocalName, Tag};
+use crate::name::{ArgName, FieldName, LocalName, Tag, Word};
 pub use reading::{How, Order, Ref, Split, Where};
 
 /// A text for the foundation to decide: over the reflexes the tags allow, or one reflex alone.
@@ -61,13 +61,25 @@ pub enum Planning {
     Need { need: Need },
 }
 
-/// How a segment that matched nothing on its own was settled.
+/// How a step came to be that is not one part decided on its own: a segment that matched nothing was settled
+/// narrowed to its neighbour's reflex, spliced into its words, or merged back; a part the engine kept whole at a
+/// comma or an `and` was split, its parts each a reflex of their own.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Repair {
     Narrowed,
     Spliced,
     Merged,
+    Split,
+}
+
+/// A word of a vocabulary the request stated for several steps, as it reached one of them: a required argument
+/// filled as a person's answer would fill it, or an optional one written into the step's words, which were then
+/// decided again narrowed to the step's reflex; never handed whole.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Shared {
+    pub word: Word,
+    pub via: Via,
 }
 
 /// One step of the plan: a segment's text and the foundation's decision on it, in the order it is to happen.
@@ -87,6 +99,9 @@ pub struct Step {
     pub refs: Vec<Ref>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub repair: Option<Repair>,
+    /// The words the request stated once for several steps that reached this one's arguments, by argument.
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub shared: IndexMap<ArgName, Shared>,
     /// The steps this one must follow: an explicit `then`, or a binding.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub after: Vec<usize>,
@@ -453,12 +468,18 @@ fn rank(status: Status) -> u8 {
     }
 }
 
-/// What the planner asked to decide a step, as its repair tells: a fragment narrowed to its neighbour's reflex,
-/// or spliced into its words, was decided under that reflex alone; any other step over the tags.
+/// What the planner asked to decide a step, as its repair and its shared words tell: a fragment narrowed to its
+/// neighbour's reflex, or spliced into its words, was decided under that reflex alone, and so were words a shared
+/// word was written into; any other step over the tags.
 #[must_use]
 pub fn asked_for(step: &Step, tags: &[Tag]) -> Asked {
-    match (step.repair, &step.reflex) {
-        (Some(Repair::Narrowed | Repair::Spliced), Some(reflex)) => Asked {
+    let narrowed = matches!(step.repair, Some(Repair::Narrowed | Repair::Spliced))
+        || step
+            .shared
+            .values()
+            .any(|shared| shared.via == Via::Rewrite);
+    match (narrowed, &step.reflex) {
+        (true, Some(reflex)) => Asked {
             text: step.text.clone(),
             tags: Vec::new(),
             only: Some(reflex.clone()),

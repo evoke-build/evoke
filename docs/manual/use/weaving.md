@@ -33,7 +33,18 @@ den lights off
   such parts is nothing to do, and one line says so.
 - `then`, `after that` and `next` order the steps. `after you X, Y` and `Y after you X` read as `X, then Y`.
   `before you X, Y` and `Y before you X` read as `Y, then X`. When a write is among the steps, every step runs
-  alone. A plan of reads may run them side by side.
+  alone, in the order you wrote them. A plan of reads may run them side by side.
+- A word the sentence says once for several steps reaches each of them. "check checkout's errors, deploys and
+  logs in eu-west" names the service and the region once: every lookup takes both. A step that lacks a required
+  word takes the one word of its kind the sentence names, as an answer would give it. A step that could take an
+  optional word takes the one said once in its part of the sentence, before any `then`, written into its words
+  and decided again under the same gate. A step whose own words name a word of that kind keeps its own, and a
+  sentence that names two, "checkout" and "payments", carries neither. Only a word from a vocabulary is carried:
+  never a number, an address, a quoted value or an option. The plan shows the word on each step it reached, and
+  `evoke why` says which words were shared.
+- Two items the classifier read as one thing, "invoices, card expenses", are two steps when each is a reflex of
+  its own: the joint is split, and a word the sentence says once reaches both. A joint it read firmly as one
+  task stays one.
 - A sentence reads most surely when it asks for a few steps. The plan is settled before anything runs, so the
   longer a sentence grows, the more often one of its steps stops to ask.
 
@@ -129,8 +140,10 @@ matched.
 ## At each step's turn
 
 Each step then goes through the same gate as one input: a run runs, a confirm prompts, an ask asks. A step that
-differs from its plan line, a bound value now in place, prints again. A failure, a decline or a refusal ends the
-weave after its stage. The steps after it are skipped, and say so:
+differs from its plan line, a bound value now in place, prints again. In the SDK a step's confirm can wait for
+someone else: the decision travels as plain data to whoever answers it, and the weave goes on when they do
+([Decisions](../sdk/decisions.md#stepsinput--tags-signal--and-weaveinput--confirm-ask-proceed-tags-signal-)).
+A failure, a decline or a refusal ends the weave after its stage. The steps after it are skipped, and say so:
 
 ```text
 $ evoke "start a 25 minute timer and kill the lights in the den"
@@ -193,7 +206,8 @@ once, with what stopped it.
 ## Afterwards
 
 Every step is logged under its number. `evoke why` shows each step of the last sentence with what became of it:
-`ran`, `failed`, `declined`, `refused`, `skipped` or `unanswered`, and why, `cancelled` among the reasons. `evoke teach <call>` with no
+`ran`, `failed`, `declined`, `refused`, `skipped` or `unanswered`, and why, `cancelled` among the reasons, and the
+words the sentence shared into it, `shared service = checkout`. `evoke teach <call>` with no
 utterance takes the step the lesson's reflex decided; when none or several did, it names the steps and asks you
 to say which ([Tuning](tuning.md)).
 

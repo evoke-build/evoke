@@ -438,9 +438,10 @@ pub fn refers_back(text: &str) -> bool {
     (0..chars.len()).any(|i| pronoun_at(&chars, i).is_some())
 }
 
-/// A pronoun at `i`, the longest alternative first: where it ends.
+/// A pronoun at `i`, the longest alternative first: where it ends. A `#` before the word makes it a name —
+/// «#it» is a channel — never a pronoun.
 fn pronoun_at(chars: &[char], i: usize) -> Option<(usize, &'static str)> {
-    if !boundary(chars, i) {
+    if !boundary(chars, i) || (i > 0 && chars[i - 1] == '#') {
         return None;
     }
     PRONOUNS
@@ -929,6 +930,9 @@ mod tests {
         assert!(!negated("note the time"));
         assert!(refers_back("pull up every one of them"));
         assert!(!refers_back("look up order 4821"));
+        // A channel's name is no pronoun.
+        assert!(!refers_back("tell #it"));
+        assert!(refers_back("tell #it about it"));
     }
 
     fn segs(texts: &[&str]) -> Vec<Segment> {

@@ -20,7 +20,7 @@ use evoke_core::text::NonEmpty;
 use evoke_core::vocabulary::Meaning;
 use evoke_core::weave::{
     self, Asked, Because, Binding, Bound, Handled, Handling, Outcome, Progress,
-    Returned as Yielded, Status, Step, Todo, Why as Stopped,
+    Returned as Yielded, Shared, Status, Step, Todo, Why as Stopped,
 };
 use evoke_core::{
     Chosen, Clean, Decision, Diagnostic, Executed, Fix, Gate, Lesson, Prompt, Running, Utterance,
@@ -116,8 +116,12 @@ impl Using<'_> {
         let exit = match woven.single(&self.arguments.tags) {
             Some(decided) => {
                 let decision = decided.decision.clone();
-                self.round(input, None, &decided, decision, &[], &IndexMap::new())
-                    .exit
+                let handed = Handed {
+                    bound: &[],
+                    taken: &IndexMap::new(),
+                    shared: &IndexMap::new(),
+                };
+                self.round(input, None, &decided, decision, handed).exit
             }
             None => self.many(input, woven),
         };
@@ -128,16 +132,15 @@ impl Using<'_> {
     }
 
     /// One decision through the foundation's loop — abstain, ask, confirm, run — as one input takes it, or as one
-    /// round of a weave's step does, numbered `at`, with the whole results the plan handed it beside it: the
-    /// line printed under `--json` and logged, the exit reported; what became of it, for the weave.
+    /// round of a weave's step does, numbered `at`, with what the plan handed it beside it: the line printed
+    /// under `--json` and logged, the exit reported; what became of it, for the weave.
     fn round(
         &mut self,
         input: &str,
         at: Option<(usize, usize)>,
         decided: &Decided,
         decision: Decision,
-        bound: &[Bound],
-        taken: &IndexMap<ArgName, Json>,
+        handed: Handed<'_>,
     ) -> Rounded {
         let json = self.arguments.json;
         let mut line = Line::of(decided);
@@ -147,16 +150,17 @@ impl Using<'_> {
             of,
             status: Status::Ran,
             why: None,
-            bound: bound.to_vec(),
+            bound: handed.bound.to_vec(),
+            shared: handed.shared.clone(),
         });
-        let chosen = match self.readied(input, at, decided, decision, bound, &mut line) {
+        let chosen = match self.readied(input, at, decided, decision, handed.bound, &mut line) {
             Ok(chosen) => chosen,
             Err(rounded) => return rounded,
         };
         line.contained = Some(self.session.contained.clone());
         let ran = self.session.run(
             &chosen,
-            taken,
+            handed.taken,
             &decided.request.state.request,
             decided.spent(),
         );
@@ -640,6 +644,7 @@ impl Using<'_> {
                 status,
                 why: Some(why),
                 bound: Vec::new(),
+                shared: step.shared.clone(),
             });
             if self.arguments.json {
                 terminal::result(&line.json());
@@ -717,16 +722,20 @@ impl Using<'_> {
                         if interrupt::interrupted() {
                             progress
                                 .handled
-                                .push(self.cancelled(input, of, &handling, &decided));
+                                .push(self.cancelled(input, step, of, &handling, &decided));
                             continue;
                         }
+                        let handed = Handed {
+                            bound: &handling.bound,
+                            taken: &handling.taken,
+                            shared: &step.shared,
+                        };
                         let rounded = self.round(
                             input,
                             Some((handling.step, of)),
                             &decided,
                             handling.decision.clone(),
-                            &handling.bound,
-                            &handling.taken,
+                            handed,
                         );
                         progress.handled.push(Handled {
                             step: handling.step,
@@ -747,7 +756,14 @@ impl Using<'_> {
 
     /// A round handed after Ctrl-C was noted: it never starts, and its line — logged, printed under `--json` —
     /// reads `skipped · cancelled`.
-    fn cancelled(&self, input: &str, of: usize, handling: &Handling, decided: &Decided) -> Handled {
+    fn cancelled(
+        &self,
+        input: &str,
+        step: &Step,
+        of: usize,
+        handling: &Handling,
+        decided: &Decided,
+    ) -> Handled {
         let mut line = Line::of(decided);
         line.decision = handling.decision.clone();
         line.step = Some(StepLine {
@@ -756,6 +772,7 @@ impl Using<'_> {
             status: Status::Skipped,
             why: Some(Stopped::Cancelled),
             bound: handling.bound.clone(),
+            shared: step.shared.clone(),
         });
         self.logged(input, &line, Exit::Ran);
         Handled {
@@ -836,6 +853,7 @@ impl Using<'_> {
                 status: outcome.status,
                 why: outcome.why.clone(),
                 bound: outcome.bound.clone(),
+                shared: step.shared.clone(),
             });
             let exit = if outcome.status == Status::Refused {
                 Exit::Declined(Decline::Abstained)
@@ -1152,6 +1170,15 @@ impl Using<'_> {
             _ => None,
         }
     }
+}
+
+/// What the plan handed a round beside its decision: the values bound into it, the whole results it takes, and
+/// the words shared into its step.
+#[derive(Clone, Copy)]
+struct Handed<'a> {
+    bound: &'a [Bound],
+    taken: &'a IndexMap<ArgName, Json>,
+    shared: &'a IndexMap<ArgName, Shared>,
 }
 
 /// What became of one round of a step: its exit, already reported; its status and why it stopped; what its body

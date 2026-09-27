@@ -6,6 +6,14 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A word a sentence says once for several steps reaches each of them: `check checkout's errors, deploys and
+  logs in eu-west` runs every lookup on checkout in eu-west. The plan shows the word on each step, `evoke why`
+  names what was shared, and `--json` carries it as `shared`.
+- Two items the classifier read as one thing, `invoices, card expenses`, are two steps when each is a reflex of
+  its own.
+- A channel named `#it` is no longer read as `it`.
+- A sentence with a change among its steps runs them in the order you wrote them. Lookups alone still run side
+  by side.
 - A manifest names where its body runs, `platforms = ["macos"]`. On another machine the reflex is inactive,
   and `add` and `show` say so. The collection's reflexes name macOS.
 - `[+] add one` at a prompt asks for the word's path when a reflex declares its value as one it reads or

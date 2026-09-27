@@ -14,15 +14,16 @@ use evoke_core::calibrate::{self, BarRow, BinRow, Calibration, LogBlock, Miss, Q
 use evoke_core::contract::Change;
 use evoke_core::decide::{Missing, Why};
 use evoke_core::manifest::{Effect, Manifest, Run};
-use evoke_core::name::{FieldName, LocalName};
+use evoke_core::name::{ArgName, FieldName, LocalName};
 use evoke_core::test::{Claim, Expected, Mismatch};
 use evoke_core::vocabulary::Vocabulary;
-use evoke_core::weave::{Because, Bound, Status, Step, Why as Stopped};
+use evoke_core::weave::{Because, Bound, Shared, Status, Step, Why as Stopped};
 use evoke_core::{
     At, Call, Case, Chosen, Clean, Contained, Contender, ContractDiff, Decision, Diagnostic,
     Effective, File, Finding, Fix, Gate, Input, Json, KeyPath, Level, Needs, Prompt, Proposed, Raw,
     Regression, Verdict, Version, Weave, render,
 };
+use indexmap::IndexMap;
 
 use crate::adapter::Trace;
 use crate::commands::Exit;
@@ -240,6 +241,8 @@ pub struct StepLine {
     pub status: Status,
     pub why: Option<evoke_core::weave::Why>,
     pub bound: Vec<Bound>,
+    /// The words the request stated once for several steps that reached this one's arguments.
+    pub shared: IndexMap<ArgName, Shared>,
 }
 
 impl Line {
@@ -312,6 +315,14 @@ impl Line {
             line.insert(
                 "bound".to_owned(),
                 serde_json::to_value(&step.bound).expect("bound values serialize"),
+            );
+        }
+        if let Some(step) = &self.step
+            && !step.shared.is_empty()
+        {
+            line.insert(
+                "shared".to_owned(),
+                serde_json::to_value(&step.shared).expect("shared words serialize"),
             );
         }
         if let Some(contained) = &self.contained {
@@ -388,6 +399,7 @@ impl Line {
                 status: field("status", take("status"))?,
                 why: field("why", take("why"))?,
                 bound: field("bound", take("bound")).unwrap_or_default(),
+                shared: field("shared", take("shared")).unwrap_or_default(),
             }),
         };
         let decision = field("decision", Json::Object(fields))?;
@@ -560,12 +572,29 @@ fn stepped(line: &Line, step: &StepLine) -> Text {
     if !takes.is_empty() {
         text.push(&format!(" · takes {}", takes.join(", ")));
     }
+    if let Some(origin) = shared(&step.shared) {
+        text.push(" · ").push(&origin);
+    }
     if step.status != Status::Declined
         && let Some(why) = &step.why
     {
         text.push(" · ").push(&stopped(why));
     }
     text
+}
+
+/// Where a step's shared words came from, as `why` and `try` say it: `shared service = checkout, region = eu-west`
+/// — the sentence stated them once for several steps.
+#[must_use]
+pub fn shared(shared: &IndexMap<ArgName, Shared>) -> Option<String> {
+    if shared.is_empty() {
+        return None;
+    }
+    let words: Vec<String> = shared
+        .iter()
+        .map(|(arg, shared)| format!("{arg} = {}", shared.word))
+        .collect();
+    Some(format!("shared {}", words.join(", ")))
 }
 
 /// A step's status, in the word its line carries.

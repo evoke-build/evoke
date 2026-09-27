@@ -117,11 +117,13 @@ plan.stages      // [[1], [2]]: a stage's steps run together; stages run in orde
 plan.verdict     // { outcome: "run" | "ask" | "confirm" | "refuse", because?: [...] }
 ```
 
-Each step carries its `decision`, the `Decision` `decide` would have made of its words alone. A binding whose
-`via` is `"takes"` is a whole result by the name its source returns, with no `kind`; a plan with no source for
-one, or two, has `verdict.outcome` `"refuse"` and `no_source` or `several_sources` among its `because`. `weave`
-settles what the plan asks first, then runs every step under `handle`'s handlers, each told which step and round
-asks, a `Turn`:
+Each step carries its `decision`, the `Decision` `decide` would have made of its words alone; `shared` names
+the words the sentence said once for several steps that reached it, `{ service: { word: "checkout", via:
+"fill" } }`; `repair` says how a part that was not decided on its own became a step, `"narrowed"`, `"spliced"`,
+`"merged"` or `"split"`. A binding whose `via` is `"takes"` is a whole result by the name its source returns,
+with no `kind`; a plan with no source for one, or two, has `verdict.outcome` `"refuse"` and `no_source` or
+`several_sources` among its `because`. `weave` settles what the plan asks first, then runs every step under
+`handle`'s handlers, each told which step and round asks, a `Turn`:
 
 ```ts
 const woven = await project.weave(input, {
@@ -133,8 +135,10 @@ woven.status     // the worst step's: "ran", "failed", "declined", "refused", "u
 woven.steps      // per step: { step, status, why?, bound, rounds: [{ round, input, decision, status, result? }] }
 ```
 
-A body's failure is the step's, with `status: "failed"`, never a throw. A step after one that stopped is
-`skipped`, with `why: { type: "earlier_step" }`. A step bound to a list of records runs once per record, one
+A `confirm` handler may wait: hand the decision, plain JSON, to a queue a second person reads, and resolve
+with their answer; the weave goes on where it waited, and nothing that ran runs twice. A body's failure is the
+step's, with `status: "failed"`, never a throw. A step after one that stopped is `skipped`, with `why: { type:
+"earlier_step" }`. A step bound to a list of records runs once per record, one
 round each. A step that takes whole results receives them in its body's `args`, handed by the weave alone; its
 `bound` entries name each argument, its source and the name, with no `value`.
 

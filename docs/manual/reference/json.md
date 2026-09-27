@@ -34,9 +34,11 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `cancelled`  | ○   |         |     |         | `true` when `Ctrl-C` ended the body; a step of a weave says it as `status` and `why` instead |
 
 A sentence read as several steps ([Weaving](../use/weaving.md)) prints one line per step, as each runs, the
-line of its decision with four fields more: `step` and `steps` first, the step's number and the count; `bound`
+line of its decision with five fields more: `step` and `steps` first, the step's number and the count; `bound`
 after `trace`, where a value came from another step, `[{ arg, from, field, value }]`, `value` absent for a whole
-result, which stays on its source's line as `result.data`; and `status` last, with `why` when the step stopped.
+result, which stays on its source's line as `result.data`; `shared`, where the sentence said a word once for
+several steps and this one took it, `{ "<arg>": { "word", "via" } }`, `via` `fill` for a required argument and
+`rewrite` for an optional one written into the step's words; and `status` last, with `why` when the step stopped.
 A request that is only what not to do prints one `abstain` line over the whole input, with no judgments and no
 contenders. A plan stopped before any step ran prints every step's line at once, its `status` `refused`,
 `skipped`, `declined` or `unanswered`. `evoke try --json` prints the plan whole instead, on one line:
@@ -49,9 +51,11 @@ call the plan took.
 | `why`    | `{ "type": "earlier_step" }`, `{ "type": "nothing_to_take", "from" }` and `{ "type": "too_large", "from" }` with the source step, `found_nothing`, `no_reflex`, `cancelled`, `{ "type": "read_as", "reflex" }`, or `{ "type": "said", "message" }`: a prompt's own line, a failure, a question no one answered |
 
 In the plan `evoke try --json` prints, a step's `refs` count the steps they may name from 0; `step`, `after`,
-`stages` and `binds` count from 1. A binding's `via` is `fill`, `rewrite` or `takes`, a whole result by the name
-its source returns, with no `kind`; the verdict's `because` names `no_source` and `several_sources` where such a
-result stops the plan.
+`stages` and `binds` count from 1. A step carries `shared` as the line does, and `repair` where it was not one
+part decided on its own: `narrowed` or `spliced`, an item of its neighbour's task; `merged`, a part read with
+its neighbour; `split`, a part of a joint the classifier read as one thing. A binding's `via` is `fill`,
+`rewrite` or `takes`, a whole result by the name its source returns, with no `kind`; the verdict's `because`
+names `no_source` and `several_sources` where such a result stops the plan.
 
 A call by name, `evoke run --json`, prints the same line with nothing judged: `input` is empty, there is no
 `confidence`, `weakest`, `judgments` or `contenders`, `trace` is empty, and `result` or `error` says what the body

@@ -5,7 +5,7 @@
 //! returns each name, or refused when none does, or two. Each invariant quotes the sentence of the design it
 //! checks.
 
-use super::reference::{abstain, decision, exclusive, joins, plan_with, stages};
+use super::reference::{abstain, decision, exclusive, gate, joins, plan_with, stages};
 use evoke_core::Plan;
 use evoke_core::adapter::Raw;
 use evoke_core::manifest::Effect;
@@ -53,7 +53,7 @@ impl Part {
 
 /// A connective between two parts: `then` orders, `and` coordinates.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum Join {
+pub(super) enum Join {
     And,
     Then,
     CommaThen,
@@ -61,7 +61,7 @@ enum Join {
 }
 
 impl Join {
-    fn words(self) -> &'static str {
+    pub(super) fn words(self) -> &'static str {
         match self {
             Self::And => " and ",
             Self::Then => " then ",
@@ -104,7 +104,7 @@ fn part() -> impl Strategy<Value = Part> {
     prop_oneof![Just(Part::Lights), Just(Part::Timer), Just(Part::Contact)]
 }
 
-fn join() -> impl Strategy<Value = Join> {
+pub(super) fn join() -> impl Strategy<Value = Join> {
     prop_oneof![
         3 => Just(Join::And),
         2 => Just(Join::Then),
@@ -123,7 +123,7 @@ fn effect() -> impl Strategy<Value = Effect> {
 
 /// The engine's judgment of a split point: mostly firm, some between, a few doubted — never under the floor the
 /// planner tries from, so every part is a step.
-fn judgment() -> impl Strategy<Value = f64> {
+pub(super) fn judgment() -> impl Strategy<Value = f64> {
     prop_oneof![6 => 0.8..=1.0, 3 => 0.5..0.8, 1 => 0.35..0.5]
 }
 
@@ -160,7 +160,7 @@ fn planned(request: &Request) -> Weave {
 
 /// A request through the planner under a plan, its needs answered: the judgments as given, each part decided
 /// by `decide`, a text narrowed to one reflex matching nothing.
-fn planned_under(
+pub(super) fn planned_under(
     plan: &Plan,
     input: &str,
     judged: &[f64],
@@ -168,7 +168,9 @@ fn planned_under(
 ) -> Weave {
     let mut answers = Answers::default();
     loop {
-        match planning::plan(plan, input, &[], &answers).expect("the answers validate") {
+        match planning::plan(plan, Some(&gate()), input, &[], &answers)
+            .expect("the answers validate")
+        {
             Planning::Done { weave } => return weave,
             Planning::Need { need } => match need {
                 Need::Judge { request: judge } => {

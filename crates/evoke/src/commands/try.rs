@@ -32,8 +32,8 @@ pub fn run(command: &Command, arguments: &Arguments, environment: &Environment) 
 }
 
 /// One input: read into its steps and shown; any decision exits 0. One step is shown as it always was; more are
-/// the plan, then each step's judgments under its number, its word the plan's — or, under `--json`, the plan
-/// whole on one line, with every adapter call it took.
+/// the plan, then each step's judgments under its number, its word the plan's and the words shared into it named
+/// — or, under `--json`, the plan whole on one line, with every adapter call it took.
 fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, input: &str) -> Exit {
     let woven = match session.weave(adapter, input, &arguments.tags, Vec::new()) {
         Ok(woven) => woven,
@@ -74,6 +74,9 @@ fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, in
             Text::from(report::quoted(&step.text)),
         ));
         terminal::answer(&report::tried(&decided, floor));
+        if let Some(origin) = report::shared(&step.shared) {
+            terminal::answer(&Text::from(format!("  {origin}")));
+        }
         abstained |= matches!(decided.decision, Decision::Abstain { .. });
     }
     // A part that matched nothing may have asked for an inactive reflex, as one input's abstain says.

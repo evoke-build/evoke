@@ -1,20 +1,21 @@
-//! The plan: read, decide, repair, bind, order, judge — over the answers a host has gathered, stopping at the
-//! first it lacks. In: a `Plan`, the request, the tags a decision is narrowed by, the `Answers` so far. Out: the
-//! `Weave`, or what is needed next.
+//! The plan: read, decide, repair, share, bind, order, judge — over the answers a host has gathered, stopping
+//! at the first it lacks. In: a `Plan`, the adapter's gate, the request, the tags a decision is narrowed by, the
+//! `Answers` so far. Out: the `Weave`, or what is needed next.
 
 use indexmap::IndexMap;
 
 use super::reading::{self, Order, Ref, SURE, Segment, Split, Unclean};
 use super::{
-    Answers, Asked, Because, Binding, Need, Outcome, Planning, Repair, Step, Verdict, Via, Weave,
-    field_names,
+    Answers, Asked, Because, Binding, Need, Outcome, Planning, Repair, Shared, Step, Verdict, Via,
+    Weave, field_names,
 };
-use crate::adapter::{Fault, Prob};
+use crate::adapter::{Fault, Gate, Prob};
 use crate::call::Value;
-use crate::decide::{Cap, Decision, merged};
+use crate::decide::{Cap, Decision, fill, merged, words};
 use crate::manifest::{Effect, Kind, Recognizer, Source, Yield};
-use crate::name::{ArgName, FieldName, LocalName, Tag};
-use crate::plan::Plan;
+use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
+use crate::plan::{Active, Plan};
+use crate::text::Clean;
 
 /// A split the engine judged below this is never tried.
 const LOW: f64 = 0.35;
@@ -26,10 +27,17 @@ const DOUBT: f64 = 0.5;
 /// one input, since each question carries both sides of the sentence and the request would grow as its square.
 const MOST_SPLITS: usize = 24;
 /// The plan of a request over the answers so far: the weave, or what is needed next; a fault when an answer does
-/// not validate against its request.
-pub fn plan(plan: &Plan, input: &str, tags: &[Tag], answers: &Answers) -> Result<Planning, Fault> {
+/// not validate against its request. The gate is what a shared word's fill is gated by, as a person's answer is.
+pub fn plan(
+    plan: &Plan,
+    gate: Option<&Gate>,
+    input: &str,
+    tags: &[Tag],
+    answers: &Answers,
+) -> Result<Planning, Fault> {
     let planner = Planner {
         plan,
+        gate,
         tags,
         answers,
         request: reading::canonical(input),
@@ -42,14 +50,15 @@ pub fn plan(plan: &Plan, input: &str, tags: &[Tag], answers: &Answers) -> Result
 
 struct Planner<'a> {
     plan: &'a Plan,
+    gate: Option<&'a Gate>,
     tags: &'a [Tag],
     answers: &'a Answers,
     /// The request in the words' own order.
     request: String,
 }
 
-/// The plan as it takes shape: the segments with their decisions, the split points taken, what was left out, and
-/// how a segment that matched nothing was settled.
+/// The plan as it takes shape: the segments with their decisions, the split points taken, what was left out,
+/// how a segment that matched nothing was settled, and the words shared into each segment's arguments.
 struct Draft {
     chars: Vec<char>,
     segs: Vec<Segment>,
@@ -57,6 +66,7 @@ struct Draft {
     taken: Vec<Split>,
     excluded: Vec<String>,
     repaired: Vec<(String, Repair)>,
+    shared: Vec<IndexMap<ArgName, Shared>>,
 }
 
 /// A fragment settled as another item of its neighbour's task.
@@ -66,7 +76,7 @@ struct Fan {
     how: Repair,
 }
 
-impl Planner<'_> {
+impl<'a> Planner<'a> {
     /// The decision a host made for a text, when it has.
     fn decided(&self, asked: &Asked) -> Option<&Decision> {
         self.answers
@@ -128,6 +138,7 @@ impl Planner<'_> {
                 .map(|seg| seg.text.clone())
                 .collect(),
             repaired: Vec::new(),
+            shared: Vec::new(),
         };
         if draft.segs.is_empty() {
             return Ok(Ok(self.finish(
@@ -140,7 +151,9 @@ impl Planner<'_> {
         let phases = self
             .segments(&mut draft)
             .and_then(|()| self.lists(&mut draft, &judged))
-            .and_then(|()| self.repair(&mut draft));
+            .and_then(|()| self.items(&mut draft, &judged))
+            .and_then(|()| self.repair(&mut draft))
+            .and_then(|()| self.share(&mut draft));
         if let Err(need) = phases {
             return Ok(Err(need));
         }
@@ -174,6 +187,7 @@ impl Planner<'_> {
                     effect,
                     refs,
                     repair,
+                    shared: draft.shared.get(k).cloned().unwrap_or_default(),
                     after: Vec::new(),
                 }
             })
@@ -338,6 +352,94 @@ impl Planner<'_> {
         Ok(())
     }
 
+    /// Items of different reflexes. A segment the engine kept whole at a comma or an `and` — «invoices, card
+    /// expenses», judged one thing at the comma — that abstained, asked or sat under the floor, whose parts each
+    /// decide alone as a different reflex, is those steps: two nouns that each name a reflex of their own are two
+    /// things, whatever the engine made of the joint. A whole decided firmly stays one, and so does one whose
+    /// confirm carries a span no argument took — «10 minutes and 30 seconds» — as the list reading leaves it.
+    fn items(&self, draft: &mut Draft, judged: &[Split]) -> Result<(), Need> {
+        let mut k = 0;
+        while k < draft.segs.len() {
+            let seg = draft.segs[k].clone();
+            let inner: Vec<Split> = reading::splits(&seg.text, true)
+                .into_iter()
+                .filter(|s| s.order == Order::And)
+                .collect();
+            if inner.is_empty() || !unsettled(&draft.decisions[k]) {
+                k += 1;
+                continue;
+            }
+            let parts = reading::segments(&seg.text, &inner);
+            let kept: Vec<&Segment> = parts.iter().filter(|part| !part.excluded).collect();
+            if kept.len() < 2 {
+                k += 1;
+                continue;
+            }
+            let wanted: Vec<Asked> = kept.iter().map(|part| self.segment(&part.text)).collect();
+            let mut missing: Vec<Asked> = Vec::new();
+            for asked in &wanted {
+                if self.decided(asked).is_none() && !missing.contains(asked) {
+                    missing.push(asked.clone());
+                }
+            }
+            if !missing.is_empty() {
+                return Err(Need::Decide { asked: missing });
+            }
+            let decided: Vec<Decision> = wanted
+                .iter()
+                .map(|asked| self.decided(asked).cloned().expect("every part is decided"))
+                .collect();
+            let mut reflexes: Vec<&LocalName> = Vec::new();
+            let distinct = decided.iter().all(|decision| {
+                reflex_of(decision).is_some_and(|reflex| {
+                    let new = !reflexes.contains(&reflex);
+                    reflexes.push(reflex);
+                    new
+                })
+            });
+            if !distinct {
+                k += 1;
+                continue;
+            }
+            let base = index_of(&draft.chars, &seg.text, seg.start)
+                .map_or(seg.start, |at| at.max(seg.start));
+            draft.excluded.extend(
+                parts
+                    .iter()
+                    .filter(|part| part.excluded)
+                    .map(|part| part.text.clone()),
+            );
+            let placed: Vec<Segment> = kept
+                .iter()
+                .map(|part| Segment {
+                    text: part.text.clone(),
+                    start: base + part.start,
+                    end: base + part.end,
+                    excluded: false,
+                })
+                .collect();
+            for part in &placed {
+                draft.repaired.push((part.text.clone(), Repair::Split));
+            }
+            let count = placed.len();
+            draft.segs.splice(k..=k, placed);
+            draft.decisions.splice(k..=k, decided);
+            for s in &inner {
+                let start = base + s.start;
+                draft.taken.push(Split {
+                    start,
+                    end: base + s.end,
+                    word: s.word.clone(),
+                    order: s.order,
+                    p: judged.iter().find(|a| a.start == start).and_then(|a| a.p),
+                });
+            }
+            draft.taken.sort_by_key(|s| s.start);
+            k += count;
+        }
+        Ok(())
+    }
+
     /// Repair. A segment that matches nothing on its own is one of three things. A second item of its
     /// neighbour's task — «gadgets» after «check stock for widgets» — is decided again narrowed to the
     /// neighbour's reflex, or spliced into the neighbour's own words in place of the value it stands for: a
@@ -348,10 +450,16 @@ impl Planner<'_> {
     /// as another reflex is tried as a fan-out too, and stays its own step when that fails, under a split the
     /// engine called one thing, or when it is a bare item — a determiner and one word, «the logo» — whatever the
     /// engine made of the split: such a part routes to the reflex whose example begins with it, weak evidence
-    /// against the words' own shape.
+    /// against the words' own shape. A part the items rule split is the step it is.
     fn repair(&self, draft: &mut Draft) -> Result<(), Need> {
         let mut k = 0;
         while k < draft.segs.len() && draft.segs.len() >= 2 {
+            // A part split from a whole the engine kept together is a step by the items rule: never an item of
+            // its neighbour's task, whatever the engine made of the joint.
+            if repair_of(draft, k) == Some(Repair::Split) {
+                k += 1;
+                continue;
+            }
             let sibling = if k > 0 { k - 1 } else { k + 1 };
             let split = split_before(&draft.taken, &draft.segs, k.max(1)).cloned();
             let sibling_reflex = reflex_of(&draft.decisions[sibling]).cloned();
@@ -419,6 +527,221 @@ impl Planner<'_> {
             k = 0;
         }
         Ok(())
+    }
+
+    /// The shared value. A word of a vocabulary the words state once — «checkout's», «in eu-west», «for
+    /// september» — reaches every step that lacks an argument of that vocabulary. Stated: the word is in the
+    /// request's own words and some step read it, from its own words, as an argument of that vocabulary, so the
+    /// engine never chooses the carried value and code carries it. It reaches a step whose own words hold no word
+    /// of the vocabulary: an optional argument takes the word its run states once, by a rewrite; a required one
+    /// the one distinct word the whole request states, however often, filled as a person's answer to the step's
+    /// ask would be. A merged part holding two words asks as before; picks and options are never carried.
+    fn share(&self, draft: &mut Draft) -> Result<(), Need> {
+        draft.shared = vec![IndexMap::new(); draft.segs.len()];
+        if draft.segs.len() < 2 {
+            return Ok(());
+        }
+        // The words as the person typed them: a step's text a rewrite appended a word to states nothing more.
+        let original: Vec<String> = draft.segs.iter().map(|seg| seg.text.clone()).collect();
+        self.rewritten(draft, &original)?;
+        self.filled(draft, &original);
+        Ok(())
+    }
+
+    /// An optional vocabulary argument a step left unstated takes the word its run states once — the run being
+    /// the steps joined by coordinating connectives, an ordering word ending it — by a rewrite: the word appended
+    /// to the step's words, decided again narrowed to the step's reflex, kept only when the reflex holds, the
+    /// word lands on that argument and no other argument moved; else the step stays. Every rewrite is decided
+    /// side by side, one need.
+    fn rewritten(&self, draft: &mut Draft, original: &[String]) -> Result<(), Need> {
+        let mut rewrites: Vec<(usize, IndexMap<ArgName, Word>, Asked)> = Vec::new();
+        for run in runs_of(&draft.taken, &draft.segs) {
+            for &k in &run {
+                let Some((reflex, active)) = self.active_of(&draft.decisions[k]) else {
+                    continue;
+                };
+                let mut carried: IndexMap<ArgName, Word> = IndexMap::new();
+                for (arg, argument) in &active.args {
+                    let Kind::Value {
+                        source: Source::Vocab(vocab),
+                        optional: true,
+                    } = &argument.kind
+                    else {
+                        continue;
+                    };
+                    if args_of(&draft.decisions[k]).is_some_and(|args| args.contains_key(arg)) {
+                        continue;
+                    }
+                    let vocabulary = words(self.plan, reflex, arg);
+                    if holds(&original[k], &vocabulary) {
+                        continue;
+                    }
+                    if let Some(word) =
+                        self.stated(original, &draft.decisions, &run, vocab, &vocabulary, true)
+                    {
+                        carried.insert(arg.clone(), word);
+                    }
+                }
+                if carried.is_empty() {
+                    continue;
+                }
+                let appended: Vec<&str> = carried.values().map(Word::as_str).collect();
+                let text = format!("{} {}", draft.segs[k].text, appended.join(" "));
+                rewrites.push((k, carried, Self::narrowed(&text, reflex)));
+            }
+        }
+        let missing: Vec<Asked> = rewrites
+            .iter()
+            .filter(|(_, _, asked)| self.decided(asked).is_none())
+            .map(|(_, _, asked)| asked.clone())
+            .collect();
+        if !missing.is_empty() {
+            return Err(Need::Decide { asked: missing });
+        }
+        for (k, carried, asked) in rewrites {
+            let again = self
+                .decided(&asked)
+                .cloned()
+                .expect("every rewrite is decided");
+            let Some(reflex) = reflex_of(&draft.decisions[k]) else {
+                continue;
+            };
+            if !kept(&draft.decisions[k], &again, reflex, &carried) {
+                continue;
+            }
+            let repair = repair_of(draft, k);
+            draft.decisions[k] = if repair == Some(Repair::Merged) {
+                merged(self.plan, again)
+            } else {
+                again
+            };
+            draft.segs[k].text.clone_from(&asked.text);
+            if let Some(repair) = repair {
+                draft.repaired.push((asked.text, repair));
+            }
+            for (arg, word) in carried {
+                let via = Via::Rewrite;
+                draft.shared[k].insert(arg, Shared { word, via });
+            }
+        }
+        Ok(())
+    }
+
+    /// A required vocabulary argument a step lacks takes the one distinct word of its vocabulary the whole
+    /// request states, however often: the decision filled as `fill` fills a person's answer, no request.
+    fn filled(&self, draft: &mut Draft, original: &[String]) {
+        let everyone: Vec<usize> = (0..draft.segs.len()).collect();
+        for k in 0..draft.segs.len() {
+            let Decision::Ask { asking, missing } = &draft.decisions[k] else {
+                continue;
+            };
+            let Some(active) = self.plan.active().get(&asking.reflex) else {
+                continue;
+            };
+            let mut given: IndexMap<ArgName, Value> = IndexMap::new();
+            let mut carried: IndexMap<ArgName, Word> = IndexMap::new();
+            for m in missing.iter() {
+                let Some(Kind::Value {
+                    source: Source::Vocab(vocab),
+                    ..
+                }) = active.args.get(&m.arg).map(|argument| &argument.kind)
+                else {
+                    continue;
+                };
+                let vocabulary = words(self.plan, &asking.reflex, &m.arg);
+                if holds(&original[k], &vocabulary) {
+                    continue;
+                }
+                let stated = self.stated(
+                    original,
+                    &draft.decisions,
+                    &everyone,
+                    vocab,
+                    &vocabulary,
+                    false,
+                );
+                if let Some(word) = stated {
+                    let value = Value::Word {
+                        word: word.clone(),
+                        value: None,
+                    };
+                    given.insert(m.arg.clone(), value);
+                    carried.insert(m.arg.clone(), word);
+                }
+            }
+            if given.is_empty() {
+                continue;
+            }
+            let filled = fill(self.plan, asking.clone(), given, self.gate);
+            draft.decisions[k] = if repair_of(draft, k) == Some(Repair::Merged) {
+                merged(self.plan, filled)
+            } else {
+                filled
+            };
+            for (arg, word) in carried {
+                let via = Via::Fill;
+                draft.shared[k].insert(arg, Shared { word, via });
+            }
+        }
+    }
+
+    /// The one word of a vocabulary the scope's words state: in the request's own words with no other word of
+    /// the vocabulary beside it — once, for an optional argument; however often, for a required one — and read by
+    /// some step of the scope, from its own words, as an argument of that vocabulary. None otherwise: two words
+    /// stated, nothing is carried, and a word the person placed twice for two steps was placed.
+    fn stated(
+        &self,
+        original: &[String],
+        decisions: &[Decision],
+        scope: &[usize],
+        vocab: &VocabName,
+        vocabulary: &IndexMap<Word, Clean>,
+        once: bool,
+    ) -> Option<Word> {
+        let members: Vec<(&str, &Decision)> = scope
+            .iter()
+            .map(|&k| (original[k].as_str(), &decisions[k]))
+            .collect();
+        let counted: Vec<(&Word, usize)> = vocabulary
+            .keys()
+            .map(|word| {
+                let n = members
+                    .iter()
+                    .map(|(text, _)| occurrences(text, word.as_str()))
+                    .sum();
+                (word, n)
+            })
+            .filter(|(_, n)| *n > 0)
+            .collect();
+        let [(word, n)] = counted.as_slice() else {
+            return None;
+        };
+        if once && *n != 1 {
+            return None;
+        }
+        let read = members.iter().any(|(text, decision)| {
+            let Some((_, active)) = self.active_of(decision) else {
+                return false;
+            };
+            args_of(decision).is_some_and(|args| {
+                args.iter().any(|(arg, value)| {
+                    matches!(value, Value::Word { word: read, .. } if read == *word)
+                        && matches!(
+                            active.args.get(arg).map(|argument| &argument.kind),
+                            Some(Kind::Value { source: Source::Vocab(of), .. }) if of == vocab
+                        )
+                        && occurrences(text, word.as_str()) > 0
+                })
+            })
+        });
+        read.then(|| (*word).clone())
+    }
+
+    /// The reflex a decision is about and its manifest as compiled, when it is about one.
+    fn active_of<'d>(&self, decision: &'d Decision) -> Option<(&'d LocalName, &'a Active)> {
+        let reflex = reflex_of(decision)?;
+        let active = self.plan.active().get(reflex)?;
+        Some((reflex, active))
     }
 
     /// References: code finds the words; with two or more earlier steps, the engine says which one a word names.
@@ -934,7 +1257,9 @@ fn split_before<'s>(taken: &'s [Split], segs: &[Segment], k: usize) -> Option<&'
         .find(|s| s.start >= before.end && s.end <= at.start)
 }
 
-/// Layers by longest path; a layer of reads runs together, any other one step at a time in the words' order.
+/// Reads alone are layers by longest path, each layer run together; a write among the steps puts every step at
+/// its turn in the words' order, alone — a step follows only steps before it, so that order keeps every edge, and
+/// it is the order the plan prints.
 fn schedule(steps: &[Step], exclusive: bool) -> Vec<Vec<usize>> {
     fn depth(steps: &[Step], n: usize, memo: &mut Vec<Option<usize>>) -> usize {
         if let Some(depth) = memo[n - 1] {
@@ -949,6 +1274,9 @@ fn schedule(steps: &[Step], exclusive: bool) -> Vec<Vec<usize>> {
         memo[n - 1] = Some(d);
         d
     }
+    if exclusive {
+        return steps.iter().map(|step| vec![step.n]).collect();
+    }
     let mut memo = vec![None; steps.len()];
     let mut layers: Vec<Vec<usize>> = Vec::new();
     for step in steps {
@@ -958,18 +1286,10 @@ fn schedule(steps: &[Step], exclusive: bool) -> Vec<Vec<usize>> {
         }
         layers[d].push(step.n);
     }
-    let mut stages = Vec::new();
-    for layer in layers.into_iter().filter(|layer| !layer.is_empty()) {
-        let reads = layer
-            .iter()
-            .all(|n| steps[n - 1].effect == Some(Effect::Read));
-        if !exclusive && reads {
-            stages.push(layer);
-        } else {
-            stages.extend(layer.into_iter().map(|n| vec![n]));
-        }
-    }
-    stages
+    layers
+        .into_iter()
+        .filter(|layer| !layer.is_empty())
+        .collect()
 }
 
 /// Before anything runs: a request left with no step refuses; a step that matches nothing refuses the whole
@@ -1009,6 +1329,95 @@ fn verdict_of(steps: &[Step], binds: &[Binding]) -> Verdict {
         Outcome::Ask
     };
     Verdict { outcome, because }
+}
+
+/// Whether the engine's reading of a whole left it unsettled: it abstained, asked, or sat under the floor — not
+/// one decided firmly, nor one whose confirm carries a span no argument took, which is one task as it stands.
+fn unsettled(decision: &Decision) -> bool {
+    match decision {
+        Decision::Abstain { .. } | Decision::Ask { .. } => true,
+        Decision::Confirm { because, .. } => {
+            because
+                .iter()
+                .any(|cap| matches!(cap, Cap::UnderFloor { .. }))
+                && !because
+                    .iter()
+                    .any(|cap| matches!(cap, Cap::UnconsumedSpan { .. }))
+        }
+        Decision::Run { .. } => false,
+    }
+}
+
+/// The runs of the plan: consecutive segments joined by coordinating connectives, an ordering word ending each.
+fn runs_of(taken: &[Split], segs: &[Segment]) -> Vec<Vec<usize>> {
+    let mut runs: Vec<Vec<usize>> = Vec::new();
+    for k in 0..segs.len() {
+        let ordered = split_before(taken, segs, k).is_some_and(|s| s.order == Order::Then);
+        match runs.last_mut() {
+            Some(run) if !ordered => run.push(k),
+            _ => runs.push(vec![k]),
+        }
+    }
+    runs
+}
+
+/// How a segment's step came to be, when it was repaired.
+fn repair_of(draft: &Draft, k: usize) -> Option<Repair> {
+    draft
+        .repaired
+        .iter()
+        .find(|(text, _)| *text == draft.segs[k].text)
+        .map(|(_, how)| *how)
+}
+
+/// Whether a step decided again with shared words in its words took them: the reflex holds, each word landed on
+/// its argument, and no argument the step had read moved.
+fn kept(
+    before: &Decision,
+    again: &Decision,
+    reflex: &LocalName,
+    carried: &IndexMap<ArgName, Word>,
+) -> bool {
+    if reflex_of(again) != Some(reflex) {
+        return false;
+    }
+    let Some(after) = args_of(again) else {
+        return false;
+    };
+    carried.iter().all(|(arg, word)| {
+        matches!(after.get(arg), Some(Value::Word { word: landed, .. }) if landed == word)
+    }) && args_of(before).is_some_and(|read| {
+        read.iter().all(|(arg, value)| {
+            after
+                .get(arg)
+                .is_some_and(|moved| stated(moved) == stated(value))
+        })
+    })
+}
+
+/// Whether a text holds any word of a vocabulary: such a step states its own value, or asks for it itself.
+fn holds(text: &str, vocabulary: &IndexMap<Word, Clean>) -> bool {
+    vocabulary
+        .keys()
+        .any(|word| occurrences(text, word.as_str()) > 0)
+}
+
+/// How often a text holds a word, bounded as the research counted it and in any letter case: «checkout's» holds
+/// `checkout`, «#incident» holds `#incident`, «eu-west» holds neither `eu` nor `west`.
+fn occurrences(text: &str, word: &str) -> usize {
+    let text: Vec<char> = text.to_lowercase().chars().collect();
+    let word: Vec<char> = word.to_lowercase().chars().collect();
+    if word.is_empty() || word.len() > text.len() {
+        return 0;
+    }
+    let joins = |c: char| c.is_ascii_alphanumeric() || c == '_' || c == '-';
+    (0..=text.len() - word.len())
+        .filter(|&i| {
+            text[i..i + word.len()] == word[..]
+                && !(i > 0 && (joins(text[i - 1]) || text[i - 1] == '#'))
+                && !text.get(i + word.len()).is_some_and(|c| joins(*c))
+        })
+        .count()
 }
 
 /// The reflex a decision is about, if any.

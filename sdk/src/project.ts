@@ -317,10 +317,12 @@ function key(asked: W.Asked): string {
   return JSON.stringify([asked.text, asked.tags ?? [], asked.only ?? null])
 }
 
-/** What the planner asked to decide a step, as its repair tells: a fragment narrowed to its neighbour's reflex, or
- *  spliced into its words, was decided under that reflex alone; any other step over the tags. */
+/** What the planner asked to decide a step, as its repair and its shared words tell: a fragment narrowed to its
+ *  neighbour's reflex, or spliced into its words, was decided under that reflex alone, and so were words a shared word
+ *  was written into; any other step over the tags. */
 function askedFor(step: W.Step, tags: string[]): W.Asked {
-  const own = step.repair === "narrowed" || step.repair === "spliced" ? step.reflex : undefined
+  const narrowed = step.repair === "narrowed" || step.repair === "spliced" || Object.values(step.shared ?? {}).some(shared => shared.via === "rewrite")
+  const own = narrowed ? step.reflex : undefined
   return own === undefined ? { text: step.text, tags } : { text: step.text, only: own }
 }
 
@@ -458,7 +460,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   async function planned(input: string, options: DecideOptions, answers: Gathered, traces: Map<string, Trace[]>): Promise<W.Weave> {
     const invoked = `steps(${JSON.stringify(shown(input))})`
     for (;;) {
-      const planning = call("weave.plan", { plan, input, tags: options.tags ?? [], answers }, invoked)
+      const planning = call("weave.plan", { plan, ...gate, input, tags: options.tags ?? [], answers }, invoked)
       if (planning.type === "done") return planning.weave
       const { need } = planning
       if (need.type === "decide") {

@@ -1,0 +1,912 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "input": "check the search errors in eu-west, list the search deploys, pull the search logs in eu-west and find the suspect",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "check the search errors in eu-west"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "search"
+              },
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "call": "errors service=\"search\" region=\"eu-west\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.9
+              },
+              {
+                "question": "errors.service",
+                "top": "search",
+                "p": 0.9
+              },
+              {
+                "question": "errors.region",
+                "top": "eu-west",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "deploys",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "list the search deploys"
+          },
+          {
+            "outcome": "run",
+            "reflex": "deploys",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "search"
+              }
+            },
+            "call": "deploys service=\"search\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "deploys",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "deploys",
+                "p": 0.9
+              },
+              {
+                "question": "deploys.service",
+                "top": "search",
+                "p": 0.9
+              },
+              {
+                "question": "deploys.region",
+                "top": "unstated",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "deploys",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "pull the search logs in eu-west"
+          },
+          {
+            "outcome": "run",
+            "reflex": "logs",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "search"
+              },
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "call": "logs service=\"search\" region=\"eu-west\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "logs",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "logs",
+                "p": 0.9
+              },
+              {
+                "question": "logs.service",
+                "top": "search",
+                "p": 0.9
+              },
+              {
+                "question": "logs.region",
+                "top": "eu-west",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "logs",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "find the suspect"
+          },
+          {
+            "outcome": "run",
+            "reflex": "suspect",
+            "args": {},
+            "call": "suspect",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "suspect",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "suspect",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "suspect",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        },
+        "weave.split_1": {
+          "yes": 0.9
+        },
+        "weave.split_2": {
+          "yes": 0.9
+        }
+      },
+      "referred": {
+        "weave.ref_2_0": {
+          "step0": 0.6,
+          "step1": 0.4
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "check the search errors in eu-west, list the search deploys, pull the search logs in eu-west and find the suspect",
+        "splits": [
+          {
+            "start": 34,
+            "end": 36,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 59,
+            "end": 61,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 92,
+            "end": 97,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          }
+        ],
+        "steps": [
+          {
+            "n": 1,
+            "text": "check the search errors in eu-west",
+            "end": 34,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "search"
+                },
+                "region": {
+                  "type": "word",
+                  "word": "eu-west"
+                }
+              },
+              "call": "errors service=\"search\" region=\"eu-west\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "errors",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "errors",
+                  "p": 0.9
+                },
+                {
+                  "question": "errors.service",
+                  "top": "search",
+                  "p": 0.9
+                },
+                {
+                  "question": "errors.region",
+                  "top": "eu-west",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "deploys",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "status",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "list the search deploys",
+            "end": 59,
+            "decision": {
+              "outcome": "run",
+              "reflex": "deploys",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "search"
+                }
+              },
+              "call": "deploys service=\"search\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "deploys",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "deploys",
+                  "p": 0.9
+                },
+                {
+                  "question": "deploys.service",
+                  "top": "search",
+                  "p": 0.9
+                },
+                {
+                  "question": "deploys.region",
+                  "top": "unstated",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "deploys",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "status",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "deploys",
+            "effect": "read",
+            "refs": [
+              {
+                "span": {
+                  "start": 5,
+                  "end": 15,
+                  "text": "the search"
+                },
+                "from": [
+                  0
+                ],
+                "how": "phrase",
+                "weak": true,
+                "noun": "search"
+              }
+            ]
+          },
+          {
+            "n": 3,
+            "text": "pull the search logs in eu-west",
+            "end": 92,
+            "decision": {
+              "outcome": "run",
+              "reflex": "logs",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "search"
+                },
+                "region": {
+                  "type": "word",
+                  "word": "eu-west"
+                }
+              },
+              "call": "logs service=\"search\" region=\"eu-west\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "logs",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "logs",
+                  "p": 0.9
+                },
+                {
+                  "question": "logs.service",
+                  "top": "search",
+                  "p": 0.9
+                },
+                {
+                  "question": "logs.region",
+                  "top": "eu-west",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "logs",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "status",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "logs",
+            "effect": "read",
+            "refs": [
+              {
+                "span": {
+                  "start": 5,
+                  "end": 15,
+                  "text": "the search"
+                },
+                "from": [
+                  0
+                ],
+                "how": "engine",
+                "weak": true,
+                "noun": "search",
+                "p": 0.6
+              }
+            ]
+          },
+          {
+            "n": 4,
+            "text": "find the suspect",
+            "end": 113,
+            "decision": {
+              "outcome": "run",
+              "reflex": "suspect",
+              "args": {},
+              "call": "suspect",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "suspect",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "suspect",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "suspect",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "status",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "suspect",
+            "effect": "read",
+            "after": [
+              1,
+              2,
+              3
+            ]
+          }
+        ],
+        "binds": [
+          {
+            "from": 1,
+            "to": 4,
+            "arg": "errors",
+            "field": "errors",
+            "via": "takes"
+          },
+          {
+            "from": 2,
+            "to": 4,
+            "arg": "deploys",
+            "field": "deploys",
+            "via": "takes"
+          },
+          {
+            "from": 3,
+            "to": 4,
+            "arg": "logs",
+            "field": "logs",
+            "via": "takes"
+          }
+        ],
+        "exclusive": false,
+        "stages": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        }
+      }
+    }
+  }
+}
