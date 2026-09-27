@@ -8,8 +8,6 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [0.10.1] - 2026-09-27
 
-## [Unreleased]
-
 - A word of a vocabulary one reflex alone asks for is that reflex's own: it never reaches another step.
 
 ## [0.10.0] - 2026-09-27
