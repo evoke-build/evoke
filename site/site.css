@@ -71,38 +71,65 @@ button { font: inherit; color: inherit; }
 .hero > *, .grid > *, .split > *, .side > *, .stack > *, .sheet > *, .ways > *, .cards > *, .pair > *, .cta > .cmd, .routes > * { min-width: 0; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
-/* The bar: the brand leads home; five pages and a pill. On a phone the pages fold into a menu the pill stays beside.
-   The links follow the menu rather than sit in it: a closed details shows nothing it holds, whatever the width.
-   The pill stands 1.5rem, the links' own gap, after the links or the menu. */
-header.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 72%, transparent); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5); border-bottom: 1px solid var(--line); }
-header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 3.5rem; }
-.brand { display: flex; align-items: center; gap: .6rem; padding-block: .6rem; margin-block: -.6rem; color: var(--fg); font-weight: 600; letter-spacing: -.01em; font-size: 1.1rem; }
+/* The bar, ruled: the brand leads home; the pages stand in the middle of the window as the tabs that head a page, the
+   one you are on on a rule of the accent laid on the hairline, another under the pointer on a rule of the card's line;
+   the repository and the one action at the end, the action without its glow. It keeps to the top of the window on
+   glass, the page at 65% blurred and saturated, so what passes beneath shows as light. Every control is 2rem tall. */
+header.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 65%, transparent); -webkit-backdrop-filter: blur(24px) saturate(1.8); backdrop-filter: blur(24px) saturate(1.8); border-bottom: 1px solid var(--line); }
+header.top .wrap { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 3.5rem; }
+.brand { grid-column: 1; justify-self: start; display: flex; align-items: center; gap: .5rem; height: 2.25rem; margin-inline-start: -.375rem; padding-inline: .375rem; border-radius: var(--radius-s); color: var(--fg); font-size: 1rem; font-weight: 600; letter-spacing: -.01em; }
 .brand:hover { text-decoration: none; }
-.brand img { width: 26px; height: 26px; }
-.menu { display: none; }
-.menu summary { display: block; list-style: none; cursor: pointer; color: var(--muted); font-size: .95rem; font-weight: 500; padding: .75rem .2rem; margin: -.35rem 0; }
-.menu summary::-webkit-details-marker { display: none; }
-.menu summary::after { content: ""; display: inline-block; width: .38em; height: .38em; margin: 0 0 .18em .5em; border-right: 1.5px solid; border-bottom: 1.5px solid; transform: rotate(45deg); transition: transform .2s ease; }
-.menu[open] summary::after { transform: translateY(.2em) rotate(-135deg); }
-.menu summary:hover { color: var(--fg); }
-nav.links { display: flex; align-items: center; gap: 1.5rem; margin-left: auto; }
-nav.links a { color: var(--muted); font-size: .95rem; font-weight: 450; white-space: nowrap; transition: color .15s; }
+/* The mark at 22 pixels and a pixel low: text centred in a box sits the middle of its x-height a pixel below the box's */
+.brand svg { width: 22px; height: 22px; translate: 0 1px; fill: var(--accent); }
+nav.links { grid-column: 2; display: flex; align-self: stretch; gap: 1.75rem; }
+nav.links a { display: flex; align-items: center; color: var(--muted); font-size: .875rem; font-weight: 450; white-space: nowrap; transition: color .15s; }
 nav.links a:hover { color: var(--fg); text-decoration: none; }
 nav.links a[aria-current] { color: var(--fg); }
-/* The repository, a mark among the links on a desk and a word in the menu on a phone */
-nav.links .repo { display: inline-flex; padding: .5rem; margin: -.5rem -.25rem; }
-nav.links .repo svg { display: block; width: 20px; height: 20px; fill: currentColor; }
-nav.links .repo span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-header.top .button.small { flex: none; margin-left: .5rem; }
-@media (max-width: 760px) {
-  .menu { display: block; margin-left: auto; }
-  nav.links { display: none; position: absolute; left: 0; right: 0; top: 3.5rem; flex-direction: column; align-items: stretch; gap: 0; padding: .5rem 1.5rem 1rem; background: var(--bg); border-bottom: 1px solid var(--line); box-shadow: 0 28px 40px -24px rgba(0, 0, 0, .9); }
-  .menu[open] + nav.links { display: flex; }
-  nav.links a { padding: .65rem 0; border-top: 1px solid var(--line); font-size: 1rem; }
-  nav.links a:first-child { border-top: 0; }
-  nav.links .repo { display: block; padding: .65rem 0; margin: 0; }
-  nav.links .repo svg { display: none; }
-  nav.links .repo span { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
+/* A page's words stand the bar's height, so their rule lies on the hairline and the focus ring goes round the words */
+nav.links a span { position: relative; display: flex; align-items: center; height: 100%; border-radius: 4px; }
+nav.links a span::after { content: ""; position: absolute; inset: auto 0 -1px; height: 2px; border-radius: 1px; background: var(--card-line); opacity: 0; transition: opacity .15s; }
+nav.links a:hover span::after { opacity: 1; }
+nav.links a[aria-current] span::after { background: var(--accent); opacity: 1; }
+nav.links a:focus-visible { outline: none; }
+nav.links a:focus-visible span { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* The repository: a glyph beside the action on a desk, a row of the menu on a phone */
+nav.links .repo { display: none; }
+header.top .end { grid-column: 3; justify-self: end; display: flex; align-items: center; gap: .5rem; }
+header.top .end .repo { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 999px; color: var(--muted); transition: color .15s, background-color .15s; }
+header.top .end .repo:hover { color: var(--fg); background: color-mix(in srgb, var(--line) 60%, transparent); }
+header.top .end .repo svg { width: 16px; height: 16px; fill: currentColor; }
+header.top .button { position: relative; height: 2rem; padding: 0 1rem; font-size: .875rem; box-shadow: none; }
+header.top .button::after { content: ""; position: absolute; inset: -6px; }
+/* The menu's button: two lines of a pixel, fourteen long, that turn into a cross while the menu is open */
+.menu { display: none; }
+.menu summary { position: relative; display: block; width: 2rem; height: 2rem; border-radius: 999px; list-style: none; cursor: pointer; color: var(--fg); transition: background-color .15s; }
+.menu summary::-webkit-details-marker { display: none; }
+.menu summary::before { content: ""; position: absolute; inset: -6px; }
+.menu summary:hover, .menu[open] summary { background: color-mix(in srgb, var(--line) 60%, transparent); }
+.menu summary span { position: absolute; left: 9px; width: 14px; height: 1px; background: currentColor; transition: translate .2s cubic-bezier(.3, .7, .2, 1), rotate .2s cubic-bezier(.3, .7, .2, 1); }
+.menu summary span:first-child { top: 13px; }
+.menu summary span:last-child { top: 18px; }
+.menu[open] summary span:first-child { translate: 0 2.5px; rotate: 45deg; }
+.menu[open] summary span:last-child { translate: 0 -2.5px; rotate: -45deg; }
+/* On a phone the pages fold into the menu: a sheet that covers the page from the hairline down, fading in where it
+   stands while its rows rise into it, and the page beneath held still. The details holds nothing; the pages follow
+   it, so a keyboard meets them next. */
+@media (max-width: 47.99rem) {
+  header.top .wrap { grid-template-columns: 1fr auto auto; column-gap: .5rem; }
+  header.top .end { grid-column: 2; }
+  header.top .end .repo { display: none; }
+  .menu { display: block; grid-column: 3; grid-row: 1; }
+  nav.links { position: absolute; top: calc(100% + 1px); left: 0; right: 0; height: calc(100dvh - 3.5rem - 1px); display: none; flex-direction: column; gap: 0; padding: .75rem 1.5rem max(1.5rem, env(safe-area-inset-bottom)); overflow-y: auto; overscroll-behavior: contain; background: var(--bg); opacity: 0; transition: opacity .15s ease-in, display .15s allow-discrete; }
+  header.top:has(.menu[open]) nav.links { display: flex; opacity: 1; transition: opacity .2s cubic-bezier(.3, .7, .2, 1); }
+  html:has(header.top .menu[open]) { overflow: hidden; }
+  nav.links a { flex: none; height: 3.5rem; border-bottom: 1px solid var(--line); color: var(--fg); font-size: 1.25rem; line-height: 1.3; letter-spacing: -.012em; transition: opacity .3s cubic-bezier(.3, .7, .2, 1) calc(var(--i) * 30ms), translate .3s cubic-bezier(.3, .7, .2, 1) calc(var(--i) * 30ms); }
+  nav.links a:not([aria-current]):hover span::after { opacity: 0; }
+  nav.links .repo { display: flex; gap: .75rem; border-bottom: 0; color: var(--muted); }
+  nav.links .repo svg { width: 20px; height: 20px; fill: currentColor; }
+  @starting-style {
+    header.top:has(.menu[open]) nav.links { opacity: 0; }
+    header.top:has(.menu[open]) nav.links a { opacity: 0; translate: 0 .5rem; }
+  }
 }
 
 /* Buttons and commands: actions are pills, surfaces keep their corners */
@@ -786,7 +813,6 @@ footer a:hover { color: var(--fg); }
 @media (max-width: 400px) {
   .hero h1 { font-size: min(2.8rem, 11.6vw); }
   .hero.solo h1 { font-size: min(2.5rem, 10.5vw); }
-  .brand { font-size: 1rem; }
   .button.small { padding: .38rem .75rem; }
 }
 
