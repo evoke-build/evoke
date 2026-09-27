@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-09-27
+
 - A word a sentence says once for several steps reaches each of them: `check checkout's errors, deploys and
   logs in eu-west` runs every lookup on checkout in eu-west. The plan shows the word on each step, `evoke why`
   names what was shared, and `--json` carries it as `shared`.
