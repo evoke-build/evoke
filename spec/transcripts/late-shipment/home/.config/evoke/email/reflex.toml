@@ -1,0 +1,19 @@
+reflex = 1
+
+description = """
+Email an update on the shipment.
+To one address: what is late, what was reserved and what was ordered."""
+not_for = ["placing an order", "tracking the shipment", "reserving stock"]
+tags = ["email"]
+effect = "write"
+confirm = "Email {to}?"
+run = "email.mts"
+
+[args.to]
+ask  = "To which address?"
+pick = "email"
+
+[examples]
+"email ops@example.com"                = { to = "ops@example.com" }
+"let lena@example.com know"            = { to = "lena@example.com" }
+"send the update to sales@example.com" = { to = "sales@example.com" }

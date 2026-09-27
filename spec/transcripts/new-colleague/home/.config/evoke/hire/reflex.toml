@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+Look up a new hire.
+Their role and the day they start."""
+not_for = ["a team's members", "creating accounts", "ordering a laptop"]
+tags = ["hire"]
+effect = "read"
+confirm = "Look up the hire of {person}?"
+run = "hire.mts"
+returns = "hire"
+
+[args.person]
+ask   = "Which person?"
+vocab = "people"
+
+[examples]
+"look up maria's hire"        = {}
+"when does sam start"         = {}
+"what role is ana joining in" = {}

@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+Find hotel rooms in a city for tonight.
+Each hotel with its price a night, the cheapest first."""
+not_for = ["flights", "booking a room", "the day's meetings"]
+tags = ["rooms"]
+effect = "read"
+confirm = "Find rooms in {city}?"
+run = "rooms.mts"
+returns = "rooms"
+
+[args.city]
+ask   = "In which city?"
+vocab = "cities"
+
+[examples]
+"find a room in lisbon"        = {}
+"hotels in madrid for tonight" = {}
+"where can i stay in berlin"   = {}

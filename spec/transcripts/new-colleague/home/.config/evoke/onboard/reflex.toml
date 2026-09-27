@@ -1,0 +1,21 @@
+reflex = 1
+
+description = """
+Book a new hire's onboarding.
+The first week's sessions with their team, on both calendars."""
+not_for = ["creating accounts", "ordering a laptop", "listing a team"]
+tags = ["onboard"]
+effect = "write"
+confirm = "Book the onboarding?"
+run = "onboard.mts"
+
+[args.hire]
+takes = "hire"
+
+[args.team]
+takes = "team"
+
+[examples]
+"book the onboarding"              = {}
+"set up her first week"            = {}
+"schedule the onboarding sessions" = {}

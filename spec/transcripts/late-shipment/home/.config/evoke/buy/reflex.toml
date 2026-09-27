@@ -1,0 +1,18 @@
+reflex = 1
+
+description = """
+Order the shortfall from a supplier.
+The purchase order goes out at once, at the quoted price."""
+not_for = ["getting quotes", "reserving stock", "sending an email"]
+tags = ["buy"]
+confirm = "Order from {supplier}?"
+run = "buy.mts"
+
+[args.supplier]
+ask   = "From which supplier?"
+vocab = "suppliers"
+
+[examples]
+"buy the shortfall from nordic" = {}
+"order it from baltic"          = {}
+"place the order with nordic"   = {}

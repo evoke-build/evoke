@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+Check what the warehouse holds of a shipment's products.
+The units of each product it carries, as of now."""
+not_for = ["where the shipment is", "supplier quotes", "reserving stock"]
+tags = ["stock"]
+effect = "read"
+confirm = "Check the stock for the {shipment} shipment?"
+run = "stock.mts"
+returns = "stock"
+
+[args.shipment]
+ask   = "Which shipment?"
+vocab = "shipments"
+
+[examples]
+"what do we hold of the rotterdam shipment's goods"   = {}
+"stock levels for what hamburg carries"               = {}
+"how much of the antwerp shipment do we already hold" = {}

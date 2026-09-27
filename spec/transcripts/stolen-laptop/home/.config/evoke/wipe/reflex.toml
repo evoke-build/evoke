@@ -1,0 +1,18 @@
+reflex = 1
+
+description = """
+Erase a laptop remotely by its serial.
+Everything on it is gone at its next check-in; there is no undo."""
+not_for = ["locking a laptop", "finding a laptop", "rotating keys"]
+tags = ["wipe"]
+confirm = "Wipe {serial}?"
+run = "wipe.mts"
+
+[args.serial]
+ask  = "Which serial?"
+pick = "quoted"
+
+[examples]
+"wipe \"C02XK1ABJG5M\""                         = { serial = "C02XK1ABJG5M" }
+"erase the laptop with serial \"FVFH3KLMN2Q7\"" = { serial = "FVFH3KLMN2Q7" }
+"remote wipe \"C02G80T3MD6R\""                  = { serial = "C02G80T3MD6R" }

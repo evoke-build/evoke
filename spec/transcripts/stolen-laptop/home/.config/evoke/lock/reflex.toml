@@ -1,0 +1,18 @@
+reflex = 1
+
+description = """
+Lock a laptop remotely.
+It locks at its next check-in and stays locked; nothing on it is erased."""
+not_for = ["wiping a laptop", "finding a laptop", "signing sessions out"]
+tags = ["lock"]
+effect = "write"
+confirm = "Lock the laptop?"
+run = "lock.mts"
+
+[args.device]
+takes = "device"
+
+[examples]
+"lock the laptop"       = {}
+"lock it remotely"      = {}
+"lock that device down" = {}

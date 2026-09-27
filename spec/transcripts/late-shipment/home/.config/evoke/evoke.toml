@@ -1,0 +1,10 @@
+adapter = "replay"
+
+[reflexes]
+shipment  = "./shipment"
+stock     = "./stock"
+quotes    = "./quotes"
+shortfall = "./shortfall"
+reserve   = "./reserve"
+buy       = "./buy"
+email     = "./email"

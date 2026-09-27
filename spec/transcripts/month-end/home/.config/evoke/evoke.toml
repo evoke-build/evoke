@@ -1,0 +1,10 @@
+adapter = "replay"
+
+[reflexes]
+bank      = "./bank"
+invoices  = "./invoices"
+cards     = "./cards"
+payroll   = "./payroll"
+reconcile = "./reconcile"
+ledger    = "./ledger"
+send      = "./send"

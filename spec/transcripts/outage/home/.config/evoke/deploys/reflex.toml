@@ -1,0 +1,28 @@
+reflex = 1
+
+description = """
+List the recent deploys of a service.
+Each release, when it went out and who shipped it."""
+not_for = ["error rates", "logs of a service", "rolling a release back"]
+tags = ["deploys"]
+effect = "read"
+confirm = "List the deploys of {service}?"
+run = "deploys.mts"
+returns = "deploys"
+
+[args.service]
+ask   = "Which service?"
+vocab = "services"
+
+[args.region]
+ask      = "In which region?"
+vocab    = "regions"
+optional = true
+
+[yields]
+deploys = { each = { release = "quoted" } }
+
+[examples]
+"what was deployed to checkout today"  = {}
+"list the deploys of payments"         = {}
+"recent releases of search in us-east" = {}

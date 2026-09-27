@@ -1,0 +1,18 @@
+reflex = 1
+
+description = """
+Book a hotel room for tonight.
+The first of the rooms found, one night, charged to the travel account."""
+not_for = ["finding rooms", "booking a flight", "moving a meeting"]
+tags = ["hotel"]
+effect = "write"
+confirm = "Book the hotel?"
+run = "hotel.mts"
+
+[args.rooms]
+takes = "rooms"
+
+[examples]
+"book the hotel"      = {}
+"take the first room" = {}
+"get me the room"     = {}

@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+List a person's signed-in sessions.
+Each app they are signed into and since when."""
+not_for = ["their laptop", "their API keys", "signing them out"]
+tags = ["sessions"]
+effect = "read"
+confirm = "List the sessions of {person}?"
+run = "sessions.mts"
+returns = "sessions"
+
+[args.person]
+ask   = "Whose sessions?"
+vocab = "people"
+
+[examples]
+"list sam's sessions"    = {}
+"where is ana signed in" = {}
+"what is jo logged into" = {}

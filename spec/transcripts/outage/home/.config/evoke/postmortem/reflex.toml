@@ -1,0 +1,21 @@
+reflex = 1
+
+description = """
+Draft the postmortem of an incident.
+A document from what the incident record says, saved for review."""
+not_for = ["looking up an incident", "posting to a channel", "the status page"]
+tags = ["postmortem"]
+effect = "write"
+confirm = "Draft the postmortem?"
+run = "postmortem.mts"
+
+[args.incident]
+takes = "incident"
+
+[yields]
+path = "quoted"
+
+[examples]
+"draft the postmortem"      = {}
+"write up the postmortem"   = {}
+"start a postmortem for it" = {}

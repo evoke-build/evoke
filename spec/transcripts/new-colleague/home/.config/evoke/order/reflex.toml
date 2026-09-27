@@ -1,0 +1,24 @@
+reflex = 1
+
+description = """
+Order a laptop for a new hire.
+The air or the pro, shipped to the office; the order is placed at once."""
+not_for = ["creating accounts", "booking onboarding", "a team's members"]
+tags = ["order"]
+confirm = "Order a laptop for {person}?"
+run = "order.mts"
+
+[args.person]
+ask   = "For whom?"
+vocab = "people"
+
+[args.model]
+ask         = "Which model?"
+options.air = "The light one, for most roles."
+options.pro = "The powerful one, for engineers and designers."
+optional    = true
+
+[examples]
+"order a laptop for maria"         = {}
+"order sam a pro laptop"           = {}
+"get ana an air before she starts" = {}

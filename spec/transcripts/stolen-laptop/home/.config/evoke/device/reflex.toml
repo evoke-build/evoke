@@ -1,0 +1,23 @@
+reflex = 1
+
+description = """
+Find a person's laptop in device management.
+Its serial, its model and when it last checked in."""
+not_for = ["their signed-in sessions", "their API keys", "locking or wiping a laptop"]
+tags = ["device"]
+effect = "read"
+confirm = "Look up the laptop of {person}?"
+run = "device.mts"
+returns = "device"
+
+[args.person]
+ask   = "Whose laptop?"
+vocab = "people"
+
+[yields]
+serial = "quoted"
+
+[examples]
+"find sam's laptop"                = {}
+"where was ana's laptop last seen" = {}
+"look up jo's device"              = {}

@@ -1,0 +1,23 @@
+reflex = 1
+
+description = """
+Find the next flights to a city.
+Each alternative with its code and departure time, the best one first."""
+not_for = ["hotel rooms", "the day's meetings", "booking a seat"]
+tags = ["flights"]
+effect = "read"
+confirm = "Find flights to {to}?"
+run = "flights.mts"
+returns = "flights"
+
+[args.to]
+ask   = "To which city?"
+vocab = "cities"
+
+[yields]
+flight = "quoted"
+
+[examples]
+"find flights to lisbon"            = {}
+"what else flies to madrid tonight" = {}
+"next flight to berlin"             = {}

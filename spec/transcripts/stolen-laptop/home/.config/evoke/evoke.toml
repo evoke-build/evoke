@@ -1,0 +1,11 @@
+adapter = "replay"
+
+[reflexes]
+device   = "./device"
+sessions = "./sessions"
+keys     = "./keys"
+lock     = "./lock"
+wipe     = "./wipe"
+revoke   = "./revoke"
+rotate   = "./rotate"
+alert    = "./alert"

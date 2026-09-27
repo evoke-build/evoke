@@ -1,0 +1,19 @@
+reflex = 1
+
+description = """
+Tell a chat channel where things stand.
+The message is what you typed about it."""
+not_for = ["booking a flight", "booking a hotel", "moving a meeting"]
+tags = ["tell"]
+effect = "write"
+confirm = "Tell {channel}?"
+run = "tell.mts"
+
+[args.channel]
+ask   = "Which channel?"
+vocab = "channels"
+
+[examples]
+"tell #travel the flight was cancelled" = {}
+"let #team know i land at midnight"     = {}
+"post to #travel that i am rebooked"    = {}

@@ -1,0 +1,18 @@
+reflex = 1
+
+description = """
+Rotate a person's API keys.
+Each listed key is replaced by a new one; the old ones stop working."""
+not_for = ["revoking sessions", "listing keys", "wiping a laptop"]
+tags = ["rotate"]
+effect = "write"
+confirm = "Rotate the keys?"
+run = "rotate.mts"
+
+[args.keys]
+takes = "keys"
+
+[examples]
+"rotate the keys"                = {}
+"rotate their api keys"          = {}
+"replace the keys with new ones" = {}

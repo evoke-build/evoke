@@ -1,0 +1,18 @@
+reflex = 1
+
+description = """
+Sign a person out of every app at once.
+Each listed session ends; they sign in again on a trusted device."""
+not_for = ["rotating keys", "listing sessions", "locking a laptop"]
+tags = ["revoke"]
+effect = "write"
+confirm = "Revoke the sessions?"
+run = "revoke.mts"
+
+[args.sessions]
+takes = "sessions"
+
+[examples]
+"revoke the sessions"      = {}
+"sign them out everywhere" = {}
+"end every session"        = {}

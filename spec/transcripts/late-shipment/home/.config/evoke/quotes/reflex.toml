@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+Get supplier quotes for what a shipment carries.
+A price per unit from each supplier who can deliver sooner."""
+not_for = ["where the shipment is", "stock in the warehouse", "placing the order"]
+tags = ["quotes"]
+effect = "read"
+confirm = "Get quotes for the {shipment} shipment?"
+run = "quotes.mts"
+returns = "quotes"
+
+[args.shipment]
+ask   = "Which shipment?"
+vocab = "shipments"
+
+[examples]
+"get quotes for the rotterdam shipment"    = {}
+"who else can supply what hamburg carries" = {}
+"supplier prices for the antwerp goods"    = {}

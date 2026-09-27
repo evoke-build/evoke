@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+Track a shipment with its carrier.
+When it now lands, how many days late that is, and which products it carries."""
+not_for = ["stock held in the warehouse", "supplier quotes", "what is short"]
+tags = ["shipment"]
+effect = "read"
+confirm = "Track the {shipment} shipment?"
+run = "shipment.mts"
+returns = "shipment"
+
+[args.shipment]
+ask   = "Which shipment?"
+vocab = "shipments"
+
+[examples]
+"where is the rotterdam shipment" = {}
+"is the hamburg shipment late"    = {}
+"track the antwerp container"     = {}

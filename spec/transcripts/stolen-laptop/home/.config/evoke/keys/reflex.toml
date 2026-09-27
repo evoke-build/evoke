@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+List a person's API keys in the key store.
+Each key's name and when it was created."""
+not_for = ["their laptop", "their signed-in sessions", "rotating the keys"]
+tags = ["keys"]
+effect = "read"
+confirm = "List the keys of {person}?"
+run = "keys.mts"
+returns = "keys"
+
+[args.person]
+ask   = "Whose keys?"
+vocab = "people"
+
+[examples]
+"list sam's api keys"      = {}
+"which keys does ana hold" = {}
+"show jo's keys"           = {}

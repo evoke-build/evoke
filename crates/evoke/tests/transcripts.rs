@@ -175,6 +175,36 @@ fn joins() {
     flow("joins");
 }
 
+#[test]
+fn outage() {
+    flow("outage");
+}
+
+#[test]
+fn stolen_laptop() {
+    flow("stolen-laptop");
+}
+
+#[test]
+fn late_shipment() {
+    flow("late-shipment");
+}
+
+#[test]
+fn month_end() {
+    flow("month-end");
+}
+
+#[test]
+fn cancelled_flight() {
+    flow("cancelled-flight");
+}
+
+#[test]
+fn new_colleague() {
+    flow("new-colleague");
+}
+
 /// The recipe yields the commit `spec/transcripts/update/home/.config/evoke/evoke.lock` records.
 #[test]
 fn the_recipe_reproduces_the_locked_commit() {

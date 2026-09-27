@@ -1,0 +1,19 @@
+reflex = 1
+
+description = """
+Alert a chat channel.
+The message is what you typed about it."""
+not_for = ["locking a laptop", "signing sessions out", "rotating keys"]
+tags = ["alert"]
+effect = "write"
+confirm = "Alert {channel}?"
+run = "alert.mts"
+
+[args.channel]
+ask   = "Which channel?"
+vocab = "channels"
+
+[examples]
+"alert #security"              = {}
+"tell #it a laptop is missing" = {}
+"let #security know"           = {}

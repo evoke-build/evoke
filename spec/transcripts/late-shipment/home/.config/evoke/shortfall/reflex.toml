@@ -1,0 +1,28 @@
+reflex = 1
+
+description = """
+Work out what a late shipment leaves short.
+Weighs the shipment, the stock held and the quotes, and lists each product code short with its units."""
+not_for = ["tracking the shipment", "reserving stock", "buying from a supplier"]
+tags = ["shortfall"]
+effect = "read"
+confirm = "Work out the shortfall?"
+run = "shortfall.mts"
+returns = "shortfall"
+
+[args.shipment]
+takes = "shipment"
+
+[args.stock]
+takes = "stock"
+
+[args.quotes]
+takes = "quotes"
+
+[yields]
+items = { each = { sku = "quoted" } }
+
+[examples]
+"work out the shortfall"        = {}
+"what are we short"             = {}
+"what runs out before it lands" = {}

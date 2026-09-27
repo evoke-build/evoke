@@ -1,0 +1,18 @@
+reflex = 1
+
+description = """
+Create a new hire's accounts.
+Mail, chat and the VPN, from the hire record; the invites go to their personal address."""
+not_for = ["ordering a laptop", "booking onboarding", "looking up the hire"]
+tags = ["accounts"]
+effect = "write"
+confirm = "Create the accounts?"
+run = "accounts.mts"
+
+[args.hire]
+takes = "hire"
+
+[examples]
+"create her accounts"                      = {}
+"set up the accounts"                      = {}
+"get the mail, chat and vpn accounts made" = {}

@@ -1,0 +1,13 @@
+adapter = "replay"
+
+[reflexes]
+errors     = "./errors"
+deploys    = "./deploys"
+logs       = "./logs"
+suspect    = "./suspect"
+rollback   = "./rollback"
+post       = "./post"
+incidents  = "./incidents"
+incident   = "./incident"
+postmortem = "./postmortem"
+status     = "./status"

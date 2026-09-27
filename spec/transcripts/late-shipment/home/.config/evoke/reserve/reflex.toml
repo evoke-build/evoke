@@ -1,0 +1,19 @@
+reflex = 1
+
+description = """
+Set aside what we hold of one product code for the orders waiting on it.
+Held until the shipment lands; nothing is bought."""
+not_for = ["buying from a supplier", "checking the stock", "working out the shortfall"]
+tags = ["reserve"]
+effect = "write"
+confirm = "Reserve {sku}?"
+run = "reserve.mts"
+
+[args.sku]
+ask  = "Which product code?"
+pick = "quoted"
+
+[examples]
+"reserve \"vx-2210-04\""                               = { sku = "vx-2210-04" }
+"hold the stock of \"hs-0409-02\" for the open orders" = { sku = "hs-0409-02" }
+"put \"vx-2214-11\" aside"                             = { sku = "vx-2214-11" }

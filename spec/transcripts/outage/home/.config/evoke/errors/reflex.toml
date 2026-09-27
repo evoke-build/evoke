@@ -1,0 +1,25 @@
+reflex = 1
+
+description = """
+Show the error rate of a service.
+The rate over the last hour and when it rose, in one region or all."""
+not_for = ["logs of a service", "releases and deploys", "the status page"]
+tags = ["errors"]
+effect = "read"
+confirm = "Check the errors of {service}?"
+run = "errors.mts"
+returns = "errors"
+
+[args.service]
+ask   = "Which service?"
+vocab = "services"
+
+[args.region]
+ask      = "In which region?"
+vocab    = "regions"
+optional = true
+
+[examples]
+"check the errors for checkout"     = {}
+"error rate of payments in eu-west" = {}
+"is search throwing errors"         = {}

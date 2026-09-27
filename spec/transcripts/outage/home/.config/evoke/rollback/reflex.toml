@@ -1,0 +1,28 @@
+reflex = 1
+
+description = """
+Roll a service back from a release to the one before it.
+Everywhere, or in one region."""
+not_for = ["listing deploys", "finding which release broke something", "restarting a service"]
+tags = ["rollback"]
+confirm = "Roll back {release}?"
+run = "rollback.mts"
+
+[args.service]
+ask      = "Which service?"
+vocab    = "services"
+optional = true
+
+[args.release]
+ask  = "From which release?"
+pick = "quoted"
+
+[args.region]
+ask      = "In which region?"
+vocab    = "regions"
+optional = true
+
+[examples]
+"roll checkout back from \"4.12.0\""        = { release = "4.12.0" }
+"revert payments from \"2.3.1\" in eu-west" = { release = "2.3.1" }
+"undo the \"7.0.2\" release of search"      = { release = "7.0.2" }

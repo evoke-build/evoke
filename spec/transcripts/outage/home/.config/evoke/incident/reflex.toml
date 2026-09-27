@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+Look up an incident by its number.
+What happened, when it opened, and which service it hit."""
+not_for = ["listing every incident", "writing a postmortem", "error rates"]
+tags = ["incident"]
+effect = "read"
+confirm = "Look up incident {number}?"
+run = "incident.mts"
+returns = "incident"
+
+[args.number]
+ask  = "Which incident number?"
+pick = "number"
+
+[examples]
+"look up incident 311"         = { number = "311" }
+"what happened in incident 42" = { number = "42" }
+"show me incident 1207"        = { number = "1207" }

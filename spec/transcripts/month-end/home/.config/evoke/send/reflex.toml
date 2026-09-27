@@ -1,0 +1,19 @@
+reflex = 1
+
+description = """
+Email the month's closing report.
+To one address."""
+not_for = ["posting to the ledger", "chat messages", "reconciling"]
+tags = ["send"]
+effect = "write"
+confirm = "Send the report to {to}?"
+run = "send.mts"
+
+[args.to]
+ask  = "To which address?"
+pick = "email"
+
+[examples]
+"send the report to cfo@example.com"           = { to = "cfo@example.com" }
+"email the close to omar@example.com"          = { to = "omar@example.com" }
+"mail the month's report to board@example.com" = { to = "board@example.com" }

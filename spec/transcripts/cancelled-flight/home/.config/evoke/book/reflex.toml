@@ -1,0 +1,18 @@
+reflex = 1
+
+description = """
+Book a seat on a flight by its code.
+Charged to the travel account; the ticket goes to your inbox."""
+not_for = ["finding flights", "booking a hotel", "telling a channel"]
+tags = ["book"]
+confirm = "Book {flight}?"
+run = "book.mts"
+
+[args.flight]
+ask  = "Which flight?"
+pick = "quoted"
+
+[examples]
+"book \"TP1043\""             = { flight = "TP1043" }
+"get me a seat on \"IB3107\"" = { flight = "IB3107" }
+"take the \"LH1166\" flight"  = { flight = "LH1166" }

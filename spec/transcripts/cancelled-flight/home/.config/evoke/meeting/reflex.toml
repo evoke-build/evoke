@@ -1,0 +1,23 @@
+reflex = 1
+
+description = """
+Move a day's meetings to another day.
+Every meeting of that day, to the day you name, or else the day after."""
+not_for = ["showing the calendar", "booking a flight", "telling a channel"]
+tags = ["meeting"]
+effect = "write"
+confirm = "Move the meetings?"
+run = "meeting.mts"
+
+[args.day]
+ask      = "To which day?"
+vocab    = "days"
+optional = true
+
+[args.calendar]
+takes = "calendar"
+
+[examples]
+"move the meetings to tuesday" = {}
+"push my meetings back a day"  = {}
+"shift them to monday"         = {}

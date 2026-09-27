@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+Show the meetings of a day.
+Each with its title and its time."""
+not_for = ["moving a meeting", "flights", "hotel rooms"]
+tags = ["calendar"]
+effect = "read"
+confirm = "Show the calendar for {day}?"
+run = "calendar.mts"
+returns = "calendar"
+
+[args.day]
+ask   = "Which day?"
+vocab = "days"
+
+[examples]
+"what is on my calendar tomorrow" = {}
+"show monday's meetings"          = {}
+"what do i have on tuesday"       = {}

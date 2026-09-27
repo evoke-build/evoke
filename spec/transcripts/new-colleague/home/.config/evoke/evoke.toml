@@ -1,0 +1,8 @@
+adapter = "replay"
+
+[reflexes]
+hire     = "./hire"
+team     = "./team"
+accounts = "./accounts"
+order    = "./order"
+onboard  = "./onboard"

@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+List a team's members.
+Who sits on it today, by first name."""
+not_for = ["one person's hire", "booking onboarding", "creating accounts"]
+tags = ["team"]
+effect = "read"
+confirm = "List the members of {team}?"
+run = "team.mts"
+returns = "team"
+
+[args.team]
+ask   = "Which team?"
+vocab = "teams"
+
+[examples]
+"who is on the platform team" = {}
+"list the sales team"         = {}
+"show me platform's members"  = {}
