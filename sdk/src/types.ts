@@ -139,6 +139,7 @@ export type Fix =
   | { type: "add_ref"; reference: string; name?: LocalName } // evoke add <reference> --as <name>
   | { type: "add_refs"; references: string[] } // evoke add <reference>…
   | { type: "teach_not"; utterance: string; reflex: LocalName } // evoke teach "<utterance>" not <reflex>
+  | { type: "teach"; utterance: string; reflex?: LocalName } // evoke teach "<utterance>" <reflex>
   | { type: "new" } // evoke new <name>
   | { type: "test" } // evoke test
   | { type: "help" } // evoke --help
@@ -164,8 +165,11 @@ export interface Manifest {
   tags: Tag[]
   effect: Effect
   confirm: Template
-  /** Absent: inline, a function the SDK holds. */
+  /** Absent: inline, a function the SDK holds — or a playbook, whose body is `steps`. */
   run?: Run
+  /** A playbook's body: a plan of sentences with `{slot}`s, each decided over the installed set when the plan is
+   *  made; absent for a reflex with a body. `run` or `steps`, exactly one. Contract, like `run`. */
+  steps?: Sentence[]
   /** Where the body runs, when not anywhere; elsewhere the reflex is inactive. Absent when anywhere. Contract, like `run`. */
   platforms?: Platform[]
   /** What the body may touch; absent, the tightest declaration. Contract, like `run`. */
@@ -193,6 +197,10 @@ export type Effect = "read" | "write" | "destructive"
 
 /** The confirm prompt: text with `{placeholder}`s, each naming a required, non-flag argument. */
 export type Template = string
+
+/** One step of a playbook: a sentence with `{slot}`s, each an argument of the manifest — a required one bare, an
+ *  optional one inside a bracketed phrase, `[ in {region}]`, written only when the slot is filled. */
+export type Sentence = string
 
 /** The body: an entrypoint run in a child, or an argv that never touches a shell. */
 export type Run = Entrypoint | Argv
@@ -643,8 +651,10 @@ export interface Plan {
 /** An active reflex as the decision needs it; `effect` is the tighter of the manifest's and the consented one, `needs` the manifest's declaration narrowed to what was consented to. */
 export interface Active {
   effect: Effect
-  /** Absent: inline, a function the SDK holds. */
+  /** Absent: inline, a function the SDK holds — or a playbook, whose body is `steps`. */
   run?: Run
+  /** A playbook's plan of sentences; absent for a reflex with a body. */
+  steps?: Sentence[]
   /** Absent: the tightest declaration. */
   needs?: Needs
   confirm: Template
@@ -921,6 +931,22 @@ export interface Step {
   shared?: Record<ArgName, Shared>
   /** The steps this one must follow: an explicit `then`, or a binding. */
   after?: number[]
+  /** The playbooks this step came from, outermost first; absent on a step of the person's own. */
+  from?: From[]
+}
+
+/** Where a step came from when a playbook wrote it: the playbook, which of its steps (from 1), and what each slot
+ *  the sentence holds took, by the slot's name. */
+export interface From {
+  playbook: LocalName
+  step: number
+  slots: Record<ArgName, string>
+}
+
+/** A part of the request that repeated a step a playbook wrote: folded into it (from 1), run once. */
+export interface Folded {
+  text: string
+  into: number
 }
 
 /** How a bound value reaches its step: answering its own ask; the step decided again with the value in its words; or a
@@ -954,6 +980,19 @@ export type Because =
   | { type: "no_source"; step: number; name: FieldName }
   /** What the step takes one of that several steps return, or one step once per record: refused. */
   | { type: "several_sources"; step: number; name: FieldName; sources: number[] }
+  /** A part of the request picked a playbook, whose steps stand from `step` on: one yes over the whole plan, its
+   *  own line and question the prompt's. */
+  | { type: "reviewed"; step: number; playbook: LocalName; text: string; prompt: Prompt }
+  /** A step whose words route to a playbook it stands inside: refused. */
+  | { type: "nested"; step: number; playbook: LocalName }
+  /** A step whose words route to a playbook past the depth: a plan inside a plan inside a plan. */
+  | { type: "too_deep"; step: number; playbook: LocalName }
+  /** The plan past the most steps it may hold, 24, once a playbook expanded. */
+  | { type: "too_long"; playbook: LocalName; steps: number }
+  /** A part that opens with a condition: refused whole, nothing decided. */
+  | { type: "conditional"; text: string }
+  /** A part that says what not to do beside a plan a playbook wrote: refused whole. */
+  | { type: "excluded"; text: string; playbook: LocalName }
 
 /** The verdict before anything runs, with every reason. */
 export interface Verdict {
@@ -968,6 +1007,8 @@ export interface Weave {
   steps: Step[]
   /** Fragments left out because they begin with a negation. */
   excluded?: string[]
+  /** Parts of the request that repeated a step a playbook wrote, each folded into that step. */
+  folded?: Folded[]
   binds?: Binding[]
   /** Whether a write is among the steps, so none may run beside another. */
   exclusive: boolean
@@ -1136,6 +1177,8 @@ export type Change =
   | { type: "source_changed"; arg: ArgName }
   | { type: "range_changed"; arg: ArgName }
   | { type: "run_changed" }
+  /** A playbook's steps moved: one added, removed, reworded or reordered. Major. */
+  | { type: "steps_changed" }
   | { type: "needs_widened"; added: Needs }
   | { type: "needs_narrowed"; removed: Needs }
   | { type: "platform_added"; platform: Platform }
@@ -1168,8 +1211,9 @@ export type Consent =
   | { type: "tightened"; effect: Effect }
   | { type: "needs_accept"; locked: Effect; upstream: Effect }
 
-/** What `lint` finds: a size cap passed, or text that addresses the model instead of describing an action. */
-export type LintRule = "size_cap" | "addresses_model"
+/** What `lint` finds: a size cap passed, text that addresses the model instead of describing an action, a step
+ *  holding a connective the reader splits on, or a step stating a word another team would change. */
+export type LintRule = "size_cap" | "addresses_model" | "connective" | "literal"
 
 /** One thing `lint` found, at the key path it concerns; reported at `add` and by `check`, never a refusal. */
 export interface Finding {
@@ -1219,8 +1263,9 @@ export interface Case {
   from: Table
 }
 
-/** Where a case came from: examples are sent to the classifier, tests are held out. */
-export type Table = "examples" | "tests"
+/** Where a case came from: examples are sent to the classifier, tests are held out; a step is a playbook's own
+ *  sentence, judged on where its words route once its slots are filled. */
+export type Table = "examples" | "tests" | "steps"
 
 /** What a record expects, as a decision compares to it: `false` for never this reflex, or a claim per argument — `{}` asserts the route alone. */
 export type Expected = false | Record<ArgName, Claim>
@@ -1239,7 +1284,12 @@ export type Mismatch =
   | { type: "arg"; arg: ArgName; read: Claim }
 
 /** The last run's verdict per case, by reflex and utterance identity; the host keeps one per plan digest. */
-export type Baseline = Record<LocalName, Record<Identity, CaseVerdict>>
+export interface Baseline {
+  /** The records' verdicts, by reflex and utterance identity; absent when none. */
+  records?: Record<LocalName, Record<Identity, CaseVerdict>>
+  /** The playbooks' steps' verdicts, by playbook and sentence identity; absent when none. */
+  steps?: Record<LocalName, Record<Identity, CaseVerdict>>
+}
 
 /** A case that passed at the last run and fails now, two of three uncached repeats. */
 export interface Regression {

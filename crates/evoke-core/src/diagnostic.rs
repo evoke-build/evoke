@@ -109,6 +109,12 @@ pub enum Fix {
         utterance: String,
         reflex: LocalName,
     },
+    /// `evoke teach "<utterance>" <reflex>`: a phrase to teach a reflex — one still to name, when none is given.
+    Teach {
+        utterance: String,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        reflex: Option<LocalName>,
+    },
     /// `evoke new <name>`: a reflex directory still to make, under a name still to choose.
     New,
     /// `evoke test`: every record judged, where the theft test at `add` could not finish.
@@ -165,6 +171,13 @@ impl Fix {
             Self::TeachNot { utterance, reflex } => format!(
                 "evoke teach {} not {reflex}",
                 serde_json::Value::String(utterance.clone())
+            ),
+            Self::Teach { utterance, reflex } => format!(
+                "evoke teach {} {}",
+                serde_json::Value::String(utterance.clone()),
+                reflex
+                    .as_ref()
+                    .map_or_else(|| "<reflex>".to_owned(), ToString::to_string)
             ),
             Self::New => "evoke new <name>".to_owned(),
             Self::Test => "evoke test".to_owned(),
@@ -341,6 +354,22 @@ mod tests {
     #[test]
     fn the_tests_and_the_help_are_commands_too() {
         assert_eq!(Fix::Test.command(""), "evoke test");
+        assert_eq!(
+            Fix::Teach {
+                utterance: "find the release behind it".to_owned(),
+                reflex: None,
+            }
+            .command(""),
+            "evoke teach \"find the release behind it\" <reflex>"
+        );
+        assert_eq!(
+            Fix::Teach {
+                utterance: "find the release behind it".to_owned(),
+                reflex: Some(local("suspect")),
+            }
+            .command(""),
+            "evoke teach \"find the release behind it\" suspect"
+        );
         assert_eq!(Fix::Help.command("evoke x"), "evoke --help");
         assert_eq!(
             Fix::Save {

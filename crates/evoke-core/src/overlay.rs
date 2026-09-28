@@ -342,7 +342,9 @@ fn read(d: &mut Diagnostics, root: Node, of: &Manifest, form: Form) -> Option<Ov
         }
         Some(effect)
     });
-    for (_, node) in top.take_any(&["run", "needs", "config", "yields", "returns", "takes"]) {
+    for (_, node) in top.take_any(&[
+        "run", "steps", "needs", "config", "yields", "returns", "takes",
+    ]) {
         d.fail(
             node.at.as_ref(),
             format!(

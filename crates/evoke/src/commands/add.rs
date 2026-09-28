@@ -1,28 +1,33 @@
 //! `evoke add <ref>… [--as name]`: each remote ref fetched at its pin or its newest tag and kept in the store — one
 //! fetch per repository and tag, however many reflexes come from it — and each local ref read where it is; every
 //! manifest read and linted; the installed examples routed over the new set, a few at a time, to name each phrase
-//! a newcomer steals; then the project, the lock and `evoke.d.ts` written, the runtime recorded, and for each
-//! newcomer its row with what it may touch, the machine's status once when it does not hold a declaration whole,
-//! then the lint, theft and inactive lines. Nothing is written until every newcomer is in hand; a theft test that
-//! could not finish — the adapter faulted, or has no key yet — is reported with `evoke test`, never a refusal.
+//! a newcomer steals; a newcomer playbook's steps decided over the new set, filled from its own records, to show
+//! what each reaches here, and every installed playbook's steps decided again, to name a step the newcomer now
+//! takes; then the project, the lock and `evoke.d.ts` written, the runtime recorded, and for each newcomer its
+//! row with what it may touch, the machine's status once when it does not hold a declaration whole, then the
+//! reach, the lint, theft and inactive lines. Nothing is written until every newcomer is in hand; a theft test that
+//! could not finish — the adapter faulted, or has no key yet — is reported with `evoke test`, never a refusal. A
+//! step that reaches nothing is reported, never a refusal: the plan refuses when it is made.
 //! In: the refs, one name or none, the environment. Out: `Exit`.
 
 use std::path::PathBuf;
 
 use evoke_core::document::Text;
+use evoke_core::manifest::Effect;
 use evoke_core::name::LocalName;
 use evoke_core::project::{Location, Locked, Reference};
 use evoke_core::{
-    Case, Diagnostic, Document, File, Finding, Fix, Gate, Item, Manifest, Routed, Scope, Table,
-    Theft, Version, add_entry, cases, compile, effective, lint, manifest, read, request, thieves,
+    Case, Decision, Diagnostic, Document, File, Finding, Fix, Gate, Installed, Item, Manifest,
+    Plan, Routed, Scope, Table, Theft, Version, add_entry, cases, compile, effective, filled, gate,
+    lint, manifest, read, request, thieves,
 };
 
 use super::session::{self, Opening, Session};
 use super::{Exit, default_name, human};
-use crate::adapter;
+use crate::adapter::{self, Adapter};
 use crate::args::{Command, Ref};
 use crate::hosts::{Deadline, Environment, contain, files, git, terminal, threads};
-use crate::report::{self, Gutter};
+use crate::report::{self, Gutter, StepBecame, TestedStep};
 
 pub fn run(
     command: &Command,
@@ -69,9 +74,9 @@ fn added(session: &mut Session<'_>, input: &str, refs: &[Ref], name: Option<&Loc
     if let Err(exit) = placed(session, &newcomers, &typed) {
         return exit;
     }
-    let (thefts, unfinished) = match stolen(session, input, &newcomers) {
-        Ok(thefts) => (thefts, None),
-        Err(exit) => (Vec::new(), Some(exit)),
+    let (thefts, reaches, unfinished) = match tested(session, input, &newcomers) {
+        Ok((thefts, reaches)) => (thefts, reaches, None),
+        Err(exit) => (Vec::new(), Vec::new(), Some(exit)),
     };
     for newcomer in &newcomers {
         if let Err(exit) = session.land(input, &add_entry(&newcomer.name, &newcomer.location)) {
@@ -107,13 +112,30 @@ fn added(session: &mut Session<'_>, input: &str, refs: &[Ref], name: Option<&Loc
     if let Some(status) = report::status(&session.contained) {
         terminal::note(&status);
     }
+    for reach in &reaches {
+        terminal::note(&report::reached(&reach.steps));
+    }
     for newcomer in &newcomers {
         for finding in &newcomer.findings {
             terminal::note(&report::finding(&newcomer.name, finding));
         }
     }
+    for reach in &reaches {
+        for line in reach.lines() {
+            session.reporter.note(input, &line);
+        }
+    }
+    let playbooks: Vec<LocalName> = session
+        .plan
+        .active()
+        .iter()
+        .filter(|(_, active)| !active.steps.is_empty())
+        .map(|(name, _)| name.clone())
+        .collect();
     for theft in &thefts {
-        session.reporter.note(input, &stolen_line(theft));
+        session
+            .reporter
+            .note(input, &stolen_line(theft, &playbooks));
     }
     if let Some(exit) = unfinished {
         session.reporter.note(input, &unfinished_line(&exit));
@@ -385,21 +407,61 @@ fn conflict(
     })
 }
 
-/// The conflict test: every installed example routed over the set with the newcomers in it, each reflex's fit
-/// asked with the route, through the adapter, a few at a time; nothing is asked when nothing is installed or no
-/// newcomer is active.
-fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<Vec<Theft>, Exit> {
-    let names: Vec<LocalName> = newcomers
-        .iter()
-        .map(|newcomer| newcomer.name.clone())
-        .collect();
-    let examples: Vec<Case> = cases(&session.installed)
-        .into_iter()
-        .filter(|case| case.from == Table::Examples && !names.contains(&case.reflex))
-        .collect();
-    if examples.is_empty() {
-        return Ok(Vec::new());
+/// What a newcomer playbook's steps reach on this set: each step's sentence and the reflex it routes to.
+struct Reach {
+    name: LocalName,
+    claim: Effect,
+    steps: Vec<TestedStep>,
+}
+
+impl Reach {
+    /// The lines after the rows: a step that reaches nothing here, with the lesson that settles it; a claim under
+    /// the steps' worst.
+    fn lines(&self) -> Vec<Diagnostic> {
+        let mut lines = Vec::new();
+        for step in &self.steps {
+            if matches!(step.became, StepBecame::NoReflex) {
+                lines.push(Diagnostic {
+                    reflex: Some(self.name.clone()),
+                    at: None,
+                    message: format!(
+                        "step {} {} reaches nothing here",
+                        step.n,
+                        report::quoted(&step.sentence)
+                    ),
+                    fix: Fix::Teach {
+                        utterance: step.sentence.clone(),
+                        reflex: None,
+                    },
+                });
+            }
+        }
+        let worst = self
+            .steps
+            .iter()
+            .filter_map(|step| match &step.became {
+                StepBecame::Routes { effect, .. } => Some(*effect),
+                _ => None,
+            })
+            .max();
+        if let Some(worst) = worst
+            && worst > self.claim
+        {
+            lines.push(Diagnostic {
+                reflex: Some(self.name.clone()),
+                at: None,
+                message: format!("claims {}; its steps reach {worst}", self.claim),
+                fix: Fix::Show {
+                    reflex: Some(self.name.clone()),
+                },
+            });
+        }
+        lines
     }
+}
+
+/// The set with the newcomers in it, compiled as the session's plan is: what every test at `add` decides over.
+fn newset(session: &Session<'_>, newcomers: &[Newcomer]) -> Result<(Installed, Plan), Exit> {
     let mut set = session.installed.clone();
     for newcomer in newcomers {
         set.reflexes.insert(
@@ -420,8 +482,38 @@ fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<
         Some(platform),
     )
     .map_err(Exit::Human)?;
+    Ok((set, plan))
+}
+
+/// The tests at `add`, over the set with the newcomers in it: the conflict test — every installed example routed,
+/// each reflex's fit asked with the route, to name each phrase a newcomer steals, and every installed playbook's
+/// steps decided again, to name a step the newcomer now takes — and the reach of each newcomer playbook's
+/// steps. Nothing is asked when no newcomer is active.
+fn tested(
+    session: &Session<'_>,
+    input: &str,
+    newcomers: &[Newcomer],
+) -> Result<(Vec<Theft>, Vec<Reach>), Exit> {
+    let names: Vec<LocalName> = newcomers
+        .iter()
+        .map(|newcomer| newcomer.name.clone())
+        .collect();
+    let (set, plan) = newset(session, newcomers)?;
     if !plan.active().keys().any(|name| names.contains(name)) {
-        return Ok(Vec::new());
+        return Ok((Vec::new(), Vec::new()));
+    }
+    let examples: Vec<Case> = cases(&session.installed)
+        .into_iter()
+        .filter(|case| case.from == Table::Examples && !names.contains(&case.reflex))
+        .collect();
+    let playbooks: Vec<&LocalName> = plan
+        .active()
+        .iter()
+        .filter(|(_, active)| !active.steps.is_empty())
+        .map(|(name, _)| name)
+        .collect();
+    if examples.is_empty() && playbooks.is_empty() {
+        return Ok((Vec::new(), Vec::new()));
     }
     let adapter = adapter::resolve(
         &session.project.adapter,
@@ -430,21 +522,52 @@ fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<
     )
     .map_err(|problems| session.reporter.human(input, problems))?;
     adapter.accepts(&plan.digest()).map_err(Exit::Human)?;
+    let mut thefts = stolen(&plan, &*adapter, &names, examples)?;
+    let mut reaches = Vec::new();
+    for name in playbooks {
+        let reach = reached(&set, &plan, &*adapter, name)?;
+        if names.contains(name) {
+            reaches.push(reach);
+            continue;
+        }
+        // An installed playbook's step that now reaches a newcomer: the newcomer took it.
+        for step in &reach.steps {
+            if let StepBecame::Routes { reflex, .. } = &step.became
+                && names.contains(reflex)
+            {
+                thefts.push(Theft {
+                    phrase: evoke_core::Utterance::new(&step.sentence)
+                        .expect("a sentence is one line"),
+                    owner: name.clone(),
+                    thief: reflex.clone(),
+                    fits: None,
+                });
+            }
+        }
+    }
+    Ok((thefts, reaches))
+}
+
+/// The conflict test: every installed example routed over the new plan, each reflex's fit asked with the route,
+/// through the adapter, a few at a time.
+fn stolen(
+    plan: &Plan,
+    adapter: &dyn Adapter,
+    names: &[LocalName],
+    examples: Vec<Case>,
+) -> Result<Vec<Theft>, Exit> {
+    if examples.is_empty() {
+        return Ok(Vec::new());
+    }
     let readings = {
         let busy = terminal::busy_over("checking for thefts", examples.len());
         threads::try_each(&examples, |case| {
-            let request = request(
-                &plan,
-                case.utterance.text().as_str(),
-                &[],
-                None,
-                Scope::Fits,
-            )
-            .map_err(Exit::Human)?;
+            let request = request(plan, case.utterance.text().as_str(), &[], None, Scope::Fits)
+                .map_err(Exit::Human)?;
             let raw = adapter
                 .answer(&request, Deadline::after(plan.deadline()))
                 .map_err(Exit::Adapter)?;
-            let reading = read(&plan, &request, raw).map_err(Exit::Adapter)?;
+            let reading = read(plan, &request, raw).map_err(Exit::Adapter)?;
             busy.tick();
             Ok(reading)
         })?
@@ -459,12 +582,120 @@ fn stolen(session: &Session<'_>, input: &str, newcomers: &[Newcomer]) -> Result<
         })
         .collect();
     let floor = adapter.declared().gate.as_ref().and_then(Gate::fits);
-    Ok(thieves(&names, &routed, floor))
+    Ok(thieves(names, &routed, floor))
+}
+
+/// One playbook's steps decided over the plan: its records decided first, each step filled from the first whose
+/// reading fills every slot — a step no record fills is untested — and decided once, uncached, no body run.
+fn reached(
+    set: &Installed,
+    plan: &Plan,
+    adapter: &dyn Adapter,
+    name: &LocalName,
+) -> Result<Reach, Exit> {
+    let active = &plan.active()[name];
+    let records: Vec<Case> = cases(set)
+        .into_iter()
+        .filter(|case| case.reflex == *name)
+        .collect();
+    let decide = |text: &str| -> Result<Decision, Exit> {
+        let request = request(plan, text, &[], None, Scope::Full).map_err(Exit::Human)?;
+        let raw = adapter
+            .answer(&request, Deadline::after(plan.deadline()))
+            .map_err(Exit::Adapter)?;
+        let reading = read(plan, &request, raw).map_err(Exit::Adapter)?;
+        Ok(gate(plan, reading, adapter.declared().gate.as_ref()))
+    };
+    let own = {
+        let busy = terminal::busy_over(format!("reading {name}"), records.len());
+        threads::try_each(&records, |case| {
+            let decision = decide(case.utterance.text().as_str());
+            busy.tick();
+            decision
+        })?
+    };
+    let own: Vec<&Decision> = own.iter().collect();
+    let texts: Vec<(usize, String, Option<String>)> = active
+        .steps
+        .iter()
+        .enumerate()
+        .map(|(i, sentence)| (i + 1, sentence.to_string(), filled(sentence, &own)))
+        .collect();
+    let decided = {
+        let filled: Vec<&(usize, String, Option<String>)> =
+            texts.iter().filter(|(_, _, text)| text.is_some()).collect();
+        let busy = terminal::busy_over(format!("deciding {name}'s steps"), filled.len());
+        threads::try_each(&filled, |(_, _, text)| {
+            let decision = decide(text.as_deref().unwrap_or_default());
+            busy.tick();
+            decision
+        })?
+    };
+    let mut decided = decided.into_iter();
+    let steps = texts
+        .into_iter()
+        .map(|(n, sentence, text)| {
+            let became = match text {
+                None => StepBecame::Untested {
+                    slot: active
+                        .steps
+                        .get(n - 1)
+                        .and_then(|sentence| sentence.slots().next().map(|(slot, _)| slot.clone()))
+                        .expect("an unfilled step holds a slot"),
+                },
+                Some(_) => match decided.next().expect("every filled step was decided") {
+                    Decision::Abstain { .. } => StepBecame::NoReflex,
+                    Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
+                        routes_to(plan, name, &chosen.call.reflex)
+                    }
+                    Decision::Ask { asking, .. } => routes_to(plan, name, &asking.reflex),
+                },
+            };
+            TestedStep {
+                n,
+                sentence,
+                became,
+                regression: false,
+            }
+        })
+        .collect();
+    Ok(Reach {
+        name: name.clone(),
+        claim: active.effect,
+        steps,
+    })
+}
+
+/// What a step routed to: a reflex with its effect, or the playbook it stands in.
+fn routes_to(plan: &Plan, playbook: &LocalName, reflex: &LocalName) -> StepBecame {
+    if reflex == playbook {
+        return StepBecame::Nested;
+    }
+    let effect = plan
+        .active()
+        .get(reflex)
+        .map_or(Effect::Destructive, |active| active.effect);
+    StepBecame::Routes {
+        reflex: reflex.clone(),
+        effect,
+    }
 }
 
 /// A theft as a line: the thief, the phrase and its owner — won, or fitted over the floor — and the lesson that
-/// settles it.
-fn stolen_line(theft: &Theft) -> Diagnostic {
+/// settles it; a playbook's step the newcomer now reaches names the step and the test that shows it.
+fn stolen_line(theft: &Theft, playbooks: &[LocalName]) -> Diagnostic {
+    if playbooks.contains(&theft.owner) {
+        return Diagnostic {
+            reflex: Some(theft.owner.clone()),
+            at: None,
+            message: format!(
+                "step \"{}\" now reaches {}",
+                theft.phrase.text(),
+                theft.thief
+            ),
+            fix: Fix::Test,
+        };
+    }
     let message = match theft.fits {
         None => format!("steals \"{}\" from {}", theft.phrase.text(), theft.owner),
         Some(fits) => format!(

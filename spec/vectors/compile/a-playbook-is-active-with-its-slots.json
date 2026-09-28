@@ -1,0 +1,12 @@
+{
+  "input": {
+    "set": {
+      "$ref": "fixtures/installed-outage-playbook.json"
+    }
+  },
+  "expect": {
+    "ok": {
+      "$ref": "fixtures/plan-outage-playbook.json"
+    }
+  }
+}

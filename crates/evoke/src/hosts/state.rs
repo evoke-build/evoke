@@ -176,6 +176,7 @@ impl State {
     /// of one plan, a step's rounds each under its number — in the order they were written; nothing decided yet
     /// is empty. Read backwards, one weave's step numbers never rise, and a number repeated is a round of the
     /// same step, with the step's own text: a rise, or the number repeated over other text, is the weave before.
+    /// A playbook's expansion is logged as step 0 before its steps: the walk ends at it.
     pub fn tail(&self) -> Result<Vec<String>, Failure> {
         let Some(text) = read(&self.state.join("log.jsonl"))? else {
             return Ok(Vec::new());
@@ -185,6 +186,14 @@ impl State {
         for line in text.lines().rev().filter(|line| !line.trim().is_empty()) {
             match (step_of(line), &last) {
                 (None, None) => {
+                    lines.push(line.to_owned());
+                    break;
+                }
+                (Some(step), Some(after)) if step.n == 0 && step.of == after.of => {
+                    lines.push(line.to_owned());
+                    break;
+                }
+                (Some(step), None) if step.n == 0 => {
                     lines.push(line.to_owned());
                     break;
                 }
@@ -415,6 +424,16 @@ mod tests {
             state.tail().unwrap(),
             vec![r#"{"step":1,"steps":2,"input":"i"}"#]
         );
+        // A playbook's expansion, step 0, opens its plan: the walk ends there, whatever stands before it.
+        for line in [
+            r#"{"step":2,"steps":2,"input":"j"}"#,
+            r#"{"step":0,"steps":2,"input":"k"}"#,
+            r#"{"step":1,"steps":2,"input":"l"}"#,
+            r#"{"step":2,"steps":2,"input":"m"}"#,
+        ] {
+            state.log(line).unwrap();
+        }
+        assert_eq!(state.tail().unwrap().len(), 3);
         let _ = fs::remove_dir_all(dir);
     }
 }

@@ -435,29 +435,6 @@
       "type": "done",
       "weave": {
         "input": "look up incident 311, mark checkout as resolved on the status page, update the status page for checkout and look up the incident",
-        "splits": [
-          {
-            "start": 20,
-            "end": 22,
-            "word": ",",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 66,
-            "end": 68,
-            "word": ",",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 103,
-            "end": 108,
-            "word": "and",
-            "order": "and",
-            "p": 0.9
-          }
-        ],
         "steps": [
           {
             "n": 1,
@@ -892,7 +869,6 @@
             ]
           }
         ],
-        "exclusive": true,
         "stages": [
           [
             1
@@ -916,7 +892,31 @@
               "arg": "number"
             }
           ]
-        }
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 20,
+            "end": 22,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 66,
+            "end": 68,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 103,
+            "end": 108,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          }
+        ]
       }
     }
   }

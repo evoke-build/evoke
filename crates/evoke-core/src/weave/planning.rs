@@ -2,17 +2,19 @@
 //! at the first it lacks. In: a `Plan`, the adapter's gate, the request, the tags a decision is narrowed by, the
 //! `Answers` so far. Out: the `Weave`, or what is needed next.
 
+use std::fmt::Write as _;
+
 use indexmap::IndexMap;
 
-use super::reading::{self, Order, Ref, SURE, Segment, Split, Unclean};
+use super::reading::{self, Left, Order, Ref, SURE, Segment, Split, Unclean};
 use super::{
-    Answers, Asked, Because, Binding, Need, Outcome, Planning, Repair, Shared, Step, Verdict, Via,
-    Weave, field_names,
+    Answers, Asked, Because, Binding, Folded, From, Need, Outcome, Planning, Repair, Shared, Step,
+    Verdict, Via, Weave, field_names,
 };
 use crate::adapter::{Fault, Gate, Prob};
 use crate::call::Value;
-use crate::decide::{Cap, Decision, fill, merged, words};
-use crate::manifest::{Effect, Kind, Recognizer, Source, Yield};
+use crate::decide::{Cap, Decision, Prompt, fill, merged, words};
+use crate::manifest::{Effect, Kind, MOST_STEPS, Recognizer, Source, Yield};
 use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
 use crate::plan::{Active, Plan};
 use crate::text::Clean;
@@ -26,6 +28,9 @@ const DOUBT: f64 = 0.5;
 /// The most split points one request is asked about; past it — a pasted list, a hostile line — the request is
 /// one input, since each question carries both sides of the sentence and the request would grow as its square.
 const MOST_SPLITS: usize = 24;
+/// How deep a plan may stand inside a plan: a step of a playbook that routes to a playbook expands once more, and
+/// a playbook inside that is refused.
+const HOPS: usize = 2;
 /// The plan of a request over the answers so far: the weave, or what is needed next; a fault when an answer does
 /// not validate against its request. The gate is what a shared word's fill is gated by, as a person's answer is.
 pub fn plan(
@@ -58,7 +63,8 @@ struct Planner<'a> {
 }
 
 /// The plan as it takes shape: the segments with their decisions, the split points taken, what was left out,
-/// how a segment that matched nothing was settled, and the words shared into each segment's arguments.
+/// how a segment that matched nothing was settled, the words shared into each segment's arguments, where each
+/// segment came from when a playbook wrote it, and what a fold or a refusal names.
 struct Draft {
     chars: Vec<char>,
     segs: Vec<Segment>,
@@ -67,6 +73,144 @@ struct Draft {
     excluded: Vec<String>,
     repaired: Vec<(String, Repair)>,
     shared: Vec<IndexMap<ArgName, Shared>>,
+    /// Per segment, the expansions it came from, outermost first; none for the person's own.
+    origins: Vec<Vec<Origin>>,
+    /// Per segment, a number of its own: what a reason or a fold names, since expansions renumber.
+    ids: Vec<usize>,
+    next: usize,
+    /// Every playbook expanded, in order.
+    expansions: Vec<Expansion>,
+    /// A step refused for what its words route to, by its id.
+    refusals: Vec<(usize, Refused)>,
+    /// The plan refused whole: past the cap, or a part left out beside a plan.
+    refused: Vec<Because>,
+    /// A part of the request folded into a step a playbook wrote, by that step's id.
+    folded: Vec<(String, usize)>,
+    /// Per segment, the words as the person typed them, once a rewrite changed them; none until then.
+    typed: Vec<Option<String>>,
+}
+
+/// One playbook a segment came from: which expansion wrote it, and its place in the playbook.
+#[derive(Clone)]
+struct Origin {
+    expansion: usize,
+    from: From,
+}
+
+/// A playbook expanded: the part that picked it, the playbook, its decision's prompt before the runner-up's step
+/// is named, the runner-up whose `fits` capped it, and the effect it claims.
+struct Expansion {
+    text: String,
+    playbook: LocalName,
+    prompt: Prompt,
+    runner_up: Option<LocalName>,
+    effect: Effect,
+}
+
+/// A playbook's sentences filled: each text with where it came from.
+type Filled = Vec<(String, From)>;
+
+/// Why a step that routes to a playbook is refused: the playbook is on its own chain, or past the depth.
+enum Refused {
+    Nested(LocalName),
+    TooDeep(LocalName),
+}
+
+/// What the plan carries beside its steps once every phase ran: the review of each expansion, the refusals
+/// named by step, and the folds.
+struct Extra {
+    reviewed: Vec<Because>,
+    refusals: Vec<Because>,
+    folded: Vec<Folded>,
+}
+
+impl Draft {
+    /// The draft over the request's segments: the ones left out apart, the rest the person's own.
+    fn new(chars: Vec<char>, segments: &[Segment], taken: Vec<Split>) -> Self {
+        let segs: Vec<Segment> = segments
+            .iter()
+            .filter(|seg| !seg.excluded())
+            .cloned()
+            .collect();
+        let count = segs.len();
+        Self {
+            chars,
+            segs,
+            decisions: Vec::new(),
+            taken,
+            excluded: segments
+                .iter()
+                .filter(|seg| seg.excluded())
+                .map(|seg| seg.text.clone())
+                .collect(),
+            repaired: Vec::new(),
+            shared: Vec::new(),
+            origins: vec![Vec::new(); count],
+            ids: (0..count).collect(),
+            next: count,
+            expansions: Vec::new(),
+            refusals: Vec::new(),
+            refused: Vec::new(),
+            folded: Vec::new(),
+            typed: vec![None; count],
+        }
+    }
+
+    /// Segment `k` replaced by several, each with its decision and origins, in every parallel list.
+    fn replace(
+        &mut self,
+        k: usize,
+        segs: Vec<Segment>,
+        decisions: Vec<Decision>,
+        origins: Vec<Vec<Origin>>,
+    ) {
+        let count = segs.len();
+        let ids: Vec<usize> = (0..count).map(|i| self.next + i).collect();
+        self.next += count;
+        if self.shared.len() == self.segs.len() {
+            self.shared.splice(k..=k, vec![IndexMap::new(); count]);
+        }
+        self.segs.splice(k..=k, segs);
+        self.decisions.splice(k..=k, decisions);
+        self.origins.splice(k..=k, origins);
+        self.ids.splice(k..=k, ids);
+        self.typed.splice(k..=k, vec![None; count]);
+    }
+
+    /// Segments `a..=b` merged into one, the person's own.
+    fn merge(&mut self, a: usize, b: usize, seg: Segment, decision: Decision) {
+        if self.shared.len() == self.segs.len() {
+            self.shared.splice(a..=b, [IndexMap::new()]);
+        }
+        self.segs.splice(a..=b, [seg]);
+        self.decisions.splice(a..=b, [decision]);
+        self.origins.splice(a..=b, [Vec::new()]);
+        self.ids.splice(a..=b, [self.next]);
+        self.typed.splice(a..=b, [None]);
+        self.next += 1;
+    }
+
+    /// Segment `k` gone, from every parallel list.
+    fn remove(&mut self, k: usize) {
+        if self.shared.len() == self.segs.len() {
+            self.shared.remove(k);
+        }
+        self.segs.remove(k);
+        self.decisions.remove(k);
+        self.origins.remove(k);
+        self.ids.remove(k);
+        self.typed.remove(k);
+    }
+
+    /// Whether the segment at `k` is refused for what its words route to: no word is carried into it.
+    fn refused_at(&self, k: usize) -> bool {
+        self.refusals.iter().any(|(id, _)| *id == self.ids[k])
+    }
+
+    /// The step number a segment id stands at now, from 1.
+    fn position(&self, id: usize) -> usize {
+        self.ids.iter().position(|i| *i == id).map_or(0, |i| i + 1)
+    }
 }
 
 /// A fragment settled as another item of its neighbour's task.
@@ -121,31 +265,31 @@ impl<'a> Planner<'a> {
             .filter(|split| split.p.is_some_and(|p| p.get() >= LOW))
             .cloned()
             .collect();
-        // A segment that begins with a negation is left out: what the person said not to do is no step.
+        // A segment that begins with a negation is left out: what the person said not to do is no step. One that
+        // begins with a condition refuses the whole request before anything is decided: no step can judge it.
         let segments = reading::segments(&self.request, &taken);
-        let mut draft = Draft {
-            chars: self.request.chars().collect(),
-            segs: segments
-                .iter()
-                .filter(|seg| !seg.excluded)
-                .cloned()
-                .collect(),
-            decisions: Vec::new(),
-            taken,
-            excluded: segments
-                .iter()
-                .filter(|seg| seg.excluded)
-                .map(|seg| seg.text.clone())
-                .collect(),
-            repaired: Vec::new(),
-            shared: Vec::new(),
-        };
+        if let Some(seg) = segments
+            .iter()
+            .find(|seg| seg.left == Some(Left::Conditional))
+        {
+            let because = Because::Conditional {
+                text: seg.text.clone(),
+            };
+            return Ok(Ok(self.refused_whole(judged, because)));
+        }
+        let mut draft = Draft::new(self.request.chars().collect(), &segments, taken);
         if draft.segs.is_empty() {
+            let extra = Extra {
+                reviewed: Vec::new(),
+                refusals: Vec::new(),
+                folded: Vec::new(),
+            };
             return Ok(Ok(self.finish(
                 judged,
                 &draft.taken,
                 Vec::new(),
                 draft.excluded,
+                extra,
             )));
         }
         let phases = self
@@ -153,46 +297,286 @@ impl<'a> Planner<'a> {
             .and_then(|()| self.lists(&mut draft, &judged))
             .and_then(|()| self.items(&mut draft, &judged))
             .and_then(|()| self.repair(&mut draft))
-            .and_then(|()| self.share(&mut draft));
+            .and_then(|()| self.expand(&mut draft))
+            .and_then(|()| self.share(&mut draft))
+            .and_then(|()| self.expand(&mut draft));
         if let Err(need) = phases {
             return Ok(Err(need));
         }
+        fold(&mut draft);
         let refs = match self.refer(&draft)? {
             Ok(refs) => refs,
             Err(need) => return Ok(Err(need)),
         };
-        let steps: Vec<Step> = draft
+        let extra = self.resolved(&draft);
+        let steps = self.steps_of(&draft, refs);
+        Ok(Ok(self.finish(
+            judged,
+            &draft.taken,
+            steps,
+            draft.excluded,
+            extra,
+        )))
+    }
+
+    /// The steps as the plan holds them, from the draft's segments once every phase ran.
+    fn steps_of(&self, draft: &Draft, refs: Vec<Vec<Ref>>) -> Vec<Step> {
+        draft
             .segs
             .iter()
-            .zip(draft.decisions)
+            .zip(&draft.decisions)
             .zip(refs)
             .enumerate()
             .map(|(k, ((seg, decision), refs))| {
-                let reflex = reflex_of(&decision).cloned();
+                let reflex = reflex_of(decision).cloned();
                 let effect = reflex
                     .as_ref()
                     .and_then(|reflex| self.plan.active().get(reflex))
                     .map(|active| active.effect);
-                let repair = draft
-                    .repaired
-                    .iter()
-                    .find(|(text, _)| *text == seg.text)
-                    .map(|(_, how)| *how);
                 Step {
                     n: k + 1,
                     text: seg.text.clone(),
                     end: seg.end,
-                    decision,
+                    decision: decision.clone(),
                     reflex,
                     effect,
                     refs,
-                    repair,
+                    repair: repair_of(draft, k),
                     shared: draft.shared.get(k).cloned().unwrap_or_default(),
                     after: Vec::new(),
+                    from: draft.origins[k]
+                        .iter()
+                        .map(|origin| origin.from.clone())
+                        .collect(),
                 }
             })
+            .collect()
+    }
+
+    /// The request refused before anything is decided: no step, the split points as judged, one reason.
+    fn refused_whole(&self, splits: Vec<Split>, because: Because) -> Weave {
+        Weave {
+            input: self.request.clone(),
+            steps: Vec::new(),
+            binds: Vec::new(),
+            stages: Vec::new(),
+            verdict: Verdict {
+                outcome: Outcome::Refuse,
+                because: vec![because],
+            },
+            exclusive: false,
+            excluded: Vec::new(),
+            folded: Vec::new(),
+            splits,
+        }
+    }
+
+    /// A playbook expanded in place. A segment decided as a playbook — a run, or a confirm — is replaced by its
+    /// filled sentences, each a segment with the part's offsets, decided as any segment over the whole set; a
+    /// sentence decided as a playbook expands in turn, to a depth of two; one that routes to a playbook on its own
+    /// chain is refused, and so is a plan grown past the most steps it may hold. An ask stays: the verdict asks.
+    fn expand(&self, draft: &mut Draft) -> Result<(), Need> {
+        let mut k = 0;
+        while k < draft.segs.len() {
+            let decision = &draft.decisions[k];
+            let Some((reflex, active)) = self.active_of(decision) else {
+                k += 1;
+                continue;
+            };
+            let reflex = reflex.clone();
+            let Some(args) = complete(decision) else {
+                k += 1;
+                continue;
+            };
+            let id = draft.ids[k];
+            if active.steps.is_empty() || draft.refusals.iter().any(|(i, _)| *i == id) {
+                k += 1;
+                continue;
+            }
+            let chain = &draft.origins[k];
+            if chain.iter().any(|origin| origin.from.playbook == reflex) {
+                draft.refusals.push((id, Refused::Nested(reflex.clone())));
+                k += 1;
+                continue;
+            }
+            if chain.len() >= HOPS {
+                draft.refusals.push((id, Refused::TooDeep(reflex.clone())));
+                k += 1;
+                continue;
+            }
+            let Some((filled, decisions)) = self.sentences(&reflex, active, args)? else {
+                k += 1;
+                continue;
+            };
+            let expansion = draft.expansions.len();
+            let prompt = prompt_of(decision, active);
+            let runner_up = runner_up_of(decision);
+            let seg = draft.segs[k].clone();
+            let chain = chain.clone();
+            draft.expansions.push(Expansion {
+                text: seg.text.clone(),
+                playbook: reflex.clone(),
+                prompt,
+                runner_up,
+                effect: active.effect,
+            });
+            let (segs, origins): (Vec<Segment>, Vec<Vec<Origin>>) = filled
+                .into_iter()
+                .map(|(text, from)| {
+                    let mut origins = chain.clone();
+                    origins.push(Origin { expansion, from });
+                    (
+                        Segment {
+                            text,
+                            start: seg.start,
+                            end: seg.end,
+                            left: None,
+                        },
+                        origins,
+                    )
+                })
+                .unzip();
+            draft.replace(k, segs, decisions, origins);
+            if draft.segs.len() > MOST_STEPS {
+                draft.refused.push(Because::TooLong {
+                    playbook: reflex.clone(),
+                    steps: draft.segs.len(),
+                });
+                break;
+            }
+        }
+        // A part that says what not to do beside a plan a playbook wrote is a guess either way: refused whole.
+        if let (Some(text), Some(expansion)) = (draft.excluded.first(), draft.expansions.first())
+            && !draft
+                .refused
+                .iter()
+                .any(|because| matches!(because, Because::Excluded { .. }))
+        {
+            draft.refused.push(Because::Excluded {
+                text: text.clone(),
+                playbook: expansion.playbook.clone(),
+            });
+        }
+        Ok(())
+    }
+
+    /// A playbook's sentences filled from a decision's values and decided over the whole set: each filled text
+    /// with where it came from, and its decision; the need when one is not decided yet; none when a sentence
+    /// could not be filled, which never happens to a complete call.
+    fn sentences(
+        &self,
+        reflex: &LocalName,
+        active: &Active,
+        args: &IndexMap<ArgName, Value>,
+    ) -> Result<Option<(Filled, Vec<Decision>)>, Need> {
+        let filled: Filled = active
+            .steps
+            .iter()
+            .enumerate()
+            .filter_map(|(i, sentence)| {
+                let (text, slots) = sentence.filled(args)?;
+                let from = From {
+                    playbook: reflex.clone(),
+                    step: i + 1,
+                    slots,
+                };
+                Some((text, from))
+            })
             .collect();
-        Ok(Ok(self.finish(judged, &draft.taken, steps, draft.excluded)))
+        if filled.len() != active.steps.len() {
+            return Ok(None);
+        }
+        let wanted: Vec<Asked> = filled.iter().map(|(text, _)| self.segment(text)).collect();
+        let mut missing: Vec<Asked> = Vec::new();
+        for asked in &wanted {
+            if self.decided(asked).is_none() && !missing.contains(asked) {
+                missing.push(asked.clone());
+            }
+        }
+        if !missing.is_empty() {
+            return Err(Need::Decide { asked: missing });
+        }
+        let decisions: Vec<Decision> = wanted
+            .iter()
+            .map(|asked| {
+                self.decided(asked)
+                    .cloned()
+                    .expect("every sentence is decided")
+            })
+            .collect();
+        Ok(Some((filled, decisions)))
+    }
+
+    /// What the plan carries beside its steps, resolved once the segments stand: each expansion's review — its
+    /// first step, its own line ending in the runner-up's step when that reflex is a step's, and the steps' worst
+    /// effect when it is tighter than the claim — the refusals by step, and the folds.
+    fn resolved(&self, draft: &Draft) -> Extra {
+        let reviewed = draft
+            .expansions
+            .iter()
+            .enumerate()
+            .filter_map(|(e, expansion)| {
+                let members: Vec<usize> = (0..draft.segs.len())
+                    .filter(|&k| draft.origins[k].iter().any(|origin| origin.expansion == e))
+                    .collect();
+                let first = *members.first()?;
+                let mut own = expansion.prompt.own.clone();
+                if let Some(runner_up) = &expansion.runner_up
+                    && let Some(n) = members
+                        .iter()
+                        .find(|&&k| reflex_of(&draft.decisions[k]) == Some(runner_up))
+                {
+                    let _ = write!(own, ", step {}", n + 1);
+                }
+                let worst = members
+                    .iter()
+                    .filter_map(|&k| self.active_of(&draft.decisions[k]))
+                    .map(|(_, active)| active.effect)
+                    .max();
+                if let Some(worst) = worst
+                    && worst > expansion.effect
+                {
+                    let _ = write!(own, " · steps reach {worst}");
+                }
+                Some(Because::Reviewed {
+                    step: first + 1,
+                    playbook: expansion.playbook.clone(),
+                    text: expansion.text.clone(),
+                    prompt: Prompt {
+                        own,
+                        template: expansion.prompt.template.clone(),
+                    },
+                })
+            })
+            .collect();
+        let mut refusals: Vec<Because> = draft
+            .refusals
+            .iter()
+            .map(|(id, refused)| match refused {
+                Refused::Nested(playbook) => Because::Nested {
+                    step: draft.position(*id),
+                    playbook: playbook.clone(),
+                },
+                Refused::TooDeep(playbook) => Because::TooDeep {
+                    step: draft.position(*id),
+                    playbook: playbook.clone(),
+                },
+            })
+            .collect();
+        refusals.extend(draft.refused.iter().cloned());
+        let folded = draft
+            .folded
+            .iter()
+            .map(|(text, id)| Folded {
+                text: text.clone(),
+                into: draft.position(*id),
+            })
+            .collect();
+        Extra {
+            reviewed,
+            refusals,
+            folded,
+        }
     }
 
     /// Every split point, judged: a candidate a negation follows is taken without asking; a request the engine
@@ -265,7 +649,15 @@ impl<'a> Planner<'a> {
             let base = index_of(&draft.chars, &seg.text, seg.start)
                 .map_or(seg.start, |at| at.max(seg.start));
             let parts = reading::segments(&seg.text, &inner);
-            let kept: Vec<&Segment> = parts.iter().filter(|part| !part.excluded).collect();
+            // A condition inside a part is no item: the part stands as the engine read it.
+            if parts
+                .iter()
+                .any(|part| part.left == Some(Left::Conditional))
+            {
+                k += 1;
+                continue;
+            }
+            let kept: Vec<&Segment> = parts.iter().filter(|part| !part.excluded()).collect();
             if kept.len() < 2 {
                 k += 1;
                 continue;
@@ -292,7 +684,7 @@ impl<'a> Planner<'a> {
                     text: kept[0].text.clone(),
                     start: base + kept[0].start,
                     end: base + kept[0].end,
-                    excluded: false,
+                    left: None,
                 },
                 head,
                 None,
@@ -308,7 +700,7 @@ impl<'a> Planner<'a> {
                         text: fan.text,
                         start: base + part.start,
                         end: base + part.end,
-                        excluded: false,
+                        left: None,
                     },
                     fan.decision,
                     Some(fan.how),
@@ -318,36 +710,7 @@ impl<'a> Planner<'a> {
                 k += 1;
                 continue;
             }
-            draft.excluded.extend(
-                parts
-                    .iter()
-                    .filter(|part| part.excluded)
-                    .map(|part| part.text.clone()),
-            );
-            let count = items.len();
-            let (segs, decisions): (Vec<Segment>, Vec<Decision>) = items
-                .into_iter()
-                .map(|(seg, decision, how)| {
-                    if let Some(how) = how {
-                        draft.repaired.push((seg.text.clone(), how));
-                    }
-                    (seg, decision)
-                })
-                .unzip();
-            draft.segs.splice(k..=k, segs);
-            draft.decisions.splice(k..=k, decisions);
-            for s in &inner {
-                let start = base + s.start;
-                draft.taken.push(Split {
-                    start,
-                    end: base + s.end,
-                    word: s.word.clone(),
-                    order: s.order,
-                    p: judged.iter().find(|a| a.start == start).and_then(|a| a.p),
-                });
-            }
-            draft.taken.sort_by_key(|s| s.start);
-            k += count;
+            k += listed(draft, k, base, &parts, items, &inner, judged);
         }
         Ok(())
     }
@@ -370,7 +733,14 @@ impl<'a> Planner<'a> {
                 continue;
             }
             let parts = reading::segments(&seg.text, &inner);
-            let kept: Vec<&Segment> = parts.iter().filter(|part| !part.excluded).collect();
+            if parts
+                .iter()
+                .any(|part| part.left == Some(Left::Conditional))
+            {
+                k += 1;
+                continue;
+            }
+            let kept: Vec<&Segment> = parts.iter().filter(|part| !part.excluded()).collect();
             if kept.len() < 2 {
                 k += 1;
                 continue;
@@ -406,7 +776,7 @@ impl<'a> Planner<'a> {
             draft.excluded.extend(
                 parts
                     .iter()
-                    .filter(|part| part.excluded)
+                    .filter(|part| part.excluded())
                     .map(|part| part.text.clone()),
             );
             let placed: Vec<Segment> = kept
@@ -415,15 +785,14 @@ impl<'a> Planner<'a> {
                     text: part.text.clone(),
                     start: base + part.start,
                     end: base + part.end,
-                    excluded: false,
+                    left: None,
                 })
                 .collect();
             for part in &placed {
                 draft.repaired.push((part.text.clone(), Repair::Split));
             }
             let count = placed.len();
-            draft.segs.splice(k..=k, placed);
-            draft.decisions.splice(k..=k, decided);
+            draft.replace(k, placed, decided, vec![Vec::new(); count]);
             for s in &inner {
                 let start = base + s.start;
                 draft.taken.push(Split {
@@ -509,7 +878,7 @@ impl<'a> Planner<'a> {
                     .to_owned(),
                 start: draft.segs[a].start,
                 end: draft.segs[b].end,
-                excluded: false,
+                left: None,
             };
             let decision = self.decide(self.segment(&whole.text))?;
             if matches!(decision, Decision::Abstain { .. }) {
@@ -519,8 +888,7 @@ impl<'a> Planner<'a> {
             // Merged back, the step confirms at its turn, as one with an unconsumed span does.
             let decision = merged(self.plan, decision);
             draft.repaired.push((whole.text.clone(), Repair::Merged));
-            draft.segs.splice(a..=b, [whole]);
-            draft.decisions.splice(a..=b, [decision]);
+            draft.merge(a, b, whole, decision);
             if let Some(split) = split {
                 draft.taken.retain(|s| *s != split);
             }
@@ -557,6 +925,9 @@ impl<'a> Planner<'a> {
         let mut rewrites: Vec<(usize, IndexMap<ArgName, Word>, Asked)> = Vec::new();
         for run in runs_of(&draft.taken, &draft.segs) {
             for &k in &run {
+                if draft.refused_at(k) {
+                    continue;
+                }
                 let Some((reflex, active)) = self.active_of(&draft.decisions[k]) else {
                     continue;
                 };
@@ -576,8 +947,7 @@ impl<'a> Planner<'a> {
                     if holds(&original[k], &vocabulary) {
                         continue;
                     }
-                    if let Some(word) =
-                        self.stated(original, &draft.decisions, &run, vocab, &vocabulary, true)
+                    if let Some(word) = self.stated(draft, original, &run, vocab, &vocabulary, true)
                     {
                         carried.insert(arg.clone(), word);
                     }
@@ -615,6 +985,9 @@ impl<'a> Planner<'a> {
             } else {
                 again
             };
+            if draft.typed[k].is_none() {
+                draft.typed[k] = Some(draft.segs[k].text.clone());
+            }
             draft.segs[k].text.clone_from(&asked.text);
             if let Some(repair) = repair {
                 draft.repaired.push((asked.text, repair));
@@ -632,6 +1005,9 @@ impl<'a> Planner<'a> {
     fn filled(&self, draft: &mut Draft, original: &[String]) {
         let everyone: Vec<usize> = (0..draft.segs.len()).collect();
         for k in 0..draft.segs.len() {
+            if draft.refused_at(k) {
+                continue;
+            }
             let Decision::Ask { asking, missing } = &draft.decisions[k] else {
                 continue;
             };
@@ -652,14 +1028,7 @@ impl<'a> Planner<'a> {
                 if holds(&original[k], &vocabulary) {
                     continue;
                 }
-                let stated = self.stated(
-                    original,
-                    &draft.decisions,
-                    &everyone,
-                    vocab,
-                    &vocabulary,
-                    false,
-                );
+                let stated = self.stated(draft, original, &everyone, vocab, &vocabulary, false);
                 if let Some(word) = stated {
                     let value = Value::Word {
                         word: word.clone(),
@@ -691,11 +1060,13 @@ impl<'a> Planner<'a> {
     /// stated, nothing is carried, and a word the person placed twice for two steps was placed. None either from
     /// a vocabulary one reflex alone asks for: that is the reflex's own object — a folder to open, a channel to
     /// tell — never another step's; a vocabulary several reflexes ask for is what the set is about, and one none
-    /// asks for is a qualifier, and both are the sentence's to share.
+    /// asks for is a qualifier, and both are the sentence's to share. The words counted are the person's: their
+    /// own segments, and the part each outermost playbook expanded from, once — never an author's sentence, which
+    /// states its slot's word as often as the author wrote it.
     fn stated(
         &self,
+        draft: &Draft,
         original: &[String],
-        decisions: &[Decision],
         scope: &[usize],
         vocab: &VocabName,
         vocabulary: &IndexMap<Word, Clean>,
@@ -706,14 +1077,26 @@ impl<'a> Planner<'a> {
         }
         let members: Vec<(&str, &Decision)> = scope
             .iter()
-            .map(|&k| (original[k].as_str(), &decisions[k]))
+            .map(|&k| (original[k].as_str(), &draft.decisions[k]))
             .collect();
+        let mut expansions: Vec<usize> = Vec::new();
+        let mut typed: Vec<&str> = Vec::new();
+        for &k in scope {
+            match draft.origins[k].first() {
+                None => typed.push(original[k].as_str()),
+                Some(origin) if !expansions.contains(&origin.expansion) => {
+                    expansions.push(origin.expansion);
+                    typed.push(draft.expansions[origin.expansion].text.as_str());
+                }
+                Some(_) => {}
+            }
+        }
         let counted: Vec<(&Word, usize)> = vocabulary
             .keys()
             .map(|word| {
-                let n = members
+                let n = typed
                     .iter()
-                    .map(|(text, _)| occurrences(text, word.as_str()))
+                    .map(|text| occurrences(text, word.as_str()))
                     .sum();
                 (word, n)
             })
@@ -879,13 +1262,15 @@ impl<'a> Planner<'a> {
         Ok(None)
     }
 
-    /// Bindings, edges, stages and the verdict over decided steps.
+    /// Bindings, edges, stages and the verdict over decided steps, with what a playbook's expansion carries: its
+    /// review among the reasons, so the plan confirms whatever its verdict; a refusal by step; the folds.
     fn finish(
         &self,
         splits: Vec<Split>,
         taken: &[Split],
         mut steps: Vec<Step>,
         excluded: Vec<String>,
+        extra: Extra,
     ) -> Weave {
         let mut after: Vec<Vec<usize>> = vec![Vec::new(); steps.len()];
         // An explicit `then` orders everything before it before everything after it.
@@ -924,19 +1309,24 @@ impl<'a> Planner<'a> {
         let exclusive = writes > 0 && steps.len() > 1;
         let stages = schedule(&steps, exclusive);
         let mut verdict = verdict_of(&steps, &binds);
-        // A whole result no step hands, or several do, is refused before anything runs: nothing answers it.
-        if !refusals.is_empty() {
+        // A whole result no step hands, or several do, is refused before anything runs: nothing answers it. So
+        // is a step that routes to its own plan, a plan too deep or too long, and a part left out beside a plan.
+        let mut refused = extra.refusals;
+        refused.extend(refusals);
+        if !refused.is_empty() {
             verdict.outcome = Outcome::Refuse;
-            verdict.because.splice(0..0, refusals);
+            verdict.because.splice(0..0, refused);
         }
         if verdict.outcome != Outcome::Refuse && !asks.is_empty() {
             verdict.outcome = Outcome::Ask;
         }
         verdict.because.extend(asks);
-        if verdict.outcome == Outcome::Run && !because.is_empty() {
+        // A plan a playbook wrote asks one yes over the whole, whatever its verdict: the review is a reason.
+        if verdict.outcome == Outcome::Run && !(because.is_empty() && extra.reviewed.is_empty()) {
             verdict.outcome = Outcome::Confirm;
         }
         verdict.because.extend(because);
+        verdict.because.extend(extra.reviewed);
         Weave {
             input: self.request.clone(),
             steps,
@@ -945,6 +1335,7 @@ impl<'a> Planner<'a> {
             verdict,
             exclusive,
             excluded,
+            folded: extra.folded,
             splits,
         }
     }
@@ -1371,6 +1762,130 @@ fn unsettled(decision: &Decision) -> bool {
         }
         Decision::Run { .. } => false,
     }
+}
+
+/// A list's items in place of the segment at `k`, the parts left out recorded, each repair with its text and
+/// every inner split taken with the judgment it had; how many segments the list became.
+fn listed(
+    draft: &mut Draft,
+    k: usize,
+    base: usize,
+    parts: &[Segment],
+    items: Vec<(Segment, Decision, Option<Repair>)>,
+    inner: &[Split],
+    judged: &[Split],
+) -> usize {
+    draft.excluded.extend(
+        parts
+            .iter()
+            .filter(|part| part.excluded())
+            .map(|part| part.text.clone()),
+    );
+    let count = items.len();
+    let (segs, decisions): (Vec<Segment>, Vec<Decision>) = items
+        .into_iter()
+        .map(|(seg, decision, how)| {
+            if let Some(how) = how {
+                draft.repaired.push((seg.text.clone(), how));
+            }
+            (seg, decision)
+        })
+        .unzip();
+    draft.replace(k, segs, decisions, vec![Vec::new(); count]);
+    for s in inner {
+        let start = base + s.start;
+        draft.taken.push(Split {
+            start,
+            end: base + s.end,
+            word: s.word.clone(),
+            order: s.order,
+            p: judged.iter().find(|a| a.start == start).and_then(|a| a.p),
+        });
+    }
+    draft.taken.sort_by_key(|s| s.start);
+    count
+}
+
+/// The fold. A part of the person's own that repeats a step a playbook wrote — the same reflex, every value it
+/// read equal to that step's, a run or a confirm capped by the effect or the runner-up alone — is removed and
+/// recorded in the person's words, so the step runs once. An ask never folds as it stands, nor a part with a cap
+/// of its own.
+fn fold(draft: &mut Draft) {
+    let mut k = 0;
+    while k < draft.segs.len() {
+        if !draft.origins[k].is_empty() || !foldable(&draft.decisions[k]) {
+            k += 1;
+            continue;
+        }
+        let (Some(reflex), Some(read)) =
+            (reflex_of(&draft.decisions[k]), args_of(&draft.decisions[k]))
+        else {
+            k += 1;
+            continue;
+        };
+        let target = (0..draft.segs.len()).find(|&j| {
+            j != k
+                && !draft.origins[j].is_empty()
+                && reflex_of(&draft.decisions[j]) == Some(reflex)
+                && read.iter().all(|(arg, value)| {
+                    args_of(&draft.decisions[j])
+                        .and_then(|theirs| theirs.get(arg))
+                        .is_some_and(|theirs| stated(theirs) == stated(value))
+                })
+        });
+        match target {
+            Some(j) => {
+                let text = draft.typed[k]
+                    .clone()
+                    .unwrap_or_else(|| draft.segs[k].text.clone());
+                draft.folded.push((text, draft.ids[j]));
+                draft.remove(k);
+            }
+            None => k += 1,
+        }
+    }
+}
+
+/// The arguments of a decision that is a complete call: a run, or a confirm.
+fn complete(decision: &Decision) -> Option<&IndexMap<ArgName, Value>> {
+    match decision {
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => Some(&chosen.call.args),
+        Decision::Ask { .. } | Decision::Abstain { .. } => None,
+    }
+}
+
+/// Whether a part of the person's own may fold into a step a playbook wrote: a run, or a confirm capped by the
+/// effect or the runner-up alone — never a merge, a doubt or a span the words carried more than the step.
+fn foldable(decision: &Decision) -> bool {
+    match decision {
+        Decision::Run { .. } => true,
+        Decision::Confirm { because, .. } => because
+            .iter()
+            .all(|cap| matches!(cap, Cap::Destructive | Cap::TwoThings { .. })),
+        Decision::Ask { .. } | Decision::Abstain { .. } => false,
+    }
+}
+
+/// The prompt of a playbook's decision: its own when it confirmed, else made over the run.
+fn prompt_of(decision: &Decision, active: &Active) -> Prompt {
+    match decision {
+        Decision::Confirm { prompt, .. } => prompt.clone(),
+        Decision::Run { chosen } => Prompt::of(chosen, active, &[]),
+        Decision::Ask { .. } | Decision::Abstain { .. } => {
+            unreachable!("a playbook expands from a complete call")
+        }
+    }
+}
+
+/// The runner-up whose `fits` capped a decision, when one did.
+fn runner_up_of(decision: &Decision) -> Option<LocalName> {
+    let Decision::Confirm { because, .. } = decision else {
+        return None;
+    };
+    because.iter().find_map(|cap| match cap {
+        Cap::TwoThings { contender } => Some(contender.reflex.clone()),
+        _ => None,
+    })
 }
 
 /// The runs of the plan: consecutive segments joined by coordinating connectives, an ordering word ending each.

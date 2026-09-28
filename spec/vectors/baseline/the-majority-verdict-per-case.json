@@ -100,25 +100,27 @@
     ]
   },
   "expect": {
-    "lights": {
-      "turn on the kitchen lights": {
-        "type": "pass"
-      },
-      "make it darker in here": {
-        "type": "fail",
-        "mismatch": {
-          "type": "arg",
-          "arg": "state",
-          "read": "off"
+    "records": {
+      "lights": {
+        "turn on the kitchen lights": {
+          "type": "pass"
+        },
+        "make it darker in here": {
+          "type": "fail",
+          "mismatch": {
+            "type": "arg",
+            "arg": "state",
+            "read": "off"
+          }
         }
-      }
-    },
-    "timer": {
-      "ping me in 2 hours": {
-        "type": "pass"
       },
-      "what time is it": {
-        "type": "pass"
+      "timer": {
+        "ping me in 2 hours": {
+          "type": "pass"
+        },
+        "what time is it": {
+          "type": "pass"
+        }
       }
     }
   }

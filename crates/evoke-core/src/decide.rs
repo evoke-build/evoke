@@ -321,14 +321,17 @@ pub enum Cap {
 }
 
 /// The confirm prompt: `evoke`'s own line, then the manifest's template filled in.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Prompt {
     pub own: String,
     pub template: Clean,
 }
 
 impl Prompt {
-    fn of(chosen: &Chosen, active: &Active, because: &[Cap]) -> Self {
+    /// The prompt of a chosen call under its caps: the call, its effect, its weakest judgment, then each cap that
+    /// has words; the template filled from the call's values.
+    #[must_use]
+    pub fn of(chosen: &Chosen, active: &Active, because: &[Cap]) -> Self {
         let mut own = format!("{} · {}", render(&chosen.call), chosen.effect);
         if let Some(judged) = &chosen.judged {
             let weakest = &judged.weakest;
@@ -371,8 +374,10 @@ impl Prompt {
             .collect::<String>();
         Self {
             own,
-            // Every piece is clean text: the template's, a key, a word or a span.
-            template: Clean::new(&template).expect("filled from clean pieces"),
+            // Every piece is clean text: the template's, a key, a word or a span; the template itself otherwise.
+            template: Clean::new(&template).unwrap_or_else(|_| {
+                Clean::new(&active.confirm.to_string()).unwrap_or_else(|_| Clean::default())
+            }),
         }
     }
 }
@@ -1257,6 +1262,16 @@ pub fn picked(text: &str, recognizer: Recognizer) -> Option<Value> {
 pub fn by_name(plan: &Plan, written: Written) -> Result<Decision, Diagnostic> {
     let reflex = written.reflex;
     let active = plan.running(&reflex)?;
+    // A playbook expands inside a plan: it has no body to call, so a call by name never reaches one.
+    if !active.steps.is_empty() {
+        return Err(refused(
+            &reflex,
+            format!("{reflex} is a plan of steps; say it in a sentence"),
+            Fix::Show {
+                reflex: Some(reflex.clone()),
+            },
+        ));
+    }
     // A whole result is handed by the plan alone: no one types one, so a call by name never reaches a taker.
     if !active.takes.is_empty() {
         let names: Vec<&str> = active.takes.values().map(FieldName::as_str).collect();

@@ -1,22 +1,24 @@
 {
   "input": {
     "before": {
-      "lights": {
-        "turn on the kitchen lights": {
-          "type": "pass"
-        },
-        "make it darker in here": {
-          "type": "fail",
-          "mismatch": {
-            "type": "arg",
-            "arg": "state",
-            "read": "off"
+      "records": {
+        "lights": {
+          "turn on the kitchen lights": {
+            "type": "pass"
+          },
+          "make it darker in here": {
+            "type": "fail",
+            "mismatch": {
+              "type": "arg",
+              "arg": "state",
+              "read": "off"
+            }
           }
-        }
-      },
-      "timer": {
-        "ping me in 2 hours": {
-          "type": "pass"
+        },
+        "timer": {
+          "ping me in 2 hours": {
+            "type": "pass"
+          }
         }
       }
     },
@@ -60,25 +62,27 @@
     ]
   },
   "expect": {
-    "lights": {
-      "turn on the kitchen lights": {
-        "type": "pass"
-      },
-      "make it darker in here": {
-        "type": "fail",
-        "mismatch": {
-          "type": "arg",
-          "arg": "state",
-          "read": "off"
+    "records": {
+      "lights": {
+        "turn on the kitchen lights": {
+          "type": "pass"
+        },
+        "make it darker in here": {
+          "type": "fail",
+          "mismatch": {
+            "type": "arg",
+            "arg": "state",
+            "read": "off"
+          }
         }
-      }
-    },
-    "timer": {
-      "ping me in 2 hours": {
-        "type": "fail",
-        "mismatch": {
-          "type": "route",
-          "read": null
+      },
+      "timer": {
+        "ping me in 2 hours": {
+          "type": "fail",
+          "mismatch": {
+            "type": "route",
+            "read": null
+          }
         }
       }
     }

@@ -11,14 +11,16 @@
 //! XDG — until the end of input, then exits 0. The loop each step takes is `rounds`', shared with `run <file>`.
 
 use evoke_core::decide::Missing;
+use evoke_core::manifest::written;
 use evoke_core::name::ArgName;
 use evoke_core::text::NonEmpty;
 use evoke_core::weave::{self, Asked, Because, Outcome, Status, Why as Stopped};
-use evoke_core::{Decision, Diagnostic, Fix, fill};
+use evoke_core::{Clean, Decision, Diagnostic, Fix, Prompt, fill};
 use indexmap::IndexMap;
 
-use super::rounds::{Answered, Engine, Handed, Rounds};
+use super::rounds::{Answered, Engine, Handed, Rounds, Teach, whole_plan};
 use super::session::{self, Decided, Opening, Woven};
+use super::r#try::refused_for;
 use super::{Decline, Exit};
 use super::{each_line, needs_terminal};
 use crate::args::{Arguments, Command, Inputs};
@@ -105,13 +107,14 @@ impl Using<'_> {
             Ok(woven) => woven,
             Err(exit) => return self.rounds.session.reporter.exit(input, exit),
         };
-        let exit = match woven.single(&self.arguments.tags) {
+        let exit = match woven.single(&self.arguments.tags, &self.rounds.session.plan) {
             Some(decided) => {
                 let decision = decided.decision.clone();
                 let handed = Handed {
                     bound: &[],
                     taken: &IndexMap::new(),
                     shared: &IndexMap::new(),
+                    from: &[],
                 };
                 self.rounds
                     .round(input, None, &decided, decision, handed)
@@ -136,16 +139,18 @@ impl Using<'_> {
     /// A weave: the plan's own questions first — a step's argument nothing binds, asked as at its turn, and
     /// again while the answer is out of range; a reference that takes nothing, confirmed — then the plan shown,
     /// and each step at its turn through the foundation's own loop; the worst step's exit. A request that is
-    /// only what not to do is nothing to do. A plan stopped before any step ran logs every step's line with what
-    /// stopped it.
+    /// only what not to do is nothing to do, and one that opens with a condition is refused in one line. A plan
+    /// stopped before any step ran logs every step's line with what stopped it. A plan a playbook wrote asks one
+    /// yes over the whole — the playbook's own confirm when the plan is its alone — and logs the expansion's line
+    /// as step 0 first.
     fn many(&mut self, input: &str, woven: Woven) -> Exit {
         let json = self.arguments.json;
         if woven.weave.steps.is_empty() {
             if json {
                 // One line per input holds under --json: an abstain that judged nothing.
-                terminal::result(&report::nothing_to_do_json(input));
+                terminal::result(&report::nothing_to_do_json(input, refused_for(&woven)));
             } else {
-                terminal::note(&report::nothing_to_do());
+                terminal::note(&report::nothing_to_do(refused_for(&woven)));
             }
             return Exit::Declined(Decline::Refused);
         }
@@ -173,6 +178,9 @@ impl Using<'_> {
         if !json {
             terminal::note(&report::planned(&woven.weave));
         }
+        if let Err(exit) = self.rounds.expansions(input, &woven) {
+            return exit;
+        }
         if woven.weave.verdict.outcome == Outcome::Refuse {
             return self.rounds.refused(input, &woven);
         }
@@ -184,20 +192,66 @@ impl Using<'_> {
                 .iter()
                 .map(report::verdict)
                 .collect();
-            if let Err(exit) = self.rounds.proceed(input, &woven, reasons.join("; ")) {
+            let (template, teach) = reviewed(&woven);
+            let proceed = self
+                .rounds
+                .proceed(input, &woven, reasons.join("; "), template, teach);
+            if let Err(exit) = proceed {
                 return exit;
             }
         }
         self.rounds.executed(input, &woven)
     }
+}
 
+/// The yes over a plan a playbook wrote: its own confirm as the question when the typed plan is one playbook's
+/// alone, `Run the plan as it stands?` otherwise; teachable whenever exactly one playbook stands in the plan —
+/// the part of the sentence that picked it taught to the playbook, never the whole sentence.
+fn reviewed(woven: &Woven) -> (Clean, Option<Teach>) {
+    {
+        let reviewed: Vec<(&str, &Prompt)> = woven
+            .weave
+            .verdict
+            .because
+            .iter()
+            .filter_map(|because| match because {
+                Because::Reviewed { text, prompt, .. } => Some((text.as_str(), prompt)),
+                _ => None,
+            })
+            .collect();
+        let [(text, prompt)] = reviewed.as_slice() else {
+            return (whole_plan(), None);
+        };
+        let alone = woven.weave.steps.iter().all(|step| !step.from.is_empty());
+        let template = if alone {
+            prompt.template.clone()
+        } else {
+            whole_plan()
+        };
+        let chosen = woven
+            .decided
+            .iter()
+            .find(|(asked, _)| asked.text == *text)
+            .and_then(|(_, decided)| match &decided.decision {
+                Decision::Run { chosen } | Decision::Confirm { chosen, .. } => Some(chosen.clone()),
+                Decision::Ask { .. } | Decision::Abstain { .. } => None,
+            });
+        let teach = chosen.map(|chosen| Teach {
+            spoken: (*text).to_owned(),
+            chosen,
+        });
+        (template, teach)
+    }
+}
+
+impl Using<'_> {
     /// The plan settled: asked up front while it asks, each answer standing in for the planner's own decision
     /// of its step when the plan is read again. A stop is reported here: the question declined, or one no one
     /// can answer, every step's line saying so.
     fn settled(&mut self, input: &str, woven: Woven) -> Result<Woven, Exit> {
         let mut woven = woven;
         let mut seeds: Vec<(Asked, Decided)> = Vec::new();
-        let mut shown: Vec<usize> = Vec::new();
+        let mut shown: Vec<String> = Vec::new();
         while woven.weave.verdict.outcome == Outcome::Ask {
             let fresh = match self.asked_up_front(&woven, &mut shown) {
                 Ok(UpFront::Seeded(fresh)) => fresh,
@@ -228,14 +282,18 @@ impl Using<'_> {
                 .woven(input, seeds.clone())
                 .map_err(|exit| self.rounds.session.reporter.exit(input, exit))?;
             // An answer the plan did not take — it stands exactly as before — is a stop, never a loop. One it
-            // took and asks about again, out of range, is asked again with the reason, as one input is.
+            // took and asks about again, out of range, is asked again with the reason, as one input is. A
+            // playbook's answered slot is taken once its steps stand with the slot's value, or once its part
+            // folded into one.
             let taken = !seeds.is_empty()
-                && seeds.iter().all(|(_, seeded)| {
-                    again
+                && seeds.iter().all(|(asked, seeded)| {
+                    again.weave.steps.iter().any(|step| {
+                        step.decision == seeded.decision || expanded(step, &seeded.decision)
+                    }) || again
                         .weave
-                        .steps
+                        .folded
                         .iter()
-                        .any(|step| step.decision == seeded.decision)
+                        .any(|folded| folded.text == asked.text)
                 });
             if !taken {
                 let problem = Diagnostic {
@@ -255,7 +313,7 @@ impl Using<'_> {
     /// it would be at its turn, the ask narrowed to what nothing binds, and the step's decision filled for the
     /// plan to stand again; the step's line is shown ahead of its first question, and `shown` remembers it.
     /// Several fields, or one record of several, no answer here can settle: a stop that names them.
-    fn asked_up_front(&mut self, woven: &Woven, shown: &mut Vec<usize>) -> Result<UpFront, Exit> {
+    fn asked_up_front(&mut self, woven: &Woven, shown: &mut Vec<String>) -> Result<UpFront, Exit> {
         let tags = self.arguments.tags.clone();
         let json = self.arguments.json;
         let of = woven.weave.steps.len();
@@ -310,9 +368,10 @@ impl Using<'_> {
             }
             let first = unbound.remove(0);
             let asks = NonEmpty::new(first, unbound);
-            if !json && !shown.contains(&n) {
+            // Shown once, by its words: an expansion renumbers the steps.
+            if !json && !shown.contains(&step.text) {
                 terminal::note(&report::step(n, of, report::step_body(step, &woven.weave)));
-                shown.push(n);
+                shown.push(step.text.clone());
             }
             let given = match self.rounds.answers(&step.text, &asking.reflex, &asks)? {
                 Answered::Given(given) => given,
@@ -330,6 +389,25 @@ impl Using<'_> {
         }
         Ok(UpFront::Seeded(seeded))
     }
+}
+
+/// Whether a step came from the playbook a seeded decision is about, with the seed's values in its slots: the
+/// seed was taken, and expanded.
+fn expanded(step: &weave::Step, seeded: &Decision) -> bool {
+    let (reflex, args) = match seeded {
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
+            (&chosen.call.reflex, &chosen.call.args)
+        }
+        Decision::Ask { .. } | Decision::Abstain { .. } => return false,
+    };
+    step.from.iter().any(|from| {
+        from.playbook == *reflex
+            && from.slots.iter().all(|(slot, value)| {
+                args.get(slot)
+                    .and_then(written)
+                    .is_some_and(|theirs| theirs == *value)
+            })
+    })
 }
 
 /// The plan's own questions asked up front: the decisions answered into, or the step whose question was declined.

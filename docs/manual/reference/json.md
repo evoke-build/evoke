@@ -38,10 +38,14 @@ line of its decision with five fields more: `step` and `steps` first, the step's
 after `trace`, where a value came from another step, `[{ arg, from, field, value }]`, `value` absent for a whole
 result, which stays on its source's line as `result.data`; `shared`, where the sentence said a word once for
 several steps and this one took it, `{ "<arg>": { "word", "via" } }`, `via` `fill` for a required argument and
-`rewrite` for an optional one written into the step's words; and `status` last, with `why` when the step stopped.
-A request that is only what not to do prints one `abstain` line over the whole input, with no judgments and no
-contenders. A plan stopped before any step ran prints every step's line at once, its `status` `refused`,
-`skipped`, `declined` or `unanswered`. A step run from a plan file carries `pinned` too, `{ "file", "id" }`: the
+`rewrite` for an optional one written into the step's words; `from`, where a playbook wrote the step,
+`[{ playbook, step, slots }]`, outermost first; and `status` last, with `why` when the step stopped. A plan a
+playbook wrote prints the sentence's own line first: `step` 0, `steps` the count, the decision that picked the
+playbook, `playbook` and `slots`, and no `status`, so a filter counting lines per input sees one more. A request
+that is only what not to do prints one `abstain` line over the whole input, with no judgments and no contenders,
+and `because` `[{ "type": "nothing_to_do" }]`; a request refused before its plan was made prints the same line
+with the reason, `conditional` with its `text`. A plan stopped before any step ran prints every step's line at
+once, its `status` `refused`, `skipped`, `declined` or `unanswered`. A step run from a plan file carries `pinned` too, `{ "file", "id" }`: the
 file as shown, `~/month.plan.json`, and the SHA-256 of what was read, `h1:…`. `evoke try --json` prints the plan
 whole instead, on one line: `input`, `steps` with each step's decision, `binds`, `stages`, `verdict`, `exclusive`,
 `excluded`, `splits`, and `trace`, every adapter call the plan took.
@@ -56,7 +60,10 @@ In the plan `evoke try --json` prints, a step's `refs` count the steps they may 
 part decided on its own: `narrowed` or `spliced`, an item of its neighbour's task; `merged`, a part read with
 its neighbour; `split`, a part of a joint the classifier read as one thing. A binding's `via` is `fill`,
 `rewrite` or `takes`, a whole result by the name its source returns, with no `kind`; the verdict's `because`
-names `no_source` and `several_sources` where such a result stops the plan.
+names `no_source` and `several_sources` where such a result stops the plan. A plan a playbook wrote carries
+`from` on each of its steps and `folded`, `[{ text, into }]`, the parts of the sentence folded into a step; its
+verdict's `because` holds `reviewed` per playbook, with the step, the sentence's `text` and its `prompt`, and
+names what refused it: `nested`, `too_deep`, `too_long`, `conditional` or `excluded`.
 
 A call by name, `evoke run --json`, prints the same line with nothing judged: `input` is empty, there is no
 `confidence`, `weakest`, `judgments` or `contenders`, `trace` is empty, and `result` or `error` says what the body

@@ -74,6 +74,11 @@ through the cache, and it is never logged. A case passes on its route and on eac
 A case that passed at the last run and fails now is decided twice more. Two of three failing marks it a
 **regression**. `test` exits 1 when a case failed. It never blocks an install.
 
+A playbook's steps are tested after its records ([Playbooks](playbooks.md)): each filled from the first record
+whose reading fills every slot it holds, decided over the whole set, and passed when it reaches a reflex. Its
+line counts them, `outage  4 passed · 7 steps route`, and a step that reaches nothing, or its own plan, or that
+no record fills, prints under it.
+
 ## Lint
 
 Records count against lint: at most 40 per table, and 200 characters per utterance. Lint reports at `add` and

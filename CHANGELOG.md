@@ -6,6 +6,19 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A reflex may be a playbook: `steps` in place of `run`, one sentence per step, `{slots}` for its arguments. A
+  short sentence reaches it like any request, each step is decided over what is installed, the plan prints with
+  the playbook and step that wrote each line, and one yes covers the whole; a step's own confirm is asked again
+  at its turn. `add` shows what each step reaches, `test` decides the steps, `show` prints them, `check` diffs
+  them as contract, and lint flags a step holding a connective or stating a channel or an address.
+- A part of the sentence that repeats a step of such a plan folds into it, `folded "…" into 1`; a part that
+  says what not to do beside the plan is refused, and so is a sentence that opens with `if`, `unless` or `in
+  case`.
+- `evoke why` shows the sentence's own block first, as step 0, when a playbook wrote the plan; `--json` prints
+  that line first, without a status, and an abstain over the whole input says why, `because`.
+- The SDK's `playbook()` hands one as code, `steps` takes `ask`, a compiled playbook reports `runs: "plan"`, and
+  `run` and `handle` refuse one.
+
 ## [0.11.0] - 2026-09-27
 
 - `evoke try --save <file> "<sentence>"` writes the plan as a file: the sentence, the classifier's answers and

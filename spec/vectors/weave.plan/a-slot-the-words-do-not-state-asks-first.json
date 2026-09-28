@@ -1,0 +1,273 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage-playbook.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "input": "The API pods keep restarting",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "The API pods keep restarting"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "outage",
+            "args": {},
+            "unconsumed": [],
+            "confidence": 0.54,
+            "weakest": {
+              "question": "route",
+              "top": "outage",
+              "p": 0.54
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "outage",
+                "p": 0.54
+              },
+              {
+                "question": "outage.service",
+                "top": "unstated",
+                "p": 0.9
+              },
+              {
+                "question": "outage.region",
+                "top": "unstated",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "incidents",
+              "route": 0.03,
+              "fits": 0.1
+            },
+            "contenders": [
+              {
+                "reflex": "outage",
+                "route": 0.54,
+                "fits": 0.8
+              },
+              {
+                "reflex": "incidents",
+                "route": 0.03,
+                "fits": 0.1
+              },
+              {
+                "reflex": "errors",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "service",
+                "ask": "Which service?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "checkout": "The checkout service: cart, payment and order confirmation.",
+                    "payments": "The payments service: card charges and refunds.",
+                    "search": "The search service: product search and suggestions."
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      ]
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "The API pods keep restarting",
+        "steps": [
+          {
+            "n": 1,
+            "text": "The API pods keep restarting",
+            "end": 28,
+            "decision": {
+              "outcome": "ask",
+              "reflex": "outage",
+              "args": {},
+              "unconsumed": [],
+              "confidence": 0.54,
+              "weakest": {
+                "question": "route",
+                "top": "outage",
+                "p": 0.54
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "outage",
+                  "p": 0.54
+                },
+                {
+                  "question": "outage.service",
+                  "top": "unstated",
+                  "p": 0.9
+                },
+                {
+                  "question": "outage.region",
+                  "top": "unstated",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "incidents",
+                "route": 0.03,
+                "fits": 0.1
+              },
+              "contenders": [
+                {
+                  "reflex": "outage",
+                  "route": 0.54,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0.03,
+                  "fits": 0.1
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "status",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "missing": [
+                {
+                  "arg": "service",
+                  "ask": "Which service?",
+                  "because": {
+                    "type": "unstated"
+                  },
+                  "choices": {
+                    "type": "vocab",
+                    "words": {
+                      "checkout": "The checkout service: cart, payment and order confirmation.",
+                      "payments": "The payments service: card charges and refunds.",
+                      "search": "The search service: product search and suggestions."
+                    }
+                  }
+                }
+              ]
+            },
+            "reflex": "outage",
+            "effect": "destructive"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ]
+        ],
+        "verdict": {
+          "outcome": "ask",
+          "because": [
+            {
+              "type": "needs",
+              "step": 1,
+              "arg": "service"
+            }
+          ]
+        },
+        "exclusive": false
+      }
+    }
+  }
+}

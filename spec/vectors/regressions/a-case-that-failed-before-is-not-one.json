@@ -1,13 +1,15 @@
 {
   "input": {
     "before": {
-      "lights": {
-        "make it darker in here": {
-          "type": "fail",
-          "mismatch": {
-            "type": "arg",
-            "arg": "state",
-            "read": "off"
+      "records": {
+        "lights": {
+          "make it darker in here": {
+            "type": "fail",
+            "mismatch": {
+              "type": "arg",
+              "arg": "state",
+              "read": "off"
+            }
           }
         }
       }

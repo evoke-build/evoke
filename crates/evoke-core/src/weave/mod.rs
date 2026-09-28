@@ -15,7 +15,7 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
 use crate::adapter::Request;
-use crate::decide::Decision;
+use crate::decide::{Decision, Prompt};
 use crate::document::Json;
 use crate::manifest::{Effect, Recognizer};
 use crate::name::{ArgName, FieldName, LocalName, Tag, Word};
@@ -83,6 +83,24 @@ pub struct Shared {
     pub via: Via,
 }
 
+/// Where a step came from when a playbook wrote it: the playbook, which of its steps, and what each slot the
+/// sentence holds took, by the slot's name. A chain, outermost first, on a step of a plan inside a plan.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct From {
+    pub playbook: LocalName,
+    /// From 1, as the playbook lists its steps.
+    pub step: usize,
+    pub slots: IndexMap<ArgName, String>,
+}
+
+/// A part of the request that repeated a step a playbook wrote: folded into it, run once.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Folded {
+    pub text: String,
+    /// The step it folded into, from 1.
+    pub into: usize,
+}
+
 /// One step of the plan: a segment's text and the foundation's decision on it, in the order it is to happen.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Step {
@@ -106,6 +124,9 @@ pub struct Step {
     /// The steps this one must follow: an explicit `then`, or a binding.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub after: Vec<usize>,
+    /// The playbooks this step came from, outermost first; none on a step of the person's own.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub from: Vec<From>,
 }
 
 /// How a bound value reaches its step: answering the step's own ask; the step decided again with the value in
@@ -170,6 +191,25 @@ pub enum Because {
         name: FieldName,
         sources: Vec<usize>,
     },
+    /// A part of the request picked a playbook, whose steps stand from `step` on: one yes over the whole plan,
+    /// its own line and question the prompt's.
+    Reviewed {
+        step: usize,
+        playbook: LocalName,
+        text: String,
+        prompt: Prompt,
+    },
+    /// A step whose words route to a playbook it stands inside: refused, a plan cannot hold itself.
+    Nested { step: usize, playbook: LocalName },
+    /// A step whose words route to a playbook past the depth: a plan inside a plan inside a plan.
+    TooDeep { step: usize, playbook: LocalName },
+    /// The plan past the most steps it may hold, once a playbook expanded.
+    TooLong { playbook: LocalName, steps: usize },
+    /// A part that opens with a condition: refused whole, nothing decided, since no step can judge it.
+    Conditional { text: String },
+    /// A part that says what not to do beside a plan a playbook wrote: refused whole, since the plan may hold
+    /// the step it leaves out.
+    Excluded { text: String, playbook: LocalName },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -207,6 +247,9 @@ pub struct Weave {
     /// Fragments left out because they begin with a negation: never decided, never run.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub excluded: Vec<String>,
+    /// Parts of the request that repeated a step a playbook wrote, each folded into that step.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub folded: Vec<Folded>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub splits: Vec<Split>,
 }
@@ -219,6 +262,8 @@ struct RawWeave {
     steps: Vec<Step>,
     #[serde(default)]
     excluded: Vec<String>,
+    #[serde(default)]
+    folded: Vec<Folded>,
     #[serde(default)]
     binds: Vec<Binding>,
     exclusive: bool,
@@ -271,6 +316,24 @@ impl TryFrom<RawWeave> for Weave {
                 ));
             }
         }
+        for step in &raw.steps {
+            if let Some(from) = step.from.iter().find(|from| from.step == 0) {
+                return Err(format!(
+                    "step {} comes from step 0 of {}, which no playbook lists",
+                    step.n, from.playbook
+                ));
+            }
+        }
+        if let Some(folded) = raw
+            .folded
+            .iter()
+            .find(|folded| folded.into == 0 || folded.into > count)
+        {
+            return Err(format!(
+                "\"{}\" folds into step {}, which the plan lacks",
+                folded.text, folded.into
+            ));
+        }
         Ok(Self {
             input: raw.input,
             steps: raw.steps,
@@ -279,6 +342,7 @@ impl TryFrom<RawWeave> for Weave {
             verdict: raw.verdict,
             exclusive: raw.exclusive,
             excluded: raw.excluded,
+            folded: raw.folded,
             splits: raw.splits,
         })
     }

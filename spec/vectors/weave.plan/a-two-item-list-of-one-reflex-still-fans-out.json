@@ -268,15 +268,6 @@
       "type": "done",
       "weave": {
         "input": "check the errors for checkout and payments",
-        "splits": [
-          {
-            "start": 29,
-            "end": 34,
-            "word": "and",
-            "order": "and",
-            "p": 0.2
-          }
-        ],
         "steps": [
           {
             "n": 1,
@@ -428,7 +419,6 @@
             "repair": "narrowed"
           }
         ],
-        "exclusive": false,
         "stages": [
           [
             1,
@@ -437,7 +427,17 @@
         ],
         "verdict": {
           "outcome": "run"
-        }
+        },
+        "exclusive": false,
+        "splits": [
+          {
+            "start": 29,
+            "end": 34,
+            "word": "and",
+            "order": "and",
+            "p": 0.2
+          }
+        ]
       }
     }
   }

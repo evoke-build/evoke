@@ -1,9 +1,11 @@
 {
   "input": {
     "before": {
-      "timer": {
-        "ping me in 2 hours": {
-          "type": "pass"
+      "records": {
+        "timer": {
+          "ping me in 2 hours": {
+            "type": "pass"
+          }
         }
       }
     },

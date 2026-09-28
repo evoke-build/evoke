@@ -347,22 +347,6 @@
       "type": "done",
       "weave": {
         "input": "checkout is back up, check the error rate and update the status page",
-        "splits": [
-          {
-            "start": 19,
-            "end": 21,
-            "word": ",",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 41,
-            "end": 46,
-            "word": "and",
-            "order": "and",
-            "p": 0.9
-          }
-        ],
         "steps": [
           {
             "n": 1,
@@ -689,7 +673,6 @@
             "effect": "write"
           }
         ],
-        "exclusive": true,
         "stages": [
           [
             1
@@ -720,7 +703,24 @@
               "arg": "component"
             }
           ]
-        }
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 19,
+            "end": 21,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 41,
+            "end": 46,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          }
+        ]
       }
     }
   }

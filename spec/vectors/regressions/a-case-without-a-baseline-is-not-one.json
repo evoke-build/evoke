@@ -1,9 +1,11 @@
 {
   "input": {
     "before": {
-      "lights": {
-        "turn on the kitchen lights": {
-          "type": "pass"
+      "records": {
+        "lights": {
+          "turn on the kitchen lights": {
+            "type": "pass"
+          }
         }
       }
     },

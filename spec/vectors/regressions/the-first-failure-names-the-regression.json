@@ -1,9 +1,11 @@
 {
   "input": {
     "before": {
-      "lights": {
-        "make it darker in here": {
-          "type": "pass"
+      "records": {
+        "lights": {
+          "make it darker in here": {
+            "type": "pass"
+          }
         }
       }
     },

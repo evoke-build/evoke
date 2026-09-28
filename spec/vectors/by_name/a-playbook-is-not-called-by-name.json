@@ -1,0 +1,23 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage-playbook.json"
+    },
+    "written": {
+      "reflex": "outage",
+      "args": {
+        "service": "checkout"
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "reflex": "outage",
+      "message": "outage is a plan of steps; say it in a sentence",
+      "fix": {
+        "type": "show",
+        "reflex": "outage"
+      }
+    }
+  }
+}

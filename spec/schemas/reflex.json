@@ -2,14 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://evoke.build/schemas/reflex.json",
   "title": "reflex.toml",
-  "description": "A reflex's manifest: what the classifier reads and what the body receives. Wording may be overridden by an overlay; the contract (run, needs, argument names, option keys, sources, range) may not. Reference: https://evoke.build/manual/author/manifest.html.",
+  "description": "A reflex's manifest: what the classifier reads and what the body receives. Wording may be overridden by an overlay; the contract (run, steps, needs, argument names, option keys, sources, range) may not. Reference: https://evoke.build/manual/author/manifest.html.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "reflex",
     "description",
-    "confirm",
-    "run"
+    "confirm"
   ],
   "properties": {
     "reflex": {
@@ -65,6 +64,16 @@
           "$ref": "#/definitions/argv"
         }
       ]
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 24,
+      "items": {
+        "$ref": "#/definitions/line",
+        "description": "One sentence, one action: text with {slot}s, each an argument — a required one bare, an optional one inside a bracketed phrase, [ in {region}], written only when the slot is filled."
+      },
+      "description": "A playbook's body: a plan of sentences with slots, each decided over the installed set when the plan is made. run or steps, exactly one; a playbook has no needs, config, yields, returns, platforms or takes. Contract, like run."
     },
     "platforms": {
       "type": "array",
@@ -713,5 +722,27 @@
         "quoted"
       ]
     }
-  }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "run"
+      ],
+      "not": {
+        "required": [
+          "steps"
+        ]
+      }
+    },
+    {
+      "required": [
+        "steps"
+      ],
+      "not": {
+        "required": [
+          "run"
+        ]
+      }
+    }
+  ]
 }

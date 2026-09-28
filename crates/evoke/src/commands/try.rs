@@ -10,7 +10,7 @@ use std::path::Path;
 use evoke_core::weave::{Because, Outcome};
 use evoke_core::{Decision, Diagnostic, Fix, Gate, pin};
 
-use super::rounds::source_fix;
+use super::rounds::refusal_fix;
 use super::session::{self, Opening, Session, Woven};
 use super::{Decline, Exit, each_line};
 use crate::adapter::Adapter;
@@ -51,7 +51,7 @@ fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, in
         return saved(session, arguments, input, &woven, file);
     }
     let floor = adapter.declared().gate.as_ref().map(Gate::route);
-    if let Some(decided) = woven.single(&arguments.tags) {
+    if let Some(decided) = woven.single(&arguments.tags, &session.plan) {
         if arguments.json {
             terminal::result(&report::Line::of(&decided).json());
         } else {
@@ -69,7 +69,7 @@ fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, in
         return Exit::Ran;
     }
     if woven.weave.steps.is_empty() {
-        terminal::answer(&report::nothing_to_do());
+        terminal::answer(&report::nothing_to_do(refused_for(&woven)));
         return Exit::Ran;
     }
     terminal::answer(&report::planned(&woven.weave));
@@ -110,9 +110,9 @@ fn saved(
     let json = arguments.json;
     if woven.weave.steps.is_empty() {
         if json {
-            terminal::result(&report::nothing_to_do_json(input));
+            terminal::result(&report::nothing_to_do_json(input, refused_for(woven)));
         } else {
-            terminal::answer(&report::nothing_to_do());
+            terminal::answer(&report::nothing_to_do(refused_for(woven)));
         }
         return Exit::Declined(Decline::Refused);
     }
@@ -152,30 +152,7 @@ fn saved(
         }
         Outcome::Refuse => {
             if !json {
-                let invoked = session.reporter.command.placeholder();
-                let mut named = false;
-                for because in &verdict.because {
-                    if matches!(
-                        because,
-                        Because::NoSource { .. } | Because::SeveralSources { .. }
-                    ) {
-                        let problem = Diagnostic {
-                            reflex: None,
-                            at: None,
-                            message: report::verdict(because),
-                            fix: source_fix(session, because, woven),
-                        };
-                        terminal::note(&report::diagnostic(
-                            &problem,
-                            &invoked,
-                            Some(&session.reporter.paths),
-                        ));
-                        named = true;
-                    }
-                }
-                if !named && let Some(hint) = report::left_out(session.plan.inactive().keys()) {
-                    terminal::note(&hint);
-                }
+                refusals(session, woven);
             }
             return Exit::Declined(Decline::Refused);
         }
@@ -204,4 +181,47 @@ fn saved(
         terminal::note(&report::written(&shown, &Landed::Whole));
     }
     Exit::Ran
+}
+
+/// A refused plan's lines under `--save`: each reason that names what to look at, else the reflexes left out.
+fn refusals(session: &Session<'_>, woven: &Woven) {
+    let invoked = session.reporter.command.placeholder();
+    let mut named = false;
+    for because in &woven.weave.verdict.because {
+        if matches!(
+            because,
+            Because::NoSource { .. }
+                | Because::SeveralSources { .. }
+                | Because::Nested { .. }
+                | Because::TooDeep { .. }
+                | Because::TooLong { .. }
+                | Because::Excluded { .. }
+        ) {
+            let problem = Diagnostic {
+                reflex: None,
+                at: None,
+                message: report::verdict(because),
+                fix: refusal_fix(session, because, woven),
+            };
+            terminal::note(&report::diagnostic(
+                &problem,
+                &invoked,
+                Some(&session.reporter.paths),
+            ));
+            named = true;
+        }
+    }
+    if !named && let Some(hint) = report::left_out(session.plan.inactive().keys()) {
+        terminal::note(&hint);
+    }
+}
+
+/// Why a plan with no step was refused: the verdict's first reason — nothing to do, or a condition.
+pub(super) fn refused_for(woven: &Woven) -> &Because {
+    woven
+        .weave
+        .verdict
+        .because
+        .first()
+        .unwrap_or(&Because::NothingToDo)
 }

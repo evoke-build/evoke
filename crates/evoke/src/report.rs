@@ -13,11 +13,11 @@ use evoke_core::adapter::QuestionId;
 use evoke_core::calibrate::{self, BarRow, BinRow, Calibration, LogBlock, Miss, QuestionRow};
 use evoke_core::contract::Change;
 use evoke_core::decide::{Missing, Why};
-use evoke_core::manifest::{Effect, Manifest, Run};
+use evoke_core::manifest::{Effect, Manifest, Run, Sentence, written as slotted};
 use evoke_core::name::{ArgName, FieldName, LocalName};
 use evoke_core::test::{Claim, Expected, Mismatch};
 use evoke_core::vocabulary::Vocabulary;
-use evoke_core::weave::{Because, Bound, Shared, Status, Step, Why as Stopped};
+use evoke_core::weave::{Because, Bound, From, Shared, Status, Step, Why as Stopped};
 use evoke_core::{
     At, Call, Case, Chosen, Clean, Contained, Contender, ContractDiff, Decision, Diagnostic,
     Digest, Effective, File, Finding, Fix, Gate, Input, Json, KeyPath, Level, Needs, Prompt,
@@ -232,8 +232,19 @@ pub struct Line {
     pub contained: Option<Contained>,
     /// A weave's step: which of how many, what became of it, the values bound into it. None for one decision.
     pub step: Option<StepLine>,
+    /// A playbook's expansion, logged as step 0 of its plan with no status: the steps' lines say what became of
+    /// the plan. None for a decision or a step.
+    pub expansion: Option<Expanded>,
     /// The plan file the step came from, when it was run from one.
     pub pinned: Option<PinnedAt>,
+}
+
+/// The expansion's own line: how many steps the plan holds, the playbook, and what each slot took.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Expanded {
+    pub of: usize,
+    pub playbook: LocalName,
+    pub slots: IndexMap<ArgName, String>,
 }
 
 /// The plan file a line's step came from: the path as shown, and the SHA-256 of the bytes read.
@@ -253,6 +264,8 @@ pub struct StepLine {
     pub bound: Vec<Bound>,
     /// The words the request stated once for several steps that reached this one's arguments.
     pub shared: IndexMap<ArgName, Shared>,
+    /// The playbooks the step came from, outermost first.
+    pub from: Vec<From>,
 }
 
 impl Line {
@@ -270,6 +283,7 @@ impl Line {
             cancelled: false,
             contained: None,
             step: None,
+            expansion: None,
             pinned: None,
         }
     }
@@ -289,6 +303,7 @@ impl Line {
             cancelled: false,
             contained: None,
             step: None,
+            expansion: None,
             pinned: None,
         }
     }
@@ -312,6 +327,10 @@ impl Line {
             line.insert("step".to_owned(), Json::from(step.n));
             line.insert("steps".to_owned(), Json::from(step.of));
         }
+        if let Some(expansion) = &self.expansion {
+            line.insert("step".to_owned(), Json::from(0));
+            line.insert("steps".to_owned(), Json::from(expansion.of));
+        }
         line.insert(
             "input".to_owned(),
             Json::String(self.input.as_str().to_owned()),
@@ -321,22 +340,7 @@ impl Line {
             "trace".to_owned(),
             serde_json::to_value(&self.trace).expect("a trace serializes"),
         );
-        if let Some(step) = &self.step
-            && !step.bound.is_empty()
-        {
-            line.insert(
-                "bound".to_owned(),
-                serde_json::to_value(&step.bound).expect("bound values serialize"),
-            );
-        }
-        if let Some(step) = &self.step
-            && !step.shared.is_empty()
-        {
-            line.insert(
-                "shared".to_owned(),
-                serde_json::to_value(&step.shared).expect("shared words serialize"),
-            );
-        }
+        self.weaving(&mut line);
         if let Some(pinned) = &self.pinned {
             line.insert(
                 "pinned".to_owned(),
@@ -392,6 +396,41 @@ impl Line {
         Json::Object(line)
     }
 
+    /// A weave's fields after the trace: a step's bound values, the words shared into it and the playbooks it came
+    /// from; an expansion's playbook and what each slot took.
+    fn weaving(&self, line: &mut serde_json::Map<String, Json>) {
+        if let Some(step) = &self.step {
+            if !step.bound.is_empty() {
+                line.insert(
+                    "bound".to_owned(),
+                    serde_json::to_value(&step.bound).expect("bound values serialize"),
+                );
+            }
+            if !step.shared.is_empty() {
+                line.insert(
+                    "shared".to_owned(),
+                    serde_json::to_value(&step.shared).expect("shared words serialize"),
+                );
+            }
+            if !step.from.is_empty() {
+                line.insert(
+                    "from".to_owned(),
+                    serde_json::to_value(&step.from).expect("a step's origins serialize"),
+                );
+            }
+        }
+        if let Some(expansion) = &self.expansion {
+            line.insert(
+                "playbook".to_owned(),
+                Json::String(expansion.playbook.to_string()),
+            );
+            line.insert(
+                "slots".to_owned(),
+                serde_json::to_value(&expansion.slots).expect("slots serialize"),
+            );
+        }
+    }
+
     /// A log line read back; the decision is what remains once the line's own fields are taken.
     pub fn parse(text: &str) -> Result<Self, String> {
         let Json::Object(mut fields) =
@@ -410,8 +449,18 @@ impl Line {
         let cancelled = field("cancelled", take("cancelled")).unwrap_or_default();
         let contained = field("contained", take("contained"))?;
         let pinned = field("pinned", take("pinned"))?;
+        let mut expansion = None;
         let step = match (take("step"), take("steps")) {
             (Json::Null, _) => None,
+            // Step 0 is a playbook's expansion: the plan's own line, with no status.
+            (n, of) if n.as_u64() == Some(0) => {
+                expansion = Some(Expanded {
+                    of: field("steps", of)?,
+                    playbook: field("playbook", take("playbook"))?,
+                    slots: field("slots", take("slots")).unwrap_or_default(),
+                });
+                None
+            }
             (n, of) => Some(StepLine {
                 n: field("step", n)?,
                 of: field("steps", of)?,
@@ -419,6 +468,7 @@ impl Line {
                 why: field("why", take("why"))?,
                 bound: field("bound", take("bound")).unwrap_or_default(),
                 shared: field("shared", take("shared")).unwrap_or_default(),
+                from: field("from", take("from")).unwrap_or_default(),
             }),
         };
         let decision = field("decision", Json::Object(fields))?;
@@ -434,6 +484,7 @@ impl Line {
             cancelled,
             contained,
             step,
+            expansion,
             pinned,
         })
     }
@@ -511,9 +562,10 @@ pub fn why(lines: &[Line]) -> Text {
     let mut shown = Vec::new();
     for line in lines {
         let input = Text::from(plain(&quoted(line.input.as_str())));
-        shown.push(match &line.step {
-            Some(step) => numbered(step.n, step.of, input),
-            None => input,
+        shown.push(match (&line.step, &line.expansion) {
+            (Some(step), _) => numbered(step.n, step.of, input),
+            (None, Some(expansion)) => numbered(0, expansion.of, input),
+            (None, None) => input,
         });
         shown.extend(block(
             line.reflex(),
@@ -533,9 +585,10 @@ pub fn why(lines: &[Line]) -> Text {
 /// What came of a decision, then where its answers came from: the plan file, the adapter calls it took, or
 /// `cached`.
 fn became(line: &Line) -> Text {
-    let mut what = match &line.step {
-        Some(step) => stepped(line, step),
-        None => alone(line),
+    let mut what = match (&line.step, &line.expansion) {
+        (Some(step), _) => stepped(line, step),
+        (None, Some(expansion)) => expanded(line, expansion),
+        (None, None) => alone(line),
     };
     let mut calls: Vec<String> = line
         .pinned
@@ -590,6 +643,32 @@ fn alone(line: &Line) -> Text {
     }
 }
 
+/// A playbook's expansion: its decision's outcome and the call as judged, then the plan it became.
+fn expanded(line: &Line, expansion: &Expanded) -> Text {
+    let mut text = match &line.decision {
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
+            let word = if matches!(line.decision, Decision::Run { .. }) {
+                "run "
+            } else {
+                "confirm "
+            };
+            let mut text = Text::from(word);
+            text.append(judged_call(chosen));
+            text
+        }
+        Decision::Ask { missing, .. } => {
+            let asked: Vec<&str> = missing.iter().map(|missing| missing.arg.as_str()).collect();
+            Text::from(format!("ask {}", asked.join(" ")))
+        }
+        Decision::Abstain { .. } => Text::from("abstain"),
+    };
+    text.push(&format!(
+        " · the {} plan, {} steps",
+        expansion.playbook, expansion.of
+    ));
+    text
+}
+
 /// A step's outcome: its status, the call as judged — `ask <args>` for a step still asking, nothing for one that
 /// matched no reflex — and why it stopped, unless it was declined: the prompt's own line says no more than the
 /// call does.
@@ -616,6 +695,9 @@ fn stepped(line: &Line, step: &StepLine) -> Text {
     }
     if let Some(origin) = shared(&step.shared) {
         text.push(" · ").push(&origin);
+    }
+    for from in &step.from {
+        text.push(&format!(" · {} {}", from.playbook, from.step));
     }
     if step.status != Status::Declined
         && let Some(why) = &step.why
@@ -747,6 +829,13 @@ pub fn planned(weave: &Weave) -> Text {
         .iter()
         .map(|step| numbered(step.n, weave.steps.len(), step_body(step, weave)))
         .collect();
+    for folded in &weave.folded {
+        lines.push(Text::from(format!(
+            "folded {} into {}",
+            quoted(&folded.text),
+            folded.into
+        )));
+    }
     if !weave.excluded.is_empty() {
         let parts: Vec<String> = weave.excluded.iter().map(|part| quoted(part)).collect();
         lines.push(Text::from(format!("left out {}", parts.join(", "))));
@@ -787,24 +876,26 @@ pub fn step_refused(text: &str, why: &Stopped) -> Text {
     body
 }
 
-/// The `--json` line of a request that is only what not to do: an abstain over the whole input, with no
-/// judgment and no contender, since nothing was asked.
+/// The `--json` line of a request refused with no step — one that is only what not to do, or opens with a
+/// condition: an abstain over the whole input, with no judgment and no contender, since nothing was asked, and
+/// the verdict's reason under `because`.
 #[must_use]
-pub fn nothing_to_do_json(input: &str) -> String {
+pub fn nothing_to_do_json(input: &str, because: &Because) -> String {
     serde_json::json!({
         "input": input,
         "outcome": "abstain",
         "judgments": [],
         "contenders": [],
         "trace": [],
+        "because": [because],
     })
     .to_string()
 }
 
-/// A request that is only what not to do: nothing to run, said in one line.
+/// A request refused with no step: nothing to run, said in the verdict's one line.
 #[must_use]
-pub fn nothing_to_do() -> Text {
-    indented(vec![Text::from(verdict(&Because::NothingToDo))])
+pub fn nothing_to_do(because: &Because) -> Text {
+    indented(vec![Text::from(verdict(because))])
 }
 
 /// A step as the plan shows it, before it runs.
@@ -880,6 +971,30 @@ pub fn step_body(step: &Step, weave: &Weave) -> Text {
         .unwrap_or_default();
     if !with.is_empty() {
         text.push(&format!(" · with {}", with.join(", ")));
+    }
+    // Which playbook wrote the step, and which of its steps; then a slot whose value reached an argument named
+    // otherwise, so each value on the line says which slot filled it.
+    let args = match &step.decision {
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => Some(&chosen.call.args),
+        Decision::Ask { asking, .. } => Some(&asking.args),
+        Decision::Abstain { .. } => None,
+    };
+    for from in &step.from {
+        text.push(&format!(" · {} {}", from.playbook, from.step));
+    }
+    for from in &step.from {
+        for (slot, value) in &from.slots {
+            let Some(args) = args else { continue };
+            if args.contains_key(slot) {
+                continue;
+            }
+            if let Some((arg, _)) = args
+                .iter()
+                .find(|(_, theirs)| slotted(theirs).as_deref() == Some(value.as_str()))
+            {
+                text.push(&format!(" · {slot} as {arg}"));
+            }
+        }
     }
     text
 }
@@ -960,6 +1075,27 @@ pub fn verdict(because: &Because) -> String {
                 )
             }
         }
+        Because::Reviewed { prompt, .. } => prompt.own.clone(),
+        Because::Nested { step, playbook } => {
+            format!("step {step} routes to {playbook}, which is expanding already")
+        }
+        Because::TooDeep { step, .. } => {
+            format!("step {step} is a plan inside a plan inside a plan")
+        }
+        Because::TooLong { steps, .. } => {
+            format!(
+                "the plan holds {steps} steps; {} is the most",
+                evoke_core::manifest::MOST_STEPS
+            )
+        }
+        Because::Conditional { text } => format!(
+            "{} is a condition, which no step can judge; ask for the check first, then say what to do",
+            quoted(text)
+        ),
+        Because::Excluded { text, playbook } => format!(
+            "{} leaves out a step the {playbook} plan may hold; say the steps you want",
+            quoted(text)
+        ),
     }
 }
 
@@ -1833,7 +1969,7 @@ pub fn created(path: &str) -> Text {
 pub fn checked_row(name: &LocalName, m: &Manifest) -> Text {
     let mut text = Text::from(format!("  {name}  "));
     text.roled(Role::Effect(m.effect), &m.effect.to_string())
-        .push(&format!("  {}", runs(&m.run)));
+        .push(&format!("  {}", runs(&m.run, &m.steps)));
     text
 }
 
@@ -1877,6 +2013,7 @@ pub fn change(change: &Change) -> (String, String) {
         Change::SourceChanged { arg } => (format!("args.{arg}"), "source changed".to_owned()),
         Change::RangeChanged { arg } => (format!("args.{arg}"), "range changed".to_owned()),
         Change::RunChanged => ("run".to_owned(), "changed".to_owned()),
+        Change::StepsChanged => ("steps".to_owned(), "the steps moved".to_owned()),
         Change::NeedsWidened { added } => ("needs".to_owned(), format!("widened: {added}")),
         Change::NeedsNarrowed { removed } => {
             ("needs".to_owned(), format!("narrowed: {removed} dropped"))
@@ -1917,15 +2054,51 @@ pub fn change(change: &Change) -> (String, String) {
     }
 }
 
+/// A playbook as `test` judged its steps: each sentence and where it routed, and the effect it claims.
+pub struct TestedPlaybook {
+    pub name: LocalName,
+    pub claim: Effect,
+    pub steps: Vec<TestedStep>,
+}
+
+/// One step of a playbook as `test` judged it: its number, its sentence with the slots as written, what became
+/// of it, and whether it passed at the last run.
+pub struct TestedStep {
+    pub n: usize,
+    pub sentence: String,
+    pub became: StepBecame,
+    pub regression: bool,
+}
+
+/// What became of a playbook's step when its words were decided, filled from a record: the reflex it routes to
+/// and that reflex's effect; nothing; the playbook it stands in; or untested, no record reading the slot named.
+pub enum StepBecame {
+    Routes { reflex: LocalName, effect: Effect },
+    NoReflex,
+    Nested,
+    Untested { slot: ArgName },
+}
+
 /// `test`'s block: per reflex its name and counts, then one line per failed case — the utterance and where the
-/// decision missed, `· regression` when it passed at the last run.
+/// decision missed, `· regression` when it passed at the last run; for a playbook, how many of its steps route,
+/// then each step that does not, and its claim when the steps reach a tighter effect.
 #[must_use]
-pub fn tested(verdicts: &[(Case, Verdict)], regressions: &[Regression]) -> Text {
+pub fn tested(
+    verdicts: &[(Case, Verdict)],
+    regressions: &[Regression],
+    playbooks: &[TestedPlaybook],
+) -> Text {
     let mut reflexes: Vec<(&LocalName, Vec<&(Case, Verdict)>)> = Vec::new();
     for judged in verdicts {
         match reflexes.last_mut() {
             Some((name, cases)) if *name == &judged.0.reflex => cases.push(judged),
             _ => reflexes.push((&judged.0.reflex, vec![judged])),
+        }
+    }
+    // A playbook with no record still has its steps to show.
+    for playbook in playbooks {
+        if !reflexes.iter().any(|(name, _)| *name == &playbook.name) {
+            reflexes.push((&playbook.name, Vec::new()));
         }
     }
     let width = reflexes
@@ -1945,6 +2118,21 @@ pub fn tested(verdicts: &[(Case, Verdict)], regressions: &[Regression]) -> Text 
         if !failed.is_empty() {
             line.push(" · ")
                 .roled(Role::Failed, &format!("{} failed", failed.len()));
+        }
+        let playbook = playbooks.iter().find(|playbook| playbook.name == *name);
+        if let Some(playbook) = playbook {
+            let routes = playbook
+                .steps
+                .iter()
+                .filter(|step| matches!(step.became, StepBecame::Routes { .. }))
+                .count();
+            let total = playbook.steps.len();
+            if routes == total {
+                line.push(&format!(" · {total} steps route"));
+            } else {
+                line.push(" · ")
+                    .roled(Role::Failed, &format!("{routes} of {total} steps route"));
+            }
         }
         lines.push(line);
         let utterances: Vec<String> = failed
@@ -1972,8 +2160,79 @@ pub fn tested(verdicts: &[(Case, Verdict)], regressions: &[Regression]) -> Text 
             }
             lines.push(line);
         }
+        if let Some(playbook) = playbook {
+            lines.extend(playbook_lines(playbook));
+        }
     }
     Text::lines(lines)
+}
+
+/// Under a playbook's line: each step that does not route, and its claim when the steps reach a tighter effect
+/// — reported, never failed.
+fn playbook_lines(playbook: &TestedPlaybook) -> Vec<Text> {
+    let mut lines = Vec::new();
+    let inner = playbook.steps.len().to_string().len();
+    for step in &playbook.steps {
+        let became = match &step.became {
+            StepBecame::Routes { .. } => continue,
+            StepBecame::NoReflex => "no reflex".to_owned(),
+            StepBecame::Nested => "nested".to_owned(),
+            StepBecame::Untested { slot } => format!("untested: no test reads {{{slot}}}"),
+        };
+        let mut line = Text::from(format!(
+            "    {:>inner$}  {} · {became}",
+            step.n,
+            quoted(&step.sentence)
+        ));
+        if step.regression {
+            line.push(" · ").roled(Role::Failed, "regression");
+        }
+        lines.push(line);
+    }
+    let worst = playbook
+        .steps
+        .iter()
+        .filter_map(|step| match &step.became {
+            StepBecame::Routes { reflex, effect } => Some((step.n, reflex, *effect)),
+            _ => None,
+        })
+        .max_by_key(|(_, _, effect)| *effect);
+    if let Some((n, reflex, effect)) = worst
+        && effect > playbook.claim
+    {
+        lines.push(Text::from(format!(
+            "    claims {}; step {n} reaches {reflex}, {effect}",
+            playbook.claim
+        )));
+    }
+    lines
+}
+
+/// `add`'s reach: what each step of a newcomer playbook routes to on this set, one line per step under its row —
+/// the reflex and its effect, `nothing here`, or the slot no record reads.
+#[must_use]
+pub fn reached(steps: &[TestedStep]) -> Text {
+    let width = steps.len().to_string().len();
+    Text::lines(steps.iter().map(|step| {
+        let mut line = Text::from(format!("  {:>width$}  {} → ", step.n, step.sentence));
+        match &step.became {
+            StepBecame::Routes { reflex, effect } => {
+                line.roled(Role::Call, reflex.as_str())
+                    .push(" · ")
+                    .roled(Role::Effect(*effect), &effect.to_string());
+            }
+            StepBecame::NoReflex => {
+                line.roled(Role::Warning, "nothing here");
+            }
+            StepBecame::Nested => {
+                line.roled(Role::Warning, "its own plan");
+            }
+            StepBecame::Untested { slot } => {
+                line.push(&format!("untested: no record reads {{{slot}}}"));
+            }
+        }
+        line
+    }))
 }
 
 /// `route: expected timer, read none`, `state: expected "dim", read "off"`.
@@ -2067,11 +2326,12 @@ pub fn updated(moved: &Updated) -> Text {
     Text::from(text)
 }
 
-/// `runs <file>` or `runs <program>`.
-pub(crate) fn runs(run: &Run) -> String {
+/// `runs <file>`, `runs <program>`, or `a plan of <n> steps` for a playbook.
+pub(crate) fn runs(run: &Run, steps: &[Sentence]) -> String {
     match run {
         Run::File(entrypoint) => format!("runs {}", entrypoint.path()),
         Run::Argv { program, .. } => format!("runs {program}"),
+        Run::Inline if !steps.is_empty() => format!("a plan of {} steps", steps.len()),
         Run::Inline => String::new(),
     }
 }
@@ -2105,6 +2365,18 @@ pub fn manifest(effective: &Effective) -> Text {
         let empty = value.as_array().is_some_and(Vec::is_empty);
         if !empty || yours(&[key]) {
             lines.push((yours(&[key]), pair(key, value)));
+        }
+        // A playbook's plan follows its confirm: each sentence numbered as the plan prints its steps.
+        if key == "confirm"
+            && let Some(Json::Array(steps)) = manifest.get("steps")
+            && !steps.is_empty()
+        {
+            lines.push((false, "steps".to_owned()));
+            let width = steps.len().to_string().len();
+            for (i, step) in steps.iter().enumerate() {
+                let sentence = step.as_str().unwrap_or_default();
+                lines.push((false, format!("  {:>width$}  {sentence}", i + 1)));
+            }
         }
     }
     if let Some(Json::Object(needs)) = manifest.get("needs")

@@ -1,0 +1,34 @@
+reflex = 1
+
+description = """
+Handle a service outage.
+Looks at the service's errors, deploys and logs, finds the release behind it, rolls it back, tells #incident and updates the status page."""
+not_for = ["one lookup on its own", "an incident's postmortem", "a service that is healthy"]
+tags = ["outage"]
+confirm = "Run the outage plan for {service}?"
+steps = [
+  "check {service}'s errors[ in {region}]",
+  "list {service}'s deploys[ in {region}]",
+  "search {service}'s logs[ in {region}]",
+  "find the release behind it",
+  "roll {service} back from that release[ in {region}]",
+  "post to the incident channel",
+  "update the status page for {service}",
+]
+
+[args.service]
+ask   = "Which service?"
+vocab = "services"
+
+[args.region]
+ask      = "In which region?"
+vocab    = "regions"
+optional = true
+
+[examples]
+"payments is down in us-east"   = {}
+"search is broken"              = {}
+"we have an outage on checkout" = {}
+
+[tests]
+"checkout is failing in eu-west" = {}

@@ -80,7 +80,8 @@ prints. A reflex handed as code runs in-process. A file runs in a
 child. An argv is spawned. A body's failure is a `FailureError`. `signal` aborts the body, and `run`
 rejects with the signal's reason. A decision made under another plan is refused as misuse, with a `TypeError`. A
 reflex that takes an earlier step's whole result is refused with a `DiagnosticError`: only `weave` hands one, so
-a host with its own loop learns at `run` that `decide`'s decision was a taker's.
+a host with its own loop learns at `run` that `decide`'s decision was a taker's. A playbook is refused the same
+way, `<name> is a plan of steps; say it in a sentence`: only `steps` and `weave` make its plan.
 
 ## `handle(input, { confirm?, ask?, tags?, signal? })`
 
@@ -101,8 +102,8 @@ const handled = await project.handle(input, {
 | `"unanswered"`    | A confirm or an ask was reached and no handler was given. The decision itself is the answer   |
 
 An answer that does not read is asked again once. Twice is a decline. An empty input is refused before the
-adapter is asked. A decided reflex that takes an earlier step's whole result is refused before any confirm. Only
-a diagnostic, a fault or a failure throws.
+adapter is asked. A decided reflex that takes an earlier step's whole result is refused before any confirm, and
+so is a playbook. Only a diagnostic, a fault or a failure throws.
 
 ## `steps(input, { tags?, signal? })` and `weave(input, { confirm?, ask?, proceed?, tags?, signal? })`
 
@@ -126,8 +127,13 @@ the words the sentence said once for several steps that reached it, `{ service: 
 "fill" } }`; `repair` says how a part that was not decided on its own became a step, `"narrowed"`, `"spliced"`,
 `"merged"` or `"split"`. A binding whose `via` is `"takes"` is a whole result by the name its source returns,
 with no `kind`; a plan with no source for one, or two, has `verdict.outcome` `"refuse"` and `no_source` or
-`several_sources` among its `because`. `weave` settles what the plan asks first, then runs every step under
-`handle`'s handlers, each told which step and round asks, a `Turn`:
+`several_sources` among its `because`. A step a playbook wrote carries `from`, the playbook, its step and the
+slots the sentence filled ([Playbooks](../author/playbooks.md)); `folded` names the parts of the sentence that
+repeat one of its steps; and the verdict's `because` holds `reviewed` per playbook, with the sentence's own
+prompt. `steps(input, { ask })` answers a slot the sentence lacks before the plan is made, as `weave`'s `ask`
+does; such a plan is a sheet, and `weave` refuses it as a file, since a file holds no one's answers. `weave`
+settles what the plan asks first, then runs every step under `handle`'s handlers, each told which step and round
+asks, a `Turn`:
 
 ```ts
 const woven = await project.weave(input, {

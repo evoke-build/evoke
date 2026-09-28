@@ -9,7 +9,7 @@ import { deepStrictEqual, equal, ok, rejects } from "node:assert/strict"
 import { test } from "node:test"
 import { fileURLToPath } from "node:url"
 
-import { type Confirm, DiagnosticError, type Pinned, load } from "../src/index.ts"
+import { type Confirm, DiagnosticError, type Pinned, load, playbook } from "../src/index.ts"
 import { replay } from "../src/testing.ts"
 
 const home = fileURLToPath(new URL("../../spec/transcripts/month-end/home/.config/evoke", import.meta.url))
@@ -152,4 +152,110 @@ test("a checker whose engine is another is refused with the pin that moved", asy
   )
   // A file of another revision, or one whose answers were edited, is refused before anything runs.
   await rejects(checker.weave({ ...pinned, plan: 2 } as unknown as Pinned, { proceed: () => true }), (error: DiagnosticError) => error.message.startsWith("plan must be 1, not 2"))
+})
+
+// ---- the outage from its short sentence: a playbook installed beside the stand-ins, its plan made by the
+// product, run after one yes; a slot the sentence lacks asked through `steps({ ask })`; a playbook never a body.
+
+const outageHome = fileURLToPath(new URL("../../spec/transcripts/outage/home/.config/evoke", import.meta.url))
+const outageAnswers = new URL("../../spec/transcripts/outage/answers.toml", import.meta.url)
+
+test("a short sentence picks its playbook, whose steps stand in the plan with where each came from", async () => {
+  const project = await load({ root: outageHome, adapter: replay(outageAnswers) })
+  equal(project.reflexes.outage?.active && project.reflexes.outage.runs, "plan")
+  const pinned = await project.steps("checkout is failing in eu-west")
+  const plan = pinned.weave
+  deepStrictEqual(
+    plan.steps.map(step => [step.reflex, step.from?.map(from => `${from.playbook} ${from.step} ${JSON.stringify(from.slots)}`)]),
+    [
+      ["errors", ['outage 1 {"service":"checkout","region":"eu-west"}']],
+      ["deploys", ['outage 2 {"service":"checkout","region":"eu-west"}']],
+      ["logs", ['outage 3 {"service":"checkout","region":"eu-west"}']],
+      ["suspect", ["outage 4 {}"]],
+      ["rollback", ['outage 5 {"service":"checkout","region":"eu-west"}']],
+      ["post", ["outage 6 {}"]],
+      ["status", ['outage 7 {"service":"checkout"}']],
+    ],
+  )
+  equal(plan.verdict.outcome, "confirm")
+  const reviewed = plan.verdict.because?.[0]
+  ok(reviewed?.type === "reviewed")
+  equal(reviewed.playbook, "outage")
+  equal(reviewed.step, 1)
+  equal(reviewed.prompt.template, "Run the outage plan for checkout?")
+  // The playbook is pinned among the reflexes, and the sentence's route among the answers.
+  ok("outage" in pinned.reflexes)
+  ok(pinned.answers.some(answer => answer.text === "checkout is failing in eu-west" && "route" in answer.raw))
+  // A part of the sentence that repeats a step folds into it.
+  const folded = await project.steps("checkout is failing in eu-west, show me the error rate")
+  deepStrictEqual(folded.weave.folded, [{ text: "show me the error rate", into: 1 }])
+  equal(folded.weave.steps.length, 7)
+})
+
+test("the plan runs after one yes over the whole, the rollback confirming at its turn", async () => {
+  const project = await load({ root: outageHome, adapter: replay(outageAnswers) })
+  const confirmed: number[] = []
+  const woven = await project.weave("checkout is failing in eu-west", {
+    proceed: plan => plan.verdict.because?.some(b => b.type === "reviewed") === true,
+    confirm: (decision: Confirm, turn) => {
+      confirmed.push(turn.step)
+      return decision.reflex === "rollback"
+    },
+  })
+  equal(woven.status, "ran")
+  deepStrictEqual(confirmed, [5])
+  deepStrictEqual(woven.steps.map(step => step.rounds[0]?.result?.text), [
+    "checkout: 8.4% errors since 14:02",
+    "checkout: 2 deploys today, the last 4.12.0 at 13:58",
+    "checkout: 412 timeouts calling payments",
+    "4.12.0, out at 13:58, four minutes before the errors rose",
+    "checkout rolled back from 4.12.0 to 4.11.3",
+    "posted to #incident",
+    "checkout: monitoring on the status page",
+  ])
+  // No yes over the plan, nothing runs.
+  equal((await project.weave("checkout is failing in eu-west", {})).status, "unanswered")
+})
+
+test("a slot the sentence lacks is asked through steps({ ask }), and such a plan is a sheet, not a file", async () => {
+  const project = await load({ root: outageHome, adapter: replay(outageAnswers) })
+  const asking = await project.steps("we have an outage")
+  equal(asking.weave.verdict.outcome, "ask")
+  equal(asking.weave.steps.length, 1)
+  const sheet = await project.steps("we have an outage", { ask: () => ({ service: "payments" }) })
+  equal(sheet.weave.verdict.outcome, "confirm")
+  deepStrictEqual(
+    sheet.weave.steps.map(step => step.reflex),
+    ["errors", "deploys", "logs", "suspect", "rollback", "post", "status"],
+  )
+  deepStrictEqual(
+    sheet.weave.steps.map(step => step.from?.map(from => `${from.playbook} ${from.step} ${from.slots.service}`)),
+    [1, 2, 3, 4, 5, 6, 7].map(n => [`outage ${n} ${n === 4 || n === 6 ? "undefined" : "payments"}`]), // a step without the slot carries none
+  )
+  // The file holds no one's answers: run by its sentence, never as a file.
+  await rejects(project.weave(sheet, { proceed: () => true }), (error: DiagnosticError) => error.message.includes("does not read the same"))
+  // A condition is no step's to judge.
+  const conditional = await project.steps("if checkout is failing in eu-west, roll it back")
+  deepStrictEqual(conditional.weave.verdict, { outcome: "refuse", because: [{ type: "conditional", text: "if checkout is failing in eu-west" }] })
+})
+
+test("a playbook is never run as a body: handle and run refuse it, and playbook() hands one to load", async () => {
+  const project = await load({ root: outageHome, adapter: replay(outageAnswers) })
+  const handled = project.handle("checkout is failing in eu-west", { confirm: () => true })
+  await rejects(handled, (error: DiagnosticError) => error.message.includes("outage is a plan of steps; say it in a sentence"))
+  const decision = await project.decide("checkout is failing in eu-west")
+  ok(decision.outcome === "confirm")
+  await rejects(project.run(decision, { confirmed: true }), (error: DiagnosticError) => error.message.includes("outage is a plan of steps"))
+  const own = await load({
+    reflexes: {
+      evening: playbook({
+        description: "Wind the house down.\nKills the lights and starts a timer.",
+        confirm: "Wind down?",
+        steps: ["kill the lights in the den", "start a 10 minute timer"],
+        examples: { "wind down": {} },
+      }),
+    },
+    adapter: { id: "replay", answer: () => Promise.reject(new Error("never asked")) },
+  })
+  equal(own.reflexes.evening?.active && own.reflexes.evening.runs, "plan")
 })

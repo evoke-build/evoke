@@ -8,6 +8,7 @@ use serde::de::Error as _;
 use serde::ser::SerializeMap;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
+use crate::call;
 use crate::contain::Platform;
 use crate::diagnostic::{At, Diagnostic};
 use crate::document::{self, Diagnostics, Document, Form, Json, KeyPath, Node, Table, Value};
@@ -15,6 +16,7 @@ use crate::name::{
     ArgName, ConfigKey, FieldName, OptionKey, RelPath, Tag, ValueName, VocabName, Word,
 };
 use crate::needs::{self, Named, Needs, Program};
+use crate::propose::PickValue;
 use crate::text::{Clean, Identity, identity};
 
 /// A reflex's manifest, normalized: `effect` explicit, every table present, records typed. Read, never built.
@@ -28,6 +30,10 @@ pub struct Manifest {
     pub confirm: Template,
     #[serde(skip_serializing_if = "Run::is_inline")]
     pub run: Run,
+    /// A playbook's body: a plan of sentences with slots, each decided over the installed set when the plan is
+    /// made. `run` or `steps`, exactly one; `run` reads inline. Contract, like `run`.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub steps: Vec<Sentence>,
     /// Where the body runs, when not anywhere; elsewhere the reflex is inactive. Contract, like `run`.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub platforms: Vec<Platform>,
@@ -215,6 +221,182 @@ impl fmt::Display for Template {
             }
         }
         Ok(())
+    }
+}
+
+/// The most steps a playbook may hold, and a plan after expansion: past it the plan is too big to read.
+pub const MOST_STEPS: usize = 24;
+
+/// One step of a playbook: a sentence with `{slot}`s, each an argument of the manifest, and phrases in brackets
+/// that go only with the slots inside them — written when every one is filled, dropped whole when one is not.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(try_from = "String", into = "String")]
+pub struct Sentence(Vec<Part>);
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Part {
+    Text(Clean),
+    Slot(ArgName),
+    Optional(Vec<Part>),
+}
+
+impl Sentence {
+    /// Reads one line with its brackets and braces; the error is a fragment to follow the step's name.
+    pub fn parse(text: &str) -> Result<Self, String> {
+        Clean::line(text)?;
+        let mut parts = Vec::new();
+        let mut piece = String::new();
+        let mut inside: Option<String> = None;
+        for c in text.chars() {
+            match (c, &mut inside) {
+                ('[', None) => {
+                    parts.extend(pieces(&piece)?);
+                    piece.clear();
+                    inside = Some(String::new());
+                }
+                ('[', Some(_)) => return Err("has a bracket in a bracket".to_owned()),
+                (']', Some(phrase)) => {
+                    let inner = pieces(phrase)?;
+                    if !inner.iter().any(|part| matches!(part, Part::Slot(_))) {
+                        return Err("has a bracket with no slot in it".to_owned());
+                    }
+                    parts.push(Part::Optional(inner));
+                    inside = None;
+                }
+                (']', None) => return Err("has a stray \"]\"".to_owned()),
+                (c, Some(phrase)) => phrase.push(c),
+                (c, None) => piece.push(c),
+            }
+        }
+        if inside.is_some() {
+            return Err("has an unmatched \"[\"".to_owned());
+        }
+        parts.extend(pieces(&piece)?);
+        Ok(Self(parts))
+    }
+
+    #[must_use]
+    pub fn parts(&self) -> &[Part] {
+        &self.0
+    }
+
+    /// Every slot, in order, with whether it stands in a bracket.
+    pub fn slots(&self) -> impl Iterator<Item = (&ArgName, bool)> {
+        fn walk<'p>(parts: &'p [Part], inside: bool, out: &mut Vec<(&'p ArgName, bool)>) {
+            for part in parts {
+                match part {
+                    Part::Text(_) => {}
+                    Part::Slot(name) => out.push((name, inside)),
+                    Part::Optional(inner) => walk(inner, true, out),
+                }
+            }
+        }
+        let mut out = Vec::new();
+        walk(&self.0, false, &mut out);
+        out.into_iter()
+    }
+
+    /// The sentence with its slots filled from a decision's values, as the person typed them: a word as the word, an
+    /// option as its key, a pick as its span, a quoted one in quotes; a bracket goes only when every slot in it is
+    /// filled. None when a required slot has no value. With it, what each slot took, by name.
+    #[must_use]
+    pub fn filled(
+        &self,
+        args: &IndexMap<ArgName, call::Value>,
+    ) -> Option<(String, IndexMap<ArgName, String>)> {
+        fn write(
+            parts: &[Part],
+            args: &IndexMap<ArgName, call::Value>,
+            text: &mut String,
+            slots: &mut IndexMap<ArgName, String>,
+        ) -> Option<()> {
+            for part in parts {
+                match part {
+                    Part::Text(piece) => text.push_str(piece.as_str()),
+                    Part::Slot(name) => {
+                        let value = written(args.get(name)?)?;
+                        text.push_str(&value);
+                        slots.insert(name.clone(), value);
+                    }
+                    Part::Optional(inner) => {
+                        let filled = Sentence(inner.clone()).slots().all(|(name, _)| {
+                            args.get(name).is_some_and(|value| written(value).is_some())
+                        });
+                        if filled {
+                            write(inner, args, text, slots)?;
+                        }
+                    }
+                }
+            }
+            Some(())
+        }
+        let mut text = String::new();
+        let mut slots = IndexMap::new();
+        write(&self.0, args, &mut text, &mut slots)?;
+        Some((text, slots))
+    }
+}
+
+/// A value as a sentence writes it: a word, an option's key, a pick's span, a quoted pick in quotes as a bound one
+/// is written; a flag has no words.
+#[must_use]
+pub fn written(value: &call::Value) -> Option<String> {
+    match value {
+        call::Value::Pick {
+            span,
+            value: PickValue::Quoted { .. },
+        } => Some(format!("\"{}\"", span.text())),
+        _ => value.text().map(str::to_owned),
+    }
+}
+
+/// A piece of a sentence outside or inside a bracket, read as a template: nothing for the empty piece a bracket
+/// leaves.
+fn pieces(text: &str) -> Result<Vec<Part>, String> {
+    if text.is_empty() {
+        return Ok(Vec::new());
+    }
+    Ok(Template::parse(text)?
+        .0
+        .into_iter()
+        .map(|piece| match piece {
+            Piece::Text(text) => Part::Text(text),
+            Piece::Arg(name) => Part::Slot(name),
+        })
+        .collect())
+}
+
+impl TryFrom<String> for Sentence {
+    type Error = String;
+
+    fn try_from(text: String) -> Result<Self, String> {
+        Self::parse(&text).map_err(|why| format!("the sentence {why}"))
+    }
+}
+
+impl From<Sentence> for String {
+    fn from(sentence: Sentence) -> Self {
+        sentence.to_string()
+    }
+}
+
+impl fmt::Display for Sentence {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fn write(parts: &[Part], f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            for part in parts {
+                match part {
+                    Part::Text(text) => f.write_str(text.as_str())?,
+                    Part::Slot(name) => write!(f, "{{{name}}}")?,
+                    Part::Optional(inner) => {
+                        f.write_str("[")?;
+                        write(inner, f)?;
+                        f.write_str("]")?;
+                    }
+                }
+            }
+            Ok(())
+        }
+        write(&self.0, f)
     }
 }
 
@@ -646,20 +828,23 @@ pub(crate) enum Lookup<'a> {
 /// Arguments by name; `None` for one that failed to read but still counts as named.
 pub(crate) type Known = IndexMap<ArgName, Option<Argument>>;
 
-/// An argument with `takes`, as read: the name it takes, none when the line did not read, and where it stands.
+/// An argument with `takes`, as read: the name it takes, none when the line did not read, where it stands, and
+/// the key path that names it.
 struct Taking {
     name: Option<FieldName>,
     at: Option<At>,
+    path: KeyPath,
 }
 
 /// The arguments with `takes`, by name, as `args` read them: what the checks after `run` and `effect` walk.
 type Taken = IndexMap<ArgName, Taking>;
 
-/// What `args` read: the asked arguments, and the taken ones.
+/// What `args` read: the asked arguments, the taken ones, and where each table stands.
 #[derive(Default)]
 pub(crate) struct Args {
     pub(crate) known: Known,
     taken: Taken,
+    ats: IndexMap<ArgName, Option<At>>,
 }
 
 impl Args {
@@ -682,9 +867,23 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
         .take("effect")
         .map_or(Some(Effect::Destructive), |node| effect(d, &node));
     let mut unknown = Vec::new();
-    let config = top
-        .take("config")
-        .map_or_else(IndexMap::new, |node| config(d, node, &mut unknown));
+    // A playbook has no body: every key a body carries is a line to remove, at its own line. The wire form
+    // carries every table, so an empty one is as good as absent.
+    let steps_node = top.take("steps");
+    let playbook = steps_node.is_some();
+    let mut bodys = |d: &mut Diagnostics, node: &Node| {
+        let empty = matches!(&node.value, Value::Table(entries) if entries.is_empty());
+        if playbook && !empty {
+            d.fail(
+                node.at.as_ref(),
+                format!("{} is a body's; a plan of steps has none", node.path),
+            );
+        }
+    };
+    let config = top.take("config").map_or_else(IndexMap::new, |node| {
+        bodys(d, &node);
+        config(d, node, &mut unknown)
+    });
     let mut read = top
         .take("args")
         .map_or_else(Args::default, |node| args(d, node, &mut unknown));
@@ -694,10 +893,11 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
     {
         takes_wire(d, node, &mut read.taken);
     }
-    let results = results(d, &mut top, &mut unknown);
+    let results = results(d, &mut top, &mut unknown, &mut bodys);
     let taken_names = read.taken();
     let known = &read.known;
     let needs = top.take("needs").map_or_else(Needs::default, |node| {
+        bodys(d, &node);
         needs::read(
             d,
             node,
@@ -714,29 +914,24 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
         d.fail(root_at.as_ref(), "confirm is required");
         None
     };
-    let run = run_of(
+    let (run, steps) = body_of(
         d,
         top.take("run"),
+        steps_node,
         form,
         known,
         &taken_names,
         root_at.as_ref(),
     );
-    let platforms = top
-        .take("platforms")
-        .map_or_else(Vec::new, |node| platforms(d, node));
+    if let Some(steps) = steps.as_ref().filter(|steps| !steps.is_empty()) {
+        unslotted(d, steps, &read);
+    }
+    let platforms = top.take("platforms").map_or_else(Vec::new, |node| {
+        bodys(d, &node);
+        platforms(d, node)
+    });
     let (examples, tests) = tables(d, &mut top, form, known, &taken_names);
-    let takes = taken(
-        d,
-        &read.taken,
-        Returned {
-            name: results.returns.as_ref(),
-            at: results.returns_at.as_ref(),
-        },
-        run.as_ref(),
-        effect,
-        results.yields_at.as_ref(),
-    );
+    let takes = takes_of(d, playbook, &read.taken, &results, run.as_ref(), effect);
     let unknown = unknown_of(d, &mut top, form, unknown, &order);
     let args: Option<IndexMap<ArgName, Argument>> = read
         .known
@@ -750,6 +945,7 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
         effect: effect?,
         confirm: confirm?,
         run: run?,
+        steps: steps?,
         platforms,
         needs,
         config,
@@ -763,6 +959,171 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
     })
 }
 
+/// What the reflex takes: a playbook takes nothing, each `takes` a line to remove; a reflex's taken arguments
+/// checked against the rest of the manifest.
+fn takes_of(
+    d: &mut Diagnostics,
+    playbook: bool,
+    taken_args: &Taken,
+    results: &Results,
+    run: Option<&Run>,
+    effect: Option<Effect>,
+) -> IndexMap<ArgName, FieldName> {
+    if playbook {
+        for taking in taken_args.values() {
+            d.fail(
+                taking.at.as_ref(),
+                format!("{} is a body's; a plan of steps has none", taking.path),
+            );
+        }
+        return IndexMap::new();
+    }
+    taken(
+        d,
+        taken_args,
+        Returned {
+            name: results.returns.as_ref(),
+            at: results.returns_at.as_ref(),
+        },
+        run,
+        effect,
+        results.yields_at.as_ref(),
+    )
+}
+
+/// The body: `run` or `steps`, exactly one. A TOML manifest with neither lacks `run`; a manifest with both is
+/// refused at the steps' line. A playbook's `run` reads inline, and a reflex's steps are none.
+fn body_of(
+    d: &mut Diagnostics,
+    run: Option<Node>,
+    steps: Option<Node>,
+    form: Form,
+    known: &Known,
+    taken: &[ArgName],
+    root_at: Option<&At>,
+) -> (Option<Run>, Option<Vec<Sentence>>) {
+    match (run, steps) {
+        (Some(_), Some(steps)) => {
+            d.fail(
+                steps.at.as_ref(),
+                "steps and run are two bodies; a manifest has one",
+            );
+            (None, None)
+        }
+        (None, Some(steps)) => {
+            let mut lookup = |name: &ArgName| lookup(known, taken, name);
+            (Some(Run::Inline), self::steps(d, steps, &mut lookup))
+        }
+        (run, None) => (
+            run_of(d, run, form, known, taken, root_at),
+            Some(Vec::new()),
+        ),
+    }
+}
+
+/// `steps`: an array of sentences, each read for its slots against the arguments; a step's line to fix is the
+/// array's, the step named by its number as the plan prints it.
+pub(crate) fn steps<'k>(
+    d: &mut Diagnostics,
+    node: Node,
+    lookup: &mut dyn FnMut(&ArgName) -> Lookup<'k>,
+) -> Option<Vec<Sentence>> {
+    let at = node.at.clone();
+    let at = at.as_ref();
+    let items = d.array(node)?;
+    if items.is_empty() {
+        d.fail(at, "steps is empty");
+        return None;
+    }
+    if items.len() > MOST_STEPS {
+        d.fail(
+            at,
+            format!("steps holds {}; {MOST_STEPS} is the most", items.len()),
+        );
+        return None;
+    }
+    let mut ok = true;
+    let mut sentences = Vec::new();
+    for (i, item) in items.iter().enumerate() {
+        let n = i + 1;
+        let text = match &item.value {
+            Value::Str(text) => text,
+            Value::Table(_) => {
+                d.fail(at, format!("step {n} is a table; a step is a sentence"));
+                ok = false;
+                continue;
+            }
+            _ => {
+                d.fail(at, format!("step {n} must be a sentence"));
+                ok = false;
+                continue;
+            }
+        };
+        let sentence = match Sentence::parse(text) {
+            Ok(sentence) => sentence,
+            Err(why) => {
+                d.fail(at, format!("step {n} {why}"));
+                ok = false;
+                continue;
+            }
+        };
+        // Words alone route; a line that reads as a call with a value names a reflex, which a step never does.
+        if call::call(text).is_ok_and(|written| written.args.values().any(Option::is_some)) {
+            d.fail(
+                at,
+                format!("step {n} reads as a call: {text}; a step is a sentence"),
+            );
+            ok = false;
+            continue;
+        }
+        for (slot, bracketed) in sentence.slots() {
+            let problem = match lookup(slot) {
+                Lookup::Unknown => Some(format!("names {{{slot}}}, which is not an argument")),
+                Lookup::Broken => None,
+                Lookup::Taken => Some(format!(
+                    "names {{{slot}}}, a result the plan hands the body"
+                )),
+                Lookup::Arg(_, arg) => match arg.kind {
+                    Kind::Flag => Some(format!("names {{{slot}}}, a flag; a flag has no words")),
+                    Kind::Value { optional: true, .. } if !bracketed => Some(format!(
+                        "names {{{slot}}}, an optional argument, outside a bracket"
+                    )),
+                    Kind::Value {
+                        optional: false, ..
+                    } if bracketed => Some(format!(
+                        "holds {{{slot}}}, a required argument, in a bracket"
+                    )),
+                    Kind::Value { .. } => None,
+                },
+            };
+            if let Some(problem) = problem {
+                d.fail(at, format!("step {n} {problem}"));
+                ok = false;
+            }
+        }
+        sentences.push(sentence);
+    }
+    ok.then_some(sentences)
+}
+
+/// An argument no step names would be asked for nothing: a line to remove, at the argument's own.
+fn unslotted(d: &mut Diagnostics, steps: &[Sentence], read: &Args) {
+    for (name, arg) in &read.known {
+        if arg.is_none() {
+            continue;
+        }
+        let named = steps
+            .iter()
+            .any(|sentence| sentence.slots().any(|(slot, _)| slot == name));
+        if !named {
+            d.fail(
+                read.ats.get(name).and_then(Option::as_ref),
+                format!("args.{name} is in no step"),
+            );
+        }
+    }
+}
+
 /// What the body's `data` is for a later step: the name it goes by whole, and the fields it yields, each with
 /// where it stands, for the checks once `run` and `effect` are known.
 struct Results {
@@ -773,14 +1134,23 @@ struct Results {
     yields_at: Option<At>,
 }
 
-fn results(d: &mut Diagnostics, top: &mut Table, unknown: &mut Vec<KeyPath>) -> Results {
+fn results(
+    d: &mut Diagnostics,
+    top: &mut Table,
+    unknown: &mut Vec<KeyPath>,
+    bodys: &mut dyn FnMut(&mut Diagnostics, &Node),
+) -> Results {
     let returns_node = top.take("returns");
-    let returns = returns_node
-        .as_ref()
-        .and_then(|node| field_name(d, node, "returns"));
+    let returns = returns_node.as_ref().and_then(|node| {
+        bodys(d, node);
+        field_name(d, node, "returns")
+    });
     let yields_node = top.take("yields");
     let yields_at = yields_node.as_ref().and_then(|node| node.at.clone());
-    let yields = yields_node.map_or_else(IndexMap::new, |node| yields(d, node, unknown));
+    let yields = yields_node.map_or_else(IndexMap::new, |node| {
+        bodys(d, &node);
+        yields(d, node, unknown)
+    });
     Results {
         returns,
         returns_at: returns_node.and_then(|node| node.at),
@@ -1161,7 +1531,8 @@ fn takes_wire(d: &mut Diagnostics, node: Node, taken: &mut Taken) {
         };
         let at = node.at.clone();
         let name = field_name(d, &node, &format!("takes.{key}"));
-        taken.insert(arg, Taking { name, at });
+        let path = node.path.clone();
+        taken.insert(arg, Taking { name, at, path });
     }
 }
 
@@ -1254,6 +1625,7 @@ pub(crate) fn args(d: &mut Diagnostics, node: Node, unknown: &mut Vec<KeyPath>) 
     let live: Vec<ArgName> = named.iter().map(|(name, _)| name.clone()).collect();
     let mut former = IndexMap::new();
     for (name, node) in named {
+        args.ats.insert(name.clone(), node.at.clone());
         match argument(d, node, &name, &live, &mut former, unknown) {
             Read::Asked(arg) => {
                 args.known.insert(name, arg);
@@ -1361,6 +1733,7 @@ fn taking(
     Taking {
         name: field_name(d, node, &format!("{path}.takes")),
         at: node.at.clone(),
+        path: node.path.clone(),
     }
 }
 

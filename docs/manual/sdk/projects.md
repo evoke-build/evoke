@@ -40,6 +40,10 @@ are typed with nothing generated. A manifest that does not read throws at `load`
 `reflex(<name>)`. The body runs in-process. It is your application's code, unscrubbed, and nothing can end it from
 outside. So it honours the deadline's `signal`.
 
+`playbook(manifest)` hands a playbook the same way: `steps` in the manifest and no body
+([Playbooks](../author/playbooks.md)). Its steps are decided over the project's reflexes when a sentence reaches
+it, and it reports `runs: "plan"`.
+
 ## Generated types
 
 `evoke add`, `update` and `remove` write `evoke.d.ts` next to `evoke.toml`. It holds one `Reflexes` interface,
@@ -56,7 +60,7 @@ Now `d.reflex` narrows `d.args` and `d.values`. A project with reflexes both ins
 ## What a project knows
 
 ```ts
-project.reflexes   // per name: { active: true, effect, runs: "inline" | "file" | "argv" } | { active: false, problems }
+project.reflexes   // per name: { active: true, effect, runs: "inline" | "file" | "argv" | "plan" } | { active: false, problems }
 project.plan       // the digest of the compiled set, "h1:…"; every decision carries it
 ```
 

@@ -14,7 +14,7 @@ Everything `evoke` reads or writes in a project, and who owns each file.
 
 <reflex>/
 ├── reflex.toml           the author's   the manifest
-├── <body>.mts            the author's   the file run names, or nothing for an argv
+├── <body>.mts            the author's   the file run names; nothing for an argv, or for a playbook, whose body is steps
 └── reflex.d.ts           evoke's        written by check: Args, Config, Context, Result, Reflex
 ```
 

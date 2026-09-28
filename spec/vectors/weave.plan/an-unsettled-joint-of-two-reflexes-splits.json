@@ -710,50 +710,6 @@
       "type": "done",
       "weave": {
         "input": "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com",
-        "splits": [
-          {
-            "start": 34,
-            "end": 36,
-            "word": ",",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 44,
-            "end": 46,
-            "word": ",",
-            "order": "and",
-            "p": 0.2
-          },
-          {
-            "start": 59,
-            "end": 64,
-            "word": "and",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 71,
-            "end": 73,
-            "word": ",",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 87,
-            "end": 89,
-            "word": ",",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 127,
-            "end": 134,
-            "word": "then",
-            "order": "then",
-            "p": 0.9
-          }
-        ],
         "steps": [
           {
             "n": 1,
@@ -1389,7 +1345,6 @@
             "via": "takes"
           }
         ],
-        "exclusive": true,
         "stages": [
           [
             1
@@ -1415,7 +1370,52 @@
         ],
         "verdict": {
           "outcome": "run"
-        }
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 34,
+            "end": 36,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 44,
+            "end": 46,
+            "word": ",",
+            "order": "and",
+            "p": 0.2
+          },
+          {
+            "start": 59,
+            "end": 64,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 71,
+            "end": 73,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 87,
+            "end": 89,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 127,
+            "end": 134,
+            "word": "then",
+            "order": "then",
+            "p": 0.9
+          }
+        ]
       }
     }
   }

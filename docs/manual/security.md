@@ -92,6 +92,9 @@ decisions. Everything below is what the tool guarantees around them, and what it
   or key. It can choose among your installed reflexes and your words, never mint a value, and it runs only after
   your yes over the whole plan and each step's own confirm; a file whose pins moved is refused before anything
   runs.
+- **A playbook reaches only what you installed.** Its steps are sentences, decided over your reflexes as typed
+  ones are, under the same gate; it fills no value of its own, and it runs only after your yes over the whole
+  plan, a destructive step confirming again at its turn.
 
 ## Check it yourself
 

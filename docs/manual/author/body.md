@@ -111,4 +111,4 @@ A body is a function. Import it and call it. The collection's own tests do exact
 with a context built by hand: `{ input: "", config: { file }, signal: new AbortController().signal }`. Nothing of
 `evoke` is needed to unit-test a reflex.
 
-**Next:** [Examples and tests](records.md).
+**Next:** [Playbooks](playbooks.md).

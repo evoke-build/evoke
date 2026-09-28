@@ -1,0 +1,555 @@
+{
+  "reflexes": {
+    "errors": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Show the error rate of a service.\nThe rate over the last hour and when it rose, in one region or all.",
+            "not_for": [
+              "logs of a service",
+              "releases and deploys",
+              "the status page"
+            ],
+            "tags": [
+              "errors"
+            ],
+            "effect": "read",
+            "confirm": "Check the errors of {service}?",
+            "run": "errors.mts",
+            "config": {},
+            "args": {
+              "service": {
+                "ask": "Which service?",
+                "vocab": "services",
+                "optional": false,
+                "was": []
+              },
+              "region": {
+                "ask": "In which region?",
+                "vocab": "regions",
+                "optional": true,
+                "was": []
+              }
+            },
+            "yields": {},
+            "returns": "errors",
+            "examples": {
+              "check the errors for checkout": {},
+              "error rate of payments in eu-west": {},
+              "is search throwing errors": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "deploys": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "List the recent deploys of a service.\nEach release, when it went out and who shipped it.",
+            "not_for": [
+              "error rates",
+              "logs of a service",
+              "rolling a release back"
+            ],
+            "tags": [
+              "deploys"
+            ],
+            "effect": "read",
+            "confirm": "List the deploys of {service}?",
+            "run": "deploys.mts",
+            "config": {},
+            "args": {
+              "service": {
+                "ask": "Which service?",
+                "vocab": "services",
+                "optional": false,
+                "was": []
+              },
+              "region": {
+                "ask": "In which region?",
+                "vocab": "regions",
+                "optional": true,
+                "was": []
+              }
+            },
+            "yields": {
+              "deploys": {
+                "each": {
+                  "release": "quoted"
+                }
+              }
+            },
+            "returns": "deploys",
+            "examples": {
+              "what was deployed to checkout today": {},
+              "list the deploys of payments": {},
+              "recent releases of search in us-east": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "logs": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Search a service's logs for the last hour.\nThe most frequent errors and how often each came.",
+            "not_for": [
+              "error rates",
+              "releases and deploys",
+              "posting to a channel"
+            ],
+            "tags": [
+              "logs"
+            ],
+            "effect": "read",
+            "confirm": "Search the logs of {service}?",
+            "run": "logs.mts",
+            "config": {},
+            "args": {
+              "service": {
+                "ask": "Which service?",
+                "vocab": "services",
+                "optional": false,
+                "was": []
+              },
+              "region": {
+                "ask": "In which region?",
+                "vocab": "regions",
+                "optional": true,
+                "was": []
+              }
+            },
+            "yields": {},
+            "returns": "logs",
+            "examples": {
+              "pull the logs for checkout": {},
+              "search the payments logs in eu-west": {},
+              "what do the search logs say": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "suspect": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Find the release most likely behind a failure.\nWeighs a service's errors, its deploys and its logs, and names the release.",
+            "not_for": [
+              "listing deploys",
+              "rolling a release back",
+              "error rates alone"
+            ],
+            "tags": [
+              "suspect"
+            ],
+            "effect": "read",
+            "confirm": "Find the suspect?",
+            "run": "suspect.mts",
+            "config": {},
+            "args": {},
+            "takes": {
+              "errors": "errors",
+              "deploys": "deploys",
+              "logs": "logs"
+            },
+            "yields": {
+              "release": "quoted"
+            },
+            "examples": {
+              "find the suspect": {},
+              "which deploy broke it": {},
+              "find the release behind the outage": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "rollback": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Roll a service back from a release to the one before it.\nEverywhere, or in one region.",
+            "not_for": [
+              "listing deploys",
+              "finding which release broke something",
+              "restarting a service"
+            ],
+            "tags": [
+              "rollback"
+            ],
+            "effect": "destructive",
+            "confirm": "Roll back {release}?",
+            "run": "rollback.mts",
+            "config": {},
+            "args": {
+              "service": {
+                "ask": "Which service?",
+                "vocab": "services",
+                "optional": true,
+                "was": []
+              },
+              "release": {
+                "ask": "From which release?",
+                "pick": "quoted",
+                "optional": false,
+                "was": []
+              },
+              "region": {
+                "ask": "In which region?",
+                "vocab": "regions",
+                "optional": true,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "roll checkout back from \"4.12.0\"": {
+                "release": "4.12.0"
+              },
+              "revert payments from \"2.3.1\" in eu-west": {
+                "release": "2.3.1"
+              },
+              "undo the \"7.0.2\" release of search": {
+                "release": "7.0.2"
+              }
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "destructive",
+      "configured": {}
+    },
+    "post": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Post a message to a chat channel.\nThe message is what you typed about it.",
+            "not_for": [
+              "email",
+              "the status page",
+              "reading a channel"
+            ],
+            "tags": [
+              "post"
+            ],
+            "effect": "write",
+            "confirm": "Post to {channel}?",
+            "run": "post.mts",
+            "config": {},
+            "args": {
+              "channel": {
+                "ask": "Which channel?",
+                "vocab": "channels",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "post to #incident that we are on it": {},
+              "tell #ops the deploy is done": {},
+              "let #incident know it is fixed": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    },
+    "incidents": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "List the open incidents.\nEach with its number and the service it hit.",
+            "not_for": [
+              "one incident by its number",
+              "error rates",
+              "the status page"
+            ],
+            "tags": [
+              "incidents"
+            ],
+            "effect": "read",
+            "confirm": "List the open incidents?",
+            "run": "incidents.mts",
+            "config": {},
+            "args": {},
+            "yields": {
+              "incidents": {
+                "each": {
+                  "number": "number"
+                }
+              }
+            },
+            "examples": {
+              "list the open incidents": {},
+              "what incidents are open": {},
+              "which incidents are still going": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "incident": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Look up an incident by its number.\nWhat happened, when it opened, and which service it hit.",
+            "not_for": [
+              "listing every incident",
+              "writing a postmortem",
+              "error rates"
+            ],
+            "tags": [
+              "incident"
+            ],
+            "effect": "read",
+            "confirm": "Look up incident {number}?",
+            "run": "incident.mts",
+            "config": {},
+            "args": {
+              "number": {
+                "ask": "Which incident number?",
+                "pick": "number",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "returns": "incident",
+            "examples": {
+              "look up incident 311": {
+                "number": "311"
+              },
+              "what happened in incident 42": {
+                "number": "42"
+              },
+              "show me incident 1207": {
+                "number": "1207"
+              }
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "postmortem": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Draft the postmortem of an incident.\nA document from what the incident record says, saved for review.",
+            "not_for": [
+              "looking up an incident",
+              "posting to a channel",
+              "the status page"
+            ],
+            "tags": [
+              "postmortem"
+            ],
+            "effect": "write",
+            "confirm": "Draft the postmortem?",
+            "run": "postmortem.mts",
+            "config": {},
+            "args": {},
+            "takes": {
+              "incident": "incident"
+            },
+            "yields": {
+              "path": "quoted"
+            },
+            "examples": {
+              "draft the postmortem": {},
+              "write up the postmortem": {},
+              "start a postmortem for it": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    },
+    "status": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Update the status page for a service.\nIts state as customers see it.",
+            "not_for": [
+              "chat channels",
+              "email",
+              "error rates"
+            ],
+            "tags": [
+              "status"
+            ],
+            "effect": "write",
+            "confirm": "Update the status page for {component}?",
+            "run": "status.mts",
+            "config": {},
+            "args": {
+              "component": {
+                "ask": "Which service?",
+                "vocab": "services",
+                "optional": false,
+                "was": []
+              },
+              "state": {
+                "ask": "Which state?",
+                "options": {
+                  "investigating": "Looking into a problem.",
+                  "identified": "The cause is known.",
+                  "monitoring": "A fix is out; watching.",
+                  "resolved": "Back to normal."
+                },
+                "optional": true,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "update the status page for checkout": {},
+              "mark payments as resolved on the status page": {
+                "state": "resolved"
+              },
+              "set the search status to investigating": {
+                "state": "investigating"
+              }
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    },
+    "outage": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Handle a service outage.\nLooks at the service's errors, deploys and logs, finds the release behind it, rolls it back, tells #incident and updates the status page.",
+            "not_for": [
+              "one lookup on its own",
+              "an incident's postmortem",
+              "a service that is healthy"
+            ],
+            "tags": [
+              "outage"
+            ],
+            "effect": "destructive",
+            "confirm": "Run the outage plan for {service}?",
+            "steps": [
+              "check {service}'s errors[ in {region}]",
+              "list {service}'s deploys[ in {region}]",
+              "search {service}'s logs[ in {region}]",
+              "find the release behind it",
+              "roll {service} back from that release[ in {region}]",
+              "post to the incident channel",
+              "update the status page for {service}"
+            ],
+            "config": {},
+            "args": {
+              "service": {
+                "ask": "Which service?",
+                "vocab": "services",
+                "optional": false,
+                "was": []
+              },
+              "region": {
+                "ask": "In which region?",
+                "vocab": "regions",
+                "optional": true,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "payments is down in us-east": {},
+              "search is broken": {},
+              "we have an outage on checkout": {}
+            },
+            "tests": {
+              "checkout is failing in eu-west": {}
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "destructive",
+      "configured": {}
+    }
+  },
+  "vocab": {
+    "channels": {
+      "#incident": {
+        "what": "Where an outage is handled."
+      },
+      "#ops": {
+        "what": "The operations team's channel."
+      }
+    },
+    "regions": {
+      "eu-west": {
+        "what": "Europe, the Ireland region."
+      },
+      "us-east": {
+        "what": "The United States, the Virginia region."
+      }
+    },
+    "services": {
+      "checkout": {
+        "what": "The checkout service: cart, payment and order confirmation."
+      },
+      "payments": {
+        "what": "The payments service: card charges and refunds."
+      },
+      "search": {
+        "what": "The search service: product search and suggestions."
+      }
+    }
+  },
+  "adapter": "replay",
+  "evoke": "0.1.0"
+}

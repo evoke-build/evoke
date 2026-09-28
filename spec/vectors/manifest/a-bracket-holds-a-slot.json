@@ -1,0 +1,38 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "outage"
+      },
+      "toml": "reflex = 1\n\ndescription = \"\"\"\nHandle a service outage.\nLooks at the service's errors, deploys and logs, finds the release behind it, rolls it back, tells #incident and updates the status page.\"\"\"\nnot_for = [\"one lookup on its own\", \"an incident's postmortem\", \"a service that is healthy\"]\ntags = [\"outage\"]\nconfirm = \"Run the outage plan for {service}?\"\nsteps = [\n  \"check {service}'s errors[ in {region}]\",\n  \"list {service}'s deploys[ in {region}]\",\n  \"search {service}'s logs[ in {region}]\",\n  \"find the release behind it\",\n  \"roll {service} back from that release[ in {region}]\",\n  \"post to the incident channel[ now]\",\n  \"update the status page for {service}\",\n]\n\n[args.service]\nask   = \"Which service?\"\nvocab = \"services\"\n\n[args.region]\nask      = \"In which region?\"\nvocab    = \"regions\"\noptional = true\n\n[examples]\n\"payments is down in us-east\"   = {}\n\"search is broken\"              = {}\n\"we have an outage on checkout\" = {}\n\n[tests]\n\"checkout is failing in eu-west\" = {}\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "outage",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "outage"
+          },
+          "line": 9,
+          "column": 1
+        },
+        "message": "step 6 has a bracket with no slot in it",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "outage"
+            },
+            "line": 9,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

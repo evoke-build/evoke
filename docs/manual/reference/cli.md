@@ -76,8 +76,8 @@ manual  https://evoke.build/manual/
 | `evoke`                | On a terminal, the REPL: `> `, line editing, history. Piped, a filter: one input per line, and the first non-zero exit is kept | as each line |
 | `evoke try "<input>"`  | Decides only: the ranking, each argument's distribution, each `fits`, the outcome and the weakest judgment; a sentence of several steps shows the plan first, then each step's judgments under its number. Never logged | 0 · 3 · 4 |
 | `evoke try --save <file> "<input>"` | The plan's lines, then the plan written as a file for `run <file>`: the sentence, the classifier's answers and the pins it was decided under, in clear. A plan that asks is refused with the step's question, exit 3; one that refuses, exit 2; nothing written either way. Never logged: [Weaving](../use/weaving.md#saving-a-plan-and-running-it-for-someone-else) | 0 · 2 · 3 · 4 |
-| `evoke why`            | The last logged decision, shown as `try` would show it, and what became of it; of a weave, every step, `from <file>` where a plan ran from one | 0 · 3 |
-| `evoke run <call>`     | Runs the call by name. No classifier. The effect policy is kept, so a destructive call confirms with `[y]es [n]o`. A reflex that takes an earlier step's result is refused: only a sentence of several steps hands one. `--json` prints the call and its result as one line. Not logged | 0 · 2 · 3 · 1 |
+| `evoke why`            | The last logged decision, shown as `try` would show it, and what became of it; of a weave, every step, `from <file>` where a plan ran from one, the sentence's own block first as step 0 where a playbook wrote the plan | 0 · 3 |
+| `evoke run <call>`     | Runs the call by name. No classifier. The effect policy is kept, so a destructive call confirms with `[y]es [n]o`. A reflex that takes an earlier step's result is refused: only a sentence of several steps hands one. So is a playbook: a sentence reaches it. `--json` prints the call and its result as one line. Not logged | 0 · 2 · 3 · 1 |
 | `evoke run <file>`     | Runs a plan `try --save` wrote, exactly: a file, since its first word is no reflex name. A pin that moved refuses it with the line that names it and the command that mends it; so does a file that does not read the same as its answers. The plan prints, one yes over it is asked whatever its verdict, then each step at its turn as a sentence's is. Every step's line names the file. Logged | 0 · 1 · 2 · 3 · 4 |
 
 | Flag            | With            | Does                                                                     |
@@ -91,7 +91,7 @@ manual  https://evoke.build/manual/
 
 | Command                                | Does                                                                                  |
 | :------------------------------------- | :------------------------------------------------------------------------------------ |
-| `evoke add <ref>… [--as <name>]`       | Fetches each ref at its pin or newest tag, once per repository; reads a local ref, `./dir`, where it is. Lints, tests for stolen phrases, writes `evoke.toml`, the lock and `evoke.d.ts`, and records the runtime. `--as` names a single ref |
+| `evoke add <ref>… [--as <name>]`       | Fetches each ref at its pin or newest tag, once per repository; reads a local ref, `./dir`, where it is. Lints, tests for stolen phrases, writes `evoke.toml`, the lock and `evoke.d.ts`, and records the runtime; for a playbook, decides each step over the set it joins and prints what it reaches. `--as` names a single ref |
 | `evoke remove <name>`                  | Drops the reflex from `evoke.toml` and the lock. Keeps your overlay, vocabularies, settings and the store's copy |
 | `evoke update [<name>]`                | Moves each unpinned remote reflex, or one, to its newest tag. A pinned one moves to its pin. Reports, or prints `up to date`. Never prompts or rewrites your files |
 | `evoke update --accept <name>`         | Takes on an effect upstream loosened, or a declaration it widened, at the current tag |
@@ -105,8 +105,8 @@ local reflex: [Installing reflexes](../use/installing.md#refs).
 
 | Command                                                   | Does                                                                        |
 | :-------------------------------------------------------- | :-------------------------------------------------------------------------- |
-| `evoke show`                                              | Every installed reflex: name, ref and tag or `./dir`, effect, what it runs. Then the inactive lines |
-| `evoke show <name>`                                       | The effective manifest as TOML, with `+` in the gutter of every line that is yours; for a reflex that takes whole results, which installed reflexes return each. Then its inactive lines |
+| `evoke show`                                              | Every installed reflex: name, ref and tag or `./dir`, effect, what it runs or `a plan of 7 steps`. Then the inactive lines |
+| `evoke show <name>`                                       | The effective manifest as TOML, with `+` in the gutter of every line that is yours; for a reflex that takes whole results, which installed reflexes return each; for a playbook, its steps after `confirm`, numbered. Then its inactive lines |
 | `evoke teach "<utterance>" <call>`                        | Writes the example to `overlays/<name>.toml`, with only what the call asserts |
 | `evoke teach "<utterance>" not <name>`                    | Writes `"<utterance>" = false` to the reflex's overlay                       |
 | `evoke teach --forget "<utterance>" <name>`               | Removes the utterance's line from the reflex's overlay, an example or a test |
@@ -116,7 +116,7 @@ local reflex: [Installing reflexes](../use/installing.md#refs).
 | `evoke vocab <name> remove <word>`                        | Removes one. A word that is not there is refused                            |
 | `evoke config <name> <key> <value>`                       | Sets a declared setting under `[config.<name>]`                             |
 | `evoke config <name> <key> --env <VAR>`                   | Names the variable a setting is read from. The only way to set a secret     |
-| `evoke test [<name>]`                                     | Decides every example and test of every active reflex, or of one, without the cache. Exits 1 when a case failed; nothing to test says so |
+| `evoke test [<name>]`                                     | Decides every example and test of every active reflex, or of one, without the cache; a playbook's steps too, each filled from a record, `7 steps route` or the step that reaches nothing. Exits 1 when a case failed; nothing to test says so |
 | `evoke calibrate [<name>] [--repeat <k>] [--json]`        | Decides every record once more, each distinct input once or `k` times, and reports what the confidence meant: the whole call right by bins with their counts and intervals, the wrong calls at or over each bar per thousand, the spread over repeats, the log's lines apart. `--json` prints one object. Exits 1 on a call wrong at or over its bar, or a bin of a hundred calls over-confident: [Calibrating](../use/calibrating.md) |
 
 None of these needs the classifier's key but `test` and `calibrate`, which ask it, or a recording.

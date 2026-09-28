@@ -8,13 +8,13 @@
 use evoke_core::call::Value;
 use evoke_core::decide::{Choices, Missing, Why};
 use evoke_core::document::Json;
-use evoke_core::manifest::{Kind, Source};
+use evoke_core::manifest::{Kind, Source, written};
 use evoke_core::name::{ArgName, LocalName, OptionKey, Tag, VocabName, Word};
 use evoke_core::needs::Entry;
 use evoke_core::text::NonEmpty;
 use evoke_core::vocabulary::Meaning;
 use evoke_core::weave::{
-    self, Asked, Because, Binding, Bound, Handled, Handling, Outcome, Progress,
+    self, Asked, Because, Binding, Bound, From, Handled, Handling, Outcome, Progress,
     Returned as Yielded, Shared, Status, Step, Todo, Why as Stopped,
 };
 use evoke_core::{
@@ -29,7 +29,7 @@ use crate::adapter::Adapter;
 use crate::hosts::processes::Returned;
 use crate::hosts::terminal::Text;
 use crate::hosts::{interrupt, terminal};
-use crate::report::{self, Line, PinnedAt, StepLine};
+use crate::report::{self, Expanded, Line, PinnedAt, StepLine};
 
 /// The adapter that answers: resolved up front, as deciding a sentence needs it, or at the first step a plan
 /// read from a file decides again — so a file that answers whole runs on a machine that holds no key.
@@ -96,6 +96,7 @@ impl Rounds<'_> {
             why: None,
             bound: handed.bound.to_vec(),
             shared: handed.shared.clone(),
+            from: handed.from.to_vec(),
         });
         let chosen = match self.readied(input, at, decided, decision, handed.bound, &mut line) {
             Ok(chosen) => chosen,
@@ -299,25 +300,40 @@ impl Rounds<'_> {
             own.push_str(" · ");
             own.push_str(&reasons.join("; "));
         }
-        if let Err(exit) = self.proceed(input, woven, own) {
+        if let Err(exit) = self.expansions(input, woven) {
+            return exit;
+        }
+        if let Err(exit) = self.proceed(input, woven, own, whole_plan(), None) {
             return exit;
         }
         self.executed(input, woven)
     }
 
-    /// The yes over a whole plan: evoke's own line, then `Run the plan as it stands?  [y]es [n]o`. `n` runs
-    /// nothing, every step's line declined; no terminal, every line unanswered. The exit is reported.
-    pub fn proceed(&mut self, input: &str, woven: &Woven, own: String) -> Result<(), Exit> {
+    /// The yes over a whole plan: evoke's own line, then the template — `Run the plan as it stands?`, or the
+    /// playbook's own confirm when the plan is one playbook's — with `[y]es [n]o`, and `[t]each` where one
+    /// playbook stands in a typed plan. `n` runs nothing, every step's line declined; no terminal, every line
+    /// unanswered. The exit is reported.
+    pub fn proceed(
+        &mut self,
+        input: &str,
+        woven: &Woven,
+        own: String,
+        template: Clean,
+        teach: Option<Teach>,
+    ) -> Result<(), Exit> {
         if !self.session.has_tty() {
             return Err(self.unanswered(input, woven, needs_terminal("a confirm")));
         }
-        let prompt = Prompt {
-            own,
-            template: Clean::new("Run the plan as it stands?").expect("a clean line"),
-        };
+        let prompt = Prompt { own, template };
         let line = Text::from(format!("  {}", prompt.own));
-        match self.session.confirmed(&line, &prompt, false) {
+        match self.session.confirmed(&line, &prompt, teach.is_some()) {
             Ok(Some(Confirmed::Yes)) => Ok(()),
+            Ok(Some(Confirmed::Teach)) => {
+                if let Some(teach) = teach {
+                    self.teach(&teach.spoken, &teach.chosen);
+                }
+                Ok(())
+            }
             Ok(_) => {
                 let exit = Exit::Declined(Decline::Refused);
                 Err(self.stopped_whole(input, woven, exit, |_| {
@@ -329,12 +345,56 @@ impl Rounds<'_> {
         }
     }
 
+    /// Each playbook's expansion logged as step 0 of its plan, before the steps' lines: the part that picked it,
+    /// its decision, the playbook and what each slot took, with no status — the steps' lines say what became of
+    /// the plan. Printed under `--json` as any line.
+    pub fn expansions(&self, input: &str, woven: &Woven) -> Result<(), Exit> {
+        let of = woven.weave.steps.len();
+        for because in &woven.weave.verdict.because {
+            let Because::Reviewed { playbook, text, .. } = because else {
+                continue;
+            };
+            let Some((_, decided)) = woven
+                .decided
+                .iter()
+                .find(|(asked, _)| asked.text == *text && asked.only.is_none())
+                .or_else(|| woven.decided.iter().find(|(asked, _)| asked.text == *text))
+            else {
+                continue;
+            };
+            let slots: IndexMap<ArgName, String> = match &decided.decision {
+                Decision::Run { chosen } | Decision::Confirm { chosen, .. } => chosen
+                    .call
+                    .args
+                    .iter()
+                    .filter_map(|(arg, value)| Some((arg.clone(), written(value)?)))
+                    .collect(),
+                Decision::Ask { .. } | Decision::Abstain { .. } => IndexMap::new(),
+            };
+            let mut line = self.line(decided);
+            line.expansion = Some(Expanded {
+                of,
+                playbook: playbook.clone(),
+                slots,
+            });
+            if self.json {
+                terminal::result(&line.json());
+            }
+            if let Err(failure) = self.session.state.log(&line.log()) {
+                return Err(self.session.reporter.exit(input, Exit::Failed(failure)));
+            }
+        }
+        Ok(())
+    }
+
     /// A plan refused whole: nothing runs. A part that matches nothing: each step's line, the abstaining one
     /// refused, the rest skipped. A whole result no step before its taker hands, or several do: the line that
-    /// names the step and what it takes, with the reflex to look at; the taker refused, the rest skipped.
+    /// names the step and what it takes, with the reflex to look at; the taker refused, the rest skipped. A
+    /// playbook's refusal — a step routing to its own plan, a plan too deep or too long, a part left out beside
+    /// it: its line, the step it names refused, the rest skipped.
     pub fn refused(&self, input: &str, woven: &Woven) -> Exit {
         let json = self.json;
-        let joins: Vec<&Because> = woven
+        let named: Vec<&Because> = woven
             .weave
             .verdict
             .because
@@ -342,11 +402,16 @@ impl Rounds<'_> {
             .filter(|because| {
                 matches!(
                     because,
-                    Because::NoSource { .. } | Because::SeveralSources { .. }
+                    Because::NoSource { .. }
+                        | Because::SeveralSources { .. }
+                        | Because::Nested { .. }
+                        | Because::TooDeep { .. }
+                        | Because::TooLong { .. }
+                        | Because::Excluded { .. }
                 )
             })
             .collect();
-        if joins.is_empty() {
+        if named.is_empty() {
             if !json && let Some(hint) = report::left_out(self.session.plan.inactive().keys()) {
                 terminal::note(&hint);
             }
@@ -362,12 +427,12 @@ impl Rounds<'_> {
         }
         if !json {
             let invoked = self.session.reporter.command.placeholder();
-            for because in &joins {
+            for because in &named {
                 let problem = Diagnostic {
                     reflex: None,
                     at: None,
                     message: report::verdict(because),
-                    fix: source_fix(&self.session, because, woven),
+                    fix: refusal_fix(&self.session, because, woven),
                 };
                 terminal::note(&report::diagnostic(
                     &problem,
@@ -378,9 +443,9 @@ impl Rounds<'_> {
         }
         let exit = Exit::Declined(Decline::Refused);
         self.stopped_whole(input, woven, exit, |step| {
-            let own: Vec<String> = joins
+            let own: Vec<String> = named
                 .iter()
-                .filter(|because| taker_of(because) == step.n)
+                .filter(|because| step_of(because) == Some(step.n))
                 .map(|because| report::verdict(because))
                 .collect();
             if own.is_empty() {
@@ -426,6 +491,7 @@ impl Rounds<'_> {
                 why: Some(why),
                 bound: Vec::new(),
                 shared: step.shared.clone(),
+                from: step.from.clone(),
             });
             if self.json {
                 terminal::result(&line.json());
@@ -514,6 +580,7 @@ impl Rounds<'_> {
                             bound: &handling.bound,
                             taken: &handling.taken,
                             shared: &step.shared,
+                            from: &step.from,
                         };
                         let rounded = self.round(
                             input,
@@ -558,6 +625,7 @@ impl Rounds<'_> {
             why: Some(Stopped::Cancelled),
             bound: handling.bound.clone(),
             shared: step.shared.clone(),
+            from: step.from.clone(),
         });
         self.logged(input, &line, Exit::Ran);
         Handled {
@@ -638,6 +706,7 @@ impl Rounds<'_> {
                 why: outcome.why.clone(),
                 bound: outcome.bound.clone(),
                 shared: step.shared.clone(),
+                from: step.from.clone(),
             });
             let exit = if outcome.status == Status::Refused {
                 Exit::Declined(Decline::Abstained)
@@ -956,12 +1025,12 @@ impl Rounds<'_> {
     }
 }
 
-/// The reflex to look at when a whole result stops the plan: one installed that returns the name no step handed,
-/// else the taker itself, whose `show` says what it takes.
-pub fn source_fix(session: &Session<'_>, because: &Because, woven: &Woven) -> Fix {
-    let taker = woven
-        .weave
-        .step(taker_of(because))
+/// The fix when the plan refuses: for a whole result no step hands, the reflex to look at — one installed that
+/// returns the name, else the taker itself, whose `show` says what it takes; for a playbook's refusal, the
+/// playbook; for a part left out beside a plan, the sentence again.
+pub fn refusal_fix(session: &Session<'_>, because: &Because, woven: &Woven) -> Fix {
+    let taker = step_of(because)
+        .and_then(|n| woven.weave.step(n))
         .and_then(|step| step.reflex.clone());
     let reflex = match because {
         Because::NoSource { name, .. } => session
@@ -971,18 +1040,36 @@ pub fn source_fix(session: &Session<'_>, because: &Because, woven: &Woven) -> Fi
             .find(|(_, active)| active.returns.as_ref() == Some(name))
             .map(|(reflex, _)| reflex.clone())
             .or(taker),
+        Because::Nested { playbook, .. }
+        | Because::TooDeep { playbook, .. }
+        | Because::TooLong { playbook, .. } => Some(playbook.clone()),
+        Because::Excluded { .. } => return Fix::Rerun,
         _ => taker,
     };
     Fix::Show { reflex }
 }
 
-/// What the plan handed a round beside its decision: the values bound into it, the whole results it takes, and
-/// the words shared into its step.
+/// The yes over the whole plan, teachable: the part of the sentence that picked the playbook, and the playbook's
+/// decision, taught as an example at `[t]each`.
+pub struct Teach {
+    pub spoken: String,
+    pub chosen: Chosen,
+}
+
+/// The template of the yes over a plan that is no one playbook's: a file's, or a typed plan of several parts.
+#[must_use]
+pub fn whole_plan() -> Clean {
+    Clean::new("Run the plan as it stands?").expect("a clean line")
+}
+
+/// What the plan handed a round beside its decision: the values bound into it, the whole results it takes, the
+/// words shared into its step, and the playbooks its step came from.
 #[derive(Clone, Copy)]
 pub struct Handed<'a> {
     pub bound: &'a [Bound],
     pub taken: &'a IndexMap<ArgName, Json>,
     pub shared: &'a IndexMap<ArgName, Shared>,
+    pub from: &'a [From],
 }
 
 /// What became of one round of a step: its exit, already reported; its status and why it stopped; what its body
@@ -1018,11 +1105,15 @@ fn rewritten_text(step: &Step, weave: &Weave, bound: &[Bound]) -> String {
     weave::running::rewrite(step, &values)
 }
 
-/// The step a refusal is about: the one that takes what no step, or several, hand it.
-fn taker_of(because: &Because) -> usize {
+/// The step a refusal is about: the one that takes what no step, or several, hand it; the one that routes to a
+/// plan it stands in, or too deep. None for a refusal of the whole.
+fn step_of(because: &Because) -> Option<usize> {
     match because {
-        Because::NoSource { step, .. } | Because::SeveralSources { step, .. } => *step,
-        _ => 0,
+        Because::NoSource { step, .. }
+        | Because::SeveralSources { step, .. }
+        | Because::Nested { step, .. }
+        | Because::TooDeep { step, .. } => Some(*step),
+        _ => None,
     }
 }
 

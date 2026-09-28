@@ -635,36 +635,6 @@
       "type": "done",
       "weave": {
         "input": "check the errors for checkout and for payments, list the checkout deploys, pull the checkout logs, then find the suspect",
-        "splits": [
-          {
-            "start": 29,
-            "end": 34,
-            "word": "and",
-            "order": "and",
-            "p": 0.6
-          },
-          {
-            "start": 46,
-            "end": 48,
-            "word": ",",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 73,
-            "end": 75,
-            "word": ",",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 97,
-            "end": 104,
-            "word": "then",
-            "order": "then",
-            "p": 0.9
-          }
-        ],
         "steps": [
           {
             "n": 1,
@@ -1119,7 +1089,6 @@
             "via": "takes"
           }
         ],
-        "exclusive": false,
         "stages": [
           [
             1,
@@ -1139,7 +1108,38 @@
               "arg": "service"
             }
           ]
-        }
+        },
+        "exclusive": false,
+        "splits": [
+          {
+            "start": 29,
+            "end": 34,
+            "word": "and",
+            "order": "and",
+            "p": 0.6
+          },
+          {
+            "start": 46,
+            "end": 48,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 73,
+            "end": 75,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 97,
+            "end": 104,
+            "word": "then",
+            "order": "then",
+            "p": 0.9
+          }
+        ]
       }
     }
   }

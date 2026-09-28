@@ -1,0 +1,51 @@
+{
+  "adapter": "replay",
+  "reflexes": {
+    "errors": {
+      "type": "local",
+      "path": "./errors"
+    },
+    "deploys": {
+      "type": "local",
+      "path": "./deploys"
+    },
+    "logs": {
+      "type": "local",
+      "path": "./logs"
+    },
+    "suspect": {
+      "type": "local",
+      "path": "./suspect"
+    },
+    "rollback": {
+      "type": "local",
+      "path": "./rollback"
+    },
+    "post": {
+      "type": "local",
+      "path": "./post"
+    },
+    "incidents": {
+      "type": "local",
+      "path": "./incidents"
+    },
+    "incident": {
+      "type": "local",
+      "path": "./incident"
+    },
+    "postmortem": {
+      "type": "local",
+      "path": "./postmortem"
+    },
+    "status": {
+      "type": "local",
+      "path": "./status"
+    },
+    "outage": {
+      "type": "local",
+      "path": "./outage"
+    }
+  },
+  "config": {},
+  "adapters": {}
+}

@@ -509,36 +509,6 @@
       "type": "done",
       "weave": {
         "input": "grab the september bank transactions, the invoices and the card expenses, then the payroll run for september, and reconcile the month",
-        "splits": [
-          {
-            "start": 36,
-            "end": 38,
-            "word": ",",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 50,
-            "end": 55,
-            "word": "and",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 72,
-            "end": 79,
-            "word": "then",
-            "order": "then",
-            "p": 0.9
-          },
-          {
-            "start": 108,
-            "end": 114,
-            "word": "and",
-            "order": "and",
-            "p": 0.9
-          }
-        ],
         "steps": [
           {
             "n": 1,
@@ -969,7 +939,6 @@
             "via": "takes"
           }
         ],
-        "exclusive": false,
         "stages": [
           [
             1,
@@ -985,7 +954,38 @@
         ],
         "verdict": {
           "outcome": "run"
-        }
+        },
+        "exclusive": false,
+        "splits": [
+          {
+            "start": 36,
+            "end": 38,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 50,
+            "end": 55,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 72,
+            "end": 79,
+            "word": "then",
+            "order": "then",
+            "p": 0.9
+          },
+          {
+            "start": 108,
+            "end": 114,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          }
+        ]
       }
     }
   }

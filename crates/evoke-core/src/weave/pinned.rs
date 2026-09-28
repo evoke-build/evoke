@@ -422,13 +422,14 @@ fn reflex_moved(
         })
     };
     let Some(item) = installed.reflexes.get(name) else {
-        let step = pinned
-            .weave
-            .steps
+        let steps = &pinned.weave.steps;
+        let step = steps.iter().find(|step| step.reflex.as_ref() == Some(name));
+        let wrote = steps
             .iter()
-            .find(|step| step.reflex.as_ref() == Some(name));
+            .any(|step| step.from.iter().any(|from| from.playbook == *name));
         let message = match step {
             Some(step) => format!("step {}'s reflex {name} is not installed here", step.n),
+            None if wrote => format!("the plan's playbook {name} is not installed here"),
             None => format!("{name} is in the plan's set and not installed here"),
         };
         return refused(message, pin.fix(name, save()));

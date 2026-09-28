@@ -1,0 +1,2615 @@
+{
+  "input": {
+    "path": "~/outage.plan.json",
+    "pinned": {
+      "$ref": "fixtures/pinned-outage.json"
+    },
+    "plan": {
+      "$ref": "fixtures/plan-outage-playbook.json"
+    }
+  },
+  "expect": {
+    "ok": {
+      "weave": {
+        "input": "checkout is failing in eu-west",
+        "steps": [
+          {
+            "n": 1,
+            "text": "check checkout's errors in eu-west",
+            "end": 30,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                },
+                "region": {
+                  "type": "word",
+                  "word": "eu-west"
+                }
+              },
+              "call": "errors service=\"checkout\" region=\"eu-west\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "errors",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "errors",
+                  "p": 0.9
+                },
+                {
+                  "question": "errors.service",
+                  "top": "checkout",
+                  "p": 0.9
+                },
+                {
+                  "question": "errors.region",
+                  "top": "eu-west",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "deploys",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "status",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "outage",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read",
+            "from": [
+              {
+                "playbook": "outage",
+                "step": 1,
+                "slots": {
+                  "service": "checkout",
+                  "region": "eu-west"
+                }
+              }
+            ]
+          },
+          {
+            "n": 2,
+            "text": "list checkout's deploys in eu-west",
+            "end": 30,
+            "decision": {
+              "outcome": "run",
+              "reflex": "deploys",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                },
+                "region": {
+                  "type": "word",
+                  "word": "eu-west"
+                }
+              },
+              "call": "deploys service=\"checkout\" region=\"eu-west\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "deploys",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "deploys",
+                  "p": 0.9
+                },
+                {
+                  "question": "deploys.service",
+                  "top": "checkout",
+                  "p": 0.9
+                },
+                {
+                  "question": "deploys.region",
+                  "top": "eu-west",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "deploys",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "status",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "outage",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "deploys",
+            "effect": "read",
+            "from": [
+              {
+                "playbook": "outage",
+                "step": 2,
+                "slots": {
+                  "service": "checkout",
+                  "region": "eu-west"
+                }
+              }
+            ]
+          },
+          {
+            "n": 3,
+            "text": "search checkout's logs in eu-west",
+            "end": 30,
+            "decision": {
+              "outcome": "run",
+              "reflex": "logs",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                },
+                "region": {
+                  "type": "word",
+                  "word": "eu-west"
+                }
+              },
+              "call": "logs service=\"checkout\" region=\"eu-west\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "logs",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "logs",
+                  "p": 0.9
+                },
+                {
+                  "question": "logs.service",
+                  "top": "checkout",
+                  "p": 0.9
+                },
+                {
+                  "question": "logs.region",
+                  "top": "eu-west",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "logs",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "status",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "outage",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "logs",
+            "effect": "read",
+            "from": [
+              {
+                "playbook": "outage",
+                "step": 3,
+                "slots": {
+                  "service": "checkout",
+                  "region": "eu-west"
+                }
+              }
+            ]
+          },
+          {
+            "n": 4,
+            "text": "find the release behind it",
+            "end": 30,
+            "decision": {
+              "outcome": "run",
+              "reflex": "suspect",
+              "args": {},
+              "call": "suspect",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "suspect",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "suspect",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "suspect",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "status",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "outage",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "suspect",
+            "effect": "read",
+            "refs": [
+              {
+                "span": {
+                  "start": 24,
+                  "end": 26,
+                  "text": "it"
+                },
+                "from": [
+                  2
+                ],
+                "how": "engine",
+                "p": 0.8
+              },
+              {
+                "span": {
+                  "start": 5,
+                  "end": 16,
+                  "text": "the release"
+                },
+                "from": [
+                  2
+                ],
+                "how": "engine",
+                "weak": true,
+                "noun": "release",
+                "p": 0.7
+              }
+            ],
+            "after": [
+              1,
+              2,
+              3
+            ],
+            "from": [
+              {
+                "playbook": "outage",
+                "step": 4,
+                "slots": {}
+              }
+            ]
+          },
+          {
+            "n": 5,
+            "text": "roll checkout back from that release in eu-west",
+            "end": 30,
+            "decision": {
+              "outcome": "ask",
+              "reflex": "rollback",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                },
+                "region": {
+                  "type": "word",
+                  "word": "eu-west"
+                }
+              },
+              "unconsumed": [],
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "rollback",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "rollback",
+                  "p": 0.9
+                },
+                {
+                  "question": "rollback.service",
+                  "top": "checkout",
+                  "p": 0.9
+                },
+                {
+                  "question": "rollback.region",
+                  "top": "eu-west",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "rollback",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "status",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "outage",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "missing": [
+                {
+                  "arg": "release",
+                  "ask": "From which release?",
+                  "because": {
+                    "type": "unstated"
+                  },
+                  "choices": {
+                    "type": "pick",
+                    "pick": "quoted"
+                  }
+                }
+              ]
+            },
+            "reflex": "rollback",
+            "effect": "destructive",
+            "refs": [
+              {
+                "span": {
+                  "start": 24,
+                  "end": 36,
+                  "text": "that release"
+                },
+                "from": [
+                  3
+                ],
+                "how": "engine",
+                "noun": "release",
+                "p": 0.9
+              }
+            ],
+            "after": [
+              4
+            ],
+            "from": [
+              {
+                "playbook": "outage",
+                "step": 5,
+                "slots": {
+                  "service": "checkout",
+                  "region": "eu-west"
+                }
+              }
+            ]
+          },
+          {
+            "n": 6,
+            "text": "post to the incident channel",
+            "end": 30,
+            "decision": {
+              "outcome": "run",
+              "reflex": "post",
+              "args": {
+                "channel": {
+                  "type": "word",
+                  "word": "#incident"
+                }
+              },
+              "call": "post channel=\"#incident\"",
+              "effect": "write",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "post",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "post",
+                  "p": 0.9
+                },
+                {
+                  "question": "post.channel",
+                  "top": "#incident",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "post",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "status",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "outage",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "post",
+            "effect": "write",
+            "from": [
+              {
+                "playbook": "outage",
+                "step": 6,
+                "slots": {}
+              }
+            ]
+          },
+          {
+            "n": 7,
+            "text": "update the status page for checkout",
+            "end": 30,
+            "decision": {
+              "outcome": "run",
+              "reflex": "status",
+              "args": {
+                "component": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "status component=\"checkout\"",
+              "effect": "write",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "status",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "status",
+                  "p": 0.9
+                },
+                {
+                  "question": "status.component",
+                  "top": "checkout",
+                  "p": 0.9
+                },
+                {
+                  "question": "status.state",
+                  "top": "unstated",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "status",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "outage",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "status",
+            "effect": "write",
+            "from": [
+              {
+                "playbook": "outage",
+                "step": 7,
+                "slots": {
+                  "service": "checkout"
+                }
+              }
+            ]
+          }
+        ],
+        "binds": [
+          {
+            "from": 1,
+            "to": 4,
+            "arg": "errors",
+            "field": "errors",
+            "via": "takes"
+          },
+          {
+            "from": 2,
+            "to": 4,
+            "arg": "deploys",
+            "field": "deploys",
+            "via": "takes"
+          },
+          {
+            "from": 3,
+            "to": 4,
+            "arg": "logs",
+            "field": "logs",
+            "via": "takes"
+          },
+          {
+            "from": 4,
+            "to": 5,
+            "arg": "release",
+            "field": "release",
+            "kind": "quoted",
+            "via": "fill"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ],
+          [
+            5
+          ],
+          [
+            6
+          ],
+          [
+            7
+          ]
+        ],
+        "verdict": {
+          "outcome": "confirm",
+          "because": [
+            {
+              "type": "reviewed",
+              "step": 1,
+              "playbook": "outage",
+              "text": "checkout is failing in eu-west",
+              "prompt": {
+                "own": "outage service=\"checkout\" region=\"eu-west\" · destructive · weakest: route 0.90 · also errors (fits 0.60), step 1",
+                "template": "Run the outage plan for checkout?"
+              }
+            }
+          ]
+        },
+        "exclusive": true
+      },
+      "decided": [
+        {
+          "asked": {
+            "text": "checkout is failing in eu-west"
+          },
+          "raw": {
+            "route": {
+              "outage": 0.9,
+              "errors": 0.05,
+              "none": 0.05
+            },
+            "fits.errors": {
+              "yes": 0.6
+            },
+            "errors.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "errors.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.deploys": {
+              "yes": 0.02
+            },
+            "deploys.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "deploys.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.logs": {
+              "yes": 0.02
+            },
+            "logs.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "logs.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.suspect": {
+              "yes": 0.02
+            },
+            "fits.rollback": {
+              "yes": 0.02
+            },
+            "rollback.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "rollback.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.post": {
+              "yes": 0.02
+            },
+            "post.channel": {
+              "unstated": 0.9,
+              "#incident": 0.05,
+              "#ops": 0.05
+            },
+            "fits.incidents": {
+              "yes": 0.02
+            },
+            "fits.incident": {
+              "yes": 0.02
+            },
+            "fits.postmortem": {
+              "yes": 0.02
+            },
+            "fits.status": {
+              "yes": 0.02
+            },
+            "status.component": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "status.state": {
+              "unstated": 0.9,
+              "investigating": 0.05,
+              "identified": 0.05
+            },
+            "fits.outage": {
+              "yes": 0.8
+            },
+            "outage.service": {
+              "checkout": 0.9,
+              "unstated": 0.1
+            },
+            "outage.region": {
+              "eu-west": 0.9,
+              "unstated": 0.1
+            }
+          },
+          "decision": {
+            "outcome": "confirm",
+            "reflex": "outage",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              },
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "call": "outage service=\"checkout\" region=\"eu-west\"",
+            "effect": "destructive",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "outage",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "outage",
+                "p": 0.9
+              },
+              {
+                "question": "outage.service",
+                "top": "checkout",
+                "p": 0.9
+              },
+              {
+                "question": "outage.region",
+                "top": "eu-west",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.05,
+              "fits": 0.6
+            },
+            "contenders": [
+              {
+                "reflex": "outage",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.05,
+                "fits": 0.6
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "prompt": {
+              "own": "outage service=\"checkout\" region=\"eu-west\" · destructive · weakest: route 0.90 · also errors (fits 0.60)",
+              "template": "Run the outage plan for checkout?"
+            },
+            "because": [
+              {
+                "type": "destructive"
+              },
+              {
+                "type": "two_things",
+                "contender": {
+                  "reflex": "errors",
+                  "route": 0.05,
+                  "fits": 0.6
+                }
+              }
+            ]
+          }
+        },
+        {
+          "asked": {
+            "text": "check checkout's errors in eu-west"
+          },
+          "raw": {
+            "route": {
+              "errors": 0.9,
+              "deploys": 0.03,
+              "none": 0.07
+            },
+            "fits.errors": {
+              "yes": 0.8
+            },
+            "errors.service": {
+              "checkout": 0.9,
+              "unstated": 0.1
+            },
+            "errors.region": {
+              "eu-west": 0.9,
+              "unstated": 0.1
+            },
+            "fits.deploys": {
+              "yes": 0.02
+            },
+            "deploys.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "deploys.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.logs": {
+              "yes": 0.02
+            },
+            "logs.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "logs.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.suspect": {
+              "yes": 0.02
+            },
+            "fits.rollback": {
+              "yes": 0.02
+            },
+            "rollback.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "rollback.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.post": {
+              "yes": 0.02
+            },
+            "post.channel": {
+              "unstated": 0.9,
+              "#incident": 0.05,
+              "#ops": 0.05
+            },
+            "fits.incidents": {
+              "yes": 0.02
+            },
+            "fits.incident": {
+              "yes": 0.02
+            },
+            "fits.postmortem": {
+              "yes": 0.02
+            },
+            "fits.status": {
+              "yes": 0.02
+            },
+            "status.component": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "status.state": {
+              "unstated": 0.9,
+              "investigating": 0.05,
+              "identified": 0.05
+            },
+            "fits.outage": {
+              "yes": 0.02
+            },
+            "outage.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "outage.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            }
+          },
+          "decision": {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              },
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "call": "errors service=\"checkout\" region=\"eu-west\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.9
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 0.9
+              },
+              {
+                "question": "errors.region",
+                "top": "eu-west",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "deploys",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "outage",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        },
+        {
+          "asked": {
+            "text": "list checkout's deploys in eu-west"
+          },
+          "raw": {
+            "route": {
+              "deploys": 0.9,
+              "errors": 0.03,
+              "none": 0.07
+            },
+            "fits.errors": {
+              "yes": 0.02
+            },
+            "errors.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "errors.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.deploys": {
+              "yes": 0.8
+            },
+            "deploys.service": {
+              "checkout": 0.9,
+              "unstated": 0.1
+            },
+            "deploys.region": {
+              "eu-west": 0.9,
+              "unstated": 0.1
+            },
+            "fits.logs": {
+              "yes": 0.02
+            },
+            "logs.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "logs.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.suspect": {
+              "yes": 0.02
+            },
+            "fits.rollback": {
+              "yes": 0.02
+            },
+            "rollback.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "rollback.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.post": {
+              "yes": 0.02
+            },
+            "post.channel": {
+              "unstated": 0.9,
+              "#incident": 0.05,
+              "#ops": 0.05
+            },
+            "fits.incidents": {
+              "yes": 0.02
+            },
+            "fits.incident": {
+              "yes": 0.02
+            },
+            "fits.postmortem": {
+              "yes": 0.02
+            },
+            "fits.status": {
+              "yes": 0.02
+            },
+            "status.component": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "status.state": {
+              "unstated": 0.9,
+              "investigating": 0.05,
+              "identified": 0.05
+            },
+            "fits.outage": {
+              "yes": 0.02
+            },
+            "outage.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "outage.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            }
+          },
+          "decision": {
+            "outcome": "run",
+            "reflex": "deploys",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              },
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "call": "deploys service=\"checkout\" region=\"eu-west\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "deploys",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "deploys",
+                "p": 0.9
+              },
+              {
+                "question": "deploys.service",
+                "top": "checkout",
+                "p": 0.9
+              },
+              {
+                "question": "deploys.region",
+                "top": "eu-west",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "deploys",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "outage",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        },
+        {
+          "asked": {
+            "text": "search checkout's logs in eu-west"
+          },
+          "raw": {
+            "route": {
+              "logs": 0.9,
+              "errors": 0.03,
+              "none": 0.07
+            },
+            "fits.errors": {
+              "yes": 0.02
+            },
+            "errors.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "errors.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.deploys": {
+              "yes": 0.02
+            },
+            "deploys.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "deploys.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.logs": {
+              "yes": 0.8
+            },
+            "logs.service": {
+              "checkout": 0.9,
+              "unstated": 0.1
+            },
+            "logs.region": {
+              "eu-west": 0.9,
+              "unstated": 0.1
+            },
+            "fits.suspect": {
+              "yes": 0.02
+            },
+            "fits.rollback": {
+              "yes": 0.02
+            },
+            "rollback.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "rollback.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.post": {
+              "yes": 0.02
+            },
+            "post.channel": {
+              "unstated": 0.9,
+              "#incident": 0.05,
+              "#ops": 0.05
+            },
+            "fits.incidents": {
+              "yes": 0.02
+            },
+            "fits.incident": {
+              "yes": 0.02
+            },
+            "fits.postmortem": {
+              "yes": 0.02
+            },
+            "fits.status": {
+              "yes": 0.02
+            },
+            "status.component": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "status.state": {
+              "unstated": 0.9,
+              "investigating": 0.05,
+              "identified": 0.05
+            },
+            "fits.outage": {
+              "yes": 0.02
+            },
+            "outage.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "outage.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            }
+          },
+          "decision": {
+            "outcome": "run",
+            "reflex": "logs",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              },
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "call": "logs service=\"checkout\" region=\"eu-west\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "logs",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "logs",
+                "p": 0.9
+              },
+              {
+                "question": "logs.service",
+                "top": "checkout",
+                "p": 0.9
+              },
+              {
+                "question": "logs.region",
+                "top": "eu-west",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "logs",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "outage",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        },
+        {
+          "asked": {
+            "text": "find the release behind it"
+          },
+          "raw": {
+            "route": {
+              "suspect": 0.9,
+              "errors": 0.03,
+              "none": 0.07
+            },
+            "fits.errors": {
+              "yes": 0.02
+            },
+            "errors.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "errors.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.deploys": {
+              "yes": 0.02
+            },
+            "deploys.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "deploys.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.logs": {
+              "yes": 0.02
+            },
+            "logs.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "logs.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.suspect": {
+              "yes": 0.8
+            },
+            "fits.rollback": {
+              "yes": 0.02
+            },
+            "rollback.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "rollback.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.post": {
+              "yes": 0.02
+            },
+            "post.channel": {
+              "unstated": 0.9,
+              "#incident": 0.05,
+              "#ops": 0.05
+            },
+            "fits.incidents": {
+              "yes": 0.02
+            },
+            "fits.incident": {
+              "yes": 0.02
+            },
+            "fits.postmortem": {
+              "yes": 0.02
+            },
+            "fits.status": {
+              "yes": 0.02
+            },
+            "status.component": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "status.state": {
+              "unstated": 0.9,
+              "investigating": 0.05,
+              "identified": 0.05
+            },
+            "fits.outage": {
+              "yes": 0.02
+            },
+            "outage.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "outage.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            }
+          },
+          "decision": {
+            "outcome": "run",
+            "reflex": "suspect",
+            "args": {},
+            "call": "suspect",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "suspect",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "suspect",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "suspect",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "outage",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        },
+        {
+          "asked": {
+            "text": "roll checkout back from that release in eu-west"
+          },
+          "raw": {
+            "route": {
+              "rollback": 0.9,
+              "errors": 0.03,
+              "none": 0.07
+            },
+            "fits.errors": {
+              "yes": 0.02
+            },
+            "errors.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "errors.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.deploys": {
+              "yes": 0.02
+            },
+            "deploys.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "deploys.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.logs": {
+              "yes": 0.02
+            },
+            "logs.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "logs.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.suspect": {
+              "yes": 0.02
+            },
+            "fits.rollback": {
+              "yes": 0.8
+            },
+            "rollback.service": {
+              "checkout": 0.9,
+              "unstated": 0.1
+            },
+            "rollback.region": {
+              "eu-west": 0.9,
+              "unstated": 0.1
+            },
+            "fits.post": {
+              "yes": 0.02
+            },
+            "post.channel": {
+              "unstated": 0.9,
+              "#incident": 0.05,
+              "#ops": 0.05
+            },
+            "fits.incidents": {
+              "yes": 0.02
+            },
+            "fits.incident": {
+              "yes": 0.02
+            },
+            "fits.postmortem": {
+              "yes": 0.02
+            },
+            "fits.status": {
+              "yes": 0.02
+            },
+            "status.component": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "status.state": {
+              "unstated": 0.9,
+              "investigating": 0.05,
+              "identified": 0.05
+            },
+            "fits.outage": {
+              "yes": 0.02
+            },
+            "outage.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "outage.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            }
+          },
+          "decision": {
+            "outcome": "ask",
+            "reflex": "rollback",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              },
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "unconsumed": [],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "rollback",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "rollback",
+                "p": 0.9
+              },
+              {
+                "question": "rollback.service",
+                "top": "checkout",
+                "p": 0.9
+              },
+              {
+                "question": "rollback.region",
+                "top": "eu-west",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "rollback",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "outage",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "release",
+                "ask": "From which release?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "pick",
+                  "pick": "quoted"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "asked": {
+            "text": "post to the incident channel"
+          },
+          "raw": {
+            "route": {
+              "post": 0.9,
+              "errors": 0.03,
+              "none": 0.07
+            },
+            "fits.errors": {
+              "yes": 0.02
+            },
+            "errors.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "errors.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.deploys": {
+              "yes": 0.02
+            },
+            "deploys.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "deploys.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.logs": {
+              "yes": 0.02
+            },
+            "logs.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "logs.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.suspect": {
+              "yes": 0.02
+            },
+            "fits.rollback": {
+              "yes": 0.02
+            },
+            "rollback.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "rollback.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.post": {
+              "yes": 0.8
+            },
+            "post.channel": {
+              "#incident": 0.9,
+              "unstated": 0.1
+            },
+            "fits.incidents": {
+              "yes": 0.02
+            },
+            "fits.incident": {
+              "yes": 0.02
+            },
+            "fits.postmortem": {
+              "yes": 0.02
+            },
+            "fits.status": {
+              "yes": 0.02
+            },
+            "status.component": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "status.state": {
+              "unstated": 0.9,
+              "investigating": 0.05,
+              "identified": 0.05
+            },
+            "fits.outage": {
+              "yes": 0.02
+            },
+            "outage.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "outage.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            }
+          },
+          "decision": {
+            "outcome": "run",
+            "reflex": "post",
+            "args": {
+              "channel": {
+                "type": "word",
+                "word": "#incident"
+              }
+            },
+            "call": "post channel=\"#incident\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "post",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "post",
+                "p": 0.9
+              },
+              {
+                "question": "post.channel",
+                "top": "#incident",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "post",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "outage",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        },
+        {
+          "asked": {
+            "text": "update the status page for checkout"
+          },
+          "raw": {
+            "route": {
+              "status": 0.9,
+              "errors": 0.03,
+              "none": 0.07
+            },
+            "fits.errors": {
+              "yes": 0.02
+            },
+            "errors.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "errors.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.deploys": {
+              "yes": 0.02
+            },
+            "deploys.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "deploys.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.logs": {
+              "yes": 0.02
+            },
+            "logs.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "logs.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.suspect": {
+              "yes": 0.02
+            },
+            "fits.rollback": {
+              "yes": 0.02
+            },
+            "rollback.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "rollback.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            },
+            "fits.post": {
+              "yes": 0.02
+            },
+            "post.channel": {
+              "unstated": 0.9,
+              "#incident": 0.05,
+              "#ops": 0.05
+            },
+            "fits.incidents": {
+              "yes": 0.02
+            },
+            "fits.incident": {
+              "yes": 0.02
+            },
+            "fits.postmortem": {
+              "yes": 0.02
+            },
+            "fits.status": {
+              "yes": 0.8
+            },
+            "status.component": {
+              "checkout": 0.9,
+              "unstated": 0.1
+            },
+            "status.state": {
+              "unstated": 0.9,
+              "investigating": 0.05,
+              "identified": 0.05
+            },
+            "fits.outage": {
+              "yes": 0.02
+            },
+            "outage.service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
+            },
+            "outage.region": {
+              "unstated": 0.9,
+              "eu-west": 0.05,
+              "us-east": 0.05
+            }
+          },
+          "decision": {
+            "outcome": "run",
+            "reflex": "status",
+            "args": {
+              "component": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "status component=\"checkout\"",
+            "effect": "write",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "status",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "status",
+                "p": 0.9
+              },
+              {
+                "question": "status.component",
+                "top": "checkout",
+                "p": 0.9
+              },
+              {
+                "question": "status.state",
+                "top": "unstated",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "status",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "outage",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

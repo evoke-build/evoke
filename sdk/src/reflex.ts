@@ -1,7 +1,8 @@
 // A reflex as code: the manifest as an object — the file's shape, less `run` and `config` — and its body, whose
 // argument types come from the manifest literal: option keys as a union, a word or a quoted, email or url pick as
-// a string, a number or duration as a number, a flag as `true`, an optional argument optional. In: a manifest
-// literal and a body. Out: an Inline, which `load` takes and runs in-process.
+// a string, a number or duration as a number, a flag as `true`, an optional argument optional. A playbook as
+// code: the manifest with its `steps` and no body, which expands inside a plan. In: a manifest literal and a
+// body. Out: an Inline, which `load` takes and runs in-process.
 
 import type { Flag, Option, Pick, Value, Values, Word } from "./decision.ts"
 import type { Reflex } from "./runtime.ts"
@@ -16,6 +17,9 @@ export interface InlineManifest {
   effect?: Effect
   /** The one-line template a person confirms, naming required arguments only. */
   confirm: string
+  /** A playbook's body: one sentence per step, `{slot}`s naming its arguments, a bracketed phrase going only with
+   *  the slot inside it. With `playbook`, never with `reflex`. */
+  steps?: string[]
   /** The arguments: a question and one source each, or a whole result an earlier step returns, taken by its name. */
   args?: Record<string, InlineArg>
   /** What the body's `data` yields for a later step to take: per field, the recognizer that reads it, or a list of
@@ -79,14 +83,21 @@ export type Args<M extends InlineManifest> = Flat<
   Values<Carried<M>> & { [N in keyof ArgsOf<M> as Taken<ArgsOf<M>[N]> extends true ? N : never]: unknown }
 >
 
-/** What `reflex` returns and `load` takes; `shape` never holds a value — it is what a decision carries, for inference. */
+/** What `reflex` and `playbook` return and `load` takes; `shape` never holds a value — it is what a decision carries,
+ *  for inference. A playbook has no body: its steps expand inside a plan. */
 export interface Inline<S = Record<string, Value>> {
   readonly manifest: InlineManifest
-  readonly body: Reflex<Record<string, unknown>, Record<never, string>>
+  readonly body?: Reflex<Record<string, unknown>, Record<never, string>> | undefined
   readonly shape?: S | undefined
 }
 
 /** A reflex as code: its body runs in-process, its arguments typed from the manifest. */
 export function reflex<const M extends InlineManifest>(manifest: M, body: Reflex<Args<M>, Record<never, string>>): Inline<Carried<M>> {
   return { manifest, body: body as Reflex<Record<string, unknown>, Record<never, string>> }
+}
+
+/** A playbook as code: a manifest whose body is `steps`, sentences with slots, each decided over the project's
+ *  reflexes when a sentence picks it. It never runs as a body; `handle` and `run` refuse it. */
+export function playbook<const M extends InlineManifest & { steps: string[] }>(manifest: M): Inline<Carried<M>> {
+  return { manifest }
 }

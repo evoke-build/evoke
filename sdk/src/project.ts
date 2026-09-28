@@ -121,9 +121,10 @@ export interface Woven<R = AnyReflexes> {
 /** Vocabularies in the file's form: per name, word → what it means, or `{ what, value? }`. */
 export type Vocab = Record<string, Record<string, string | { what: string; value?: string | undefined }>>
 
-/** A reflex the project holds: active, with its effect and how it runs; or inactive, with each problem and its fix. */
+/** A reflex the project holds: active, with its effect and how it runs — a playbook runs as a plan; or inactive,
+ *  with each problem and its fix. */
 export type ReflexStatus =
-  | { active: true; effect: W.Effect; runs: "inline" | "file" | "argv" }
+  | { active: true; effect: W.Effect; runs: "inline" | "file" | "argv" | "plan" }
   | { active: false; problems: Problem[] }
 
 export interface Project<R = AnyReflexes> {
@@ -146,8 +147,11 @@ export interface Project<R = AnyReflexes> {
   /** One request read into its steps, each decided as `decide` decides one, ordered by the words, a result of
    *  one threaded into a later one, sealed as a plan file: the sentence, the plan with its verdict before anything
    *  runs, every answer the plan took and the pins they were gathered under. `JSON.stringify` writes it; `weave`
-   *  takes it, here or on another machine with the same project. Runs nothing. */
-  steps(input: string, options?: DecideOptions): Promise<W.Pinned>
+   *  takes it, here or on another machine with the same project. With `ask`, what the plan asks first — a
+   *  playbook's slot the sentence does not state — is answered before the plan is sealed, so the plan shows whole;
+   *  such a plan is a sheet, not a file: `weave(pinned)` refuses it, since a file holds no one's answers, and the
+   *  page runs it by its sentence. Runs nothing. */
+  steps(input: string, options?: DecideOptions & Pick<WeaveOptions<R>, "ask">): Promise<W.Pinned>
   /** The steps, what the plan asks first answered, then every step run stage by stage under the same handlers. */
   weave(input: string, options?: WeaveOptions<R>): Promise<Woven<R>>
   /** A plan file run exactly: its pins checked against this project — a `DiagnosticError` names the first that
@@ -253,9 +257,10 @@ export async function load<R extends object = AnyReflexes>(options: LoadOptions<
     if (handed === undefined) continue
     const worded = word(name, { file: { type: "manifest", name }, json: { reflex: 1, ...handed.manifest } }, files.overlays[name])
     // The manifest is the app's own code: its problems are the app's to fix now, not a reflex to leave inactive.
-    if ("err" in worded.wording && worded.manifest === undefined) throw fromCode(worded.wording.err, `reflex(${name})`)
+    if ("err" in worded.wording && worded.manifest === undefined) throw fromCode(worded.wording.err, handed.body === undefined ? `playbook(${name})` : `reflex(${name})`)
     reflexes[name] = { wording: worded.wording, consented: worded.manifest?.effect ?? "destructive", configured: {} }
-    bodies[name] = handed.body
+    // A playbook has no body: it expands inside a plan.
+    if (handed.body !== undefined) bodies[name] = handed.body
   }
   const vocab: Record<string, W.Vocabulary> = {}
   for (const [name, toml] of Object.entries(files.vocab)) {
@@ -396,7 +401,8 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   for (const name of Object.keys(installed.reflexes)) {
     const active = plan.active[name]
     if (active !== undefined) {
-      reflexes[name] = { active: true, effect: active.effect, runs: bodies[name] !== undefined ? "inline" : Array.isArray(active.run) ? "argv" : "file" }
+      const runs = (active.steps?.length ?? 0) > 0 ? "plan" : bodies[name] !== undefined ? "inline" : Array.isArray(active.run) ? "argv" : "file"
+      reflexes[name] = { active: true, effect: active.effect, runs }
     } else {
       reflexes[name] = { active: false, problems: (plan.inactive[name] ?? []).map(diagnostic => problem(diagnostic, invoked)) }
     }
@@ -469,7 +475,16 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     async steps(input, options = {}) {
       nonEmpty(input, "steps")
       const gathered = gathering()
-      const weave = await planned(input, options, gathered)
+      let weave = await planned(input, options, gathered)
+      // What the plan asks first, answered when a handler is given: the plan is made again over the answer, so a
+      // playbook whose slot the sentence lacks expands and the plan shows whole.
+      while (options.ask !== undefined && weave.verdict.outcome === "ask") {
+        const filled = await askedUpFront(weave, gathered.answers, options, gathered.traces)
+        if (filled !== "filled") break
+        const again = await planned(input, options, gathered)
+        if (JSON.stringify(again.verdict) === JSON.stringify(weave.verdict)) break
+        weave = again
+      }
       return call("weave.pin", { installed, plan, project: owned, ...locked, declared, input, tags: options.tags ?? [], weave, answers: gathered.entries })
     },
 
@@ -734,9 +749,13 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   }
 
   /** A reflex that takes a whole result, met outside a weave: refused before any confirm, since only a request of
-   *  several steps hands one. */
+   *  several steps hands one. A playbook too: it expands inside a plan, and has no body to run. */
   function taker(decision: { reflex: string }): void {
-    const takes = Object.values(plan.active[decision.reflex]?.takes ?? {})
+    const active = plan.active[decision.reflex]
+    if ((active?.steps?.length ?? 0) > 0) {
+      throw refused(decision.reflex, `${decision.reflex} is a plan of steps; say it in a sentence`, { type: "show", reflex: decision.reflex }, 'weave("<input>")')
+    }
+    const takes = Object.values(active?.takes ?? {})
     if (takes.length === 0) return
     throw refused(decision.reflex, `${decision.reflex} takes ${words(takes)}, which a step before it in the same request returns`, { type: "rerun" }, 'weave("<input>")')
   }

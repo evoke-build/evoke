@@ -58,6 +58,7 @@ git. A **TypeScript SDK** that puts the same decisions inside your app. You invo
 | [The manifest](author/manifest.md)            | `reflex.toml`, key by key                                       |
 | [Arguments](author/arguments.md)              | Options, vocabularies, picks and flags; ranges; renames         |
 | [The body](author/body.md)                    | File bodies and argv bodies; context, results, the deadline     |
+| [Playbooks](author/playbooks.md)              | A reflex whose body is a plan: steps with slots, one yes over the whole |
 | [Examples and tests](author/records.md)       | Records, assertions, `evoke test`, lint                         |
 | [Wording](author/wording.md)                  | Writing descriptions the classifier reads well                  |
 | [Publishing](author/publishing.md)            | Tags, versions, the contract diff, collections, the Hub         |

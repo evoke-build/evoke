@@ -1,0 +1,52 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage-playbook.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "input": "if checkout is failing in eu-west, roll it back",
+    "tags": [],
+    "answers": {
+      "decided": [],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "if checkout is failing in eu-west, roll it back",
+        "steps": [],
+        "stages": [],
+        "verdict": {
+          "outcome": "refuse",
+          "because": [
+            {
+              "type": "conditional",
+              "text": "if checkout is failing in eu-west"
+            }
+          ]
+        },
+        "exclusive": false,
+        "splits": [
+          {
+            "start": 33,
+            "end": 35,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          }
+        ]
+      }
+    }
+  }
+}

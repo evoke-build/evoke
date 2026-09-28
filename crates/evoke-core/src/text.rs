@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize, Serializer};
 use unicode_normalization::UnicodeNormalization;
 
 /// Text that cannot repaint a terminal: no C0 or C1 control but the line feed, no bidi control.
-#[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(try_from = "String")]
 pub struct Clean(String);
 

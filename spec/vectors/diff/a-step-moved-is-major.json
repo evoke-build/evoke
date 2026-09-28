@@ -1,0 +1,63 @@
+{
+  "input": {
+    "previous": {
+      "$ref": "fixtures/outage-playbook.json"
+    },
+    "next": {
+      "description": "Handle a service outage.\nLooks at the service's errors, deploys and logs, finds the release behind it, rolls it back, tells #incident and updates the status page.",
+      "not_for": [
+        "one lookup on its own",
+        "an incident's postmortem",
+        "a service that is healthy"
+      ],
+      "tags": [
+        "outage"
+      ],
+      "effect": "destructive",
+      "confirm": "Run the outage plan for {service}?",
+      "steps": [
+        "check {service}'s errors[ in {region}]",
+        "list {service}'s deploys[ in {region}]",
+        "search {service}'s logs[ in {region}]",
+        "find the release behind it",
+        "roll {service} back from that release[ in {region}]",
+        "post to the ops channel",
+        "update the status page for {service}"
+      ],
+      "config": {},
+      "args": {
+        "service": {
+          "ask": "Which service?",
+          "vocab": "services",
+          "optional": false,
+          "was": []
+        },
+        "region": {
+          "ask": "In which region?",
+          "vocab": "regions",
+          "optional": true,
+          "was": []
+        }
+      },
+      "yields": {},
+      "examples": {
+        "payments is down in us-east": {},
+        "search is broken": {},
+        "we have an outage on checkout": {}
+      },
+      "tests": {
+        "checkout is failing in eu-west": {}
+      },
+      "unknown": []
+    }
+  },
+  "expect": {
+    "level": "major",
+    "changes": [
+      {
+        "type": "steps_changed"
+      }
+    ],
+    "violations": []
+  }
+}

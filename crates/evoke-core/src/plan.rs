@@ -12,8 +12,8 @@ use crate::diagnostic::{Diagnostic, Fix};
 use crate::digest::Digest;
 use crate::document::{self, Diagnostics, Form, Json, KeyPath};
 use crate::manifest::{
-    self, Argument, Assertion, Effect, Kind, Manifest, Recognizer, Record, Run, Source, Template,
-    Yield,
+    self, Argument, Assertion, Effect, Kind, Manifest, Recognizer, Record, Run, Sentence, Source,
+    Template, Yield,
 };
 use crate::name::{
     AdapterId, ArgName, ConfigKey, FieldName, LocalName, Tag, VarName, VocabName, Word,
@@ -240,6 +240,9 @@ pub struct Active {
     pub effect: Effect,
     #[serde(skip_serializing_if = "Run::is_inline")]
     pub run: Run,
+    /// A playbook's plan of sentences; none for a reflex with a body.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub steps: Vec<Sentence>,
     #[serde(default, skip_serializing_if = "Needs::is_none")]
     pub needs: Needs,
     pub confirm: Template,
@@ -265,6 +268,7 @@ impl Active {
         Self {
             effect: manifest.effect,
             run: manifest.run.clone(),
+            steps: manifest.steps.clone(),
             needs: manifest.needs.clone(),
             confirm: manifest.confirm.clone(),
             args: manifest.args.clone(),
@@ -349,6 +353,9 @@ fn read_active(d: &mut Diagnostics, json: &Json) -> Option<Active> {
         None
     };
     let run = manifest::run_of(d, top.take("run"), Form::Wire, &known, &taken_names, None);
+    let steps = top.take("steps").map_or(Some(Vec::new()), |node| {
+        manifest::steps(d, node, &mut lookup)
+    });
     let config: Option<IndexMap<ConfigKey, Setting>> = match top.take("config") {
         Some(node) => match serde_json::from_value(node.json()) {
             Ok(config) => Some(config),
@@ -385,6 +392,7 @@ fn read_active(d: &mut Diagnostics, json: &Json) -> Option<Active> {
     Some(Active {
         effect: effect?,
         run: run?,
+        steps: steps?,
         needs,
         confirm: confirm?,
         args: args?,

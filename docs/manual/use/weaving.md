@@ -115,6 +115,35 @@ $ evoke "check the errors for checkout, then find the suspect"
 [2]
 ```
 
+## A plan a playbook wrote
+
+A short sentence can reach a playbook, a reflex whose body is a plan of sentences
+([Playbooks](../author/playbooks.md)). Its steps stand in the plan as if you had typed them, each decided over
+what you have installed, and every line ends with the playbook and the step that wrote it. Under the plan comes
+the sentence's own line, then one question over the whole. Your yes covers every step, and a step's own confirm
+is asked again at its turn.
+
+```text
+$ evoke "checkout is failing in eu-west"
+  1  errors service="checkout" region="eu-west"  0.90 · outage 1
+  2  deploys service="checkout" region="eu-west"  0.90 · outage 2
+  3  logs service="checkout" region="eu-west"  0.90 · outage 3
+  4  suspect  0.90 · takes errors from 1, deploys from 2, logs from 3 · outage 4
+  5  rollback service="checkout" region="eu-west" · takes release from 4 · outage 5
+  6  post channel="#incident"  0.90 · outage 6
+  7  status component="checkout"  0.90 · outage 7 · service as component
+  outage service="checkout" region="eu-west" · destructive · weakest: route 0.90 · also errors (fits 0.60), step 1
+  Run the outage plan for checkout?  [y]es [n]o [t]each > y
+```
+
+A slot the sentence does not state is asked before the plan prints. A part of your sentence that repeats a step
+of the plan folds into that step, and the plan says so: `folded "show me the error rate" into 1`. A part that
+says what not to do beside such a plan is refused, since the step it may have meant is already there. A sentence
+that opens with a condition, `if`, `unless` or `in case`, is refused whatever follows: `evoke` judges no
+condition, so ask for the check first, then type what to do. A step of the plan that matches nothing here, or
+that reaches a plan inside a plan inside a plan, refuses the whole plan, and the line names the step. When the
+sentence holds more than the playbook, the question is `Run the plan as it stands?`.
+
 ## Before anything runs
 
 The plan is settled first. A step whose required argument no other step provides is asked for it up front, as
@@ -136,8 +165,9 @@ An answer out of range is asked again with the reason, as one input's would be. 
 `evoke` would say of that step alone: the call and its confidence, or the confirm's own line with its weakest
 judgment. After it: `asks <arg>` for what the step still needs, `takes <name> from <n>` where a result threads
 in, the name a field's or a whole result's, `after <n>` where the words ordered it, `with <n>` where the step
-runs beside earlier ones, `no reflex` where nothing matched. Under the plan, `left out "…"` names a part that
-said what not to do.
+runs beside earlier ones, `<playbook> <n>` where a playbook wrote the step, `no reflex` where nothing matched.
+Under the plan, `folded "…" into <n>` names a part that repeats a step a playbook wrote, and `left out "…"` a
+part that said what not to do.
 
 ## At each step's turn
 
@@ -198,10 +228,12 @@ line prints first, its `why` `{ "type": "cancelled" }`.
 
 ## `try` and `--json`
 
-`evoke try` shows the plan, then every step's judgments under its number. `evoke try --json` prints the plan
-whole, on one line, with every adapter call it took. `evoke --json` prints one line per step as it runs: the
-line of one decision, with `step` and `steps` first, `bound` where a value came from another step, and `status`
-at the end, with `why` when the step stopped ([The JSON line](../reference/json.md)). A plan stopped before any
+`evoke try` shows the plan, then every step's judgments under its number, the sentence's own block first as
+step 0 when a playbook wrote the plan. `evoke try --json` prints the plan whole, on one line, with every adapter
+call it took. `evoke --json` prints one line per step as it runs: the line of one decision, with `step` and
+`steps` first, `bound` where a value came from another step, `from` where a playbook wrote it, and `status` at
+the end, with `why` when the step stopped; the sentence's own line prints first, as step 0, with no status
+([The JSON line](../reference/json.md)). A plan stopped before any
 step ran, refused, its question or its prompt declined, or with no terminal to ask, prints every step's line at
 once, with what stopped it.
 
@@ -265,7 +297,8 @@ In the SDK, `steps` returns the same object and `weave` takes it ([Decisions](..
 
 ## Afterwards
 
-Every step is logged under its number. `evoke why` shows each step of the last sentence with what became of it:
+Every step is logged under its number. `evoke why` shows each step of the last sentence with what became of it,
+the sentence's own block first, as step 0, when a playbook wrote the plan:
 `ran`, `failed`, `declined`, `refused`, `skipped` or `unanswered`, and why, `cancelled` among the reasons, and the
 words the sentence shared into it, `shared service = checkout`. `evoke teach <call>` with no
 utterance takes the step the lesson's reflex decided; when none or several did, it names the steps and asks you

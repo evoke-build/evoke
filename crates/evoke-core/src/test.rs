@@ -10,7 +10,7 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use crate::adapter::Prob;
 use crate::call::Value;
 use crate::decide::{Contender, Decision};
-use crate::manifest::{Assertion, Record};
+use crate::manifest::{Assertion, Record, Sentence};
 use crate::name::{ArgName, LocalName};
 use crate::plan::Installed;
 use crate::text::{Clean, Identity, NonEmpty, Utterance};
@@ -24,12 +24,14 @@ pub struct Case {
     pub from: Table,
 }
 
-/// Where a case came from: examples are sent to the classifier, tests are held out.
+/// Where a case came from: examples are sent to the classifier, tests are held out; a step is a playbook's own
+/// sentence, judged on where its words route once its slots are filled from a record's reading.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Table {
     Examples,
     Tests,
+    Steps,
 }
 
 /// What a record expects, as a decision compares to it: never this reflex, or the route with a claim per argument.
@@ -67,11 +69,16 @@ pub enum Mismatch {
     Arg { arg: ArgName, read: Claim },
 }
 
-/// The last run's verdict per case, by reflex and utterance identity; the host keeps one per plan digest, so a
-/// switched engine or a changed set starts afresh and reports no phantom regressions.
+/// The last run's verdict per case, by reflex and utterance identity — the records in one map, a playbook's
+/// steps in another, so a step and a test of the same words keep two verdicts; the host keeps one per plan
+/// digest, so a switched engine or a changed set starts afresh and reports no phantom regressions.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct Baseline(IndexMap<LocalName, IndexMap<Identity, Verdict>>);
+pub struct Baseline {
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub records: IndexMap<LocalName, IndexMap<Identity, Verdict>>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub steps: IndexMap<LocalName, IndexMap<Identity, Verdict>>,
+}
 
 /// A case that passed at the last run and fails now, two of three uncached repeats.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -127,9 +134,49 @@ pub fn cases(set: &Installed) -> Vec<Case> {
     cases
 }
 
+/// Every step of every playbook with wording, as cases of the steps table: the playbook as its reflex, the
+/// sentence with its slots as its utterance, nothing asserted. Judged on where the sentence routes once filled.
+#[must_use]
+pub fn steps(set: &Installed) -> Vec<Case> {
+    let mut cases = Vec::new();
+    for (reflex, item) in &set.reflexes {
+        let Ok(effective) = &item.wording else {
+            continue;
+        };
+        for sentence in &effective.manifest.steps {
+            let Ok(utterance) = Utterance::new(&sentence.to_string()) else {
+                continue;
+            };
+            cases.push(Case {
+                reflex: reflex.clone(),
+                utterance,
+                expect: Expected::Asserts(IndexMap::new()),
+                from: Table::Steps,
+            });
+        }
+    }
+    cases
+}
+
+/// A step of a playbook, filled from the first decision whose reading fills every slot it holds: the sentence
+/// with the decision's values in its words, or none when no decision fills it. Never a word of the tool's own.
+#[must_use]
+pub fn filled(sentence: &Sentence, decisions: &[&Decision]) -> Option<String> {
+    decisions.iter().find_map(|decision| {
+        let args = match decision {
+            Decision::Run { chosen } | Decision::Confirm { chosen, .. } => &chosen.call.args,
+            Decision::Ask { asking, .. } => &asking.args,
+            Decision::Abstain { .. } => return None,
+        };
+        sentence.filled(args).map(|(text, _)| text)
+    })
+}
+
 /// A case against the decision made of its utterance: a never-case passes unless the route came to its reflex; an
 /// asserting case needs the route, then each claim met by what was read — an ask reads its missing arguments as
-/// unstated, a confirm is judged by its call, and an argument the record does not name is not compared.
+/// unstated, a confirm is judged by its call, and an argument the record does not name is not compared. A step
+/// passes when its words route to a reflex; one that routes to nothing fails, and so does one that routes to the
+/// playbook it stands in, which the plan would refuse as nested.
 #[must_use]
 pub fn judge(case: &Case, decision: &Decision) -> Verdict {
     let (reflex, args) = match decision {
@@ -145,6 +192,15 @@ pub fn judge(case: &Case, decision: &Decision) -> Verdict {
             read: read.cloned(),
         },
     };
+    if case.from == Table::Steps {
+        return match reflex {
+            Some(read) if !routed => {
+                let _ = read;
+                Verdict::Pass
+            }
+            read => route(read),
+        };
+    }
     match &case.expect {
         Expected::Never if routed => route(Some(&case.reflex)),
         Expected::Never => Verdict::Pass,
@@ -200,7 +256,7 @@ pub fn baseline(before: &Baseline, judged: &[(Case, NonEmpty<Verdict>)]) -> Base
             },
             _ => Verdict::Pass,
         };
-        next.0
+        next.table_mut(case.from)
             .entry(case.reflex.clone())
             .or_default()
             .insert(case.utterance.id().clone(), verdict);
@@ -249,7 +305,24 @@ impl Baseline {
     /// The case's verdict at the last run, when it was judged then.
     #[must_use]
     pub fn get(&self, case: &Case) -> Option<&Verdict> {
-        self.0.get(&case.reflex)?.get(case.utterance.id())
+        self.table(case.from)
+            .get(&case.reflex)?
+            .get(case.utterance.id())
+    }
+
+    /// The map a case's table keeps its verdicts in: the records', or the steps'.
+    fn table(&self, from: Table) -> &IndexMap<LocalName, IndexMap<Identity, Verdict>> {
+        match from {
+            Table::Examples | Table::Tests => &self.records,
+            Table::Steps => &self.steps,
+        }
+    }
+
+    fn table_mut(&mut self, from: Table) -> &mut IndexMap<LocalName, IndexMap<Identity, Verdict>> {
+        match from {
+            Table::Examples | Table::Tests => &mut self.records,
+            Table::Steps => &mut self.steps,
+        }
     }
 }
 
@@ -393,12 +466,14 @@ mod tests {
                 mismatch: Mismatch::Arg { read: Claim::Text(text), .. }
             } if text.as_str() == "off"
         ));
-        let baseline: Baseline =
-            serde_json::from_str(r#"{ "timer": { "what time is it": { "type": "pass" } } }"#)
-                .unwrap();
+        let baseline: Baseline = serde_json::from_str(
+            r#"{ "records": { "timer": { "what time is it": { "type": "pass" } } } }"#,
+        )
+        .unwrap();
         assert_eq!(
             serde_json::to_string(&baseline).unwrap(),
-            r#"{"timer":{"what time is it":{"type":"pass"}}}"#
+            r#"{"records":{"timer":{"what time is it":{"type":"pass"}}}}"#
         );
+        assert_eq!(serde_json::to_string(&Baseline::default()).unwrap(), "{}");
     }
 }

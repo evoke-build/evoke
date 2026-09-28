@@ -1,0 +1,33 @@
+{
+  "input": {
+    "path": "~/outage.plan.json",
+    "pinned": {
+      "$ref": "fixtures/pinned-outage.json"
+    },
+    "installed": {
+      "$ref": "fixtures/installed-outage.json"
+    },
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "declared": {
+      "id": "replay",
+      "gate": {
+        "route": 0.5,
+        "fits": 0.3,
+        "read": 0.6,
+        "write": 0.8
+      }
+    }
+  },
+  "expect": {
+    "err": {
+      "message": "the plan's playbook outage is not installed here",
+      "fix": {
+        "type": "save",
+        "file": "~/outage.plan.json",
+        "input": "checkout is failing in eu-west"
+      }
+    }
+  }
+}

@@ -188,9 +188,10 @@ impl Woven {
 
     /// The one decision a request read as: one step, and so nothing bound — what the foundation alone would have
     /// made of it, under the plan's cap. A part left out beside it changes nothing: what was said not to do is
-    /// no step. A step that takes a whole result no step hands is no decision but the plan's refusal.
+    /// no step. A step that takes a whole result no step hands is no decision but the plan's refusal; nor is a
+    /// playbook's step, which asks its slot up front and then expands, never runs as a body.
     #[must_use]
-    pub fn single(&self, tags: &[Tag]) -> Option<Decided> {
+    pub fn single(&self, tags: &[Tag], plan: &Plan) -> Option<Decided> {
         if self.weave.verdict.because.iter().any(|because| {
             matches!(
                 because,
@@ -200,7 +201,17 @@ impl Woven {
             return None;
         }
         match self.weave.steps.as_slice() {
-            [step] => self.planned(step, tags),
+            [step] => {
+                let playbook = step
+                    .reflex
+                    .as_ref()
+                    .and_then(|reflex| plan.active().get(reflex))
+                    .is_some_and(|active| !active.steps.is_empty());
+                if playbook || !step.from.is_empty() {
+                    return None;
+                }
+                self.planned(step, tags)
+            }
             _ => None,
         }
     }
@@ -744,7 +755,7 @@ impl Session<'_> {
                         item.wording.as_ref().ok().map(|effective| {
                             (
                                 Some(effective.manifest.effect.max(item.consented)),
-                                report::runs(&effective.manifest.run),
+                                report::runs(&effective.manifest.run, &effective.manifest.steps),
                                 needs::narrowed(&effective.manifest.needs, &item.needs),
                             )
                         })

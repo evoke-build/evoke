@@ -32,13 +32,28 @@ pub struct Split {
 }
 
 /// A segment of the request: its text and where it sits, in characters; one that begins with a negation is left
-/// out — never decided, never run.
+/// out — never decided, never run — and one that begins with a condition refuses the whole request.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Segment {
     pub text: String,
     pub start: usize,
     pub end: usize,
-    pub excluded: bool,
+    pub left: Option<Left>,
+}
+
+/// Why a segment is no step: it says what not to do, or opens with a condition no step can judge.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Left {
+    Negated,
+    Conditional,
+}
+
+impl Segment {
+    /// A segment left out: it begins with a negation.
+    #[must_use]
+    pub fn excluded(&self) -> bool {
+        self.left == Some(Left::Negated)
+    }
 }
 
 /// The reference word in a step's text, in characters of that text.
@@ -109,6 +124,8 @@ const AND: [&str; 12] = [
 ];
 /// A segment that begins so is left out.
 const NEGATION: [&str; 6] = ["not", "don't", "do not", "never", "without", "nor"];
+/// A segment that begins so is a condition, which no step can judge: the whole request is refused.
+const CONDITION: [&str; 3] = ["if", "unless", "in case"];
 const PRONOUNS: [&str; 9] = [
     "both of them",
     "each of them",
@@ -403,7 +420,7 @@ pub fn segments(text: &str, taken: &[Split]) -> Vec<Segment> {
         let text = piece.trim();
         if !text.is_empty() {
             out.push(Segment {
-                excluded: negated(text),
+                left: left(text),
                 text: text.to_owned(),
                 start,
                 end,
@@ -424,8 +441,30 @@ pub fn segments(text: &str, taken: &[Split]) -> Vec<Segment> {
 /// Whether a segment begins with a negation: left out, never decided, never run.
 #[must_use]
 pub fn negated(text: &str) -> bool {
+    heads(text, &NEGATION)
+}
+
+/// Whether a segment begins with a condition — `if`, `unless`, `in case` — which no step can judge.
+#[must_use]
+pub fn conditional(text: &str) -> bool {
+    heads(text, &CONDITION)
+}
+
+/// Why a segment is no step, when it is not one.
+fn left(text: &str) -> Option<Left> {
+    if negated(text) {
+        Some(Left::Negated)
+    } else if conditional(text) {
+        Some(Left::Conditional)
+    } else {
+        None
+    }
+}
+
+/// Whether a text begins with one of the words, whole.
+fn heads(text: &str, words: &[&str]) -> bool {
     let chars: Vec<char> = text.chars().collect();
-    NEGATION
+    words
         .iter()
         .any(|word| starts_with_word(&chars, 0, word) && ends_word(&chars, word.len()))
 }
@@ -650,8 +689,9 @@ pub(crate) fn judging(
     all: &[Split],
 ) -> Result<Option<(Vec<usize>, Request)>, Unclean> {
     let chars: Vec<char> = request.chars().collect();
+    // A split a negation or a condition follows is taken as sure: what comes after it is no step's to judge.
     let asked: Vec<usize> = (0..all.len())
-        .filter(|&i| !negated(&chars[all[i].end..].iter().collect::<String>()))
+        .filter(|&i| left(&chars[all[i].end..].iter().collect::<String>()).is_none())
         .collect();
     if asked.is_empty() {
         return Ok(None);
@@ -918,7 +958,7 @@ mod tests {
         let segs = segments(text, &taken);
         assert_eq!(
             segs.iter()
-                .map(|s| (s.text.as_str(), s.excluded))
+                .map(|s| (s.text.as_str(), s.excluded()))
                 .collect::<Vec<_>>(),
             [
                 ("check the deadline for the logo", false),
@@ -928,6 +968,17 @@ mod tests {
         assert!(negated("don't archive the logo"));
         assert!(negated("don\u{2019}t archive the logo"));
         assert!(!negated("note the time"));
+        // A condition is the negation's twin: its split is sure, and the segment is marked, never left out.
+        assert!(conditional("if checkout is failing"));
+        assert!(conditional("in case it rains"));
+        assert!(!conditional("iffy"));
+        let text = "roll it back if checkout is failing";
+        let all = splits(text, true);
+        assert!(all.is_empty());
+        let text = "if checkout is failing in eu-west, roll it back";
+        let segs = segments(text, &splits(text, true));
+        assert_eq!(segs[0].left, Some(Left::Conditional));
+        assert!(!segs[0].excluded());
         assert!(refers_back("pull up every one of them"));
         assert!(!refers_back("look up order 4821"));
         // A channel's name is no pronoun.
@@ -942,7 +993,7 @@ mod tests {
                 text: (*text).to_owned(),
                 start: 0,
                 end: 0,
-                excluded: false,
+                left: None,
             })
             .collect()
     }

@@ -938,50 +938,6 @@
       "type": "done",
       "weave": {
         "input": "check checkout's errors, deploys and logs in eu-west, find the deploy they point to, roll it back, then post to #incident and update the status page",
-        "splits": [
-          {
-            "start": 23,
-            "end": 25,
-            "word": ",",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 32,
-            "end": 37,
-            "word": "and",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 52,
-            "end": 54,
-            "word": ",",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 83,
-            "end": 85,
-            "word": ",",
-            "order": "and",
-            "p": 0.9
-          },
-          {
-            "start": 97,
-            "end": 104,
-            "word": "then",
-            "order": "then",
-            "p": 0.9
-          },
-          {
-            "start": 121,
-            "end": 126,
-            "word": "and",
-            "order": "and",
-            "p": 0.9
-          }
-        ],
         "steps": [
           {
             "n": 1,
@@ -1641,7 +1597,6 @@
             "via": "fill"
           }
         ],
-        "exclusive": true,
         "stages": [
           [
             1
@@ -1667,7 +1622,52 @@
         ],
         "verdict": {
           "outcome": "run"
-        }
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 23,
+            "end": 25,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 32,
+            "end": 37,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 52,
+            "end": 54,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 83,
+            "end": 85,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 97,
+            "end": 104,
+            "word": "then",
+            "order": "then",
+            "p": 0.9
+          },
+          {
+            "start": 121,
+            "end": 126,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          }
+        ]
       }
     }
   }

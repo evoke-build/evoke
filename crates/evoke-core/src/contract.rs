@@ -13,6 +13,7 @@ use crate::document::KeyPath;
 use crate::manifest::{Effect, Element, Kind, Manifest, Run, Source, renames};
 use crate::name::{ArgName, ConfigKey, FieldName, OptionKey};
 use crate::needs::{self, Needs};
+use crate::weave::reading;
 
 /// What changed in the contract from one version to the next, and how much it matters.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -56,6 +57,9 @@ pub enum Change {
         arg: ArgName,
     },
     RunChanged,
+    /// A playbook's steps moved: one added, removed, reworded or reordered. The plan a person's yes covered is
+    /// another plan.
+    StepsChanged,
     /// The declaration reaches more: what was added, which a person's lock keeps out until they accept it.
     NeedsWidened {
         added: Needs,
@@ -146,6 +150,7 @@ impl Change {
             | Self::SourceChanged { .. }
             | Self::RangeChanged { .. }
             | Self::RunChanged
+            | Self::StepsChanged
             | Self::Required { .. }
             | Self::ConfigSecret { secret: true, .. }
             | Self::YieldRemoved { .. }
@@ -235,6 +240,9 @@ pub fn diff(previous: &Manifest, next: &Manifest) -> ContractDiff {
     }
     if followed(&previous.run, &renamed) != next.run {
         changes.push(Change::RunChanged);
+    }
+    if previous.steps != next.steps {
+        changes.push(Change::StepsChanged);
     }
     let added = needs::added(&next.needs, &previous.needs);
     if !added.is_none() {
@@ -338,12 +346,15 @@ pub fn consent(locked: Effect, upstream: Effect) -> Consent {
     }
 }
 
-/// What `lint` finds: a size cap passed, or text that addresses the model instead of describing an action.
+/// What `lint` finds: a size cap passed, text that addresses the model instead of describing an action, a step
+/// holding a connective the reader splits on, or a step stating a word another team would change.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum LintRule {
     SizeCap,
     AddressesModel,
+    Connective,
+    Literal,
 }
 
 /// One thing `lint` found, at the key path it concerns; reported at `add` and by `check`, never a refusal.
@@ -448,6 +459,7 @@ pub fn lint(m: &Manifest) -> Vec<Finding> {
             }
         }
     }
+    lint_steps(&mut findings, &m.steps);
     for (table, records) in [("examples", &m.examples), ("tests", &m.tests)] {
         let path = KeyPath::new([table]);
         cap_entries(
@@ -499,6 +511,59 @@ fn cap_entries(
             message: format!("{what} has {n} {unit}; the cap is {cap}"),
         });
     }
+}
+
+/// A playbook's steps: each under the utterance cap and clear of the model; one holding a connective the reader
+/// splits on is flagged, since an expanded sentence is never split and a noun phrase may hold an `and`; so is one
+/// stating a channel or an address, which another team would name otherwise.
+fn lint_steps(findings: &mut Vec<Finding>, steps: &[crate::manifest::Sentence]) {
+    for (i, sentence) in steps.iter().enumerate() {
+        let at = KeyPath::new(["steps", &i.to_string()]);
+        let text = sentence.to_string();
+        cap_chars(
+            findings,
+            &at,
+            &format!("step {}", i + 1),
+            &text,
+            UTTERANCE_CHARS,
+        );
+        addresses(findings, &at, &text);
+        if let Some(split) = reading::splits(&text, true).first() {
+            findings.push(Finding {
+                rule: LintRule::Connective,
+                path: at.clone(),
+                message: format!(
+                    "step {} holds \"{}\"; one step is one action",
+                    i + 1,
+                    split.word
+                ),
+            });
+        }
+        if let Some(literal) = literal(&text) {
+            findings.push(Finding {
+                rule: LintRule::Literal,
+                path: at.clone(),
+                message: format!(
+                    "step {} states \"{literal}\"; a word another team would change is a slot",
+                    i + 1
+                ),
+            });
+        }
+    }
+}
+
+/// A channel or an address written into a step's words — `#incident`, `ops@example.com` — which another team would
+/// name otherwise: the first one.
+fn literal(text: &str) -> Option<String> {
+    text.split_whitespace()
+        .map(|word| word.trim_matches(|c: char| matches!(c, ',' | '.' | ';' | ':' | '!' | '?')))
+        .find(|word| {
+            (word.starts_with('#') && word.len() > 1)
+                || word
+                    .split_once('@')
+                    .is_some_and(|(user, host)| !user.is_empty() && host.contains('.'))
+        })
+        .map(str::to_owned)
 }
 
 fn addresses(findings: &mut Vec<Finding>, path: &KeyPath, text: &str) {

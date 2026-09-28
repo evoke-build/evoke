@@ -676,6 +676,7 @@ fn weave_of(model: &Model) -> Weave {
             repair: None,
             shared: IndexMap::new(),
             after: spec.after(),
+            from: Vec::new(),
         })
         .collect();
     let binds: Vec<Binding> = model
@@ -709,6 +710,7 @@ fn weave_of(model: &Model) -> Weave {
         splits: Vec::new(),
         steps,
         excluded: Vec::new(),
+        folded: Vec::new(),
         binds,
         exclusive: exclusive(&effects),
         stages: model.stages.clone(),
