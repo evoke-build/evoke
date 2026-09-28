@@ -10,11 +10,9 @@ missing or unclear, and always asks before anything that cannot be undone.
 
 **Built to an exceptional standard.** Three rules define it, and [QUALITY.md](QUALITY.md) shows how each is kept.
 
-- **Every detail is measured.** On every change, tests check how `evoke` decides, case by case, and what it
-  prints, word for word.
+- **Every detail is measured.** Tests check how `evoke` decides, case by case, and what it prints, word for word.
 - **Every boundary is clear.** Each part has one job. The core that decides never touches a file or the network.
-- **Nothing is added on a hunch.** Before a feature is built, it is studied and its design is weighed against the
-  alternatives.
+- **Nothing is added on a hunch.** Every feature is studied, and its options weighed, before it is built.
 
 <p align="center"><a href="https://evoke.build/film.html"><img src="assets/film.jpg" alt="Software, by reflex. A film about where evoke is going." width="640"></a></p>
 

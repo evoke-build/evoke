@@ -7,19 +7,19 @@ standard, defined by three rules. This page shows how each rule is kept, and how
 
 What `evoke` must do is written down as examples a test can check, and it is built until they pass.
 
-| What                     | How it is checked                                                                                   |
-| :----------------------- | :-------------------------------------------------------------------------------------------------- |
-| What `evoke` prints      | Every recorded session in [spec/transcripts](spec/transcripts) is replayed against the built program, offline, and each line must match |
-| How it decides           | Each of the core's public operations has its cases in [spec/vectors](spec/vectors), run by the Rust tests and again through the TypeScript SDK |
-| Inputs no one wrote      | [Property tests](crates/evoke-core/tests) generate them, and check what must always hold: a step that cannot be undone never runs without a yes, and a change never runs beside another step. Each failure is shrunk to its smallest case |
-| Text built to break it   | The manifest reader and the reading of a sentence are [fuzzed](fuzz): fed random variations of real inputs, and neither may crash |
-| Its confidence           | [`evoke calibrate`](https://evoke.build/manual/use/calibrating.html) checks each confidence against your own examples and tests: a call given 0.85 should be right about 85 times in 100 |
-| The collection           | Each reflex under [reflexes/](reflexes/README.md) is checked as it stands in the repository: its manifest reads without a warning, and its program loads within the limits it declares |
-| The manual and the site  | Both are [built](mise-tasks/site) on every change, and each link between their pages must land on a page and an anchor that exist |
-| The Rust code            | Formatted, and the workspace held to the pedantic lints of clippy, Rust's linter, every warning an error |
-| Arithmetic               | The release build keeps [overflow checks](Cargo.toml), so an overflow is reported as a bug instead of becoming a wrong number |
-| The dependencies         | Each one the workspace uses has its reason [written beside it](Cargo.toml), and [an audit](deny.toml) checks their licences, known vulnerabilities and sources. The SDK depends on nothing at run time |
-| The tools                | Each is pinned to an exact version in [mise.toml](mise.toml)                                         |
+| What         | How it is checked                                                                                               |
+| :----------- | :-------------------------------------------------------------------------------------------------------------- |
+| Output       | Every recorded session in [spec/transcripts](spec/transcripts) is replayed against the built program, offline, and each line must match |
+| Decisions    | Each of the core's public operations has its cases in [spec/vectors](spec/vectors), run by the Rust tests and again through the TypeScript SDK |
+| Guarantees   | [Property tests](crates/evoke-core/tests) generate inputs no one wrote, and check what must always hold: a step that cannot be undone never runs without a yes, and a change never runs beside another step. Each failure is shrunk to its smallest case |
+| Parsing      | The manifest reader and the reading of a sentence are [fuzzed](fuzz): fed random variations of real inputs, and neither may crash |
+| Confidence   | [`evoke calibrate`](https://evoke.build/manual/use/calibrating.html) checks each confidence against your own examples and tests: a call given 0.85 should be right about 85 times in 100 |
+| Collection   | Each reflex under [reflexes/](reflexes/README.md) is checked as it stands in the repository: its manifest reads without a warning, and its program loads within the limits it declares |
+| Pages        | The manual and the site are [built](mise-tasks/site) on every change, and each link between their pages must land on a page and an anchor that exist |
+| Code         | Rust code is formatted, and the workspace is held to the pedantic lints of clippy, Rust's linter, with every warning an error |
+| Arithmetic   | The release build keeps [overflow checks](Cargo.toml), so an overflow is reported as a bug instead of becoming a wrong number |
+| Dependencies | Each one the workspace uses has its reason [written beside it](Cargo.toml), and [an audit](deny.toml) checks their licences, known vulnerabilities and sources. The SDK depends on nothing at run time |
+| Tools        | Each is pinned to an exact version in [mise.toml](mise.toml)                                                    |
 
 CI runs lint and the tests on every change to `main` and on every pull request. It runs the tests again under the
 oldest and the newest Node the SDK supports. On macOS it replays the sessions and checks the collection again,
