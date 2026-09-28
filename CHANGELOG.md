@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-09-28
+
 - Four recognizers beside the five: `pick = "date"`, `"time"`, `"amount"` and `"code"`. A date is read as the
   words say it, `tomorrow`, `next friday`, `the 14th`, `may fifth`, and reaches the body as a day of your
   machine's calendar, or of `EVOKE_TODAY`; a time as `17:30`; an amount as `{ amount, currency }`; a code, a
