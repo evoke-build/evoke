@@ -9,7 +9,8 @@
       "decided": [
         [
           {
-            "text": "find the suspect"
+            "text": "find the suspect",
+            "whole": true
           },
           {
             "outcome": "run",

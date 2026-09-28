@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "remind me every monday at nine and everyday at noon"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 26,
+        "end": 30,
+        "text": "nine"
+      },
+      "value": {
+        "type": "number",
+        "value": 9
+      }
+    },
+    {
+      "span": {
+        "start": 47,
+        "end": 51,
+        "text": "noon"
+      },
+      "value": {
+        "type": "time",
+        "value": "12:00"
+      }
+    }
+  ]
+}

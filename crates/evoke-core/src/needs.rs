@@ -11,6 +11,7 @@ use indexmap::IndexMap;
 use serde::de::Error as _;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
+use crate::calendar::Date;
 use crate::call::{Call, Value as Given};
 use crate::diagnostic::{At, Diagnostic, Fix};
 use crate::document::{self, Diagnostics, Document, Json, KeyPath, Node, Value};
@@ -466,6 +467,7 @@ pub fn resolve(
     active: &Active,
     config: &IndexMap<ConfigKey, String>,
     home: &str,
+    today: Date,
 ) -> Result<Policy, Diagnostic> {
     let mut policy = Policy {
         hosts: needs.hosts,
@@ -487,7 +489,7 @@ pub fn resolve(
                 Entry::Home(rest) => format!("{home}/{rest}"),
                 Entry::Absolute(path) => path.to_string(),
                 Entry::Value(name) => {
-                    let Some(value) = value_of(name, call, active, config, home) else {
+                    let Some(value) = value_of(name, call, active, config, home, today) else {
                         continue;
                     };
                     if !value.starts_with('/') {
@@ -521,9 +523,10 @@ fn value_of(
     active: &Active,
     config: &IndexMap<ConfigKey, String>,
     home: &str,
+    today: Date,
 ) -> Option<String> {
     if active.args.contains_key(name.as_str()) {
-        return match call.args.get(name.as_str())?.under_home(home) {
+        return match call.args.get(name.as_str())?.received(home, today) {
             Json::String(text) => Some(text),
             other => Some(other.to_string()),
         };
@@ -822,6 +825,11 @@ pub fn consent(locked: &Needs, upstream: &Needs) -> Consent {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The day the needs are resolved on: any, since no test names a date.
+    fn today() -> Date {
+        "2026-09-28".parse().unwrap()
+    }
     use crate::diagnostic::File;
     use crate::document::Text;
     use crate::manifest::manifest;
@@ -1086,6 +1094,7 @@ mod tests {
             &active,
             &config,
             "/Users/me",
+            today(),
         )
         .unwrap();
         assert_eq!(paths(&policy.reads), ["/Users/me/notes"]);
@@ -1102,6 +1111,7 @@ mod tests {
             &active,
             &config,
             "/Users/me",
+            today(),
         )
         .unwrap_err();
         assert_eq!(
@@ -1116,7 +1126,15 @@ mod tests {
             }
         );
         let bad = IndexMap::from([(ConfigKey::new("file").unwrap(), "notes.txt".to_owned())]);
-        let refused = resolve(&active.needs, &call(&[]), &active, &bad, "/Users/me").unwrap_err();
+        let refused = resolve(
+            &active.needs,
+            &call(&[]),
+            &active,
+            &bad,
+            "/Users/me",
+            today(),
+        )
+        .unwrap_err();
         assert_eq!(
             refused.fix,
             Fix::ConfigSet {

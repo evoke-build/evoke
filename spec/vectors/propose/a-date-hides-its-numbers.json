@@ -1,0 +1,36 @@
+{
+  "input": {
+    "input": "on march 7 at the 14th"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 3,
+        "end": 10,
+        "text": "march 7"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "month": 3,
+          "day": 7
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 14,
+        "end": 22,
+        "text": "the 14th"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "day",
+          "day": 14
+        }
+      }
+    }
+  ]
+}

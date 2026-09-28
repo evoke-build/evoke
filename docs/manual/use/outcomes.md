@@ -64,8 +64,10 @@ volume set to 40%
 ```
 
 - A choice takes its number or its own text. A pick takes what you type, read the same way as the input. A pick
-  is a number, a duration, an address, a URL, or a quoted phrase. A quoted argument takes the whole line when
-  nothing is quoted.
+  is a number, a duration, an address, a URL, a quoted phrase, a date, a time, an amount or a code. A quoted
+  argument takes the whole line when nothing is quoted; a code takes a quoted one.
+- A pick whose manifest names a `recent` field lists what the bodies of this session returned under it, `From
+  which release?  [1] 4.12.0  [2] 4.11.3  > `, and a number picks one ([Arguments](../author/arguments.md#a-value-recalled)).
 - An answer that does not fit is asked again, with the reason on the line. An empty line asks again.
 - `+` at a vocabulary's prompt asks `Word?` and `Meaning?`, then `Path?` when a reflex's declaration takes the
   word's value as a path, writes the word to your vocabulary, and goes on.

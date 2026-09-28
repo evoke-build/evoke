@@ -1,0 +1,1 @@
+check checkout's errors, deploys and logs in eu-west, find the deploy they point to, roll it back, then post to #incident and update the status page

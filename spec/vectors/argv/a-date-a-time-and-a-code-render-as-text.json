@@ -1,0 +1,101 @@
+{
+  "input": {
+    "chosen": {
+      "reflex": "ticket",
+      "args": {
+        "flight": {
+          "type": "pick",
+          "span": {
+            "start": 0,
+            "end": 6,
+            "text": "TP1043"
+          },
+          "value": {
+            "type": "code",
+            "value": "TP1043"
+          }
+        },
+        "day": {
+          "type": "pick",
+          "span": {
+            "start": 0,
+            "end": 8,
+            "text": "tomorrow"
+          },
+          "value": {
+            "type": "date",
+            "value": {
+              "type": "offset",
+              "days": 1
+            }
+          }
+        },
+        "at": {
+          "type": "pick",
+          "span": {
+            "start": 0,
+            "end": 3,
+            "text": "6pm"
+          },
+          "value": {
+            "type": "time",
+            "value": "18:00"
+          }
+        }
+      },
+      "call": "ticket flight=\"TP1043\" day=\"tomorrow\" at=\"6pm\"",
+      "effect": "read"
+    },
+    "active": {
+      "effect": "read",
+      "run": [
+        "ticket",
+        "--flight",
+        "{flight}",
+        "--on",
+        "{day}",
+        "--at",
+        "{at}"
+      ],
+      "confirm": "Print the ticket for {flight}?",
+      "args": {
+        "flight": {
+          "ask": "Which flight?",
+          "pick": "code",
+          "optional": false,
+          "was": []
+        },
+        "day": {
+          "ask": "On which day?",
+          "pick": "date",
+          "optional": false,
+          "was": []
+        },
+        "at": {
+          "ask": "At what time?",
+          "pick": "time",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "ticket"
+      ]
+    },
+    "home": "/Users/me",
+    "today": "2026-05-05"
+  },
+  "expect": {
+    "ok": [
+      "ticket",
+      "--flight",
+      "TP1043",
+      "--on",
+      "2026-05-06",
+      "--at",
+      "18:00"
+    ]
+  }
+}

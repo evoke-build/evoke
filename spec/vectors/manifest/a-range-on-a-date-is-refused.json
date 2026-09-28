@@ -1,0 +1,38 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "book"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Book a seat on a flight.\"\nconfirm     = \"Book {flight}?\"\nrun         = \"book.mts\"\n\n[args.flight]\nask   = \"On which day?\"\npick  = \"date\"\nrange = [1, 31]\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "book",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "book"
+          },
+          "line": 10,
+          "column": 1
+        },
+        "message": "args.flight has range, which only number and duration take",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "book"
+            },
+            "line": 10,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

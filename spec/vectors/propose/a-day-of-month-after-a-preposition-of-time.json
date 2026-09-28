@@ -1,0 +1,35 @@
+{
+  "input": {
+    "input": "pay it on the 14th and remind me by the twenty second"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 10,
+        "end": 18,
+        "text": "the 14th"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "day",
+          "day": 14
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 36,
+        "end": 53,
+        "text": "the twenty second"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "day",
+          "day": 22
+        }
+      }
+    }
+  ]
+}

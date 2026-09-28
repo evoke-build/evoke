@@ -238,13 +238,15 @@ export type Source = { options: Options } | { vocab: VocabName } | Pick
 /** The author's closed set, never empty: key = what the body receives, value = what it means. */
 export type Options = Record<OptionKey, Clean>
 
-/** A built-in recognizer over the input; a range only where a number exists, whole seconds for a duration. */
+/** A built-in recognizer over the input; a range only where a number exists, whole seconds for a duration;
+ *  `recent` the field of an earlier result — one a reflex's `yields` names — whose values the ask offers back
+ *  when the words state none. */
 export type Pick =
-  | { pick: "number" | "duration"; range?: Range }
-  | { pick: "email" | "url" | "quoted" }
+  | { pick: "number" | "duration"; range?: Range; recent?: FieldName }
+  | { pick: "email" | "url" | "quoted" | "date" | "time" | "amount" | "code"; recent?: FieldName }
 
-/** One of the five recognizers, by the name a manifest's `pick` writes. */
-export type Recognizer = "number" | "duration" | "email" | "url" | "quoted"
+/** One of the nine recognizers, by the name a manifest's `pick` writes. */
+export type Recognizer = "number" | "duration" | "email" | "url" | "quoted" | "date" | "time" | "amount" | "code"
 
 /** What a field of a body's `data` holds, for a later step to take: a value the recognizer reads, or a list of records with such fields. Contract. */
 export type Yield = Recognizer | { each: Record<FieldName, Recognizer> }
@@ -556,11 +558,21 @@ export interface State {
   request: Input
 }
 
-/** One call of `answer`: the state, the questions, and the candidate spans the pick questions were built from. */
+/** One call of `answer`: the state, the questions, the candidate spans the pick questions were built from, and
+ *  per pick question the values recalled from the process's results, offered at the ask and never asked of the
+ *  adapter. */
 export interface Request {
   state: State
   questions: Record<QuestionId, Question>
   proposed: Proposed[]
+  recent?: Record<QuestionId, string[]>
+}
+
+/** A result the process holds, newest first as the host hands them: the reflex that returned it and its `data`,
+ *  for an ask to recall a value from the field a `recent` pick names. */
+export interface Recent {
+  reflex: LocalName
+  data: Json
 }
 
 /** A finite number in `[0, 1]`. */
@@ -675,7 +687,7 @@ export interface Active {
 /** A question that does not depend on the input, or a pick whose options exist only per input. */
 export type Slot =
   | Question
-  | { type: "pick"; ask: Clean; pick: Recognizer; optional: boolean }
+  | { type: "pick"; ask: Clean; pick: Recognizer; optional: boolean; recent?: FieldName }
 
 // propose.rs
 
@@ -685,13 +697,36 @@ export interface Proposed {
   value: PickValue
 }
 
-/** What a pick hands the body: the number, the seconds, or the text. */
+/** What a pick reads: the number, the seconds, the text, a day's reading, a clock time, an amount, a code. */
 export type PickValue =
   | { type: "number"; value: number }
   | { type: "duration"; value: number } // whole seconds
   | { type: "email"; value: Clean }
   | { type: "url"; value: Clean }
   | { type: "quoted"; value: Clean }
+  | { type: "date"; value: Day }
+  | { type: "time"; value: string } // HH:MM
+  | { type: "amount"; value: Amount }
+  | { type: "code"; value: Clean }
+
+// calendar.rs
+
+/** A day as the words state it, resolved against today at the body's door: an offset in days, a weekday — the
+ *  next such day, or `next`, `this` or `last` — a day of the month, or a calendar day with or without its year. */
+export type Day =
+  | { type: "offset"; days: number }
+  | { type: "weekday"; weekday: Weekday; which?: Which }
+  | { type: "day"; day: number }
+  | { type: "calendar"; year?: number; month: number; day: number }
+
+export type Weekday = "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
+export type Which = "next" | "this" | "last"
+
+/** An amount of money: the figure, finite and never negative, and its currency as three capitals. */
+export interface Amount {
+  amount: number
+  currency: string
+}
 
 // ---- decide, call, run ----
 
@@ -751,7 +786,7 @@ export type Why =
 export type Choices =
   | { type: "options"; options: Record<OptionKey, Clean> }
   | { type: "vocab"; words: Record<Word, Clean> }
-  | { type: "pick"; pick: Recognizer }
+  | { type: "pick"; pick: Recognizer; recent?: string[] }
 
 /** The outcome, tagged by `outcome` on the wire, the chosen call's fields flattened beside it. */
 export type Decision =
@@ -849,11 +884,13 @@ export interface Envelope {
 
 // ---- weave ----
 
-/** A text for the foundation to decide: over the reflexes the tags allow, or one reflex alone. */
+/** A text for the foundation to decide: over the reflexes the tags allow, or one reflex alone; `whole` when the
+ *  text is the whole request, which alone memory reaches. */
 export interface Asked {
   text: string
   tags?: Tag[]
   only?: LocalName
+  whole?: boolean
 }
 
 /** What the plan needs a host to do next: judge the split points, name each reference's step, or decide texts. */
@@ -1198,6 +1235,7 @@ export type Change =
   | { type: "arg_renamed"; from: ArgName; to: ArgName }
   | { type: "source_changed"; arg: ArgName }
   | { type: "range_changed"; arg: ArgName }
+  | { type: "recent_changed"; arg: ArgName }
   | { type: "run_changed" }
   /** A playbook's steps moved: one added, removed, reworded or reordered. Major. */
   | { type: "steps_changed" }
@@ -1234,8 +1272,9 @@ export type Consent =
   | { type: "needs_accept"; locked: Effect; upstream: Effect }
 
 /** What `lint` finds: a size cap passed, text that addresses the model instead of describing an action, a step
- *  holding a connective the reader splits on, or a step stating a word another team would change. */
-export type LintRule = "size_cap" | "addresses_model" | "connective" | "literal"
+ *  holding a connective the reader splits on, a step stating a word another team would change, or a step opening
+ *  `check that <noun>`, which refers to an earlier step where `check whether` is meant. */
+export type LintRule = "size_cap" | "addresses_model" | "connective" | "literal" | "reference"
 
 /** One thing `lint` found, at the key path it concerns; reported at `add` and by `check`, never a refusal. */
 export interface Finding {

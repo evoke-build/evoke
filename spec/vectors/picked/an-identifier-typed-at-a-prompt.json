@@ -1,0 +1,18 @@
+{
+  "input": {
+    "text": "4.12.0",
+    "recognizer": "code"
+  },
+  "expect": {
+    "type": "pick",
+    "span": {
+      "start": 0,
+      "end": 6,
+      "text": "4.12.0"
+    },
+    "value": {
+      "type": "code",
+      "value": "4.12.0"
+    }
+  }
+}

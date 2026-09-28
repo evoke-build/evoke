@@ -1,0 +1,22 @@
+{
+  "input": {
+    "text": "may 5",
+    "recognizer": "date"
+  },
+  "expect": {
+    "type": "pick",
+    "span": {
+      "start": 0,
+      "end": 5,
+      "text": "may 5"
+    },
+    "value": {
+      "type": "date",
+      "value": {
+        "type": "calendar",
+        "month": 5,
+        "day": 5
+      }
+    }
+  }
+}

@@ -20,7 +20,7 @@ takes = "stock"
 takes = "quotes"
 
 [yields]
-items = { each = { sku = "quoted" } }
+items = { each = { sku = "code" } }
 
 [examples]
 "work out the shortfall"        = {}

@@ -11,7 +11,7 @@ run = "meeting.mts"
 
 [args.day]
 ask      = "To which day?"
-vocab    = "days"
+pick     = "date"
 optional = true
 
 [args.calendar]

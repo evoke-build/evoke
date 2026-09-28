@@ -1,0 +1,49 @@
+{
+  "input": {
+    "input": "pay €1,200, $50 and £19.99"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 4,
+        "end": 10,
+        "text": "€1,200"
+      },
+      "value": {
+        "type": "amount",
+        "value": {
+          "amount": 1200,
+          "currency": "EUR"
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 12,
+        "end": 15,
+        "text": "$50"
+      },
+      "value": {
+        "type": "amount",
+        "value": {
+          "amount": 50,
+          "currency": "USD"
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 20,
+        "end": 26,
+        "text": "£19.99"
+      },
+      "value": {
+        "type": "amount",
+        "value": {
+          "amount": 19.99,
+          "currency": "GBP"
+        }
+      }
+    }
+  ]
+}

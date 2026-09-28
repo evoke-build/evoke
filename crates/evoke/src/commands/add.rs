@@ -562,8 +562,15 @@ fn stolen(
     let readings = {
         let busy = terminal::busy_over("checking for thefts", examples.len());
         threads::try_each(&examples, |case| {
-            let request = request(plan, case.utterance.text().as_str(), &[], None, Scope::Fits)
-                .map_err(Exit::Human)?;
+            let request = request(
+                plan,
+                case.utterance.text().as_str(),
+                &[],
+                None,
+                Scope::Fits,
+                &[],
+            )
+            .map_err(Exit::Human)?;
             let raw = adapter
                 .answer(&request, Deadline::after(plan.deadline()))
                 .map_err(Exit::Adapter)?;
@@ -599,7 +606,7 @@ fn reached(
         .filter(|case| case.reflex == *name)
         .collect();
     let decide = |text: &str| -> Result<Decision, Exit> {
-        let request = request(plan, text, &[], None, Scope::Full).map_err(Exit::Human)?;
+        let request = request(plan, text, &[], None, Scope::Full, &[]).map_err(Exit::Human)?;
         let raw = adapter
             .answer(&request, Deadline::after(plan.deadline()))
             .map_err(Exit::Adapter)?;

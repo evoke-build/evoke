@@ -1,0 +1,12 @@
+{
+  "input": {
+    "set": {
+      "$ref": "fixtures/installed-booking.json"
+    }
+  },
+  "expect": {
+    "ok": {
+      "$ref": "fixtures/plan-booking.json"
+    }
+  }
+}

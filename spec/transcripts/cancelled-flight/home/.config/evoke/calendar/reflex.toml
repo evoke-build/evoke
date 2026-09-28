@@ -11,8 +11,8 @@ run = "calendar.mts"
 returns = "calendar"
 
 [args.day]
-ask   = "Which day?"
-vocab = "days"
+ask  = "Which day?"
+pick = "date"
 
 [examples]
 "what is on my calendar tomorrow" = {}

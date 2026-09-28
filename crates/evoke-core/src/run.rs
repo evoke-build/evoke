@@ -1,14 +1,15 @@
 //! What a body receives: the envelope a file body reads on stdin, or the argv a program is spawned with. In: the
-//! chosen call, its active reflex, the whole results the plan handed it, the input, the deadline and the home.
-//! Out: an `Envelope` — config still references, which the host resolves; a taken argument the plan did not hand
-//! is refused, so no host runs a taker without its data — or an argv, where a placeholder whose argument is
-//! unstated is dropped and a value starting with `-` is refused. In both, a word's value and a plain setting
-//! that name a path under the home, `~/Desktop`, are expanded to it: the body, the argv and the declaration see
-//! one path.
+//! chosen call, its active reflex, the whole results the plan handed it, the input, the deadline, the home and
+//! the day. Out: an `Envelope` — config still references, which the host resolves; a taken argument the plan did
+//! not hand is refused, so no host runs a taker without its data — or an argv, where a placeholder whose argument
+//! is unstated is dropped and a value starting with `-` is refused. In both, a date is resolved against the day
+//! the host read, and a word's value and a plain setting that name a path under the home, `~/Desktop`, are
+//! expanded to it: the body, the argv and the declaration see one path and one day.
 
 use indexmap::IndexMap;
 use serde::Serialize;
 
+use crate::calendar::Date;
 use crate::call::{Value, expand_home};
 use crate::decide::Chosen;
 use crate::diagnostic::{Diagnostic, Fix};
@@ -20,8 +21,8 @@ use crate::project::Setting;
 use crate::text::Input;
 
 /// One JSON line on the loader's stdin. `args` carries values: an option key, a vocabulary word's `value` if set
-/// else the word, a pick's value, `true` for a flag, and a whole result as its source returned it. An inline
-/// body has no `run`.
+/// else the word, a pick's value — a date as `YYYY-MM-DD` — `true` for a flag, and a whole result as its source
+/// returned it. An inline body has no `run`.
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Envelope {
     pub reflex: LocalName,
@@ -42,6 +43,7 @@ pub fn envelope(
     input: &Input,
     deadline: Millis,
     home: &str,
+    today: Date,
 ) -> Result<Envelope, Diagnostic> {
     let reflex = &chosen.call.reflex;
     let missing: Vec<&str> = active
@@ -67,7 +69,7 @@ pub fn envelope(
         .call
         .args
         .iter()
-        .map(|(name, value)| (name.clone(), value.under_home(home)))
+        .map(|(name, value)| (name.clone(), value.received(home, today)))
         .collect();
     for arg in active.takes.keys() {
         if let Some(data) = taken.get(arg) {
@@ -97,7 +99,12 @@ pub fn envelope(
 }
 
 /// The argv of a chosen call: the program, then each element as written or as its argument's value.
-pub fn argv(chosen: &Chosen, active: &Active, home: &str) -> Result<Vec<String>, Diagnostic> {
+pub fn argv(
+    chosen: &Chosen,
+    active: &Active,
+    home: &str,
+    today: Date,
+) -> Result<Vec<String>, Diagnostic> {
     let reflex = &chosen.call.reflex;
     let Run::Argv { program, rest } = &active.run else {
         return Err(refused(
@@ -113,7 +120,7 @@ pub fn argv(chosen: &Chosen, active: &Active, home: &str) -> Result<Vec<String>,
                 let Some(value) = chosen.call.args.get(name) else {
                     continue;
                 };
-                let text = text(value, home);
+                let text = text(value, home, today);
                 if text.starts_with('-') {
                     return Err(refused(
                         reflex,
@@ -130,8 +137,8 @@ pub fn argv(chosen: &Chosen, active: &Active, home: &str) -> Result<Vec<String>,
 }
 
 /// A value as one argv element: the envelope's value as a person would type it.
-fn text(value: &Value, home: &str) -> String {
-    match value.under_home(home) {
+fn text(value: &Value, home: &str, today: Date) -> String {
+    match value.received(home, today) {
         Json::String(text) => text,
         Json::Number(number) => number
             .as_f64()

@@ -255,7 +255,8 @@
         ],
         [
           {
-            "text": "turn the den lights off and put on some music"
+            "text": "turn the den lights off and put on some music",
+            "whole": true
           },
           {
             "outcome": "run",

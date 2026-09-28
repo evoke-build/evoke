@@ -6,12 +6,13 @@ export { load } from "./project.ts"
 export type { DecideOptions, Handlers, LoadOptions, Project, ReflexStatus, RunOptions, Turn, Vocab, WeaveOptions, Woven, WovenRound, WovenStep } from "./project.ts"
 export { playbook, reflex } from "./reflex.ts"
 export type { Args, Carried, Inline, InlineArg, InlineManifest, InlineRecords, InlineStep, ReflexesOf } from "./reflex.ts"
-export type { Abstain, Ask, Confirm, Decision, Flag, Given, Handled, Option, Pick, Plain, AnyReflexes, Run, Value, Values, Word } from "./decision.ts"
+export type { Abstain, Ask, Confirm, Decision, Flag, Given, Handled, Option, Pick, Plain, AnyReflexes, Received, ReceivedValues, Run, Value, Values, Word } from "./decision.ts"
 export type { Context, Reflex, Result } from "./runtime.ts"
 export type { Adapter, Trace } from "./adapter.ts"
 export { DiagnosticError, EvokeError, FailureError, FaultError } from "./errors.ts"
 export type { Problem } from "./errors.ts"
 export type {
+  Amount,
   Answer,
   Because,
   Binding,
@@ -20,6 +21,7 @@ export type {
   Choices,
   Contained,
   Contender,
+  Day,
   Diagnostic,
   Effect,
   Fault,
@@ -35,6 +37,7 @@ export type {
   Question,
   NonEmpty,
   Raw,
+  Recent,
   Recognizer,
   Span,
   State,

@@ -12,11 +12,24 @@ use crate::adapter::{
 };
 use crate::call::{Call, Value, Written, quoted, render};
 use crate::diagnostic::{Diagnostic, Fix};
-use crate::manifest::{self, Argument, Effect, Kind, Pick, Piece, Range, Recognizer, Source};
+use crate::document::Json;
+use crate::manifest::{
+    self, Argument, Effect, Kind, Pick, Piece, Range, Recognizer, Source, Yield,
+};
 use crate::name::{ArgName, FieldName, LocalName, OptionKey, Tag, VocabName, Word};
 use crate::plan::{Active, Plan, Slot, unstated as unstated_key, unstated_text};
 use crate::propose::{PickValue, propose};
 use crate::text::{Clean, Input, NonEmpty, Span};
+
+/// The most values an ask lists from the session's results.
+const MOST_RECENT: usize = 5;
+
+/// A result a body of this session returned, as the host hands it to `request`: the reflex, and its `data`.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Recent {
+    pub reflex: LocalName,
+    pub data: Json,
+}
 
 /// What a request asks: everything, or the route alone — the conflict test at `add`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -81,13 +94,22 @@ pub enum Why {
     OutOfRange { span: Span, range: Range<f64> },
 }
 
-/// What a person may answer with; a vocabulary also prompts to add a word.
+/// What a person may answer with; a vocabulary also prompts to add a word; a pick that names a yielded field
+/// lists the values the session's results returned under it, when there are any.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
 pub enum Choices {
-    Options { options: IndexMap<OptionKey, Clean> },
-    Vocab { words: IndexMap<Word, Clean> },
-    Pick { pick: Recognizer },
+    Options {
+        options: IndexMap<OptionKey, Clean>,
+    },
+    Vocab {
+        words: IndexMap<Word, Clean>,
+    },
+    Pick {
+        pick: Recognizer,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        recent: Option<Vec<String>>,
+    },
 }
 
 /// The outcome, tagged by `outcome` on the wire, the chosen call's fields flattened beside it.
@@ -384,13 +406,15 @@ impl Prompt {
 
 /// The one call of `answer`: an input over the cap is refused; `--tag` narrows the set, or `only` narrows it to
 /// one reflex — what a weave decides a fragment or a rewritten step by; a pick is asked over its candidates, or
-/// not at all.
+/// not at all. `recent` is what the session's bodies returned, newest first: a pick that names a yielded field
+/// keeps the values under it that its recognizer reads whole, for its ask to list; no question offers them.
 pub fn request(
     plan: &Plan,
     input: &str,
     tags: &[Tag],
     only: Option<&LocalName>,
     scope: Scope,
+    recent: &[Recent],
 ) -> Result<Request, Diagnostic> {
     let input = Input::new(input).map_err(|why| Diagnostic {
         reflex: None,
@@ -432,14 +456,37 @@ pub fn request(
             }
         }
     }
+    let mut recalled = IndexMap::new();
     if scope == Scope::Full {
         for (id, slot) in plan.slots() {
-            if !id.reflex().is_some_and(|name| narrowed.contains(&name)) {
+            let Some(reflex) = id.reflex().filter(|name| narrowed.contains(name)) else {
                 continue;
-            }
+            };
             let question = match slot {
                 Slot::Ready(question) => question.clone(),
-                Slot::Pick { ask, pick, .. } => {
+                Slot::Pick {
+                    ask,
+                    pick,
+                    recent: field,
+                    ..
+                } => {
+                    if let (Some(field), QuestionId::Arg(_, arg)) = (field, id) {
+                        let values = plan
+                            .active()
+                            .get(reflex)
+                            .and_then(|active| active.args.get(arg))
+                            .map(|argument| match &argument.kind {
+                                Kind::Value {
+                                    source: Source::Pick(pick),
+                                    ..
+                                } => recalled_values(plan, recent, field, pick),
+                                _ => Vec::new(),
+                            })
+                            .unwrap_or_default();
+                        if !values.is_empty() {
+                            recalled.insert(id.clone(), values);
+                        }
+                    }
                     let options: IndexMap<Key, Text> = proposed
                         .iter()
                         .filter(|proposed| proposes(*pick, &proposed.value))
@@ -467,7 +514,106 @@ pub fn request(
         state: State { request: input },
         questions,
         proposed,
+        recent: recalled,
     })
+}
+
+/// The values of `field` among the session's results, newest first: each read whole by the pick's recognizer
+/// as a body yields it and inside its range, distinct, five at most. A result of an inactive reflex, and a
+/// field its manifest does not yield, count for nothing.
+fn recalled_values(plan: &Plan, results: &[Recent], field: &FieldName, pick: &Pick) -> Vec<String> {
+    let mut kept: Vec<String> = Vec::new();
+    for result in results {
+        let Some(active) = plan.active().get(&result.reflex) else {
+            continue;
+        };
+        for text in under_field(&active.yields, field, &result.data) {
+            if kept.len() == MOST_RECENT {
+                return kept;
+            }
+            if kept.contains(&text) {
+                continue;
+            }
+            let Some(Value::Pick { value, .. }) = yielded(&text, pick.recognizer()) else {
+                continue;
+            };
+            if out_of_range(pick, &value).is_none() {
+                kept.push(text);
+            }
+        }
+    }
+    kept
+}
+
+/// The values a result holds under `field`, strung as a bound value is: the field itself, or the field of each
+/// record of a list, by the kind the manifest yields it as.
+fn under_field(yields: &IndexMap<FieldName, Yield>, field: &FieldName, data: &Json) -> Vec<String> {
+    let Some(data) = data.as_object() else {
+        return Vec::new();
+    };
+    let mut values = Vec::new();
+    for (name, yield_) in yields {
+        match yield_ {
+            Yield::Kind(kind) if name == field => {
+                values.extend(
+                    data.get(name.as_str())
+                        .and_then(|value| scalar(value, *kind)),
+                );
+            }
+            Yield::Each(fields) => {
+                if let Some(kind) = fields.get(field)
+                    && let Some(records) = data.get(name.as_str()).and_then(Json::as_array)
+                {
+                    values.extend(records.iter().filter_map(|record| {
+                        record
+                            .get(field.as_str())
+                            .and_then(|value| scalar(value, *kind))
+                    }));
+                }
+            }
+            Yield::Kind(_) => {}
+        }
+    }
+    values
+}
+
+/// A string or a number of a result's data as text a recognizer reads: a number under a `duration` field as
+/// `<n> seconds`; anything else is nothing to take.
+#[must_use]
+pub fn scalar(value: &Json, kind: Recognizer) -> Option<String> {
+    match value {
+        Json::String(text) => Some(text.clone()),
+        Json::Number(number) => {
+            let text = number
+                .as_i64()
+                .map_or_else(|| number.to_string(), |i| i.to_string());
+            Some(if kind == Recognizer::Duration {
+                format!("{text} seconds")
+            } else {
+                text
+            })
+        }
+        _ => None,
+    }
+}
+
+/// Text a body yielded, or a branch listed, read whole by the kind: as `picked` reads it, but a date only with
+/// its year and a time only as `HH:MM`, since a value that depends on the day names nothing a step can take.
+#[must_use]
+pub fn yielded(text: &str, kind: Recognizer) -> Option<Value> {
+    let value = picked(text, kind)?;
+    let stands = match &value {
+        Value::Pick {
+            value: PickValue::Date { value },
+            ..
+        } => value.is_absolute(),
+        Value::Pick {
+            value: PickValue::Time { value },
+            ..
+        } => text.trim() == value.to_string(),
+        _ => true,
+    };
+    stands.then_some(value)
 }
 
 /// Nothing to ask about: the first inactive reflex's first problem, nothing installed, or a tag no reflex carries.
@@ -503,16 +649,48 @@ pub(crate) fn candidate(span: &Span) -> Key {
     Key::new(&format!("{}-{}", span.start(), span.end())).expect("a candidate key has text")
 }
 
-/// Whether a candidate is one the recognizer proposes.
+/// Whether a candidate is one the recognizer proposes; a code argument also takes a quoted candidate whose text
+/// reads as a code whole.
 fn proposes(recognizer: Recognizer, value: &PickValue) -> bool {
-    matches!(
-        (recognizer, value),
+    match (recognizer, value) {
         (Recognizer::Number, PickValue::Number { .. })
-            | (Recognizer::Duration, PickValue::Seconds { .. })
-            | (Recognizer::Email, PickValue::Email { .. })
-            | (Recognizer::Url, PickValue::Url { .. })
-            | (Recognizer::Quoted, PickValue::Quoted { .. })
-    )
+        | (Recognizer::Duration, PickValue::Seconds { .. })
+        | (Recognizer::Email, PickValue::Email { .. })
+        | (Recognizer::Url, PickValue::Url { .. })
+        | (Recognizer::Quoted, PickValue::Quoted { .. })
+        | (Recognizer::Date, PickValue::Date { .. })
+        | (Recognizer::Time, PickValue::Time { .. })
+        | (Recognizer::Amount, PickValue::Amount { .. })
+        | (Recognizer::Code, PickValue::Code { .. }) => true,
+        (Recognizer::Code, PickValue::Quoted { value }) => coded(value).is_some(),
+        _ => false,
+    }
+}
+
+/// The text between quotes as a code, when it reads as one whole.
+fn coded(text: &Clean) -> Option<Clean> {
+    let input = Input::new(text.as_str()).ok()?;
+    let whole = input.as_str().chars().count();
+    propose(&input)
+        .into_iter()
+        .find_map(|proposed| match proposed.value {
+            PickValue::Code { value }
+                if proposed.span.start() == 0 && proposed.span.end() == whole =>
+            {
+                Some(value)
+            }
+            _ => None,
+        })
+}
+
+/// A candidate's value as the argument's pick takes it: a quoted code as the code, every other as read.
+fn taken_as(recognizer: Recognizer, value: &PickValue) -> PickValue {
+    match (recognizer, value) {
+        (Recognizer::Code, PickValue::Quoted { value }) => PickValue::Code {
+            value: value.clone(),
+        },
+        _ => value.clone(),
+    }
 }
 
 /// Every answer validated against its question and resolved to the keys offered.
@@ -650,9 +828,10 @@ struct Reader<'a> {
     answers: Answers<'a>,
 }
 
-/// What one argument's judgment settles: a value that may consume a span, a missing value, or nothing.
+/// What one argument's judgment settles: a value with the spans it consumes — a pick's own, or every typed
+/// candidate a word covers — a missing value, or nothing.
 enum Settled<'a> {
-    Value(Value, Option<&'a Span>),
+    Value(Value, Vec<&'a Span>),
     Missing(Missing),
     Nothing,
 }
@@ -709,17 +888,19 @@ impl<'a> Reader<'a> {
                 .get(&question)
                 .zip(self.answers.get(&question));
             let Some((Question::Choice(choice), answer)) = asked else {
-                // A pick with no candidate is not asked and reads unstated.
+                // A pick with no candidate is not asked and reads unstated; its ask lists what the session's
+                // results returned, when the request kept any.
                 if let Some(source) = required(argument) {
-                    missing.push(unstated(self.plan, &reflex, arg, argument, source));
+                    let recent = self.recalled(&question);
+                    missing.push(unstated(self.plan, &reflex, arg, argument, source, recent));
                 }
                 continue;
             };
             let judgment = judge(question, argument, choice, answer)?;
             match self.settle(&reflex, arg, argument, choice, &judgment)? {
-                Settled::Value(value, span) => {
+                Settled::Value(value, spans) => {
                     args.insert(arg.clone(), value);
-                    consumed.extend(span);
+                    consumed.extend(spans);
                 }
                 Settled::Missing(unsettled) => missing.push(unsettled),
                 Settled::Nothing => {}
@@ -757,14 +938,17 @@ impl<'a> Reader<'a> {
         let top = &judgment.top;
         let malformed = |message: String| malformed(judgment.question.clone(), message);
         let source = match &argument.kind {
-            Kind::Flag if top.as_str() == "yes" => return Ok(Settled::Value(Value::Flag, None)),
+            Kind::Flag if top.as_str() == "yes" => {
+                return Ok(Settled::Value(Value::Flag, Vec::new()));
+            }
             Kind::Flag => return Ok(Settled::Nothing),
             Kind::Value { source, .. } => source,
         };
         if Some(top) == choice.otherwise() {
             return Ok(match required(argument) {
                 Some(source) => {
-                    Settled::Missing(unstated(self.plan, reflex, arg, argument, source))
+                    let recent = self.recalled(&judgment.question);
+                    Settled::Missing(unstated(self.plan, reflex, arg, argument, source, recent))
                 }
                 None => Settled::Nothing,
             });
@@ -776,11 +960,23 @@ impl<'a> Reader<'a> {
                     .ok_or_else(|| malformed(format!("\"{top}\" is not an option")))?;
                 Value::Option { key: key.clone() }
             }
-            Source::Vocab(vocabulary) => worded(
-                self.plan,
-                vocabulary,
-                Word::new(top.as_str()).map_err(malformed)?,
-            ),
+            Source::Vocab(vocabulary) => {
+                let word = Word::new(top.as_str()).map_err(malformed)?;
+                // A word said and used is no unused span: every typed candidate that is its text is consumed,
+                // so `monday` under a vocabulary of days is the word, and the date it reads as caps nothing.
+                let spoken = word.as_str().to_lowercase();
+                let covered: Vec<&Span> = self
+                    .request
+                    .proposed
+                    .iter()
+                    .filter(|proposed| {
+                        proposed.value.is_typed()
+                            && proposed.span.text().as_str().to_lowercase() == spoken
+                    })
+                    .map(|proposed| &proposed.span)
+                    .collect();
+                return Ok(Settled::Value(worded(self.plan, vocabulary, word), covered));
+            }
             Source::Pick(pick) => {
                 let proposed = self
                     .request
@@ -791,7 +987,8 @@ impl<'a> Reader<'a> {
                             && proposes(pick.recognizer(), &proposed.value)
                     })
                     .ok_or_else(|| malformed(format!("\"{top}\" is not a candidate")))?;
-                if let Some(range) = out_of_range(pick, &proposed.value) {
+                let value = taken_as(pick.recognizer(), &proposed.value);
+                if let Some(range) = out_of_range(pick, &value) {
                     return Ok(Settled::Missing(Missing {
                         arg: arg.clone(),
                         ask: argument.ask.clone(),
@@ -801,19 +998,25 @@ impl<'a> Reader<'a> {
                         },
                         choices: Choices::Pick {
                             pick: pick.recognizer(),
+                            recent: self.recalled(&judgment.question),
                         },
                     }));
                 }
                 return Ok(Settled::Value(
                     Value::Pick {
                         span: proposed.span.clone(),
-                        value: proposed.value.clone(),
+                        value,
                     },
-                    Some(&proposed.span),
+                    vec![&proposed.span],
                 ));
             }
         };
-        Ok(Settled::Value(value, None))
+        Ok(Settled::Value(value, Vec::new()))
+    }
+
+    /// The values the request kept for a pick's ask from the session's results, when it kept any.
+    fn recalled(&self, question: &QuestionId) -> Option<Vec<String>> {
+        self.request.recent.get(question).cloned()
     }
 }
 
@@ -856,30 +1059,40 @@ fn required(argument: &Argument) -> Option<&Source> {
     }
 }
 
-/// An argument the request did not state.
+/// An argument the request did not state; `recent` is what the session's results returned for a pick's ask to
+/// list.
 fn unstated(
     plan: &Plan,
     reflex: &LocalName,
     arg: &ArgName,
     argument: &Argument,
     source: &Source,
+    recent: Option<Vec<String>>,
 ) -> Missing {
     Missing {
         arg: arg.clone(),
         ask: argument.ask.clone(),
         because: Why::Unstated,
-        choices: choices(plan, reflex, arg, source),
+        choices: choices(plan, reflex, arg, source, recent),
     }
 }
 
-/// What a person may answer for an argument: the author's options, the vocabulary's words, or the pick's kind.
-fn choices(plan: &Plan, reflex: &LocalName, arg: &ArgName, source: &Source) -> Choices {
+/// What a person may answer for an argument: the author's options, the vocabulary's words, or the pick's kind
+/// with the session's values under the field it names.
+fn choices(
+    plan: &Plan,
+    reflex: &LocalName,
+    arg: &ArgName,
+    source: &Source,
+    recent: Option<Vec<String>>,
+) -> Choices {
     match source {
         Source::Options(options) => Choices::Options {
             options: (**options).clone(),
         },
         Source::Pick(pick) => Choices::Pick {
             pick: pick.recognizer(),
+            recent,
         },
         Source::Vocab(_) => Choices::Vocab {
             words: words(plan, reflex, arg),
@@ -1050,7 +1263,7 @@ fn settled(
                 Some(unsettled) => missing.push(unsettled.clone()),
                 None => {
                     if let Some(source) = required(argument) {
-                        missing.push(unstated(plan, reflex, arg, argument, source));
+                        missing.push(unstated(plan, reflex, arg, argument, source, None));
                     }
                 }
             }
@@ -1079,7 +1292,7 @@ fn settled(
                 arg: arg.clone(),
                 ask: argument.ask.clone(),
                 because,
-                choices: choices(plan, reflex, arg, source),
+                choices: choices(plan, reflex, arg, source, None),
             }),
             // A flag given anything but itself is absent.
             (Err(_), Kind::Flag, _) => {}
@@ -1223,16 +1436,16 @@ pub fn merged(plan: &Plan, decision: Decision) -> Decision {
 /// Typed text run through a pick's recognizer, as the prompt and a call by name read it: a candidate of its kind
 /// that covers the whole text, spaces at the ends aside — `1e3` and `1 hour 30 minutes` read as nothing, so a call
 /// by name is refused and a prompt asks again, never trimmed to the part that read; a quoted pick takes the whole
-/// text when no quotes enclose it whole.
+/// text when no quotes enclose it whole, and a code pick takes a code typed in quotes.
 #[must_use]
 pub fn picked(text: &str, recognizer: Recognizer) -> Option<Value> {
     let input = Input::new(text.trim()).ok()?;
     let whole = input.as_str().chars().count();
     let found = propose(&input).into_iter().find(|proposed| {
         proposes(recognizer, &proposed.value)
-            && match recognizer {
+            && match (recognizer, &proposed.value) {
                 // A quoted span stands inside its quotes.
-                Recognizer::Quoted => {
+                (Recognizer::Quoted, _) | (Recognizer::Code, PickValue::Quoted { .. }) => {
                     proposed.span.start() == 1 && proposed.span.end() + 1 == whole
                 }
                 _ => proposed.span.start() == 0 && proposed.span.end() == whole,
@@ -1240,8 +1453,8 @@ pub fn picked(text: &str, recognizer: Recognizer) -> Option<Value> {
     });
     match (found, recognizer) {
         (Some(proposed), _) => Some(Value::Pick {
+            value: taken_as(recognizer, &proposed.value),
             span: proposed.span,
-            value: proposed.value,
         }),
         (None, Recognizer::Quoted) => {
             let span = Span::of(&input, 0, input.as_str().chars().count())?;

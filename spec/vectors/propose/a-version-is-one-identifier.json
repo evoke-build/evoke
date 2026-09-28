@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "roll back 4.12.0 and 1.2.3.4"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 10,
+        "end": 16,
+        "text": "4.12.0"
+      },
+      "value": {
+        "type": "code",
+        "value": "4.12.0"
+      }
+    },
+    {
+      "span": {
+        "start": 21,
+        "end": 28,
+        "text": "1.2.3.4"
+      },
+      "value": {
+        "type": "code",
+        "value": "1.2.3.4"
+      }
+    }
+  ]
+}

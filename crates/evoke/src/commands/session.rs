@@ -9,6 +9,7 @@
 
 use std::path::{Path, PathBuf};
 
+use evoke_core::decide::Recent;
 use evoke_core::document::{Json, Text};
 use evoke_core::manifest::{Effect, Run};
 use evoke_core::name::{AdapterId, ArgName, ConfigKey, LocalName, Tag};
@@ -35,7 +36,7 @@ use crate::hosts::state::State;
 use crate::hosts::store::Store;
 use crate::hosts::terminal::{self, Tty};
 use crate::hosts::{Deadline, Environment, Failure};
-use crate::hosts::{contain, interrupt};
+use crate::hosts::{clock, contain, interrupt};
 use crate::report::{self, Paths, Row};
 
 /// A body that gave no result: what failed and its fix, and the frames of an error a file body threw, none for
@@ -218,7 +219,7 @@ impl Woven {
 
     /// What a step's words decided, as the planner asked for them: the text's own word, before the plan's.
     fn decided_for(&self, step: &Step, tags: &[Tag]) -> Option<&Decided> {
-        let asked = weave::asked_for(step, tags);
+        let asked = self.weave.asked_for(step, tags);
         self.decided
             .iter()
             .find(|(a, _)| *a == asked)
@@ -863,18 +864,20 @@ impl Session<'_> {
         only: Option<&LocalName>,
     ) -> Result<Decided, Exit> {
         let _busy = terminal::busy("deciding");
-        self.decided(adapter, input, tags, only, true)
+        self.decided(adapter, input, tags, only, true, &[])
     }
 
     /// One request read into its steps: the engine asked whether each connective separates two things, each
     /// part decided as `decide` decides one, all through the cache. `seeded` decisions stand in for the
-    /// planner's own — a step's ask answered before anything runs — and are read first.
+    /// planner's own — a step's ask answered before anything runs — and are read first. `recent` is the
+    /// process's results, newest first, offered back at the ask of a whole sentence alone.
     pub fn weave(
         &self,
         adapter: &dyn Adapter,
         input: &str,
         tags: &[Tag],
         seeded: Vec<(Asked, Decided)>,
+        recent: &[Recent],
     ) -> Result<Woven, Exit> {
         let _busy = terminal::busy("deciding");
         let mut answers = weave::Answers {
@@ -911,12 +914,16 @@ impl Session<'_> {
                 }
                 Need::Decide { asked } => {
                     for asked in asked {
+                        // Memory reaches a whole sentence alone: a part of one, or a step's words rewritten,
+                        // recalls nothing.
+                        let recalled = if asked.whole { recent } else { &[] };
                         let one = self.decided(
                             adapter,
                             &asked.text,
                             &asked.tags,
                             asked.only.as_ref(),
                             true,
+                            recalled,
                         )?;
                         trace.extend(one.trace.iter().cloned());
                         answers.decided.push((asked.clone(), one.decision.clone()));
@@ -967,7 +974,7 @@ impl Session<'_> {
         input: &str,
         tags: &[Tag],
     ) -> Result<Decided, Exit> {
-        self.decided(adapter, input, tags, None, false)
+        self.decided(adapter, input, tags, None, false, &[])
     }
 
     fn decided(
@@ -977,8 +984,10 @@ impl Session<'_> {
         tags: &[Tag],
         only: Option<&LocalName>,
         cached: bool,
+        recent: &[Recent],
     ) -> Result<Decided, Exit> {
-        let request = request(&self.plan, input, tags, only, Scope::Full).map_err(Exit::Human)?;
+        let request =
+            request(&self.plan, input, tags, only, Scope::Full, recent).map_err(Exit::Human)?;
         let deadline = Deadline::after(self.plan.deadline());
         let hit = if cached {
             self.state
@@ -1072,7 +1081,8 @@ impl Session<'_> {
         Ok(edited)
     }
 
-    /// The body, under its declaration: the policy resolved with the call's values; the machine's facts about it
+    /// The body, under its declaration: the policy resolved with the call's values, a relative day against today's;
+    /// the machine's facts about it
     /// gathered — a declared path or program it lacks is the failure, before anything runs — then the loader
     /// started with the envelope, or the argv spawned, in the body's directory with a private temporary folder,
     /// the layers around it. Timed from now — the plan's deadline less what the adapter spent of it — so a
@@ -1091,14 +1101,15 @@ impl Session<'_> {
         let what = format!("running {reflex}");
         let active = &self.plan.active()[reflex];
         let home = self.environment.get("HOME").unwrap_or_default();
+        let today = clock::today(self.environment)?;
         let deadline = Deadline::after(self.plan.deadline()).less(spent);
         let refused = |refused: Diagnostic| Failure {
             what: what.clone(),
             cause: Some(refused.message),
             fix: refused.fix,
         };
-        let envelope =
-            envelope(chosen, active, taken, input, deadline.left(), home).map_err(refused)?;
+        let envelope = envelope(chosen, active, taken, input, deadline.left(), home, today)
+            .map_err(refused)?;
         let (shipped, dir) = &self.shipped[reflex];
         let dir = std::fs::canonicalize(dir).map_err(|error| Failure {
             what: what.clone(),
@@ -1115,9 +1126,9 @@ impl Session<'_> {
             .map(|(key, value)| ((*key).clone(), value.clone()))
             .collect();
         let policy =
-            resolve(&active.needs, &chosen.call, active, &values, home).map_err(refused)?;
+            resolve(&active.needs, &chosen.call, active, &values, home, today).map_err(refused)?;
         let argv = match &active.run {
-            Run::Argv { .. } => Some(argv(chosen, active, home).map_err(refused)?),
+            Run::Argv { .. } => Some(argv(chosen, active, home, today).map_err(refused)?),
             Run::File(_) | Run::Inline => None,
         };
         let runtime = match argv {
@@ -1165,7 +1176,9 @@ impl Session<'_> {
                 let origin = self.origin(reflex, &dir);
                 // A fetched reflex's own declaration, resolved: `--accept` is the fix when it reaches what was refused.
                 let upstream = matches!(origin, Origin::Fetched)
-                    .then(|| resolve(&shipped.needs, &chosen.call, active, &values, home).ok())
+                    .then(|| {
+                        resolve(&shipped.needs, &chosen.call, active, &values, home, today).ok()
+                    })
                     .flatten();
                 let named =
                     needs::refusal(&policy, upstream.as_ref(), reflex, &origin, &refused, home);

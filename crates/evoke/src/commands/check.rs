@@ -25,7 +25,7 @@ use crate::args::Command;
 use crate::hosts::contain;
 use crate::hosts::processes::{self, Body, Probed};
 use crate::hosts::state::State;
-use crate::hosts::{Deadline, Environment, Failure, files, git, terminal};
+use crate::hosts::{Deadline, Environment, Failure, clock, files, git, terminal};
 use crate::report::{self, Paths};
 
 pub fn run(command: &Command, environment: &Environment) -> Exit {
@@ -90,6 +90,9 @@ impl Checking<'_> {
             self.loaded(&checked, &text, entrypoint.path().as_str())?;
         }
         terminal::answer(&report::checked_row(self.name, &checked));
+        for path in &checked.unknown {
+            terminal::answer(&report::unknown_key(self.name, path));
+        }
         for finding in lint(&checked) {
             terminal::answer(&report::finding(self.name, &finding));
         }
@@ -152,8 +155,16 @@ impl Checking<'_> {
             args: IndexMap::new(),
         };
         let home = self.environment.get("HOME").unwrap_or_default();
-        let policy =
-            resolve(&checked.needs, &call, &active, &IndexMap::new(), home).map_err(Exit::Human)?;
+        let today = clock::today(self.environment).map_err(Exit::Failed)?;
+        let policy = resolve(
+            &checked.needs,
+            &call,
+            &active,
+            &IndexMap::new(),
+            home,
+            today,
+        )
+        .map_err(Exit::Human)?;
         let scratch = files::scratch(self.environment).map_err(Exit::Failed)?;
         let state = State::of(self.environment).map_err(Exit::Failed)?;
         let facts = match contain::facts(

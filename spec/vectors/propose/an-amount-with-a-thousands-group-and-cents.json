@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "it costs $1,234.56"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 9,
+        "end": 18,
+        "text": "$1,234.56"
+      },
+      "value": {
+        "type": "amount",
+        "value": {
+          "amount": 1234.56,
+          "currency": "USD"
+        }
+      }
+    }
+  ]
+}

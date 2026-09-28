@@ -11,9 +11,9 @@ run = "reserve.mts"
 
 [args.sku]
 ask  = "Which product code?"
-pick = "quoted"
+pick = "code"
 
 [examples]
-"reserve \"vx-2210-04\""                               = { sku = "vx-2210-04" }
-"hold the stock of \"hs-0409-02\" for the open orders" = { sku = "hs-0409-02" }
-"put \"vx-2214-11\" aside"                             = { sku = "vx-2214-11" }
+"reserve VX-221004"                               = { sku = "VX-221004" }
+"hold the stock of HS-040902 for the open orders" = { sku = "HS-040902" }
+"put VX-221411 aside"                             = { sku = "VX-221411" }

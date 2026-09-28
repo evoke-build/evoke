@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "pay €1.200 or €1,200"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 14,
+        "end": 20,
+        "text": "€1,200"
+      },
+      "value": {
+        "type": "amount",
+        "value": {
+          "amount": 1200,
+          "currency": "EUR"
+        }
+      }
+    }
+  ]
+}

@@ -16,7 +16,8 @@
       "tags": []
     },
     "config": {},
-    "home": "/Users/me"
+    "home": "/Users/me",
+    "today": "2026-05-05"
   },
   "expect": {
     "ok": {}

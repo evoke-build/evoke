@@ -44,7 +44,9 @@ decisions. Everything below is what the tool guarantees around them, and what it
 - **Arguments are closed sets, exact spans, or an earlier step's result.** A value is an author's option key, one
   of your vocabulary words, a piece of the input read by a recognizer and checked against its range, or, in a
   sentence of several steps, a field of an earlier step's result or that step's whole result, bound by the plan
-  and shown on its line before anything runs. Injected text can choose a call. It can never mint a value.
+  and shown on its line before anything runs; or, at a prompt, a value a body of this session returned under a
+  field the author named, listed for you to choose and read by the recognizer. Injected text can choose a call.
+  It can never mint a value. A date reaches a body as a day of your machine's calendar, never as a word.
 - **The effect gate covers what it chooses.** A destructive reflex always confirms, and there is no `--yes`.
   Unattended use is a threshold in a file you own and trust. A `read` or `write` reflex over its floor runs
   without asking. Whatever it does with a span it is handed, like a URL or a quoted text, an injected sentence

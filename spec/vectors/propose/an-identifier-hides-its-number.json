@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "look up INC-311"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 8,
+        "end": 15,
+        "text": "INC-311"
+      },
+      "value": {
+        "type": "code",
+        "value": "INC-311"
+      }
+    }
+  ]
+}

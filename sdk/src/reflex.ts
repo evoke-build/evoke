@@ -1,12 +1,13 @@
 // A reflex as code: the manifest as an object — the file's shape, less `run` and `config` — and its body, whose
-// argument types come from the manifest literal: option keys as a union, a word or a quoted, email or url pick as
-// a string, a number or duration as a number, a flag as `true`, an optional argument optional. A playbook as
+// argument types come from the manifest literal: option keys as a union, a word or a quoted, email, url, time or
+// code pick as a string, a number or duration as a number, a date as `YYYY-MM-DD`, an amount as `{ amount,
+// currency }`, a flag as `true`, an optional argument optional. A playbook as
 // code: the manifest with its `steps` and no body, which expands inside a plan. In: a manifest literal and a
 // body. Out: an Inline, which `load` takes and runs in-process.
 
-import type { Flag, Option, Pick, Value, Values, Word } from "./decision.ts"
+import type { Flag, Option, Pick, ReceivedValues, Value, Values, Word } from "./decision.ts"
 import type { Reflex } from "./runtime.ts"
-import type { Effect, Recognizer } from "./types.ts"
+import type { Amount, Day, Effect, Recognizer } from "./types.ts"
 
 /** One step of a playbook as code: a sentence, or a step that may not run as `{ say, when }`, `when` the one field
  *  of the step before the alternatives and the value under which this step runs. */
@@ -36,13 +37,14 @@ export interface InlineManifest {
 }
 
 /** An argument: its question and exactly one source, a flag optional by nature; or `takes` alone, a whole result
- *  an earlier step returns, by the name that result goes by — filled by the plan, never asked. */
+ *  an earlier step returns, by the name that result goes by — filled by the plan, never asked. A pick's `recent`
+ *  names the field of an earlier result whose values the ask offers back when the words state none. */
 export type InlineArg =
   | ({ ask: string } & (
       | { options: Record<string, string>; optional?: boolean }
       | { vocab: string; optional?: boolean }
-      | { pick: "number" | "duration"; range?: [number, number]; optional?: boolean }
-      | { pick: "email" | "url" | "quoted"; optional?: boolean }
+      | { pick: "number" | "duration"; range?: [number, number]; optional?: boolean; recent?: string }
+      | { pick: "email" | "url" | "quoted" | "date" | "time" | "amount" | "code"; optional?: boolean; recent?: string }
       | { flag: true }
     ))
   | { takes: string }
@@ -57,11 +59,15 @@ type Typed<A> = A extends { options: infer O }
     ? Word
     : A extends { pick: infer P extends "number" | "duration" }
       ? Pick<P, number>
-      : A extends { pick: infer P extends "email" | "url" | "quoted" }
+      : A extends { pick: infer P extends "email" | "url" | "quoted" | "time" | "code" }
         ? Pick<P, string>
-        : A extends { flag: true }
-          ? Flag
-          : never
+        : A extends { pick: "date" }
+          ? Pick<"date", Day>
+          : A extends { pick: "amount" }
+            ? Pick<"amount", Amount>
+            : A extends { flag: true }
+              ? Flag
+              : never
 type Absent<A> = A extends { optional: true } | { flag: true } ? true : false
 type Taken<A> = A extends { takes: string } ? true : false
 type Flat<T> = { [K in keyof T]: T[K] } & {}
@@ -81,10 +87,10 @@ export type Carried<M extends InlineManifest> = Flat<
  *  project has installed reflexes beside them. */
 export type ReflexesOf<I> = { [K in keyof I]: I[K] extends Inline<infer S> ? S : never }
 
-/** The body's arguments, plain: what `reflex`'s body receives — the asked arguments' values, and each whole result
- *  it takes as `unknown`, since evoke checks no shape. */
+/** The body's arguments, plain: what `reflex`'s body receives — the asked arguments' values as the body receives
+ *  them, a date resolved, and each whole result it takes as `unknown`, since evoke checks no shape. */
 export type Args<M extends InlineManifest> = Flat<
-  Values<Carried<M>> & { [N in keyof ArgsOf<M> as Taken<ArgsOf<M>[N]> extends true ? N : never]: unknown }
+  ReceivedValues<Carried<M>> & { [N in keyof ArgsOf<M> as Taken<ArgsOf<M>[N]> extends true ? N : never]: unknown }
 >
 
 /** What `reflex` and `playbook` return and `load` takes; `shape` never holds a value — it is what a decision carries,

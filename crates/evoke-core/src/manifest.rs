@@ -531,7 +531,8 @@ pub struct ConfigSpec {
     pub secret: bool,
 }
 
-/// An argument: its question, where its values come from, and its former names. Read, never built.
+/// An argument: its question, where its values come from, its former names, and — beside a pick — the yielded
+/// field whose recent values its ask lists. Read, never built.
 #[derive(Clone, Debug, PartialEq)]
 #[non_exhaustive]
 pub struct Argument {
@@ -539,6 +540,9 @@ pub struct Argument {
     pub kind: Kind,
     /// Flat and cumulative; a retired name never returns.
     pub was: Vec<ArgName>,
+    /// A field of `[yields]`, by the name it goes by across the set: the values the session's results returned
+    /// under it are the ask's closed choices when the words leave the pick unstated. Beside `pick` only. Contract.
+    pub recent: Option<FieldName>,
 }
 
 /// A flag, or a value with exactly one source; a flag is optional by nature.
@@ -598,6 +602,10 @@ pub enum Pick {
     Email,
     Url,
     Quoted,
+    Date,
+    Time,
+    Amount,
+    Code,
 }
 
 impl Pick {
@@ -610,11 +618,15 @@ impl Pick {
             Self::Email => Recognizer::Email,
             Self::Url => Recognizer::Url,
             Self::Quoted => Recognizer::Quoted,
+            Self::Date => Recognizer::Date,
+            Self::Time => Recognizer::Time,
+            Self::Amount => Recognizer::Amount,
+            Self::Code => Recognizer::Code,
         }
     }
 }
 
-/// One of the five recognizers, by the name a manifest's `pick` writes.
+/// One of the nine recognizers, by the name a manifest's `pick` writes.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Recognizer {
@@ -623,7 +635,14 @@ pub enum Recognizer {
     Email,
     Url,
     Quoted,
+    Date,
+    Time,
+    Amount,
+    Code,
 }
+
+/// The nine names, as a refusal lists them.
+const RECOGNIZER_NAMES: &str = "number, duration, email, url, quoted, date, time, amount or code";
 
 impl Recognizer {
     /// The name a manifest's `pick` writes.
@@ -635,6 +654,10 @@ impl Recognizer {
             Self::Email => "email",
             Self::Url => "url",
             Self::Quoted => "quoted",
+            Self::Date => "date",
+            Self::Time => "time",
+            Self::Amount => "amount",
+            Self::Code => "code",
         }
     }
 
@@ -647,7 +670,29 @@ impl Recognizer {
             Self::Email => "an email address",
             Self::Url => "a URL",
             Self::Quoted => "text",
+            Self::Date => "a date",
+            Self::Time => "a clock time",
+            Self::Amount => "an amount",
+            Self::Code => "a code",
         }
+    }
+
+    /// The recognizer a manifest names, or none.
+    #[must_use]
+    pub fn named(name: &str) -> Option<Self> {
+        [
+            Self::Number,
+            Self::Duration,
+            Self::Email,
+            Self::Url,
+            Self::Quoted,
+            Self::Date,
+            Self::Time,
+            Self::Amount,
+            Self::Code,
+        ]
+        .into_iter()
+        .find(|recognizer| recognizer.name() == name)
     }
 }
 
@@ -727,6 +772,9 @@ impl Serialize for Argument {
                             Pick::Number(Some(range)) => map.serialize_entry("range", range)?,
                             Pick::Duration(Some(range)) => map.serialize_entry("range", range)?,
                             _ => {}
+                        }
+                        if let Some(recent) = &self.recent {
+                            map.serialize_entry("recent", recent)?;
                         }
                     }
                 }
@@ -1601,23 +1649,14 @@ fn each(
 
 /// A recognizer by the name a manifest writes.
 fn recognizer(d: &mut Diagnostics, node: &Node) -> Option<Recognizer> {
-    match d.str(node)? {
-        "number" => Some(Recognizer::Number),
-        "duration" => Some(Recognizer::Duration),
-        "email" => Some(Recognizer::Email),
-        "url" => Some(Recognizer::Url),
-        "quoted" => Some(Recognizer::Quoted),
-        _ => {
-            d.fail(
-                node.at.as_ref(),
-                format!(
-                    "{} must be number, duration, email, url or quoted",
-                    node.name()
-                ),
-            );
-            None
-        }
+    let named = Recognizer::named(d.str(node)?);
+    if named.is_none() {
+        d.fail(
+            node.at.as_ref(),
+            format!("{} must be {RECOGNIZER_NAMES}", node.name()),
+        );
     }
+    named
 }
 
 /// What a placeholder's name resolves to among the asked and the taken arguments.
@@ -1809,6 +1848,7 @@ fn argument(
     let mut sources = table.take_any(&SOURCES);
     let range = table.take("range");
     let optional = table.take("optional");
+    let recent = table.take("recent");
     let was = table
         .take("was")
         .map_or_else(Vec::new, |node| was(d, node, name, live, former));
@@ -1835,7 +1875,37 @@ fn argument(
             None
         }
     };
-    Read::Asked(ask.zip(kind).map(|(ask, kind)| Argument { ask, kind, was }))
+    let recent = recent.and_then(|node| recent_of(d, &node, &path, kind.as_ref()));
+    Read::Asked(ask.zip(kind).map(|(ask, kind)| Argument {
+        ask,
+        kind,
+        was,
+        recent,
+    }))
+}
+
+/// `recent = "<field>"` beside a pick: the field's name; beside any other source a line to fix; nothing when the
+/// source itself did not read, so the line is not blamed twice.
+fn recent_of(
+    d: &mut Diagnostics,
+    node: &Node,
+    path: &KeyPath,
+    kind: Option<&Kind>,
+) -> Option<FieldName> {
+    match kind {
+        None => None,
+        Some(Kind::Value {
+            source: Source::Pick(_),
+            ..
+        }) => field_name(d, node, &format!("{path}.recent")),
+        Some(_) => {
+            d.fail(
+                node.at.as_ref(),
+                format!("{path} has recent, which only a pick takes"),
+            );
+            None
+        }
+    }
 }
 
 /// The keys an asked argument may carry, and why each is out of place beside `takes`.
@@ -1859,6 +1929,12 @@ fn taking(
     node: &Node,
     unknown: &mut Vec<KeyPath>,
 ) -> Taking {
+    if let Some(recent) = table.take("recent") {
+        d.fail(
+            recent.at.as_ref(),
+            format!("{path} has recent, which only a pick takes"),
+        );
+    }
     for (key, why) in BESIDE_TAKES {
         if let Some(other) = table.take(key) {
             d.fail(
@@ -1972,16 +2048,20 @@ fn options(d: &mut Diagnostics, node: &Node, path: &KeyPath) -> Option<Options> 
 }
 
 fn pick(d: &mut Diagnostics, node: &Node, path: &KeyPath, range: Option<Node>) -> Option<Pick> {
-    let pick = match d.str(node)? {
-        "number" => Pick::Number(None),
-        "duration" => Pick::Duration(None),
-        "email" => Pick::Email,
-        "url" => Pick::Url,
-        "quoted" => Pick::Quoted,
-        _ => {
+    let pick = match Recognizer::named(d.str(node)?) {
+        Some(Recognizer::Number) => Pick::Number(None),
+        Some(Recognizer::Duration) => Pick::Duration(None),
+        Some(Recognizer::Email) => Pick::Email,
+        Some(Recognizer::Url) => Pick::Url,
+        Some(Recognizer::Quoted) => Pick::Quoted,
+        Some(Recognizer::Date) => Pick::Date,
+        Some(Recognizer::Time) => Pick::Time,
+        Some(Recognizer::Amount) => Pick::Amount,
+        Some(Recognizer::Code) => Pick::Code,
+        None => {
             d.fail(
                 node.at.as_ref(),
-                format!("{path}.pick must be number, duration, email, url or quoted"),
+                format!("{path}.pick must be {RECOGNIZER_NAMES}"),
             );
             return None;
         }
@@ -2204,6 +2284,21 @@ fn argv(d: &mut Diagnostics, node: Node, known: &Known, taken: &[ArgName]) -> Op
                     d.fail(
                         at,
                         format!("run names {{{name}}}, a flag; flags need a file body"),
+                    );
+                    None
+                }
+                // An amount is a figure in a currency, no one element: the body reads it as a file's.
+                Some(Some(Argument {
+                    kind:
+                        Kind::Value {
+                            source: Source::Pick(Pick::Amount),
+                            ..
+                        },
+                    ..
+                })) => {
+                    d.fail(
+                        at,
+                        format!("run names {{{name}}}, an amount; an amount needs a file body"),
                     );
                     None
                 }

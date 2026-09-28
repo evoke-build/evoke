@@ -1,0 +1,173 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "asking": {
+      "reflex": "meeting",
+      "args": {
+        "day": {
+          "type": "pick",
+          "span": {
+            "start": 20,
+            "end": 28,
+            "text": "tomorrow"
+          },
+          "value": {
+            "type": "date",
+            "value": {
+              "type": "offset",
+              "days": 1
+            }
+          }
+        }
+      },
+      "unconsumed": [],
+      "confidence": 0.9,
+      "weakest": {
+        "question": "meeting.day",
+        "top": "20-28",
+        "p": 0.9
+      },
+      "judgments": [
+        {
+          "question": "route",
+          "top": "meeting",
+          "p": 0.95
+        },
+        {
+          "question": "meeting.day",
+          "top": "20-28",
+          "p": 0.9
+        }
+      ],
+      "runner_up": {
+        "reflex": "rollback",
+        "route": 0.03,
+        "fits": 0.02
+      },
+      "contenders": [
+        {
+          "reflex": "meeting",
+          "route": 0.95,
+          "fits": 0.8
+        },
+        {
+          "reflex": "rollback",
+          "route": 0.03,
+          "fits": 0.02
+        },
+        {
+          "reflex": "calendar",
+          "route": 0,
+          "fits": 0.02
+        },
+        {
+          "reflex": "deploys",
+          "route": 0,
+          "fits": 0.02
+        }
+      ]
+    },
+    "given": {
+      "time": {
+        "type": "pick",
+        "span": {
+          "start": 0,
+          "end": 3,
+          "text": "3pm"
+        },
+        "value": {
+          "type": "time",
+          "value": "15:00"
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "outcome": "run",
+    "reflex": "meeting",
+    "args": {
+      "day": {
+        "type": "pick",
+        "span": {
+          "start": 20,
+          "end": 28,
+          "text": "tomorrow"
+        },
+        "value": {
+          "type": "date",
+          "value": {
+            "type": "offset",
+            "days": 1
+          }
+        }
+      },
+      "time": {
+        "type": "pick",
+        "span": {
+          "start": 0,
+          "end": 3,
+          "text": "3pm"
+        },
+        "value": {
+          "type": "time",
+          "value": "15:00"
+        }
+      }
+    },
+    "call": "meeting day=\"tomorrow\" time=\"3pm\"",
+    "effect": "write",
+    "confidence": 0.9,
+    "weakest": {
+      "question": "meeting.day",
+      "top": "20-28",
+      "p": 0.9
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "meeting",
+        "p": 0.95
+      },
+      {
+        "question": "meeting.day",
+        "top": "20-28",
+        "p": 0.9
+      }
+    ],
+    "runner_up": {
+      "reflex": "rollback",
+      "route": 0.03,
+      "fits": 0.02
+    },
+    "contenders": [
+      {
+        "reflex": "meeting",
+        "route": 0.95,
+        "fits": 0.8
+      },
+      {
+        "reflex": "rollback",
+        "route": 0.03,
+        "fits": 0.02
+      },
+      {
+        "reflex": "calendar",
+        "route": 0,
+        "fits": 0.02
+      },
+      {
+        "reflex": "deploys",
+        "route": 0,
+        "fits": 0.02
+      }
+    ]
+  }
+}

@@ -33,7 +33,8 @@
     },
     "input": "dim the office to 30 percent",
     "deadline": 29950,
-    "home": "/Users/me"
+    "home": "/Users/me",
+    "today": "2026-05-05"
   },
   "expect": {
     "ok": {

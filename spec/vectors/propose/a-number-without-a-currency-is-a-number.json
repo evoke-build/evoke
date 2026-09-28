@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "send 50 to sam"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 5,
+        "end": 7,
+        "text": "50"
+      },
+      "value": {
+        "type": "number",
+        "value": 50
+      }
+    }
+  ]
+}

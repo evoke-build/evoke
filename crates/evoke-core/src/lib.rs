@@ -7,6 +7,7 @@
 #![allow(clippy::result_large_err)]
 
 pub mod adapter;
+pub mod calendar;
 pub mod calibrate;
 pub mod call;
 pub mod contain;

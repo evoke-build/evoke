@@ -40,7 +40,7 @@ den lights off
   optional word takes the one said once in its part of the sentence, before any `then`, written into its words
   and decided again under the same gate. A step whose own words name a word of that kind keeps its own, and a
   sentence that names two, "checkout" and "payments", carries neither. Only a word from a vocabulary is carried:
-  never a number, an address, a quoted value or an option. And only a word no one reflex owns: a vocabulary one
+  never a number, a date, an address, a quoted value or an option. And only a word no one reflex owns: a vocabulary one
   reflex alone asks for, the folder `open` opens, is that reflex's own and never reaches another step. The plan
   shows the word on each step it reached, and `evoke why` says which words were shared.
 - Two items the classifier read as one thing, "invoices, card expenses", are two steps when each is a reflex of
@@ -67,9 +67,12 @@ drafted to dana@example.com
 `mail` needed an address the words did not give. `contact` yields one, and `them` names it. A required argument
 is filled with the value. An optional one is decided again with the value written into the words, so the
 classifier assigns it, under the same gate as any words: a quoted value no argument takes is an unconsumed span,
-and the step confirms. Nothing is guessed: a reference that several fields could satisfy, or one record of a
-list, stops with a line naming them. A step that refers to another whose result it takes nothing from asks
-before anything runs:
+and the step confirms. A date a step yields reaches the next as a day, `2026-05-06`, never as `tomorrow`: a
+relative day is nothing to take. Nothing is guessed: a reference that several fields could satisfy, or one record
+of a list, stops with a line naming them. Within one sentence a step refers to another; across sentences, in one
+session, a pick with `recent` recalls what earlier bodies returned, at its ask
+([Arguments](../author/arguments.md#a-value-recalled)). A step that refers to another whose result it takes
+nothing from asks before anything runs:
 
 ```text
 $ evoke "look up dana's address and start a 10 minute timer for them"

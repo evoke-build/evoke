@@ -1,0 +1,51 @@
+{
+  "input": {
+    "input": "timer for 3 minutes called \"eggs\" at 30 percent and -5"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 10,
+        "end": 19,
+        "text": "3 minutes"
+      },
+      "value": {
+        "type": "duration",
+        "value": 180
+      }
+    },
+    {
+      "span": {
+        "start": 28,
+        "end": 32,
+        "text": "eggs"
+      },
+      "value": {
+        "type": "quoted",
+        "value": "eggs"
+      }
+    },
+    {
+      "span": {
+        "start": 37,
+        "end": 47,
+        "text": "30 percent"
+      },
+      "value": {
+        "type": "number",
+        "value": 30
+      }
+    },
+    {
+      "span": {
+        "start": 52,
+        "end": 54,
+        "text": "-5"
+      },
+      "value": {
+        "type": "number",
+        "value": -5
+      }
+    }
+  ]
+}

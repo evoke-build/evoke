@@ -1,0 +1,57 @@
+{
+  "input": {
+    "input": "a fifteen pound turkey, 3 pound beef, one pound and a dollar"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 2,
+        "end": 9,
+        "text": "fifteen"
+      },
+      "value": {
+        "type": "number",
+        "value": 15
+      }
+    },
+    {
+      "span": {
+        "start": 24,
+        "end": 25,
+        "text": "3"
+      },
+      "value": {
+        "type": "number",
+        "value": 3
+      }
+    },
+    {
+      "span": {
+        "start": 38,
+        "end": 47,
+        "text": "one pound"
+      },
+      "value": {
+        "type": "amount",
+        "value": {
+          "amount": 1,
+          "currency": "GBP"
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 52,
+        "end": 60,
+        "text": "a dollar"
+      },
+      "value": {
+        "type": "amount",
+        "value": {
+          "amount": 1,
+          "currency": "USD"
+        }
+      }
+    }
+  ]
+}

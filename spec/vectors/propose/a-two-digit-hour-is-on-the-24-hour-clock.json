@@ -1,0 +1,40 @@
+{
+  "input": {
+    "input": "remind me at 09:30, 13:00 and 10:30"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 13,
+        "end": 18,
+        "text": "09:30"
+      },
+      "value": {
+        "type": "time",
+        "value": "09:30"
+      }
+    },
+    {
+      "span": {
+        "start": 20,
+        "end": 25,
+        "text": "13:00"
+      },
+      "value": {
+        "type": "time",
+        "value": "13:00"
+      }
+    },
+    {
+      "span": {
+        "start": 30,
+        "end": 35,
+        "text": "10:30"
+      },
+      "value": {
+        "type": "time",
+        "value": "10:30"
+      }
+    }
+  ]
+}

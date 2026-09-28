@@ -114,6 +114,7 @@ A word is one clean line, trimmed, spaces allowed, and unique under identity. `n
 export type Option<K extends string> = { type: "option"; key: K }
 export type Word = { type: "word"; word: string; value?: string }
 export type Pick<T extends string, V> = { type: "pick"; span: { start: number; end: number; text: string }; value: { type: T; value: V } }
+export type Day = { type: "offset"; days: number } | { type: "weekday"; weekday: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"; which?: "next" | "this" | "last" } | { type: "day"; day: number } | { type: "calendar"; year?: number; month: number; day: number }
 export type Flag = { type: "flag" }
 
 export interface Reflexes {
@@ -126,7 +127,9 @@ export interface Reflexes {
 }
 ```
 
-A reflex whose manifest does not read is left out. The file imports nothing.
+A date is `Pick<"date", Day>`, a time `Pick<"time", string>`, an amount `Pick<"amount", { amount: number; currency:
+string }>`, a code `Pick<"code", string>`. A reflex whose manifest does not read is left out. The file imports
+nothing.
 
 ## `reflex.d.ts`
 

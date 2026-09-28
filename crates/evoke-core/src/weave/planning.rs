@@ -13,7 +13,7 @@ use super::{
 };
 use crate::adapter::{Fault, Gate, Prob};
 use crate::call::Value;
-use crate::decide::{Cap, Decision, Prompt, fill, merged, picked, words};
+use crate::decide::{Cap, Decision, Prompt, fill, merged, words, yielded};
 use crate::manifest::{self, Effect, Kind, MOST_STEPS, Recognizer, Source, Yield};
 use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
 use crate::plan::{Active, Plan};
@@ -244,12 +244,14 @@ impl<'a> Planner<'a> {
             .map(|(_, decision)| decision)
     }
 
-    /// A segment's decision over the reflexes the tags allow.
+    /// A segment's decision over the reflexes the tags allow; whole when the segment is the whole request, the
+    /// one text a host may hand the session's results for.
     fn segment(&self, text: &str) -> Asked {
         Asked {
             text: text.to_owned(),
             tags: self.tags.to_vec(),
             only: None,
+            whole: text == self.request.trim(),
         }
     }
 
@@ -259,6 +261,7 @@ impl<'a> Planner<'a> {
             text: text.to_owned(),
             tags: Vec::new(),
             only: Some(reflex.clone()),
+            whole: false,
         }
     }
 
@@ -1415,7 +1418,8 @@ impl<'a> Planner<'a> {
                     continue;
                 }
             };
-            if picked(is.as_str(), kind).is_none() {
+            // The value as a body would yield it: a relative day, `tomorrow`, could never be compared.
+            if yielded(is.as_str(), kind).is_none() {
                 refusals.push(Because::BadValue { step, field, is });
                 continue;
             }

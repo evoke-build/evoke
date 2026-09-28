@@ -1,0 +1,129 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "request": {
+      "$ref": "fixtures/request-meeting-tomorrow-at-3pm.json"
+    },
+    "raw": {
+      "route": {
+        "meeting": 0.95,
+        "rollback": 0.03,
+        "none": 0.02
+      },
+      "fits.meeting": {
+        "yes": 0.8
+      },
+      "meeting.day": {
+        "20-28": 0.9,
+        "unstated": 0.1
+      },
+      "meeting.time": {
+        "32-35": 0.9,
+        "unstated": 0.1
+      },
+      "fits.rollback": {
+        "yes": 0.02
+      },
+      "fits.calendar": {
+        "yes": 0.02
+      },
+      "calendar.day": {
+        "unstated": 0.9,
+        "tomorrow": 0.05,
+        "monday": 0.05
+      },
+      "fits.deploys": {
+        "yes": 0.02
+      },
+      "deploys.service": {
+        "unstated": 0.9,
+        "checkout": 0.05,
+        "payments": 0.05
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "ranking": [
+        {
+          "reflex": "meeting",
+          "route": 0.95,
+          "fits": 0.8
+        },
+        {
+          "reflex": "rollback",
+          "route": 0.03,
+          "fits": 0.02
+        },
+        {
+          "reflex": "calendar",
+          "route": 0,
+          "fits": 0.02
+        },
+        {
+          "reflex": "deploys",
+          "route": 0,
+          "fits": 0.02
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "meeting",
+          "p": 0.95
+        },
+        {
+          "question": "meeting.day",
+          "top": "20-28",
+          "p": 0.9
+        },
+        {
+          "question": "meeting.time",
+          "top": "32-35",
+          "p": 0.9
+        }
+      ],
+      "winner": {
+        "reflex": "meeting",
+        "args": {
+          "day": {
+            "type": "pick",
+            "span": {
+              "start": 20,
+              "end": 28,
+              "text": "tomorrow"
+            },
+            "value": {
+              "type": "date",
+              "value": {
+                "type": "offset",
+                "days": 1
+              }
+            }
+          },
+          "time": {
+            "type": "pick",
+            "span": {
+              "start": 32,
+              "end": 35,
+              "text": "3pm"
+            },
+            "value": {
+              "type": "time",
+              "value": "15:00"
+            }
+          }
+        },
+        "missing": [],
+        "unconsumed": [],
+        "runner_up": {
+          "reflex": "rollback",
+          "route": 0.03,
+          "fits": 0.02
+        }
+      }
+    }
+  }
+}

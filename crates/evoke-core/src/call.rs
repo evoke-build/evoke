@@ -8,6 +8,7 @@ use indexmap::IndexMap;
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
 
+use crate::calendar::Date;
 use crate::diagnostic::{Diagnostic, Fix};
 use crate::document::Json;
 use crate::name::{ArgName, LocalName, OptionKey, Word};
@@ -62,8 +63,9 @@ pub fn expand_home(value: &str, home: &str) -> String {
 }
 
 impl Value {
-    /// The value as a body receives it: an option key, a word's `value` if set else the word, a pick's number,
-    /// seconds or text, `true` for a flag.
+    /// The value as a decision carries it: an option key, a word's `value` if set else the word, a pick's number,
+    /// seconds, text, clock time, amount in its currency, or a date as read — relative, resolved only at the
+    /// body's door — `true` for a flag.
     #[must_use]
     pub fn plain(&self) -> Json {
         match self {
@@ -76,20 +78,29 @@ impl Value {
                 PickValue::Seconds { value } => Json::from(*value),
                 PickValue::Email { value }
                 | PickValue::Url { value }
-                | PickValue::Quoted { value } => Json::String(value.to_string()),
+                | PickValue::Quoted { value }
+                | PickValue::Code { value } => Json::String(value.to_string()),
+                PickValue::Time { value } => Json::String(value.to_string()),
+                PickValue::Date { value } => serde_json::to_value(value).unwrap_or(Json::Null),
+                PickValue::Amount { value } => serde_json::to_value(value).unwrap_or(Json::Null),
             },
             Self::Flag => Json::Bool(true),
         }
     }
 
-    /// The value as a body receives it, a word's `value` that names a path under the home expanded: a vocabulary
-    /// keeps a path as a person writes it, `~/Desktop`, and the body, an argv and the declaration see one path.
+    /// The value as a body receives it: a date resolved against `today` to `YYYY-MM-DD`, a word's `value` that
+    /// names a path under the home expanded — a vocabulary keeps a path as a person writes it, `~/Desktop`, and
+    /// the body, an argv and the declaration see one path — every other value as `plain`.
     #[must_use]
-    pub fn under_home(&self, home: &str) -> Json {
+    pub fn received(&self, home: &str, today: Date) -> Json {
         match self {
             Self::Word {
                 value: Some(value), ..
             } => Json::String(expand_home(value, home)),
+            Self::Pick {
+                value: PickValue::Date { value },
+                ..
+            } => Json::String(value.resolve(today).to_string()),
             _ => self.plain(),
         }
     }

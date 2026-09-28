@@ -18,7 +18,7 @@ import { DiagnosticError, FailureError, type Problem } from "./errors.ts"
 import { entry, snapshot, text } from "./files.ts"
 import type { Op, Ops } from "./ops.ts"
 import type { Inline } from "./reflex.ts"
-import { type Reflex, type Result, Refusal, child, inline, program, resolved } from "./runtime.ts"
+import { type Reflex, type Result, Refusal, child, inline, program, resolved, today } from "./runtime.ts"
 import type * as W from "./types.ts"
 
 export interface LoadOptions<R = AnyReflexes> {
@@ -42,6 +42,10 @@ export interface DecideOptions {
   /** Aborts the adapter call; `decide` rejects with the signal's reason. A weave's run it cancels: every body
    *  ended, every step that did not finish `skipped · cancelled`, the rejection's reason carrying the record. */
   signal?: AbortSignal | undefined
+  /** The process's results, newest first — a reflex and the `data` its body returned — for an ask to offer back
+   *  the values of the field a `recent` pick names, when the words state none. A whole sentence's ask alone: a
+   *  step's, or a part's, recalls nothing; `steps` seals a plan from the words alone and takes none. */
+  recent?: W.Recent[] | undefined
 }
 
 export interface RunOptions {
@@ -151,7 +155,7 @@ export interface Project<R = AnyReflexes> {
    *  playbook's slot the sentence does not state — is answered before the plan is sealed, so the plan shows whole;
    *  such a plan is a sheet, not a file: `weave(pinned)` refuses it, since a file holds no one's answers, and the
    *  page runs it by its sentence. Runs nothing. */
-  steps(input: string, options?: DecideOptions & Pick<WeaveOptions<R>, "ask">): Promise<W.Pinned>
+  steps(input: string, options?: Omit<DecideOptions, "recent"> & Pick<WeaveOptions<R>, "ask">): Promise<W.Pinned>
   /** The steps, what the plan asks first answered, then every step run stage by stage under the same handlers. */
   weave(input: string, options?: WeaveOptions<R>): Promise<Woven<R>>
   /** A plan file run exactly: its pins checked against this project — a `DiagnosticError` names the first that
@@ -348,16 +352,17 @@ function shown(input: string): string {
 
 /** What was asked, as one key: the text, the tags, the one reflex. */
 function key(asked: W.Asked): string {
-  return JSON.stringify([asked.text, asked.tags ?? [], asked.only ?? null])
+  return JSON.stringify([asked.text, asked.tags ?? [], asked.only ?? null, asked.whole ?? false])
 }
 
 /** What the planner asked to decide a step, as its repair and its shared words tell: a fragment narrowed to its
  *  neighbour's reflex, or spliced into its words, was decided under that reflex alone, and so were words a shared word
- *  was written into; any other step over the tags. */
-function askedFor(step: W.Step, tags: string[]): W.Asked {
+ *  was written into; any other step over the tags, whole when its words are the whole request. */
+function askedFor(step: W.Step, tags: string[], input: string): W.Asked {
   const narrowed = step.repair === "narrowed" || step.repair === "spliced" || Object.values(step.shared ?? {}).some(shared => shared.via === "rewrite")
   const own = narrowed ? step.reflex : undefined
-  return own === undefined ? { text: step.text, tags } : { text: step.text, only: own }
+  if (own !== undefined) return { text: step.text, only: own }
+  return step.text === input.trim() ? { text: step.text, tags, whole: true } : { text: step.text, tags }
 }
 
 /** The answers a plan gathers: what it decided is always there to push to. */
@@ -515,7 +520,8 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   /** One text asked, answered, read and gated, its raw answers kept beside the decision — for the plan file. */
   async function decidedText(input: string, options: DecideOptions): Promise<{ decision: Decision<AnyReflexes>; raw: W.Raw }> {
     const invoked = invocation(input)
-    const request = call("request", { plan, input, tags: options.tags ?? [], ...(options.only === undefined ? {} : { only: options.only }), scope: "full" }, invoked)
+    const recent = options.recent === undefined || options.recent.length === 0 ? {} : { recent: options.recent }
+    const request = call("request", { plan, input, tags: options.tags ?? [], ...(options.only === undefined ? {} : { only: options.only }), scope: "full", ...recent }, invoked)
     const { raw, trace } = await answered(adapter, request, plan.deadline, options.signal, invoked)
     const reading = call("read", { plan, request, raw }, invoked)
     const decision = call("gate", { plan, reading, ...gate })
@@ -545,11 +551,12 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   }
 
   /** One text decided as the plan asks — over the tags, or one reflex alone — its trace kept by what was asked and
-   *  its raw answers as an entry. */
+   *  its raw answers as an entry; the process's results reach the whole request's text alone. */
   async function decided(asked: W.Asked, options: DecideOptions, gathered: Gathering): Promise<W.Decision> {
     const { decision, raw } = await decidedText(asked.text, {
       ...(asked.only === undefined ? { tags: asked.tags ?? [] } : { only: asked.only }),
       ...(options.signal === undefined ? {} : { signal: options.signal }),
+      ...(asked.whole === true && options.recent !== undefined ? { recent: options.recent } : {}),
     })
     gathered.traces.set(key(asked), decision.trace)
     gathered.entries.push({ text: asked.text, raw })
@@ -602,7 +609,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
       const step = woven.steps[n - 1]
       if (step === undefined || step.decision.outcome !== "ask") continue
       const bound = new Set((woven.binds ?? []).filter(b => b.to === n).map(b => b.arg))
-      const asked = askedFor(step, options.tags ?? [])
+      const asked = askedFor(step, options.tags ?? [], woven.input)
       let decision = lined(step.decision, { input: step.text, plan: plan.digest, trace: traces.get(key(asked)) ?? [] })
       let refusals = 0
       while (decision.outcome === "ask") {
@@ -681,7 +688,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
         const step = woven.steps[handling.step - 1]
         // A round decided again with its values in its words has its own trace; any other round has its step's.
         const own = step?.reflex === undefined || !handling.bound?.length ? undefined : traces.get(key({ text: handling.input, only: step.reflex }))
-        const trace = own ?? (step === undefined ? undefined : traces.get(key(askedFor(step, options.tags ?? [])))) ?? []
+        const trace = own ?? (step === undefined ? undefined : traces.get(key(askedFor(step, options.tags ?? [], woven.input)))) ?? []
         const decision = lined(handling.decision, { input: handling.input, plan: plan.digest, trace })
         // Nothing starts after the signal: a round handed after it is cancelled without a question asked.
         if (signal?.aborted) {
@@ -768,15 +775,17 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     const active = plan.active[chosen.reflex]
     if (active === undefined) throw refused(chosen.reflex, `${chosen.reflex} is not active`, { type: "rerun" }, "run(d)")
     const spent = chosen.trace.reduce((sum, entry) => sum + entry.ms, 0)
+    const what = `running ${chosen.reflex}`
+    // Today once per run: a relative day resolves against it at the door, and the declaration reads it the same.
+    const day = today(what)
     // The whole decision crosses: the core reads the fields of a Chosen and ignores the SDK's own.
     const wire = chosen as unknown as W.Chosen
-    const envelope = call("envelope", { chosen: wire, active, taken, input: chosen.input, deadline: Math.max(plan.deadline - spent, 0), home: homedir() }, "run(d)")
-    const what = `running ${chosen.reflex}`
+    const envelope = call("envelope", { chosen: wire, active, taken, input: chosen.input, deadline: Math.max(plan.deadline - spent, 0), home: homedir(), today: day }, "run(d)")
     const body = bodies[chosen.reflex]
     if (body !== undefined) return inline(what, body, envelope, options.signal)
     const dir = dirs[chosen.reflex]
     if (dir === undefined) throw refused(chosen.reflex, `${chosen.reflex} has no body to run`, { type: "sync" }, "run(d)")
-    return contained(what, chosen, active, dir, envelope, options.signal)
+    return contained(what, chosen, active, dir, envelope, day, options.signal)
   }
 
   /** One body run for a weave, the whole results its step takes beside it: what it returned, or its failure as the
@@ -793,16 +802,17 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     }
   }
 
-  /** A file or an argv body under its declaration: the policy resolved with the call's values, the machine's facts
-   *  gathered — a declared path or program it lacks is the failure, before anything runs — then the loader or the
-   *  program in the body's directory with a private temporary folder, the layers around it; a refusal past the
-   *  declaration names the path, the key and the fix. */
+  /** A file or an argv body under its declaration: the policy resolved with the call's values, a relative day
+   *  against today, the machine's facts gathered — a declared path or program it lacks is the failure, before
+   *  anything runs — then the loader or the program in the body's directory with a private temporary folder, the
+   *  layers around it; a refusal past the declaration names the path, the key and the fix. */
   async function contained(
     what: string,
     chosen: Run<AnyReflexes> | Confirm<AnyReflexes>,
     active: W.Active,
     dir: string,
     envelope: W.Envelope,
+    day: string,
     signal: AbortSignal | undefined,
   ): Promise<Result> {
     const reflex = chosen.reflex
@@ -810,8 +820,8 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     const called: W.Call = { reflex, args: chosen.args, call: chosen.call }
     const config = resolved(what, envelope.config)
     const home = homedir()
-    const policy: W.Policy = call("needs.resolve", { needs: active.needs ?? {}, call: called, active, config, home }, "run(d)")
-    const argv = typeof active.run === "string" ? undefined : call("argv", { chosen: wire, active, home }, "run(d)")
+    const policy: W.Policy = call("needs.resolve", { needs: active.needs ?? {}, call: called, active, config, home, today: day }, "run(d)")
+    const argv = typeof active.run === "string" ? undefined : call("argv", { chosen: wire, active, home, today: day }, "run(d)")
     const body = realpathSync(dir)
     const origin = (): W.Origin => {
       if (!local.has(reflex)) return { type: "fetched" }
@@ -841,7 +851,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
         let upstream: W.Policy | undefined
         const declared = shipped[reflex]?.needs
         if (at.type === "fetched" && declared !== undefined) {
-          const answer = reply("needs.resolve", { needs: declared, call: called, active, config, home })
+          const answer = reply("needs.resolve", { needs: declared, call: called, active, config, home, today: day })
           if ("ok" in answer) upstream = answer.ok as W.Policy
         }
         const diagnostic = call("needs.refusal", { policy, ...(upstream === undefined ? {} : { upstream }), reflex, origin: at, refused: error.refused, home })
@@ -935,5 +945,13 @@ function wants(recognizer: W.Recognizer): string {
       return "a URL"
     case "quoted":
       return "text"
+    case "date":
+      return "a date"
+    case "time":
+      return "a clock time"
+    case "amount":
+      return "an amount"
+    case "code":
+      return "a code"
   }
 }

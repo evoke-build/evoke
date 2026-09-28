@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "see https://example.com/v/4.12.0"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 4,
+        "end": 32,
+        "text": "https://example.com/v/4.12.0"
+      },
+      "value": {
+        "type": "url",
+        "value": "https://example.com/v/4.12.0"
+      }
+    }
+  ]
+}

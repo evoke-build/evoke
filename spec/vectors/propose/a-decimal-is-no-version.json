@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "dim to 4.12"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 7,
+        "end": 11,
+        "text": "4.12"
+      },
+      "value": {
+        "type": "number",
+        "value": 4.12
+      }
+    }
+  ]
+}

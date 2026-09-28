@@ -43,6 +43,7 @@ pub fn run(command: &Command, arguments: &Arguments, environment: &Environment) 
             json: arguments.json,
             tags: arguments.tags.clone(),
             pinned: None,
+            results: Vec::new(),
         },
         arguments,
     };
@@ -132,9 +133,13 @@ impl Using<'_> {
     /// The input read into its steps through the adapter, `seeded` decisions standing in for the planner's own.
     fn woven(&mut self, input: &str, seeded: Vec<(Asked, Decided)>) -> Result<Woven, Exit> {
         let adapter = self.rounds.engine.resolved(&self.rounds.session, input)?;
-        self.rounds
-            .session
-            .weave(adapter, input, &self.arguments.tags, seeded)
+        self.rounds.session.weave(
+            adapter,
+            input,
+            &self.arguments.tags,
+            seeded,
+            &self.rounds.results,
+        )
     }
 
     /// A weave: the plan's own questions first — a step's argument nothing binds, asked as at its turn, and
@@ -386,7 +391,7 @@ impl Using<'_> {
             );
             let mut decided = woven.planned(step, &tags).expect("every step was decided");
             decided.decision = filled;
-            seeded.push((weave::asked_for(step, &tags), decided));
+            seeded.push((woven.weave.asked_for(step, &tags), decided));
         }
         Ok(UpFront::Seeded(seeded))
     }

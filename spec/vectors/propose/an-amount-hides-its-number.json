@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "pay €1,200 to sam"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 4,
+        "end": 10,
+        "text": "€1,200"
+      },
+      "value": {
+        "type": "amount",
+        "value": {
+          "amount": 1200,
+          "currency": "EUR"
+        }
+      }
+    }
+  ]
+}

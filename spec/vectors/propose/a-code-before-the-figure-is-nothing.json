@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "USD 50 and try 3 times"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 4,
+        "end": 6,
+        "text": "50"
+      },
+      "value": {
+        "type": "number",
+        "value": 50
+      }
+    },
+    {
+      "span": {
+        "start": 15,
+        "end": 16,
+        "text": "3"
+      },
+      "value": {
+        "type": "number",
+        "value": 3
+      }
+    }
+  ]
+}

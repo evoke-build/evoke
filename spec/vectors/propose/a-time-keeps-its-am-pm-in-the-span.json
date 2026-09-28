@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "wake me up at 5am this week"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 14,
+        "end": 17,
+        "text": "5am"
+      },
+      "value": {
+        "type": "time",
+        "value": "05:00"
+      }
+    }
+  ]
+}

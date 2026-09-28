@@ -47,7 +47,8 @@
     },
     "input": "find the suspect",
     "deadline": 29950,
-    "home": "/home/ana"
+    "home": "/home/ana",
+    "today": "2026-05-05"
   },
   "expect": {
     "ok": {

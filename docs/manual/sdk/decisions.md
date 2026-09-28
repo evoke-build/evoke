@@ -61,9 +61,11 @@ An app that wants a reflex's wording with a body of its own calls `decide`, swit
 ## Ask and `fill(d, given)`
 
 `missing` says, per argument, its `ask`, why it is missing, and what it may be. Missing means never stated, or a
-pick out of range. What it may be is the options, the vocabulary's words, or which recognizer reads it. `fill`
-takes what a person answered, by argument name: an option's key, a word, or the text a pick reads. It types the
-answer and gates again, synchronously:
+pick out of range. What it may be is the options, the vocabulary's words, or which recognizer reads it, with
+`choices.recent` listing the values recalled from the results the application handed `decide`, `handle` or
+`weave` as `recent: [{ reflex, data }]`, newest first, when the pick's manifest names the field. `fill` takes what
+a person answered, by argument name: an option's key, a word, or the text a pick reads, a recalled value among
+them. It types the answer and gates again, synchronously:
 
 ```ts
 const filled = project.fill(d, { room: "den" })       // a Decision again: run, confirm, or still an ask

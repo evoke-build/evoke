@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "book TP1043 and LH 1234"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 5,
+        "end": 11,
+        "text": "TP1043"
+      },
+      "value": {
+        "type": "code",
+        "value": "TP1043"
+      }
+    },
+    {
+      "span": {
+        "start": 19,
+        "end": 23,
+        "text": "1234"
+      },
+      "value": {
+        "type": "number",
+        "value": 1234
+      }
+    }
+  ]
+}

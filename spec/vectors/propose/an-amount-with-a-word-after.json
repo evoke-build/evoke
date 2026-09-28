@@ -1,0 +1,49 @@
+{
+  "input": {
+    "input": "transfer 50 dollars, twelve hundred dollars and 3000 yen"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 9,
+        "end": 19,
+        "text": "50 dollars"
+      },
+      "value": {
+        "type": "amount",
+        "value": {
+          "amount": 50,
+          "currency": "USD"
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 21,
+        "end": 43,
+        "text": "twelve hundred dollars"
+      },
+      "value": {
+        "type": "amount",
+        "value": {
+          "amount": 1200,
+          "currency": "USD"
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 48,
+        "end": 56,
+        "text": "3000 yen"
+      },
+      "value": {
+        "type": "amount",
+        "value": {
+          "amount": 3000,
+          "currency": "JPY"
+        }
+      }
+    }
+  ]
+}

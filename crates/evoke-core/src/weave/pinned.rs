@@ -555,12 +555,14 @@ pub fn replan(path: &str, pinned: &Pinned, plan: &Plan) -> Result<Replanned, Dia
             }
             Need::Decide { asked } => {
                 for asked in asked {
+                    // A file holds no memory: no result of any session reaches a text decided again from it.
                     let request = decide::request(
                         plan,
                         &asked.text,
                         &asked.tags,
                         asked.only.as_ref(),
                         Scope::Full,
+                        &[],
                     )?;
                     let raw = answered(pinned, &request).map_err(&refused)?;
                     let reading = decide::read(plan, &request, raw.clone())

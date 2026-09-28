@@ -1,0 +1,37 @@
+{
+  "input": {
+    "input": "see me friday the 14th and tuesday 21 march 2017"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 7,
+        "end": 22,
+        "text": "friday the 14th"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "day",
+          "day": 14
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 27,
+        "end": 48,
+        "text": "tuesday 21 march 2017"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "year": 2017,
+          "month": 3,
+          "day": 21
+        }
+      }
+    }
+  ]
+}

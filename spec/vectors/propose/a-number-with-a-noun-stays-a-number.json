@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "look up incident 311 and order 4821"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 17,
+        "end": 20,
+        "text": "311"
+      },
+      "value": {
+        "type": "number",
+        "value": 311
+      }
+    },
+    {
+      "span": {
+        "start": 31,
+        "end": 35,
+        "text": "4821"
+      },
+      "value": {
+        "type": "number",
+        "value": 4821
+      }
+    }
+  ]
+}

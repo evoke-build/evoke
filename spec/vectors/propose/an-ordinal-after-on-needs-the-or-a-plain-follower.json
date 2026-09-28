@@ -1,0 +1,32 @@
+{
+  "input": {
+    "input": "take out from the deli on 6th ave and pay on the 6th"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 26,
+        "end": 27,
+        "text": "6"
+      },
+      "value": {
+        "type": "number",
+        "value": 6
+      }
+    },
+    {
+      "span": {
+        "start": 45,
+        "end": 52,
+        "text": "the 6th"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "day",
+          "day": 6
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "at six in the morning and three in the afternoon"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 3,
+        "end": 21,
+        "text": "six in the morning"
+      },
+      "value": {
+        "type": "time",
+        "value": "06:00"
+      }
+    },
+    {
+      "span": {
+        "start": 26,
+        "end": 48,
+        "text": "three in the afternoon"
+      },
+      "value": {
+        "type": "time",
+        "value": "15:00"
+      }
+    }
+  ]
+}

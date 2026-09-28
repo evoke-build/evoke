@@ -1,0 +1,51 @@
+{
+  "input": {
+    "input": "wake me at 5am, 6:30 pm, 7 a.m. and 12 AM"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 11,
+        "end": 14,
+        "text": "5am"
+      },
+      "value": {
+        "type": "time",
+        "value": "05:00"
+      }
+    },
+    {
+      "span": {
+        "start": 16,
+        "end": 23,
+        "text": "6:30 pm"
+      },
+      "value": {
+        "type": "time",
+        "value": "18:30"
+      }
+    },
+    {
+      "span": {
+        "start": 25,
+        "end": 31,
+        "text": "7 a.m."
+      },
+      "value": {
+        "type": "time",
+        "value": "07:00"
+      }
+    },
+    {
+      "span": {
+        "start": 36,
+        "end": 41,
+        "text": "12 AM"
+      },
+      "value": {
+        "type": "time",
+        "value": "00:00"
+      }
+    }
+  ]
+}

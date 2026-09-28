@@ -1,0 +1,711 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-booking.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "input": "plan the trip to lisbon",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "plan the trip to lisbon",
+            "whole": true
+          },
+          {
+            "outcome": "confirm",
+            "reflex": "trip",
+            "args": {
+              "to": {
+                "type": "word",
+                "word": "lisbon"
+              }
+            },
+            "call": "trip to=\"lisbon\"",
+            "effect": "destructive",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "trip.to",
+              "top": "lisbon",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "trip",
+                "p": 0.95
+              },
+              {
+                "question": "trip.to",
+                "top": "lisbon",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "flights",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "trip",
+                "route": 0.95,
+                "fits": 0.8
+              },
+              {
+                "reflex": "flights",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "book",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "seats",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "weather",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "traffic",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "convert",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ticket",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "prompt": {
+              "own": "trip to=\"lisbon\" · destructive · weakest: to 0.90",
+              "template": "Plan the trip to lisbon?"
+            },
+            "because": [
+              {
+                "type": "destructive"
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "find a flight to lisbon"
+          },
+          {
+            "outcome": "run",
+            "reflex": "flights",
+            "args": {
+              "to": {
+                "type": "word",
+                "word": "lisbon"
+              }
+            },
+            "call": "flights to=\"lisbon\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "flights.to",
+              "top": "lisbon",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "flights",
+                "p": 0.95
+              },
+              {
+                "question": "flights.to",
+                "top": "lisbon",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "book",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "flights",
+                "route": 0.95,
+                "fits": 0.8
+              },
+              {
+                "reflex": "book",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "seats",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "weather",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "traffic",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "convert",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ticket",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "trip",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "book it"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "book",
+            "args": {},
+            "unconsumed": [],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "book",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "book",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "flights",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "book",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "flights",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "seats",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "weather",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "traffic",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "convert",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ticket",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "trip",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "flight",
+                "ask": "Which flight?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "pick",
+                  "pick": "code"
+                }
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "find a flight to madrid"
+          },
+          {
+            "outcome": "run",
+            "reflex": "flights",
+            "args": {
+              "to": {
+                "type": "word",
+                "word": "madrid"
+              }
+            },
+            "call": "flights to=\"madrid\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "flights",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "flights",
+                "p": 0.9
+              },
+              {
+                "question": "flights.to",
+                "top": "madrid",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "book",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "flights",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "book",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "seats",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "weather",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "traffic",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "convert",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ticket",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "trip",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ]
+      ]
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "plan the trip to lisbon",
+        "steps": [
+          {
+            "n": 1,
+            "text": "find a flight to lisbon",
+            "end": 23,
+            "decision": {
+              "outcome": "run",
+              "reflex": "flights",
+              "args": {
+                "to": {
+                  "type": "word",
+                  "word": "lisbon"
+                }
+              },
+              "call": "flights to=\"lisbon\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "flights.to",
+                "top": "lisbon",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "flights",
+                  "p": 0.95
+                },
+                {
+                  "question": "flights.to",
+                  "top": "lisbon",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "book",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "flights",
+                  "route": 0.95,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "book",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "seats",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "weather",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "traffic",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "convert",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ticket",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "trip",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "flights",
+            "effect": "read",
+            "from": [
+              {
+                "playbook": "trip",
+                "step": 1,
+                "slots": {
+                  "to": "lisbon"
+                }
+              }
+            ]
+          },
+          {
+            "n": 2,
+            "text": "book it",
+            "end": 23,
+            "decision": {
+              "outcome": "ask",
+              "reflex": "book",
+              "args": {},
+              "unconsumed": [],
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "book",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "book",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "flights",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "book",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "flights",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "seats",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "weather",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "traffic",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "convert",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ticket",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "trip",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "missing": [
+                {
+                  "arg": "flight",
+                  "ask": "Which flight?",
+                  "because": {
+                    "type": "unstated"
+                  },
+                  "choices": {
+                    "type": "pick",
+                    "pick": "code"
+                  }
+                }
+              ]
+            },
+            "reflex": "book",
+            "effect": "destructive",
+            "refs": [
+              {
+                "span": {
+                  "start": 5,
+                  "end": 7,
+                  "text": "it"
+                },
+                "from": [
+                  0
+                ],
+                "how": "pronoun"
+              }
+            ],
+            "after": [
+              1
+            ],
+            "from": [
+              {
+                "playbook": "trip",
+                "step": 2,
+                "slots": {}
+              }
+            ]
+          },
+          {
+            "n": 3,
+            "text": "find a flight to madrid",
+            "end": 23,
+            "decision": {
+              "outcome": "run",
+              "reflex": "flights",
+              "args": {
+                "to": {
+                  "type": "word",
+                  "word": "madrid"
+                }
+              },
+              "call": "flights to=\"madrid\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "flights",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "flights",
+                  "p": 0.9
+                },
+                {
+                  "question": "flights.to",
+                  "top": "madrid",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "book",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "flights",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "book",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "seats",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "weather",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "traffic",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "convert",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ticket",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "trip",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "flights",
+            "effect": "read",
+            "from": [
+              {
+                "playbook": "trip",
+                "step": 3,
+                "slots": {}
+              }
+            ]
+          }
+        ],
+        "binds": [
+          {
+            "from": 1,
+            "to": 2,
+            "arg": "flight",
+            "field": "flight",
+            "kind": "code",
+            "via": "fill"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ]
+        ],
+        "verdict": {
+          "outcome": "refuse",
+          "because": [
+            {
+              "type": "bad_value",
+              "step": 2,
+              "field": "day",
+              "is": "tomorrow"
+            },
+            {
+              "type": "bad_value",
+              "step": 3,
+              "field": "day",
+              "is": "next week"
+            },
+            {
+              "type": "reviewed",
+              "step": 1,
+              "playbook": "trip",
+              "text": "plan the trip to lisbon",
+              "prompt": {
+                "own": "trip to=\"lisbon\" · destructive · weakest: to 0.90",
+                "template": "Plan the trip to lisbon?"
+              }
+            }
+          ]
+        },
+        "exclusive": true
+      }
+    }
+  }
+}

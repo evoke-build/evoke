@@ -1,0 +1,192 @@
+{
+  "reflexes": {
+    "meeting": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Move a meeting to a day and a time.\nThe meeting moves to the day and the time you name.",
+            "not_for": [
+              "showing the calendar",
+              "rolling a release back"
+            ],
+            "tags": [
+              "meeting"
+            ],
+            "effect": "write",
+            "confirm": "Move the meeting to {day} at {time}?",
+            "run": "meeting.mts",
+            "config": {},
+            "args": {
+              "day": {
+                "ask": "To which day?",
+                "pick": "date",
+                "optional": false,
+                "was": []
+              },
+              "time": {
+                "ask": "At what time?",
+                "pick": "time",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "move the meeting to friday at 10am": {
+                "day": "friday",
+                "time": "10am"
+              }
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    },
+    "rollback": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Roll a service back from a release to the one before it.\nEverywhere at once.",
+            "not_for": [
+              "listing deploys",
+              "moving a meeting"
+            ],
+            "tags": [
+              "rollback"
+            ],
+            "effect": "destructive",
+            "confirm": "Roll back {release}?",
+            "run": "rollback.mts",
+            "config": {},
+            "args": {
+              "release": {
+                "ask": "From which release?",
+                "pick": "code",
+                "recent": "release",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "roll checkout back from 4.12.0": {
+                "release": "4.12.0"
+              }
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "destructive",
+      "configured": {}
+    },
+    "calendar": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Show the meetings of a day.\nEach with its title and its time.",
+            "not_for": [
+              "moving a meeting",
+              "rolling a release back"
+            ],
+            "tags": [
+              "calendar"
+            ],
+            "effect": "read",
+            "confirm": "Show the calendar for {day}?",
+            "run": "calendar.mts",
+            "config": {},
+            "args": {
+              "day": {
+                "ask": "Which day?",
+                "vocab": "days",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {
+              "day": "date"
+            },
+            "examples": {
+              "what is on my calendar tomorrow": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "deploys": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "List the recent deploys of a service.\nEach release, newest first.",
+            "not_for": [
+              "rolling a release back",
+              "moving a meeting"
+            ],
+            "tags": [
+              "deploys"
+            ],
+            "effect": "read",
+            "confirm": "List the deploys of {service}?",
+            "run": "deploys.mts",
+            "config": {},
+            "args": {
+              "service": {
+                "ask": "Which service?",
+                "vocab": "services",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {
+              "deploys": {
+                "each": {
+                  "release": "code"
+                }
+              }
+            },
+            "examples": {
+              "list the checkout deploys": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    }
+  },
+  "vocab": {
+    "days": {
+      "tomorrow": {
+        "what": "Tomorrow, the day after today."
+      },
+      "monday": {
+        "what": "Monday, the first day of the week."
+      }
+    },
+    "services": {
+      "checkout": {
+        "what": "The checkout service."
+      },
+      "payments": {
+        "what": "The payments service."
+      }
+    }
+  },
+  "adapter": "replay",
+  "evoke": "0.1.0"
+}

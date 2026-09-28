@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "wipe C02XK1ABJG5M and FVFH3KLMN2Q7"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 5,
+        "end": 17,
+        "text": "C02XK1ABJG5M"
+      },
+      "value": {
+        "type": "code",
+        "value": "C02XK1ABJG5M"
+      }
+    },
+    {
+      "span": {
+        "start": 22,
+        "end": 34,
+        "text": "FVFH3KLMN2Q7"
+      },
+      "value": {
+        "type": "code",
+        "value": "FVFH3KLMN2Q7"
+      }
+    }
+  ]
+}

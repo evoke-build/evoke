@@ -268,12 +268,16 @@ pub struct State {
     pub request: Input,
 }
 
-/// One call of `answer`: the state, the questions, and the candidate spans the pick questions were built from.
+/// One call of `answer`: the state, the questions, the candidate spans the pick questions were built from, and,
+/// per pick that names a yielded field, the values the session's results returned under it — the ask's closed
+/// choices, which no question offers; absent when none.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Request {
     pub state: State,
     pub questions: IndexMap<QuestionId, Question>,
     pub proposed: Vec<Proposed>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub recent: IndexMap<QuestionId, Vec<String>>,
 }
 
 /// A finite number in `[0, 1]`.

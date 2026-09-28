@@ -1,5 +1,5 @@
 {
-  "digest": "h1:bf5a50df1c44d23c6d6e709413531883ce014676526f55b3ad10e876da8ea778",
+  "digest": "h1:bb54e8e5f2bc0cef401da19cea2bb79e8abf3c309cb8bda8ec7f3cbb8fb45a1d",
   "active": {
     "errors": {
       "effect": "read",
@@ -47,7 +47,7 @@
       "yields": {
         "deploys": {
           "each": {
-            "release": "quoted"
+            "release": "code"
           }
         }
       },
@@ -93,7 +93,7 @@
         "logs": "logs"
       },
       "yields": {
-        "release": "quoted"
+        "release": "code"
       },
       "config": {},
       "tags": [
@@ -113,7 +113,8 @@
         },
         "release": {
           "ask": "From which release?",
-          "pick": "quoted",
+          "pick": "code",
+          "recent": "release",
           "optional": false,
           "was": []
         },
@@ -328,9 +329,9 @@
             "restarting a service"
           ],
           "examples": [
-            "roll checkout back from \"4.12.0\"",
-            "revert payments from \"2.3.1\" in eu-west",
-            "undo the \"7.0.2\" release of search"
+            "roll checkout back from 4.12.0",
+            "revert payments from 2.3.1 in eu-west",
+            "undo the 7.0.2 release of search"
           ]
         },
         "post": {
@@ -522,8 +523,9 @@
     "rollback.release": {
       "type": "pick",
       "ask": "From which release?",
-      "pick": "quoted",
-      "optional": false
+      "pick": "code",
+      "optional": false,
+      "recent": "release"
     },
     "rollback.region": {
       "type": "choice",

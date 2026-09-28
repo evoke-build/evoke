@@ -1,6 +1,6 @@
 // The shipment stand-in of the late-shipment flow, as R5's fixture wrote it: prints what it was handed and returns fixed data.
 
-const SKUS = ["vx-2210", "vx-2214", "hs-0409"]
+const SKUS = ["VX-2210", "VX-2214", "HS-0409"]
 
 const CARRIER = { eta: "thursday 06:00", late_days: 4 }
 

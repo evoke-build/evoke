@@ -13,7 +13,7 @@ use evoke_core::adapter::QuestionId;
 use evoke_core::calibrate::{self, BarRow, BinRow, Calibration, LogBlock, Miss, QuestionRow};
 use evoke_core::contract::Change;
 use evoke_core::decide::{Missing, Why};
-use evoke_core::manifest::{Effect, Manifest, Run, Sentence, written as slotted};
+use evoke_core::manifest::{Effect, Manifest, Recognizer, Run, Sentence, written as slotted};
 use evoke_core::name::{ArgName, FieldName, LocalName};
 use evoke_core::test::{Claim, Expected, Mismatch};
 use evoke_core::vocabulary::Vocabulary;
@@ -215,13 +215,16 @@ pub fn plain(text: &str) -> String {
 /// One decision's line. `json` is what `--json` prints and a filter reads: the input, the decision's fields, the
 /// trace — one `{ adapter, questions, ms }` per call, none when the cache answered — the result when a body ran,
 /// the error when it failed with the frames of an error a file body threw. `log` is the same line with the
-/// adapter's answers and the input's candidates beside it, which `why` reads back.
+/// adapter's answers, the input's candidates and the values an ask recalled beside it, which `why` reads back.
 pub struct Line {
     pub input: Input,
     pub decision: Decision,
     pub trace: Vec<Trace>,
     pub answers: Raw,
     pub proposed: Vec<Proposed>,
+    /// What an ask offered back from the process's results, per argument: logged for `why`, never printed under
+    /// `--json`.
+    pub recalled: IndexMap<ArgName, Vec<String>>,
     pub result: Option<Returned>,
     pub error: Option<String>,
     /// The frames of the error a file body threw, from its first, when it threw one.
@@ -279,6 +282,7 @@ impl Line {
             trace: decided.trace.clone(),
             answers: decided.answers.clone(),
             proposed: decided.proposed.clone(),
+            recalled: IndexMap::new(),
             result: None,
             error: None,
             frames: Vec::new(),
@@ -299,6 +303,7 @@ impl Line {
             trace: Vec::new(),
             answers: Raw::default(),
             proposed: Vec::new(),
+            recalled: IndexMap::new(),
             result: None,
             error: None,
             frames: Vec::new(),
@@ -394,6 +399,12 @@ impl Line {
                 "proposed".to_owned(),
                 serde_json::to_value(&self.proposed).expect("candidates serialize"),
             );
+            if !self.recalled.is_empty() {
+                line.insert(
+                    "recalled".to_owned(),
+                    serde_json::to_value(&self.recalled).expect("recalled values serialize"),
+                );
+            }
         }
         Json::Object(line)
     }
@@ -451,6 +462,7 @@ impl Line {
         let trace = field("trace", take("trace"))?;
         let answers = field("answers", take("answers"))?;
         let proposed = field("proposed", take("proposed"))?;
+        let recalled = field("recalled", take("recalled")).unwrap_or_default();
         let result = field("result", take("result"))?;
         let error = field("error", take("error"))?;
         let frames = field("frames", take("frames")).unwrap_or_default();
@@ -487,6 +499,7 @@ impl Line {
             trace,
             answers,
             proposed,
+            recalled,
             result,
             error,
             frames,
@@ -559,6 +572,7 @@ pub fn tried(decided: &Decided, route_floor: Option<evoke_core::Prob>) -> Text {
         &decided.proposed,
         contenders(&decided.decision),
         under,
+        &IndexMap::new(),
     );
     lines.push(outcome(&decided.decision));
     indented(lines)
@@ -582,6 +596,7 @@ pub fn why(lines: &[Line]) -> Text {
             &line.proposed,
             contenders(&line.decision),
             None,
+            &line.recalled,
         ));
         shown.push(became(line));
         for frame in &line.frames {
@@ -1237,8 +1252,9 @@ pub fn confirm_prompt(prompt: &Prompt, teachable: bool, retry: Option<&str>) -> 
     format!("  {}  {retry}{choices} > ", prompt.template)
 }
 
-/// The ask prompt: numbered choices, a vocabulary's `[+] add one`, or a pick typed freely; `retry` says why the
-/// last answer did not do.
+/// The ask prompt: numbered choices, a vocabulary's `[+] add one`, or a pick typed freely — the values recalled
+/// from the process's results numbered before it, a number pick's named as hints; `retry` says why the last
+/// answer did not do.
 #[must_use]
 pub fn ask_prompt(missing: &Missing, retry: Option<&str>) -> String {
     use evoke_core::decide::Choices;
@@ -1258,7 +1274,22 @@ pub fn ask_prompt(missing: &Missing, retry: Option<&str>) -> String {
             }
             line.push_str("[+] add one  ");
         }
-        Choices::Pick { .. } => {}
+        // A number pick names the recalled values as hints: a number typed is its own answer.
+        Choices::Pick {
+            pick: Recognizer::Number,
+            recent: Some(values),
+        } => {
+            let _ = write!(line, "{}  ", values.join(" · "));
+        }
+        Choices::Pick {
+            recent: Some(values),
+            ..
+        } => {
+            for (i, value) in values.iter().enumerate() {
+                let _ = write!(line, "[{}] {value}  ", i + 1);
+            }
+        }
+        Choices::Pick { recent: None, .. } => {}
     }
     line.push_str("> ");
     line
@@ -2067,6 +2098,7 @@ pub fn change(change: &Change) -> (String, String) {
         }
         Change::SourceChanged { arg } => (format!("args.{arg}"), "source changed".to_owned()),
         Change::RangeChanged { arg } => (format!("args.{arg}"), "range changed".to_owned()),
+        Change::RecentChanged { arg } => (format!("args.{arg}"), "recent changed".to_owned()),
         Change::RunChanged => ("run".to_owned(), "changed".to_owned()),
         Change::StepsChanged => ("steps".to_owned(), "the steps moved".to_owned()),
         Change::NeedsWidened { added } => ("needs".to_owned(), format!("widened: {added}")),
@@ -2354,6 +2386,15 @@ fn aligned(lines: &[(String, String)]) -> String {
     text
 }
 
+/// `check`: a manifest key this evoke does not read — a newer evoke's, or a slip — parked and passed along whole.
+#[must_use]
+pub fn unknown_key(reflex: &LocalName, path: &KeyPath) -> Text {
+    let mut text = Text::from("  ");
+    text.roled(Role::Warning, "unknown")
+        .push(&format!("  {reflex}: {path} is not a key this evoke reads"));
+    text
+}
+
 /// A lint finding at `add` and `check`: reported, never a refusal.
 #[must_use]
 pub fn finding(reflex: &LocalName, finding: &Finding) -> Text {
@@ -2612,14 +2653,15 @@ fn toml(value: &Json) -> String {
     }
 }
 
-/// The ranking, the winner's argument lines and the fits line, unindented; on each distribution the top answer
-/// carries the weight.
+/// The ranking, the winner's argument lines, the values an ask recalled and the fits line, unindented; on each
+/// distribution the top answer carries the weight.
 fn block(
     winner: Option<&LocalName>,
     answers: &Raw,
     proposed: &[Proposed],
     contenders: &[Contender],
     under_floor: Option<evoke_core::Prob>,
+    recalled: &IndexMap<ArgName, Vec<String>>,
 ) -> Vec<Text> {
     let mut lines = vec![ranking(answers, under_floor)];
     let arguments: Vec<(&str, &String)> = winner
@@ -2639,6 +2681,7 @@ fn block(
     let width = arguments
         .iter()
         .map(|(arg, _)| arg.len())
+        .chain(recalled.keys().map(|arg| arg.as_str().len()))
         .fold("fits".len(), usize::max)
         + 2;
     for (arg, question) in arguments {
@@ -2647,6 +2690,13 @@ fn block(
             candidate(key, proposed)
         }));
         lines.push(line);
+    }
+    for (arg, values) in recalled {
+        lines.push(Text::from(format!(
+            "{:<width$}recalled {}",
+            arg.as_str(),
+            values.join(" · ")
+        )));
     }
     // Most fitting first; ties keep the ranking's order.
     let mut fits: Vec<(&Contender, f64)> = contenders

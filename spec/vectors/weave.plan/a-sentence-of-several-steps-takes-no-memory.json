@@ -1,0 +1,39 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "input": "move the meeting to tomorrow at 3pm, then roll back the last deploy",
+    "tags": [],
+    "answers": {
+      "decided": [],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "need",
+      "need": {
+        "type": "decide",
+        "asked": [
+          {
+            "text": "move the meeting to tomorrow at 3pm"
+          },
+          {
+            "text": "roll back the last deploy"
+          }
+        ]
+      }
+    }
+  }
+}

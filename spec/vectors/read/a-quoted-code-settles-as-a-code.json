@@ -1,0 +1,105 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "request": {
+      "$ref": "fixtures/request-roll-checkout-back-from-a-quoted-release.json"
+    },
+    "raw": {
+      "route": {
+        "rollback": 0.95,
+        "meeting": 0.03,
+        "none": 0.02
+      },
+      "fits.meeting": {
+        "yes": 0.02
+      },
+      "fits.rollback": {
+        "yes": 0.8
+      },
+      "rollback.release": {
+        "25-31": 0.9,
+        "unstated": 0.1
+      },
+      "fits.calendar": {
+        "yes": 0.02
+      },
+      "calendar.day": {
+        "unstated": 0.9,
+        "tomorrow": 0.05,
+        "monday": 0.05
+      },
+      "fits.deploys": {
+        "yes": 0.02
+      },
+      "deploys.service": {
+        "unstated": 0.9,
+        "checkout": 0.05,
+        "payments": 0.05
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "ranking": [
+        {
+          "reflex": "rollback",
+          "route": 0.95,
+          "fits": 0.8
+        },
+        {
+          "reflex": "meeting",
+          "route": 0.03,
+          "fits": 0.02
+        },
+        {
+          "reflex": "calendar",
+          "route": 0,
+          "fits": 0.02
+        },
+        {
+          "reflex": "deploys",
+          "route": 0,
+          "fits": 0.02
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "rollback",
+          "p": 0.95
+        },
+        {
+          "question": "rollback.release",
+          "top": "25-31",
+          "p": 0.9
+        }
+      ],
+      "winner": {
+        "reflex": "rollback",
+        "args": {
+          "release": {
+            "type": "pick",
+            "span": {
+              "start": 25,
+              "end": 31,
+              "text": "4.12.0"
+            },
+            "value": {
+              "type": "code",
+              "value": "4.12.0"
+            }
+          }
+        },
+        "missing": [],
+        "unconsumed": [],
+        "runner_up": {
+          "reflex": "meeting",
+          "route": 0.03,
+          "fits": 0.02
+        }
+      }
+    }
+  }
+}

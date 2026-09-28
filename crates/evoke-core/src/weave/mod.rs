@@ -22,7 +22,9 @@ use crate::name::{ArgName, FieldName, LocalName, Tag, Word};
 use crate::text::Clean;
 pub use reading::{How, Order, Ref, Split, Where};
 
-/// A text for the foundation to decide: over the reflexes the tags allow, or one reflex alone.
+/// A text for the foundation to decide: over the reflexes the tags allow, or one reflex alone. `whole` when the
+/// text is the whole request: the one segment of an unsplit draft, never a part, a rewrite or a playbook's filled
+/// sentence — the one text a host may hand the session's results to `request` for.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Asked {
     pub text: String,
@@ -30,6 +32,8 @@ pub struct Asked {
     pub tags: Vec<Tag>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub only: Option<LocalName>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub whole: bool,
 }
 
 /// What the plan needs a host to do next.
@@ -407,6 +411,32 @@ impl Weave {
     pub fn step(&self, n: usize) -> Option<&Step> {
         self.steps.get(n.checked_sub(1)?)
     }
+
+    /// What the planner asked to decide a step, as its repair and its shared words tell: a fragment narrowed to
+    /// its neighbour's reflex, or spliced into its words, was decided under that reflex alone, and so were words
+    /// a shared word was written into; any other step over the tags — whole when its words are the whole request.
+    #[must_use]
+    pub fn asked_for(&self, step: &Step, tags: &[Tag]) -> Asked {
+        let narrowed = matches!(step.repair, Some(Repair::Narrowed | Repair::Spliced))
+            || step
+                .shared
+                .values()
+                .any(|shared| shared.via == Via::Rewrite);
+        match (narrowed, &step.reflex) {
+            (true, Some(reflex)) => Asked {
+                text: step.text.clone(),
+                tags: Vec::new(),
+                only: Some(reflex.clone()),
+                whole: false,
+            },
+            _ => Asked {
+                text: step.text.clone(),
+                tags: tags.to_vec(),
+                only: None,
+                whole: step.text == self.input.trim(),
+            },
+        }
+    }
 }
 
 /// A value bound into a step at its turn: the argument it reached and the field it came from; a whole result
@@ -587,30 +617,6 @@ fn rank(status: Status) -> u8 {
         Status::Failed => 1,
         Status::Declined | Status::Refused => 2,
         Status::Unanswered => 3,
-    }
-}
-
-/// What the planner asked to decide a step, as its repair and its shared words tell: a fragment narrowed to its
-/// neighbour's reflex, or spliced into its words, was decided under that reflex alone, and so were words a shared
-/// word was written into; any other step over the tags.
-#[must_use]
-pub fn asked_for(step: &Step, tags: &[Tag]) -> Asked {
-    let narrowed = matches!(step.repair, Some(Repair::Narrowed | Repair::Spliced))
-        || step
-            .shared
-            .values()
-            .any(|shared| shared.via == Via::Rewrite);
-    match (narrowed, &step.reflex) {
-        (true, Some(reflex)) => Asked {
-            text: step.text.clone(),
-            tags: Vec::new(),
-            only: Some(reflex.clone()),
-        },
-        _ => Asked {
-            text: step.text.clone(),
-            tags: tags.to_vec(),
-            only: None,
-        },
     }
 }
 

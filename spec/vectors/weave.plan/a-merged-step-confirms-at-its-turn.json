@@ -178,7 +178,8 @@
         ],
         [
           {
-            "text": "kill the lights in the den, then be quick"
+            "text": "kill the lights in the den, then be quick",
+            "whole": true
           },
           {
             "outcome": "run",

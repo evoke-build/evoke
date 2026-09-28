@@ -1,0 +1,43 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "calendar"
+      },
+      "toml": "reflex = 1\n\ndescription = \"\"\"\nShow the meetings of a day.\nEach with its title and its time.\"\"\"\nnot_for = [\"moving a meeting\", \"rolling a release back\"]\ntags    = [\"calendar\"]\neffect  = \"read\"\nconfirm = \"Show the calendar for {day}?\"\nrun     = \"calendar.mts\"\n\n[args.day]\nask   = \"Which day?\"\nvocab = \"days\"\n\n[yields]\nday = \"date\"\n\n[examples]\n\"what is on my calendar tomorrow\" = {}\n"
+    }
+  },
+  "expect": {
+    "ok": {
+      "description": "Show the meetings of a day.\nEach with its title and its time.",
+      "not_for": [
+        "moving a meeting",
+        "rolling a release back"
+      ],
+      "tags": [
+        "calendar"
+      ],
+      "effect": "read",
+      "confirm": "Show the calendar for {day}?",
+      "run": "calendar.mts",
+      "config": {},
+      "args": {
+        "day": {
+          "ask": "Which day?",
+          "vocab": "days",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {
+        "day": "date"
+      },
+      "examples": {
+        "what is on my calendar tomorrow": {}
+      },
+      "tests": {},
+      "unknown": []
+    }
+  }
+}

@@ -481,9 +481,13 @@
             "duration",
             "email",
             "url",
-            "quoted"
+            "quoted",
+            "date",
+            "time",
+            "amount",
+            "code"
           ],
-          "description": "A span of the input, found by a built-in recognizer. The body receives the value: the number, seconds, the string."
+          "description": "A span of the input, found by a built-in recognizer. The body receives the value: the number, seconds, the string, a date as YYYY-MM-DD, a time as HH:MM, an amount as { amount, currency }."
         },
         "range": {
           "type": "array",
@@ -493,6 +497,10 @@
           "minItems": 2,
           "maxItems": 2,
           "description": "[min, max] on the value, for number and duration (seconds) only. Outside it, evoke asks."
+        },
+        "recent": {
+          "$ref": "#/definitions/name",
+          "description": "The field of an earlier result, one a reflex's [yields] names, whose values the ask offers back when the words state none. With pick only. Contract."
         },
         "flag": {
           "const": true,
@@ -535,6 +543,11 @@
                 "required": [
                   "takes"
                 ]
+              },
+              {
+                "required": [
+                  "recent"
+                ]
               }
             ]
           }
@@ -569,6 +582,11 @@
               {
                 "required": [
                   "takes"
+                ]
+              },
+              {
+                "required": [
+                  "recent"
                 ]
               }
             ]
@@ -609,7 +627,11 @@
                 "enum": [
                   "email",
                   "url",
-                  "quoted"
+                  "quoted",
+                  "date",
+                  "time",
+                  "amount",
+                  "code"
                 ]
               }
             }
@@ -657,6 +679,11 @@
               {
                 "required": [
                   "takes"
+                ]
+              },
+              {
+                "required": [
+                  "recent"
                 ]
               }
             ]
@@ -707,6 +734,11 @@
                 "required": [
                   "was"
                 ]
+              },
+              {
+                "required": [
+                  "recent"
+                ]
               }
             ]
           }
@@ -744,13 +776,17 @@
       "description": "Utterances keyed by their original spelling. {} asserts the route alone; false means never this reflex; { arg = false } asserts unstated; { flag = true } asserts a flag; a pick's value is the verbatim span."
     },
     "recognizer": {
-      "description": "One of the five recognizers, by the name a pick writes.",
+      "description": "One of the nine recognizers, by the name a pick writes.",
       "enum": [
         "number",
         "duration",
         "email",
         "url",
-        "quoted"
+        "quoted",
+        "date",
+        "time",
+        "amount",
+        "code"
       ]
     }
   },

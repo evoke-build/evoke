@@ -15,7 +15,7 @@ ask   = "Whose laptop?"
 vocab = "people"
 
 [yields]
-serial = "quoted"
+serial = "code"
 
 [examples]
 "find sam's laptop"                = {}

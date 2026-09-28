@@ -1,0 +1,96 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "request": {
+      "$ref": "fixtures/request-calendar-for-tomorrow.json"
+    },
+    "raw": {
+      "route": {
+        "calendar": 0.95,
+        "meeting": 0.03,
+        "none": 0.02
+      },
+      "fits.meeting": {
+        "yes": 0.02
+      },
+      "meeting.day": {
+        "unstated": 0.9,
+        "21-29": 0.1
+      },
+      "fits.rollback": {
+        "yes": 0.02
+      },
+      "fits.calendar": {
+        "yes": 0.8
+      },
+      "calendar.day": {
+        "tomorrow": 0.9,
+        "unstated": 0.1
+      },
+      "fits.deploys": {
+        "yes": 0.02
+      },
+      "deploys.service": {
+        "unstated": 0.9,
+        "checkout": 0.05,
+        "payments": 0.05
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "ranking": [
+        {
+          "reflex": "calendar",
+          "route": 0.95,
+          "fits": 0.8
+        },
+        {
+          "reflex": "meeting",
+          "route": 0.03,
+          "fits": 0.02
+        },
+        {
+          "reflex": "rollback",
+          "route": 0,
+          "fits": 0.02
+        },
+        {
+          "reflex": "deploys",
+          "route": 0,
+          "fits": 0.02
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "calendar",
+          "p": 0.95
+        },
+        {
+          "question": "calendar.day",
+          "top": "tomorrow",
+          "p": 0.9
+        }
+      ],
+      "winner": {
+        "reflex": "calendar",
+        "args": {
+          "day": {
+            "type": "word",
+            "word": "tomorrow"
+          }
+        },
+        "missing": [],
+        "unconsumed": [],
+        "runner_up": {
+          "reflex": "meeting",
+          "route": 0.03,
+          "fits": 0.02
+        }
+      }
+    }
+  }
+}

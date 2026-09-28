@@ -15,7 +15,8 @@
       "decided": [
         [
           {
-            "text": "checkout is failing in eu-west"
+            "text": "checkout is failing in eu-west",
+            "whole": true
           },
           {
             "outcome": "confirm",
@@ -653,7 +654,7 @@
                 },
                 "choices": {
                   "type": "pick",
-                  "pick": "quoted"
+                  "pick": "code"
                 }
               }
             ]
@@ -1480,7 +1481,7 @@
                   },
                   "choices": {
                     "type": "pick",
-                    "pick": "quoted"
+                    "pick": "code"
                   }
                 }
               ]
@@ -1763,7 +1764,7 @@
             "to": 5,
             "arg": "release",
             "field": "release",
-            "kind": "quoted",
+            "kind": "code",
             "via": "fill"
           }
         ],

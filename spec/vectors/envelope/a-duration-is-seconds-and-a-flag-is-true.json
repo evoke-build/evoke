@@ -65,7 +65,8 @@
     },
     "input": "timer for 10 minutes called \"eggs\", loud",
     "deadline": 30000,
-    "home": "/Users/me"
+    "home": "/Users/me",
+    "today": "2026-05-05"
   },
   "expect": {
     "ok": {

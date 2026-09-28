@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "move the meeting to tomorrow"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 20,
+        "end": 28,
+        "text": "tomorrow"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "offset",
+          "days": 1
+        }
+      }
+    }
+  ]
+}

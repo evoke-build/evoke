@@ -1,0 +1,57 @@
+{
+  "input": {
+    "chosen": {
+      "reflex": "book",
+      "args": {
+        "flight": {
+          "type": "pick",
+          "span": {
+            "start": 0,
+            "end": 6,
+            "text": "TP1043"
+          },
+          "value": {
+            "type": "code",
+            "value": "TP1043"
+          }
+        }
+      },
+      "call": "book flight=\"TP1043\"",
+      "effect": "destructive"
+    },
+    "active": {
+      "effect": "destructive",
+      "run": "book.mts",
+      "confirm": "Book {flight}?",
+      "args": {
+        "flight": {
+          "ask": "Which flight?",
+          "pick": "code",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "book"
+      ]
+    },
+    "input": "",
+    "deadline": 30000,
+    "home": "/Users/me",
+    "today": "2026-05-05"
+  },
+  "expect": {
+    "ok": {
+      "reflex": "book",
+      "run": "book.mts",
+      "args": {
+        "flight": "TP1043"
+      },
+      "input": "",
+      "config": {},
+      "deadline": 30000
+    }
+  }
+}

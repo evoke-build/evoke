@@ -9,7 +9,8 @@
       "decided": [
         [
           {
-            "text": "kill the lights in the den and the office"
+            "text": "kill the lights in the den and the office",
+            "whole": true
           },
           {
             "outcome": "confirm",

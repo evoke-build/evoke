@@ -1,0 +1,39 @@
+{
+  "input": {
+    "input": "what happened on december 4, 1982 and on march fourth two thousand and seventeen"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 17,
+        "end": 33,
+        "text": "december 4, 1982"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "year": 1982,
+          "month": 12,
+          "day": 4
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 41,
+        "end": 80,
+        "text": "march fourth two thousand and seventeen"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "year": 2017,
+          "month": 3,
+          "day": 4
+        }
+      }
+    }
+  ]
+}

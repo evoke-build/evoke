@@ -1,0 +1,40 @@
+{
+  "input": {
+    "input": "at five pm, seven thirty am and eight at night"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 3,
+        "end": 10,
+        "text": "five pm"
+      },
+      "value": {
+        "type": "time",
+        "value": "17:00"
+      }
+    },
+    {
+      "span": {
+        "start": 12,
+        "end": 27,
+        "text": "seven thirty am"
+      },
+      "value": {
+        "type": "time",
+        "value": "07:30"
+      }
+    },
+    {
+      "span": {
+        "start": 32,
+        "end": 46,
+        "text": "eight at night"
+      },
+      "value": {
+        "type": "time",
+        "value": "20:00"
+      }
+    }
+  ]
+}

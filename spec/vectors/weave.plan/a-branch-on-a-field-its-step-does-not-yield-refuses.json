@@ -15,7 +15,8 @@
       "decided": [
         [
           {
-            "text": "drain the primary"
+            "text": "drain the primary",
+            "whole": true
           },
           {
             "outcome": "confirm",

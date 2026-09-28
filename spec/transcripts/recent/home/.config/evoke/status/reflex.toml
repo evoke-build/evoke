@@ -1,0 +1,27 @@
+reflex = 1
+
+description = """
+Update the status page for a service.
+Its state as customers see it."""
+not_for = ["chat channels", "email", "error rates"]
+tags = ["status"]
+effect = "write"
+confirm = "Update the status page for {component}?"
+run = "status.mts"
+
+[args.component]
+ask   = "Which service?"
+vocab = "services"
+
+[args.state]
+ask                   = "Which state?"
+options.investigating = "Looking into a problem."
+options.identified    = "The cause is known."
+options.monitoring    = "A fix is out; watching."
+options.resolved      = "Back to normal."
+optional              = true
+
+[examples]
+"update the status page for checkout"          = {}
+"mark payments as resolved on the status page" = { state = "resolved" }
+"set the search status to investigating"       = { state = "investigating" }

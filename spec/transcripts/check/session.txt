@@ -19,6 +19,10 @@ $ mkdir torn && printf 'reflex = 1\ndescription = "Nothing."\nconfirm = "Nothing
 $ mkdir broken && printf 'reflex = 1\ndescription = "Nothing."\nconfirm = "Nothing?"\nrun = "nothing.ts"\n' > broken/reflex.toml && cd broken && evoke check
   broken: run: "nothing.ts" must end in .mts or .mjs  →  ~/broken/reflex.toml:4:1
 [3]
+$ mkdir warm && printf 'reflex = 1\ndescription = "Nothing."\nconfirm = "Nothing?"\nrun = "warm.mts"\nwarmth = "the key a newer evoke reads"\n' > warm/reflex.toml && printf 'export default () => "warm"\n' > warm/warm.mts && cd warm && evoke check
+  warm  destructive  runs warm.mts
+  unknown  warm: warmth is not a key this evoke reads
++ reflex.d.ts
 $ evoke check
   no reflex.toml here  →  evoke new <name>
 [3]

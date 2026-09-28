@@ -1,0 +1,63 @@
+{
+  "input": {
+    "chosen": {
+      "reflex": "convert",
+      "args": {
+        "fare": {
+          "type": "pick",
+          "span": {
+            "start": 0,
+            "end": 9,
+            "text": "120 euros"
+          },
+          "value": {
+            "type": "amount",
+            "value": {
+              "amount": 120,
+              "currency": "EUR"
+            }
+          }
+        }
+      },
+      "call": "convert fare=\"120 euros\"",
+      "effect": "read"
+    },
+    "active": {
+      "effect": "read",
+      "run": "convert.mts",
+      "confirm": "What fare {fare}?",
+      "args": {
+        "fare": {
+          "ask": "What fare?",
+          "pick": "amount",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "convert"
+      ]
+    },
+    "input": "",
+    "deadline": 30000,
+    "home": "/Users/me",
+    "today": "2026-05-05"
+  },
+  "expect": {
+    "ok": {
+      "reflex": "convert",
+      "run": "convert.mts",
+      "args": {
+        "fare": {
+          "amount": 120,
+          "currency": "EUR"
+        }
+      },
+      "input": "",
+      "config": {},
+      "deadline": 30000
+    }
+  }
+}

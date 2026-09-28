@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "at half past five pm and a quarter to six"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 3,
+        "end": 20,
+        "text": "half past five pm"
+      },
+      "value": {
+        "type": "time",
+        "value": "17:30"
+      }
+    }
+  ]
+}

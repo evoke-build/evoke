@@ -9,6 +9,9 @@ use crate::manifest::{Argument, Kind, Manifest, Pick, Source};
 use crate::name::OptionKey;
 use crate::plan::Installed;
 
+/// An amount as a body and a decision carry it: the one value that is not a scalar.
+const AMOUNT: &str = "{ amount: number; currency: string }";
+
 /// What every `reflex.d.ts` ends with: the body's context, result and type, bound to its `Args` and `Config`.
 const BODY: &str = "\
 /** What the body receives beside its arguments. */
@@ -39,9 +42,17 @@ pub fn reflex_dts(m: &Manifest) -> String {
                 match source {
                     Source::Options(options) => union(options.keys().map(OptionKey::as_str)),
                     Source::Pick(Pick::Number(_) | Pick::Duration(_)) => "number".to_owned(),
-                    Source::Vocab(_) | Source::Pick(Pick::Email | Pick::Url | Pick::Quoted) => {
-                        "string".to_owned()
-                    }
+                    Source::Pick(Pick::Amount) => AMOUNT.to_owned(),
+                    // A date reaches the body resolved, `YYYY-MM-DD`; a time as `HH:MM`.
+                    Source::Vocab(_)
+                    | Source::Pick(
+                        Pick::Email
+                        | Pick::Url
+                        | Pick::Quoted
+                        | Pick::Date
+                        | Pick::Time
+                        | Pick::Code,
+                    ) => "string".to_owned(),
                 },
                 *optional,
             ),
@@ -85,6 +96,7 @@ pub fn project_dts(set: &Installed) -> String {
          export type Option<K extends string> = { type: \"option\"; key: K }\n\
          export type Word = { type: \"word\"; word: string; value?: string }\n\
          export type Pick<T extends string, V> = { type: \"pick\"; span: { start: number; end: number; text: string }; value: { type: T; value: V } }\n\
+         export type Day = { type: \"offset\"; days: number } | { type: \"weekday\"; weekday: \"monday\" | \"tuesday\" | \"wednesday\" | \"thursday\" | \"friday\" | \"saturday\" | \"sunday\"; which?: \"next\" | \"this\" | \"last\" } | { type: \"day\"; day: number } | { type: \"calendar\"; year?: number; month: number; day: number }\n\
          export type Flag = { type: \"flag\" }\n\
          \n",
     );
@@ -130,7 +142,12 @@ fn carried<'a>(argument: &'a Argument, name: &'a str) -> Member<'a> {
                 Source::Pick(pick) => {
                     let value = match pick {
                         Pick::Number(_) | Pick::Duration(_) => "number",
-                        Pick::Email | Pick::Url | Pick::Quoted => "string",
+                        Pick::Email | Pick::Url | Pick::Quoted | Pick::Time | Pick::Code => {
+                            "string"
+                        }
+                        // A decision carries a date as read, relative; the body alone receives the day.
+                        Pick::Date => "Day",
+                        Pick::Amount => AMOUNT,
                     };
                     format!("Pick<{}, {value}>", quoted(pick.recognizer().name()))
                 }

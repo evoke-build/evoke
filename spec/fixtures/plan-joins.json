@@ -1,5 +1,5 @@
 {
-  "digest": "h1:e1ee1cc26be3f89fe5f8a0635624774ef8e222893407a20a78249e36456070fb",
+  "digest": "h1:8fe2567115a5c3c240af22f2f9e29e046cd954f09bea976c9f8d6c5f58af61f8",
   "active": {
     "errors": {
       "effect": "read",
@@ -14,11 +14,11 @@
         }
       },
       "yields": {},
+      "returns": "errors",
       "config": {},
       "tags": [
         "ops"
-      ],
-      "returns": "errors"
+      ]
     },
     "deploys": {
       "effect": "read",
@@ -33,11 +33,11 @@
         }
       },
       "yields": {},
+      "returns": "deploys",
       "config": {},
       "tags": [
         "ops"
-      ],
-      "returns": "deploys"
+      ]
     },
     "logs": {
       "effect": "read",
@@ -52,29 +52,29 @@
         }
       },
       "yields": {},
+      "returns": "logs",
       "config": {},
       "tags": [
         "ops"
-      ],
-      "returns": "logs"
+      ]
     },
     "suspect": {
       "effect": "read",
       "run": "suspect.mts",
       "confirm": "Find the suspect?",
       "args": {},
-      "yields": {
-        "release": "quoted"
-      },
-      "config": {},
-      "tags": [
-        "ops"
-      ],
       "takes": {
         "errors": "errors",
         "deploys": "deploys",
         "logs": "logs"
-      }
+      },
+      "yields": {
+        "release": "code"
+      },
+      "config": {},
+      "tags": [
+        "ops"
+      ]
     },
     "rollback": {
       "effect": "write",
@@ -83,7 +83,7 @@
       "args": {
         "release": {
           "ask": "From which release?",
-          "pick": "quoted",
+          "pick": "code",
           "optional": false,
           "was": []
         }
@@ -124,27 +124,27 @@
         }
       },
       "yields": {},
+      "returns": "incident",
       "config": {},
       "tags": [
         "ops"
-      ],
-      "returns": "incident"
+      ]
     },
     "postmortem": {
       "effect": "write",
       "run": "postmortem.mts",
       "confirm": "Draft the postmortem?",
       "args": {},
+      "takes": {
+        "record": "incident"
+      },
       "yields": {
         "path": "quoted"
       },
       "config": {},
       "tags": [
         "ops"
-      ],
-      "takes": {
-        "record": "incident"
-      }
+      ]
     }
   },
   "inactive": {},
@@ -316,7 +316,7 @@
     "rollback.release": {
       "type": "pick",
       "ask": "From which release?",
-      "pick": "quoted",
+      "pick": "code",
       "optional": false
     },
     "fits.incidents": {

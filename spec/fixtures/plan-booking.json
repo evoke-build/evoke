@@ -1,0 +1,393 @@
+{
+  "digest": "h1:71ea5006ef861caa6ad6adc145c7146116f9eef66a2807749d737d4bc21a6fe9",
+  "active": {
+    "flights": {
+      "effect": "read",
+      "run": "flights.mts",
+      "confirm": "Find a flight to {to}?",
+      "args": {
+        "to": {
+          "ask": "To which city?",
+          "vocab": "cities",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {
+        "flight": "code",
+        "day": "date",
+        "departure": "time",
+        "fare": "amount"
+      },
+      "config": {},
+      "tags": [
+        "flights"
+      ]
+    },
+    "book": {
+      "effect": "destructive",
+      "run": "book.mts",
+      "confirm": "Book {flight}?",
+      "args": {
+        "flight": {
+          "ask": "Which flight?",
+          "pick": "code",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "book"
+      ]
+    },
+    "seats": {
+      "effect": "read",
+      "run": "seats.mts",
+      "confirm": "Which flight {flight}?",
+      "args": {
+        "flight": {
+          "ask": "Which flight?",
+          "pick": "code",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "seats"
+      ]
+    },
+    "weather": {
+      "effect": "read",
+      "run": "weather.mts",
+      "confirm": "Which day {day}?",
+      "args": {
+        "day": {
+          "ask": "Which day?",
+          "pick": "date",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "weather"
+      ]
+    },
+    "traffic": {
+      "effect": "read",
+      "run": "traffic.mts",
+      "confirm": "At what time {departure}?",
+      "args": {
+        "departure": {
+          "ask": "At what time?",
+          "pick": "time",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "traffic"
+      ]
+    },
+    "convert": {
+      "effect": "read",
+      "run": "convert.mts",
+      "confirm": "What fare {fare}?",
+      "args": {
+        "fare": {
+          "ask": "What fare?",
+          "pick": "amount",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "convert"
+      ]
+    },
+    "ticket": {
+      "effect": "read",
+      "run": [
+        "ticket",
+        "--flight",
+        "{flight}",
+        "--on",
+        "{day}",
+        "--at",
+        "{at}"
+      ],
+      "confirm": "Print the ticket for {flight}?",
+      "args": {
+        "flight": {
+          "ask": "Which flight?",
+          "pick": "code",
+          "optional": false,
+          "was": []
+        },
+        "day": {
+          "ask": "On which day?",
+          "pick": "date",
+          "optional": false,
+          "was": []
+        },
+        "at": {
+          "ask": "At what time?",
+          "pick": "time",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "ticket"
+      ]
+    },
+    "trip": {
+      "effect": "destructive",
+      "steps": [
+        "find a flight to {to}",
+        {
+          "say": "book it",
+          "when": {
+            "day": "tomorrow"
+          }
+        },
+        {
+          "say": "find a flight to madrid",
+          "when": {
+            "day": "next week"
+          }
+        }
+      ],
+      "confirm": "Plan the trip to {to}?",
+      "args": {
+        "to": {
+          "ask": "To which city?",
+          "vocab": "cities",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "trip"
+      ]
+    }
+  },
+  "inactive": {},
+  "slots": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "flights": {
+          "what": "Find the next flight to a city.\nIts code, the day it leaves, the departure time and the fare.",
+          "not_for": [
+            "booking a seat",
+            "printing a ticket"
+          ],
+          "examples": [
+            "find a flight to lisbon"
+          ]
+        },
+        "book": {
+          "what": "Book a seat on a flight.\nThe flight by its code; charged to the travel account.",
+          "not_for": [
+            "finding flights",
+            "printing a ticket"
+          ],
+          "examples": [
+            "book TP1043"
+          ]
+        },
+        "seats": {
+          "what": "Show the seat map of a flight.\nEvery free seat, by its code.",
+          "not_for": [
+            "finding flights",
+            "booking a seat"
+          ],
+          "examples": [
+            "show the seat map"
+          ]
+        },
+        "weather": {
+          "what": "Show the weather of a day.\nThe forecast for the day you name.",
+          "not_for": [
+            "finding flights",
+            "booking a seat"
+          ],
+          "examples": [
+            "check the weather"
+          ]
+        },
+        "traffic": {
+          "what": "Show the traffic before a departure.\nThe roads to the airport at the time you name.",
+          "not_for": [
+            "finding flights",
+            "booking a seat"
+          ],
+          "examples": [
+            "check the traffic"
+          ]
+        },
+        "convert": {
+          "what": "Convert a fare to dollars.\nAt today's rate.",
+          "not_for": [
+            "finding flights",
+            "booking a seat"
+          ],
+          "examples": [
+            "convert the fare"
+          ]
+        },
+        "ticket": {
+          "what": "Print a ticket for a flight.\nThe flight's code, its day and its departure, through the ticket printer.",
+          "not_for": [
+            "booking a seat",
+            "finding flights"
+          ],
+          "examples": [
+            "print the ticket for TP1043 on friday at 6pm"
+          ]
+        },
+        "trip": {
+          "what": "Plan a trip to a city.\nFinds the next flight there, and books it when it leaves tomorrow.",
+          "not_for": [
+            "one lookup on its own"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "fits.flights": {
+      "type": "yesno",
+      "ask": "Does `flights` do the specific thing the request asks for?",
+      "yes": "Find the next flight to a city.\nIts code, the day it leaves, the departure time and the fare.",
+      "no": "Something else, such as: booking a seat; printing a ticket."
+    },
+    "flights.to": {
+      "type": "choice",
+      "ask": "To which city?",
+      "options": {
+        "lisbon": "Lisbon, where the client meeting is.",
+        "madrid": "Madrid, the southern office.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.book": {
+      "type": "yesno",
+      "ask": "Does `book` do the specific thing the request asks for?",
+      "yes": "Book a seat on a flight.\nThe flight by its code; charged to the travel account.",
+      "no": "Something else, such as: finding flights; printing a ticket."
+    },
+    "book.flight": {
+      "type": "pick",
+      "ask": "Which flight?",
+      "pick": "code",
+      "optional": false
+    },
+    "fits.seats": {
+      "type": "yesno",
+      "ask": "Does `seats` do the specific thing the request asks for?",
+      "yes": "Show the seat map of a flight.\nEvery free seat, by its code.",
+      "no": "Something else, such as: finding flights; booking a seat."
+    },
+    "seats.flight": {
+      "type": "pick",
+      "ask": "Which flight?",
+      "pick": "code",
+      "optional": false
+    },
+    "fits.weather": {
+      "type": "yesno",
+      "ask": "Does `weather` do the specific thing the request asks for?",
+      "yes": "Show the weather of a day.\nThe forecast for the day you name.",
+      "no": "Something else, such as: finding flights; booking a seat."
+    },
+    "weather.day": {
+      "type": "pick",
+      "ask": "Which day?",
+      "pick": "date",
+      "optional": false
+    },
+    "fits.traffic": {
+      "type": "yesno",
+      "ask": "Does `traffic` do the specific thing the request asks for?",
+      "yes": "Show the traffic before a departure.\nThe roads to the airport at the time you name.",
+      "no": "Something else, such as: finding flights; booking a seat."
+    },
+    "traffic.departure": {
+      "type": "pick",
+      "ask": "At what time?",
+      "pick": "time",
+      "optional": false
+    },
+    "fits.convert": {
+      "type": "yesno",
+      "ask": "Does `convert` do the specific thing the request asks for?",
+      "yes": "Convert a fare to dollars.\nAt today's rate.",
+      "no": "Something else, such as: finding flights; booking a seat."
+    },
+    "convert.fare": {
+      "type": "pick",
+      "ask": "What fare?",
+      "pick": "amount",
+      "optional": false
+    },
+    "fits.ticket": {
+      "type": "yesno",
+      "ask": "Does `ticket` do the specific thing the request asks for?",
+      "yes": "Print a ticket for a flight.\nThe flight's code, its day and its departure, through the ticket printer.",
+      "no": "Something else, such as: booking a seat; finding flights."
+    },
+    "ticket.flight": {
+      "type": "pick",
+      "ask": "Which flight?",
+      "pick": "code",
+      "optional": false
+    },
+    "ticket.day": {
+      "type": "pick",
+      "ask": "On which day?",
+      "pick": "date",
+      "optional": false
+    },
+    "ticket.at": {
+      "type": "pick",
+      "ask": "At what time?",
+      "pick": "time",
+      "optional": false
+    },
+    "fits.trip": {
+      "type": "yesno",
+      "ask": "Does `trip` do the specific thing the request asks for?",
+      "yes": "Plan a trip to a city.\nFinds the next flight there, and books it when it leaves tomorrow.",
+      "no": "Something else, such as: one lookup on its own."
+    },
+    "trip.to": {
+      "type": "choice",
+      "ask": "To which city?",
+      "options": {
+        "lisbon": "Lisbon, where the client meeting is.",
+        "madrid": "Madrid, the southern office.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    }
+  },
+  "values": {},
+  "deadline": 30000
+}

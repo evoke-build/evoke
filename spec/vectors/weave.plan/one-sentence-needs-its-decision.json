@@ -14,7 +14,8 @@
         "type": "decide",
         "asked": [
           {
-            "text": "kill the lights in the den"
+            "text": "kill the lights in the den",
+            "whole": true
           }
         ]
       }

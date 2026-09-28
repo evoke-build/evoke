@@ -1,0 +1,1057 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-booking.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "input": "find a flight to lisbon, show the seat map of that flight, check the weather on that day, check the traffic for that departure and convert the fare",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "find a flight to lisbon"
+          },
+          {
+            "outcome": "run",
+            "reflex": "flights",
+            "args": {
+              "to": {
+                "type": "word",
+                "word": "lisbon"
+              }
+            },
+            "call": "flights to=\"lisbon\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "flights.to",
+              "top": "lisbon",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "flights",
+                "p": 0.95
+              },
+              {
+                "question": "flights.to",
+                "top": "lisbon",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "book",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "flights",
+                "route": 0.95,
+                "fits": 0.8
+              },
+              {
+                "reflex": "book",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "seats",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "weather",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "traffic",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "convert",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ticket",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "trip",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "show the seat map of that flight"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "seats",
+            "args": {},
+            "unconsumed": [],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "seats",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "seats",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "flights",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "seats",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "flights",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "book",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "weather",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "traffic",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "convert",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ticket",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "trip",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "flight",
+                "ask": "Which flight?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "pick",
+                  "pick": "code"
+                }
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the weather on that day"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "weather",
+            "args": {},
+            "unconsumed": [],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "weather",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "weather",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "flights",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "weather",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "flights",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "book",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "seats",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "traffic",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "convert",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ticket",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "trip",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "day",
+                "ask": "Which day?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "pick",
+                  "pick": "date"
+                }
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the traffic for that departure"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "traffic",
+            "args": {},
+            "unconsumed": [],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "traffic",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "traffic",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "flights",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "traffic",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "flights",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "book",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "seats",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "weather",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "convert",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ticket",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "trip",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "departure",
+                "ask": "At what time?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "pick",
+                  "pick": "time"
+                }
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "convert the fare"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "convert",
+            "args": {},
+            "unconsumed": [],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "convert",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "convert",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "flights",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "convert",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "flights",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "book",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "seats",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "weather",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "traffic",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ticket",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "trip",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "fare",
+                "ask": "What fare?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "pick",
+                  "pick": "amount"
+                }
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        },
+        "weave.split_1": {
+          "yes": 0.9
+        },
+        "weave.split_2": {
+          "yes": 0.9
+        },
+        "weave.split_3": {
+          "yes": 0.9
+        }
+      },
+      "referred": {
+        "weave.ref_2_0": {
+          "step0": 0.9,
+          "step1": 0.1
+        },
+        "weave.ref_3_0": {
+          "step0": 0.9,
+          "step1": 0.05,
+          "step2": 0.05
+        },
+        "weave.ref_4_0": {
+          "step0": 0.9,
+          "step1": 0.04,
+          "step2": 0.03,
+          "step3": 0.03
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "find a flight to lisbon, show the seat map of that flight, check the weather on that day, check the traffic for that departure and convert the fare",
+        "steps": [
+          {
+            "n": 1,
+            "text": "find a flight to lisbon",
+            "end": 23,
+            "decision": {
+              "outcome": "run",
+              "reflex": "flights",
+              "args": {
+                "to": {
+                  "type": "word",
+                  "word": "lisbon"
+                }
+              },
+              "call": "flights to=\"lisbon\"",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "flights.to",
+                "top": "lisbon",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "flights",
+                  "p": 0.95
+                },
+                {
+                  "question": "flights.to",
+                  "top": "lisbon",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "book",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "flights",
+                  "route": 0.95,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "book",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "seats",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "weather",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "traffic",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "convert",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ticket",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "trip",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "flights",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "show the seat map of that flight",
+            "end": 57,
+            "decision": {
+              "outcome": "ask",
+              "reflex": "seats",
+              "args": {},
+              "unconsumed": [],
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "seats",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "seats",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "flights",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "seats",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "flights",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "book",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "weather",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "traffic",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "convert",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ticket",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "trip",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "missing": [
+                {
+                  "arg": "flight",
+                  "ask": "Which flight?",
+                  "because": {
+                    "type": "unstated"
+                  },
+                  "choices": {
+                    "type": "pick",
+                    "pick": "code"
+                  }
+                }
+              ]
+            },
+            "reflex": "seats",
+            "effect": "read",
+            "refs": [
+              {
+                "span": {
+                  "start": 21,
+                  "end": 32,
+                  "text": "that flight"
+                },
+                "from": [
+                  0
+                ],
+                "how": "phrase",
+                "noun": "flight"
+              }
+            ],
+            "after": [
+              1
+            ]
+          },
+          {
+            "n": 3,
+            "text": "check the weather on that day",
+            "end": 88,
+            "decision": {
+              "outcome": "ask",
+              "reflex": "weather",
+              "args": {},
+              "unconsumed": [],
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "weather",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "weather",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "flights",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "weather",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "flights",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "book",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "seats",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "traffic",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "convert",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ticket",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "trip",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "missing": [
+                {
+                  "arg": "day",
+                  "ask": "Which day?",
+                  "because": {
+                    "type": "unstated"
+                  },
+                  "choices": {
+                    "type": "pick",
+                    "pick": "date"
+                  }
+                }
+              ]
+            },
+            "reflex": "weather",
+            "effect": "read",
+            "refs": [
+              {
+                "span": {
+                  "start": 21,
+                  "end": 29,
+                  "text": "that day"
+                },
+                "from": [
+                  0
+                ],
+                "how": "engine",
+                "noun": "day",
+                "p": 0.9
+              }
+            ],
+            "after": [
+              1
+            ]
+          },
+          {
+            "n": 4,
+            "text": "check the traffic for that departure",
+            "end": 126,
+            "decision": {
+              "outcome": "ask",
+              "reflex": "traffic",
+              "args": {},
+              "unconsumed": [],
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "traffic",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "traffic",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "flights",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "traffic",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "flights",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "book",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "seats",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "weather",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "convert",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ticket",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "trip",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "missing": [
+                {
+                  "arg": "departure",
+                  "ask": "At what time?",
+                  "because": {
+                    "type": "unstated"
+                  },
+                  "choices": {
+                    "type": "pick",
+                    "pick": "time"
+                  }
+                }
+              ]
+            },
+            "reflex": "traffic",
+            "effect": "read",
+            "refs": [
+              {
+                "span": {
+                  "start": 22,
+                  "end": 36,
+                  "text": "that departure"
+                },
+                "from": [
+                  0
+                ],
+                "how": "engine",
+                "noun": "departure",
+                "p": 0.9
+              }
+            ],
+            "after": [
+              1
+            ]
+          },
+          {
+            "n": 5,
+            "text": "convert the fare",
+            "end": 147,
+            "decision": {
+              "outcome": "ask",
+              "reflex": "convert",
+              "args": {},
+              "unconsumed": [],
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "convert",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "convert",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "flights",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "convert",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "flights",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "book",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "seats",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "weather",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "traffic",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "ticket",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "trip",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "missing": [
+                {
+                  "arg": "fare",
+                  "ask": "What fare?",
+                  "because": {
+                    "type": "unstated"
+                  },
+                  "choices": {
+                    "type": "pick",
+                    "pick": "amount"
+                  }
+                }
+              ]
+            },
+            "reflex": "convert",
+            "effect": "read",
+            "refs": [
+              {
+                "span": {
+                  "start": 8,
+                  "end": 16,
+                  "text": "the fare"
+                },
+                "from": [
+                  0
+                ],
+                "how": "engine",
+                "weak": true,
+                "noun": "fare",
+                "p": 0.9
+              }
+            ],
+            "after": [
+              1
+            ]
+          }
+        ],
+        "binds": [
+          {
+            "from": 1,
+            "to": 2,
+            "arg": "flight",
+            "field": "flight",
+            "kind": "code",
+            "via": "fill"
+          },
+          {
+            "from": 1,
+            "to": 3,
+            "arg": "day",
+            "field": "day",
+            "kind": "date",
+            "via": "fill"
+          },
+          {
+            "from": 1,
+            "to": 4,
+            "arg": "departure",
+            "field": "departure",
+            "kind": "time",
+            "via": "fill"
+          },
+          {
+            "from": 1,
+            "to": 5,
+            "arg": "fare",
+            "field": "fare",
+            "kind": "amount",
+            "via": "fill"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2,
+            3,
+            4,
+            5
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": false,
+        "splits": [
+          {
+            "start": 23,
+            "end": 25,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 57,
+            "end": 59,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 88,
+            "end": 90,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 126,
+            "end": 131,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "input": {
+    "text": "5:30 pm",
+    "recognizer": "time"
+  },
+  "expect": {
+    "type": "pick",
+    "span": {
+      "start": 0,
+      "end": 7,
+      "text": "5:30 pm"
+    },
+    "value": {
+      "type": "time",
+      "value": "17:30"
+    }
+  }
+}

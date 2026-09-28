@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "-€5 and -5 dollars"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 2,
+        "end": 3,
+        "text": "5"
+      },
+      "value": {
+        "type": "number",
+        "value": 5
+      }
+    },
+    {
+      "span": {
+        "start": 8,
+        "end": 10,
+        "text": "-5"
+      },
+      "value": {
+        "type": "number",
+        "value": -5
+      }
+    }
+  ]
+}

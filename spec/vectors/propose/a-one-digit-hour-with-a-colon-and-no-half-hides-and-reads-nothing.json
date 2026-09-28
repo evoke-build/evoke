@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "wake me at 5:30 and set the volume to 10"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 38,
+        "end": 40,
+        "text": "10"
+      },
+      "value": {
+        "type": "number",
+        "value": 10
+      }
+    }
+  ]
+}

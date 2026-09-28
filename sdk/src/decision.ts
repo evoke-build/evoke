@@ -10,7 +10,7 @@ import type * as W from "./types.ts"
 /** The four shapes evoke.d.ts declares, so a generated Reflexes and an inline one are one kind of thing. */
 export type Option<K extends string = string> = { type: "option"; key: K }
 export type Word = { type: "word"; word: string; value?: string }
-export type Pick<T extends W.Recognizer = W.Recognizer, V = number | string> = {
+export type Pick<T extends W.Recognizer = W.Recognizer, V = number | string | W.Day | W.Amount> = {
   type: "pick"
   span: W.Span
   value: { type: T; value: V }
@@ -22,7 +22,8 @@ export type Value = W.Value
 /** What a decision's args carry per reflex when nothing narrows it: any reflex, any arguments. */
 export type AnyReflexes = Record<string, Record<string, Value>>
 
-/** A value as a body receives it: the key, the word's value else the word, the number or text, `true`. */
+/** A value as `values` carries it: the key, the word's value else the word, the number or text, a day's reading,
+ *  a clock time, an amount, `true`. */
 export type Plain<V> = V extends Option<infer K>
   ? K
   : V extends Word
@@ -35,6 +36,12 @@ export type Plain<V> = V extends Option<infer K>
 
 /** Plain values per argument; an optional argument stays optional. */
 export type Values<A> = { [N in keyof A]: Plain<NonNullable<A[N]>> }
+
+/** A value as a body receives it: as `values` carries it, but a date resolved against today, `YYYY-MM-DD`. */
+export type Received<V> = V extends Pick<"date", W.Day> ? string : Plain<V>
+
+/** Received values per argument; an optional argument stays optional. */
+export type ReceivedValues<A> = { [N in keyof A]: Received<NonNullable<A[N]>> }
 
 /** What every decision carries beside the core's fields. */
 export interface Line {

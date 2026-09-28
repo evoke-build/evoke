@@ -1,0 +1,142 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "calendar",
+          "route": 0.95,
+          "fits": 0.8
+        },
+        {
+          "reflex": "meeting",
+          "route": 0.03,
+          "fits": 0.02
+        },
+        {
+          "reflex": "rollback",
+          "route": 0,
+          "fits": 0.02
+        },
+        {
+          "reflex": "deploys",
+          "route": 0,
+          "fits": 0.02
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "calendar",
+          "p": 0.95
+        },
+        {
+          "question": "calendar.day",
+          "top": "tomorrow",
+          "p": 0.9
+        }
+      ],
+      "winner": {
+        "reflex": "calendar",
+        "args": {
+          "day": {
+            "type": "word",
+            "word": "tomorrow"
+          }
+        },
+        "missing": [],
+        "unconsumed": [
+          {
+            "start": 34,
+            "end": 40,
+            "text": "monday"
+          }
+        ],
+        "runner_up": {
+          "reflex": "meeting",
+          "route": 0.03,
+          "fits": 0.02
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "outcome": "confirm",
+    "reflex": "calendar",
+    "args": {
+      "day": {
+        "type": "word",
+        "word": "tomorrow"
+      }
+    },
+    "call": "calendar day=\"tomorrow\"",
+    "effect": "read",
+    "confidence": 0.9,
+    "weakest": {
+      "question": "calendar.day",
+      "top": "tomorrow",
+      "p": 0.9
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "calendar",
+        "p": 0.95
+      },
+      {
+        "question": "calendar.day",
+        "top": "tomorrow",
+        "p": 0.9
+      }
+    ],
+    "runner_up": {
+      "reflex": "meeting",
+      "route": 0.03,
+      "fits": 0.02
+    },
+    "contenders": [
+      {
+        "reflex": "calendar",
+        "route": 0.95,
+        "fits": 0.8
+      },
+      {
+        "reflex": "meeting",
+        "route": 0.03,
+        "fits": 0.02
+      },
+      {
+        "reflex": "rollback",
+        "route": 0,
+        "fits": 0.02
+      },
+      {
+        "reflex": "deploys",
+        "route": 0,
+        "fits": 0.02
+      }
+    ],
+    "prompt": {
+      "own": "calendar day=\"tomorrow\" · read · weakest: day 0.90 · unused \"monday\"",
+      "template": "Show the calendar for tomorrow?"
+    },
+    "because": [
+      {
+        "type": "unconsumed_span",
+        "span": {
+          "start": 34,
+          "end": 40,
+          "text": "monday"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "input": {
+    "input": "on 27.03.2017 but not 7.30"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 3,
+        "end": 13,
+        "text": "27.03.2017"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "year": 2017,
+          "month": 3,
+          "day": 27
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 22,
+        "end": 26,
+        "text": "7.30"
+      },
+      "value": {
+        "type": "number",
+        "value": 7.3
+      }
+    }
+  ]
+}

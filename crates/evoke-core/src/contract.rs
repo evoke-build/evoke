@@ -56,6 +56,10 @@ pub enum Change {
     RangeChanged {
         arg: ArgName,
     },
+    /// The yielded field a pick's ask lists recent values of came, went or moved: what an ask offers changes.
+    RecentChanged {
+        arg: ArgName,
+    },
     RunChanged,
     /// A playbook's steps moved: one added, removed, reworded or reordered. The plan a person's yes covered is
     /// another plan.
@@ -149,6 +153,7 @@ impl Change {
             | Self::ArgRenamed { .. }
             | Self::SourceChanged { .. }
             | Self::RangeChanged { .. }
+            | Self::RecentChanged { .. }
             | Self::RunChanged
             | Self::StepsChanged
             | Self::Required { .. }
@@ -232,6 +237,11 @@ pub fn diff(previous: &Manifest, next: &Manifest) -> ContractDiff {
             continue;
         };
         changes.extend(compare(current, &before.kind, &after.kind));
+        if before.recent != after.recent {
+            changes.push(Change::RecentChanged {
+                arg: current.clone(),
+            });
+        }
     }
     for name in next.args.keys() {
         if !previous.args.contains_key(name) && !renamed.values().any(|to| to == name) {
@@ -347,7 +357,8 @@ pub fn consent(locked: Effect, upstream: Effect) -> Consent {
 }
 
 /// What `lint` finds: a size cap passed, text that addresses the model instead of describing an action, a step
-/// holding a connective the reader splits on, or a step stating a word another team would change.
+/// holding a connective the reader splits on, a step stating a word another team would change, or a step
+/// referring to an earlier one by `that <noun>` where `whether` is meant.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum LintRule {
@@ -355,6 +366,7 @@ pub enum LintRule {
     AddressesModel,
     Connective,
     Literal,
+    Reference,
 }
 
 /// One thing `lint` found, at the key path it concerns; reported at `add` and by `check`, never a refusal.
@@ -545,6 +557,17 @@ fn lint_steps(findings: &mut Vec<Finding>, steps: &[crate::manifest::Sentence]) 
                 path: at.clone(),
                 message: format!(
                     "step {} states \"{literal}\"; a word another team would change is a slot",
+                    i + 1
+                ),
+            });
+        }
+        // `check that writes land` names an earlier step by `that writes`, and would confirm as taking nothing.
+        if let Some(noun) = reading::checked_that(&text) {
+            findings.push(Finding {
+                rule: LintRule::Reference,
+                path: at.clone(),
+                message: format!(
+                    "step {} says \"check that {noun}\"; a step refers by \"that <noun>\": say \"check whether\"",
                     i + 1
                 ),
             });

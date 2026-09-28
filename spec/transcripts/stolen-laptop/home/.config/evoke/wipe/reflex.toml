@@ -10,9 +10,9 @@ run = "wipe.mts"
 
 [args.serial]
 ask  = "Which serial?"
-pick = "quoted"
+pick = "code"
 
 [examples]
-"wipe \"C02XK1ABJG5M\""                         = { serial = "C02XK1ABJG5M" }
-"erase the laptop with serial \"FVFH3KLMN2Q7\"" = { serial = "FVFH3KLMN2Q7" }
-"remote wipe \"C02G80T3MD6R\""                  = { serial = "C02G80T3MD6R" }
+"wipe C02XK1ABJG5M"                         = { serial = "C02XK1ABJG5M" }
+"erase the laptop with serial FVFH3KLMN2Q7" = { serial = "FVFH3KLMN2Q7" }
+"remote wipe C02G80T3MD6R"                  = { serial = "C02G80T3MD6R" }

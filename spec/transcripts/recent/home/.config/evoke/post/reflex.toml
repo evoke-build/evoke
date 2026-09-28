@@ -1,0 +1,19 @@
+reflex = 1
+
+description = """
+Post a message to a chat channel.
+The message is what you typed about it."""
+not_for = ["email", "the status page", "reading a channel"]
+tags = ["post"]
+effect = "write"
+confirm = "Post to {channel}?"
+run = "post.mts"
+
+[args.channel]
+ask   = "Which channel?"
+vocab = "channels"
+
+[examples]
+"post to #incident that we are on it" = {}
+"tell #ops the deploy is done"        = {}
+"let #incident know it is fixed"      = {}

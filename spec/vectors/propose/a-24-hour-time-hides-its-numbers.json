@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "the deploy at 15:00 and 23:59"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 14,
+        "end": 19,
+        "text": "15:00"
+      },
+      "value": {
+        "type": "time",
+        "value": "15:00"
+      }
+    },
+    {
+      "span": {
+        "start": 24,
+        "end": 29,
+        "text": "23:59"
+      },
+      "value": {
+        "type": "time",
+        "value": "23:59"
+      }
+    }
+  ]
+}

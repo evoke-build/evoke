@@ -1,0 +1,72 @@
+{
+  "input": {
+    "args": {
+      "day": {
+        "type": "pick",
+        "span": {
+          "start": 0,
+          "end": 8,
+          "text": "tomorrow"
+        },
+        "value": {
+          "type": "date",
+          "value": {
+            "type": "offset",
+            "days": 1
+          }
+        }
+      },
+      "time": {
+        "type": "pick",
+        "span": {
+          "start": 0,
+          "end": 3,
+          "text": "3pm"
+        },
+        "value": {
+          "type": "time",
+          "value": "15:00"
+        }
+      },
+      "fare": {
+        "type": "pick",
+        "span": {
+          "start": 0,
+          "end": 9,
+          "text": "120 euros"
+        },
+        "value": {
+          "type": "amount",
+          "value": {
+            "amount": 120,
+            "currency": "EUR"
+          }
+        }
+      },
+      "flight": {
+        "type": "pick",
+        "span": {
+          "start": 0,
+          "end": 6,
+          "text": "TP1043"
+        },
+        "value": {
+          "type": "code",
+          "value": "TP1043"
+        }
+      }
+    }
+  },
+  "expect": {
+    "day": {
+      "type": "offset",
+      "days": 1
+    },
+    "time": "15:00",
+    "fare": {
+      "amount": 120,
+      "currency": "EUR"
+    },
+    "flight": "TP1043"
+  }
+}

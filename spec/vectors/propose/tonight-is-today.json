@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "book a room for tonight"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 16,
+        "end": 23,
+        "text": "tonight"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "offset",
+          "days": 0
+        }
+      }
+    }
+  ]
+}

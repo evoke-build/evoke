@@ -10,9 +10,9 @@ run = "book.mts"
 
 [args.flight]
 ask  = "Which flight?"
-pick = "quoted"
+pick = "code"
 
 [examples]
-"book \"TP1043\""             = { flight = "TP1043" }
-"get me a seat on \"IB3107\"" = { flight = "IB3107" }
-"take the \"LH1166\" flight"  = { flight = "LH1166" }
+"book TP1043"             = { flight = "TP1043" }
+"get me a seat on IB3107" = { flight = "IB3107" }
+"take the LH1166 flight"  = { flight = "LH1166" }

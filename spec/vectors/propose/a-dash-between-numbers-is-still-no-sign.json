@@ -1,0 +1,40 @@
+{
+  "input": {
+    "input": "wait 5-10 minutes for INC-311"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 5,
+        "end": 6,
+        "text": "5"
+      },
+      "value": {
+        "type": "number",
+        "value": 5
+      }
+    },
+    {
+      "span": {
+        "start": 7,
+        "end": 17,
+        "text": "10 minutes"
+      },
+      "value": {
+        "type": "duration",
+        "value": 600
+      }
+    },
+    {
+      "span": {
+        "start": 22,
+        "end": 29,
+        "text": "INC-311"
+      },
+      "value": {
+        "type": "code",
+        "value": "INC-311"
+      }
+    }
+  ]
+}

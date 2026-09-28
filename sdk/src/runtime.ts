@@ -199,6 +199,34 @@ export function resolved(what: string, config: Record<string, Setting>): Record<
   return values
 }
 
+/** The calendar day a relative date resolves against at the body's door: `EVOKE_TODAY` as `YYYY-MM-DD` when set —
+ *  a value that is no day is the failure it names — else the machine's local day. */
+export function today(what: string): string {
+  const named = process.env.EVOKE_TODAY
+  if (named === undefined || named === "") {
+    const now = new Date()
+    return civil(now.getFullYear(), now.getMonth() + 1, now.getDate())
+  }
+  const parts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(named)?.slice(1).map(Number) ?? []
+  const [year, month, day] = parts
+  if (year === undefined || month === undefined || day === undefined || civil(year, month, day) !== named || !exists(year, month, day)) {
+    throw failed(what, `EVOKE_TODAY: ${JSON.stringify(named)} is not a date: YYYY-MM-DD`, { type: "export_key", var: "EVOKE_TODAY" })
+  }
+  return named
+}
+
+/** `YYYY-MM-DD`. */
+function civil(year: number, month: number, day: number): string {
+  return `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+}
+
+/** Whether the calendar has the day: a year from 1, a month of twelve, a day the month holds. */
+function exists(year: number, month: number, day: number): boolean {
+  const date = new Date(0)
+  date.setUTCFullYear(year, month - 1, day)
+  return year >= 1 && date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
+}
+
 /** The environment a body runs under: five variables, nothing else, `TMPDIR` the private folder made for the run. */
 function scrubbed(tmp: string): Record<string, string> {
   const env: Record<string, string> = {}

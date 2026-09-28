@@ -3,6 +3,7 @@
 //! pseudo-terminal — or, when the flow says `# no tty`, with no terminal at all, in a session of its own, so the
 //! terminal of whoever runs the suite does not reach it — with `TERM=dumb` and `NO_COLOR=1` so the terminal shows
 //! plain text, `replay` answering from `EVOKE_ANSWERS`, `# platform macos` replaying the flow as that machine,
+//! `# today YYYY-MM-DD` setting the day a relative date resolves against,
 //! remotes rebuilt from their trees by the recipe. Every line must
 //! match, trailing spaces aside, JSON as JSON with `ms` aside; `[N]` is the exit code; a line `^C` is Ctrl-C typed
 //! once the line before it has shown, and the terminal's echo of it. One test per flow; each is turned on by the
@@ -211,6 +212,11 @@ fn new_colleague() {
 }
 
 #[test]
+fn recent() {
+    flow("recent");
+}
+
+#[test]
 fn plans() {
     flow("plans");
 }
@@ -267,6 +273,13 @@ fn flow(name: &str) {
         .find_map(|line| line.strip_prefix("# platform "))
     {
         environment.push(("EVOKE_PLATFORM".to_owned(), platform.trim().to_owned()));
+    }
+    // `# today YYYY-MM-DD`: the day a relative date resolves against, whatever the clock says.
+    if let Some(today) = session
+        .lines()
+        .find_map(|line| line.strip_prefix("# today "))
+    {
+        environment.push(("EVOKE_TODAY".to_owned(), today.trim().to_owned()));
     }
     for step in steps(&session) {
         let mut command = Command::new("sh");

@@ -600,7 +600,7 @@
               },
               "choices": {
                 "type": "pick",
-                "pick": "quoted"
+                "pick": "code"
               }
             }
           ]
@@ -883,7 +883,7 @@
         "to": 5,
         "arg": "release",
         "field": "release",
-        "kind": "quoted",
+        "kind": "code",
         "via": "fill"
       }
     ],
@@ -938,14 +938,14 @@
     "read": 0.6,
     "write": 0.8
   },
-  "set": "h1:bf5a50df1c44d23c6d6e709413531883ce014676526f55b3ad10e876da8ea778",
+  "set": "h1:bb54e8e5f2bc0cef401da19cea2bb79e8abf3c309cb8bda8ec7f3cbb8fb45a1d",
   "reflexes": {
     "errors": {
       "item": "h1:2dff0043389abaab30f0c70bcb2f53d3455ecea858c0d130adc8b82d13b55577",
       "path": "./errors"
     },
     "deploys": {
-      "item": "h1:7379b100d71919e4b718c200e58e173b77d6ae1bee6027e2830bb91c6380f6fd",
+      "item": "h1:ba9c78bbeb495ba7552dd1ab6a611abae18f10b0183b6ec4dcce998c2dfe3c3e",
       "path": "./deploys"
     },
     "logs": {
@@ -953,11 +953,11 @@
       "path": "./logs"
     },
     "suspect": {
-      "item": "h1:59cdd7a7b2ab65f4c8db1e1067ceea3b118cf56dd1e2b0940091f925e8e02802",
+      "item": "h1:b2b9594ee60c946fbe813a0c1fe2e7b7572e947756fb2b5512ee131af648e792",
       "path": "./suspect"
     },
     "rollback": {
-      "item": "h1:af496f28f95383a402d70c05d933c7955f458b3d2bde9c0f0e19435cc12edaf0",
+      "item": "h1:3863e21df7ed6d8fd213252d6ced28a2ab201dc569c2863fa3c413854195e3d9",
       "path": "./rollback"
     },
     "post": {

@@ -1,0 +1,7 @@
+{
+  "input": {
+    "text": "1200",
+    "recognizer": "amount"
+  },
+  "expect": null
+}

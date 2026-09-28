@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "what day is the 15th"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 12,
+        "end": 20,
+        "text": "the 15th"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "day",
+          "day": 15
+        }
+      }
+    }
+  ]
+}

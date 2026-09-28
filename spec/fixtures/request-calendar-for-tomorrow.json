@@ -1,0 +1,124 @@
+{
+  "state": {
+    "request": "show my calendar for tomorrow"
+  },
+  "questions": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "meeting": {
+          "what": "Move a meeting to a day and a time.\nThe meeting moves to the day and the time you name.",
+          "not_for": [
+            "showing the calendar",
+            "rolling a release back"
+          ],
+          "examples": [
+            "move the meeting to friday at 10am"
+          ]
+        },
+        "rollback": {
+          "what": "Roll a service back from a release to the one before it.\nEverywhere at once.",
+          "not_for": [
+            "listing deploys",
+            "moving a meeting"
+          ],
+          "examples": [
+            "roll checkout back from 4.12.0"
+          ]
+        },
+        "calendar": {
+          "what": "Show the meetings of a day.\nEach with its title and its time.",
+          "not_for": [
+            "moving a meeting",
+            "rolling a release back"
+          ],
+          "examples": [
+            "what is on my calendar tomorrow"
+          ]
+        },
+        "deploys": {
+          "what": "List the recent deploys of a service.\nEach release, newest first.",
+          "not_for": [
+            "rolling a release back",
+            "moving a meeting"
+          ],
+          "examples": [
+            "list the checkout deploys"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "fits.meeting": {
+      "type": "yesno",
+      "ask": "Does `meeting` do the specific thing the request asks for?",
+      "yes": "Move a meeting to a day and a time.\nThe meeting moves to the day and the time you name.",
+      "no": "Something else, such as: showing the calendar; rolling a release back."
+    },
+    "meeting.day": {
+      "type": "choice",
+      "ask": "To which day?",
+      "options": {
+        "21-29": "tomorrow",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.rollback": {
+      "type": "yesno",
+      "ask": "Does `rollback` do the specific thing the request asks for?",
+      "yes": "Roll a service back from a release to the one before it.\nEverywhere at once.",
+      "no": "Something else, such as: listing deploys; moving a meeting."
+    },
+    "fits.calendar": {
+      "type": "yesno",
+      "ask": "Does `calendar` do the specific thing the request asks for?",
+      "yes": "Show the meetings of a day.\nEach with its title and its time.",
+      "no": "Something else, such as: moving a meeting; rolling a release back."
+    },
+    "calendar.day": {
+      "type": "choice",
+      "ask": "Which day?",
+      "options": {
+        "tomorrow": "Tomorrow, the day after today.",
+        "monday": "Monday, the first day of the week.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.deploys": {
+      "type": "yesno",
+      "ask": "Does `deploys` do the specific thing the request asks for?",
+      "yes": "List the recent deploys of a service.\nEach release, newest first.",
+      "no": "Something else, such as: rolling a release back; moving a meeting."
+    },
+    "deploys.service": {
+      "type": "choice",
+      "ask": "Which service?",
+      "options": {
+        "checkout": "The checkout service.",
+        "payments": "The payments service.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    }
+  },
+  "proposed": [
+    {
+      "span": {
+        "start": 21,
+        "end": 29,
+        "text": "tomorrow"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "offset",
+          "days": 1
+        }
+      }
+    }
+  ]
+}

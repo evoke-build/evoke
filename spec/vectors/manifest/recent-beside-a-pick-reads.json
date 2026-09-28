@@ -1,0 +1,44 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "rollback"
+      },
+      "toml": "reflex = 1\n\ndescription = \"\"\"\nRoll a service back from a release to the one before it.\nEverywhere at once.\"\"\"\nnot_for = [\"listing deploys\", \"moving a meeting\"]\ntags    = [\"rollback\"]\nconfirm = \"Roll back {release}?\"\nrun     = \"rollback.mts\"\n\n[args.release]\nask    = \"From which release?\"\npick   = \"code\"\nrecent = \"release\"\n\n[examples]\n\"roll checkout back from 4.12.0\" = { release = \"4.12.0\" }\n"
+    }
+  },
+  "expect": {
+    "ok": {
+      "description": "Roll a service back from a release to the one before it.\nEverywhere at once.",
+      "not_for": [
+        "listing deploys",
+        "moving a meeting"
+      ],
+      "tags": [
+        "rollback"
+      ],
+      "effect": "destructive",
+      "confirm": "Roll back {release}?",
+      "run": "rollback.mts",
+      "config": {},
+      "args": {
+        "release": {
+          "ask": "From which release?",
+          "pick": "code",
+          "recent": "release",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "examples": {
+        "roll checkout back from 4.12.0": {
+          "release": "4.12.0"
+        }
+      },
+      "tests": {},
+      "unknown": []
+    }
+  }
+}

@@ -14,7 +14,8 @@
       "decided": [
         [
           {
-            "text": "set a timer for 10 minutes and 30 seconds"
+            "text": "set a timer for 10 minutes and 30 seconds",
+            "whole": true
           },
           {
             "outcome": "confirm",

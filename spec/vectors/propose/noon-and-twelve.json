@@ -1,0 +1,51 @@
+{
+  "input": {
+    "input": "at noon, by midnight, 12 am and 12 pm"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 3,
+        "end": 7,
+        "text": "noon"
+      },
+      "value": {
+        "type": "time",
+        "value": "12:00"
+      }
+    },
+    {
+      "span": {
+        "start": 12,
+        "end": 20,
+        "text": "midnight"
+      },
+      "value": {
+        "type": "time",
+        "value": "00:00"
+      }
+    },
+    {
+      "span": {
+        "start": 22,
+        "end": 27,
+        "text": "12 am"
+      },
+      "value": {
+        "type": "time",
+        "value": "00:00"
+      }
+    },
+    {
+      "span": {
+        "start": 32,
+        "end": 37,
+        "text": "12 pm"
+      },
+      "value": {
+        "type": "time",
+        "value": "12:00"
+      }
+    }
+  ]
+}

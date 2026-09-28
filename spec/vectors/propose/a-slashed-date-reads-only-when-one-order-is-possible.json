@@ -1,0 +1,39 @@
+{
+  "input": {
+    "input": "on 27/03/2017, on 5/17/2037 and on 12/03/2019"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 3,
+        "end": 13,
+        "text": "27/03/2017"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "year": 2017,
+          "month": 3,
+          "day": 27
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 18,
+        "end": 27,
+        "text": "5/17/2037"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "year": 2037,
+          "month": 5,
+          "day": 17
+        }
+      }
+    }
+  ]
+}

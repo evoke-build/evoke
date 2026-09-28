@@ -56,9 +56,10 @@ evoke "mute the office lights"
 
 It selects. An argument's value is one of five things: one of the author's options, one of
 your vocabulary words, a piece of what you typed, taken word for word, or, in a sentence of several steps, a field
-of an earlier step's result or that step's whole result, which the plan shows. That piece can be a number, a
-duration, an email address, a URL, or a quoted phrase, and it is checked against its range. So a sentence can
-choose a call, but it can never invent a value. And what it chooses still passes the gate. That is the shape of
-every guarantee in [Security](../security.md).
+of an earlier step's result or that step's whole result, which the plan shows; or, when the words leave it out, a
+value an earlier result of this session holds, which you choose at the prompt. That piece can be a number, a
+duration, an email address, a URL, a quoted phrase, a date, a time, an amount or a code, and it is checked against
+its range. So a sentence can choose a call, but it can never invent a value. And what it chooses still passes the
+gate. That is the shape of every guarantee in [Security](../security.md).
 
 **Next:** [Typing a request](../use/saying-things.md).

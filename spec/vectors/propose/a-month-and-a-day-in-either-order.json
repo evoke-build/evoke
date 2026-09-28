@@ -1,0 +1,67 @@
+{
+  "input": {
+    "input": "on may fifth, the 14th of march, march 7 and 7th march"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 3,
+        "end": 12,
+        "text": "may fifth"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "month": 5,
+          "day": 5
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 14,
+        "end": 31,
+        "text": "the 14th of march"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "month": 3,
+          "day": 14
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 33,
+        "end": 40,
+        "text": "march 7"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "month": 3,
+          "day": 7
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 45,
+        "end": 54,
+        "text": "7th march"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "month": 3,
+          "day": 7
+        }
+      }
+    }
+  ]
+}

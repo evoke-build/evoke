@@ -1,0 +1,38 @@
+{
+  "input": {
+    "input": "the weather on mar. 4th, 2020 and sept 12"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 15,
+        "end": 29,
+        "text": "mar. 4th, 2020"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "year": 2020,
+          "month": 3,
+          "day": 4
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 34,
+        "end": 41,
+        "text": "sept 12"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "month": 9,
+          "day": 12
+        }
+      }
+    }
+  ]
+}

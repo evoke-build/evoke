@@ -1,0 +1,38 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "book"
+      },
+      "toml": "reflex = 1\n\ndescription = \"Book a seat on a flight.\"\nconfirm     = \"Book {flight}?\"\nrun         = \"book.mts\"\n\n[args.flight]\nask     = \"Which seat?\"\noptions = { aisle = \"An aisle seat.\", window = \"A window seat.\" }\nrecent  = \"seat\"\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "book",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "book"
+          },
+          "line": 10,
+          "column": 1
+        },
+        "message": "args.flight has recent, which only a pick takes",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "book"
+            },
+            "line": 10,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

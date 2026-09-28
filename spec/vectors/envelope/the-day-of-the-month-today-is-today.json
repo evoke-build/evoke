@@ -1,0 +1,79 @@
+{
+  "input": {
+    "chosen": {
+      "reflex": "meeting",
+      "args": {
+        "day": {
+          "type": "pick",
+          "span": {
+            "start": 0,
+            "end": 7,
+            "text": "the 5th"
+          },
+          "value": {
+            "type": "date",
+            "value": {
+              "type": "day",
+              "day": 5
+            }
+          }
+        },
+        "time": {
+          "type": "pick",
+          "span": {
+            "start": 0,
+            "end": 3,
+            "text": "3pm"
+          },
+          "value": {
+            "type": "time",
+            "value": "15:00"
+          }
+        }
+      },
+      "call": "meeting day=\"the 5th\" time=\"3pm\"",
+      "effect": "write"
+    },
+    "active": {
+      "effect": "write",
+      "run": "meeting.mts",
+      "confirm": "Move the meeting to {day} at {time}?",
+      "args": {
+        "day": {
+          "ask": "To which day?",
+          "pick": "date",
+          "optional": false,
+          "was": []
+        },
+        "time": {
+          "ask": "At what time?",
+          "pick": "time",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "meeting"
+      ]
+    },
+    "input": "",
+    "deadline": 30000,
+    "home": "/Users/me",
+    "today": "2026-05-05"
+  },
+  "expect": {
+    "ok": {
+      "reflex": "meeting",
+      "run": "meeting.mts",
+      "args": {
+        "day": "2026-05-05",
+        "time": "15:00"
+      },
+      "input": "",
+      "config": {},
+      "deadline": 30000
+    }
+  }
+}

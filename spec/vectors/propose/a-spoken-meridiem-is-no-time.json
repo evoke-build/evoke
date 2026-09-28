@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "at seven a m"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 3,
+        "end": 8,
+        "text": "seven"
+      },
+      "value": {
+        "type": "number",
+        "value": 7
+      }
+    }
+  ]
+}

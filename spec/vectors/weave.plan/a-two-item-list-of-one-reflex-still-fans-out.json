@@ -15,7 +15,8 @@
       "decided": [
         [
           {
-            "text": "check the errors for checkout and payments"
+            "text": "check the errors for checkout and payments",
+            "whole": true
           },
           {
             "outcome": "run",

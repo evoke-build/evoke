@@ -1,0 +1,23 @@
+{
+  "input": {
+    "input": "what did we do on 2026-05-05"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 18,
+        "end": 28,
+        "text": "2026-05-05"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "calendar",
+          "year": 2026,
+          "month": 5,
+          "day": 5
+        }
+      }
+    }
+  ]
+}

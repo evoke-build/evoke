@@ -1,0 +1,49 @@
+{
+  "input": {
+    "input": "in three days, in two weeks and a week from today"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 0,
+        "end": 13,
+        "text": "in three days"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "offset",
+          "days": 3
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 15,
+        "end": 27,
+        "text": "in two weeks"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "offset",
+          "days": 14
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 32,
+        "end": 49,
+        "text": "a week from today"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "offset",
+          "days": 7
+        }
+      }
+    }
+  ]
+}

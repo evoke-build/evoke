@@ -100,8 +100,10 @@ export type Result = string | { text: string; data?: unknown }
 export type Reflex = (args: Args, context: Context) => Result | Promise<Result>
 ```
 
-Option keys become a union: `"on" | "off" | "dim"`. A word, a quoted text, an address and a URL are `string`. A
-number and a duration are `number`. A flag is `true`. A taken result is `unknown`, since `evoke` checks no shape.
+Option keys become a union: `"on" | "off" | "dim"`. A word, a quoted text, an address, a URL and a code are
+`string`. A number and a duration are `number`. A date is a `string`, `2026-05-05`, resolved against the day the
+body runs; a time a `string`, `17:30`; an amount `{ amount: number; currency: string }`. A flag is `true`. A taken
+result is `unknown`, since `evoke` checks no shape.
 An optional argument is marked `?`. Each member carries its `ask` or `about`, so an editor's hover shows the
 question. The file imports nothing.
 

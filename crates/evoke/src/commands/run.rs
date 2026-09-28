@@ -175,6 +175,7 @@ fn planned(command: &Command, file: &str, json: bool, environment: &Environment)
             file: shown.clone(),
             id: Digest::of(text.as_bytes()),
         }),
+        results: Vec::new(),
     };
     rounds.run_pinned(&pinned.input, &woven, &shown)
 }

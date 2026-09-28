@@ -850,7 +850,24 @@ fn request_of(
         },
         questions,
         proposed: Vec::new(),
+        recent: IndexMap::new(),
     })
+}
+
+/// The noun a step opening with `check that <noun>` names — a reference to an earlier step by code, `check that
+/// writes land`, where `check whether` is meant — when it opens so: what a playbook's lint flags. A step that
+/// refers on purpose, `roll back that release`, is not opened by a check.
+#[must_use]
+pub(crate) fn checked_that(text: &str) -> Option<String> {
+    let chars: Vec<char> = text.chars().collect();
+    if !starts_with_word(&chars, 0, "check") {
+        return None;
+    }
+    let after = spaces(&chars, "check".len())?;
+    match phrase_at(&chars, after) {
+        Some((_, "that", noun)) if !STOP.contains(&noun.as_str()) => Some(noun),
+        _ => None,
+    }
 }
 
 /// `weave.<name>`: a question of the layer's own.

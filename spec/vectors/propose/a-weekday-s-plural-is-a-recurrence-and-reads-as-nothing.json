@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "remind me on mondays at 9am"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 24,
+        "end": 27,
+        "text": "9am"
+      },
+      "value": {
+        "type": "time",
+        "value": "09:00"
+      }
+    }
+  ]
+}

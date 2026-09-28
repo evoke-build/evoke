@@ -1,0 +1,46 @@
+{
+  "input": {
+    "input": "send 1000 USD, 100USD and USD 50"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 5,
+        "end": 13,
+        "text": "1000 USD"
+      },
+      "value": {
+        "type": "amount",
+        "value": {
+          "amount": 1000,
+          "currency": "USD"
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 15,
+        "end": 21,
+        "text": "100USD"
+      },
+      "value": {
+        "type": "amount",
+        "value": {
+          "amount": 100,
+          "currency": "USD"
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 30,
+        "end": 32,
+        "text": "50"
+      },
+      "value": {
+        "type": "number",
+        "value": 50
+      }
+    }
+  ]
+}

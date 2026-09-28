@@ -68,7 +68,7 @@ level = "number"
 | `[needs]`     | no       | What the body touches, held by the kernel: `reads`, `writes`, `hosts`, `runs`. Left out, the tightest declaration: its own directory and `TMPDIR`. [What the body touches](#what-the-body-touches) |
 | `[config]`    | no       | Settings the user provides with `evoke config`: `key = "about"` or `key = { about, secret = true }`. A secret is only ever set from an environment variable |
 | `[args.<name>]` | no     | The arguments: an `ask` and exactly one source, or `takes` alone. [Arguments](arguments.md) |
-| `[yields]`    | no       | What the body's `data` holds, for a later step to take ([Weaving](../use/weaving.md)): per field, the kind that reads it, `number`, `duration`, `email`, `url` or `quoted`; or `{ each = { … } }` for a list of records |
+| `[yields]`    | no       | What the body's `data` holds, for a later step to take ([Weaving](../use/weaving.md)) or for a pick's `recent` to recall ([Arguments](arguments.md#a-value-recalled)): per field, the recognizer that reads it, `number`, `duration`, `email`, `url`, `quoted`, `date`, `time`, `amount` or `code`; or `{ each = { … } }` for a list of records |
 | `returns`     | no       | The name of what the body's `data` is, whole, for a later step to take: `returns = "deploys"`. Not with an argv `run`. [A result another step takes whole](#a-result-another-step-takes-whole) |
 | `[examples]`  | no       | Utterances with what they assert, sent to the classifier. [Examples and tests](records.md) |
 | `[tests]`     | no       | The same shape, held out: never sent, run by `evoke test` |
@@ -123,14 +123,15 @@ user's `evoke update --accept`, and is `minor`: [Publishing](publishing.md).
 - Names of arguments, tags, config keys and vocabularies match `[a-z][a-z0-9_]*`. An argument name is also never
   a JavaScript reserved word, so a body can destructure it.
 - Option keys are one clean line each. `none` and `unstated` are reserved.
-- Unknown keys are reported, never fatal. The schema at `https://evoke.build/schemas/reflex.json` is strict, so
-  an editor flags a typo before `evoke check` does.
+- Unknown keys are reported by `evoke check`, never fatal: `unknown  lights: warmth is not a key this evoke
+  reads`. The schema at `https://evoke.build/schemas/reflex.json` is strict, so an editor flags a typo before
+  `evoke check` does.
 
 ## What is contract, what is wording
 
 | Contract: a user cannot override it, and changing it is a version bump | Wording: a user may override it, and you may improve it at any tag |
 | :---------------------------------------------------------------- | :--------------------------------------------------------- |
-| `run` or `steps`; `platforms`; `[needs]`; argument names and their sources; option keys; `range`; `config` keys; `yields`; `returns`; what an argument takes | `description`, `not_for`, `tags`, `confirm`; every `ask`; the meaning of each option; examples and tests |
+| `run` or `steps`; `platforms`; `[needs]`; argument names and their sources; option keys; `range`; `recent`; `config` keys; `yields`; `returns`; what an argument takes | `description`, `not_for`, `tags`, `confirm`; every `ask`; the meaning of each option; examples and tests |
 
 An argument may be renamed by declaring its former names, like `was = ["state"]`. Every user's overlay and call
 then follows. [Publishing](publishing.md) says how `evoke check` diffs one tag against the next.
@@ -141,8 +142,9 @@ At `add` and at `check`, lint reports and never refuses. It flags a summary over
 over 1 000, more than eight `not_for` entries, more than 24 options on one argument, more than 40 records in a
 table, or an utterance over 200 characters. It also flags any phrase that addresses a model instead of describing
 an action: *ignore previous*, *you must*, *always choose*, *as an AI*, *the classifier*. In a playbook it flags a
-step holding a connective, `and`, `then` or a comma, since one step is one action, and a step stating a channel or
-an address, since a word another team would change is better a slot. The text is yours to weigh. The finding
+step holding a connective, `and`, `then` or a comma, since one step is one action, a step stating a channel or
+an address, since a word another team would change is better a slot, and a step opening `check that <noun>`,
+which refers to an earlier step where `check whether` is meant. The text is yours to weigh. The finding
 names the key.
 
 **Next:** [Arguments](arguments.md).

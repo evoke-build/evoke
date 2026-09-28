@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "remind me the day after tomorrow"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 10,
+        "end": 32,
+        "text": "the day after tomorrow"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "offset",
+          "days": 2
+        }
+      }
+    }
+  ]
+}

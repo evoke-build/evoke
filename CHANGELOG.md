@@ -6,6 +6,16 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- Four recognizers beside the five: `pick = "date"`, `"time"`, `"amount"` and `"code"`. A date is read as the
+  words say it, `tomorrow`, `next friday`, `the 14th`, `may fifth`, and reaches the body as a day of your
+  machine's calendar, or of `EVOKE_TODAY`; a time as `17:30`; an amount as `{ amount, currency }`; a code, a
+  version, a ticket or a serial, as typed. `[yields]` names them too, and a yielded date reaches the next step
+  as a day.
+- A pick may name a field with `recent = "release"`: when the words leave the argument unstated, the ask lists
+  what the bodies of this session returned under that field, `From which release?  [1] 4.12.0  [2] 4.11.3`, and
+  `why` names what was offered. The SDK takes the results as `recent` on `decide`, `handle` and `weave`.
+- `check` prints a manifest's unknown keys, and lint flags a playbook step opening `check that`.
+
 ## [0.13.0] - 2026-09-28
 
 - A playbook's step may run only under a value an earlier step yields: `{ say = "…", when = { landing = "yes"

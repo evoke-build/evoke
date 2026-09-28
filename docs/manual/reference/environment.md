@@ -12,6 +12,7 @@ nothing is sent anywhere but the adapter you chose.
 | `OPENJEV_API_KEY`   | The `openjev` adapter, when deciding | The classifier's key, from openjev.sh. Never written to a file      |
 | `EVOKE_ANSWERS`     | The `replay` adapter           | A recording to answer from, with `adapter = "replay"` in `evoke.toml`     |
 | `EVOKE_PLATFORM`    | Every decision, `add`, `show`, `test` | `linux` or `macos`: the platform a manifest's `platforms` is judged by, this machine's when unset. Set it to decide or test as another machine would; a body still runs here |
+| `EVOKE_TODAY`       | A body's run, `check`          | `YYYY-MM-DD`: the day a `date` argument resolves against, your machine's local day when unset. A value that is no day stops the run |
 | `<VAR>` of a `--env` setting | A body's run           | A config value, most often a secret, resolved for that run only          |
 | `NO_COLOR`          | The terminal                   | Set and not empty: no colour. The spinner and the line editor stay        |
 | `TERM`              | The terminal                   | Unset, empty or `dumb`: no colour, no spinner, no line editor            |

@@ -25,7 +25,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `prompt`     |     | ●       |     |         | `{ own, template }`: `evoke`'s line and the reflex's question   |
 | `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `unconsumed_span`, `two_things`, `merged` |
 | `unconsumed` |     |         | ●   |         | Typed spans no argument took                                    |
-| `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because`, `choices`        |
+| `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because`, `choices`; a pick's `choices.recent` lists the values recalled from this session's results, when any |
 | `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call: `{ adapter, questions, ms }`. Empty when the answers came from the cache |
 | `result`     | ○   |         |     |         | `{ text, data? }` when the body ran                             |
 | `contained`  | ○   |         |     |         | Whenever the body ran, with `result` or `error`: whether this machine held it to its declaration, `{ "type": "full" }`, or `"partial"` or `"none"` with `why`, one sentence |
@@ -91,7 +91,10 @@ own questions first. `run <file>` refuses the file when any of these differs her
 { "type": "flag" }
 ```
 
-A pick's `value` is what the body receives: the number, the seconds, the text. Its `span` is where it was read,
+A pick's `value` is what a recognizer read: the number, the seconds, the text; a date's reading, `{ "type":
+"offset", "days": 1 }`, `{ "type": "weekday", "weekday": "friday", "which": "next" }`, `{ "type": "day", "day":
+14 }` or `{ "type": "calendar", "year": 2027, "month": 5, "day": 4 }`, resolved to a day only when the body runs;
+a time as `"17:30"`; an amount as `{ "amount": 1200, "currency": "EUR" }`; a code as its text. Its `span` is where it was read,
 in character offsets of the input.
 
 ## Examples

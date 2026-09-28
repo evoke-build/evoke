@@ -7,7 +7,7 @@ fits  = 0.3
 read  = 0.6
 write = 0.8
 
-[answers."find flights to lisbon, rooms there and tomorrow's calendar, book that flight, book the hotel, move the meetings to tuesday, then tell #travel"]
+[answers."find flights to lisbon, rooms there tonight and tomorrow's calendar, book that flight, book the hotel, move the meetings to tuesday, then tell #travel"]
 "weave.split_0" = { yes = 0.9 }
 "weave.split_1" = { yes = 0.9 }
 "weave.split_2" = { yes = 0.9 }
@@ -23,26 +23,24 @@ route           = { flights = 0.9, rooms = 0.03, none = 0.07 }
 "fits.rooms"    = { yes = 0.02 }
 "rooms.city"    = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 "fits.calendar" = { yes = 0.02 }
-"calendar.day"  = { unstated = 0.9, monday = 0.05, tuesday = 0.05 }
 "fits.book"     = { yes = 0.02 }
 "fits.hotel"    = { yes = 0.02 }
 "fits.meeting"  = { yes = 0.02 }
-"meeting.day"   = { unstated = 0.9, monday = 0.05, tuesday = 0.05 }
 "fits.tell"     = { yes = 0.02 }
 "tell.channel"  = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
 
-[answers."rooms there"]
+[answers."rooms there tonight"]
 route           = { rooms = 0.9, flights = 0.03, none = 0.07 }
 "fits.flights"  = { yes = 0.02 }
 "flights.to"    = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 "fits.rooms"    = { yes = 0.8 }
 "rooms.city"    = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 "fits.calendar" = { yes = 0.02 }
-"calendar.day"  = { unstated = 0.9, monday = 0.05, tuesday = 0.05 }
+"calendar.day"  = { unstated = 0.9, 12-19 = 0.1 }
 "fits.book"     = { yes = 0.02 }
 "fits.hotel"    = { yes = 0.02 }
 "fits.meeting"  = { yes = 0.02 }
-"meeting.day"   = { unstated = 0.9, monday = 0.05, tuesday = 0.05 }
+"meeting.day"   = { unstated = 0.9, 12-19 = 0.1 }
 "fits.tell"     = { yes = 0.02 }
 "tell.channel"  = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
 
@@ -53,11 +51,11 @@ route           = { calendar = 0.9, flights = 0.03, none = 0.07 }
 "fits.rooms"    = { yes = 0.02 }
 "rooms.city"    = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 "fits.calendar" = { yes = 0.8 }
-"calendar.day"  = { tomorrow = 0.9, unstated = 0.1 }
+"calendar.day"  = { 0-8 = 0.9, unstated = 0.1 }
 "fits.book"     = { yes = 0.02 }
 "fits.hotel"    = { yes = 0.02 }
 "fits.meeting"  = { yes = 0.02 }
-"meeting.day"   = { unstated = 0.9, monday = 0.05, tuesday = 0.05 }
+"meeting.day"   = { unstated = 0.9, 0-8 = 0.1 }
 "fits.tell"     = { yes = 0.02 }
 "tell.channel"  = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
 
@@ -68,11 +66,9 @@ route           = { book = 0.9, flights = 0.03, none = 0.07 }
 "fits.rooms"    = { yes = 0.02 }
 "rooms.city"    = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 "fits.calendar" = { yes = 0.02 }
-"calendar.day"  = { unstated = 0.9, monday = 0.05, tuesday = 0.05 }
 "fits.book"     = { yes = 0.8 }
 "fits.hotel"    = { yes = 0.02 }
 "fits.meeting"  = { yes = 0.02 }
-"meeting.day"   = { unstated = 0.9, monday = 0.05, tuesday = 0.05 }
 "fits.tell"     = { yes = 0.02 }
 "tell.channel"  = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
 
@@ -83,11 +79,9 @@ route           = { hotel = 0.9, flights = 0.03, none = 0.07 }
 "fits.rooms"    = { yes = 0.02 }
 "rooms.city"    = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 "fits.calendar" = { yes = 0.02 }
-"calendar.day"  = { unstated = 0.9, monday = 0.05, tuesday = 0.05 }
 "fits.book"     = { yes = 0.02 }
 "fits.hotel"    = { yes = 0.8 }
 "fits.meeting"  = { yes = 0.02 }
-"meeting.day"   = { unstated = 0.9, monday = 0.05, tuesday = 0.05 }
 "fits.tell"     = { yes = 0.02 }
 "tell.channel"  = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
 
@@ -98,11 +92,11 @@ route           = { meeting = 0.9, flights = 0.03, none = 0.07 }
 "fits.rooms"    = { yes = 0.02 }
 "rooms.city"    = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 "fits.calendar" = { yes = 0.02 }
-"calendar.day"  = { unstated = 0.9, monday = 0.05, tuesday = 0.05 }
+"calendar.day"  = { unstated = 0.9, 21-28 = 0.1 }
 "fits.book"     = { yes = 0.02 }
 "fits.hotel"    = { yes = 0.02 }
 "fits.meeting"  = { yes = 0.8 }
-"meeting.day"   = { tuesday = 0.9, unstated = 0.1 }
+"meeting.day"   = { 21-28 = 0.9, unstated = 0.1 }
 "fits.tell"     = { yes = 0.02 }
 "tell.channel"  = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
 
@@ -113,10 +107,8 @@ route           = { tell = 0.9, flights = 0.03, none = 0.07 }
 "fits.rooms"    = { yes = 0.02 }
 "rooms.city"    = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 "fits.calendar" = { yes = 0.02 }
-"calendar.day"  = { unstated = 0.9, monday = 0.05, tuesday = 0.05 }
 "fits.book"     = { yes = 0.02 }
 "fits.hotel"    = { yes = 0.02 }
 "fits.meeting"  = { yes = 0.02 }
-"meeting.day"   = { unstated = 0.9, monday = 0.05, tuesday = 0.05 }
 "fits.tell"     = { yes = 0.8 }
 "tell.channel"  = { "#travel" = 0.9, unstated = 0.1 }

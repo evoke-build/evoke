@@ -6,9 +6,9 @@
 //! `Exit`, every line printed and logged.
 
 use evoke_core::call::Value;
-use evoke_core::decide::{Choices, Missing, Why};
+use evoke_core::decide::{Choices, Missing, Recent, Why};
 use evoke_core::document::Json;
-use evoke_core::manifest::{Kind, Source, written};
+use evoke_core::manifest::{Kind, Recognizer, Source, written};
 use evoke_core::name::{ArgName, LocalName, OptionKey, Tag, VocabName, Word};
 use evoke_core::needs::Entry;
 use evoke_core::text::NonEmpty;
@@ -60,6 +60,9 @@ pub struct Rounds<'a> {
     pub json: bool,
     pub tags: Vec<Tag>,
     pub pinned: Option<PinnedAt>,
+    /// The process's results, newest first: what a whole sentence's ask offers back, a value the words lack
+    /// recalled from a result that yielded it.
+    pub results: Vec<Recent>,
 }
 
 impl Rounds<'_> {
@@ -113,6 +116,15 @@ impl Rounds<'_> {
                     terminal::result(&returned.text);
                 }
                 line.result = Some(returned.clone());
+                if let Some(data) = &returned.data {
+                    self.results.insert(
+                        0,
+                        Recent {
+                            reflex: chosen.call.reflex.clone(),
+                            data: data.clone(),
+                        },
+                    );
+                }
                 let mut rounded = self.stopped(input, &mut line, Exit::Ran, None);
                 rounded.result = Some(returned);
                 rounded
@@ -155,6 +167,7 @@ impl Rounds<'_> {
                     if !self.session.has_tty() {
                         return Err(self.no_terminal(input, line, "an ask"));
                     }
+                    line.recalled.extend(recalled_in(&missing));
                     let given = match self.answers(input, &asking.reflex, &missing) {
                         Ok(Answered::Given(given)) => given,
                         Ok(Answered::Declined { ask }) => {
@@ -568,6 +581,7 @@ impl Rounds<'_> {
                             text: handling.input.clone(),
                             tags: Vec::new(),
                             only: step.reflex.clone(),
+                            whole: false,
                         };
                         let decided = rewritten
                             .iter()
@@ -919,8 +933,16 @@ impl Rounds<'_> {
                         }));
                     }
                 }
-                Choices::Pick { pick } => {
-                    if let Some(value) = picked(typed, *pick) {
+                Choices::Pick { pick, recent } => {
+                    // A recalled value by its number, as an options prompt reads one; a number pick names them
+                    // as hints only, since a number typed is its own answer.
+                    let listed = recent
+                        .as_deref()
+                        .filter(|_| *pick != Recognizer::Number)
+                        .unwrap_or_default();
+                    let keys: Vec<&str> = listed.iter().map(String::as_str).collect();
+                    let chosen = chosen_from(typed, &keys).map_or(typed, |at| keys[at]);
+                    if let Some(value) = picked(chosen, *pick) {
                         return Ok(Some(value));
                     }
                     retry = Some(format!("{} is not {}", report::quoted(typed), pick.wants()));
@@ -1189,6 +1211,17 @@ fn why_of(exit: &Exit) -> Option<Stopped> {
             message: fault.to_string(),
         }),
     }
+}
+
+/// What an ask offered back from the process's results, per argument: the line's record of it, for `why`.
+fn recalled_in(missing: &NonEmpty<Missing>) -> impl Iterator<Item = (ArgName, Vec<String>)> {
+    missing.iter().filter_map(|missing| match &missing.choices {
+        Choices::Pick {
+            recent: Some(values),
+            ..
+        } => Some((missing.arg.clone(), values.clone())),
+        _ => None,
+    })
 }
 
 /// A number from 1, or the choice's own text.

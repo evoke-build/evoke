@@ -1,0 +1,141 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "asking": {
+      "reflex": "rollback",
+      "args": {},
+      "unconsumed": [],
+      "confidence": 0.95,
+      "weakest": {
+        "question": "route",
+        "top": "rollback",
+        "p": 0.95
+      },
+      "judgments": [
+        {
+          "question": "route",
+          "top": "rollback",
+          "p": 0.95
+        }
+      ],
+      "runner_up": {
+        "reflex": "meeting",
+        "route": 0.03,
+        "fits": 0.02
+      },
+      "contenders": [
+        {
+          "reflex": "rollback",
+          "route": 0.95,
+          "fits": 0.8
+        },
+        {
+          "reflex": "meeting",
+          "route": 0.03,
+          "fits": 0.02
+        },
+        {
+          "reflex": "calendar",
+          "route": 0,
+          "fits": 0.02
+        },
+        {
+          "reflex": "deploys",
+          "route": 0,
+          "fits": 0.02
+        }
+      ]
+    },
+    "given": {
+      "release": {
+        "type": "pick",
+        "span": {
+          "start": 0,
+          "end": 6,
+          "text": "4.12.0"
+        },
+        "value": {
+          "type": "code",
+          "value": "4.12.0"
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "outcome": "confirm",
+    "reflex": "rollback",
+    "args": {
+      "release": {
+        "type": "pick",
+        "span": {
+          "start": 0,
+          "end": 6,
+          "text": "4.12.0"
+        },
+        "value": {
+          "type": "code",
+          "value": "4.12.0"
+        }
+      }
+    },
+    "call": "rollback release=\"4.12.0\"",
+    "effect": "destructive",
+    "confidence": 0.95,
+    "weakest": {
+      "question": "route",
+      "top": "rollback",
+      "p": 0.95
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "rollback",
+        "p": 0.95
+      }
+    ],
+    "runner_up": {
+      "reflex": "meeting",
+      "route": 0.03,
+      "fits": 0.02
+    },
+    "contenders": [
+      {
+        "reflex": "rollback",
+        "route": 0.95,
+        "fits": 0.8
+      },
+      {
+        "reflex": "meeting",
+        "route": 0.03,
+        "fits": 0.02
+      },
+      {
+        "reflex": "calendar",
+        "route": 0,
+        "fits": 0.02
+      },
+      {
+        "reflex": "deploys",
+        "route": 0,
+        "fits": 0.02
+      }
+    ],
+    "prompt": {
+      "own": "rollback release=\"4.12.0\" · destructive · weakest: route 0.95",
+      "template": "Roll back 4.12.0?"
+    },
+    "because": [
+      {
+        "type": "destructive"
+      }
+    ]
+  }
+}

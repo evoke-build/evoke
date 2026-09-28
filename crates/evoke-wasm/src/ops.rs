@@ -4,7 +4,9 @@
 
 use evoke_adapters::replay;
 use evoke_adapters::systemone::{self, Door};
+use evoke_core::calendar::Date;
 use evoke_core::contain::Platform;
+use evoke_core::decide::Recent;
 use evoke_core::document::Text;
 use evoke_core::manifest::{ConfigSpec, Effect, Recognizer};
 use evoke_core::name::AdapterId;
@@ -101,6 +103,7 @@ fn decide(op: &str, input: &Json) -> Reply {
             &arg::<Vec<Tag>>(input, "tags")?,
             opt::<LocalName>(input, "only")?.as_ref(),
             arg::<Scope>(input, "scope")?,
+            &opt::<Vec<Recent>>(input, "recent")?.unwrap_or_default(),
         )),
         "read" => result(read(
             &arg::<Plan>(input, "plan")?,
@@ -138,11 +141,13 @@ fn decide(op: &str, input: &Json) -> Reply {
             &arg::<Input>(input, "input")?,
             arg::<Millis>(input, "deadline")?,
             text(input, "home")?,
+            arg::<Date>(input, "today")?,
         )),
         "argv" => result(argv(
             &arg::<Chosen>(input, "chosen")?,
             &arg::<Active>(input, "active")?,
             text(input, "home")?,
+            arg::<Date>(input, "today")?,
         )),
         _ => return weaving(op, input),
     })
@@ -206,6 +211,7 @@ fn needs_and_contain(op: &str, input: &Json) -> Reply {
             &arg::<Active>(input, "active")?,
             &arg::<IndexMap<ConfigKey, String>>(input, "config")?,
             text(input, "home")?,
+            arg::<Date>(input, "today")?,
         )),
         "contain.seatbelt" => ok(seatbelt(
             &arg::<Policy>(input, "policy")?,

@@ -15,7 +15,8 @@
       "decided": [
         [
           {
-            "text": "The API pods keep restarting"
+            "text": "The API pods keep restarting",
+            "whole": true
           },
           {
             "outcome": "ask",

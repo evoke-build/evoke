@@ -1,0 +1,35 @@
+{
+  "input": {
+    "input": "send tomorrow's agenda and today's numbers"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 5,
+        "end": 13,
+        "text": "tomorrow"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "offset",
+          "days": 1
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 27,
+        "end": 32,
+        "text": "today"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "offset",
+          "days": 0
+        }
+      }
+    }
+  ]
+}

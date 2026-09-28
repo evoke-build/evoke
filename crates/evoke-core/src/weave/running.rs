@@ -18,10 +18,10 @@ use super::{
 };
 use crate::adapter::Gate;
 use crate::call::Value;
-use crate::decide::{Decision, fill, merged, picked};
+use crate::decide::{Decision, fill, merged, scalar, yielded};
 use crate::document::Json;
-use crate::manifest::Recognizer;
-use crate::name::ArgName;
+use crate::manifest::{Recognizer, Yield};
+use crate::name::{ArgName, FieldName, LocalName};
 use crate::plan::Plan;
 
 /// The most a whole result may carry to its taker, in bytes of JSON: past it the step is skipped, `too_large`.
@@ -113,7 +113,8 @@ impl Runner<'_> {
                 let step = &self.weave.steps[n - 1];
                 // A step that may not run: its source's field picks it, or skips it.
                 if let Some(when) = &step.when
-                    && let Some(why) = skipped_for(when, &walks)
+                    && let Some(why) =
+                        skipped_for(when, &walks, self.kind_of(when.step, &when.field))
                 {
                     walks[n - 1].status = Some((Status::Skipped, Some(why)));
                     continue;
@@ -223,6 +224,15 @@ impl Runner<'_> {
             .find(|h| h.step == step && h.round == round)
     }
 
+    /// The kind a step's reflex yields a field as, when it yields it as one value.
+    fn kind_of(&self, step: usize, field: &FieldName) -> Option<Recognizer> {
+        let reflex: &LocalName = self.weave.step(step)?.reflex.as_ref()?;
+        match self.plan.active().get(reflex)?.yields.get(field)? {
+            Yield::Kind(kind) => Some(*kind),
+            Yield::Each(_) => None,
+        }
+    }
+
     /// One round prepared for the host: the step's decision as planned, or with its bound values in place —
     /// answering its ask, or decided again with the values in its words, which needs the host first — and the
     /// whole results it takes beside it, which never reach its words.
@@ -255,7 +265,7 @@ impl Runner<'_> {
             let given: IndexMap<ArgName, Value> = values
                 .iter()
                 .filter_map(|(b, text)| {
-                    let value = picked(text, b.kind?)?;
+                    let value = yielded(text, b.kind?)?;
                     Some((b.arg.clone(), value))
                 })
                 .collect();
@@ -270,6 +280,7 @@ impl Runner<'_> {
             text: text.clone(),
             tags: Vec::new(),
             only: Some(reflex.clone()),
+            whole: false,
         };
         let Some((_, decision)) = self.progress.decided.iter().find(|(a, _)| *a == asked) else {
             return Err(Todo::Decide {
@@ -395,10 +406,17 @@ fn rounds_for(binds: &[&Binding], walks: &[Walk]) -> Rounds {
             continue;
         }
         let data = result.and_then(Json::as_object);
+        // A field read as the recognizer reads it, as a body may yield it: a date with its year, a time as
+        // `HH:MM`; a relative day yielded is nothing to take.
+        let strung = |value: &Json| -> Option<String> {
+            let kind = binding.kind?;
+            let text = scalar(value, kind)?;
+            yielded(&text, kind).map(|_| text)
+        };
         let Some(each) = &binding.each else {
             let Some(value) = data
                 .and_then(|data| data.get(binding.field.as_str()))
-                .and_then(scalar)
+                .and_then(strung)
             else {
                 return nothing;
             };
@@ -413,7 +431,7 @@ fn rounds_for(binds: &[&Binding], walks: &[Walk]) -> Rounds {
         };
         let values: Option<Vec<String>> = records
             .iter()
-            .map(|record| record.get(binding.field.as_str()).and_then(scalar))
+            .map(|record| record.get(binding.field.as_str()).and_then(strung))
             .collect();
         let Some(values) = values else {
             return nothing;
@@ -458,8 +476,9 @@ fn rounds_for(binds: &[&Binding], walks: &[Walk]) -> Rounds {
 
 /// Why a step that may not run is skipped, if it is: its source found nothing, so it skips clean; the result
 /// lacks the field, which is the source's failure as any taker's; or the field holds another value than the one
-/// the step lists — read as a scalar exactly as a bound field is, compared as text. None when it is chosen.
-fn skipped_for(when: &When, walks: &[Walk]) -> Option<Why> {
+/// the step lists — strung exactly as a bound field is, by the kind the source yields it as, compared as text.
+/// None when it is chosen.
+fn skipped_for(when: &When, walks: &[Walk], kind: Option<Recognizer>) -> Option<Why> {
     let walk = &walks[when.step - 1];
     if matches!(
         walk.status,
@@ -473,7 +492,7 @@ fn skipped_for(when: &When, walks: &[Walk]) -> Option<Why> {
         .and_then(|result| result.data.as_ref())
         .and_then(Json::as_object)
         .and_then(|data| data.get(when.field.as_str()))
-        .and_then(scalar);
+        .and_then(|value| scalar(value, kind?));
     match value {
         None => Some(Why::NothingToTake { from: when.step }),
         Some(value) if value == when.is.as_str() => None,
@@ -481,19 +500,6 @@ fn skipped_for(when: &When, walks: &[Walk]) -> Option<Why> {
             from: when.step,
             value,
         }),
-    }
-}
-
-/// A string or a number of a result's data, as text; anything else is nothing to take.
-fn scalar(value: &Json) -> Option<String> {
-    match value {
-        Json::String(text) => Some(text.clone()),
-        Json::Number(number) => Some(
-            number
-                .as_i64()
-                .map_or_else(|| number.to_string(), |i| i.to_string()),
-        ),
-        _ => None,
     }
 }
 

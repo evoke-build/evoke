@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "see me thursday the 14th"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 7,
+        "end": 24,
+        "text": "thursday the 14th"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "day",
+          "day": 14
+        }
+      }
+    }
+  ]
+}

@@ -27,23 +27,26 @@ export interface Ops {
   // decide
   compile: { input: { set: T.Installed; values?: T.Values; limits?: T.Limits; platform?: T.Platform }; output: T.Result<T.Plan, T.Diagnostic> }
   propose: { input: { input: T.Input }; output: T.Proposed[] }
-  request: { input: { plan: T.Plan; input: string; tags: T.Tag[]; only?: T.LocalName; scope: T.Scope }; output: T.Result<T.Request, T.Diagnostic> }
+  request: {
+    input: { plan: T.Plan; input: string; tags: T.Tag[]; only?: T.LocalName; scope: T.Scope; recent?: T.Recent[] }
+    output: T.Result<T.Request, T.Diagnostic>
+  }
   read: { input: { plan: T.Plan; request: T.Request; raw: T.Raw }; output: T.Result<T.Reading, T.Fault> }
   gate: { input: { plan: T.Plan; reading: T.Reading; gate?: T.Gate }; output: T.Decision }
   fill: { input: { plan: T.Plan; asking: T.Asking; given: Record<T.ArgName, T.Value>; gate?: T.Gate }; output: T.Decision }
   by_name: { input: { plan: T.Plan; written: T.Written }; output: T.Result<T.Decision, T.Diagnostic> }
   picked: { input: { text: string; recognizer: T.Recognizer }; output: T.Value | null }
-  values: { input: { args: Record<T.ArgName, T.Value> }; output: Record<T.ArgName, string | number | true> }
+  values: { input: { args: Record<T.ArgName, T.Value> }; output: Record<T.ArgName, string | number | true | T.Day | T.Amount> }
   // run
   call: { input: { text: string }; output: T.Result<T.Written, T.Diagnostic> }
   envelope: {
-    input: { chosen: T.Chosen; active: T.Active; taken?: Record<T.ArgName, T.Json>; input: T.Input; deadline: T.Millis; home: string }
+    input: { chosen: T.Chosen; active: T.Active; taken?: Record<T.ArgName, T.Json>; input: T.Input; deadline: T.Millis; home: string; today: string }
     output: T.Result<T.Envelope, T.Diagnostic>
   }
-  argv: { input: { chosen: T.Chosen; active: T.Active; home: string }; output: T.Result<string[], T.Diagnostic> }
+  argv: { input: { chosen: T.Chosen; active: T.Active; home: string; today: string }; output: T.Result<string[], T.Diagnostic> }
   // needs, contain
   "needs.resolve": {
-    input: { needs: T.Needs; call: T.Call; active: T.Active; config: Record<T.ConfigKey, string>; home: string }
+    input: { needs: T.Needs; call: T.Call; active: T.Active; config: Record<T.ConfigKey, string>; home: string; today: string }
     output: T.Result<T.Policy, T.Diagnostic>
   }
   "needs.widens": { input: { from: T.Needs; to: T.Needs }; output: boolean }

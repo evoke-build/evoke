@@ -43,7 +43,7 @@ pub fn run(command: &Command, arguments: &Arguments, environment: &Environment) 
 /// — or, under `--json`, the plan whole on one line, with every adapter call it took. With `--save`, the plan's
 /// lines and the file.
 fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, input: &str) -> Exit {
-    let woven = match session.weave(adapter, input, &arguments.tags, Vec::new()) {
+    let woven = match session.weave(adapter, input, &arguments.tags, Vec::new(), &[]) {
         Ok(woven) => woven,
         Err(exit) => return session.reporter.exit(input, exit),
     };

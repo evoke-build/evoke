@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "note \"tomorrow at three for €5\""
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 6,
+        "end": 30,
+        "text": "tomorrow at three for €5"
+      },
+      "value": {
+        "type": "quoted",
+        "value": "tomorrow at three for €5"
+      }
+    }
+  ]
+}

@@ -1,0 +1,232 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-booking.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "weave": {
+      "$ref": "fixtures/weave-flight-lookups.json"
+    },
+    "progress": {
+      "decided": [],
+      "handled": [
+        {
+          "step": 1,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "TP1043 to lisbon",
+            "data": {
+              "flight": "TP1043",
+              "day": "tomorrow",
+              "departure": "18:40",
+              "fare": {
+                "amount": 120,
+                "currency": "EUR"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "expect": {
+    "type": "todo",
+    "todo": {
+      "type": "handle",
+      "handling": [
+        {
+          "step": 2,
+          "round": 0,
+          "decision": {
+            "outcome": "run",
+            "reflex": "seats",
+            "args": {
+              "flight": {
+                "type": "pick",
+                "span": {
+                  "start": 0,
+                  "end": 6,
+                  "text": "TP1043"
+                },
+                "value": {
+                  "type": "code",
+                  "value": "TP1043"
+                }
+              }
+            },
+            "call": "seats flight=\"TP1043\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "seats",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "seats",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "flights",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "seats",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "flights",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "book",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "weather",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "traffic",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "convert",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ticket",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "trip",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          },
+          "input": "show the seat map of that flight",
+          "bound": [
+            {
+              "arg": "flight",
+              "from": 1,
+              "field": "flight",
+              "value": "TP1043"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "round": 0,
+          "decision": {
+            "outcome": "run",
+            "reflex": "traffic",
+            "args": {
+              "departure": {
+                "type": "pick",
+                "span": {
+                  "start": 0,
+                  "end": 5,
+                  "text": "18:40"
+                },
+                "value": {
+                  "type": "time",
+                  "value": "18:40"
+                }
+              }
+            },
+            "call": "traffic departure=\"18:40\"",
+            "effect": "read",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "traffic",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "traffic",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "flights",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "traffic",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "flights",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "book",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "seats",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "weather",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "convert",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "ticket",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "trip",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          },
+          "input": "check the traffic for that departure",
+          "bound": [
+            {
+              "arg": "departure",
+              "from": 1,
+              "field": "departure",
+              "value": "18:40"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

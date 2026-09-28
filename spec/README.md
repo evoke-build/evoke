@@ -55,10 +55,10 @@ and the seeds test read those directory names as owned files:
   on a line is a non-zero exit code; absent, the command exited 0. Lines compare exactly but for trailing spaces;
   a line that is JSON is compared as JSON, every number one kind, `ms` values and a plan file's `pinned.id` aside,
   since a file written in the flow carries the release's version. A line starting with `#`
-  is a note for the reader; the note `# no tty` runs the flow's commands without a terminal, and `# platform macos`
+  is a note for the reader; the note `# no tty` runs the flow's commands without a terminal, `# platform macos`
   or `# platform linux` runs them as that machine, `EVOKE_PLATFORM` set, so a flow over the collection replays
-  anywhere. A step that has not
-  finished within a minute fails, named, and its process group is ended.
+  anywhere, and `# today YYYY-MM-DD` sets the day a relative date resolves against, `EVOKE_TODAY`. A step that has
+  not finished within a minute fails, named, and its process group is ended.
 - `home/` — the throwaway `$HOME`: the project under `.config/evoke/`, local reflexes, XDG state as the flow needs it.
   A flow without one uses [`transcripts/home/`](home/.config/evoke/evoke.toml). Paths under it print as `~/…`. The
   runner records the `node` on its `PATH`, as the binary it runs as, in the home's state, as `evoke sync` will on

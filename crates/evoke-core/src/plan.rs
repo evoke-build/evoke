@@ -404,7 +404,8 @@ fn read_active(d: &mut Diagnostics, json: &Json) -> Option<Active> {
     })
 }
 
-/// A question that does not depend on the input, or a pick whose options exist only per input.
+/// A question that does not depend on the input, or a pick whose options exist only per input — and, when the
+/// pick names a yielded field, whose ask lists the session's values under it.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Slot {
     Ready(Question),
@@ -412,6 +413,7 @@ pub enum Slot {
         ask: Clean,
         pick: Recognizer,
         optional: bool,
+        recent: Option<FieldName>,
     },
 }
 
@@ -421,6 +423,8 @@ struct RawPick {
     ask: Clean,
     pick: Recognizer,
     optional: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    recent: Option<FieldName>,
 }
 
 impl Serialize for Slot {
@@ -431,10 +435,12 @@ impl Serialize for Slot {
                 ask,
                 pick,
                 optional,
+                recent,
             } => RawPick {
                 ask: ask.clone(),
                 pick: *pick,
                 optional: *optional,
+                recent: recent.clone(),
             }
             .serialize(serializer),
         }
@@ -449,11 +455,13 @@ impl<'de> Deserialize<'de> for Slot {
                 ask,
                 pick,
                 optional,
+                recent,
             } = serde_json::from_value(json).map_err(D::Error::custom)?;
             Ok(Self::Pick {
                 ask,
                 pick,
                 optional,
+                recent,
             })
         } else {
             serde_json::from_value(json)
@@ -847,6 +855,7 @@ fn argument_slots(
                     ask,
                     pick: pick.recognizer(),
                     optional: *optional,
+                    recent: argument.recent.clone(),
                 },
                 Kind::Value {
                     source: Source::Options(options),

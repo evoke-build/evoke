@@ -1,0 +1,18 @@
+{
+  "input": {
+    "input": "in six months"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 3,
+        "end": 6,
+        "text": "six"
+      },
+      "value": {
+        "type": "number",
+        "value": 6
+      }
+    }
+  ]
+}

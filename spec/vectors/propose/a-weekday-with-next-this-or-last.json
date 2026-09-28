@@ -1,0 +1,52 @@
+{
+  "input": {
+    "input": "move it to next monday, this friday or last tuesday"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 11,
+        "end": 22,
+        "text": "next monday"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "weekday",
+          "weekday": "monday",
+          "which": "next"
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 24,
+        "end": 35,
+        "text": "this friday"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "weekday",
+          "weekday": "friday",
+          "which": "this"
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 39,
+        "end": 51,
+        "text": "last tuesday"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "weekday",
+          "weekday": "tuesday",
+          "which": "last"
+        }
+      }
+    }
+  ]
+}

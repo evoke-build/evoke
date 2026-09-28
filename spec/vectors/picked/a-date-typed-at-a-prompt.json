@@ -1,0 +1,21 @@
+{
+  "input": {
+    "text": "tomorrow",
+    "recognizer": "date"
+  },
+  "expect": {
+    "type": "pick",
+    "span": {
+      "start": 0,
+      "end": 8,
+      "text": "tomorrow"
+    },
+    "value": {
+      "type": "date",
+      "value": {
+        "type": "offset",
+        "days": 1
+      }
+    }
+  }
+}

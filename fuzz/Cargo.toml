@@ -11,6 +11,7 @@ cargo-fuzz = true
 [dependencies]
 evoke-core    = { path = "../crates/evoke-core" }
 libfuzzer-sys = "0.4.10"
+serde_json    = "1.0.149"
 
 # The manifest reader on raw bytes: every manifest the vectors and the collection hold seeds the corpus.
 [[bin]]
@@ -24,6 +25,38 @@ bench = false
 [[bin]]
 name  = "reading"
 path  = "fuzz_targets/reading.rs"
+test  = false
+doc   = false
+bench = false
+
+# The `date` recognizer on raw bytes: every candidate re-reads whole through `picked`, bounded, and no two candidates overlap.
+[[bin]]
+name  = "date"
+path  = "fuzz_targets/date.rs"
+test  = false
+doc   = false
+bench = false
+
+# The `time` recognizer on raw bytes: every candidate re-reads whole through `picked`, bounded, and no two candidates overlap.
+[[bin]]
+name  = "time"
+path  = "fuzz_targets/time.rs"
+test  = false
+doc   = false
+bench = false
+
+# The `amount` recognizer on raw bytes: every candidate re-reads whole through `picked`, bounded, and no two candidates overlap.
+[[bin]]
+name  = "amount"
+path  = "fuzz_targets/amount.rs"
+test  = false
+doc   = false
+bench = false
+
+# The `code` recognizer on raw bytes: every candidate re-reads whole through `picked`, bounded, and no two candidates overlap.
+[[bin]]
+name  = "code"
+path  = "fuzz_targets/code.rs"
 test  = false
 doc   = false
 bench = false

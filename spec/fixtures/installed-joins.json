@@ -147,7 +147,7 @@
             "config": {},
             "args": {},
             "yields": {
-              "release": "quoted"
+              "release": "code"
             },
             "takes": {
               "errors": "errors",
@@ -190,7 +190,7 @@
             "args": {
               "release": {
                 "ask": "From which release?",
-                "pick": "quoted",
+                "pick": "code",
                 "optional": false,
                 "was": []
               }

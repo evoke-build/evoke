@@ -1,0 +1,356 @@
+{
+  "reflexes": {
+    "flights": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Find the next flight to a city.\nIts code, the day it leaves, the departure time and the fare.",
+            "not_for": [
+              "booking a seat",
+              "printing a ticket"
+            ],
+            "tags": [
+              "flights"
+            ],
+            "effect": "read",
+            "confirm": "Find a flight to {to}?",
+            "run": "flights.mts",
+            "config": {},
+            "args": {
+              "to": {
+                "ask": "To which city?",
+                "vocab": "cities",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {
+              "flight": "code",
+              "day": "date",
+              "departure": "time",
+              "fare": "amount"
+            },
+            "examples": {
+              "find a flight to lisbon": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "book": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Book a seat on a flight.\nThe flight by its code; charged to the travel account.",
+            "not_for": [
+              "finding flights",
+              "printing a ticket"
+            ],
+            "tags": [
+              "book"
+            ],
+            "effect": "destructive",
+            "confirm": "Book {flight}?",
+            "run": "book.mts",
+            "config": {},
+            "args": {
+              "flight": {
+                "ask": "Which flight?",
+                "pick": "code",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "book TP1043": {
+                "flight": "TP1043"
+              }
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "destructive",
+      "configured": {}
+    },
+    "seats": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Show the seat map of a flight.\nEvery free seat, by its code.",
+            "not_for": [
+              "finding flights",
+              "booking a seat"
+            ],
+            "tags": [
+              "seats"
+            ],
+            "effect": "read",
+            "confirm": "Which flight {flight}?",
+            "run": "seats.mts",
+            "config": {},
+            "args": {
+              "flight": {
+                "ask": "Which flight?",
+                "pick": "code",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "show the seat map": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "weather": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Show the weather of a day.\nThe forecast for the day you name.",
+            "not_for": [
+              "finding flights",
+              "booking a seat"
+            ],
+            "tags": [
+              "weather"
+            ],
+            "effect": "read",
+            "confirm": "Which day {day}?",
+            "run": "weather.mts",
+            "config": {},
+            "args": {
+              "day": {
+                "ask": "Which day?",
+                "pick": "date",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "check the weather": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "traffic": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Show the traffic before a departure.\nThe roads to the airport at the time you name.",
+            "not_for": [
+              "finding flights",
+              "booking a seat"
+            ],
+            "tags": [
+              "traffic"
+            ],
+            "effect": "read",
+            "confirm": "At what time {departure}?",
+            "run": "traffic.mts",
+            "config": {},
+            "args": {
+              "departure": {
+                "ask": "At what time?",
+                "pick": "time",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "check the traffic": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "convert": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Convert a fare to dollars.\nAt today's rate.",
+            "not_for": [
+              "finding flights",
+              "booking a seat"
+            ],
+            "tags": [
+              "convert"
+            ],
+            "effect": "read",
+            "confirm": "What fare {fare}?",
+            "run": "convert.mts",
+            "config": {},
+            "args": {
+              "fare": {
+                "ask": "What fare?",
+                "pick": "amount",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "convert the fare": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "ticket": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Print a ticket for a flight.\nThe flight's code, its day and its departure, through the ticket printer.",
+            "not_for": [
+              "booking a seat",
+              "finding flights"
+            ],
+            "tags": [
+              "ticket"
+            ],
+            "effect": "read",
+            "confirm": "Print the ticket for {flight}?",
+            "run": [
+              "ticket",
+              "--flight",
+              "{flight}",
+              "--on",
+              "{day}",
+              "--at",
+              "{at}"
+            ],
+            "config": {},
+            "args": {
+              "flight": {
+                "ask": "Which flight?",
+                "pick": "code",
+                "optional": false,
+                "was": []
+              },
+              "day": {
+                "ask": "On which day?",
+                "pick": "date",
+                "optional": false,
+                "was": []
+              },
+              "at": {
+                "ask": "At what time?",
+                "pick": "time",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "print the ticket for TP1043 on friday at 6pm": {
+                "flight": "TP1043",
+                "day": "friday",
+                "at": "6pm"
+              }
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "trip": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Plan a trip to a city.\nFinds the next flight there, and books it when it leaves tomorrow.",
+            "not_for": [
+              "one lookup on its own"
+            ],
+            "tags": [
+              "trip"
+            ],
+            "effect": "destructive",
+            "confirm": "Plan the trip to {to}?",
+            "steps": [
+              "find a flight to {to}",
+              {
+                "say": "book it",
+                "when": {
+                  "day": "tomorrow"
+                }
+              },
+              {
+                "say": "find a flight to madrid",
+                "when": {
+                  "day": "next week"
+                }
+              }
+            ],
+            "config": {},
+            "args": {
+              "to": {
+                "ask": "To which city?",
+                "vocab": "cities",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {},
+            "tests": {
+              "plan the trip to lisbon": {}
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "destructive",
+      "configured": {}
+    }
+  },
+  "vocab": {
+    "cities": {
+      "lisbon": {
+        "what": "Lisbon, where the client meeting is."
+      },
+      "madrid": {
+        "what": "Madrid, the southern office."
+      }
+    }
+  },
+  "adapter": "replay",
+  "evoke": "0.1.0"
+}
