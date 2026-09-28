@@ -8,6 +8,14 @@ It picks the ones the sentence asks for and fills their inputs from your words o
 plan before anything runs. It runs when it is sure enough for what the program changes, asks when something is
 missing or unclear, and always asks before anything that cannot be undone.
 
+**Built to an exceptional standard.** Three rules define it, and [QUALITY.md](QUALITY.md) shows how each is kept.
+
+- **Every detail is measured.** On every change, tests check how `evoke` decides, case by case, and what it
+  prints, word for word.
+- **Every boundary is clear.** Each part has one job. The core that decides never touches a file or the network.
+- **Nothing is added on a hunch.** Before a feature is built, it is studied and its design is weighed against the
+  alternatives.
+
 <p align="center"><a href="https://evoke.build/film.html"><img src="assets/film.jpg" alt="Software, by reflex. A film about where evoke is going." width="640"></a></p>
 
 ## Where evoke is going
