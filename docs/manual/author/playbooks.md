@@ -106,6 +106,49 @@ playbook's alone, `Run the plan as it stands?` when the sentence holds more. A s
 one's above all, is asked again at its turn, every time. `[t]each` at the whole-plan question teaches the route
 to your playbook; at a step's turn it teaches the step's reflex from the filled sentence.
 
+## A result picks among the steps you listed
+
+A step may run only under a value an earlier step yields. Write it as a table, `say` the sentence and `when`
+one field with the value it runs under, as text, and list the alternatives together right after the step
+whose result picks among them:
+
+```toml
+steps = [
+  "drain connections off the primary",
+  "fail over to the replica",
+  "check whether writes land on the new primary",
+  { say = "tell the ops channel the failover is done", when = { landing = "yes" } },
+  { say = "fail back to the old primary",              when = { landing = "no" } },
+]
+```
+
+A result never writes a step: it picks among the steps you listed, and the whole list prints before anything
+runs. The field is one that step's reflex declares under `[yields]`, a text or a number; the plan refuses
+before anything runs when the step reaches a reflex that yields no such field, or the value is one the field
+cannot hold. The step's line ends `then 4 on "yes", 5 on "no"`, and each alternative's `if 3 yields landing
+"yes"`. At that step's turn the result is compared with each value as text. The step it picks runs, the others
+are skipped clean and say so at the end, and a value no step lists picks nothing, the plan going on. A step
+that should run either way is listed without `when`. A step that may not run is one step: a later step cannot
+take its result, and its words may not reach another playbook.
+
+```text
+$ evoke "drain the primary"
+  1  drain  0.90 · runbook 1
+  2  failover · destructive · weakest: route 0.90 · runbook 2
+  3  verify  0.90 · runbook 3 · then 4 on "yes", 5 on "no"
+  4  tell channel="#ops"  0.90 · runbook 4 · if 3 yields landing "yes"
+  5  failback · destructive · weakest: route 0.90 · runbook 5 · if 3 yields landing "no"
+  runbook · destructive · weakest: route 0.90 · also drain (fits 0.60), step 1
+  Run the failover runbook?  [y]es [n]o [t]each > y
+primary drained
+  2  failover · destructive · weakest: route 0.90
+  Promote the replica now?  [y]es [n]o [t]each > y
+replica promoted
+writes landing on the new primary
+told #ops
+  5  failback · destructive · weakest: route 0.90 · runbook 5 · if 3 yields landing "no" · skipped · not chosen: step 3 yielded landing "yes"
+```
+
 ## What the person adds to the sentence
 
 A part of the sentence that repeats a step of the plan folds into that step, and the plan says so:
@@ -117,15 +160,16 @@ check first and the plan after.
 
 `steps` is contract: an overlay may reword the description, the confirm and the asks, never a step. A step
 added, removed, reworded or reordered is a major version, and `evoke check` says so: `steps  the steps moved`.
-A slot added or renamed rewords a step, so it is major too.
+A slot added or renamed rewords a step, so it is major too, and so is a `when` added, moved or changed.
 
 ## `add`, `test` and `show`
 
 `add` decides every step of a newcomer playbook over the set it joins, runs nothing, and prints what each
 reaches under its row; a step that reaches nothing installs and is reported, since the plan refuses when it is
 made. `test` decides the playbook's records as any reflex's, then its steps, each filled from the first record
-whose reading fills every slot it holds; a step no record fills is `untested`. `show` prints the steps after
-`confirm`, numbered.
+whose reading fills every slot it holds; a step no record fills is `untested`. Both say when the step before a
+branch reaches a reflex that yields no field the branch waits on. `show` prints the steps after `confirm`,
+numbered, a step that may not run ending in its `when`.
 
 ```text
 $ evoke test outage

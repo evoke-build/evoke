@@ -11,6 +11,7 @@ adapter, and the words of a weave.
 | **Ask**          | The outcome when a required argument is missing: `evoke` asks the argument's own question                 |
 | **Binding**      | A value of one step's result taken by a later step, by kind: filled into a required argument, or written into the words for an optional one; or the whole result, by the name its source returns, handed beside the decision |
 | **Body**         | What `run` names: a `.mts`/`.mjs` file exporting a function, or a program with its arguments; a playbook has `steps` instead |
+| **Branch**       | Steps of a playbook that run only under a value an earlier step yields, `{ say = "…", when = { landing = "yes" } }`, listed right after that step; the plan prints every one, the result picks, the rest are skipped clean |
 | **Call**         | A reflex with its arguments filled, on one line: `lights room="den" state="off"`                          |
 | **Cap**          | A reason a complete call stops at confirm: destructive, no gate, under floor, an unconsumed span, two things |
 | **Collection**   | A repository of reflex directories                                                                        |

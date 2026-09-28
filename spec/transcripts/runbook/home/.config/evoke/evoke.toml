@@ -1,0 +1,12 @@
+adapter = "replay"
+
+[reflexes]
+drain    = "./drain"
+failover = "./failover"
+verify   = "./verify"
+tell     = "./tell"
+failback = "./failback"
+runbook  = "./runbook"
+
+[config.verify]
+landing = "yes"

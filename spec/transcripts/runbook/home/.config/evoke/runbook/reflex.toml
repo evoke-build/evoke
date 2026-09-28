@@ -1,0 +1,23 @@
+reflex = 1
+
+description = """
+Fail the database over to its replica.
+Drains the primary, promotes the replica and checks that writes land on it; tells the ops channel when they do, fails back when they do not."""
+not_for = ["draining the primary on its own", "checking writes on their own", "a replica that is primary already"]
+tags = ["failover"]
+confirm = "Run the failover runbook?"
+steps = [
+  "drain connections off the primary",
+  "fail over to the replica",
+  "check whether writes land on the new primary",
+  { say = "tell the ops channel the failover is done", when = { landing = "yes" } },
+  { say = "fail back to the old primary", when = { landing = "no" } },
+]
+
+[examples]
+"run the failover runbook"           = {}
+"switch the database to the replica" = {}
+"the primary is dying, fail over"    = {}
+
+[tests]
+"drain the primary" = {}

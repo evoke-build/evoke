@@ -19,6 +19,7 @@ use crate::decide::{Decision, Prompt};
 use crate::document::Json;
 use crate::manifest::{Effect, Recognizer};
 use crate::name::{ArgName, FieldName, LocalName, Tag, Word};
+use crate::text::Clean;
 pub use reading::{How, Order, Ref, Split, Where};
 
 /// A text for the foundation to decide: over the reflexes the tags allow, or one reflex alone.
@@ -101,6 +102,16 @@ pub struct Folded {
     pub into: usize,
 }
 
+/// What picks a step that may not run: the step whose result does, the field, and the value under which this
+/// step runs — compared as text at the step's turn; another value skips it clean.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct When {
+    /// From 1, as the plan prints it: an earlier step of the same playbook.
+    pub step: usize,
+    pub field: FieldName,
+    pub is: Clean,
+}
+
 /// One step of the plan: a segment's text and the foundation's decision on it, in the order it is to happen.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Step {
@@ -127,6 +138,9 @@ pub struct Step {
     /// The playbooks this step came from, outermost first; none on a step of the person's own.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub from: Vec<From>,
+    /// What picks this step, when it may not run: an earlier step's field and the value it runs under.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub when: Option<When>,
 }
 
 /// How a bound value reaches its step: answering the step's own ask; the step decided again with the value in
@@ -210,6 +224,23 @@ pub enum Because {
     /// A part that says what not to do beside a plan a playbook wrote: refused whole, since the plan may hold
     /// the step it leaves out.
     Excluded { text: String, playbook: LocalName },
+    /// A step that may not run whose words route to a playbook: refused, a branch is one step.
+    BranchIntoPlan { step: usize, playbook: LocalName },
+    /// A step that may not run on a field the step before it does not yield as one value: refused.
+    NoField { step: usize, field: FieldName },
+    /// A step that may not run under a value the field's reader does not read: refused, since it could never be
+    /// chosen.
+    BadValue {
+        step: usize,
+        field: FieldName,
+        is: Clean,
+    },
+    /// A step that takes from a step that may not run: refused, nothing may answer it.
+    MaybeSource {
+        step: usize,
+        name: FieldName,
+        source: usize,
+    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -324,6 +355,29 @@ impl TryFrom<RawWeave> for Weave {
                 ));
             }
         }
+        // A step that may not run waits on a step of an earlier stage, never one run once per record.
+        let stage = |n: usize| raw.stages.iter().position(|stage| stage.contains(&n));
+        for step in &raw.steps {
+            let Some(when) = &step.when else {
+                continue;
+            };
+            if when.step == 0 || when.step >= step.n || stage(when.step) >= stage(step.n) {
+                return Err(format!(
+                    "step {} waits on step {}, which is not in an earlier stage",
+                    step.n, when.step
+                ));
+            }
+            if raw
+                .binds
+                .iter()
+                .any(|b| b.to == when.step && b.each.is_some())
+            {
+                return Err(format!(
+                    "step {} waits on step {}, which runs once per record",
+                    step.n, when.step
+                ));
+            }
+        }
         if let Some(folded) = raw
             .folded
             .iter()
@@ -415,6 +469,8 @@ pub enum Why {
     TooLarge { from: usize },
     /// A step it depends on found nothing: an empty list.
     FoundNothing,
+    /// The step it names yielded another value than the one this step lists: not this step, skipped clean.
+    NotChosen { from: usize, value: String },
     /// Once the values were in place, the words matched no reflex.
     NoReflex,
     /// Once the values were in place, the words read as another reflex.

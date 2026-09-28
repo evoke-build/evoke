@@ -39,7 +39,8 @@ after `trace`, where a value came from another step, `[{ arg, from, field, value
 result, which stays on its source's line as `result.data`; `shared`, where the sentence said a word once for
 several steps and this one took it, `{ "<arg>": { "word", "via" } }`, `via` `fill` for a required argument and
 `rewrite` for an optional one written into the step's words; `from`, where a playbook wrote the step,
-`[{ playbook, step, slots }]`, outermost first; and `status` last, with `why` when the step stopped. A plan a
+`[{ playbook, step, slots }]`, outermost first; `when`, where the step runs only under a value an earlier step
+yields, `{ step, field, is }`; and `status` last, with `why` when the step stopped. A plan a
 playbook wrote prints the sentence's own line first: `step` 0, `steps` the count, the decision that picked the
 playbook, `playbook` and `slots`, and no `status`, so a filter counting lines per input sees one more. A request
 that is only what not to do prints one `abstain` line over the whole input, with no judgments and no contenders,
@@ -53,7 +54,7 @@ whole instead, on one line: `input`, `steps` with each step's decision, `binds`,
 | Field    | Holds                                                                                                   |
 | :------- | :------------------------------------------------------------------------------------------------------ |
 | `status` | `"ran"`, `"failed"`, `"declined"`, `"refused"`, `"skipped"`, `"unanswered"`                              |
-| `why`    | `{ "type": "earlier_step" }`, `{ "type": "nothing_to_take", "from" }` and `{ "type": "too_large", "from" }` with the source step, `found_nothing`, `no_reflex`, `cancelled`, `{ "type": "read_as", "reflex" }`, or `{ "type": "said", "message" }`: a prompt's own line, a failure, a question no one answered |
+| `why`    | `{ "type": "earlier_step" }`, `{ "type": "nothing_to_take", "from" }` and `{ "type": "too_large", "from" }` with the source step, `found_nothing`, `{ "type": "not_chosen", "from", "value" }` for a step another value picked past, `no_reflex`, `cancelled`, `{ "type": "read_as", "reflex" }`, or `{ "type": "said", "message" }`: a prompt's own line, a failure, a question no one answered |
 
 In the plan `evoke try --json` prints, a step's `refs` count the steps they may name from 0; `step`, `after`,
 `stages` and `binds` count from 1. A step carries `shared` as the line does, and `repair` where it was not one
@@ -61,9 +62,10 @@ part decided on its own: `narrowed` or `spliced`, an item of its neighbour's tas
 its neighbour; `split`, a part of a joint the classifier read as one thing. A binding's `via` is `fill`,
 `rewrite` or `takes`, a whole result by the name its source returns, with no `kind`; the verdict's `because`
 names `no_source` and `several_sources` where such a result stops the plan. A plan a playbook wrote carries
-`from` on each of its steps and `folded`, `[{ text, into }]`, the parts of the sentence folded into a step; its
-verdict's `because` holds `reviewed` per playbook, with the step, the sentence's `text` and its `prompt`, and
-names what refused it: `nested`, `too_deep`, `too_long`, `conditional` or `excluded`.
+`from` on each of its steps, `when` on a step that may not run, and `folded`, `[{ text, into }]`, the parts of
+the sentence folded into a step; its verdict's `because` holds `reviewed` per playbook, with the step, the
+sentence's `text` and its `prompt`, and names what refused it: `nested`, `too_deep`, `too_long`, `conditional`,
+`excluded`, or, for a branch, `no_field`, `bad_value`, `maybe_source` or `branch_into_plan`.
 
 A call by name, `evoke run --json`, prints the same line with nothing judged: `input` is empty, there is no
 `confidence`, `weakest`, `judgments` or `contenders`, `trace` is empty, and `result` or `error` says what the body

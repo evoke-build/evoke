@@ -181,6 +181,11 @@ fn outage() {
 }
 
 #[test]
+fn runbook() {
+    flow("runbook");
+}
+
+#[test]
 fn stolen_laptop() {
     flow("stolen-laptop");
 }

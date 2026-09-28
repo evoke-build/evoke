@@ -6,6 +6,14 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A playbook's step may run only under a value an earlier step yields: `{ say = "…", when = { landing = "yes"
+  } }`, listed right after that step. The plan prints every branch, `then 4 on "yes", 5 on "no"` and `if 3
+  yields landing "yes"`; the value picks at that step's turn, a step not chosen is skipped clean, `not chosen:
+  step 3 yielded landing "yes"`, and a value no step lists picks nothing. `show` prints the `when`; `test` and
+  `add` say when the step before a branch reaches a reflex that yields no such field.
+- The SDK's `Step` carries `when`, a step skipped so says `not_chosen`, and `playbook()` takes a step as
+  `{ say, when }`.
+
 ## [0.12.0] - 2026-09-28
 
 - A reflex may be a playbook: `steps` in place of `run`, one sentence per step, `{slots}` for its arguments. A

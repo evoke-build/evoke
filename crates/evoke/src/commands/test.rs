@@ -7,12 +7,12 @@
 //! In: a name or none, the environment. Out: `Exit`, a line per reflex and one per failure on stdout, the
 //! spinner counting the cases; exit 1 when any case failed, with the count. Nothing runs and nothing is logged.
 
-use evoke_core::manifest::Sentence;
+use evoke_core::manifest::{Sentence, Yield};
 use evoke_core::name::{ArgName, LocalName};
 use evoke_core::text::NonEmpty;
 use evoke_core::{
-    Case, Decision, Fix, Table, Utterance, Verdict, baseline, cases, filled, judge, regressions,
-    steps,
+    Case, Decision, Fix, Plan, Table, Utterance, Verdict, baseline, cases, filled, judge,
+    regressions, steps,
 };
 
 use super::session::{self, Opening, Session};
@@ -289,6 +289,7 @@ fn playbook_blocks(
                 regression,
             });
         }
+        branched(&session.plan, &active.steps, &mut steps);
         if steps.is_empty() || !verdicts.iter().any(|(case, _)| case.reflex == *name) {
             let judged = verdicts.iter().any(|(case, _)| case.reflex == *name);
             if steps.is_empty() && !judged {
@@ -302,6 +303,35 @@ fn playbook_blocks(
         });
     }
     blocks
+}
+
+/// A step that may not run needs the step before it — the nearest without `when` — to yield the field that picks
+/// it as one value: a source that reaches a reflex yielding no such field is said so, and routes no more.
+pub(super) fn branched(plan: &Plan, sentences: &[Sentence], steps: &mut [TestedStep]) {
+    for (i, sentence) in sentences.iter().enumerate() {
+        let Some(when) = sentence.when() else {
+            continue;
+        };
+        let Some(source) = (0..i).rev().find(|&j| sentences[j].when().is_none()) else {
+            continue;
+        };
+        let Some(step) = steps.iter_mut().find(|step| step.n == source + 1) else {
+            continue;
+        };
+        let StepBecame::Routes { reflex, .. } = &step.became else {
+            continue;
+        };
+        let yields = plan
+            .active()
+            .get(reflex)
+            .and_then(|active| active.yields.get(&when.field));
+        if !matches!(yields, Some(Yield::Kind(_))) {
+            step.became = StepBecame::NoField {
+                reflex: reflex.clone(),
+                field: when.field.clone(),
+            };
+        }
+    }
 }
 
 /// What a step routed to: a reflex with its effect, or the playbook it stands in.

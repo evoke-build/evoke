@@ -677,6 +677,7 @@ fn weave_of(model: &Model) -> Weave {
             shared: IndexMap::new(),
             after: spec.after(),
             from: Vec::new(),
+            when: None,
         })
         .collect();
     let binds: Vec<Binding> = model

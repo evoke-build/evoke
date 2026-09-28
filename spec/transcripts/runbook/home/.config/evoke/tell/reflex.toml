@@ -1,0 +1,18 @@
+reflex = 1
+
+description = """
+Tell a chat channel where things stand.
+The message is what you typed about it."""
+not_for = ["email", "the status page"]
+tags = ["tell"]
+effect = "write"
+confirm = "Tell {channel}?"
+run = "tell.mts"
+
+[args.channel]
+ask   = "Which channel?"
+vocab = "channels"
+
+[examples]
+"tell #ops the failover is done" = {}
+"let #ops know"                  = {}

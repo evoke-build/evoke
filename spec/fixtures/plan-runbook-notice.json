@@ -1,0 +1,256 @@
+{
+  "digest": "h1:326854a5ccce248bbcac108b932eb0e2a5dc8f76cd9a0351240e3b0a69c3ca8a",
+  "active": {
+    "drain": {
+      "effect": "write",
+      "run": "drain.mts",
+      "confirm": "Drain the primary?",
+      "args": {},
+      "yields": {},
+      "config": {},
+      "tags": [
+        "drain"
+      ]
+    },
+    "failover": {
+      "effect": "destructive",
+      "run": "failover.mts",
+      "confirm": "Promote the replica now?",
+      "args": {},
+      "yields": {},
+      "config": {},
+      "tags": [
+        "failover"
+      ]
+    },
+    "verify": {
+      "effect": "read",
+      "run": "verify.mts",
+      "confirm": "Check writes?",
+      "args": {},
+      "yields": {
+        "landing": "quoted"
+      },
+      "config": {
+        "landing": {
+          "type": "plain",
+          "value": "yes"
+        }
+      },
+      "tags": [
+        "verify"
+      ]
+    },
+    "tell": {
+      "effect": "write",
+      "run": "tell.mts",
+      "confirm": "Tell {channel}?",
+      "args": {
+        "channel": {
+          "ask": "Which channel?",
+          "vocab": "channels",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "returns": "notice",
+      "config": {},
+      "tags": [
+        "tell"
+      ]
+    },
+    "failback": {
+      "effect": "destructive",
+      "run": "failback.mts",
+      "confirm": "Fail back to the old primary?",
+      "args": {},
+      "yields": {},
+      "config": {},
+      "tags": [
+        "failback"
+      ]
+    },
+    "runbook": {
+      "effect": "destructive",
+      "steps": [
+        "drain connections off the primary",
+        "fail over to the replica",
+        "check whether writes land on the new primary",
+        {
+          "say": "tell the ops channel the failover is done",
+          "when": {
+            "landing": "yes"
+          }
+        },
+        {
+          "say": "fail back to the old primary",
+          "when": {
+            "landing": "no"
+          }
+        },
+        "record the notice"
+      ],
+      "confirm": "Run the failover runbook?",
+      "args": {},
+      "yields": {},
+      "config": {},
+      "tags": [
+        "failover"
+      ]
+    },
+    "record": {
+      "effect": "write",
+      "run": "record.mts",
+      "confirm": "Record the notice?",
+      "args": {},
+      "takes": {
+        "note": "notice"
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "record"
+      ]
+    }
+  },
+  "inactive": {},
+  "slots": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "drain": {
+          "what": "Drain traffic from the primary database.\nNew connections go to the replica; open ones finish.",
+          "not_for": [
+            "promoting the replica",
+            "checking writes"
+          ],
+          "examples": [
+            "drain connections off the primary",
+            "stop new connections to the primary"
+          ]
+        },
+        "failover": {
+          "what": "Promote the replica to primary.\nThe old primary is demoted; it cannot be undone from here.",
+          "not_for": [
+            "draining connections",
+            "checking writes"
+          ],
+          "examples": [
+            "fail over to the replica",
+            "promote the replica"
+          ]
+        },
+        "verify": {
+          "what": "Check that writes land on the current primary.\nAnswers yes or no.",
+          "not_for": [
+            "draining",
+            "promoting"
+          ],
+          "examples": [
+            "check that writes land on the new primary",
+            "are writes landing"
+          ]
+        },
+        "tell": {
+          "what": "Tell a chat channel where things stand.\nThe message is what you typed about it.",
+          "not_for": [
+            "email",
+            "the status page"
+          ],
+          "examples": [
+            "tell #ops the failover is done",
+            "let #ops know"
+          ]
+        },
+        "failback": {
+          "what": "Fail back to the old primary.\nThe replica is demoted again; it cannot be undone from here.",
+          "not_for": [
+            "failing over",
+            "checking writes"
+          ],
+          "examples": [
+            "fail back to the old primary",
+            "go back to the old primary"
+          ]
+        },
+        "runbook": {
+          "what": "Fail the database over to its replica.\nDrains the primary, promotes the replica and checks that writes land on it; tells the ops channel when they do, fails back when they do not.",
+          "not_for": [
+            "draining the primary on its own",
+            "checking writes on their own",
+            "a replica that is primary already"
+          ],
+          "examples": [
+            "run the failover runbook",
+            "switch the database to the replica",
+            "the primary is dying, fail over"
+          ]
+        },
+        "record": {
+          "what": "Record what a channel was told.\nKeeps the notice beside the incident.",
+          "examples": [
+            "record the notice"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "fits.drain": {
+      "type": "yesno",
+      "ask": "Does `drain` do the specific thing the request asks for?",
+      "yes": "Drain traffic from the primary database.\nNew connections go to the replica; open ones finish.",
+      "no": "Something else, such as: promoting the replica; checking writes."
+    },
+    "fits.failover": {
+      "type": "yesno",
+      "ask": "Does `failover` do the specific thing the request asks for?",
+      "yes": "Promote the replica to primary.\nThe old primary is demoted; it cannot be undone from here.",
+      "no": "Something else, such as: draining connections; checking writes."
+    },
+    "fits.verify": {
+      "type": "yesno",
+      "ask": "Does `verify` do the specific thing the request asks for?",
+      "yes": "Check that writes land on the current primary.\nAnswers yes or no.",
+      "no": "Something else, such as: draining; promoting."
+    },
+    "fits.tell": {
+      "type": "yesno",
+      "ask": "Does `tell` do the specific thing the request asks for?",
+      "yes": "Tell a chat channel where things stand.\nThe message is what you typed about it.",
+      "no": "Something else, such as: email; the status page."
+    },
+    "tell.channel": {
+      "type": "choice",
+      "ask": "Which channel?",
+      "options": {
+        "#ops": "The operations team's channel, where a failover is announced.",
+        "#db": "The database team's channel.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.failback": {
+      "type": "yesno",
+      "ask": "Does `failback` do the specific thing the request asks for?",
+      "yes": "Fail back to the old primary.\nThe replica is demoted again; it cannot be undone from here.",
+      "no": "Something else, such as: failing over; checking writes."
+    },
+    "fits.runbook": {
+      "type": "yesno",
+      "ask": "Does `runbook` do the specific thing the request asks for?",
+      "yes": "Fail the database over to its replica.\nDrains the primary, promotes the replica and checks that writes land on it; tells the ops channel when they do, fails back when they do not.",
+      "no": "Something else, such as: draining the primary on its own; checking writes on their own; a replica that is primary already."
+    },
+    "fits.record": {
+      "type": "yesno",
+      "ask": "Does `record` do the specific thing the request asks for?",
+      "yes": "Record what a channel was told.\nKeeps the notice beside the incident.",
+      "no": "Something else."
+    }
+  },
+  "values": {},
+  "deadline": 30000
+}

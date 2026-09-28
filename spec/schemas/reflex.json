@@ -70,10 +70,41 @@
       "minItems": 1,
       "maxItems": 24,
       "items": {
-        "$ref": "#/definitions/line",
-        "description": "One sentence, one action: text with {slot}s, each an argument — a required one bare, an optional one inside a bracketed phrase, [ in {region}], written only when the slot is filled."
+        "oneOf": [
+          {
+            "$ref": "#/definitions/line",
+            "description": "One sentence, one action: text with {slot}s, each an argument — a required one bare, an optional one inside a bracketed phrase, [ in {region}], written only when the slot is filled."
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "say",
+              "when"
+            ],
+            "properties": {
+              "say": {
+                "$ref": "#/definitions/line",
+                "description": "The sentence, as a step is written."
+              },
+              "when": {
+                "type": "object",
+                "minProperties": 1,
+                "maxProperties": 1,
+                "propertyNames": {
+                  "$ref": "#/definitions/name"
+                },
+                "additionalProperties": {
+                  "$ref": "#/definitions/line"
+                },
+                "description": "One field the step before the alternatives yields, and the value, as text, under which this step runs; another value skips it."
+              }
+            },
+            "description": "A step that may not run: its sentence, and what picks it. The alternatives of a branch stand together right after the step whose result picks among them."
+          }
+        ]
       },
-      "description": "A playbook's body: a plan of sentences with slots, each decided over the installed set when the plan is made. run or steps, exactly one; a playbook has no needs, config, yields, returns, platforms or takes. Contract, like run."
+      "description": "A playbook's body: a plan of sentences with slots, each decided over the installed set when the plan is made; a step that may not run as { say, when }. run or steps, exactly one; a playbook has no needs, config, yields, returns, platforms or takes. Contract, like run."
     },
     "platforms": {
       "type": "array",

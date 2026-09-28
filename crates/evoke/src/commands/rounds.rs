@@ -15,7 +15,7 @@ use evoke_core::text::NonEmpty;
 use evoke_core::vocabulary::Meaning;
 use evoke_core::weave::{
     self, Asked, Because, Binding, Bound, From, Handled, Handling, Outcome, Progress,
-    Returned as Yielded, Shared, Status, Step, Todo, Why as Stopped,
+    Returned as Yielded, Shared, Status, Step, Todo, When, Why as Stopped,
 };
 use evoke_core::{
     Chosen, Clean, Decision, Diagnostic, Executed, Fix, Gate, Lesson, Prompt, Running, Utterance,
@@ -97,6 +97,7 @@ impl Rounds<'_> {
             bound: handed.bound.to_vec(),
             shared: handed.shared.clone(),
             from: handed.from.to_vec(),
+            when: handed.when.cloned(),
         });
         let chosen = match self.readied(input, at, decided, decision, handed.bound, &mut line) {
             Ok(chosen) => chosen,
@@ -408,6 +409,10 @@ impl Rounds<'_> {
                         | Because::TooDeep { .. }
                         | Because::TooLong { .. }
                         | Because::Excluded { .. }
+                        | Because::BranchIntoPlan { .. }
+                        | Because::NoField { .. }
+                        | Because::BadValue { .. }
+                        | Because::MaybeSource { .. }
                 )
             })
             .collect();
@@ -492,6 +497,7 @@ impl Rounds<'_> {
                 bound: Vec::new(),
                 shared: step.shared.clone(),
                 from: step.from.clone(),
+                when: step.when.clone(),
             });
             if self.json {
                 terminal::result(&line.json());
@@ -581,6 +587,7 @@ impl Rounds<'_> {
                             taken: &handling.taken,
                             shared: &step.shared,
                             from: &step.from,
+                            when: step.when.as_ref(),
                         };
                         let rounded = self.round(
                             input,
@@ -626,6 +633,7 @@ impl Rounds<'_> {
             bound: handling.bound.clone(),
             shared: step.shared.clone(),
             from: step.from.clone(),
+            when: step.when.clone(),
         });
         self.logged(input, &line, Exit::Ran);
         Handled {
@@ -682,8 +690,19 @@ impl Rounds<'_> {
                 } else {
                     let mut body = report::step_body(step, &woven.weave);
                     body.push(" · skipped");
-                    if outcome.why == Some(Stopped::Cancelled) {
-                        body.push(" · cancelled");
+                    match &outcome.why {
+                        Some(Stopped::Cancelled) => {
+                            body.push(" · cancelled");
+                        }
+                        Some(why @ Stopped::NotChosen { from, .. }) => {
+                            body.push(" · ")
+                                .push(&report::stopped(why, step.when.as_ref()));
+                            // No step the source picks among was chosen: a value no step lists.
+                            if none_chosen(&woven.weave, executed, *from) {
+                                body.push(", which no step lists");
+                            }
+                        }
+                        _ => {}
                     }
                     body
                 };
@@ -707,6 +726,7 @@ impl Rounds<'_> {
                 bound: outcome.bound.clone(),
                 shared: step.shared.clone(),
                 from: step.from.clone(),
+                when: step.when.clone(),
             });
             let exit = if outcome.status == Status::Refused {
                 Exit::Declined(Decline::Abstained)
@@ -1044,9 +1064,30 @@ pub fn refusal_fix(session: &Session<'_>, because: &Because, woven: &Woven) -> F
         | Because::TooDeep { playbook, .. }
         | Because::TooLong { playbook, .. } => Some(playbook.clone()),
         Because::Excluded { .. } => return Fix::Rerun,
+        // A step that may not run is the author's: the playbook that lists it.
+        Because::BranchIntoPlan { .. }
+        | Because::NoField { .. }
+        | Because::BadValue { .. }
+        | Because::MaybeSource { .. } => step_of(because)
+            .and_then(|n| woven.weave.step(n))
+            .and_then(|step| step.from.last())
+            .map(|from| from.playbook.clone())
+            .or(taker),
         _ => taker,
     };
     Fix::Show { reflex }
+}
+
+/// Whether no step a source picks among was chosen: every step waiting on it was skipped as not chosen, so the
+/// source yielded a value no step lists.
+fn none_chosen(weave: &Weave, executed: &Executed, source: usize) -> bool {
+    executed.steps.iter().all(|outcome| {
+        weave
+            .step(outcome.step)
+            .and_then(|step| step.when.as_ref())
+            .is_none_or(|when| when.step != source)
+            || matches!(outcome.why, Some(Stopped::NotChosen { .. }))
+    })
 }
 
 /// The yes over the whole plan, teachable: the part of the sentence that picked the playbook, and the playbook's
@@ -1063,13 +1104,14 @@ pub fn whole_plan() -> Clean {
 }
 
 /// What the plan handed a round beside its decision: the values bound into it, the whole results it takes, the
-/// words shared into its step, and the playbooks its step came from.
+/// words shared into its step, the playbooks its step came from, and what picks the step when it may not run.
 #[derive(Clone, Copy)]
 pub struct Handed<'a> {
     pub bound: &'a [Bound],
     pub taken: &'a IndexMap<ArgName, Json>,
     pub shared: &'a IndexMap<ArgName, Shared>,
     pub from: &'a [From],
+    pub when: Option<&'a When>,
 }
 
 /// What became of one round of a step: its exit, already reported; its status and why it stopped; what its body
@@ -1106,13 +1148,17 @@ fn rewritten_text(step: &Step, weave: &Weave, bound: &[Bound]) -> String {
 }
 
 /// The step a refusal is about: the one that takes what no step, or several, hand it; the one that routes to a
-/// plan it stands in, or too deep. None for a refusal of the whole.
+/// plan it stands in, or too deep; the one that may not run, or takes from one. None for a refusal of the whole.
 fn step_of(because: &Because) -> Option<usize> {
     match because {
         Because::NoSource { step, .. }
         | Because::SeveralSources { step, .. }
         | Because::Nested { step, .. }
-        | Because::TooDeep { step, .. } => Some(*step),
+        | Because::TooDeep { step, .. }
+        | Because::BranchIntoPlan { step, .. }
+        | Because::NoField { step, .. }
+        | Because::BadValue { step, .. }
+        | Because::MaybeSource { step, .. } => Some(*step),
         _ => None,
     }
 }

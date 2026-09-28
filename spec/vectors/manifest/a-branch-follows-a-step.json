@@ -1,0 +1,38 @@
+{
+  "input": {
+    "doc": {
+      "file": {
+        "type": "manifest",
+        "name": "runbook"
+      },
+      "toml": "reflex = 1\n\ndescription = \"\"\"\nFail the database over to its replica.\nDrains the primary, promotes the replica and checks that writes land on it; tells the ops channel when they do, fails back when they do not.\"\"\"\nnot_for = [\"draining the primary on its own\", \"checking writes on their own\", \"a replica that is primary already\"]\ntags = [\"failover\"]\nconfirm = \"Run the failover runbook?\"\nsteps = [\n  { say = \"drain connections off the primary\", when = { landing = \"yes\" } },\n  \"fail over to the replica\",\n  \"check whether writes land on the new primary\",\n  { say = \"tell the ops channel the failover is done\", when = { landing = \"yes\" } },\n  { say = \"fail back to the old primary\", when = { landing = \"no\" } },\n]\n\n[examples]\n\"run the failover runbook\"           = {}\n\"switch the database to the replica\" = {}\n\"the primary is dying, fail over\"    = {}\n\n[tests]\n\"drain the primary\" = {}\n"
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "reflex": "runbook",
+        "at": {
+          "file": {
+            "type": "manifest",
+            "name": "runbook"
+          },
+          "line": 9,
+          "column": 1
+        },
+        "message": "step 1 branches, and no step comes before it",
+        "fix": {
+          "type": "edit_line",
+          "at": {
+            "file": {
+              "type": "manifest",
+              "name": "runbook"
+            },
+            "line": 9,
+            "column": 1
+          }
+        }
+      }
+    ]
+  }
+}

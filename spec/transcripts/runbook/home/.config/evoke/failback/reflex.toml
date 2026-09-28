@@ -1,0 +1,14 @@
+reflex = 1
+
+description = """
+Fail back to the old primary.
+The replica is demoted again; it cannot be undone from here."""
+not_for = ["failing over", "checking writes"]
+tags = ["failback"]
+effect = "destructive"
+confirm = "Fail back to the old primary?"
+run = "failback.mts"
+
+[examples]
+"fail back to the old primary" = {}
+"go back to the old primary"   = {}

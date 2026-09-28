@@ -632,7 +632,7 @@ fn reached(
         })?
     };
     let mut decided = decided.into_iter();
-    let steps = texts
+    let mut steps: Vec<TestedStep> = texts
         .into_iter()
         .map(|(n, sentence, text)| {
             let became = match text {
@@ -659,6 +659,7 @@ fn reached(
             }
         })
         .collect();
+    super::test::branched(plan, &active.steps, &mut steps);
     Ok(Reach {
         name: name.clone(),
         claim: active.effect,

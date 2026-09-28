@@ -144,6 +144,12 @@ condition, so ask for the check first, then type what to do. A step of the plan 
 that reaches a plan inside a plan inside a plan, refuses the whole plan, and the line names the step. When the
 sentence holds more than the playbook, the question is `Run the plan as it stands?`.
 
+A playbook may list steps that run only under a value an earlier step yields, a branch. The plan prints every
+one before anything runs: the line of the step whose result picks ends `then 4 on "yes", 5 on "no"`, and each
+alternative's `if 3 yields landing "yes"`. At that step's turn the value picks. The step it picks runs, the
+others are skipped clean and say so at the end, `skipped · not chosen: step 3 yielded landing "yes"`, and a
+value no step lists picks nothing, `which no step lists`, the plan going on ([Playbooks](../author/playbooks.md)).
+
 ## Before anything runs
 
 The plan is settled first. A step whose required argument no other step provides is asked for it up front, as
@@ -165,7 +171,9 @@ An answer out of range is asked again with the reason, as one input's would be. 
 `evoke` would say of that step alone: the call and its confidence, or the confirm's own line with its weakest
 judgment. After it: `asks <arg>` for what the step still needs, `takes <name> from <n>` where a result threads
 in, the name a field's or a whole result's, `after <n>` where the words ordered it, `with <n>` where the step
-runs beside earlier ones, `<playbook> <n>` where a playbook wrote the step, `no reflex` where nothing matched.
+runs beside earlier ones, `<playbook> <n>` where a playbook wrote the step, `then <n> on "<value>"` where the
+step's result picks among later steps, `if <n> yields <field> "<value>"` where the step runs only under that
+value, `no reflex` where nothing matched.
 Under the plan, `folded "…" into <n>` names a part that repeats a step a playbook wrote, and `left out "…"` a
 part that said what not to do.
 

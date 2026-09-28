@@ -2,6 +2,8 @@
 //! the steps it follows — answering its own ask through `fill`, or decided again with the values written into its
 //! words — and the whole results it takes beside its decision, never in its words; then the foundation's own
 //! loop, which a host takes it through. A step bound to a list of records runs once per record, one at a time.
+//! A step that may not run is picked by its source's field, read as a bound field is and compared as text; another
+//! value skips it clean, and the plan goes on.
 //! A failure, a refusal or a decline ends the weave after the stage; what never ran is reported so. A round the
 //! host ended — the weave cancelled — ends it too: nothing more is handed, and every step that had not finished
 //! reads `skipped · cancelled`. Over the progress a host has gathered, stopping at the first thing it lacks. In:
@@ -12,7 +14,7 @@ use indexmap::IndexMap;
 use super::planning::reflex_of;
 use super::{
     Asked, Binding, Bound, Executed, Handled, Handling, Progress, Repair, Returned, Running,
-    Status, Step, StepOutcome, Todo, Via, Weave, Why,
+    Status, Step, StepOutcome, Todo, Via, Weave, When, Why,
 };
 use crate::adapter::Gate;
 use crate::call::Value;
@@ -109,6 +111,13 @@ impl Runner<'_> {
                     continue;
                 }
                 let step = &self.weave.steps[n - 1];
+                // A step that may not run: its source's field picks it, or skips it.
+                if let Some(when) = &step.when
+                    && let Some(why) = skipped_for(when, &walks)
+                {
+                    walks[n - 1].status = Some((Status::Skipped, Some(why)));
+                    continue;
+                }
                 let binds: Vec<&Binding> = self.weave.binds.iter().filter(|b| b.to == n).collect();
                 let (rounds, taken, held) = match rounds_for(&binds, &walks) {
                     Rounds::Skipped(why) => {
@@ -293,7 +302,7 @@ impl Runner<'_> {
 }
 
 /// Why the weave ends after this stage, if it does: a cancelled round, with its own reason; else a step that
-/// did not run — a step that found nothing to do skipped clean and stops nothing.
+/// did not run — a step that found nothing to do, or was not chosen, skipped clean and stops nothing.
 fn stopped_after(stage: &[usize], walks: &[Walk]) -> Option<Why> {
     let status = |n: &usize| walks[n - 1].status.as_ref();
     if stage
@@ -305,7 +314,13 @@ fn stopped_after(stage: &[usize], walks: &[Walk]) -> Option<Why> {
     let ran = |n: &usize| {
         matches!(
             status(n),
-            Some((Status::Ran, _) | (Status::Skipped, Some(Why::FoundNothing)))
+            Some(
+                (Status::Ran, _)
+                    | (
+                        Status::Skipped,
+                        Some(Why::FoundNothing | Why::NotChosen { .. })
+                    )
+            )
         )
     };
     (!stage.iter().all(ran)).then_some(Why::EarlierStep)
@@ -438,6 +453,34 @@ fn rounds_for(binds: &[&Binding], walks: &[Walk]) -> Rounds {
             .collect(),
         taken,
         held,
+    }
+}
+
+/// Why a step that may not run is skipped, if it is: its source found nothing, so it skips clean; the result
+/// lacks the field, which is the source's failure as any taker's; or the field holds another value than the one
+/// the step lists — read as a scalar exactly as a bound field is, compared as text. None when it is chosen.
+fn skipped_for(when: &When, walks: &[Walk]) -> Option<Why> {
+    let walk = &walks[when.step - 1];
+    if matches!(
+        walk.status,
+        Some((Status::Skipped, Some(Why::FoundNothing)))
+    ) {
+        return Some(Why::FoundNothing);
+    }
+    let value = walk
+        .result
+        .as_ref()
+        .and_then(|result| result.data.as_ref())
+        .and_then(Json::as_object)
+        .and_then(|data| data.get(when.field.as_str()))
+        .and_then(scalar);
+    match value {
+        None => Some(Why::NothingToTake { from: when.step }),
+        Some(value) if value == when.is.as_str() => None,
+        Some(value) => Some(Why::NotChosen {
+            from: when.step,
+            value,
+        }),
     }
 }
 

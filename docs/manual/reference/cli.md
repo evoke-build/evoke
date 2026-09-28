@@ -106,7 +106,7 @@ local reflex: [Installing reflexes](../use/installing.md#refs).
 | Command                                                   | Does                                                                        |
 | :-------------------------------------------------------- | :-------------------------------------------------------------------------- |
 | `evoke show`                                              | Every installed reflex: name, ref and tag or `./dir`, effect, what it runs or `a plan of 7 steps`. Then the inactive lines |
-| `evoke show <name>`                                       | The effective manifest as TOML, with `+` in the gutter of every line that is yours; for a reflex that takes whole results, which installed reflexes return each; for a playbook, its steps after `confirm`, numbered. Then its inactive lines |
+| `evoke show <name>`                                       | The effective manifest as TOML, with `+` in the gutter of every line that is yours; for a reflex that takes whole results, which installed reflexes return each; for a playbook, its steps after `confirm`, numbered, a step that may not run ending in its `when`. Then its inactive lines |
 | `evoke teach "<utterance>" <call>`                        | Writes the example to `overlays/<name>.toml`, with only what the call asserts |
 | `evoke teach "<utterance>" not <name>`                    | Writes `"<utterance>" = false` to the reflex's overlay                       |
 | `evoke teach --forget "<utterance>" <name>`               | Removes the utterance's line from the reflex's overlay, an example or a test |
@@ -116,7 +116,7 @@ local reflex: [Installing reflexes](../use/installing.md#refs).
 | `evoke vocab <name> remove <word>`                        | Removes one. A word that is not there is refused                            |
 | `evoke config <name> <key> <value>`                       | Sets a declared setting under `[config.<name>]`                             |
 | `evoke config <name> <key> --env <VAR>`                   | Names the variable a setting is read from. The only way to set a secret     |
-| `evoke test [<name>]`                                     | Decides every example and test of every active reflex, or of one, without the cache; a playbook's steps too, each filled from a record, `7 steps route` or the step that reaches nothing. Exits 1 when a case failed; nothing to test says so |
+| `evoke test [<name>]`                                     | Decides every example and test of every active reflex, or of one, without the cache; a playbook's steps too, each filled from a record, `7 steps route` or the step that reaches nothing, or reaches a reflex that yields no field a branch waits on. Exits 1 when a case failed; nothing to test says so |
 | `evoke calibrate [<name>] [--repeat <k>] [--json]`        | Decides every record once more, each distinct input once or `k` times, and reports what the confidence meant: the whole call right by bins with their counts and intervals, the wrong calls at or over each bar per thousand, the spread over repeats, the log's lines apart. `--json` prints one object. Exits 1 on a call wrong at or over its bar, or a bin of a hundred calls over-confident: [Calibrating](../use/calibrating.md) |
 
 None of these needs the classifier's key but `test` and `calibrate`, which ask it, or a recording.

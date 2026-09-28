@@ -1,0 +1,240 @@
+{
+  "reflexes": {
+    "drain": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Drain traffic from the primary database.\nNew connections go to the replica; open ones finish.",
+            "not_for": [
+              "promoting the replica",
+              "checking writes"
+            ],
+            "tags": [
+              "drain"
+            ],
+            "effect": "write",
+            "confirm": "Drain the primary?",
+            "run": "drain.mts",
+            "config": {},
+            "args": {},
+            "yields": {},
+            "examples": {
+              "drain connections off the primary": {},
+              "stop new connections to the primary": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    },
+    "failover": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Promote the replica to primary.\nThe old primary is demoted; it cannot be undone from here.",
+            "not_for": [
+              "draining connections",
+              "checking writes"
+            ],
+            "tags": [
+              "failover"
+            ],
+            "effect": "destructive",
+            "confirm": "Promote the replica now?",
+            "run": "failover.mts",
+            "config": {},
+            "args": {},
+            "yields": {},
+            "examples": {
+              "fail over to the replica": {},
+              "promote the replica": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "destructive",
+      "configured": {}
+    },
+    "verify": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Check that writes land on the current primary.\nAnswers yes or no.",
+            "not_for": [
+              "draining",
+              "promoting"
+            ],
+            "tags": [
+              "verify"
+            ],
+            "effect": "read",
+            "confirm": "Check writes?",
+            "run": "verify.mts",
+            "config": {
+              "landing": {
+                "about": "Whether writes land on the new primary: yes or no.",
+                "secret": false
+              }
+            },
+            "args": {},
+            "yields": {
+              "landing": "quoted"
+            },
+            "examples": {
+              "check that writes land on the new primary": {},
+              "are writes landing": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {
+        "landing": {
+          "type": "plain"
+        }
+      }
+    },
+    "tell": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Tell a chat channel where things stand.\nThe message is what you typed about it.",
+            "not_for": [
+              "email",
+              "the status page"
+            ],
+            "tags": [
+              "tell"
+            ],
+            "effect": "write",
+            "confirm": "Tell {channel}?",
+            "run": "tell.mts",
+            "config": {},
+            "args": {
+              "channel": {
+                "ask": "Which channel?",
+                "vocab": "channels",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "tell #ops the failover is done": {},
+              "let #ops know": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    },
+    "failback": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Fail back to the old primary.\nThe replica is demoted again; it cannot be undone from here.",
+            "not_for": [
+              "failing over",
+              "checking writes"
+            ],
+            "tags": [
+              "failback"
+            ],
+            "effect": "destructive",
+            "confirm": "Fail back to the old primary?",
+            "run": "failback.mts",
+            "config": {},
+            "args": {},
+            "yields": {},
+            "examples": {
+              "fail back to the old primary": {},
+              "go back to the old primary": {}
+            },
+            "tests": {},
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "destructive",
+      "configured": {}
+    },
+    "runbook": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Fail the database over to its replica.\nDrains the primary, promotes the replica and checks that writes land on it; tells the ops channel when they do, fails back when they do not.",
+            "not_for": [
+              "draining the primary on its own",
+              "checking writes on their own",
+              "a replica that is primary already"
+            ],
+            "tags": [
+              "failover"
+            ],
+            "effect": "destructive",
+            "confirm": "Run the failover runbook?",
+            "steps": [
+              "drain connections off the primary",
+              "fail over to the replica",
+              "check whether writes land on the new primary",
+              {
+                "say": "tell the ops channel the failover is done",
+                "when": {
+                  "landing": "yes"
+                }
+              },
+              {
+                "say": "fail back to the old primary",
+                "when": {
+                  "landing": "no"
+                }
+              }
+            ],
+            "config": {},
+            "args": {},
+            "yields": {},
+            "examples": {
+              "run the failover runbook": {},
+              "switch the database to the replica": {},
+              "the primary is dying, fail over": {}
+            },
+            "tests": {
+              "drain the primary": {}
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "destructive",
+      "configured": {}
+    }
+  },
+  "vocab": {
+    "channels": {
+      "#ops": {
+        "what": "The operations team's channel, where a failover is announced."
+      },
+      "#db": {
+        "what": "The database team's channel."
+      }
+    }
+  },
+  "adapter": "replay",
+  "evoke": "0.1.0"
+}

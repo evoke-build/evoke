@@ -1,0 +1,125 @@
+# The runbook from «drain the primary»: the failover asks at its turn, the check's result picks among the two
+# steps the author listed after it, and the one not chosen prints with the plan and is skipped clean.
+$ evoke "drain the primary"
+  1  drain  0.90 · runbook 1
+  2  failover · destructive · weakest: route 0.90 · runbook 2
+  3  verify  0.90 · runbook 3 · then 4 on "yes", 5 on "no"
+  4  tell channel="#ops"  0.90 · runbook 4 · if 3 yields landing "yes"
+  5  failback · destructive · weakest: route 0.90 · runbook 5 · if 3 yields landing "no"
+  runbook · destructive · weakest: route 0.90 · also drain (fits 0.60), step 1
+  Run the failover runbook?  [y]es [n]o [t]each > y
+primary drained
+  2  failover · destructive · weakest: route 0.90
+  Promote the replica now?  [y]es [n]o [t]each > y
+replica promoted
+writes landing on the new primary
+told #ops
+  5  failback · destructive · weakest: route 0.90 · runbook 5 · if 3 yields landing "no" · skipped · not chosen: step 3 yielded landing "yes"
+$ evoke why
+  0  "drain the primary"
+  runbook 0.90 · drain 0.08 · none 0.02
+  fits  runbook 0.80 · drain 0.60 · failover 0.02 · verify 0.02 · tell 0.02 · failback 0.02
+  confirm runbook · weakest: route 0.90 · the runbook plan, 5 steps · replay, 8 questions
+  1  "drain connections off the primary"
+  drain 0.90 · runbook 0.06 · none 0.04
+  fits  drain 0.80 · runbook 0.10 · failover 0.02 · verify 0.02 · tell 0.02 · failback 0.02
+  ran drain · weakest: route 0.90 · runbook 1 · replay, 8 questions
+  2  "fail over to the replica"
+  failover 0.90 · none 0.07 · drain 0.03
+  fits  failover 0.80 · drain 0.02 · verify 0.02 · tell 0.02 · failback 0.02 · runbook 0.02
+  ran failover · weakest: route 0.90 · runbook 2 · replay, 8 questions
+  3  "check whether writes land on the new primary"
+  verify 0.90 · none 0.07 · drain 0.03
+  fits  verify 0.80 · drain 0.02 · failover 0.02 · tell 0.02 · failback 0.02 · runbook 0.02
+  ran verify · weakest: route 0.90 · runbook 3 · replay, 8 questions
+  4  "tell the ops channel the failover is done"
+  tell 0.90 · none 0.07 · drain 0.03
+  channel  #ops 0.90 · unstated 0.10
+  fits     tell 0.80 · drain 0.02 · failover 0.02 · verify 0.02 · failback 0.02 · runbook 0.02
+  ran tell channel="#ops" · weakest: route 0.90 · runbook 4 · replay, 8 questions
+  5  "fail back to the old primary"
+  failback 0.90 · none 0.07 · drain 0.03
+  fits  failback 0.80 · drain 0.02 · failover 0.02 · verify 0.02 · tell 0.02 · runbook 0.02
+  skipped failback · weakest: route 0.90 · runbook 5 · not chosen: step 3 yielded landing "yes" · replay, 8 questions
+# The failover declined: nothing after it runs.
+$ evoke "drain the primary"
+  1  drain  0.90 · runbook 1
+  2  failover · destructive · weakest: route 0.90 · runbook 2
+  3  verify  0.90 · runbook 3 · then 4 on "yes", 5 on "no"
+  4  tell channel="#ops"  0.90 · runbook 4 · if 3 yields landing "yes"
+  5  failback · destructive · weakest: route 0.90 · runbook 5 · if 3 yields landing "no"
+  runbook · destructive · weakest: route 0.90 · also drain (fits 0.60), step 1
+  Run the failover runbook?  [y]es [n]o [t]each > y
+primary drained
+  2  failover · destructive · weakest: route 0.90
+  Promote the replica now?  [y]es [n]o [t]each > n
+  3  verify  0.90 · runbook 3 · then 4 on "yes", 5 on "no" · skipped
+  4  tell channel="#ops"  0.90 · runbook 4 · if 3 yields landing "yes" · skipped
+  5  failback · destructive · weakest: route 0.90 · runbook 5 · if 3 yields landing "no" · skipped
+[2]
+# Writes not landing: the other branch is chosen, and asks, since it is destructive.
+$ evoke config verify landing no
++ evoke.toml  [config.verify] landing = "no"
+$ evoke "drain the primary"
+  1  drain  0.90 · runbook 1
+  2  failover · destructive · weakest: route 0.90 · runbook 2
+  3  verify  0.90 · runbook 3 · then 4 on "yes", 5 on "no"
+  4  tell channel="#ops"  0.90 · runbook 4 · if 3 yields landing "yes"
+  5  failback · destructive · weakest: route 0.90 · runbook 5 · if 3 yields landing "no"
+  runbook · destructive · weakest: route 0.90 · also drain (fits 0.60), step 1
+  Run the failover runbook?  [y]es [n]o [t]each > y
+primary drained
+  2  failover · destructive · weakest: route 0.90
+  Promote the replica now?  [y]es [n]o [t]each > y
+replica promoted
+writes not landing on the new primary
+  5  failback · destructive · weakest: route 0.90
+  Fail back to the old primary?  [y]es [n]o [t]each > y
+failed back to the old primary
+  4  tell channel="#ops"  0.90 · runbook 4 · if 3 yields landing "yes" · skipped · not chosen: step 3 yielded landing "no"
+# A value no step lists picks nothing, and the plan goes on.
+$ evoke config verify landing maybe
++ evoke.toml  [config.verify] landing = "maybe"
+$ evoke "drain the primary"
+  1  drain  0.90 · runbook 1
+  2  failover · destructive · weakest: route 0.90 · runbook 2
+  3  verify  0.90 · runbook 3 · then 4 on "yes", 5 on "no"
+  4  tell channel="#ops"  0.90 · runbook 4 · if 3 yields landing "yes"
+  5  failback · destructive · weakest: route 0.90 · runbook 5 · if 3 yields landing "no"
+  runbook · destructive · weakest: route 0.90 · also drain (fits 0.60), step 1
+  Run the failover runbook?  [y]es [n]o [t]each > y
+primary drained
+  2  failover · destructive · weakest: route 0.90
+  Promote the replica now?  [y]es [n]o [t]each > y
+replica promoted
+writes maybe landing on the new primary
+  4  tell channel="#ops"  0.90 · runbook 4 · if 3 yields landing "yes" · skipped · not chosen: step 3 yielded landing "maybe", which no step lists
+  5  failback · destructive · weakest: route 0.90 · runbook 5 · if 3 yields landing "no" · skipped · not chosen: step 3 yielded landing "maybe", which no step lists
+$ evoke try --json "drain the primary"
+{"input":"drain the primary","steps":[{"n":1,"text":"drain connections off the primary","end":17,"decision":{"outcome":"run","reflex":"drain","args":{},"call":"drain","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"drain","p":0.9},"judgments":[{"question":"route","top":"drain","p":0.9}],"runner_up":{"reflex":"runbook","route":0.06,"fits":0.1},"contenders":[{"reflex":"drain","route":0.9,"fits":0.8},{"reflex":"runbook","route":0.06,"fits":0.1},{"reflex":"failover","route":0.0,"fits":0.02},{"reflex":"verify","route":0.0,"fits":0.02},{"reflex":"tell","route":0.0,"fits":0.02},{"reflex":"failback","route":0.0,"fits":0.02}]},"reflex":"drain","effect":"write","from":[{"playbook":"runbook","step":1,"slots":{}}]},{"n":2,"text":"fail over to the replica","end":17,"decision":{"outcome":"confirm","reflex":"failover","args":{},"call":"failover","effect":"destructive","confidence":0.9,"weakest":{"question":"route","top":"failover","p":0.9},"judgments":[{"question":"route","top":"failover","p":0.9}],"runner_up":{"reflex":"drain","route":0.03,"fits":0.02},"contenders":[{"reflex":"failover","route":0.9,"fits":0.8},{"reflex":"drain","route":0.03,"fits":0.02},{"reflex":"verify","route":0.0,"fits":0.02},{"reflex":"tell","route":0.0,"fits":0.02},{"reflex":"failback","route":0.0,"fits":0.02},{"reflex":"runbook","route":0.0,"fits":0.02}],"prompt":{"own":"failover · destructive · weakest: route 0.90","template":"Promote the replica now?"},"because":[{"type":"destructive"}]},"reflex":"failover","effect":"destructive","from":[{"playbook":"runbook","step":2,"slots":{}}]},{"n":3,"text":"check whether writes land on the new primary","end":17,"decision":{"outcome":"run","reflex":"verify","args":{},"call":"verify","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"verify","p":0.9},"judgments":[{"question":"route","top":"verify","p":0.9}],"runner_up":{"reflex":"drain","route":0.03,"fits":0.02},"contenders":[{"reflex":"verify","route":0.9,"fits":0.8},{"reflex":"drain","route":0.03,"fits":0.02},{"reflex":"failover","route":0.0,"fits":0.02},{"reflex":"tell","route":0.0,"fits":0.02},{"reflex":"failback","route":0.0,"fits":0.02},{"reflex":"runbook","route":0.0,"fits":0.02}]},"reflex":"verify","effect":"read","refs":[{"span":{"start":29,"end":44,"text":"the new primary"},"from":[0],"how":"engine","weak":true,"noun":"primary","p":0.9}],"from":[{"playbook":"runbook","step":3,"slots":{}}]},{"n":4,"text":"tell the ops channel the failover is done","end":17,"decision":{"outcome":"run","reflex":"tell","args":{"channel":{"type":"word","word":"#ops"}},"call":"tell channel=\"#ops\"","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"tell","p":0.9},"judgments":[{"question":"route","top":"tell","p":0.9},{"question":"tell.channel","top":"#ops","p":0.9}],"runner_up":{"reflex":"drain","route":0.03,"fits":0.02},"contenders":[{"reflex":"tell","route":0.9,"fits":0.8},{"reflex":"drain","route":0.03,"fits":0.02},{"reflex":"failover","route":0.0,"fits":0.02},{"reflex":"verify","route":0.0,"fits":0.02},{"reflex":"failback","route":0.0,"fits":0.02},{"reflex":"runbook","route":0.0,"fits":0.02}]},"reflex":"tell","effect":"write","after":[3],"from":[{"playbook":"runbook","step":4,"slots":{}}],"when":{"step":3,"field":"landing","is":"yes"}},{"n":5,"text":"fail back to the old primary","end":17,"decision":{"outcome":"confirm","reflex":"failback","args":{},"call":"failback","effect":"destructive","confidence":0.9,"weakest":{"question":"route","top":"failback","p":0.9},"judgments":[{"question":"route","top":"failback","p":0.9}],"runner_up":{"reflex":"drain","route":0.03,"fits":0.02},"contenders":[{"reflex":"failback","route":0.9,"fits":0.8},{"reflex":"drain","route":0.03,"fits":0.02},{"reflex":"failover","route":0.0,"fits":0.02},{"reflex":"verify","route":0.0,"fits":0.02},{"reflex":"tell","route":0.0,"fits":0.02},{"reflex":"runbook","route":0.0,"fits":0.02}],"prompt":{"own":"failback · destructive · weakest: route 0.90","template":"Fail back to the old primary?"},"because":[{"type":"destructive"}]},"reflex":"failback","effect":"destructive","after":[3],"from":[{"playbook":"runbook","step":5,"slots":{}}],"when":{"step":3,"field":"landing","is":"no"}}],"stages":[[1],[2],[3],[4],[5]],"verdict":{"outcome":"confirm","because":[{"type":"reviewed","step":1,"playbook":"runbook","text":"drain the primary","prompt":{"own":"runbook · destructive · weakest: route 0.90 · also drain (fits 0.60), step 1","template":"Run the failover runbook?"}}]},"exclusive":true,"trace":[]}
+# A playbook is never called by name; its branches show in the manifest, and its test decides every step.
+$ evoke run runbook
+  runbook: runbook is a plan of steps; say it in a sentence  →  evoke show runbook
+[3]
+$ evoke show runbook
+  description = "Fail the database over to its replica.\nDrains the primary, promotes the replica and checks that writes land on it; tells the ops channel when they do, fails back when they do not."
+  not_for = ["draining the primary on its own", "checking writes on their own", "a replica that is primary already"]
+  tags = ["failover"]
+  effect = "destructive"
+  confirm = "Run the failover runbook?"
+  steps
+    1  drain connections off the primary
+    2  fail over to the replica
+    3  check whether writes land on the new primary
+    4  tell the ops channel the failover is done  when landing = "yes"
+    5  fail back to the old primary  when landing = "no"
+
+  [examples]
+  "run the failover runbook" = {}
+  "switch the database to the replica" = {}
+  "the primary is dying, fail over" = {}
+
+  [tests]
+  "drain the primary" = {}
+$ evoke test runbook
+  runbook  4 passed · 5 steps route

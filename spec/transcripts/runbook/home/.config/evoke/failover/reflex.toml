@@ -1,0 +1,14 @@
+reflex = 1
+
+description = """
+Promote the replica to primary.
+The old primary is demoted; it cannot be undone from here."""
+not_for = ["draining connections", "checking writes"]
+tags = ["failover"]
+effect = "destructive"
+confirm = "Promote the replica now?"
+run = "failover.mts"
+
+[examples]
+"fail over to the replica" = {}
+"promote the replica"      = {}

@@ -199,8 +199,10 @@ export type Effect = "read" | "write" | "destructive"
 export type Template = string
 
 /** One step of a playbook: a sentence with `{slot}`s, each an argument of the manifest — a required one bare, an
- *  optional one inside a bracketed phrase, `[ in {region}]`, written only when the slot is filled. */
-export type Sentence = string
+ *  optional one inside a bracketed phrase, `[ in {region}]`, written only when the slot is filled; or, for a step
+ *  that may not run, the sentence as `say` and, under `when`, the one field of the step before the alternatives and
+ *  the value, as text, under which this step runs. */
+export type Sentence = string | { say: string; when: Record<FieldName, string> }
 
 /** The body: an entrypoint run in a child, or an argv that never touches a shell. */
 export type Run = Entrypoint | Argv
@@ -933,6 +935,8 @@ export interface Step {
   after?: number[]
   /** The playbooks this step came from, outermost first; absent on a step of the person's own. */
   from?: From[]
+  /** What picks this step, when it may not run; absent on a step that always runs. */
+  when?: When
 }
 
 /** Where a step came from when a playbook wrote it: the playbook, which of its steps (from 1), and what each slot
@@ -947,6 +951,14 @@ export interface From {
 export interface Folded {
   text: string
   into: number
+}
+
+/** What picks a step that may not run: the step (from 1) whose result does, the field, and the value under which
+ *  this step runs, compared as text at its turn; another value skips the step clean. */
+export interface When {
+  step: number
+  field: FieldName
+  is: string
 }
 
 /** How a bound value reaches its step: answering its own ask; the step decided again with the value in its words; or a
@@ -993,6 +1005,14 @@ export type Because =
   | { type: "conditional"; text: string }
   /** A part that says what not to do beside a plan a playbook wrote: refused whole. */
   | { type: "excluded"; text: string; playbook: LocalName }
+  /** A step that may not run whose words route to a playbook: refused, a branch is one step. */
+  | { type: "branch_into_plan"; step: number; playbook: LocalName }
+  /** A step that may not run on a field the step before it does not yield as one value: refused. */
+  | { type: "no_field"; step: number; field: FieldName }
+  /** A step that may not run under a value the field's reader does not read: refused. */
+  | { type: "bad_value"; step: number; field: FieldName; is: string }
+  /** A step that takes from a step that may not run: refused, nothing may answer it. */
+  | { type: "maybe_source"; step: number; name: FieldName; source: number }
 
 /** The verdict before anything runs, with every reason. */
 export interface Verdict {
@@ -1055,6 +1075,8 @@ export type WeaveWhy =
   /** The step it names returned a whole result over the cap, a mebibyte of JSON. */
   | { type: "too_large"; from: number }
   | { type: "found_nothing" }
+  /** The step it names yielded another value than the one this step lists: skipped clean. */
+  | { type: "not_chosen"; from: number; value: string }
   | { type: "no_reflex" }
   | { type: "read_as"; reflex: LocalName }
   /** The weave was cancelled: the round the host ended, and every step that had not finished by then. */

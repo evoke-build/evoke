@@ -63,7 +63,7 @@ level = "number"
 | `effect`      | no       | `read`, `write` or `destructive`. **Absent means destructive.** It is the author's claim, and not trusted: a user may tighten it, never loosen it. A reflex has one effect, so grouped actions take the worst case |
 | `confirm`     | yes      | The one-line question a person answers. A `{placeholder}` names a **required** argument. A pick shows its span. A placeholder for an optional argument or a flag is an error |
 | `run`         | one of   | The body: a path ending in `.mts` or `.mjs` inside the directory, or an argv. [The body](body.md) |
-| `steps`       | one of   | A plan in place of a body: one sentence per step, `{slot}` for an argument, `[ words with a {slot}]` for an optional one; at most 24. None of a body's keys with it. [Playbooks](playbooks.md) |
+| `steps`       | one of   | A plan in place of a body: one sentence per step, `{slot}` for an argument, `[ words with a {slot}]` for an optional one, `{ say = "…", when = { field = "value" } }` for a step that runs only under what the step before it yields; at most 24. None of a body's keys with it. [Playbooks](playbooks.md) |
 | `platforms`   | no       | Where the body runs, when not anywhere: `["macos"]`, `["linux"]`, or both. On another machine the reflex is inactive, and `add` and `show` say so: `runs on macOS only` |
 | `[needs]`     | no       | What the body touches, held by the kernel: `reads`, `writes`, `hosts`, `runs`. Left out, the tightest declaration: its own directory and `TMPDIR`. [What the body touches](#what-the-body-touches) |
 | `[config]`    | no       | Settings the user provides with `evoke config`: `key = "about"` or `key = { about, secret = true }`. A secret is only ever set from an environment variable |

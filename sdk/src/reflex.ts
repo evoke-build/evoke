@@ -8,6 +8,10 @@ import type { Flag, Option, Pick, Value, Values, Word } from "./decision.ts"
 import type { Reflex } from "./runtime.ts"
 import type { Effect, Recognizer } from "./types.ts"
 
+/** One step of a playbook as code: a sentence, or a step that may not run as `{ say, when }`, `when` the one field
+ *  of the step before the alternatives and the value under which this step runs. */
+export type InlineStep = string | { say: string; when: Record<string, string> }
+
 /** `reflex.toml` as an object: no `run`, no `config` — a body closes over what it needs — no `reflex` key. */
 export interface InlineManifest {
   description: string
@@ -18,8 +22,8 @@ export interface InlineManifest {
   /** The one-line template a person confirms, naming required arguments only. */
   confirm: string
   /** A playbook's body: one sentence per step, `{slot}`s naming its arguments, a bracketed phrase going only with
-   *  the slot inside it. With `playbook`, never with `reflex`. */
-  steps?: string[]
+   *  the slot inside it; a step that may not run as `{ say, when }`. With `playbook`, never with `reflex`. */
+  steps?: InlineStep[]
   /** The arguments: a question and one source each, or a whole result an earlier step returns, taken by its name. */
   args?: Record<string, InlineArg>
   /** What the body's `data` yields for a later step to take: per field, the recognizer that reads it, or a list of
@@ -98,6 +102,6 @@ export function reflex<const M extends InlineManifest>(manifest: M, body: Reflex
 
 /** A playbook as code: a manifest whose body is `steps`, sentences with slots, each decided over the project's
  *  reflexes when a sentence picks it. It never runs as a body; `handle` and `run` refuse it. */
-export function playbook<const M extends InlineManifest & { steps: string[] }>(manifest: M): Inline<Carried<M>> {
+export function playbook<const M extends InlineManifest & { steps: InlineStep[] }>(manifest: M): Inline<Carried<M>> {
   return { manifest }
 }

@@ -9,12 +9,12 @@ use indexmap::IndexMap;
 use super::reading::{self, Left, Order, Ref, SURE, Segment, Split, Unclean};
 use super::{
     Answers, Asked, Because, Binding, Folded, From, Need, Outcome, Planning, Repair, Shared, Step,
-    Verdict, Via, Weave, field_names,
+    Verdict, Via, Weave, When, field_names,
 };
 use crate::adapter::{Fault, Gate, Prob};
 use crate::call::Value;
-use crate::decide::{Cap, Decision, Prompt, fill, merged, words};
-use crate::manifest::{Effect, Kind, MOST_STEPS, Recognizer, Source, Yield};
+use crate::decide::{Cap, Decision, Prompt, fill, merged, picked, words};
+use crate::manifest::{self, Effect, Kind, MOST_STEPS, Recognizer, Source, Yield};
 use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
 use crate::plan::{Active, Plan};
 use crate::text::Clean;
@@ -90,11 +90,13 @@ struct Draft {
     typed: Vec<Option<String>>,
 }
 
-/// One playbook a segment came from: which expansion wrote it, and its place in the playbook.
+/// One playbook a segment came from: which expansion wrote it, its place in the playbook, and what picks it when
+/// it may not run, bound once the steps stand.
 #[derive(Clone)]
 struct Origin {
     expansion: usize,
     from: From,
+    when: Option<manifest::When>,
 }
 
 /// A playbook expanded: the part that picked it, the playbook, its decision's prompt before the runner-up's step
@@ -107,21 +109,33 @@ struct Expansion {
     effect: Effect,
 }
 
-/// A playbook's sentences filled: each text with where it came from.
-type Filled = Vec<(String, From)>;
+/// A playbook's sentences filled: each text with where it came from, and what picks it when it may not run.
+type Filled = Vec<(String, From, Option<manifest::When>)>;
 
-/// Why a step that routes to a playbook is refused: the playbook is on its own chain, or past the depth.
+/// Why a step that routes to a playbook is refused: the playbook is on its own chain, past the depth, or the
+/// step may not run, and a branch is one step.
 enum Refused {
     Nested(LocalName),
     TooDeep(LocalName),
+    BranchIntoPlan(LocalName),
 }
 
 /// What the plan carries beside its steps once every phase ran: the review of each expansion, the refusals
-/// named by step, and the folds.
+/// named by step, the folds, and the steps that may not run.
 struct Extra {
     reviewed: Vec<Because>,
     refusals: Vec<Because>,
     folded: Vec<Folded>,
+    branches: Vec<Branching>,
+}
+
+/// A step that may not run, once the segments stand: its number, what picks it, and the step whose result does —
+/// the nearest before it in the same expansion without `when` — none when that step is a plan of its own, which
+/// yields nothing.
+struct Branching {
+    step: usize,
+    when: manifest::When,
+    source: Option<usize>,
 }
 
 impl Draft {
@@ -283,6 +297,7 @@ impl<'a> Planner<'a> {
                 reviewed: Vec::new(),
                 refusals: Vec::new(),
                 folded: Vec::new(),
+                branches: Vec::new(),
             };
             return Ok(Ok(self.finish(
                 judged,
@@ -348,6 +363,7 @@ impl<'a> Planner<'a> {
                         .iter()
                         .map(|origin| origin.from.clone())
                         .collect(),
+                    when: None,
                 }
             })
             .collect()
@@ -394,6 +410,14 @@ impl<'a> Planner<'a> {
                 continue;
             }
             let chain = &draft.origins[k];
+            // A step that may not run is one step: it never opens a plan of its own.
+            if chain.last().is_some_and(|origin| origin.when.is_some()) {
+                draft
+                    .refusals
+                    .push((id, Refused::BranchIntoPlan(reflex.clone())));
+                k += 1;
+                continue;
+            }
             if chain.iter().any(|origin| origin.from.playbook == reflex) {
                 draft.refusals.push((id, Refused::Nested(reflex.clone())));
                 k += 1;
@@ -422,9 +446,13 @@ impl<'a> Planner<'a> {
             });
             let (segs, origins): (Vec<Segment>, Vec<Vec<Origin>>) = filled
                 .into_iter()
-                .map(|(text, from)| {
+                .map(|(text, from, when)| {
                     let mut origins = chain.clone();
-                    origins.push(Origin { expansion, from });
+                    origins.push(Origin {
+                        expansion,
+                        from,
+                        when,
+                    });
                     (
                         Segment {
                             text,
@@ -480,13 +508,16 @@ impl<'a> Planner<'a> {
                     step: i + 1,
                     slots,
                 };
-                Some((text, from))
+                Some((text, from, sentence.when().cloned()))
             })
             .collect();
         if filled.len() != active.steps.len() {
             return Ok(None);
         }
-        let wanted: Vec<Asked> = filled.iter().map(|(text, _)| self.segment(text)).collect();
+        let wanted: Vec<Asked> = filled
+            .iter()
+            .map(|(text, _, _)| self.segment(text))
+            .collect();
         let mut missing: Vec<Asked> = Vec::new();
         for asked in &wanted {
             if self.decided(asked).is_none() && !missing.contains(asked) {
@@ -561,6 +592,10 @@ impl<'a> Planner<'a> {
                     step: draft.position(*id),
                     playbook: playbook.clone(),
                 },
+                Refused::BranchIntoPlan(playbook) => Because::BranchIntoPlan {
+                    step: draft.position(*id),
+                    playbook: playbook.clone(),
+                },
             })
             .collect();
         refusals.extend(draft.refused.iter().cloned());
@@ -576,6 +611,7 @@ impl<'a> Planner<'a> {
             reviewed,
             refusals,
             folded,
+            branches: branches_of(draft),
         }
     }
 
@@ -1263,7 +1299,8 @@ impl<'a> Planner<'a> {
     }
 
     /// Bindings, edges, stages and the verdict over decided steps, with what a playbook's expansion carries: its
-    /// review among the reasons, so the plan confirms whatever its verdict; a refusal by step; the folds.
+    /// review among the reasons, so the plan confirms whatever its verdict; a refusal by step; the folds; the
+    /// steps that may not run, bound to the step whose result picks each.
     fn finish(
         &self,
         splits: Vec<Split>,
@@ -1272,6 +1309,12 @@ impl<'a> Planner<'a> {
         excluded: Vec<String>,
         extra: Extra,
     ) -> Weave {
+        let Extra {
+            reviewed,
+            refusals: mut refused,
+            folded,
+            branches,
+        } = extra;
         let mut after: Vec<Vec<usize>> = vec![Vec::new(); steps.len()];
         // An explicit `then` orders everything before it before everything after it.
         for split in taken.iter().filter(|split| split.order == Order::Then) {
@@ -1297,6 +1340,7 @@ impl<'a> Planner<'a> {
             because,
             refusals,
         } = self.bind(&steps, &mut after);
+        let branched = self.branches(&mut steps, &mut after, &binds, branches);
         for (step, mut edges) in steps.iter_mut().zip(after) {
             edges.sort_unstable();
             step.after = edges;
@@ -1310,9 +1354,10 @@ impl<'a> Planner<'a> {
         let stages = schedule(&steps, exclusive);
         let mut verdict = verdict_of(&steps, &binds);
         // A whole result no step hands, or several do, is refused before anything runs: nothing answers it. So
-        // is a step that routes to its own plan, a plan too deep or too long, and a part left out beside a plan.
-        let mut refused = extra.refusals;
+        // is a step that routes to its own plan, a plan too deep or too long, a part left out beside a plan, and
+        // a step that may not run on a field its step does not yield, or that a later step takes from.
         refused.extend(refusals);
+        refused.extend(branched);
         if !refused.is_empty() {
             verdict.outcome = Outcome::Refuse;
             verdict.because.splice(0..0, refused);
@@ -1322,11 +1367,11 @@ impl<'a> Planner<'a> {
         }
         verdict.because.extend(asks);
         // A plan a playbook wrote asks one yes over the whole, whatever its verdict: the review is a reason.
-        if verdict.outcome == Outcome::Run && !(because.is_empty() && extra.reviewed.is_empty()) {
+        if verdict.outcome == Outcome::Run && !(because.is_empty() && reviewed.is_empty()) {
             verdict.outcome = Outcome::Confirm;
         }
         verdict.because.extend(because);
-        verdict.because.extend(extra.reviewed);
+        verdict.because.extend(reviewed);
         Weave {
             input: self.request.clone(),
             steps,
@@ -1335,9 +1380,59 @@ impl<'a> Planner<'a> {
             verdict,
             exclusive,
             excluded,
-            folded: extra.folded,
+            folded,
             splits,
         }
+    }
+
+    /// Every step that may not run bound to the step whose result picks it — the field one value that step's
+    /// reflex yields, the value one the field's reader reads — and ordered after it. A source that is a plan of
+    /// its own, lacks the field, yields it per record or runs once per record refuses the step; so does a value
+    /// the field's reader never reads, which could never be chosen; and a step that takes anything from a step
+    /// that may not run is refused too, since nothing may answer it.
+    fn branches(
+        &self,
+        steps: &mut [Step],
+        after: &mut [Vec<usize>],
+        binds: &[Binding],
+        branches: Vec<Branching>,
+    ) -> Vec<Because> {
+        let mut refusals = Vec::new();
+        for Branching { step, when, source } in branches {
+            let manifest::When { field, is } = when;
+            // A source that matches nothing refuses the plan on its own.
+            if source.is_some_and(|n| steps[n - 1].reflex.is_none()) {
+                continue;
+            }
+            let yields = source
+                .and_then(|n| steps[n - 1].reflex.as_ref())
+                .and_then(|reflex| self.plan.active().get(reflex))
+                .map(|active| &active.yields);
+            let kind = match (source, yields.and_then(|yields| yields.get(&field))) {
+                (Some(n), Some(Yield::Kind(kind))) if !per_record(binds, n) => *kind,
+                _ => {
+                    refusals.push(Because::NoField { step, field });
+                    continue;
+                }
+            };
+            if picked(is.as_str(), kind).is_none() {
+                refusals.push(Because::BadValue { step, field, is });
+                continue;
+            }
+            let n = source.expect("the field was found on the source");
+            steps[step - 1].when = Some(When { step: n, field, is });
+            follow(after, step, n);
+        }
+        for binding in binds {
+            if steps[binding.from - 1].when.is_some() {
+                refusals.push(Because::MaybeSource {
+                    step: binding.to,
+                    name: binding.field.clone(),
+                    source: binding.from,
+                });
+            }
+        }
+        refusals
     }
 
     /// Every whole result a step takes bound by its name to the one step before it whose reflex returns it —
@@ -1823,9 +1918,12 @@ fn fold(draft: &mut Draft) {
             k += 1;
             continue;
         };
+        // Only into a step the author wrote that always runs: the person asked unconditionally.
         let target = (0..draft.segs.len()).find(|&j| {
             j != k
-                && !draft.origins[j].is_empty()
+                && draft.origins[j]
+                    .last()
+                    .is_some_and(|origin| origin.when.is_none())
                 && reflex_of(&draft.decisions[j]) == Some(reflex)
                 && read.iter().all(|(arg, value)| {
                     args_of(&draft.decisions[j])
@@ -1844,6 +1942,33 @@ fn fold(draft: &mut Draft) {
             None => k += 1,
         }
     }
+}
+
+/// Every step that may not run, once the segments stand: its number, what picks it, and the step whose result
+/// picks it — the nearest before it in the same expansion without `when`; none when that step expanded into a
+/// plan of its own, which yields nothing.
+fn branches_of(draft: &Draft) -> Vec<Branching> {
+    (0..draft.segs.len())
+        .filter_map(|k| {
+            let depth = draft.origins[k].len().checked_sub(1)?;
+            let origin = &draft.origins[k][depth];
+            let when = origin.when.clone()?;
+            let source = (0..k)
+                .rev()
+                .find(|&j| {
+                    draft.origins[j].get(depth).is_some_and(|before| {
+                        before.expansion == origin.expansion && before.when.is_none()
+                    })
+                })
+                .filter(|&j| draft.origins[j].len() == depth + 1)
+                .map(|j| j + 1);
+            Some(Branching {
+                step: k + 1,
+                when,
+                source,
+            })
+        })
+        .collect()
 }
 
 /// The arguments of a decision that is a complete call: a run, or a confirm.

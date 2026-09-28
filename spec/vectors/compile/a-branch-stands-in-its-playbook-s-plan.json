@@ -1,0 +1,17 @@
+{
+  "input": {
+    "set": {
+      "$ref": "fixtures/installed-runbook.json"
+    },
+    "values": {
+      "verify": {
+        "landing": "yes"
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "$ref": "fixtures/plan-runbook.json"
+    }
+  }
+}

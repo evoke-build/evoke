@@ -115,6 +115,7 @@ impl Using<'_> {
                     taken: &IndexMap::new(),
                     shared: &IndexMap::new(),
                     from: &[],
+                    when: None,
                 };
                 self.rounds
                     .round(input, None, &decided, decision, handed)

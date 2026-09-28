@@ -1,0 +1,14 @@
+reflex = 1
+
+description = """
+Drain traffic from the primary database.
+New connections go to the replica; open ones finish."""
+not_for = ["promoting the replica", "checking writes"]
+tags = ["drain"]
+effect = "write"
+confirm = "Drain the primary?"
+run = "drain.mts"
+
+[examples]
+"drain connections off the primary"   = {}
+"stop new connections to the primary" = {}

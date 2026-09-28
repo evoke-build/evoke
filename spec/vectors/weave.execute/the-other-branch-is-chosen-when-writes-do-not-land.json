@@ -1,0 +1,126 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-runbook.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "weave": {
+      "$ref": "fixtures/weave-runbook.json"
+    },
+    "progress": {
+      "handled": [
+        {
+          "step": 1,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "primary drained"
+          }
+        },
+        {
+          "step": 2,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "replica promoted"
+          }
+        },
+        {
+          "step": 3,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "writes not landing on the new primary",
+            "data": {
+              "landing": "no"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "expect": {
+    "type": "todo",
+    "todo": {
+      "type": "handle",
+      "handling": [
+        {
+          "step": 5,
+          "round": 0,
+          "decision": {
+            "outcome": "confirm",
+            "reflex": "failback",
+            "args": {},
+            "call": "failback",
+            "effect": "destructive",
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "failback",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "failback",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "drain",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "failback",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "drain",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "failover",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "verify",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "tell",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "runbook",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "prompt": {
+              "own": "failback · destructive · weakest: route 0.90",
+              "template": "Fail back to the old primary?"
+            },
+            "because": [
+              {
+                "type": "destructive"
+              }
+            ]
+          },
+          "input": "fail back to the old primary"
+        }
+      ]
+    }
+  }
+}

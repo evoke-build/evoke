@@ -228,10 +228,71 @@ impl fmt::Display for Template {
 pub const MOST_STEPS: usize = 24;
 
 /// One step of a playbook: a sentence with `{slot}`s, each an argument of the manifest, and phrases in brackets
-/// that go only with the slots inside them — written when every one is filled, dropped whole when one is not.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(try_from = "String", into = "String")]
-pub struct Sentence(Vec<Part>);
+/// that go only with the slots inside them — written when every one is filled, dropped whole when one is not;
+/// and, for a step that may not run, what picks it. On the wire a string, or `{ say, when }` for a step with
+/// `when`.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Sentence {
+    parts: Vec<Part>,
+    when: Option<When>,
+}
+
+/// What picks a step that may not run: a field the step before the alternatives yields, and the value under which
+/// this one runs, as text — `{ say = "…", when = { landing = "yes" } }`. One field, one value; the alternatives
+/// stand together right after their step.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct When {
+    pub field: FieldName,
+    pub is: Clean,
+}
+
+/// A step on the wire: its words alone, or with what picks it.
+#[derive(Serialize, Deserialize)]
+#[serde(untagged)]
+enum Said {
+    Text(String),
+    Table {
+        say: String,
+        when: IndexMap<FieldName, Clean>,
+    },
+}
+
+impl Serialize for Sentence {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let say = self.to_string();
+        match &self.when {
+            None => Said::Text(say),
+            Some(when) => Said::Table {
+                say,
+                when: IndexMap::from([(when.field.clone(), when.is.clone())]),
+            },
+        }
+        .serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for Sentence {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let (say, when) = match Said::deserialize(deserializer)? {
+            Said::Text(say) => (say, None),
+            Said::Table { say, when } => {
+                let mut fields = when.into_iter();
+                let (field, is) = match (fields.next(), fields.next()) {
+                    (Some(field), None) => field,
+                    (None, _) => return Err(D::Error::custom("when has no field")),
+                    (Some(_), Some(_)) => {
+                        return Err(D::Error::custom("when branches on two fields; one picks"));
+                    }
+                };
+                (say, Some(When { field, is }))
+            }
+        };
+        let mut sentence =
+            Self::parse(&say).map_err(|why| D::Error::custom(format!("the sentence {why}")))?;
+        sentence.when = when;
+        Ok(sentence)
+    }
+}
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Part {
@@ -272,12 +333,18 @@ impl Sentence {
             return Err("has an unmatched \"[\"".to_owned());
         }
         parts.extend(pieces(&piece)?);
-        Ok(Self(parts))
+        Ok(Self { parts, when: None })
     }
 
     #[must_use]
     pub fn parts(&self) -> &[Part] {
-        &self.0
+        &self.parts
+    }
+
+    /// What picks the step, when it may not run.
+    #[must_use]
+    pub fn when(&self) -> Option<&When> {
+        self.when.as_ref()
     }
 
     /// Every slot, in order, with whether it stands in a bracket.
@@ -292,7 +359,7 @@ impl Sentence {
             }
         }
         let mut out = Vec::new();
-        walk(&self.0, false, &mut out);
+        walk(&self.parts, false, &mut out);
         out.into_iter()
     }
 
@@ -319,7 +386,11 @@ impl Sentence {
                         slots.insert(name.clone(), value);
                     }
                     Part::Optional(inner) => {
-                        let filled = Sentence(inner.clone()).slots().all(|(name, _)| {
+                        let inner_slots = Sentence {
+                            parts: inner.clone(),
+                            when: None,
+                        };
+                        let filled = inner_slots.slots().all(|(name, _)| {
                             args.get(name).is_some_and(|value| written(value).is_some())
                         });
                         if filled {
@@ -332,7 +403,7 @@ impl Sentence {
         }
         let mut text = String::new();
         let mut slots = IndexMap::new();
-        write(&self.0, args, &mut text, &mut slots)?;
+        write(&self.parts, args, &mut text, &mut slots)?;
         Some((text, slots))
     }
 }
@@ -366,20 +437,6 @@ fn pieces(text: &str) -> Result<Vec<Part>, String> {
         .collect())
 }
 
-impl TryFrom<String> for Sentence {
-    type Error = String;
-
-    fn try_from(text: String) -> Result<Self, String> {
-        Self::parse(&text).map_err(|why| format!("the sentence {why}"))
-    }
-}
-
-impl From<Sentence> for String {
-    fn from(sentence: Sentence) -> Self {
-        sentence.to_string()
-    }
-}
-
 impl fmt::Display for Sentence {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fn write(parts: &[Part], f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -396,7 +453,7 @@ impl fmt::Display for Sentence {
             }
             Ok(())
         }
-        write(&self.0, f)
+        write(&self.parts, f)
     }
 }
 
@@ -1021,8 +1078,8 @@ fn body_of(
     }
 }
 
-/// `steps`: an array of sentences, each read for its slots against the arguments; a step's line to fix is the
-/// array's, the step named by its number as the plan prints it.
+/// `steps`: an array of sentences, each read for its slots against the arguments — a table for a step that may not
+/// run, `{ say, when }`; a step's line to fix is the array's, the step named by its number as the plan prints it.
 pub(crate) fn steps<'k>(
     d: &mut Diagnostics,
     node: Node,
@@ -1046,12 +1103,14 @@ pub(crate) fn steps<'k>(
     let mut sentences = Vec::new();
     for (i, item) in items.iter().enumerate() {
         let n = i + 1;
-        let text = match &item.value {
-            Value::Str(text) => text,
-            Value::Table(_) => {
-                d.fail(at, format!("step {n} is a table; a step is a sentence"));
-                ok = false;
-                continue;
+        let (text, when) = match &item.value {
+            Value::Str(text) => (text.clone(), None),
+            Value::Table(entries) => {
+                let Some((text, when)) = branch(d, at, entries, n) else {
+                    ok = false;
+                    continue;
+                };
+                (text, Some(when))
             }
             _ => {
                 d.fail(at, format!("step {n} must be a sentence"));
@@ -1059,7 +1118,8 @@ pub(crate) fn steps<'k>(
                 continue;
             }
         };
-        let sentence = match Sentence::parse(text) {
+        let text = text.as_str();
+        let mut sentence = match Sentence::parse(text) {
             Ok(sentence) => sentence,
             Err(why) => {
                 d.fail(at, format!("step {n} {why}"));
@@ -1101,9 +1161,87 @@ pub(crate) fn steps<'k>(
                 ok = false;
             }
         }
+        sentence.when = when;
         sentences.push(sentence);
     }
     ok.then_some(sentences)
+}
+
+/// A step that may not run, `{ say = "<sentence>", when = { <field> = "<value>" } }`: its words and what picks it,
+/// one field with its value as text; refused when the table holds anything else, names no field or two, or
+/// stands first, where no step comes before it.
+fn branch(
+    d: &mut Diagnostics,
+    at: Option<&At>,
+    entries: &[(String, Node)],
+    n: usize,
+) -> Option<(String, When)> {
+    let mut say = None;
+    let mut when = None;
+    for (key, node) in entries {
+        match key.as_str() {
+            "say" => say = Some(node),
+            "when" => when = Some(node),
+            other => {
+                d.fail(
+                    at,
+                    format!("step {n} has {other}, which is neither say nor when"),
+                );
+                return None;
+            }
+        }
+    }
+    let Some(say) = say.and_then(Node::str) else {
+        d.fail(at, format!("step {n} has no say"));
+        return None;
+    };
+    let Some(when) = when else {
+        d.fail(
+            at,
+            format!("step {n} has no when; a step that always runs is a sentence"),
+        );
+        return None;
+    };
+    let (field, value) = match &when.value {
+        Value::Table(fields) if fields.len() == 1 => &fields[0],
+        Value::Table(fields) if fields.len() > 1 => {
+            d.fail(at, format!("step {n} branches on two fields; one picks"));
+            return None;
+        }
+        _ => {
+            d.fail(at, format!("step {n} has when with no field"));
+            return None;
+        }
+    };
+    if n == 1 {
+        d.fail(at, "step 1 branches, and no step comes before it");
+        return None;
+    }
+    let field = match FieldName::new(field) {
+        Ok(field) => field,
+        Err(why) => {
+            d.fail(at, format!("step {n} branches on \"{field}\": {why}"));
+            return None;
+        }
+    };
+    let Some(is) = value.str() else {
+        d.fail(
+            at,
+            format!(
+                "step {n} branches on {field} = {}; the value is text",
+                value.kind()
+            ),
+        );
+        return None;
+    };
+    let is = match Clean::line(is) {
+        Ok(is) => is,
+        Err(why) => {
+            d.fail(at, format!("step {n}'s {field} {why}"));
+            return None;
+        }
+    };
+    Some((say.to_owned(), When { field, is }))
 }
 
 /// An argument no step names would be asked for nothing: a line to remove, at the argument's own.

@@ -259,3 +259,32 @@ test("a playbook is never run as a body: handle and run refuse it, and playbook(
   })
   equal(own.reflexes.evening?.active && own.reflexes.evening.runs, "plan")
 })
+
+// ---- the runbook from «drain the primary»: a branch — two steps that run only under what the check yields,
+// printed with the plan; the one not chosen skipped clean.
+
+const runbookHome = fileURLToPath(new URL("../../spec/transcripts/runbook/home/.config/evoke", import.meta.url))
+const runbookAnswers = new URL("../../spec/transcripts/runbook/answers.toml", import.meta.url)
+
+test("a branch waits on a field the step before it yields, and the step not chosen is skipped clean", async () => {
+  const project = await load({ root: runbookHome, adapter: replay(runbookAnswers) })
+  const { weave: plan } = await project.steps("drain the primary")
+  deepStrictEqual(
+    plan.steps.map(step => [step.reflex, step.when, step.after]),
+    [
+      ["drain", undefined, undefined],
+      ["failover", undefined, undefined],
+      ["verify", undefined, undefined],
+      ["tell", { step: 3, field: "landing", is: "yes" }, [3]],
+      ["failback", { step: 3, field: "landing", is: "no" }, [3]],
+    ],
+  )
+  equal(plan.verdict.outcome, "confirm")
+  const woven = await project.weave("drain the primary", { proceed: () => true, confirm: () => true })
+  equal(woven.status, "ran")
+  deepStrictEqual(
+    woven.steps.map(step => `${step.step} ${step.status}${step.why === undefined ? "" : ` ${step.why.type}`}`),
+    ["1 ran", "2 ran", "3 ran", "4 ran", "5 skipped not_chosen"],
+  )
+  deepStrictEqual(woven.steps[4]?.why, { type: "not_chosen", from: 3, value: "yes" })
+})

@@ -1,0 +1,20 @@
+reflex = 1
+
+description = """
+Check that writes land on the current primary.
+Answers yes or no."""
+not_for = ["draining", "promoting"]
+tags = ["verify"]
+effect = "read"
+confirm = "Check writes?"
+run = "verify.mts"
+
+[config]
+landing = "Whether writes land on the new primary: yes or no."
+
+[yields]
+landing = "quoted"
+
+[examples]
+"check that writes land on the new primary" = {}
+"are writes landing"                        = {}

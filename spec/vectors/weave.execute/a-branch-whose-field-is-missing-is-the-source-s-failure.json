@@ -1,0 +1,111 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-runbook.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "weave": {
+      "$ref": "fixtures/weave-runbook.json"
+    },
+    "progress": {
+      "handled": [
+        {
+          "step": 1,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "primary drained"
+          }
+        },
+        {
+          "step": 2,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "replica promoted"
+          }
+        },
+        {
+          "step": 3,
+          "round": 0,
+          "status": "ran",
+          "result": {
+            "text": "writes?",
+            "data": {}
+          }
+        }
+      ]
+    }
+  },
+  "expect": {
+    "type": "done",
+    "executed": {
+      "steps": [
+        {
+          "step": 1,
+          "status": "ran",
+          "rounds": [
+            {
+              "step": 1,
+              "round": 0,
+              "status": "ran",
+              "result": {
+                "text": "primary drained"
+              }
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "status": "ran",
+          "rounds": [
+            {
+              "step": 2,
+              "round": 0,
+              "status": "ran",
+              "result": {
+                "text": "replica promoted"
+              }
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "status": "ran",
+          "rounds": [
+            {
+              "step": 3,
+              "round": 0,
+              "status": "ran",
+              "result": {
+                "text": "writes?",
+                "data": {}
+              }
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "status": "skipped",
+          "why": {
+            "type": "nothing_to_take",
+            "from": 3
+          }
+        },
+        {
+          "step": 5,
+          "status": "skipped",
+          "why": {
+            "type": "earlier_step"
+          }
+        }
+      ],
+      "worst": "failed"
+    }
+  }
+}

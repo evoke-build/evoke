@@ -17,7 +17,7 @@ use evoke_core::manifest::{Effect, Manifest, Run, Sentence, written as slotted};
 use evoke_core::name::{ArgName, FieldName, LocalName};
 use evoke_core::test::{Claim, Expected, Mismatch};
 use evoke_core::vocabulary::Vocabulary;
-use evoke_core::weave::{Because, Bound, From, Shared, Status, Step, Why as Stopped};
+use evoke_core::weave::{Because, Bound, From, Shared, Status, Step, When, Why as Stopped};
 use evoke_core::{
     At, Call, Case, Chosen, Clean, Contained, Contender, ContractDiff, Decision, Diagnostic,
     Digest, Effective, File, Finding, Fix, Gate, Input, Json, KeyPath, Level, Needs, Prompt,
@@ -266,6 +266,8 @@ pub struct StepLine {
     pub shared: IndexMap<ArgName, Shared>,
     /// The playbooks the step came from, outermost first.
     pub from: Vec<From>,
+    /// What picks the step, when it may not run.
+    pub when: Option<When>,
 }
 
 impl Line {
@@ -418,6 +420,12 @@ impl Line {
                     serde_json::to_value(&step.from).expect("a step's origins serialize"),
                 );
             }
+            if let Some(when) = &step.when {
+                line.insert(
+                    "when".to_owned(),
+                    serde_json::to_value(when).expect("what picks a step serializes"),
+                );
+            }
         }
         if let Some(expansion) = &self.expansion {
             line.insert(
@@ -469,6 +477,7 @@ impl Line {
                 bound: field("bound", take("bound")).unwrap_or_default(),
                 shared: field("shared", take("shared")).unwrap_or_default(),
                 from: field("from", take("from")).unwrap_or_default(),
+                when: field("when", take("when"))?,
             }),
         };
         let decision = field("decision", Json::Object(fields))?;
@@ -702,7 +711,7 @@ fn stepped(line: &Line, step: &StepLine) -> Text {
     if step.status != Status::Declined
         && let Some(why) = &step.why
     {
-        text.push(" · ").push(&stopped(why));
+        text.push(" · ").push(&stopped(why, step.when.as_ref()));
     }
     text
 }
@@ -733,14 +742,19 @@ fn status_word(status: Status) -> &'static str {
     }
 }
 
-/// Why a step stopped, in a person's words.
+/// Why a step stopped, in a person's words; a step not chosen names the field it waits on, when the step is
+/// known.
 #[must_use]
-pub fn stopped(why: &Stopped) -> String {
+pub fn stopped(why: &Stopped, when: Option<&When>) -> String {
     match why {
         Stopped::EarlierStep => "an earlier step stopped".to_owned(),
         Stopped::NothingToTake { from } => format!("step {from} yielded nothing it takes"),
         Stopped::TooLarge { from } => format!("step {from} returned more than 1 MiB"),
         Stopped::FoundNothing => "its source found nothing".to_owned(),
+        Stopped::NotChosen { from, value } => match when {
+            Some(when) => format!("not chosen: step {from} yielded {} \"{value}\"", when.field),
+            None => format!("not chosen: step {from} yielded \"{value}\""),
+        },
         Stopped::NoReflex => "no reflex".to_owned(),
         Stopped::ReadAs { reflex } => format!("read as {reflex}"),
         Stopped::Cancelled => "cancelled".to_owned(),
@@ -872,7 +886,7 @@ pub fn step_confirming(chosen: &Chosen, prompt: &Prompt, contained: &Contained) 
 #[must_use]
 pub fn step_refused(text: &str, why: &Stopped) -> Text {
     let mut body = Text::from(quoted(text));
-    body.push(" · ").push(&stopped(why));
+    body.push(" · ").push(&stopped(why, None));
     body
 }
 
@@ -901,11 +915,13 @@ pub fn nothing_to_do(because: &Because) -> Text {
 /// A step as the plan shows it, before it runs.
 #[must_use]
 pub fn step_body(step: &Step, weave: &Weave) -> Text {
+    // The steps whose results reach this one, or pick it: the lines say so, and `after` need not.
     let taken: Vec<usize> = weave
         .binds
         .iter()
         .filter(|b| b.to == step.n)
         .map(|b| b.from)
+        .chain(step.when.iter().map(|when| when.step))
         .collect();
     let mut text = match &step.decision {
         Decision::Run { chosen } => run_line(chosen),
@@ -996,7 +1012,33 @@ pub fn step_body(step: &Step, weave: &Weave) -> Text {
             }
         }
     }
+    branched(&mut text, step, weave);
     text
+}
+
+/// What a step's result picks among — the steps standing after it, each under its value — and what picks the
+/// step, when it may not run: ` · then 4 on "yes", 5 on "no"` on the one, ` · if 3 yields landing "no"` on the
+/// other.
+fn branched(text: &mut Text, step: &Step, weave: &Weave) {
+    let picks: Vec<String> = weave
+        .steps
+        .iter()
+        .filter_map(|other| {
+            let when = other.when.as_ref().filter(|when| when.step == step.n)?;
+            Some(format!("{} on \"{}\"", other.n, when.is.as_str()))
+        })
+        .collect();
+    if !picks.is_empty() {
+        text.push(&format!(" · then {}", picks.join(", ")));
+    }
+    if let Some(when) = &step.when {
+        text.push(&format!(
+            " · if {} yields {} \"{}\"",
+            when.step,
+            when.field,
+            when.is.as_str()
+        ));
+    }
 }
 
 /// The plan as one JSON line: the weave's fields, then `trace`, every adapter call the plan took.
@@ -1096,6 +1138,19 @@ pub fn verdict(because: &Because) -> String {
             "{} leaves out a step the {playbook} plan may hold; say the steps you want",
             quoted(text)
         ),
+        Because::BranchIntoPlan { step, .. } => {
+            format!("step {step} branches into a plan; a branch is one step")
+        }
+        Because::NoField { step, field } => {
+            format!("step {step} branches on {field}, which the step before it does not yield")
+        }
+        Because::BadValue { step, field, is } => format!(
+            "step {step} waits on {field} = \"{}\", which no {field} reads",
+            is.as_str()
+        ),
+        Because::MaybeSource { step, name, source } => {
+            format!("step {step} takes {name} from step {source}, which may not run")
+        }
     }
 }
 
@@ -2071,9 +2126,11 @@ pub struct TestedStep {
 }
 
 /// What became of a playbook's step when its words were decided, filled from a record: the reflex it routes to
-/// and that reflex's effect; nothing; the playbook it stands in; or untested, no record reading the slot named.
+/// and that reflex's effect; a reflex that yields no such field as a step after it waits on; nothing; the
+/// playbook it stands in; or untested, no record reading the slot named.
 pub enum StepBecame {
     Routes { reflex: LocalName, effect: Effect },
+    NoField { reflex: LocalName, field: FieldName },
     NoReflex,
     Nested,
     Untested { slot: ArgName },
@@ -2175,6 +2232,9 @@ fn playbook_lines(playbook: &TestedPlaybook) -> Vec<Text> {
     for step in &playbook.steps {
         let became = match &step.became {
             StepBecame::Routes { .. } => continue,
+            StepBecame::NoField { reflex, field } => {
+                format!("reaches {reflex}, which yields no {field}")
+            }
             StepBecame::NoReflex => "no reflex".to_owned(),
             StepBecame::Nested => "nested".to_owned(),
             StepBecame::Untested { slot } => format!("untested: no test reads {{{slot}}}"),
@@ -2220,6 +2280,11 @@ pub fn reached(steps: &[TestedStep]) -> Text {
                 line.roled(Role::Call, reflex.as_str())
                     .push(" · ")
                     .roled(Role::Effect(*effect), &effect.to_string());
+            }
+            StepBecame::NoField { reflex, field } => {
+                line.roled(Role::Call, reflex.as_str())
+                    .push(" · ")
+                    .roled(Role::Warning, &format!("yields no {field}"));
             }
             StepBecame::NoReflex => {
                 line.roled(Role::Warning, "nothing here");
@@ -2372,11 +2437,7 @@ pub fn manifest(effective: &Effective) -> Text {
             && !steps.is_empty()
         {
             lines.push((false, "steps".to_owned()));
-            let width = steps.len().to_string().len();
-            for (i, step) in steps.iter().enumerate() {
-                let sentence = step.as_str().unwrap_or_default();
-                lines.push((false, format!("  {:>width$}  {sentence}", i + 1)));
-            }
+            lines.extend(step_lines(steps).into_iter().map(|line| (false, line)));
         }
     }
     if let Some(Json::Object(needs)) = manifest.get("needs")
@@ -2435,6 +2496,30 @@ pub fn manifest(effective: &Effective) -> Text {
         }
         text
     }))
+}
+
+/// A playbook's steps as `show` prints them, numbered: a step that may not run ends with the field and value that
+/// pick it, `when landing = "yes"`.
+fn step_lines(steps: &[Json]) -> Vec<String> {
+    let width = steps.len().to_string().len();
+    steps
+        .iter()
+        .enumerate()
+        .map(|(i, step)| {
+            let (sentence, when) = match step {
+                Json::Object(table) => (
+                    table.get("say").and_then(Json::as_str),
+                    table.get("when").and_then(Json::as_object),
+                ),
+                _ => (step.as_str(), None),
+            };
+            let mut line = format!("  {:>width$}  {}", i + 1, sentence.unwrap_or_default());
+            for (field, is) in when.into_iter().flatten() {
+                let _ = write!(line, "  when {field} = {is}");
+            }
+            line
+        })
+        .collect()
 }
 
 /// The `[args.<name>]` tables of `show`: each asked argument's keys, an ask or an option marked when it is yours,
