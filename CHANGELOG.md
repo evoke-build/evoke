@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-09-28
+
 - A reflex may be a playbook: `steps` in place of `run`, one sentence per step, `{slots}` for its arguments. A
   short sentence reaches it like any request, each step is decided over what is installed, the plan prints with
   the playbook and step that wrote each line, and one yes covers the whole; a step's own confirm is asked again
