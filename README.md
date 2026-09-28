@@ -80,8 +80,8 @@ which reflex or none and which value for each input, and gives each answer a pro
 gate that decides whether a call runs, confirms or asks, are `evoke`'s. The core names no engine.
 
 A reflex is a recipe: written once, shared through git, improved by everyone. A fetched reflex runs as you, held
-by the kernel to what its manifest declares: the paths it reads and writes, the hosts it reaches, the programs it
-runs. A reach past the declaration ends the run: [Security](https://evoke.build/manual/security.html).
+by the kernel to what its manifest declares: the paths it reads and writes, whether it reaches the network, and the
+programs it runs. A reach past the declaration ends the run: [Security](https://evoke.build/manual/security.html).
 
 ## It stops
 
