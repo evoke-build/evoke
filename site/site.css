@@ -922,11 +922,14 @@ footer a:hover { color: var(--fg); }
 .runbook .pulse { stroke: var(--term-ok); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 4 14; opacity: 0; transition: opacity .6s; animation: belt-long 1.2s linear infinite; }
 .runbook .ring { fill: #1a1a1e; stroke: #36363d; stroke-width: 2; transition: stroke .5s; }
 .runbook .core { fill: #34343a; transition: fill .5s; }
-.runbook[data-drain="ran"] .drain .ring, .runbook[data-failover="ran"] .failover .ring, .runbook[data-verify="ran"] .verify .ring { stroke: var(--term-ok); }
-.runbook[data-drain="ran"] .drain .core, .runbook[data-failover="ran"] .failover .core, .runbook[data-verify="ran"] .verify .core { fill: var(--term-ok); }
+.runbook[data-drain="ran"] .drain .ring, .runbook[data-failover="ran"] .failover .ring, .runbook[data-verify="ran"] .verify .ring, .runbook[data-tell="ran"] .tell .ring { stroke: var(--term-ok); }
+.runbook[data-drain="ran"] .drain .core, .runbook[data-failover="ran"] .failover .core, .runbook[data-verify="ran"] .verify .core, .runbook[data-tell="ran"] .tell .core { fill: var(--term-ok); }
 .runbook[data-failover="confirm"] .failover .ring { stroke: var(--term-mid); animation: pulse 1.1s ease-in-out infinite; }
 .runbook[data-failover="confirm"] .failover .core { fill: var(--term-mid); }
-.runbook[data-drain="ran"] .l1 .pulse, .runbook[data-failover="ran"] .l2 .pulse { opacity: 1; }
+.runbook[data-failback="skipped"] .failback .ring { stroke-dasharray: 4 6; }
+.runbook[data-failback="skipped"] .failback text { opacity: .55; }
+.runbook[data-drain="ran"] .l1 .pulse, .runbook[data-failover="ran"] .l2 .pulse, .runbook[data-tell="ran"] .l3 .pulse { opacity: 1; }
+.runbook .l3 .wire, .runbook .l4 .wire { stroke: #26262b; }
 /* the weave: two steps on one wire */
 .woven .wire { stroke: #26262b; stroke-width: 3; stroke-linecap: round; }
 .woven .pulse { stroke: var(--term-ok); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 4 14; opacity: 0; transition: opacity .6s; animation: belt-long 1.2s linear infinite; }

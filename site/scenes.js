@@ -123,12 +123,19 @@
         { text: "[2]" },
       ], hold: 3000 },
     ] },
-    runbook: { final: { drain: "ran", failover: "ran", verify: "ran" }, scenes: [
-      { say: 'node runbook.ts "drain the primary"', busy: "", lines: [
-        { step: 0, cls: "out", text: "primary drained", set: { drain: "ran" }, pause: 900 },
-        { step: 1, ask: "Promote the replica now?  [y]es [n]o > ", answer: "y", set: { failover: "confirm" }, after: { failover: "ran" } },
-        { cls: "out", text: "replica promoted", pause: 900 },
-        { step: 2, cls: "out", text: "writes landing on the new primary", set: { verify: "ran" } },
+    runbook: { final: { drain: "ran", failover: "ran", verify: "ran", tell: "ran", failback: "skipped" }, scenes: [
+      { say: 'node runbook.ts "switch the database to the replica"', busy: "", lines: [
+        { step: 0, text: "  1  drain connections off the primary" },
+        { text: "  2  fail over to the replica" },
+        { text: "  3  check whether writes land on the new primary" },
+        { text: '  4  tell the ops channel the failover is done · if 3 yields landing "yes"' },
+        { text: '  5  fail back to the old primary · if 3 yields landing "no"', pause: 600 },
+        { ask: "Run the plan?  [y]es [n]o > ", answer: "y" },
+        { step: 1, ask: "Promote the replica now?  [y]es [n]o > ", answer: "y", set: { failover: "confirm" } },
+        { step: 0, cls: "out", text: "primary drained", set: { drain: "ran" }, pause: 700 },
+        { step: 1, cls: "out", text: "replica promoted", set: { failover: "ran" }, pause: 700 },
+        { step: 2, cls: "out", text: "writes landing on the new primary", set: { verify: "ran" }, pause: 700 },
+        { step: 3, cls: "out", text: "told #ops", set: { tell: "ran", failback: "skipped" } },
       ], hold: 4200 },
     ] },
     woven: { final: { names: "1", n1: "ran", n2: "ran", wire: "on" }, step: 0, scenes: [

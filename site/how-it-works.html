@@ -43,7 +43,7 @@
         <li><a href="#sentence"><code>02</code>How your sentence is read</a></li>
         <li><a href="#decisions"><code>03</code>How sure evoke must be to run</a></li>
         <li><a href="#handoff"><code>04</code>Passing a result to the next step</a></li>
-        <li><a href="#runbook"><code>05</code>A program chooses what runs next</a></li>
+        <li><a href="#runbook"><code>05</code>A result picks the next step</a></li>
         <li><a href="#vocabulary"><code>06</code>Your names and phrases</a></li>
         <li><a href="#app"><code>07</code>What stays yours to decide</a></li>
       </ul>
@@ -350,58 +350,66 @@ One person at a time; prints the address."""</span>
     </section>
 
     <section id="runbook">
-      <div class="rule"><p class="label">A continuation</p><span class="num">05</span></div>
-      <h2>A program can name the next step.</h2>
-      <p class="sub">A reflex's program can return the next sentence with its result. A short loop in your application,
-        written with the TypeScript SDK, submits it as if you had typed it. <strong>This is the runbook pattern, a second
-        way to chain, where each program decides what follows.</strong></p>
+      <div class="rule"><p class="label">A branch</p><span class="num">05</span></div>
+      <h2>A result picks among the steps the author listed.</h2>
+      <p class="sub">A playbook is a reflex whose body is a plan of sentences. A step may run only under a value an earlier
+        step yields, and the author lists every such step right after it. <strong>The whole list prints before anything
+        runs. The result picks, and a result never writes a step.</strong></p>
       <div class="grid">
         <figure class="figure">
           <div class="scene">
-            <svg class="wide" viewBox="0 0 640 200" aria-hidden="true">
-              <path class="wire" d="M146 84 H294"/><path class="wire" d="M346 84 H494"/>
-              <text class="dim" x="220" y="70" text-anchor="middle">next: "fail over…"</text>
-              <text class="dim" x="420" y="70" text-anchor="middle">next: "check that…"</text>
-              <g transform="translate(120 84)"><circle class="box ok" r="26"/><circle class="dot ok" r="6"/><text class="ink" y="50" text-anchor="middle">drain</text><text class="dim" y="66" text-anchor="middle">write · ran</text></g>
-              <g transform="translate(320 84)"><circle class="box mid" r="26"/><circle class="dot mid" r="6"/><text class="ink" y="50" text-anchor="middle">failover</text><text class="mid" y="66" text-anchor="middle">destructive · asked</text></g>
-              <g transform="translate(520 84)"><circle class="box ok" r="26"/><circle class="dot ok" r="6"/><text class="ink" y="50" text-anchor="middle">verify</text><text class="dim" y="66" text-anchor="middle">read · ran</text></g>
-              <path class="wire dash" d="M120 26 H520"/><text class="accent" x="320" y="18" text-anchor="middle">one loop in your app</text>
-              <path class="wire dash" d="M120 26 V58"/><path class="wire dash" d="M320 26 V58"/><path class="wire dash" d="M520 26 V58"/>
-              <text class="dim" x="320" y="184" text-anchor="middle">Each step passes the gate on its own. Only the destructive one asks a person.</text>
+            <svg class="wide" viewBox="0 0 640 220" aria-hidden="true">
+              <path class="wire" d="M106 110 H214"/><path class="wire" d="M286 110 H394"/>
+              <path class="wire" d="M446 100 L514 58"/><path class="wire dash" d="M446 120 L514 162"/>
+              <text class="dim" x="480" y="66" text-anchor="middle">landing "yes"</text>
+              <text class="dim" x="480" y="150" text-anchor="middle">landing "no"</text>
+              <g transform="translate(80 110)"><circle class="box ok" r="26"/><circle class="dot ok" r="6"/><text class="ink" y="50" text-anchor="middle">drain</text><text class="dim" y="66" text-anchor="middle">write · ran</text></g>
+              <g transform="translate(250 110)"><circle class="box mid" r="26"/><circle class="dot mid" r="6"/><text class="ink" y="50" text-anchor="middle">failover</text><text class="mid" y="66" text-anchor="middle">destructive · asked</text></g>
+              <g transform="translate(420 110)"><circle class="box ok" r="26"/><circle class="dot ok" r="6"/><text class="ink" y="50" text-anchor="middle">verify</text><text class="dim" y="66" text-anchor="middle">read · yields landing</text></g>
+              <g transform="translate(540 44)"><circle class="box ok" r="22"/><circle class="dot ok" r="5"/><text class="ink" x="32" y="5">tell</text><text class="dim" x="32" y="21">write · ran</text></g>
+              <g transform="translate(540 176)"><circle class="box" r="22"/><circle class="dot" r="5"/><text class="ink" x="32" y="5">failback</text><text class="dim" x="32" y="21">skipped · not chosen</text></g>
             </svg>
-            <svg class="narrow" viewBox="0 0 340 370" aria-hidden="true">
-              <path class="wire dash" d="M40 30 V294"/><path class="wire dash" d="M40 54 H72"/><path class="wire dash" d="M40 174 H72"/><path class="wire dash" d="M40 294 H72"/>
-              <text class="accent" x="40" y="20">one loop in your app</text>
-              <path class="wire" d="M96 78 V150"/><path class="wire" d="M96 198 V270"/>
-              <text class="dim" x="136" y="118">next: "fail over…"</text>
-              <text class="dim" x="136" y="238">next: "check that…"</text>
-              <g transform="translate(96 54)"><circle class="box ok" r="24"/><circle class="dot ok" r="6"/></g>
-              <text class="ink" x="136" y="52">drain</text><text class="dim" x="136" y="70">write · ran</text>
-              <g transform="translate(96 174)"><circle class="box mid" r="24"/><circle class="dot mid" r="6"/></g>
-              <text class="ink" x="136" y="172">failover</text><text class="mid" x="136" y="190">destructive · asked</text>
-              <g transform="translate(96 294)"><circle class="box ok" r="24"/><circle class="dot ok" r="6"/></g>
-              <text class="ink" x="136" y="292">verify</text><text class="dim" x="136" y="310">read · ran</text>
-              <text class="dim" x="170" y="340" text-anchor="middle">Each step passes the gate on its own.</text>
-              <text class="dim" x="170" y="358" text-anchor="middle">Only the destructive one asks a person.</text>
+            <svg class="narrow" viewBox="0 0 340 400" aria-hidden="true">
+              <path class="wire" d="M60 78 V132"/><path class="wire" d="M60 198 V252"/>
+              <path class="wire" d="M60 318 L60 350"/><path class="wire dash" d="M60 318 L200 350"/>
+              <text class="dim" x="72" y="342">"yes"</text><text class="dim" x="140" y="342">"no"</text>
+              <g transform="translate(60 54)"><circle class="box ok" r="24"/><circle class="dot ok" r="6"/></g>
+              <text class="ink" x="100" y="52">drain</text><text class="dim" x="100" y="70">write · ran</text>
+              <g transform="translate(60 174)"><circle class="box mid" r="24"/><circle class="dot mid" r="6"/></g>
+              <text class="ink" x="100" y="172">failover</text><text class="mid" x="100" y="190">destructive · asked</text>
+              <g transform="translate(60 294)"><circle class="box ok" r="24"/><circle class="dot ok" r="6"/></g>
+              <text class="ink" x="100" y="292">verify</text><text class="dim" x="100" y="310">read · yields landing</text>
+              <g transform="translate(60 372)"><circle class="box ok" r="18"/><circle class="dot ok" r="5"/></g>
+              <text class="ink" x="86" y="370">tell</text><text class="dim" x="86" y="386">ran</text>
+              <g transform="translate(200 372)"><circle class="box" r="18"/><circle class="dot" r="5"/></g>
+              <text class="ink" x="226" y="370">failback</text><text class="dim" x="226" y="386">not chosen</text>
             </svg>
           </div>
-          <figcaption><b>Three reflexes, one loop.</b> Each step is decided and gated like any sentence you type. The loop
-            is six lines of your code, and it stops as soon as a step does not run.</figcaption>
+          <figcaption><b>Five sentences, one plan.</b> The check yields <code>landing</code>, and the two steps after it each
+            name the value they run under. The one not chosen is skipped and says so.</figcaption>
         </figure>
         <div class="side">
           <div class="panel term" role="figure" aria-label="The runbook, run">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>~/runbook</div>
-<pre><span class="p">$</span> <span class="in">node runbook.ts "drain the primary"</span>
+<pre><span class="p">$</span> <span class="in">evoke "drain the primary"</span>
+  1  drain  0.90 · runbook 1
+  2  failover · destructive · weakest: route 0.90 · runbook 2
+  3  verify  0.90 · runbook 3 · then 4 on "yes", 5 on "no"
+  4  tell channel="#ops"  0.90 · runbook 4 · if 3 yields landing "yes"
+  5  failback · destructive · weakest: route 0.90 · runbook 5 · if 3 yields landing "no"
+<span class="own">Run the failover runbook?  [y]es [n]o [t]each &gt; <span class="in">y</span></span>
 <span class="out">primary drained</span>
-<span class="own">Promote the replica now?  [y]es [n]o &gt; <span class="in">y</span></span>
+<span class="own">Promote the replica now?  [y]es [n]o [t]each &gt; <span class="in">y</span></span>
 <span class="out">replica promoted
-writes landing on the new primary</span></pre>
+writes landing on the new primary
+told #ops</span>
+  5  failback · skipped · not chosen: step 3 yielded landing "yes"</pre>
           </div>
           <ol class="notes column">
-            <li><b>1</b><span><strong>Two ways to chain.</strong> In one sentence of several steps, evoke plans the steps
-              and passes declared results. In a continuation, each program names the next step, and your loop submits it.</span></li>
-            <li><b>2</b><span><strong>The database programs are stand-ins.</strong> They print fixed lines. Yours would
-              drain, promote and check a real database.</span></li>
+            <li><b>1</b><span><strong>A closed list.</strong> The author wrote both branches, and the plan shows each with the
+              value it waits on. A value no step lists picks nothing, and the plan goes on.</span></li>
+            <li><b>2</b><span><strong>Every step is gated on its own.</strong> The failover cannot be undone, so it asks at its
+              turn whatever the yes over the whole plan said.</span></li>
           </ol>
         </div>
       </div>
