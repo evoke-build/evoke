@@ -2,8 +2,8 @@
 //! the parent reads the master until the child is gone, typing each answer as its prompt shows, and Ctrl-C once
 //! the line before it has shown.
 
-// The one place in the workspace that needs unsafe: libc's openpty returns raw descriptors, and pre_exec runs
-// between fork and exec, where only async-signal-safe calls are allowed — setsid and one ioctl are.
+// Unsafe, as in the hosts that call the kernel: libc's openpty returns raw descriptors, and pre_exec runs between
+// fork and exec, where only async-signal-safe calls are allowed — setsid and one ioctl are.
 #![expect(unsafe_code)]
 
 use std::fs::File;
