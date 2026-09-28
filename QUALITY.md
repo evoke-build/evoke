@@ -12,7 +12,7 @@ What `evoke` must do is written down as examples a test can check, and it is bui
 | Output       | Every recorded session in [spec/transcripts](spec/transcripts) is replayed against the built program, offline, and each line must match |
 | Decisions    | Each of the core's public operations has its cases in [spec/vectors](spec/vectors), run by the Rust tests and again through the TypeScript SDK |
 | Guarantees   | [Property tests](crates/evoke-core/tests) generate inputs no one wrote, and check what must always hold: a step that cannot be undone never runs without a yes, and a change never runs beside another step. Each failure is shrunk to its smallest case |
-| Parsing      | The manifest reader and the reading of a sentence are [fuzzed](fuzz): fed random variations of real inputs, and neither may crash |
+| Parsing      | The manifest reader, the reading of a sentence and the four value recognizers are [fuzzed](fuzz): fed random variations of real inputs, none may crash, and a date, a time, an amount or a code found in a sentence must read again alone at a prompt |
 | Confidence   | [`evoke calibrate`](https://evoke.build/manual/use/calibrating.html) checks each confidence against your own examples and tests: a call given 0.85 should be right about 85 times in 100 |
 | Collection   | Each reflex under [reflexes/](reflexes/README.md) is checked as it stands in the repository: its manifest reads without a warning, and its program loads within the limits it declares |
 | Pages        | The manual and the site are [built](mise-tasks/site) on every change, and each link between their pages must land on a page and an anchor that exist |

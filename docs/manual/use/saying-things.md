@@ -32,6 +32,21 @@ den lights off
 >
 ```
 
+The session remembers what its reflexes returned. A pick whose author named a `recent` field offers those values
+back when a sentence leaves the argument out, so after a listing, «roll back the last deploy» asks with the
+releases numbered ([Arguments](../author/arguments.md#a-value-recalled)):
+
+```text
+> list the checkout deploys
+checkout: 2 deploys today, the last 4.12.0 at 13:58
+> roll back the last deploy
+  From which release?  [1] 4.12.0  [2] 4.11.3  > 1
+  Roll back 4.12.0?  [y]es [n]o [t]each > y
+```
+
+A day in a sentence, `tomorrow`, `next friday`, `the 14th`, is read as you said it and becomes a date when the
+program runs, against your machine's clock ([Arguments](../author/arguments.md#picks)).
+
 **A filter.** Pipe lines into `evoke`, or into `evoke try`, and every line is one input, answered in order. A line that needs a
 prompt, a confirm or an ask, cannot be answered without a terminal. That line exits 3 and names the command to run
 yourself. The filter still answers every other line, and exits with the first non-zero code.

@@ -87,7 +87,8 @@ $ evoke "we have an outage"
 A step is decided by the classifier over what the person has installed, from its words alone, as a typed
 sentence would be. So name no reflex: describe what should happen, one action per step. A word another team
 would change, a channel or an address, is better described than written: `post to the incident channel` reaches
-whatever channel their vocabulary holds for it, and `lint` flags a step that states one. A step may reach
+whatever channel their vocabulary holds for it, and `lint` flags a step that states one. Say `check whether
+writes land`, never `check that writes land`: `that writes` refers to an earlier step, and `lint` flags it. A step may reach
 another playbook, once. A step that reaches the playbook it stands in is refused, so word a step apart from your
 own examples. A step no reflex matches refuses the whole plan before anything runs:
 
