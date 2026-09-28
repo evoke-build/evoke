@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-09-28
+
 - A playbook's step may run only under a value an earlier step yields: `{ say = "…", when = { landing = "yes"
   } }`, listed right after that step. The plan prints every branch, `then 4 on "yes", 5 on "no"` and `if 3
   yields landing "yes"`; the value picks at that step's turn, a step not chosen is skipped clean, `not chosen:
