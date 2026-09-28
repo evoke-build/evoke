@@ -315,10 +315,9 @@ done<span class="o">()</span></pre>
       <ul class="needs">
         <li class="ok"><b>Node 24.5 or newer, and the SDK</b>The plan runs in your app.</li>
         <li class="ok"><b>A classifier key</b><a href="/start.html?example=runbook">Get a key from TypeSafe AI</a>. The
-          sentence and each step are one request each, billed to your key.</li>
-        <li class="no"><b>Real programs</b>The five shown return fixed lines. Yours would call your database, and the check
-          would answer <code>landing</code> from what it found; pass the <code>signal</code> each receives to every
-          call, since each decision has 30 seconds.</li>
+          sentence and each step are one request, billed to your key.</li>
+        <li class="no"><b>Real programs</b>The five shown return fixed lines. Yours would call your database, and pass
+          the <code>signal</code> they receive to every call: each decision has 30 seconds.</li>
         <li class="no"><b>Recovery, decided by you</b>A step that fails stops the rest. What to do about the steps
           already done is your application's call.</li>
         <li class="no"><b>A chat bot</b>evoke has no chat integration. In an app, the confirm handler is where a bot
