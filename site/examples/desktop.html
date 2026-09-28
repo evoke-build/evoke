@@ -140,11 +140,12 @@
 <span class="s">Set the output volume.</span>
 <span class="s">A percentage of the maximum; 0 is silent."""</span>
 
-<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span><span class="s">"muting and unmuting"</span><span class="o">,</span> <span class="s">"screen brightness"</span><span class="o">,</span> <span class="s">"one app's volume"</span><span class="o">,</span> <span class="s">"turning it up or down by an amount"</span><span class="o">]</span>
-<span class="k">tags</span>    <span class="o">=</span> <span class="o">[</span><span class="s">"sound"</span><span class="o">]</span>
-<span class="k">effect</span>  <span class="o">=</span> <span class="s">"write"</span>
-<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Set the volume to <span class="ph">{level}</span>?"</span>
-<span class="k">run</span>     <span class="o">=</span> <span class="s">"volume.mts"</span>
+<span class="k">not_for</span>   <span class="o">=</span> <span class="o">[</span><span class="s">"muting and unmuting"</span><span class="o">,</span> <span class="s">"screen brightness"</span><span class="o">,</span> <span class="s">"one app's volume"</span><span class="o">,</span> <span class="s">"turning it up or down by an amount"</span><span class="o">]</span>
+<span class="k">tags</span>      <span class="o">=</span> <span class="o">[</span><span class="s">"sound"</span><span class="o">]</span>
+<span class="k">effect</span>    <span class="o">=</span> <span class="s">"write"</span>
+<span class="k">confirm</span>   <span class="o">=</span> <span class="s">"Set the volume to <span class="ph">{level}</span>?"</span>
+<span class="k">run</span>       <span class="o">=</span> <span class="s">"volume.mts"</span>
+<span class="k">platforms</span> <span class="o">=</span> <span class="o">[</span><span class="s">"macos"</span><span class="o">]</span>
 
 <span class="t">[needs]</span>
 <span class="k">runs</span> <span class="o">=</span> <span class="o">[</span><span class="s">"osascript"</span><span class="o">]</span>
@@ -158,11 +159,11 @@
 <span class="s">"set the volume to 40 percent"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"40 percent"</span> <span class="o">}</span>
 <span class="s">"volume 15"</span>                    <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"15"</span> <span class="o">}</span>
 <span class="s">"turn the sound up to 80"</span>      <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"80"</span> <span class="o">}</span>
+<span class="s">"mute the sound"</span>               <span class="o">=</span> <span class="n">false</span>
 
 <span class="t">[tests]</span>
 <span class="s">"make it 100 percent loud"</span>   <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"100 percent"</span> <span class="o">}</span>
 <span class="s">"turn the volume down a bit"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="n">false</span> <span class="o">}</span>
-<span class="s">"mute the sound"</span>             <span class="o">=</span> <span class="n">false</span>
 <span class="s">"set the brightness to 50"</span>   <span class="o">=</span> <span class="n">false</span></pre>
           </div>
           <div role="tabpanel" id="p2" aria-labelledby="t2" hidden>
