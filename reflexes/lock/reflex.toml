@@ -22,9 +22,9 @@ platforms = ["macos"]
 runs = ["open"]
 
 [examples]
-"lock the screen"                     = {}
-"lock my laptop"                      = {}
-"lock the computer before I step out" = {}
+"lock the screen"                    = {}
+"lock my laptop"                     = {}
+"lock the computer while I step out" = {}
 
 [tests]
 "lock up this mac"                 = {}
