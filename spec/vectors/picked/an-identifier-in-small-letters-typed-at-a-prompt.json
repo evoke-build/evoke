@@ -1,0 +1,18 @@
+{
+  "input": {
+    "text": "tp1043",
+    "recognizer": "code"
+  },
+  "expect": {
+    "type": "pick",
+    "span": {
+      "start": 0,
+      "end": 6,
+      "text": "tp1043"
+    },
+    "value": {
+      "type": "code",
+      "value": "tp1043"
+    }
+  }
+}

@@ -529,8 +529,9 @@ fn small_prefix(tokens: &[Token]) -> Option<(f64, &[Token])> {
 // ---- a code ------------------------------------------------------------------------------------------------
 
 /// An identifier as typed: a version, `4.12.0`, two dots or more, digits only; a ticket, `INC-311`, two to six
-/// capitals, a dash, one to six digits; a serial or a compact flight, `TP1043`, `C02XK1ABJG5M`, six or more
-/// capitals and digits with at least one letter and two digits. At a word boundary, never after `-` or `.`,
+/// letters, a dash, one to six digits; a serial or a compact flight, `TP1043`, `C02XK1ABJG5M`, six or more
+/// letters and digits with at least one letter and two digits; a letter in either case, so `inc-311` and
+/// `tp1043` read as they are typed, and `10mins` stays a duration. At a word boundary, never after `-` or `.`,
 /// ending at one; `4.12` is a decimal, `27.03.2017` a dotted date, `2.0.0-rc.1` nothing.
 fn code(chars: &[char], i: usize) -> Scan {
     if !boundary(chars, i) || (i > 0 && matches!(chars[i - 1], '-' | '.')) {
@@ -580,31 +581,32 @@ fn version(chars: &[char], i: usize) -> Option<usize> {
     (!dotted_date).then(|| parts.last().map_or(i, |(_, end)| *end))
 }
 
-/// `[A-Z]{2,6}-\d{1,6}` at `i`.
+/// `[A-Za-z]{2,6}-\d{1,6}` at `i`.
 fn ticket(chars: &[char], i: usize) -> Option<usize> {
-    let capitals = chars[i..]
+    let letters = chars[i..]
         .iter()
-        .take_while(|c| c.is_ascii_uppercase())
+        .take_while(|c| c.is_ascii_alphabetic())
         .count();
-    if !(2..=6).contains(&capitals) || chars.get(i + capitals) != Some(&'-') {
+    if !(2..=6).contains(&letters) || chars.get(i + letters) != Some(&'-') {
         return None;
     }
-    let end = digit_run(chars, i + capitals + 1)?;
-    (end - (i + capitals + 1) <= 6).then_some(end)
+    let end = digit_run(chars, i + letters + 1)?;
+    (end - (i + letters + 1) <= 6).then_some(end)
 }
 
-/// `[A-Z0-9]{6,}` at `i` with a capital and two digits among them.
+/// `[A-Za-z0-9]{6,}` at `i` with a letter and two digits among them; a figure before small letters is a quantity
+/// with its unit, `10mins`, so a run that holds a small letter starts with a letter.
 fn serial(chars: &[char], i: usize) -> Option<usize> {
-    let run = &chars[i..]
+    let length = chars[i..]
         .iter()
-        .take_while(|c| c.is_ascii_uppercase() || c.is_ascii_digit())
+        .take_while(|c| c.is_ascii_alphanumeric())
         .count();
-    let letters = chars[i..i + run].iter().any(char::is_ascii_uppercase);
-    let digits = chars[i..i + run]
-        .iter()
-        .filter(|c| c.is_ascii_digit())
-        .count();
-    (*run >= 6 && letters && digits >= 2).then_some(i + run)
+    let run = &chars[i..i + length];
+    let letters = run.iter().any(char::is_ascii_alphabetic);
+    let digits = run.iter().filter(|c| c.is_ascii_digit()).count();
+    let quantity =
+        run.first().is_some_and(char::is_ascii_digit) && run.iter().any(char::is_ascii_lowercase);
+    (length >= 6 && letters && digits >= 2 && !quantity).then_some(i + length)
 }
 
 // ---- a date ------------------------------------------------------------------------------------------------
@@ -2322,8 +2324,22 @@ mod tests {
             ["code C02XK1ABJG5M", "code FVFH3KLMN2Q7"]
         );
         none("convert to MP3 and H264 for WIN10");
-        none("revert a1b2c3d4e5f");
-        assert_eq!(kinds("inc-311 and lh 1234"), ["number 311", "number 1234"]);
+        assert_eq!(
+            kinds("look up inc-311 and book tp1043"),
+            ["code inc-311", "code tp1043"]
+        );
+        assert_eq!(
+            kinds("wipe c02xk1abjg5m and Fvfh3klmn2q7"),
+            ["code c02xk1abjg5m", "code Fvfh3klmn2q7"]
+        );
+        assert_eq!(kinds("revert a1b2c3d4e5f"), ["code a1b2c3d4e5f"]);
+        none("convert to mp3 and h264 for win10");
+        assert_eq!(
+            kinds("wait 10mins then send 1200gbp"),
+            ["duration 10mins", "number 1200"]
+        );
+        assert_eq!(kinds("book 3U8888"), ["code 3U8888"]);
+        assert_eq!(kinds("a-1 and lh 1234"), ["number 1", "number 1234"]);
         assert_eq!(kinds("roll back \"4.12.0\""), ["quoted 4.12.0"]);
         assert_eq!(
             kinds("look up incident 311 and order 4821"),

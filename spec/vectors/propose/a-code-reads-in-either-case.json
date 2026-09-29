@@ -1,0 +1,40 @@
+{
+  "input": {
+    "input": "look up inc-311, book tp1043 and wipe c02xk1abjg5m"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 8,
+        "end": 15,
+        "text": "inc-311"
+      },
+      "value": {
+        "type": "code",
+        "value": "inc-311"
+      }
+    },
+    {
+      "span": {
+        "start": 22,
+        "end": 28,
+        "text": "tp1043"
+      },
+      "value": {
+        "type": "code",
+        "value": "tp1043"
+      }
+    },
+    {
+      "span": {
+        "start": 38,
+        "end": 50,
+        "text": "c02xk1abjg5m"
+      },
+      "value": {
+        "type": "code",
+        "value": "c02xk1abjg5m"
+      }
+    }
+  ]
+}

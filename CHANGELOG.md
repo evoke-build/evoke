@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A code reads in small letters too: `inc-311`, `tp1043`, `c02xk1abjg5m`.
+
 ## [0.14.0] - 2026-09-28
 
 - Four recognizers beside the five: `pick = "date"`, `"time"`, `"amount"` and `"code"`. A date is read as the
