@@ -27,6 +27,9 @@ pub struct Manifest {
     pub not_for: Vec<Clean>,
     pub tags: Vec<Tag>,
     pub effect: Effect,
+    /// The file left `effect` out, which means destructive: a reader of the file cannot see it, so lint says so.
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub effect_absent: bool,
     pub confirm: Template,
     #[serde(skip_serializing_if = "Run::is_inline")]
     pub run: Run,
@@ -968,9 +971,7 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
         .take("not_for")
         .map_or_else(Vec::new, |node| list(d, node, Diagnostics::line));
     let tags = top.take("tags").map_or_else(Vec::new, |node| tags(d, node));
-    let effect = top
-        .take("effect")
-        .map_or(Some(Effect::Destructive), |node| effect(d, &node));
+    let (effect, effect_absent) = claimed(d, &mut top, form);
     let mut unknown = Vec::new();
     // A playbook has no body: every key a body carries is a line to remove, at its own line. The wire form
     // carries every table, so an empty one is as good as absent.
@@ -1048,6 +1049,7 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
         not_for,
         tags,
         effect: effect?,
+        effect_absent,
         confirm: confirm?,
         run: run?,
         steps: steps?,
@@ -1062,6 +1064,20 @@ fn read(d: &mut Diagnostics, root: Node, form: Form) -> Option<Manifest> {
         tests,
         unknown,
     })
+}
+
+/// The effect a manifest claims, destructive when it claims none, and whether its file left the key out: a file
+/// says so by leaving it out, a wire value carries what its file did.
+fn claimed(d: &mut Diagnostics, top: &mut Table, form: Form) -> (Option<Effect>, bool) {
+    let node = top.take("effect");
+    let absent = if form == Form::Wire {
+        top.take("effect_absent")
+            .is_some_and(|node| d.bool(&node) == Some(true))
+    } else {
+        node.is_none()
+    };
+    let effect = node.map_or(Some(Effect::Destructive), |node| effect(d, &node));
+    (effect, absent)
 }
 
 /// What the reflex takes: a playbook takes nothing, each `takes` a line to remove; a reflex's taken arguments

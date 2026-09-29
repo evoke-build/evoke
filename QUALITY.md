@@ -15,6 +15,7 @@ What `evoke` must do is written down as examples a test can check, and it is bui
 | Parsing      | The manifest reader, the reading of a sentence and the four value recognizers are [fuzzed](fuzz): fed random variations of real inputs, none may crash, and a date, a time, an amount or a code found in a sentence must read again alone at a prompt |
 | Confidence   | [`evoke calibrate`](https://evoke.build/manual/use/calibrating.html) checks each confidence against your own examples and tests: a call given 0.85 should be right about 85 times in 100 |
 | Collection   | Each reflex under [reflexes/](reflexes/README.md) is checked as it stands in the repository: its manifest reads without a warning, and its program loads within the limits it declares |
+| Wording      | The collection and the six example problems under [spec/transcripts](spec/transcripts) keep every rule [lint](https://evoke.build/manual/reference/diagnostics.html#what-lint-reports) reports: the effect written, three examples, a record that leaves out each option and pick, a confirm that reads the call back |
 | Pages        | The manual and the site are [built](mise-tasks/site) on every change, and each link between their pages must land on a page and an anchor that exist |
 | Code         | Rust code is formatted, and the workspace is held to the pedantic lints of clippy, Rust's linter, with every warning an error |
 | Arithmetic   | The release build keeps [overflow checks](Cargo.toml), so an overflow is reported as a bug instead of becoming a wrong number |

@@ -164,6 +164,8 @@ export interface Manifest {
   not_for: Clean[]
   tags: Tag[]
   effect: Effect
+  /** The file left `effect` out, which means destructive; absent when it wrote one. What lint reports. */
+  effect_absent?: true
   confirm: Template
   /** Absent: inline, a function the SDK holds — or a playbook, whose body is `steps`. */
   run?: Run
@@ -1271,10 +1273,26 @@ export type Consent =
   | { type: "tightened"; effect: Effect }
   | { type: "needs_accept"; locked: Effect; upstream: Effect }
 
-/** What `lint` finds: a size cap passed, text that addresses the model instead of describing an action, a step
- *  holding a connective the reader splits on, a step stating a word another team would change, or a step opening
- *  `check that <noun>`, which refers to an earlier step where `check whether` is meant. */
-export type LintRule = "size_cap" | "addresses_model" | "connective" | "literal" | "reference"
+/** What `lint` finds. What an engine must not be sent: a size cap passed, text that addresses the model instead
+ *  of describing an action. What a plan would misread: a step holding a connective the reader splits on, a step
+ *  stating a word another team would change, a step opening `check that <noun>`, which refers to an earlier step
+ *  where `check whether` is meant, a step worded as the playbook's own summary or examples. What a reader of the
+ *  file would miss: `effect` left out, a quoted argument no example shows in quotes, fewer than three examples,
+ *  an option or a pick no record leaves out, a confirm that reads no value back or asks `Are you sure`, an
+ *  option's meaning that repeats its ask. */
+export type LintRule =
+  | "size_cap"
+  | "addresses_model"
+  | "connective"
+  | "literal"
+  | "reference"
+  | "situation"
+  | "effect"
+  | "quoted"
+  | "examples"
+  | "unstated"
+  | "confirm"
+  | "meaning"
 
 /** One thing `lint` found, at the key path it concerns; reported at `add` and by `check`, never a refusal. */
 export interface Finding {

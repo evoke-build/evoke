@@ -14,6 +14,7 @@
       "not_for": [],
       "tags": [],
       "effect": "destructive",
+      "effect_absent": true,
       "confirm": "Set the lights {state}?",
       "run": "lights.mts",
       "config": {},

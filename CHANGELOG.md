@@ -10,6 +10,12 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - A sentence that states a playbook's situation twice gets one plan: the second part folds into the first.
 - The collection: every manifest is reworded, `sleep` is a reflex of its own, and `power` restarts or shuts
   down.
+- Lint reports what a reader of a manifest would miss: `effect` left out, fewer than three examples, an option
+  or a pick no record leaves out, a `quoted` argument no example shows in quotes, a confirm that reads no value
+  back, an option's meaning that repeats its ask, and a playbook's step worded as its own summary. `add` says
+  when a playbook's step reaches a reflex without the playbook's tag.
+- `evoke new --playbook <name>` writes a playbook from the template.
+- The SDK's `Manifest` carries `effect_absent` when its file left `effect` out.
 
 ## [0.14.0] - 2026-09-28
 

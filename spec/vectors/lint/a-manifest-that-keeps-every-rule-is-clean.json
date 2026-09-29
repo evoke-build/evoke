@@ -1,0 +1,51 @@
+{
+  "input": {
+    "manifest": {
+      "description": "Set the lights of the house.\nOn or off, and nothing else changes.",
+      "not_for": [],
+      "tags": [],
+      "effect": "write",
+      "confirm": "Switch the lights {state}?",
+      "run": "lights.mts",
+      "config": {},
+      "args": {
+        "state": {
+          "ask": "What should the lights do?",
+          "options": {
+            "on": "Switch on.",
+            "off": "Switch off."
+          },
+          "optional": false,
+          "was": []
+        },
+        "label": {
+          "ask": "Under which name?",
+          "pick": "quoted",
+          "optional": true,
+          "was": []
+        }
+      },
+      "yields": {},
+      "examples": {
+        "lights on": {
+          "state": "on"
+        },
+        "kill the lights": {
+          "state": "off"
+        },
+        "lights off, call it \"bedtime\"": {
+          "state": "off",
+          "label": "bedtime"
+        }
+      },
+      "tests": {
+        "do something with the lights": {
+          "state": false,
+          "label": false
+        }
+      },
+      "unknown": []
+    }
+  },
+  "expect": []
+}

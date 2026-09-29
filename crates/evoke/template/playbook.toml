@@ -1,0 +1,32 @@
+reflex = 1
+
+description = """
+Handle a service that is down or failing.
+Checks its errors, lists its deploys, then tells the incident channel."""
+not_for = ["checking a service's errors on its own"]
+tags = ["{name}"]
+effect = "write"
+confirm = "Run the {name} plan for {service}?"
+steps = [
+  "check {service}'s errors[ in {region}]",
+  "list {service}'s deploys[ in {region}]",
+  "post to the incident channel",
+]
+
+[args.service]
+ask   = "Which service is down?"
+vocab = "services"
+
+[args.region]
+ask      = "In which region?"
+vocab    = "regions"
+optional = true
+
+[examples]
+"payments is down in us-east" = {}
+"search is broken"            = {}
+"checkout keeps failing"      = {}
+
+[tests]
+"the payments service stopped answering" = {}
+"show me the error rate of payments"     = false

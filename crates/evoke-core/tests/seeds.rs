@@ -1,6 +1,8 @@
 //! Every real owned file under `reflexes/` and `spec/transcripts/` parses: manifests, projects, locks, vocabularies,
-//! and overlays against the local reflex beside them; and every manifest lints clean. One manifest must not read —
-//! the tree the update transcript skips — and this checks that it does not.
+//! and overlays against the local reflex beside them. The sets an author copies, the collection and the six
+//! problems' homes, keep every rule lint holds; a flow's stand-in keeps the rules that guard an engine and a
+//! plan, and writes its `effect`. One manifest must not read — the tree the update transcript skips — and this
+//! checks that it does not.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -8,7 +10,8 @@ use std::path::{Path, PathBuf};
 use evoke_core::document::Text;
 use evoke_core::name::{LocalName, VocabName};
 use evoke_core::{
-    Diagnostic, Document, File, Finding, Fix, lint, lock, manifest, overlay, project, vocabulary,
+    Diagnostic, Document, File, Finding, Fix, LintRule, lint, lock, manifest, overlay, project,
+    vocabulary,
 };
 
 fn root() -> PathBuf {
@@ -17,6 +20,33 @@ fn root() -> PathBuf {
 
 /// The one manifest that must not read: what `evoke update` reports and skips in its transcript.
 const UNREADABLE: &str = "spec/transcripts/update/remote/radhi/tools/1.1.0/clock/reflex.toml";
+
+/// The sets an author copies: the collection, and the homes of the six problems.
+const COPIED: [&str; 7] = [
+    "reflexes",
+    "spec/transcripts/outage/home",
+    "spec/transcripts/month-end/home",
+    "spec/transcripts/stolen-laptop/home",
+    "spec/transcripts/late-shipment/home",
+    "spec/transcripts/cancelled-flight/home",
+    "spec/transcripts/new-colleague/home",
+];
+
+/// The rules a flow's stand-in may break: what a reader of a published manifest would miss, and a step worded
+/// as its playbook's own sentence, which the runbook's flow pins as it was written.
+const STAND_IN: [LintRule; 6] = [
+    LintRule::Quoted,
+    LintRule::Examples,
+    LintRule::Unstated,
+    LintRule::Confirm,
+    LintRule::Meaning,
+    LintRule::Situation,
+];
+
+/// Whether a file belongs to a set an author copies.
+fn copied(path: &Path) -> bool {
+    COPIED.iter().any(|set| path.starts_with(root().join(set)))
+}
 
 fn walk(dir: &Path, files: &mut Vec<PathBuf>) {
     for entry in fs::read_dir(dir).unwrap_or_else(|error| panic!("{}: {error}", dir.display())) {
@@ -58,7 +88,13 @@ fn parse(path: &Path) -> Option<Vec<Diagnostic>> {
                 file: File::Manifest { name: name.clone() },
                 text: Text::Toml(&text),
             }) {
-                Ok(parsed) => Some(findings(&name, &lint(&parsed))),
+                Ok(parsed) => {
+                    let mut found = lint(&parsed);
+                    if !copied(path) {
+                        found.retain(|finding| !STAND_IN.contains(&finding.rule));
+                    }
+                    Some(findings(&name, &found))
+                }
                 Err(errors) => Some(errors),
             }
         }

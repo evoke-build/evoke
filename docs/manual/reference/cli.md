@@ -46,6 +46,7 @@ tune
 
 author
   evoke new <name>                        a working reflex from the template
+    --playbook                            a playbook instead: a plan of steps
   evoke check                             lint, types, contract against its tag
 
 exit    0 ran · 1 failed · 2 declined · 3 needs a human · 4 adapter failed
@@ -91,7 +92,7 @@ manual  https://evoke.build/manual/
 
 | Command                                | Does                                                                                  |
 | :------------------------------------- | :------------------------------------------------------------------------------------ |
-| `evoke add <ref>… [--as <name>]`       | Fetches each ref at its pin or newest tag, once per repository; reads a local ref, `./dir`, where it is. Lints, tests for stolen phrases, writes `evoke.toml`, the lock and `evoke.d.ts`, and records the runtime; for a playbook, decides each step over the set it joins and prints what it reaches. `--as` names a single ref |
+| `evoke add <ref>… [--as <name>]`       | Fetches each ref at its pin or newest tag, once per repository; reads a local ref, `./dir`, where it is. Lints, tests for stolen phrases, writes `evoke.toml`, the lock and `evoke.d.ts`, and records the runtime; for a playbook, decides each step over the set it joins and prints what it reaches, and any reflex reached that lacks the playbook's tag. `--as` names a single ref |
 | `evoke remove <name>`                  | Drops the reflex from `evoke.toml` and the lock. Keeps your overlay, vocabularies, settings and the store's copy |
 | `evoke update [<name>]`                | Moves each unpinned remote reflex, or one, to its newest tag. A pinned one moves to its pin. Reports, or prints `up to date`. Never prompts or rewrites your files |
 | `evoke update --accept <name>`         | Takes on an effect upstream loosened, or a declaration it widened, at the current tag |
@@ -126,6 +127,7 @@ None of these needs the classifier's key but `test` and `calibrate`, which ask i
 | Command            | Does                                                                                                       |
 | :----------------- | :--------------------------------------------------------------------------------------------------------- |
 | `evoke new <name>` | Writes `./<name>/reflex.toml`, `<name>.mts` and `reflex.d.ts` from the template. Refuses a directory that exists |
+| `evoke new --playbook <name>` | Writes `./<name>/reflex.toml` alone, a playbook of three steps from the template |
 | `evoke check`      | In a reflex directory: the manifest's lines to fix, the body found and loaded, lint, `reflex.d.ts` rewritten when it changed, and the contract diffed against the repository's newest tag |
 
 ## Exit codes

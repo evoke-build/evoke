@@ -1,0 +1,43 @@
+{
+  "input": {
+    "manifest": {
+      "description": "Handle a service that is down or failing.\nFinds the errors and the deploys, then rolls back the release behind them.",
+      "not_for": [],
+      "tags": [],
+      "effect": "destructive",
+      "confirm": "Run the outage plan for {service}?",
+      "steps": [
+        "handle the failing {service} service",
+        "list {service}'s deploys",
+        "roll {service} back from that release"
+      ],
+      "config": {},
+      "args": {
+        "service": {
+          "ask": "Which service is down?",
+          "vocab": "services",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "examples": {
+        "payments is down": {},
+        "search is broken": {},
+        "checkout keeps failing": {}
+      },
+      "tests": {},
+      "unknown": []
+    }
+  },
+  "expect": [
+    {
+      "rule": "situation",
+      "path": [
+        "steps",
+        "0"
+      ],
+      "message": "step 1's words are the summary's or an example's; word a step apart from the situation"
+    }
+  ]
+}

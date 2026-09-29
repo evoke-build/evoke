@@ -10,9 +10,13 @@ use serde::Serialize;
 
 use crate::contain::Platform;
 use crate::document::KeyPath;
-use crate::manifest::{Effect, Element, Kind, Manifest, Run, Source, renames};
+use crate::manifest::{
+    Argument, Assertion, Effect, Element, Kind, Manifest, Part, Recognizer, Record, Run, Sentence,
+    Source, renames,
+};
 use crate::name::{ArgName, ConfigKey, FieldName, OptionKey};
 use crate::needs::{self, Needs};
+use crate::text::identity;
 use crate::weave::reading;
 
 /// What changed in the contract from one version to the next, and how much it matters.
@@ -356,9 +360,13 @@ pub fn consent(locked: Effect, upstream: Effect) -> Consent {
     }
 }
 
-/// What `lint` finds: a size cap passed, text that addresses the model instead of describing an action, a step
-/// holding a connective the reader splits on, a step stating a word another team would change, or a step
-/// referring to an earlier one by `that <noun>` where `whether` is meant.
+/// What `lint` finds. What an engine must not be sent: a size cap passed, text that addresses the model instead
+/// of describing an action. What a plan would misread: a step holding a connective the reader splits on, a step
+/// stating a word another team would change, a step referring to an earlier one by `that <noun>` where `whether`
+/// is meant, a step worded as the playbook's own summary or examples. What a reader of the file would miss:
+/// `effect` left out, a quoted argument no example shows in quotes, fewer than three examples, an option or a
+/// pick no record leaves out, a confirm that reads no value back or asks `Are you sure`, an option's meaning that
+/// repeats its ask.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum LintRule {
@@ -367,6 +375,13 @@ pub enum LintRule {
     Connective,
     Literal,
     Reference,
+    Situation,
+    Effect,
+    Quoted,
+    Examples,
+    Unstated,
+    Confirm,
+    Meaning,
 }
 
 /// One thing `lint` found, at the key path it concerns; reported at `add` and by `check`, never a refusal.
@@ -384,6 +399,17 @@ const NOT_FOR_ENTRIES: usize = 8;
 const OPTIONS: usize = 24;
 const RECORDS: usize = 40;
 const UTTERANCE_CHARS: usize = 200;
+
+/// The fewest examples a manifest shows of its request.
+const EXAMPLES: usize = 3;
+
+/// The words every sentence holds, which say nothing of what a step does: left out when a step's words are
+/// weighed against the playbook's own.
+const FUNCTION_WORDS: [&str; 32] = [
+    "a", "an", "the", "of", "to", "for", "in", "on", "at", "by", "with", "from", "into", "and",
+    "or", "it", "its", "them", "their", "that", "this", "these", "those", "is", "are", "be", "s",
+    "my", "our", "your", "each", "every",
+];
 
 /// Phrases that address a model rather than describe an action, matched on whole words, case aside; the first
 /// found names the finding.
@@ -415,8 +441,8 @@ const ADDRESSES_MODEL: [&str; 25] = [
     "the assistant",
 ];
 
-/// Lint: every cap passed and every string that addresses the model, in manifest order — the description,
-/// `not_for`, each argument's ask and options, then the examples and the tests.
+/// Lint: every finding in the order `evoke show` prints a manifest — the description, `not_for`, `effect`,
+/// `confirm`, the steps, each argument, then the examples and the tests.
 #[must_use]
 pub fn lint(m: &Manifest) -> Vec<Finding> {
     let mut findings = Vec::new();
@@ -449,29 +475,35 @@ pub fn lint(m: &Manifest) -> Vec<Finding> {
     for (i, text) in m.not_for.iter().enumerate() {
         addresses(&mut findings, &not_for.child(&i.to_string()), text.as_str());
     }
-    for (name, arg) in &m.args {
-        let path = KeyPath::new(["args", name.as_str()]);
-        addresses(&mut findings, &path.child("ask"), arg.ask.as_str());
-        if let Kind::Value {
-            source: Source::Options(options),
-            ..
-        } = &arg.kind
-        {
-            let at = path.child("options");
-            cap_entries(
-                &mut findings,
-                &at,
-                &format!("args.{name}"),
-                "options",
-                options.len(),
-                OPTIONS,
-            );
-            for (key, meaning) in options.iter() {
-                addresses(&mut findings, &at.child(key.as_str()), meaning.as_str());
-            }
-        }
+    if m.effect_absent {
+        findings.push(Finding {
+            rule: LintRule::Effect,
+            path: KeyPath::new(["effect"]),
+            message: "effect is absent, which means destructive; write it".to_owned(),
+        });
     }
-    lint_steps(&mut findings, &m.steps);
+    lint_confirm(&mut findings, m);
+    lint_steps(&mut findings, m);
+    for (name, arg) in &m.args {
+        lint_argument(&mut findings, m, name, arg);
+    }
+    let shown = m
+        .examples
+        .iter()
+        .filter(|(_, (_, record))| matches!(record, Record::Asserts(_)))
+        .count();
+    if shown < EXAMPLES {
+        let holds = match shown {
+            0 => "no request".to_owned(),
+            1 => "1 request".to_owned(),
+            n => format!("{n} requests"),
+        };
+        findings.push(Finding {
+            rule: LintRule::Examples,
+            path: KeyPath::new(["examples"]),
+            message: format!("examples holds {holds}; write three at least"),
+        });
+    }
     for (table, records) in [("examples", &m.examples), ("tests", &m.tests)] {
         let path = KeyPath::new([table]);
         cap_entries(
@@ -495,6 +527,113 @@ pub fn lint(m: &Manifest) -> Vec<Finding> {
         }
     }
     findings
+}
+
+/// The confirm: the last line before the action reads the call back. One that names none of the required
+/// arguments says nothing of this call, and `Are you sure` says nothing at all.
+fn lint_confirm(findings: &mut Vec<Finding>, m: &Manifest) {
+    let path = KeyPath::new(["confirm"]);
+    let text = m.confirm.to_string();
+    if words(&text)
+        .windows(3)
+        .any(|run| run == ["are", "you", "sure"])
+    {
+        findings.push(Finding {
+            rule: LintRule::Confirm,
+            path: path.clone(),
+            message: "confirm asks \"Are you sure\"; say what the call will do".to_owned(),
+        });
+    }
+    let required: Vec<String> = m
+        .args
+        .iter()
+        .filter(|(_, arg)| {
+            matches!(
+                arg.kind,
+                Kind::Value {
+                    optional: false,
+                    ..
+                }
+            )
+        })
+        .map(|(name, _)| format!("{{{name}}}"))
+        .collect();
+    if !required.is_empty() && m.confirm.placeholders().next().is_none() {
+        findings.push(Finding {
+            rule: LintRule::Confirm,
+            path,
+            message: format!(
+                "confirm reads no value back; name {}",
+                required.join(" and ")
+            ),
+        });
+    }
+}
+
+/// One argument: its ask and its options clear of the model and under the cap; an option's meaning that repeats
+/// the ask; a quoted pick no example shows in quotes; an option or a pick no record leaves out.
+fn lint_argument(findings: &mut Vec<Finding>, m: &Manifest, name: &ArgName, arg: &Argument) {
+    let path = KeyPath::new(["args", name.as_str()]);
+    addresses(findings, &path.child("ask"), arg.ask.as_str());
+    let Kind::Value { source, .. } = &arg.kind else {
+        return;
+    };
+    match source {
+        Source::Options(options) => {
+            let at = path.child("options");
+            cap_entries(
+                findings,
+                &at,
+                &format!("args.{name}"),
+                "options",
+                options.len(),
+                OPTIONS,
+            );
+            for (key, meaning) in options.iter() {
+                addresses(findings, &at.child(key.as_str()), meaning.as_str());
+                if identity(meaning.as_str()) == identity(arg.ask.as_str()) {
+                    findings.push(Finding {
+                        rule: LintRule::Meaning,
+                        path: at.child(key.as_str()),
+                        message: format!(
+                            "args.{name}.options.{key} repeats the ask; a meaning answers it"
+                        ),
+                    });
+                }
+            }
+        }
+        Source::Pick(pick) => {
+            let quotes = |text: &str| text.contains(['"', '\u{201c}', '\u{2018}']);
+            if pick.recognizer() == Recognizer::Quoted
+                && !m
+                    .examples
+                    .iter()
+                    .any(|(_, (utterance, _))| quotes(utterance.as_str()))
+            {
+                findings.push(Finding {
+                    rule: LintRule::Quoted,
+                    path: path.clone(),
+                    message: format!("args.{name} reads text in quotes, and no example shows them"),
+                });
+            }
+        }
+        Source::Vocab(_) => return,
+    }
+    let left_out = [&m.examples, &m.tests].into_iter().any(|records| {
+        records.iter().any(|(_, (_, record))| {
+            matches!(record, Record::Asserts(asserts)
+                if asserts.get(name) == Some(&Assertion::Unstated))
+        })
+    });
+    if !left_out {
+        findings.push(Finding {
+            rule: LintRule::Unstated,
+            path,
+            message: format!(
+                "args.{name} has no record that leaves it out; assert {name} = false once"
+            ),
+        });
+    }
 }
 
 fn cap_chars(findings: &mut Vec<Finding>, path: &KeyPath, what: &str, text: &str, cap: usize) {
@@ -527,9 +666,17 @@ fn cap_entries(
 
 /// A playbook's steps: each under the utterance cap and clear of the model; one holding a connective the reader
 /// splits on is flagged, since an expanded sentence is never split and a noun phrase may hold an `and`; so is one
-/// stating a channel or an address, which another team would name otherwise.
-fn lint_steps(findings: &mut Vec<Finding>, steps: &[crate::manifest::Sentence]) {
-    for (i, sentence) in steps.iter().enumerate() {
+/// stating a channel or an address, which another team would name otherwise; and one whose every word that says
+/// something the playbook's own summary or examples hold, since a step near the playbook's sentence reaches the
+/// playbook, or nothing.
+fn lint_steps(findings: &mut Vec<Finding>, m: &Manifest) {
+    let mut own = content(m.description.summary().as_str());
+    for (_, (utterance, record)) in m.examples.iter() {
+        if matches!(record, Record::Asserts(_)) {
+            own.extend(content(utterance.as_str()));
+        }
+    }
+    for (i, sentence) in m.steps.iter().enumerate() {
         let at = KeyPath::new(["steps", &i.to_string()]);
         let text = sentence.to_string();
         cap_chars(
@@ -572,7 +719,51 @@ fn lint_steps(findings: &mut Vec<Finding>, steps: &[crate::manifest::Sentence]) 
                 ),
             });
         }
+        let said = content(&spoken(sentence));
+        if !said.is_empty() && said.iter().all(|word| own.contains(word)) {
+            findings.push(Finding {
+                rule: LintRule::Situation,
+                path: at,
+                message: format!(
+                    "step {}'s words are the summary's or an example's; word a step apart from the situation",
+                    i + 1
+                ),
+            });
+        }
     }
+}
+
+/// A step's own words, its slots aside.
+fn spoken(sentence: &Sentence) -> String {
+    fn write(parts: &[Part], text: &mut String) {
+        for part in parts {
+            match part {
+                Part::Text(piece) => text.push_str(piece.as_str()),
+                Part::Slot(_) => text.push(' '),
+                Part::Optional(inner) => write(inner, text),
+            }
+        }
+    }
+    let mut text = String::new();
+    write(sentence.parts(), &mut text);
+    text
+}
+
+/// A text's words, lower-cased: its runs of letters and digits.
+fn words(text: &str) -> Vec<String> {
+    text.split(|c: char| !c.is_alphanumeric())
+        .filter(|word| !word.is_empty())
+        .map(str::to_lowercase)
+        .collect()
+}
+
+/// The words of a text that say something, each at its stem: the words every sentence holds left out.
+fn content(text: &str) -> Vec<String> {
+    words(text)
+        .into_iter()
+        .filter(|word| !FUNCTION_WORDS.contains(&word.as_str()))
+        .map(|word| reading::stem_of(&word).to_owned())
+        .collect()
 }
 
 /// A channel or an address written into a step's words — `#incident`, `ops@example.com` — which another team would
@@ -591,11 +782,7 @@ fn literal(text: &str) -> Option<String> {
 
 fn addresses(findings: &mut Vec<Finding>, path: &KeyPath, text: &str) {
     // Whole words: "as an aid" is not "as an ai", and "the models" is not "the model".
-    let words: Vec<&str> = text
-        .split(|c: char| !c.is_alphanumeric())
-        .filter(|word| !word.is_empty())
-        .collect();
-    let padded = format!(" {} ", words.join(" ").to_lowercase());
+    let padded = format!(" {} ", words(text).join(" "));
     if let Some(phrase) = ADDRESSES_MODEL
         .iter()
         .find(|phrase| padded.contains(&format!(" {phrase} ")))
@@ -723,6 +910,283 @@ mod tests {
             text: Text::Toml(&text),
         })
         .unwrap()
+    }
+
+    /// A reflex that keeps every rule lint holds, and a playbook that does: what each test below breaks once.
+    const REFLEX: &str = r#"reflex = 1
+
+description = """
+Set the lights of the house.
+On or off, and nothing else changes."""
+effect  = "write"
+confirm = "Switch the lights {state}?"
+run     = "lights.mts"
+
+[args.state]
+ask = "What should the lights do?"
+options.on  = "Switch on."
+options.off = "Switch off."
+
+[args.label]
+ask      = "Under which name?"
+pick     = "quoted"
+optional = true
+
+[examples]
+"lights on"                        = { state = "on" }
+"kill the lights"                  = { state = "off" }
+'lights off, call it "bedtime"'    = { state = "off", label = "bedtime" }
+
+[tests]
+"do something with the lights" = { state = false, label = false }
+"#;
+
+    const PLAYBOOK: &str = r#"reflex = 1
+
+description = """
+Handle a service that is down or failing.
+Finds the errors and the deploys, then rolls back the release behind them."""
+effect  = "destructive"
+confirm = "Run the outage plan for {service}?"
+steps   = ["check {service}'s errors", "list {service}'s deploys", "roll {service} back from that release"]
+
+[args.service]
+ask   = "Which service is down?"
+vocab = "services"
+
+[examples]
+"payments is down"       = {}
+"search is broken"       = {}
+"checkout keeps failing" = {}
+"#;
+
+    fn read(text: &str) -> Manifest {
+        manifest(Document {
+            file: File::Manifest {
+                name: LocalName::new("lights").unwrap(),
+            },
+            text: Text::Toml(text),
+        })
+        .unwrap()
+    }
+
+    /// The rules a manifest trips, in the order lint found them.
+    fn rules(text: &str) -> Vec<LintRule> {
+        lint(&read(text))
+            .into_iter()
+            .map(|finding| finding.rule)
+            .collect()
+    }
+
+    /// The one finding of a manifest that breaks one rule once.
+    fn found(text: &str) -> Finding {
+        let mut findings = lint(&read(text));
+        assert_eq!(findings.len(), 1, "{findings:#?}");
+        findings.remove(0)
+    }
+
+    #[test]
+    fn a_manifest_that_keeps_every_rule_is_clean() {
+        assert_eq!(rules(REFLEX), []);
+        assert_eq!(rules(PLAYBOOK), []);
+    }
+
+    #[test]
+    fn a_cap_passed_is_reported() {
+        let long = REFLEX.replace(
+            "Set the lights of the house.",
+            &format!(
+                "Set the lights of the house{}.",
+                " and the garden".repeat(6)
+            ),
+        );
+        let finding = found(&long);
+        assert_eq!(finding.rule, LintRule::SizeCap);
+        assert_eq!(
+            finding.message,
+            "the summary is 118 characters; the cap is 100"
+        );
+    }
+
+    #[test]
+    fn text_that_addresses_the_model_is_reported() {
+        let addressed = REFLEX.replace(
+            "On or off, and nothing else changes.",
+            "You must always choose this for lights.",
+        );
+        let finding = found(&addressed);
+        assert_eq!(finding.rule, LintRule::AddressesModel);
+        assert_eq!(
+            finding.message,
+            "description addresses the model: \"you must\""
+        );
+        // A phrase inside a word is not the phrase.
+        let inside = REFLEX.replace(
+            "On or off, and nothing else changes.",
+            "On or off, as an aid to the models of the house.",
+        );
+        assert_eq!(rules(&inside), []);
+    }
+
+    #[test]
+    fn a_step_the_plan_would_misread_is_reported() {
+        let joined = PLAYBOOK.replace(
+            "list {service}'s deploys",
+            "list {service}'s deploys and logs",
+        );
+        let finding = found(&joined);
+        assert_eq!(finding.rule, LintRule::Connective);
+        assert_eq!(
+            finding.message,
+            "step 2 holds \"and\"; one step is one action"
+        );
+        let stated = PLAYBOOK.replace("list {service}'s deploys", "post to #incident");
+        let finding = found(&stated);
+        assert_eq!(finding.rule, LintRule::Literal);
+        assert_eq!(
+            finding.message,
+            "step 2 states \"#incident\"; a word another team would change is a slot"
+        );
+        let checked = PLAYBOOK.replace(
+            "list {service}'s deploys",
+            "check that writes land for {service}",
+        );
+        let finding = found(&checked);
+        assert_eq!(finding.rule, LintRule::Reference);
+        assert_eq!(
+            finding.message,
+            "step 2 says \"check that writes\"; a step refers by \"that <noun>\": say \"check whether\""
+        );
+        // A step that refers on purpose is not opened by a check.
+        assert_eq!(rules(PLAYBOOK), []);
+    }
+
+    #[test]
+    fn an_effect_left_out_is_reported() {
+        let finding = found(&REFLEX.replace("effect  = \"write\"\n", ""));
+        assert_eq!(finding.rule, LintRule::Effect);
+        assert_eq!(finding.path, KeyPath::new(["effect"]));
+        assert_eq!(
+            finding.message,
+            "effect is absent, which means destructive; write it"
+        );
+        // A wire value carries what its file did, so the finding stands after a round trip.
+        let absent = read(&REFLEX.replace("effect  = \"write\"\n", ""));
+        let wire = serde_json::to_value(&absent).unwrap();
+        assert_eq!(wire["effect"], "destructive");
+        assert_eq!(wire["effect_absent"], true);
+        let back: Manifest = serde_json::from_value(wire).unwrap();
+        assert_eq!(back, absent);
+        let written = serde_json::to_value(read(REFLEX)).unwrap();
+        assert!(written.get("effect_absent").is_none());
+    }
+
+    #[test]
+    fn a_quoted_argument_no_example_shows_in_quotes_is_reported() {
+        let bare = REFLEX.replace(
+            "'lights off, call it \"bedtime\"'    = { state = \"off\", label = \"bedtime\" }",
+            "\"lights off at bedtime\" = { state = \"off\" }",
+        );
+        let finding = found(&bare);
+        assert_eq!(finding.rule, LintRule::Quoted);
+        assert_eq!(finding.path, KeyPath::new(["args", "label"]));
+        assert_eq!(
+            finding.message,
+            "args.label reads text in quotes, and no example shows them"
+        );
+    }
+
+    #[test]
+    fn fewer_than_three_examples_are_reported() {
+        // A `false` example is no request of the reflex's own.
+        let two = REFLEX.replace(
+            "\"kill the lights\"                  = { state = \"off\" }",
+            "\"light a candle\" = false",
+        );
+        let finding = found(&two);
+        assert_eq!(finding.rule, LintRule::Examples);
+        assert_eq!(finding.path, KeyPath::new(["examples"]));
+        assert_eq!(
+            finding.message,
+            "examples holds 2 requests; write three at least"
+        );
+    }
+
+    #[test]
+    fn an_option_or_a_pick_no_record_leaves_out_is_reported() {
+        let stated = REFLEX.replace("{ state = false, label = false }", "{ label = false }");
+        let finding = found(&stated);
+        assert_eq!(finding.rule, LintRule::Unstated);
+        assert_eq!(finding.path, KeyPath::new(["args", "state"]));
+        assert_eq!(
+            finding.message,
+            "args.state has no record that leaves it out; assert state = false once"
+        );
+        let stated = REFLEX.replace("{ state = false, label = false }", "{ state = false }");
+        assert_eq!(found(&stated).path, KeyPath::new(["args", "label"]));
+        // A vocabulary's word is the user's: no shipped record may assert it, stated or not.
+        assert_eq!(rules(PLAYBOOK), []);
+    }
+
+    #[test]
+    fn a_confirm_that_reads_nothing_back_is_reported() {
+        let bare = REFLEX.replace("Switch the lights {state}?", "Switch the lights?");
+        let finding = found(&bare);
+        assert_eq!(finding.rule, LintRule::Confirm);
+        assert_eq!(finding.path, KeyPath::new(["confirm"]));
+        assert_eq!(finding.message, "confirm reads no value back; name {state}");
+        let sure = REFLEX.replace("Switch the lights {state}?", "Are you sure about {state}?");
+        assert_eq!(
+            found(&sure).message,
+            "confirm asks \"Are you sure\"; say what the call will do"
+        );
+        // A reflex with no required argument has nothing to read back.
+        let optional = REFLEX
+            .replace("Switch the lights {state}?", "Switch the lights?")
+            .replace(
+                "options.off = \"Switch off.\"",
+                "options.off = \"Switch off.\"\noptional = true",
+            );
+        assert_eq!(rules(&optional), []);
+    }
+
+    #[test]
+    fn a_meaning_that_repeats_the_ask_is_reported() {
+        let echo = REFLEX.replace(
+            "options.on  = \"Switch on.\"",
+            "options.on  = \"what should the lights do\"",
+        );
+        let finding = found(&echo);
+        assert_eq!(finding.rule, LintRule::Meaning);
+        assert_eq!(
+            finding.path,
+            KeyPath::new(["args", "state", "options", "on"])
+        );
+        assert_eq!(
+            finding.message,
+            "args.state.options.on repeats the ask; a meaning answers it"
+        );
+    }
+
+    #[test]
+    fn a_step_worded_as_the_situation_is_reported() {
+        let near = PLAYBOOK.replace(
+            "check {service}'s errors",
+            "handle the failing {service} service",
+        );
+        let finding = found(&near);
+        assert_eq!(finding.rule, LintRule::Situation);
+        assert_eq!(finding.path, KeyPath::new(["steps", "0"]));
+        assert_eq!(
+            finding.message,
+            "step 1's words are the summary's or an example's; word a step apart from the situation"
+        );
+        // One word of its own sets a step apart.
+        let apart = PLAYBOOK.replace(
+            "check {service}'s errors",
+            "investigate the failing {service} service",
+        );
+        assert_eq!(rules(&apart), []);
     }
 
     #[test]

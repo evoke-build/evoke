@@ -25,6 +25,10 @@ $ evoke sync
 $ evoke add radhi/tools@1.0.0
 + clock  radhi/tools/clock@1.0.0  read         runs clock.mts
 + note   radhi/tools/note@1.0.0   destructive  runs note.mts
+  lint  clock: examples holds 2 requests; write three at least
+  lint  note: args.text has no record that leaves it out; assert text = false once
+  lint  note: args.tag has no record that leaves it out; assert tag = false once
+  lint  note: examples holds 2 requests; write three at least
   the theft test did not finish: "turn on the kitchen lights" is not recorded  →  evoke test
 # The pins dropped by hand, as evoke.toml is yours to edit.
 $ printf 'adapter = "replay"\n\n[reflexes]\nlights = "radhi/home/lights"\nclock = "radhi/tools/clock"\nnote = "radhi/tools/note"\n\n[config.lights]\nbridge = "10.0.0.2"\ntoken  = { env = "HUE_TOKEN" }\n' > .config/evoke/evoke.toml

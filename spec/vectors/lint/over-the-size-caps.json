@@ -328,7 +328,8 @@
           "state": "o1"
         },
         "test number 39": {
-          "state": "o1"
+          "state": false,
+          "brightness": false
         }
       },
       "unknown": []

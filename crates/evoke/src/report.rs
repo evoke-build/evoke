@@ -1472,6 +1472,7 @@ const COMMANDS: [(&str, &[(&str, &str)]); 4] = [
         "author",
         &[
             ("evoke new <name>", "a working reflex from the template"),
+            ("  --playbook", "a playbook instead: a plan of steps"),
             ("evoke check", "lint, types, contract against its tag"),
         ],
     ),
@@ -3227,7 +3228,7 @@ mod tests {
         assert!(narrow.contains("\n  evoke \"<input>\"\n      decide, gate, run\n"));
         assert!(narrow.contains("\n    --json\n      one JSON line per input, for a filter\n"));
         // One more line per described command or flag, and the exit codes on two.
-        assert_eq!(narrow.lines().count(), wide.lines().count() + 29);
+        assert_eq!(narrow.lines().count(), wide.lines().count() + 30);
         let widest = narrow.lines().map(chars).max().unwrap_or(0);
         assert!(widest <= 60, "a line is {widest} columns wide");
     }

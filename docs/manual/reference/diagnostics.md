@@ -47,6 +47,34 @@ still ends in its fix: the manifest's line for a local reflex, `evoke remove <re
 `evoke update --accept <reflex>` for a fetched one, the value's source for a `{name}`, `mkdir -p` for a folder
 the body writes into.
 
+## What lint reports
+
+At `evoke check` and `evoke add`, lint reports and never refuses. Each line starts with `lint`, names the reflex
+and says what to change. The text is yours to weigh:
+
+| Line                                                                          | Means                                                                  |
+| :---------------------------------------------------------------------------- | :--------------------------------------------------------------------- |
+| `the summary is 120 characters; the cap is 100`                               | A size passed its cap: the summary, the description, `not_for`, the options, the records, a sentence or a step |
+| `description addresses the model: "you must"`                                 | A phrase speaks to a model instead of describing the action            |
+| `effect is absent, which means destructive; write it`                         | The manifest leaves `effect` out, and a reader cannot see what that means |
+| `confirm reads no value back; name {release}`                                 | The reflex has a required argument, and the confirm names none         |
+| `confirm asks "Are you sure"; say what the call will do`                      | The confirm asks for a yes without saying what it covers               |
+| `args.state.options.on repeats the ask; a meaning answers it`                 | An option's meaning is the question again                              |
+| `args.label reads text in quotes, and no example shows them`                  | A `quoted` argument, and no example holds a quotation mark             |
+| `args.level has no record that leaves it out; assert level = false once`      | No example or test asserts the option or the pick unstated             |
+| `examples holds 2 requests; write three at least`                             | Fewer than three examples state a request of the reflex                |
+| `step 4 holds "then"; one step is one action`                                 | A step holds a connective or a comma                                   |
+| `step 6 states "#incident"; a word another team would change is a slot`       | A step writes in a channel or an address                               |
+| `step 3 says "check that writes"; a step refers by "that <noun>": say "check whether"` | A step opens with `check that`                                |
+| `step 1's words are the summary's or an example's; word a step apart from the situation` | Every word of a step that says something is in the playbook's own summary or examples |
+
+`evoke add` prints two lines more for a playbook, once its steps are decided over the set it joins:
+
+| Line                                                        | Means                                                             |
+| :---------------------------------------------------------- | :---------------------------------------------------------------- |
+| `claims write; its steps reach destructive`                 | A step reaches a reflex with a tighter effect than the playbook claims |
+| `step 3 reaches logs, which lacks the tag outage`           | A request narrowed with `--tag outage` would leave that step without its reflex |
+
 ## Why a reflex is inactive
 
 An inactive reflex is left out of every decision, and `show` lists why, one line each:

@@ -144,7 +144,11 @@ table, or an utterance over 200 characters. It also flags any phrase that addres
 an action: *ignore previous*, *you must*, *always choose*, *as an AI*, *the classifier*. In a playbook it flags a
 step holding a connective, `and`, `then` or a comma, since one step is one action, a step stating a channel or
 an address, since a word another team would change is better a slot, and a step opening `check that <noun>`,
-which refers to an earlier step where `check whether` is meant. The text is yours to weigh. The finding
-names the key.
+which refers to an earlier step where `check whether` is meant, and a step worded as the playbook's own summary
+or examples. It reports what a reader of the file would miss: `effect` left out, fewer than three examples, an
+option or a pick that no record leaves out, a `quoted` argument that no example shows in quotes, a confirm that
+names none of the required arguments or asks *Are you sure*, and an option's meaning that repeats its ask. The
+text is yours to weigh. The finding names the key, and [Diagnostics](../reference/diagnostics.md#what-lint-reports)
+lists every line.
 
 **Next:** [Arguments](arguments.md).

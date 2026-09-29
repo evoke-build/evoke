@@ -1,9 +1,15 @@
 $ git clone -q -b main https://github.com/radhi/home && cd home/lights && evoke check
   lights  write  runs lights.mts
+  lint  lights: args.state has no record that leaves it out; assert state = false once
+  lint  lights: args.brightness has no record that leaves it out; assert brightness = false once
+  lint  lights: examples holds 2 requests; write three at least
 + reflex.d.ts
   1.2.0  same
 $ cp next/reflex.toml home/lights/reflex.toml && cd home/lights && evoke check
   lights  write  runs lights.mts
+  lint  lights: args.power has no record that leaves it out; assert power = false once
+  lint  lights: args.brightness has no record that leaves it out; assert brightness = false once
+  lint  lights: examples holds 2 requests; write three at least
 + reflex.d.ts
   1.2.0 → 2.0.0  major
     args.state  renamed power
@@ -22,6 +28,8 @@ $ mkdir broken && printf 'reflex = 1\ndescription = "Nothing."\nconfirm = "Nothi
 $ mkdir warm && printf 'reflex = 1\ndescription = "Nothing."\nconfirm = "Nothing?"\nrun = "warm.mts"\nwarmth = "the key a newer evoke reads"\n' > warm/reflex.toml && printf 'export default () => "warm"\n' > warm/warm.mts && cd warm && evoke check
   warm  destructive  runs warm.mts
   unknown  warm: warmth is not a key this evoke reads
+  lint  warm: effect is absent, which means destructive; write it
+  lint  warm: examples holds no request; write three at least
 + reflex.d.ts
 $ evoke check
   no reflex.toml here  →  evoke new <name>

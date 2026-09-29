@@ -19,6 +19,7 @@
         "files"
       ],
       "effect": "destructive",
+      "effect_absent": true,
       "confirm": "Empty the trash?",
       "run": [
         "osascript",

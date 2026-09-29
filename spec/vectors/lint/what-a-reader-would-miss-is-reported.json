@@ -1,0 +1,107 @@
+{
+  "input": {
+    "manifest": {
+      "description": "Set the lights of the house.\nOn or off, and nothing else changes.",
+      "not_for": [],
+      "tags": [],
+      "effect": "destructive",
+      "effect_absent": true,
+      "confirm": "Are you sure?",
+      "run": "lights.mts",
+      "config": {},
+      "args": {
+        "state": {
+          "ask": "What should the lights do?",
+          "options": {
+            "on": "What should the lights do?",
+            "off": "Switch off."
+          },
+          "optional": false,
+          "was": []
+        },
+        "label": {
+          "ask": "Under which name?",
+          "pick": "quoted",
+          "optional": true,
+          "was": []
+        }
+      },
+      "yields": {},
+      "examples": {
+        "lights on": {
+          "state": "on"
+        },
+        "kill the lights": {
+          "state": "off"
+        },
+        "candle light": false
+      },
+      "tests": {},
+      "unknown": []
+    }
+  },
+  "expect": [
+    {
+      "rule": "effect",
+      "path": [
+        "effect"
+      ],
+      "message": "effect is absent, which means destructive; write it"
+    },
+    {
+      "rule": "confirm",
+      "path": [
+        "confirm"
+      ],
+      "message": "confirm asks \"Are you sure\"; say what the call will do"
+    },
+    {
+      "rule": "confirm",
+      "path": [
+        "confirm"
+      ],
+      "message": "confirm reads no value back; name {state}"
+    },
+    {
+      "rule": "meaning",
+      "path": [
+        "args",
+        "state",
+        "options",
+        "on"
+      ],
+      "message": "args.state.options.on repeats the ask; a meaning answers it"
+    },
+    {
+      "rule": "unstated",
+      "path": [
+        "args",
+        "state"
+      ],
+      "message": "args.state has no record that leaves it out; assert state = false once"
+    },
+    {
+      "rule": "quoted",
+      "path": [
+        "args",
+        "label"
+      ],
+      "message": "args.label reads text in quotes, and no example shows them"
+    },
+    {
+      "rule": "unstated",
+      "path": [
+        "args",
+        "label"
+      ],
+      "message": "args.label has no record that leaves it out; assert label = false once"
+    },
+    {
+      "rule": "examples",
+      "path": [
+        "examples"
+      ],
+      "message": "examples holds 2 requests; write three at least"
+    }
+  ]
+}

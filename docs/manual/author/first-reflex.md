@@ -21,7 +21,7 @@ reflex = 1
 
 description = """
 Say hello to someone.
-A greeting with the name given, printed back."""
+The name is the text in quotes, "like this"; the greeting is printed and nothing changes."""
 not_for = ["saying goodbye"]
 effect = "read"
 confirm = "Say hello to {who}?"
@@ -32,12 +32,14 @@ ask  = "Who should be greeted?"
 pick = "quoted"
 
 [examples]
-'say hello to "Ada"' = { who = "Ada" }
-'greet "Grace"'      = { who = "Grace" }
+'say hello to "Ada"'   = { who = "Ada" }
+'greet "Grace"'        = { who = "Grace" }
+'a hello for "Edsger"' = { who = "Edsger" }
 
 [tests]
-'wave at "Linus"' = { who = "Linus" }
-"what time is it" = false
+'wave at "Linus"'      = { who = "Linus" }
+"say hello"            = { who = false }
+"bid everyone goodbye" = false
 ```
 
 ```ts

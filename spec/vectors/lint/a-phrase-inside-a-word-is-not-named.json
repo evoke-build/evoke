@@ -59,11 +59,15 @@
         "dim the office to 30 percent": {
           "state": "dim",
           "brightness": "30 percent"
+        },
+        "lights on in the hall": {
+          "state": "on"
         }
       },
       "tests": {
         "make it darker in here": {
-          "state": "dim"
+          "state": false,
+          "brightness": false
         },
         "light a candle": false
       },

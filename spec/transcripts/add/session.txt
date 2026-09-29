@@ -1,6 +1,10 @@
 $ evoke add radhi/home/lights radhi/timer
 + lights  radhi/home/lights 1.2.0  write  runs lights.mts
 + timer   radhi/timer 1.0.1        write  runs timer.mts
+  lint  lights: args.state has no record that leaves it out; assert state = false once
+  lint  lights: args.brightness has no record that leaves it out; assert brightness = false once
+  lint  lights: examples holds 2 requests; write three at least
+  lint  timer: args.label has no record that leaves it out; assert label = false once
   inactive  lights: vocabulary "rooms" is empty  →  evoke vocab rooms add <word> "<meaning>"
   inactive  lights: config "bridge" is not set   →  evoke config lights bridge <value>
   inactive  lights: config "token" is not set    →  evoke config lights token --env <VAR>
@@ -20,6 +24,7 @@ $ evoke add radhi/timer --as clock
 [3]
 $ evoke add radhi/eggs
 + eggs  radhi/eggs 1.0.0  write  runs timer.mts
+  lint  eggs: args.label has no record that leaves it out; assert label = false once
   eggs: also fits "set a timer for 10 minutes" of timer (0.70)  →  evoke teach "set a timer for 10 minutes" not eggs
   eggs: steals "count down 90 seconds" from timer  →  evoke teach "count down 90 seconds" not eggs
 # One taken name refuses a collection whole; the fix installs the rest. A ref without its tag, a collection

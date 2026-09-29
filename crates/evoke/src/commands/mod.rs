@@ -82,7 +82,7 @@ pub fn dispatch(command: &Command, environment: &Environment) -> Exit {
         }
         Command::Sync => sync::run(command, environment),
         Command::Trust => trust::run(environment),
-        Command::New(name) => new::run(command, name),
+        Command::New { name, playbook } => new::run(command, name, *playbook),
         Command::Check => check::run(command, environment),
         Command::Test(name) => test::run(command, name.as_ref(), environment),
         Command::Calibrate { name, repeat, json } => {

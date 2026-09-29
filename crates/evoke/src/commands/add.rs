@@ -7,14 +7,16 @@
 //! row with what it may touch, the machine's status once when it does not hold a declaration whole, then the
 //! reach, the lint, theft and inactive lines. Nothing is written until every newcomer is in hand; a theft test that
 //! could not finish — the adapter faulted, or has no key yet — is reported with `evoke test`, never a refusal. A
-//! step that reaches nothing is reported, never a refusal: the plan refuses when it is made.
+//! step that reaches nothing is reported, never a refusal: the plan refuses when it is made; so are a claim its
+//! steps pass and a step that reaches a reflex without a tag the playbook carries, which a request narrowed by
+//! that tag would starve.
 //! In: the refs, one name or none, the environment. Out: `Exit`.
 
 use std::path::PathBuf;
 
 use evoke_core::document::Text;
 use evoke_core::manifest::Effect;
-use evoke_core::name::LocalName;
+use evoke_core::name::{LocalName, Tag};
 use evoke_core::project::{Location, Locked, Reference};
 use evoke_core::{
     Case, Decision, Diagnostic, Document, File, Finding, Fix, Gate, Installed, Item, Manifest,
@@ -407,16 +409,18 @@ fn conflict(
     })
 }
 
-/// What a newcomer playbook's steps reach on this set: each step's sentence and the reflex it routes to.
+/// What a newcomer playbook's steps reach on this set: each step's sentence and the reflex it routes to, and
+/// each reflex reached that lacks a tag the playbook carries, by its step.
 struct Reach {
     name: LocalName,
     claim: Effect,
     steps: Vec<TestedStep>,
+    untagged: Vec<(usize, LocalName, Vec<Tag>)>,
 }
 
 impl Reach {
     /// The lines after the rows: a step that reaches nothing here, with the lesson that settles it; a claim under
-    /// the steps' worst.
+    /// the steps' worst; a reflex reached that lacks the playbook's tag.
     fn lines(&self) -> Vec<Diagnostic> {
         let mut lines = Vec::new();
         for step in &self.steps {
@@ -453,6 +457,20 @@ impl Reach {
                 message: format!("claims {}; its steps reach {worst}", self.claim),
                 fix: Fix::Show {
                     reflex: Some(self.name.clone()),
+                },
+            });
+        }
+        for (n, reflex, lacking) in &self.untagged {
+            let tags: Vec<&str> = lacking.iter().map(Tag::as_str).collect();
+            lines.push(Diagnostic {
+                reflex: Some(self.name.clone()),
+                at: None,
+                message: format!(
+                    "step {n} reaches {reflex}, which lacks the tag {}",
+                    tags.join(", ")
+                ),
+                fix: Fix::Show {
+                    reflex: Some(reflex.clone()),
                 },
             });
         }
@@ -667,10 +685,29 @@ fn reached(
         })
         .collect();
     super::test::branched(plan, &active.steps, &mut steps);
+    let untagged = steps
+        .iter()
+        .filter_map(|step| {
+            let (StepBecame::Routes { reflex, .. } | StepBecame::NoField { reflex, .. }) =
+                &step.became
+            else {
+                return None;
+            };
+            let theirs = &plan.active().get(reflex)?.tags;
+            let lacking: Vec<Tag> = active
+                .tags
+                .iter()
+                .filter(|tag| !theirs.contains(tag))
+                .cloned()
+                .collect();
+            (!lacking.is_empty()).then(|| (step.n, reflex.clone(), lacking))
+        })
+        .collect();
     Ok(Reach {
         name: name.clone(),
         claim: active.effect,
         steps,
+        untagged,
     })
 }
 
@@ -732,5 +769,61 @@ fn unfinished_line(exit: &Exit) -> Diagnostic {
         at: None,
         message: format!("the theft test did not finish: {}", report::said(exit)),
         fix: Fix::Test,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn name(text: &str) -> LocalName {
+        LocalName::new(text).unwrap()
+    }
+
+    fn routes(n: usize, sentence: &str, reflex: &str, effect: Effect) -> TestedStep {
+        TestedStep {
+            n,
+            sentence: sentence.to_owned(),
+            became: StepBecame::Routes {
+                reflex: name(reflex),
+                effect,
+            },
+            regression: false,
+        }
+    }
+
+    fn said(reach: &Reach) -> Vec<String> {
+        reach
+            .lines()
+            .iter()
+            .map(|line| format!("{} → {}", line.message, line.fix.command("")))
+            .collect()
+    }
+
+    #[test]
+    fn a_reached_reflex_without_the_playbook_s_tag_is_reported() {
+        let tag = Tag::new("outage").unwrap();
+        let mut reach = Reach {
+            name: name("outage"),
+            claim: Effect::Destructive,
+            steps: vec![
+                routes(1, "check checkout's errors", "errors", Effect::Read),
+                routes(2, "roll checkout back", "rollback", Effect::Destructive),
+            ],
+            untagged: vec![(2, name("rollback"), vec![tag])],
+        };
+        assert_eq!(
+            said(&reach),
+            ["step 2 reaches rollback, which lacks the tag outage → evoke show rollback"]
+        );
+        // Every reflex reached carries the tag, and the claim is the worst of the steps: nothing to say.
+        reach.untagged.clear();
+        assert!(said(&reach).is_empty());
+        // A claim its steps pass is said as before.
+        reach.claim = Effect::Write;
+        assert_eq!(
+            said(&reach),
+            ["claims write; its steps reach destructive → evoke show outage"]
+        );
     }
 }

@@ -40,6 +40,7 @@ tune
 
 author
   evoke new <name>                        a working reflex from the template
+    --playbook                            a playbook instead: a plan of steps
   evoke check                             lint, types, contract against its tag
 
 exit    0 ran · 1 failed · 2 declined · 3 needs a human · 4 adapter failed

@@ -79,8 +79,8 @@ pub enum Command {
     Sync,
     /// `evoke trust`: this project blessed at its content.
     Trust,
-    /// `evoke new <name>`: a working reflex under `./<name>/` from the template.
-    New(LocalName),
+    /// `evoke new [--playbook] <name>`: a working reflex under `./<name>/` from the template, or a playbook.
+    New { name: LocalName, playbook: bool },
     /// `evoke check`: the reflex here — its lines to fix, lint, its types, its contract against the newest tag.
     Check,
     /// `evoke test [name]`: every example and test of every active reflex, or of one, judged over the whole set.
@@ -281,7 +281,10 @@ impl Command {
             }
             Self::Sync => "evoke sync".to_owned(),
             Self::Trust => "evoke trust".to_owned(),
-            Self::New(name) => format!("evoke new {name}"),
+            Self::New { name, playbook } => {
+                let playbook = if *playbook { " --playbook" } else { "" };
+                format!("evoke new{playbook} {name}")
+            }
             Self::Check => "evoke check".to_owned(),
             Self::Test(name) => format!("evoke test{}", named(name)),
             Self::Calibrate { name, repeat, json } => {
@@ -400,10 +403,7 @@ pub fn parse(
         "sync" => Err(usage("sync takes no arguments")),
         "trust" if rest.is_empty() => Ok(Command::Trust),
         "trust" => Err(usage("trust takes no arguments")),
-        "new" => match rest {
-            [name] => named("new", name).map(Command::New),
-            _ => Err(usage("new takes one name: evoke new <name>")),
-        },
+        "new" => new(rest),
         "check" if rest.is_empty() => Ok(Command::Check),
         "check" => Err(usage("check takes no arguments")),
         "test" => match rest {
@@ -825,6 +825,28 @@ fn calibrate(arguments: &[String]) -> Result<Command, Diagnostic> {
 }
 
 /// `[<name>] [--accept <name>]`.
+/// `new [--playbook] <name>`: one name, and the flag before or after it.
+fn new(arguments: &[String]) -> Result<Command, Diagnostic> {
+    let mut name = None;
+    let mut playbook = false;
+    for argument in arguments {
+        match argument.as_str() {
+            "--playbook" => playbook = true,
+            flag if flag.starts_with('-') && flag.len() > 1 => {
+                return Err(usage(format!(
+                    "{flag} is not a flag of new; the flag is --playbook"
+                )));
+            }
+            text if name.is_none() => name = Some(named("new", text)?),
+            _ => {
+                return Err(usage("new takes one name: evoke new [--playbook] <name>"));
+            }
+        }
+    }
+    let name = name.ok_or_else(|| usage("new takes one name: evoke new [--playbook] <name>"))?;
+    Ok(Command::New { name, playbook })
+}
+
 fn update(arguments: &[String]) -> Result<Command, Diagnostic> {
     let mut reflex = None;
     let mut accept = None;
@@ -1347,6 +1369,14 @@ mod tests {
     fn the_author_commands_and_their_lines() {
         let lines = [
             (&["new", "hello"][..], "evoke new hello"),
+            (
+                &["new", "--playbook", "outage"],
+                "evoke new --playbook outage",
+            ),
+            (
+                &["new", "outage", "--playbook"],
+                "evoke new --playbook outage",
+            ),
             (&["check"], "evoke check"),
             (&["test"], "evoke test"),
             (&["test", "timer"], "evoke test timer"),
@@ -1370,6 +1400,8 @@ mod tests {
             &["new"][..],
             &["new", "Hello"],
             &["new", "a", "b"],
+            &["new", "--playbook"],
+            &["new", "--plan", "outage"],
             &["check", "lights"],
             &["test", "a", "b"],
             &["test", "none"],

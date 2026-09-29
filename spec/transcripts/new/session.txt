@@ -29,3 +29,16 @@ $ evoke new broken && grep -v '^confirm' broken/reflex.toml > t && mv t broken/r
 + broken/reflex.d.ts
   broken: confirm is required  →  ~/broken/reflex.toml:1:1
 [3]
+# A playbook from the template: one file, a plan of three steps, and it checks clean.
+$ evoke new --playbook drill
++ drill/reflex.toml
+$ cd drill && evoke check
+  drill  write  a plan of 3 steps
+$ sed -n 8,14p drill/reflex.toml
+effect = "write"
+confirm = "Run the drill plan for {service}?"
+steps = [
+  "check {service}'s errors[ in {region}]",
+  "list {service}'s deploys[ in {region}]",
+  "post to the incident channel",
+]
