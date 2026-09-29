@@ -8,9 +8,11 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
 use crate::account::{self, Does, Left};
+pub use crate::adapter::Scope;
 use crate::adapter::{
     Choice, Fault, Gate, Key, Prob, Question, QuestionId, Raw, Request, State, Text,
 };
+use crate::bounds::{self, Found, Sought};
 use crate::call::{Call, Value, Written, quoted, render};
 use crate::diagnostic::{Diagnostic, Fix};
 use crate::document::Json;
@@ -35,16 +37,6 @@ const MOST_RECENT: usize = 5;
 pub struct Recent {
     pub reflex: LocalName,
     pub data: Json,
-}
-
-/// What a request asks: everything, or the route alone — the conflict test at `add`.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum Scope {
-    Full,
-    Route,
-    /// The route and every reflex's `fits`: what the thief test at `add` asks.
-    Fits,
 }
 
 /// What the answers said: the reflexes ranked, every choice read, and the winner with its values.
@@ -142,6 +134,12 @@ pub enum Basis {
     Spelled { form: Form, yes: Prob },
     /// The one candidate of its kind, and a yes says it is meant.
     Only { yes: Prob },
+    /// A text typed without quotes: the reading the last choice took, and the readings beside it.
+    Text {
+        p: Prob,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        others: Vec<Span>,
+    },
 }
 
 impl Basis {
@@ -149,7 +147,7 @@ impl Basis {
     #[must_use]
     pub fn sure(&self) -> Prob {
         match self {
-            Self::Ask { p } | Self::View { p, .. } => *p,
+            Self::Ask { p } | Self::View { p, .. } | Self::Text { p, .. } => *p,
             Self::Views { ask, reader, .. } => {
                 if reader < ask {
                     *reader
@@ -169,6 +167,7 @@ impl Basis {
                 form: Form::Misspelt | Form::Spaced,
                 ..
             } => Some(Cap::Respelt { arg: arg.clone() }),
+            Self::Text { .. } => Some(Cap::TextRead { arg: arg.clone() }),
             Self::Ask { .. } | Self::Views { .. } | Self::Spelled { .. } | Self::Only { .. } => {
                 None
             }
@@ -487,6 +486,10 @@ pub enum Cap {
     Respelt {
         arg: ArgName,
     },
+    /// A text read from words typed without quotes.
+    TextRead {
+        arg: ArgName,
+    },
     /// Words of the request that ask for another thing, which the call does not hold.
     More {
         words: Span,
@@ -544,6 +547,9 @@ impl Prompt {
                     if let Some(words) = from(chosen, arg) {
                         let _ = write!(own, " · {arg} from {}", quoted(words.as_str()));
                     }
+                }
+                Cap::TextRead { arg } => {
+                    let _ = write!(own, " · {arg} without quotes");
                 }
                 Cap::Destructive | Cap::UnderFloor { .. } => {}
             }
@@ -652,6 +658,7 @@ pub fn request(
         state: State { request: input },
         questions,
         proposed,
+        scope,
         recent: recalled,
         listed,
         spelled,
@@ -1110,6 +1117,7 @@ pub fn read(plan: &Plan, request: &Request, raw: Raw) -> Result<Read, Fault> {
                 state: request.state.clone(),
                 questions: open,
                 proposed: Vec::new(),
+                scope: request.scope,
                 recent: IndexMap::new(),
                 listed: IndexMap::new(),
                 spelled: IndexMap::new(),
@@ -1230,6 +1238,62 @@ pub(crate) fn top(choice: &Choice, answer: &IndexMap<Key, Prob>) -> Option<(Key,
         .reduce(|best, next| if next.1 > best.1 { next } else { best })
 }
 
+/// The winner as it is read: what its arguments settled so far, and the spans they consume.
+#[derive(Default)]
+struct Draft<'a> {
+    judgments: Vec<Judgment>,
+    args: IndexMap<ArgName, Value>,
+    basis: IndexMap<ArgName, Basis>,
+    missing: Vec<Missing>,
+    left: Vec<Left>,
+    consumed: Vec<&'a Span>,
+}
+
+impl Draft<'_> {
+    /// A text typed without quotes, taken as its argument's value: it stands on the choice that took it, and
+    /// no more on the argument's own question; the argument is no more asked, and its words are held.
+    fn worded(
+        &mut self,
+        reflex: &LocalName,
+        arg: ArgName,
+        span: Span,
+        stands: Basis,
+        chose: Judgment,
+    ) {
+        let own = QuestionId::Arg(reflex.clone(), arg.clone());
+        match self
+            .judgments
+            .iter_mut()
+            .find(|judged| judged.question == own)
+        {
+            Some(judged) => *judged = chose,
+            None => self.judgments.push(chose),
+        }
+        self.missing.retain(|asked| asked.arg != arg);
+        self.left
+            .retain(|run| run.words.end() <= span.start() || run.words.start() >= span.end());
+        let value = span.text().clone();
+        self.args.insert(
+            arg.clone(),
+            Value::Pick {
+                span,
+                value: PickValue::Quoted { value },
+                typed: None,
+            },
+        );
+        self.basis.insert(arg, stands);
+    }
+}
+
+/// The values in the order the reflex lists its arguments.
+fn ordered(active: &Active, mut args: IndexMap<ArgName, Value>) -> IndexMap<ArgName, Value> {
+    active
+        .args
+        .keys()
+        .filter_map(|arg| args.shift_remove_entry(arg))
+        .collect()
+}
+
 /// At this share a run of words answers an argument's ask, or asks for another thing.
 const LEFT: f64 = 0.5;
 
@@ -1269,8 +1333,8 @@ impl Reader<'_> {
         Ok(ranking)
     }
 
-    /// The route winner's arguments read in order: a judgment per argument, and what each settled. A question
-    /// an argument waits for is put in `open`.
+    /// The route winner read: its arguments in order, the account of the words no value holds, and the texts
+    /// typed without quotes. A question the reading waits for is put in `open`.
     fn winner(
         &self,
         reflex: LocalName,
@@ -1282,11 +1346,52 @@ impl Reader<'_> {
             self.plan.active().get(&reflex).ok_or_else(|| {
                 malformed(QuestionId::Route, format!("\"{reflex}\" is not active"))
             })?;
-        let mut judgments = vec![route];
-        let mut args = IndexMap::new();
-        let mut basis = IndexMap::new();
-        let mut missing = Vec::new();
-        let mut consumed: Vec<&Span> = Vec::new();
+        let mut draft = self.arguments(&reflex, active, route, open)?;
+        let unconsumed = self
+            .request
+            .proposed
+            .iter()
+            .filter(|proposed| {
+                proposed.value.is_typed() && !draft.consumed.contains(&&proposed.span)
+            })
+            .map(|proposed| proposed.span.clone())
+            .collect();
+        // The words and the texts are read where the request asks everything, its arguments among it.
+        if self.request.scope == Scope::Full {
+            draft.left = self.account(&reflex, active, &draft.args, &draft.basis, open);
+            let left = draft.left.clone();
+            self.answered(&reflex, active, &draft.args, &left, &mut draft.missing);
+            let texts = self.texts(&reflex, active, &draft.args, &draft.missing, open);
+            for (arg, span, stands, chose) in texts {
+                draft.worded(&reflex, arg, span, stands, chose);
+            }
+        }
+        Ok((
+            draft.judgments,
+            Winner {
+                reflex,
+                args: ordered(active, draft.args),
+                basis: draft.basis,
+                missing: draft.missing,
+                left: draft.left,
+                unconsumed,
+                runner_up,
+            },
+        ))
+    }
+
+    /// The winner's arguments read in order: a judgment per argument, and what each settled.
+    fn arguments(
+        &self,
+        reflex: &LocalName,
+        active: &Active,
+        route: Judgment,
+        open: &mut IndexMap<QuestionId, Question>,
+    ) -> Result<Draft<'_>, Fault> {
+        let mut draft = Draft {
+            judgments: vec![route],
+            ..Draft::default()
+        };
         for (arg, argument) in &active.args {
             let question = QuestionId::Arg(reflex.clone(), arg.clone());
             let asked = self
@@ -1298,7 +1403,8 @@ impl Reader<'_> {
                 // An optional argument over an empty vocabulary is not asked and reads unstated.
                 if let Some(source) = required(argument) {
                     let recent = self.recalled(&question);
-                    missing.push(unstated(self.plan, &reflex, arg, argument, source, recent));
+                    let unsaid = unstated(self.plan, reflex, arg, argument, source, recent);
+                    draft.missing.push(unsaid);
                 }
                 continue;
             };
@@ -1306,7 +1412,7 @@ impl Reader<'_> {
                 plan: self.plan,
                 request: self.request,
                 answers: &self.answers,
-                reflex: &reflex,
+                reflex,
                 arg,
                 argument,
                 choice,
@@ -1330,38 +1436,117 @@ impl Reader<'_> {
             };
             match settled {
                 Settled::Value(value, stands, spans) => {
-                    args.insert(arg.clone(), value);
+                    draft.args.insert(arg.clone(), value);
                     if let Some(stands) = stands {
-                        basis.insert(arg.clone(), stands);
+                        draft.basis.insert(arg.clone(), stands);
                     }
-                    consumed.extend(spans);
+                    draft.consumed.extend(spans);
                 }
-                Settled::Missing(unsettled) => missing.push(unsettled),
+                Settled::Missing(unsettled) => draft.missing.push(unsettled),
                 Settled::Nothing | Settled::Open => {}
             }
-            judgments.push(judgment);
+            draft.judgments.push(judgment);
         }
-        let unconsumed = self
+        Ok(draft)
+    }
+
+    /// The texts typed without quotes: for each argument that takes a text between quotes, holds none and
+    /// is offered none, its text is looked for among the words no typed value holds; it is taken where the
+    /// request states one, by its own question or by words that answer it, and the last choice takes a reading.
+    fn texts(
+        &self,
+        reflex: &LocalName,
+        active: &Active,
+        args: &IndexMap<ArgName, Value>,
+        missing: &[Missing],
+        open: &mut IndexMap<QuestionId, Question>,
+    ) -> Vec<(ArgName, Span, Basis, Judgment)> {
+        let quoted = |argument: &Argument| {
+            matches!(
+                &argument.kind,
+                Kind::Value { source: Source::Pick(pick), .. } if pick.recognizer() == Recognizer::Quoted
+            )
+        };
+        let offered = self
             .request
             .proposed
             .iter()
-            .filter(|proposed| proposed.value.is_typed() && !consumed.contains(&&proposed.span))
-            .map(|proposed| proposed.span.clone())
+            .any(|proposed| proposes(Recognizer::Quoted, &proposed.value));
+        let mut held: Vec<&Span> = args
+            .values()
+            .filter_map(|value| match value {
+                Value::Pick { span, .. } => Some(span),
+                _ => None,
+            })
             .collect();
-        let left = self.account(&reflex, active, &args, &basis, open);
-        self.answered(&reflex, active, &args, &left, &mut missing);
-        Ok((
-            judgments,
-            Winner {
-                reflex,
-                args,
-                basis,
-                missing,
-                left,
-                unconsumed,
-                runner_up,
-            },
-        ))
+        held.extend(self.typed(reflex, active));
+        let mut read = Vec::new();
+        for (arg, argument) in &active.args {
+            if offered || args.contains_key(arg) || !quoted(argument) {
+                continue;
+            }
+            let input = &self.request.state.request;
+            let sought = Sought::new(input, reflex, arg, &argument.ask, &held);
+            let stated = missing.iter().any(|asked| {
+                asked.arg == *arg && matches!(asked.because, Why::NotOffered | Why::Unread)
+            });
+            // Its questions are put whether or not a text is stated; their answers count where one is.
+            if let Found::Text {
+                span,
+                chose: (question, top),
+                p,
+                others,
+            } = bounds::read(&sought, &self.answers, stated, open)
+            {
+                let chose = Judgment { question, top, p };
+                read.push((arg.clone(), span, Basis::Text { p, others }, chose));
+            }
+        }
+        read
+    }
+
+    /// The words a typed argument's own question points at, taken or not: the best of its candidates, where
+    /// the answer says the request states a value more than it says it states none. They are a typed value's
+    /// words, and no part of a text.
+    fn typed(&self, reflex: &LocalName, active: &Active) -> Vec<&Span> {
+        let mut spans = Vec::new();
+        for (arg, argument) in &active.args {
+            let question = QuestionId::Arg(reflex.clone(), arg.clone());
+            let (
+                Kind::Value {
+                    source: Source::Pick(pick),
+                    ..
+                },
+                Some(Question::Choice(choice)),
+                Some(answer),
+            ) = (
+                &argument.kind,
+                self.request.questions.get(&question),
+                self.answers.get(&question),
+            )
+            else {
+                continue;
+            };
+            let unsaid = choice
+                .otherwise()
+                .map_or(Prob::ZERO, |key| probability(answer, key));
+            let best = self
+                .request
+                .proposed
+                .iter()
+                .filter(|proposed| {
+                    pick.recognizer() != Recognizer::Quoted
+                        && proposes(pick.recognizer(), &proposed.value)
+                })
+                .map(|proposed| (proposed, probability(answer, &candidate(&proposed.span))))
+                .reduce(|best, next| if next.1 > best.1 { next } else { best });
+            if let Some((proposed, p)) = best
+                && p.get() + probability(answer, &none_key()).get() > unsaid.get()
+            {
+                spans.push(&proposed.span);
+            }
+        }
+        spans
     }
 
     /// Words that answer an ask the call holds no value for: the argument is asked, with the words.

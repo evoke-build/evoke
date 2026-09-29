@@ -37,6 +37,14 @@ route                              = { timer = 0.6, eggs = 0.35, none = 0.05 }
 "weave.only_eggs__duration_16_26"  = { yes = 0.05 }
 "weave.left_timer_0_2"             = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_4_5"             = { action = 0.9, courtesy = 0.1 }
+"weave.first_timer__label_0"       = { unstated = 1.0 }
+"weave.run_timer__label_0"         = { unstated = 1.0 }
+"weave.word_timer__label_0"        = { yes = 0.05 }
+"weave.word_timer__label_1"        = { yes = 0.05 }
+"weave.word_timer__label_2"        = { yes = 0.05 }
+"weave.word_timer__label_3"        = { yes = 0.05 }
+"weave.word_timer__label_4"        = { yes = 0.05 }
+"weave.word_timer__label_5"        = { yes = 0.05 }
 
 [answers."25 minute timer"]
 route                            = { timer = 0.55, eggs = 0.4, none = 0.05 }
@@ -49,6 +57,11 @@ route                            = { timer = 0.55, eggs = 0.4, none = 0.05 }
 "weave.only_timer__duration_0_9" = { yes = 0.05 }
 "weave.only_eggs__duration_0_9"  = { yes = 0.05 }
 "weave.left_timer_0_2"           = { action = 0.9, courtesy = 0.1 }
+"weave.first_timer__label_0"     = { unstated = 1.0 }
+"weave.run_timer__label_0"       = { unstated = 1.0 }
+"weave.word_timer__label_0"      = { yes = 0.05 }
+"weave.word_timer__label_1"      = { yes = 0.05 }
+"weave.word_timer__label_2"      = { yes = 0.05 }
 
 [answers."timer for 3 minutes called \"eggs\""]
 route                              = { timer = 0.5, eggs = 0.45, none = 0.05 }
@@ -77,3 +90,9 @@ route                              = { eggs = 0.55, timer = 0.4, none = 0.05 }
 "weave.only_timer__duration_11_21" = { yes = 0.05 }
 "weave.only_eggs__duration_11_21"  = { yes = 0.05 }
 "weave.left_eggs_0_3"              = { action = 0.9, courtesy = 0.1 }
+"weave.first_eggs__label_0"        = { unstated = 1.0 }
+"weave.run_eggs__label_0"          = { unstated = 1.0 }
+"weave.word_eggs__label_0"         = { yes = 0.05 }
+"weave.word_eggs__label_1"         = { yes = 0.05 }
+"weave.word_eggs__label_2"         = { yes = 0.05 }
+"weave.word_eggs__label_3"         = { yes = 0.05 }

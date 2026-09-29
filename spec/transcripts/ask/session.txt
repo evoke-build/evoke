@@ -20,3 +20,16 @@ $ evoke why
   words  "kill the lights" say what to do 0.90 · "garage" answer room 0.85
   fits   lights 0.80 · timer 0.05 · volume 0.05
   ran lights room="office" state="off" · weakest: state 0.90 · replay, 15 questions in 2 rounds
+# A text typed without quotes is read from the words as typed, and waits for a yes.
+$ evoke "set a timer for 10 minutes called tea"
+  What is the timer for?  you wrote "called tea"  > y
+  timer duration="10 minutes" label="y"  0.93
+10 minute timer started
+$ evoke why
+  "set a timer for 10 minutes called tea"
+  timer 0.93 · none 0.04 · lights 0.02 · volume 0.01
+  duration  "10 minutes" 0.95 · unstated 0.05
+  label     none 0.70 · unstated 0.30
+  words     "set a timer" say what to do 0.95 · "called tea" answer label 0.80
+  fits      timer 0.85 · lights 0.05 · volume 0.05
+  ran timer duration="10 minutes" label="y" · weakest: route 0.93 · replay, 24 questions in 3 rounds

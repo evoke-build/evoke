@@ -27,22 +27,27 @@ route                      = { lights = 0.9, timer = 0.02, volume = 0.02, none =
 "weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."start a timer"]
-route                      = { timer = 0.92, lights = 0.02, volume = 0.01, none = 0.05 }
-"fits.lights"              = { yes = 0.05 }
-"fits.timer"               = { yes = 0.8 }
-"fits.volume"              = { yes = 0.05 }
-"fits.power"               = { yes = 0.02 }
-"lights.room"              = { unstated = 0.8, den = 0.1, office = 0.1 }
-"lights.state"             = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
-"power.action"             = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
-"lights.brightness"        = { unstated = 1.0 }
-"timer.duration"           = { unstated = 1.0 }
-"timer.label"              = { unstated = 1.0 }
-"volume.level"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.8, den = 0.1, office = 0.1 }
-"weave.view_lights__state" = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
-"weave.view_power__action" = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
-"weave.left_timer_0_2"     = { action = 0.9, courtesy = 0.1 }
+route                        = { timer = 0.92, lights = 0.02, volume = 0.01, none = 0.05 }
+"fits.lights"                = { yes = 0.05 }
+"fits.timer"                 = { yes = 0.8 }
+"fits.volume"                = { yes = 0.05 }
+"fits.power"                 = { yes = 0.02 }
+"lights.room"                = { unstated = 0.8, den = 0.1, office = 0.1 }
+"lights.state"               = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
+"power.action"               = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+"lights.brightness"          = { unstated = 1.0 }
+"timer.duration"             = { unstated = 1.0 }
+"timer.label"                = { unstated = 1.0 }
+"volume.level"               = { unstated = 1.0 }
+"weave.view_lights__room"    = { unstated = 0.8, den = 0.1, office = 0.1 }
+"weave.view_lights__state"   = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
+"weave.view_power__action"   = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+"weave.left_timer_0_2"       = { action = 0.9, courtesy = 0.1 }
+"weave.first_timer__label_0" = { unstated = 1.0 }
+"weave.run_timer__label_0"   = { unstated = 1.0 }
+"weave.word_timer__label_0"  = { yes = 0.05 }
+"weave.word_timer__label_1"  = { yes = 0.05 }
+"weave.word_timer__label_2"  = { yes = 0.05 }
 
 [answers."kill the lights in the den"]
 route                      = { lights = 0.91, timer = 0.02, volume = 0.01, none = 0.06 }
@@ -90,21 +95,28 @@ route                      = { power = 0.97, timer = 0.01, none = 0.02 }
 "weave.split_0" = { yes = 0.95 }
 
 [answers."start a 25 minute timer"]
-route                             = { timer = 0.9, lights = 0.02, volume = 0.02, none = 0.06 }
-"fits.lights"                     = { yes = 0.05 }
-"fits.timer"                      = { yes = 0.8 }
-"fits.volume"                     = { yes = 0.05 }
-"fits.power"                      = { yes = 0.02 }
-"lights.room"                     = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"                    = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"power.action"                    = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
-"timer.duration"                  = { 8-17 = 0.7, unstated = 0.3 }
-"lights.brightness"               = { unstated = 1.0 }
-"timer.label"                     = { unstated = 1.0 }
-"volume.level"                    = { unstated = 1.0 }
-"weave.view_lights__room"         = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"        = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"weave.only_timer__duration_8_17" = { yes = 0.05 }
-"weave.view_power__action"        = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
-"weave.left_timer_0_0"            = { action = 0.9, courtesy = 0.1 }
-"weave.left_timer_4_4"            = { action = 0.9, courtesy = 0.1 }
+route                                = { timer = 0.9, lights = 0.02, volume = 0.02, none = 0.06 }
+"fits.lights"                        = { yes = 0.05 }
+"fits.timer"                         = { yes = 0.8 }
+"fits.volume"                        = { yes = 0.05 }
+"fits.power"                         = { yes = 0.02 }
+"lights.room"                        = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state"                       = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"power.action"                       = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+"timer.duration"                     = { 8-17 = 0.7, unstated = 0.3 }
+"lights.brightness"                  = { unstated = 1.0 }
+"timer.label"                        = { unstated = 1.0 }
+"volume.level"                       = { unstated = 1.0 }
+"weave.view_lights__room"            = { unstated = 0.9, den = 0.05, office = 0.05 }
+"weave.view_lights__state"           = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.only_timer__duration_8_17"    = { yes = 0.05 }
+"weave.view_power__action"           = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+"weave.left_timer_0_0"               = { action = 0.9, courtesy = 0.1 }
+"weave.left_timer_4_4"               = { action = 0.9, courtesy = 0.1 }
+"weave.first_timer__label_260156541" = { unstated = 1.0 }
+"weave.run_timer__label_260156541"   = { unstated = 1.0 }
+"weave.word_timer__label_0"          = { yes = 0.05 }
+"weave.word_timer__label_1"          = { yes = 0.05 }
+"weave.word_timer__label_4"          = { yes = 0.05 }
+"weave.first_timer__label_246345331" = { unstated = 1.0 }
+"weave.run_timer__label_246345331"   = { unstated = 1.0 }

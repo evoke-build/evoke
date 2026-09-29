@@ -167,6 +167,85 @@
             "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
             "more": "They ask for another thing as well."
           }
+        },
+        "weave.first_timer__label_0": {
+          "type": "choice",
+          "ask": "What is the timer for?",
+          "options": {
+            "s0": "start a timer for the eggs",
+            "s1": "a timer for the eggs",
+            "s2": "timer for the eggs",
+            "s3": "for the eggs",
+            "s4": "the eggs",
+            "s5": "eggs",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.run_timer__label_0": {
+          "type": "choice",
+          "ask": "What is the timer for?",
+          "options": {
+            "1-1": "a",
+            "3-3": "for",
+            "4-4": "the",
+            "5-5": "eggs",
+            "0-0": "start",
+            "2-2": "timer",
+            "0-1": "start a",
+            "1-2": "a timer",
+            "3-4": "for the",
+            "4-5": "the eggs",
+            "2-3": "timer for",
+            "1-3": "a timer for",
+            "3-5": "for the eggs",
+            "0-2": "start a timer",
+            "2-4": "timer for the",
+            "1-4": "a timer for the",
+            "0-3": "start a timer for",
+            "2-5": "timer for the eggs",
+            "1-5": "a timer for the eggs",
+            "0-4": "start a timer for the",
+            "0-5": "start a timer for the eggs",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.word_timer__label_0": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «start», in «start a timer», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_1": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «a», in «start a timer for», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_2": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «timer», in «start a timer for the», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_3": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «for», in «a timer for the eggs», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_4": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «the», in «timer for the eggs», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_5": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «eggs», in «for the eggs», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
         }
       },
       "proposed": []
@@ -213,6 +292,30 @@
         "arg:label": 0.4,
         "action": 0.35,
         "courtesy": 0.25
+      },
+      "weave.first_timer__label_0": {
+        "unstated": 1
+      },
+      "weave.run_timer__label_0": {
+        "unstated": 1
+      },
+      "weave.word_timer__label_0": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_1": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_2": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_3": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_4": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_5": {
+        "yes": 0.05
       }
     }
   },

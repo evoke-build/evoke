@@ -271,16 +271,36 @@ pub struct State {
     pub request: Input,
 }
 
+/// What a request asks: everything, or the route alone — the conflict test at `add`.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Scope {
+    #[default]
+    Full,
+    Route,
+    /// The route and every reflex's `fits`: what the thief test at `add` asks.
+    Fits,
+}
+
+impl Scope {
+    #[expect(clippy::trivially_copy_pass_by_ref, reason = "serde hands a reference")]
+    fn is_full(&self) -> bool {
+        *self == Self::Full
+    }
+}
+
 /// One call of `answer`: the state, the questions, the candidate spans the pick questions were built from, and,
 /// per pick that names a yielded field, the values the session's results returned under it — the ask's closed
 /// choices, which no question offers; absent when none. Beside them, what code found in the request's own
 /// words before any question: per listed argument the listed words they hold, per typed argument the values
-/// they spell out; absent when none.
+/// they spell out; absent when none. And what the request asks, when it is not everything.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Request {
     pub state: State,
     pub questions: IndexMap<QuestionId, Question>,
     pub proposed: Vec<Proposed>,
+    #[serde(default, skip_serializing_if = "Scope::is_full")]
+    pub scope: Scope,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub recent: IndexMap<QuestionId, Vec<String>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]

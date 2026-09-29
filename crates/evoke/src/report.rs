@@ -2848,8 +2848,11 @@ fn stands_on(decision: &Decision, arg: &str) -> Option<String> {
     };
     let (name, stands) = basis.iter().find(|(name, _)| name.as_str() == arg)?;
     let value = args.get(name)?;
-    let shown = value.text().unwrap_or_default();
     let said = |words: &Span| plain(&quoted(words.text().as_str()));
+    let shown = match stands {
+        Basis::Text { .. } => plain(&quoted(value.text().unwrap_or_default())),
+        _ => value.text().unwrap_or_default().to_owned(),
+    };
     Some(match stands {
         Basis::Ask { .. } => return None,
         Basis::Views {
@@ -2897,6 +2900,14 @@ fn stands_on(decision: &Decision, arg: &str) -> Option<String> {
             _ => return None,
         },
         Basis::Only { yes } => format!("the only one of its kind: yes {:.2}", yes.get()),
+        Basis::Text { p, others } if others.is_empty() => {
+            format!("read without quotes: {shown} {:.2}", p.get())
+        }
+        Basis::Text { p, others } => format!(
+            "read without quotes: {shown} {:.2} · other readings: {}",
+            p.get(),
+            others.iter().map(said).collect::<Vec<String>>().join(" · ")
+        ),
     })
 }
 

@@ -53,6 +53,33 @@ pub(crate) fn left(reflex: &LocalName, from: usize, to: usize) -> QuestionId {
     own(&format!("left_{reflex}_{from}_{to}"))
 }
 
+/// `weave.first_<reflex>__<argument>_<held>`: where a text typed without quotes begins, among the words no
+/// typed value holds; `held` stands for those values' places, 0 when there is none.
+pub(crate) fn first(reflex: &LocalName, arg: &ArgName, held: u32) -> QuestionId {
+    own(&format!("first_{}_{held}", pair(reflex, arg)))
+}
+
+/// `weave.run_<reflex>__<argument>_<held>`: the text chosen whole among the runs of those words.
+pub(crate) fn run(reflex: &LocalName, arg: &ArgName, held: u32) -> QuestionId {
+    own(&format!("run_{}_{held}", pair(reflex, arg)))
+}
+
+/// `weave.word_<reflex>__<argument>_<n>`: whether the word at place `n` of the request is part of the text.
+pub(crate) fn word(reflex: &LocalName, arg: &ArgName, place: usize) -> QuestionId {
+    own(&format!("word_{}_{place}", pair(reflex, arg)))
+}
+
+/// `weave.last_<reflex>__<argument>_<from>_<held>`: where the text ends, that begins at the word at `from`.
+pub(crate) fn last(reflex: &LocalName, arg: &ArgName, from: usize, held: u32) -> QuestionId {
+    own(&format!("last_{}_{from}_{held}", pair(reflex, arg)))
+}
+
+/// `weave.text_<reflex>__<argument>_<readings>`: the last choice among a text's readings, which `readings`
+/// stands for.
+pub(crate) fn last_choice(reflex: &LocalName, arg: &ArgName, readings: u32) -> QuestionId {
+    own(&format!("text_{}_{readings}", pair(reflex, arg)))
+}
+
 /// A reflex and its argument as one name. Two pairs of a set never share one: `compile` refuses the second.
 pub(crate) fn pair(reflex: &LocalName, arg: &ArgName) -> String {
     format!("{reflex}__{arg}")
@@ -65,7 +92,17 @@ pub fn argument(question: &QuestionId) -> Option<ArgName> {
         return None;
     };
     // The kind, then how many places follow the pair.
-    let kinds = [("view_", 0), ("is_", 1), ("said_", 2), ("only_", 2)];
+    let kinds = [
+        ("view_", 0),
+        ("is_", 1),
+        ("said_", 2),
+        ("only_", 2),
+        ("first_", 1),
+        ("run_", 1),
+        ("word_", 1),
+        ("last_", 2),
+        ("text_", 1),
+    ];
     let (rest, places) = kinds
         .iter()
         .find_map(|(kind, places)| Some((name.as_str().strip_prefix(kind)?, *places)))?;

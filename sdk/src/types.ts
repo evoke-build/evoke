@@ -568,6 +568,8 @@ export interface Request {
   state: State
   questions: Record<QuestionId, Question>
   proposed: Proposed[]
+  /** What the request asks, when it is not everything. */
+  scope?: Scope
   recent?: Record<QuestionId, string[]>
   listed?: Record<QuestionId, Listed[]>
   spelled?: Record<QuestionId, Spelled[]>
@@ -804,6 +806,8 @@ export type Basis =
   | { by: "spelled"; form: Form; yes: Prob }
   /** The one candidate of its kind, and a yes says it is meant. */
   | { by: "only"; yes: Prob }
+  /** A text typed without quotes: the reading the last choice took, and the readings beside it. */
+  | { by: "text"; p: Prob; others?: Span[] }
 
 /** What a run of words does in the request: it says what to do, answers an argument's ask, asks for nothing, or
  *  asks for another thing. */
@@ -903,6 +907,8 @@ export type Cap =
   | { type: "one_view"; arg: ArgName }
   /** A value read from words that do not spell it as it is typed: a day misspelt, a code typed with spaces. */
   | { type: "respelt"; arg: ArgName }
+  /** A text read from words typed without quotes. */
+  | { type: "text_read"; arg: ArgName }
   /** Words of the request that ask for another thing, which the call does not hold. */
   | { type: "more"; words: Span }
   | { type: "unconsumed_span"; span: Span }

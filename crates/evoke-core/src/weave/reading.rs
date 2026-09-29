@@ -6,7 +6,7 @@
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
-use crate::adapter::{Choice, Key, Prob, Question, QuestionId, Raw, Request, State, Text};
+use crate::adapter::{Choice, Key, Prob, Question, QuestionId, Raw, Request, Scope, State, Text};
 use crate::decide::validated;
 use crate::name::WeaveName;
 use crate::text::{Clean, Input};
@@ -850,6 +850,7 @@ fn request_of(
         },
         questions,
         proposed: Vec::new(),
+        scope: Scope::Full,
         recent: IndexMap::new(),
         listed: IndexMap::new(),
         spelled: IndexMap::new(),

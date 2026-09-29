@@ -8,19 +8,24 @@ read  = 0.6
 write = 0.8
 
 [answers."start a timer"]
-route                      = { timer = 0.92, lights = 0.02, volume = 0.01, none = 0.05 }
-"fits.lights"              = { yes = 0.05 }
-"fits.timer"               = { yes = 0.8 }
-"fits.volume"              = { yes = 0.05 }
-"lights.room"              = { unstated = 0.8, den = 0.1, office = 0.1 }
-"lights.state"             = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
-"lights.brightness"        = { unstated = 1.0 }
-"timer.duration"           = { unstated = 1.0 }
-"timer.label"              = { unstated = 1.0 }
-"volume.level"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.8, den = 0.1, office = 0.1 }
-"weave.view_lights__state" = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
-"weave.left_timer_0_2"     = { action = 0.9, courtesy = 0.1 }
+route                        = { timer = 0.92, lights = 0.02, volume = 0.01, none = 0.05 }
+"fits.lights"                = { yes = 0.05 }
+"fits.timer"                 = { yes = 0.8 }
+"fits.volume"                = { yes = 0.05 }
+"lights.room"                = { unstated = 0.8, den = 0.1, office = 0.1 }
+"lights.state"               = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
+"lights.brightness"          = { unstated = 1.0 }
+"timer.duration"             = { unstated = 1.0 }
+"timer.label"                = { unstated = 1.0 }
+"volume.level"               = { unstated = 1.0 }
+"weave.view_lights__room"    = { unstated = 0.8, den = 0.1, office = 0.1 }
+"weave.view_lights__state"   = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
+"weave.left_timer_0_2"       = { action = 0.9, courtesy = 0.1 }
+"weave.first_timer__label_0" = { unstated = 1.0 }
+"weave.run_timer__label_0"   = { unstated = 1.0 }
+"weave.word_timer__label_0"  = { yes = 0.05 }
+"weave.word_timer__label_1"  = { yes = 0.05 }
+"weave.word_timer__label_2"  = { yes = 0.05 }
 
 [answers."set the volume to 150 percent"]
 route                                 = { volume = 0.93, lights = 0.02, timer = 0.01, none = 0.04 }
@@ -56,3 +61,33 @@ route                      = { lights = 0.92, timer = 0.02, volume = 0.01, none 
 "weave.is_lights__state_1" = { yes = 0.9 }
 "weave.left_lights_5_5"    = { "arg:room" = 0.85, action = 0.1, courtesy = 0.05 }
 "weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+
+[answers."set a timer for 10 minutes called tea"]
+route                                  = { timer = 0.93, lights = 0.02, volume = 0.01, none = 0.04 }
+"fits.lights"                          = { yes = 0.05 }
+"fits.timer"                           = { yes = 0.85 }
+"fits.volume"                          = { yes = 0.05 }
+"timer.duration"                       = { 16-26 = 0.95, unstated = 0.05 }
+"timer.label"                          = { none = 0.7, unstated = 0.3 }
+"weave.left_timer_0_2"                 = { action = 0.95, courtesy = 0.05 }
+"weave.left_timer_6_7"                 = { "arg:label" = 0.8, action = 0.2 }
+"weave.first_timer__label_3169934535"  = { s6 = 0.7, s7 = 0.2, unstated = 0.1 }
+"weave.run_timer__label_3169934535"    = { 7-7 = 0.6, 6-7 = 0.3, unstated = 0.1 }
+"weave.word_timer__label_6"            = { yes = 0.3 }
+"weave.word_timer__label_7"            = { yes = 0.9 }
+"weave.last_timer__label_6_3169934535" = { e7 = 0.8, e6 = 0.1, unstated = 0.1 }
+"weave.text_timer__label_1997792219"   = { r2 = 0.82, r1 = 0.1, other = 0.05, unstated = 0.03 }
+"lights.room"                          = { unstated = 1.0 }
+"lights.state"                         = { unstated = 1.0 }
+"lights.brightness"                    = { unstated = 1.0 }
+"volume.level"                         = { unstated = 1.0 }
+"weave.view_lights__room"              = { unstated = 1.0 }
+"weave.view_lights__state"             = { unstated = 1.0 }
+"weave.only_timer__duration_16_26"     = { yes = 0.05 }
+"weave.word_timer__label_0"            = { yes = 0.05 }
+"weave.word_timer__label_1"            = { yes = 0.05 }
+"weave.word_timer__label_2"            = { yes = 0.05 }
+"weave.word_timer__label_3"            = { yes = 0.05 }
+"weave.first_timer__label_1171567175"  = { unstated = 1.0 }
+"weave.run_timer__label_1171567175"    = { unstated = 1.0 }
+"weave.text_timer__label_3521553818"   = { unstated = 1.0 }

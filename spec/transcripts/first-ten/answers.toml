@@ -267,3 +267,7 @@ route                         = { note = 0.93, download = 0.02, none = 0.05 }
 "weave.view_screenshot__area" = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
 "weave.view_wifi__state"      = { unstated = 0.9, on = 0.05, off = 0.05 }
 "weave.left_note_0_0"         = { action = 0.9, courtesy = 0.1 }
+"weave.first_note__text_0"    = { unstated = 1.0 }
+"weave.run_note__text_0"      = { unstated = 1.0 }
+"weave.word_note__text_0"     = { yes = 0.05 }
+"weave.word_note__text_1"     = { yes = 0.05 }

@@ -47,7 +47,8 @@
           "otherwise": "none"
         }
       },
-      "proposed": []
+      "proposed": [],
+      "scope": "route"
     }
   }
 }

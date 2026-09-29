@@ -12,7 +12,7 @@ use crate::text::{Clean, Input, Span};
 use crate::words::{self, Token};
 
 /// The words that join a value to what is asked: a run of words left over is cut before each.
-const INTRODUCES: [&str; 25] = [
+pub(crate) const INTRODUCES: [&str; 25] = [
     "about",
     "regarding",
     "concerning",

@@ -32,12 +32,19 @@ route                  = { pause = 0.9, wait = 0.04, timer = 0.01, none = 0.05 }
 "weave.left_pause_0_2" = { action = 0.9, courtesy = 0.1 }
 
 [answers."start a 10 minute timer"]
-route                             = { timer = 0.9, wait = 0.02, pause = 0.02, none = 0.06 }
-"fits.wait"                       = { yes = 0.02 }
-"fits.pause"                      = { yes = 0.02 }
-"fits.timer"                      = { yes = 0.8 }
-"timer.duration"                  = { 8-17 = 0.9, unstated = 0.1 }
-"timer.label"                     = { unstated = 1.0 }
-"weave.only_timer__duration_8_17" = { yes = 0.05 }
-"weave.left_timer_0_0"            = { action = 0.9, courtesy = 0.1 }
-"weave.left_timer_4_4"            = { action = 0.9, courtesy = 0.1 }
+route                                = { timer = 0.9, wait = 0.02, pause = 0.02, none = 0.06 }
+"fits.wait"                          = { yes = 0.02 }
+"fits.pause"                         = { yes = 0.02 }
+"fits.timer"                         = { yes = 0.8 }
+"timer.duration"                     = { 8-17 = 0.9, unstated = 0.1 }
+"timer.label"                        = { unstated = 1.0 }
+"weave.only_timer__duration_8_17"    = { yes = 0.05 }
+"weave.left_timer_0_0"               = { action = 0.9, courtesy = 0.1 }
+"weave.left_timer_4_4"               = { action = 0.9, courtesy = 0.1 }
+"weave.first_timer__label_260156541" = { unstated = 1.0 }
+"weave.run_timer__label_260156541"   = { unstated = 1.0 }
+"weave.word_timer__label_0"          = { yes = 0.05 }
+"weave.word_timer__label_1"          = { yes = 0.05 }
+"weave.word_timer__label_4"          = { yes = 0.05 }
+"weave.first_timer__label_246345331" = { unstated = 1.0 }
+"weave.run_timer__label_246345331"   = { unstated = 1.0 }

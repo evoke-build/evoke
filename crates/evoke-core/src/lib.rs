@@ -8,6 +8,7 @@
 
 pub mod account;
 pub mod adapter;
+mod bounds;
 pub mod calendar;
 pub mod calibrate;
 pub mod call;

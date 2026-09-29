@@ -15,7 +15,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `outcome`    | ●   | ●       | ●   | ●       | `"run"`, `"confirm"`, `"ask"`, `"abstain"`                      |
 | `reflex`     | ●   | ●       | ●   |         | The winner's local name                                        |
 | `args`       | ●   | ●       | ●   |         | Per argument, a typed value; partial for an ask. A pick read from words that spell it out carries `typed`, the value as it is typed |
-| `basis`      | ○   | ○       | ○   |         | Per value read from the input, what it stands on, by `by`: `ask`, its own question; `views`, two questions that agree; `view`, one of them and the `words` that hold it; `words`, the words and a `yes`; `spelled`, words that spell it out and a `yes`; `only`, the one candidate of its kind and a `yes` |
+| `basis`      | ○   | ○       | ○   |         | Per value read from the input, what it stands on, by `by`: `ask`, its own question; `views`, two questions that agree; `view`, one of them and the `words` that hold it; `words`, the words and a `yes`; `spelled`, words that spell it out and a `yes`; `only`, the one candidate of its kind and a `yes`; `text`, a text typed without quotes, with the `others` it could have been |
 | `call`       | ●   | ●       |     |         | The call on one line: `lights room="den" state="off"`           |
 | `effect`     | ●   | ●       |     |         | `"read"`, `"write"`, `"destructive"`                            |
 | `confidence` | ●   | ●       | ●   |         | The weakest judgment's probability                              |
@@ -25,7 +25,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `runner_up`  | ○   | ○       | ○   |         | The second reflex, when there is one                            |
 | `prompt`     |     | ●       |     |         | `{ own, template }`: `evoke`'s line and the reflex's question   |
 | `left`       | ○   | ○       | ○   |         | The words of the input that no value holds, each with what it does: `{ words, does, p }`, `does` one of `action`, `answers` with its `arg`, `nothing`, `more` |
-| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `more`, `unconsumed_span`, `two_things`, `merged` |
+| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `unconsumed_span`, `two_things`, `merged` |
 | `unconsumed` |     |         | ●   |         | Typed spans no argument took                                    |
 | `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because` (`unstated`, `out_of_range`, `not_offered`, `unsettled` or `unread`), `words` when the input holds words that answer the ask, `choices`; a pick's `choices.recent` lists the values recalled from this session's results, when any |
 | `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call, a round of questions each: `{ adapter, questions, ms }`. Empty when the answers came from the cache |

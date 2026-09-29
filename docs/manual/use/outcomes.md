@@ -43,6 +43,8 @@ These are the reasons a decision stops at confirm, in the order the line names t
   did not agree. The line names the argument and the word: `room from "snug"`.
 - **spelled another way**: a value was read from words that do not spell it as it is typed, like a day misspelt
   or a code typed with a space. The line names the words: `sku from "hs 0409"`.
+- **a text without quotes**: a text was read from words you typed without quotes. The line names the
+  argument: `label without quotes`.
 - **more words**: the input holds words that ask for another thing, which the call does not hold. The line
   shows them: `also "lock the door too"`.
 - **an unconsumed span**: you typed something recognizable, like a duration or a URL, and no argument took it. A

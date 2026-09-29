@@ -533,6 +533,30 @@
             "weave.left_timer_4_7": {
               "action": 0.9,
               "courtesy": 0.1
+            },
+            "weave.first_timer__label_246345331": {
+              "unstated": 1
+            },
+            "weave.run_timer__label_246345331": {
+              "unstated": 1
+            },
+            "weave.word_timer__label_0": {
+              "yes": 0.05
+            },
+            "weave.word_timer__label_1": {
+              "yes": 0.05
+            },
+            "weave.word_timer__label_4": {
+              "yes": 0.05
+            },
+            "weave.word_timer__label_5": {
+              "yes": 0.05
+            },
+            "weave.word_timer__label_6": {
+              "yes": 0.05
+            },
+            "weave.word_timer__label_7": {
+              "yes": 0.05
             }
           },
           "decision": {
