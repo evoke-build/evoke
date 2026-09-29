@@ -15,6 +15,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   A day misspelt and a code typed with a space are read too, and the call confirms with the words as typed.
 - A call confirms when a value from a list was read from a word of the input alone; the prompt names the word.
   `try` and `why` say under a value what it stands on, and the JSON line carries it as `basis`.
+- An ask names the words of the input that answer it: `"garage" is not on the list`. A call confirms when the
+  input holds words that ask for another thing. `try` and `why` list the words no value holds, and the JSON
+  line carries them as `left`.
 
 ## [0.15.0] - 2026-09-29
 

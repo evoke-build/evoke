@@ -35,6 +35,26 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "pull"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 17,
+                  "end": 34,
+                  "text": "bank transactions"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -105,6 +125,17 @@
             "outcome": "ask",
             "reflex": "invoices",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 23,
+                  "text": "invoices, card expenses"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.55,
             "weakest": {
@@ -193,6 +224,17 @@
             "outcome": "ask",
             "reflex": "payroll",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 7,
+                  "text": "payroll"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -283,6 +325,17 @@
             "args": {},
             "call": "reconcile",
             "effect": "read",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 14,
+                  "text": "reconcile them"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -348,6 +401,26 @@
             "outcome": "ask",
             "reflex": "ledger",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 24,
+                  "text": "post the closing entries"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 32,
+                  "end": 38,
+                  "text": "ledger"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.78,
             "weakest": {
@@ -457,6 +530,17 @@
                 "p": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 15,
+                  "text": "send the report"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -536,6 +620,17 @@
             "outcome": "ask",
             "reflex": "invoices",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 8,
+                  "text": "invoices"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -624,6 +719,17 @@
             "outcome": "ask",
             "reflex": "cards",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 13,
+                  "text": "card expenses"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -755,6 +861,26 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "pull"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 17,
+                    "end": 34,
+                    "text": "bank transactions"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -841,6 +967,17 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 8,
+                    "text": "invoices"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -929,6 +1066,17 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 13,
+                    "text": "card expenses"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -1017,6 +1165,17 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 7,
+                    "text": "payroll"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -1092,6 +1251,17 @@
               "args": {},
               "call": "reconcile",
               "effect": "read",
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 14,
+                    "text": "reconcile them"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -1196,6 +1366,26 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 24,
+                    "text": "post the closing entries"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 32,
+                    "end": 38,
+                    "text": "ledger"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.78,
               "weakest": {
                 "question": "route",
@@ -1305,6 +1495,17 @@
                   "p": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 15,
+                    "text": "send the report"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

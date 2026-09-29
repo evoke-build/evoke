@@ -6,6 +6,17 @@
     "asking": {
       "reflex": "rollback",
       "args": {},
+      "left": [
+        {
+          "words": {
+            "start": 0,
+            "end": 25,
+            "text": "roll back the last deploy"
+          },
+          "does": "action",
+          "p": 0.9
+        }
+      ],
       "unconsumed": [],
       "confidence": 0.95,
       "weakest": {
@@ -93,6 +104,17 @@
     },
     "call": "rollback release=\"4.12.0\"",
     "effect": "destructive",
+    "left": [
+      {
+        "words": {
+          "start": 0,
+          "end": 25,
+          "text": "roll back the last deploy"
+        },
+        "does": "action",
+        "p": 0.9
+      }
+    ],
     "confidence": 0.95,
     "weakest": {
       "question": "route",

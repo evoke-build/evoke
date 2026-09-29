@@ -48,6 +48,8 @@ route                          = { deploys = 0.9, errors = 0.03, none = 0.07 }
 "weave.view_status__component" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
 "weave.is_status__component_0" = { yes = 0.05 }
 "weave.view_status__state"     = { unstated = 0.9, investigating = 0.05, identified = 0.05 }
+"weave.left_deploys_0_0"       = { action = 0.9, courtesy = 0.1 }
+"weave.left_deploys_3_3"       = { action = 0.9, courtesy = 0.1 }
 
 [answers."roll back the last deploy"]
 route                          = { rollback = 0.9, errors = 0.03, none = 0.07 }
@@ -86,6 +88,7 @@ route                          = { rollback = 0.9, errors = 0.03, none = 0.07 }
 "weave.view_status__component" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
 "weave.view_status__state"     = { unstated = 0.9, investigating = 0.05, identified = 0.05 }
 "weave.is_status__state_3"     = { yes = 0.05 }
+"weave.left_rollback_0_4"      = { action = 0.9, courtesy = 0.1 }
 
 [answers."list the checkout deploys, then roll back the last one"]
 "weave.split_0" = { yes = 0.9 }
@@ -128,3 +131,4 @@ route                               = { rollback = 0.9, errors = 0.03, none = 0.
 "weave.view_status__component"      = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
 "weave.view_status__state"          = { unstated = 0.9, investigating = 0.05, identified = 0.05 }
 "weave.is_status__state_3"          = { yes = 0.05 }
+"weave.left_rollback_0_4"           = { action = 0.9, courtesy = 0.1 }

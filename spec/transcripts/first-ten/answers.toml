@@ -42,6 +42,7 @@ route                            = { volume = 0.93, awake = 0.01, timer = 0.01, 
 "weave.view_wifi__state"         = { unstated = 0.9, on = 0.05, off = 0.05 }
 "weave.view_download__to"        = { unstated = 1.0 }
 "weave.view_open__place"         = { unstated = 1.0 }
+"weave.left_volume_0_2"          = { action = 0.9, courtesy = 0.1 }
 
 [answers."kill the wifi"]
 route                         = { wifi = 0.9, power = 0.02, lock = 0.02, none = 0.06 }
@@ -78,6 +79,7 @@ route                         = { wifi = 0.9, power = 0.02, lock = 0.02, none = 
 "weave.is_wifi__state_1"      = { yes = 0.9 }
 "weave.view_download__to"     = { unstated = 0.97, desktop = 0.03 }
 "weave.view_open__place"      = { unstated = 0.96, desktop = 0.04 }
+"weave.left_wifi_0_2"         = { action = 0.9, courtesy = 0.1 }
 
 [answers."restart the computer"]
 route                         = { power = 0.97, wifi = 0.01, none = 0.02 }
@@ -114,6 +116,7 @@ route                         = { power = 0.97, wifi = 0.01, none = 0.02 }
 "weave.view_wifi__state"      = { unstated = 0.9, on = 0.05, off = 0.05 }
 "weave.view_download__to"     = { unstated = 1.0 }
 "weave.view_open__place"      = { unstated = 1.0 }
+"weave.left_power_2_2"        = { action = 0.9, courtesy = 0.1 }
 
 [answers."what time is it"]
 route                         = { none = 0.7, timer = 0.2, awake = 0.05, lock = 0.05 }
@@ -186,6 +189,8 @@ route                         = { open = 0.91, download = 0.02, lock = 0.01, non
 "weave.view_power__action"    = { unstated = 0.96, restart = 0.02, shutdown = 0.02 }
 "weave.view_screenshot__area" = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
 "weave.view_wifi__state"      = { unstated = 0.9, on = 0.05, off = 0.05 }
+"weave.left_open_0_0"         = { action = 0.9, courtesy = 0.1 }
+"weave.left_open_3_3"         = { action = 0.9, courtesy = 0.1 }
 
 [answers."download https://evoke.build/llms.txt and note it"]
 "weave.split_0" = { yes = 0.9 }
@@ -225,6 +230,7 @@ route                           = { download = 0.97, open = 0.01, none = 0.02 }
 "weave.view_power__action"      = { unstated = 0.96, restart = 0.02, shutdown = 0.02 }
 "weave.view_screenshot__area"   = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
 "weave.view_wifi__state"        = { unstated = 0.9, on = 0.05, off = 0.05 }
+"weave.left_download_0_0"       = { action = 0.9, courtesy = 0.1 }
 
 [answers."note it"]
 route                         = { note = 0.93, download = 0.02, none = 0.05 }
@@ -260,3 +266,4 @@ route                         = { note = 0.93, download = 0.02, none = 0.05 }
 "weave.view_power__action"    = { unstated = 0.96, restart = 0.02, shutdown = 0.02 }
 "weave.view_screenshot__area" = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
 "weave.view_wifi__state"      = { unstated = 0.9, on = 0.05, off = 0.05 }
+"weave.left_note_0_0"         = { action = 0.9, courtesy = 0.1 }

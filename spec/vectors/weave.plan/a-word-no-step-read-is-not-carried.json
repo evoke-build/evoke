@@ -21,6 +21,17 @@
             "outcome": "ask",
             "reflex": "post",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "checkout is back"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -123,6 +134,17 @@
             "outcome": "ask",
             "reflex": "errors",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "check the error rate"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -231,6 +253,17 @@
             "outcome": "ask",
             "reflex": "status",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 22,
+                  "text": "update the status page"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -356,6 +389,17 @@
               "outcome": "ask",
               "reflex": "post",
               "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "checkout is back"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "unconsumed": [],
               "confidence": 0.9,
               "weakest": {
@@ -460,6 +504,17 @@
               "outcome": "ask",
               "reflex": "errors",
               "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 20,
+                    "text": "check the error rate"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "unconsumed": [],
               "confidence": 0.9,
               "weakest": {
@@ -570,6 +625,17 @@
               "outcome": "ask",
               "reflex": "status",
               "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 22,
+                    "text": "update the status page"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "unconsumed": [],
               "confidence": 0.9,
               "weakest": {

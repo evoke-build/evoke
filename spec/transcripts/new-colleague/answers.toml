@@ -30,6 +30,8 @@ route                      = { hire = 0.9, team = 0.03, none = 0.07 }
 "weave.view_order__person" = { unstated = 0.9, maria = 0.05, sam = 0.05 }
 "weave.is_order__person_0" = { yes = 0.05 }
 "weave.view_order__model"  = { unstated = 0.9, air = 0.05, pro = 0.05 }
+"weave.left_hire_0_0"      = { action = 0.9, courtesy = 0.1 }
+"weave.left_hire_3_3"      = { action = 0.9, courtesy = 0.1 }
 
 [answers."the platform team"]
 route                      = { team = 0.9, hire = 0.03, none = 0.07 }
@@ -47,6 +49,7 @@ route                      = { team = 0.9, hire = 0.03, none = 0.07 }
 "weave.is_team__team_0"    = { yes = 0.9 }
 "weave.view_order__person" = { unstated = 0.9, maria = 0.05, sam = 0.05 }
 "weave.view_order__model"  = { unstated = 0.9, air = 0.05, pro = 0.05 }
+"weave.left_team_2_2"      = { action = 0.9, courtesy = 0.1 }
 
 [answers."create her accounts"]
 route                      = { accounts = 0.9, hire = 0.03, none = 0.07 }
@@ -63,6 +66,7 @@ route                      = { accounts = 0.9, hire = 0.03, none = 0.07 }
 "weave.view_team__team"    = { unstated = 0.9, platform = 0.05, sales = 0.05 }
 "weave.view_order__person" = { unstated = 0.9, maria = 0.05, sam = 0.05 }
 "weave.view_order__model"  = { unstated = 0.9, air = 0.05, pro = 0.05 }
+"weave.left_accounts_0_2"  = { action = 0.9, courtesy = 0.1 }
 
 [answers."order her a laptop"]
 route                      = { order = 0.9, hire = 0.03, none = 0.07 }
@@ -79,6 +83,7 @@ route                      = { order = 0.9, hire = 0.03, none = 0.07 }
 "weave.view_team__team"    = { unstated = 0.9, platform = 0.05, sales = 0.05 }
 "weave.view_order__person" = { unstated = 0.9, maria = 0.05, sam = 0.05 }
 "weave.view_order__model"  = { unstated = 0.9, air = 0.05, pro = 0.05 }
+"weave.left_order_0_3"     = { action = 0.9, courtesy = 0.1 }
 
 [answers."book the onboarding"]
 route                      = { onboard = 0.9, hire = 0.03, none = 0.07 }
@@ -95,3 +100,4 @@ route                      = { onboard = 0.9, hire = 0.03, none = 0.07 }
 "weave.view_team__team"    = { unstated = 0.9, platform = 0.05, sales = 0.05 }
 "weave.view_order__person" = { unstated = 0.9, maria = 0.05, sam = 0.05 }
 "weave.view_order__model"  = { unstated = 0.9, air = 0.05, pro = 0.05 }
+"weave.left_onboard_0_2"   = { action = 0.9, courtesy = 0.1 }

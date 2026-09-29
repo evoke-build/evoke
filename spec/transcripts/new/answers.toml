@@ -24,6 +24,7 @@ route                           = { hello = 0.94, none = 0.06 }
 "weave.view_lights__state"      = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "weave.only_timer__label_11_14" = { yes = 0.05 }
 "weave.only_hello__who_11_14"   = { yes = 0.05 }
+"weave.left_hello_0_0"          = { action = 0.9, courtesy = 0.1 }
 
 [answers."wave at \"grace\""]
 route                          = { hello = 0.92, none = 0.08 }
@@ -42,3 +43,4 @@ route                          = { hello = 0.92, none = 0.08 }
 "weave.view_lights__state"     = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "weave.only_timer__label_9_14" = { yes = 0.05 }
 "weave.only_hello__who_9_14"   = { yes = 0.05 }
+"weave.left_hello_0_0"         = { action = 0.9, courtesy = 0.1 }

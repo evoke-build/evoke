@@ -12,3 +12,4 @@ route                    = { list = 0.9, none = 0.1 }
 "fits.list"              = { yes = 0.8, no = 0.2 }
 "list.place"             = { unstated = 0.9, desktop = 0.1 }
 "weave.view_list__place" = { unstated = 0.9, desktop = 0.1 }
+"weave.left_list_0_2"    = { action = 0.9, courtesy = 0.1 }

@@ -14,20 +14,22 @@ write = 0.8
 "weave.split_0" = { yes = 0.95 }
 
 [answers."wait a while"]
-route            = { wait = 0.9, pause = 0.04, timer = 0.01, none = 0.05 }
-"fits.wait"      = { yes = 0.8 }
-"fits.pause"     = { yes = 0.1 }
-"fits.timer"     = { yes = 0.02 }
-"timer.duration" = { unstated = 1.0 }
-"timer.label"    = { unstated = 1.0 }
+route                 = { wait = 0.9, pause = 0.04, timer = 0.01, none = 0.05 }
+"fits.wait"           = { yes = 0.8 }
+"fits.pause"          = { yes = 0.1 }
+"fits.timer"          = { yes = 0.02 }
+"timer.duration"      = { unstated = 1.0 }
+"timer.label"         = { unstated = 1.0 }
+"weave.left_wait_0_2" = { action = 0.9, courtesy = 0.1 }
 
 [answers."pause a moment"]
-route            = { pause = 0.9, wait = 0.04, timer = 0.01, none = 0.05 }
-"fits.wait"      = { yes = 0.1 }
-"fits.pause"     = { yes = 0.8 }
-"fits.timer"     = { yes = 0.02 }
-"timer.duration" = { unstated = 1.0 }
-"timer.label"    = { unstated = 1.0 }
+route                  = { pause = 0.9, wait = 0.04, timer = 0.01, none = 0.05 }
+"fits.wait"            = { yes = 0.1 }
+"fits.pause"           = { yes = 0.8 }
+"fits.timer"           = { yes = 0.02 }
+"timer.duration"       = { unstated = 1.0 }
+"timer.label"          = { unstated = 1.0 }
+"weave.left_pause_0_2" = { action = 0.9, courtesy = 0.1 }
 
 [answers."start a 10 minute timer"]
 route                             = { timer = 0.9, wait = 0.02, pause = 0.02, none = 0.06 }
@@ -37,3 +39,5 @@ route                             = { timer = 0.9, wait = 0.02, pause = 0.02, no
 "timer.duration"                  = { 8-17 = 0.9, unstated = 0.1 }
 "timer.label"                     = { unstated = 1.0 }
 "weave.only_timer__duration_8_17" = { yes = 0.05 }
+"weave.left_timer_0_0"            = { action = 0.9, courtesy = 0.1 }
+"weave.left_timer_4_4"            = { action = 0.9, courtesy = 0.1 }

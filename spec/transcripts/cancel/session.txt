@@ -15,18 +15,20 @@ none
 $ evoke why
   1  "wait a while"
   wait 0.90 · none 0.05 · pause 0.04 · timer 0.01
-  fits  wait 0.80 · pause 0.10 · timer 0.02
-  skipped wait · weakest: route 0.90 · cancelled · replay, 6 questions
+  words  "wait a while" say what to do 0.90
+  fits   wait 0.80 · pause 0.10 · timer 0.02
+  skipped wait · weakest: route 0.90 · cancelled · replay, 7 questions in 2 rounds
   2  "start a 10 minute timer"
   timer 0.90 · none 0.06 · wait 0.02 · pause 0.02
   duration  "10 minute" 0.90 · unstated 0.10
+  words     "start" say what to do 0.90 · "timer" say what to do 0.90
   fits      timer 0.80 · wait 0.02 · pause 0.02
-  skipped timer duration="10 minute" · weakest: route 0.90 · cancelled · replay, 7 questions
+  skipped timer duration="10 minute" · weakest: route 0.90 · cancelled · replay, 9 questions in 2 rounds
 $ evoke --json "pause a moment and start a 10 minute timer"
 waiting
 ^C
-{"step":1,"steps":2,"input":"pause a moment","outcome":"run","reflex":"pause","args":{},"call":"pause","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"pause","p":0.9},"judgments":[{"question":"route","top":"pause","p":0.9}],"runner_up":{"reflex":"wait","route":0.04,"fits":0.1},"contenders":[{"reflex":"pause","route":0.9,"fits":0.8},{"reflex":"wait","route":0.04,"fits":0.1},{"reflex":"timer","route":0.01,"fits":0.02}],"trace":[{"adapter":"replay","questions":6,"ms":0}],"contained":{"type":"full"},"status":"skipped","why":{"type":"cancelled"}}
-{"step":2,"steps":2,"input":"start a 10 minute timer","outcome":"run","reflex":"timer","args":{"duration":{"type":"pick","span":{"start":8,"end":17,"text":"10 minute"},"value":{"type":"duration","value":600}}},"call":"timer duration=\"10 minute\"","effect":"write","basis":{"duration":{"by":"ask","p":0.9}},"confidence":0.9,"weakest":{"question":"route","top":"timer","p":0.9},"judgments":[{"question":"route","top":"timer","p":0.9},{"question":"timer.duration","top":"8-17","p":0.9},{"question":"timer.label","top":"unstated","p":1.0}],"runner_up":{"reflex":"wait","route":0.02,"fits":0.02},"contenders":[{"reflex":"timer","route":0.9,"fits":0.8},{"reflex":"wait","route":0.02,"fits":0.02},{"reflex":"pause","route":0.02,"fits":0.02}],"trace":[],"status":"skipped","why":{"type":"cancelled"}}
+{"step":1,"steps":2,"input":"pause a moment","outcome":"run","reflex":"pause","args":{},"call":"pause","effect":"write","left":[{"words":{"start":0,"end":14,"text":"pause a moment"},"does":"action","p":0.9}],"confidence":0.9,"weakest":{"question":"route","top":"pause","p":0.9},"judgments":[{"question":"route","top":"pause","p":0.9}],"runner_up":{"reflex":"wait","route":0.04,"fits":0.1},"contenders":[{"reflex":"pause","route":0.9,"fits":0.8},{"reflex":"wait","route":0.04,"fits":0.1},{"reflex":"timer","route":0.01,"fits":0.02}],"trace":[{"adapter":"replay","questions":6,"ms":0},{"adapter":"replay","questions":1,"ms":0}],"contained":{"type":"full"},"status":"skipped","why":{"type":"cancelled"}}
+{"step":2,"steps":2,"input":"start a 10 minute timer","outcome":"run","reflex":"timer","args":{"duration":{"type":"pick","span":{"start":8,"end":17,"text":"10 minute"},"value":{"type":"duration","value":600}}},"call":"timer duration=\"10 minute\"","effect":"write","basis":{"duration":{"by":"ask","p":0.9}},"left":[{"words":{"start":0,"end":5,"text":"start"},"does":"action","p":0.9},{"words":{"start":18,"end":23,"text":"timer"},"does":"action","p":0.9}],"confidence":0.9,"weakest":{"question":"route","top":"timer","p":0.9},"judgments":[{"question":"route","top":"timer","p":0.9},{"question":"timer.duration","top":"8-17","p":0.9},{"question":"timer.label","top":"unstated","p":1.0}],"runner_up":{"reflex":"wait","route":0.02,"fits":0.02},"contenders":[{"reflex":"timer","route":0.9,"fits":0.8},{"reflex":"wait","route":0.02,"fits":0.02},{"reflex":"pause","route":0.02,"fits":0.02}],"trace":[],"status":"skipped","why":{"type":"cancelled"}}
 [130]
 $ pgrep -f 'sleep 4242$' || echo none
 none
@@ -40,10 +42,11 @@ none
 $ evoke --json "wait a while"
 waiting
 ^C
-{"input":"wait a while","outcome":"run","reflex":"wait","args":{},"call":"wait","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"wait","p":0.9},"judgments":[{"question":"route","top":"wait","p":0.9}],"runner_up":{"reflex":"pause","route":0.04,"fits":0.1},"contenders":[{"reflex":"wait","route":0.9,"fits":0.8},{"reflex":"pause","route":0.04,"fits":0.1},{"reflex":"timer","route":0.01,"fits":0.02}],"trace":[],"contained":{"type":"full"},"error":"running wait: interrupted","cancelled":true}
+{"input":"wait a while","outcome":"run","reflex":"wait","args":{},"call":"wait","effect":"write","left":[{"words":{"start":0,"end":12,"text":"wait a while"},"does":"action","p":0.9}],"confidence":0.9,"weakest":{"question":"route","top":"wait","p":0.9},"judgments":[{"question":"route","top":"wait","p":0.9}],"runner_up":{"reflex":"pause","route":0.04,"fits":0.1},"contenders":[{"reflex":"wait","route":0.9,"fits":0.8},{"reflex":"pause","route":0.04,"fits":0.1},{"reflex":"timer","route":0.01,"fits":0.02}],"trace":[],"contained":{"type":"full"},"error":"running wait: interrupted","cancelled":true}
 [130]
 $ evoke why
   "wait a while"
   wait 0.90 · none 0.05 · pause 0.04 · timer 0.01
-  fits  wait 0.80 · pause 0.10 · timer 0.02
+  words  "wait a while" say what to do 0.90
+  fits   wait 0.80 · pause 0.10 · timer 0.02
   cancelled wait · weakest: route 0.90 · cached

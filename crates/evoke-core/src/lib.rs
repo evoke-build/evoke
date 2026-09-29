@@ -6,6 +6,7 @@
 // An Err of a Diagnostic is large with 64-bit pointers and not on wasm32, so this cannot be an expectation.
 #![allow(clippy::result_large_err)]
 
+pub mod account;
 pub mod adapter;
 pub mod calendar;
 pub mod calibrate;
@@ -34,6 +35,7 @@ pub mod vocabulary;
 pub mod weave;
 pub mod words;
 
+pub use account::{Does, Left};
 pub use adapter::{Declared, Fault, Gate, Key, Limits, Prob, Question, QuestionId, Raw, Request};
 pub use calibrate::{Calibration, LogBlock, Logged, calibrate, log_block};
 pub use call::{Call, Value, Written, call, render};

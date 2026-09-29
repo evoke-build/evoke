@@ -54,6 +54,26 @@
           }
         },
         "missing": [],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 16,
+              "text": "show my calendar"
+            },
+            "does": "action",
+            "p": 0.9
+          },
+          {
+            "words": {
+              "start": 34,
+              "end": 40,
+              "text": "monday"
+            },
+            "does": "action",
+            "p": 0.9
+          }
+        ],
         "unconsumed": [
           {
             "start": 34,
@@ -93,6 +113,26 @@
         "reader": 0.9
       }
     },
+    "left": [
+      {
+        "words": {
+          "start": 0,
+          "end": 16,
+          "text": "show my calendar"
+        },
+        "does": "action",
+        "p": 0.9
+      },
+      {
+        "words": {
+          "start": 34,
+          "end": 40,
+          "text": "monday"
+        },
+        "does": "action",
+        "p": 0.9
+      }
+    ],
     "confidence": 0.9,
     "weakest": {
       "question": "calendar.day",

@@ -45,6 +45,17 @@
                   "yes": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 15,
+                    "text": "kill the lights"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "lights.room",
@@ -138,6 +149,26 @@
                   "p": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 5,
+                    "text": "start"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 18,
+                    "end": 39,
+                    "text": "timer after you leave"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -298,6 +329,10 @@
             },
             "weave.is_lights__state_1": {
               "yes": 0.9
+            },
+            "weave.left_lights_0_2": {
+              "action": 0.9,
+              "courtesy": 0.1
             }
           },
           "decision": {
@@ -328,6 +363,17 @@
                 "yes": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 15,
+                  "text": "kill the lights"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "lights.room",
@@ -479,6 +525,14 @@
               "unstated": 0.9,
               "dana": 0.05,
               "sam": 0.05
+            },
+            "weave.left_timer_0_0": {
+              "action": 0.9,
+              "courtesy": 0.1
+            },
+            "weave.left_timer_4_7": {
+              "action": 0.9,
+              "courtesy": 0.1
             }
           },
           "decision": {
@@ -506,6 +560,26 @@
                 "p": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 5,
+                  "text": "start"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 18,
+                  "end": 39,
+                  "text": "timer after you leave"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",

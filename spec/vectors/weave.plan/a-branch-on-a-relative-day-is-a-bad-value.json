@@ -36,6 +36,17 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 13,
+                  "text": "plan the trip"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "trip.to",
@@ -134,6 +145,17 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 13,
+                  "text": "find a flight"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "flights.to",
@@ -209,6 +231,17 @@
             "outcome": "ask",
             "reflex": "book",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "book"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -312,6 +345,17 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 13,
+                  "text": "find a flight"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -410,6 +454,17 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 13,
+                    "text": "find a flight"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "flights.to",
@@ -496,6 +551,17 @@
               "outcome": "ask",
               "reflex": "book",
               "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "book"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "unconsumed": [],
               "confidence": 0.9,
               "weakest": {
@@ -624,6 +690,17 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 13,
+                    "text": "find a flight"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

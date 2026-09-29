@@ -21,7 +21,7 @@ use evoke_core::vocabulary::Vocabulary;
 use evoke_core::weave::{Because, Bound, From, Shared, Status, Step, When, Why as Stopped};
 use evoke_core::{
     At, Call, Case, Chosen, Clean, Contained, Contender, ContractDiff, Decision, Diagnostic,
-    Digest, Effective, File, Finding, Fix, Gate, Input, Json, KeyPath, Level, Needs, Prompt,
+    Digest, Does, Effective, File, Finding, Fix, Gate, Input, Json, KeyPath, Level, Needs, Prompt,
     Proposed, Raw, Regression, Span, Verdict, Version, Weave, render,
 };
 use indexmap::IndexMap;
@@ -1313,22 +1313,39 @@ pub fn ask_prompt(missing: &Missing, retry: Option<&str>) -> String {
     line
 }
 
-/// Why an argument is asked, where the question alone does not say: `150 percent is outside 0–100`, or that what
-/// the request names is not on the list.
+/// Why an argument is asked, where the question alone does not say: `150 percent is outside 0–100`; that what
+/// the request names is not on the list, with the words where the reading found them; the words that answer the
+/// ask and were read as no value.
 #[must_use]
 pub fn because(missing: &Missing) -> Option<String> {
     use evoke_core::decide::Choices;
-    match (&missing.because, &missing.choices) {
-        (Why::Unstated | Why::Unsettled, _) | (Why::NotOffered, Choices::Pick { .. }) => None,
+    let words = missing
+        .words
+        .as_ref()
+        .map(|words| plain(&quoted(words.text().as_str())));
+    let listed = matches!(
+        missing.choices,
+        Choices::Options { .. } | Choices::Vocab { .. }
+    );
+    match (&missing.because, words) {
         (Why::OutOfRange { span, range }, _) => Some(format!(
             "{} is outside {}–{}",
             span.text(),
             range.min(),
             range.max()
         )),
-        (Why::NotOffered, Choices::Options { .. } | Choices::Vocab { .. }) => {
-            Some("what you named is not on the list".to_owned())
-        }
+        (Why::NotOffered, Some(words)) if listed => Some(format!("{words} is not on the list")),
+        (Why::NotOffered, None) if listed => Some("what you named is not on the list".to_owned()),
+        (_, Some(words)) if listed => Some(format!("you wrote {words}")),
+        (_, Some(words)) => match &missing.choices {
+            Choices::Pick {
+                pick: Recognizer::Quoted,
+                ..
+            } => Some(format!("you wrote {words}")),
+            Choices::Pick { pick, .. } => Some(format!("{words} is not {}", pick.wants())),
+            _ => None,
+        },
+        (_, None) => None,
     }
 }
 
@@ -2727,11 +2744,13 @@ fn block(
                 .collect()
         })
         .unwrap_or_default();
+    let left = left(decision);
+    let least = if left.is_empty() { "fits" } else { "words" };
     let width = arguments
         .iter()
         .map(|(arg, _)| arg.len())
         .chain(recalled.keys().map(|arg| arg.as_str().len()))
-        .fold("fits".len(), usize::max)
+        .fold(least.len(), usize::max)
         + 2;
     for (arg, question) in arguments {
         let mut line = Text::from(format!("{arg:<width$}"));
@@ -2748,6 +2767,13 @@ fn block(
             "{:<width$}recalled {}",
             arg.as_str(),
             values.join(" · ")
+        )));
+    }
+    if !left.is_empty() {
+        lines.push(Text::from(format!(
+            "{:<width$}{}",
+            "words",
+            left.join(" · ")
         )));
     }
     // Most fitting first; ties keep the ranking's order.
@@ -2785,6 +2811,31 @@ const SHOWN: f64 = 0.005;
 /// A question's answers as sorted, `key p` each: the top one weighted; the ones that would print as `0.00`
 /// folded into a count — but the sentinels `none` and `unstated`, which always show, since they are what the
 /// answer was weighed against. `shown` writes a key as the person reads it.
+/// The runs of the request's words that no value holds, each with what it does: `"kill the lights" say what to
+/// do 0.97`.
+fn left(decision: &Decision) -> Vec<String> {
+    let left = match decision {
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => &chosen.left,
+        Decision::Ask { asking, .. } => &asking.left,
+        Decision::Abstain { .. } => return Vec::new(),
+    };
+    left.iter()
+        .map(|run| {
+            let does = match &run.does {
+                Does::Action => "say what to do".to_owned(),
+                Does::Answers { arg } => format!("answer {arg}"),
+                Does::Nothing => "ask for nothing".to_owned(),
+                Does::More => "ask for another thing".to_owned(),
+            };
+            format!(
+                "{} {does} {:.2}",
+                plain(&quoted(run.words.text().as_str())),
+                run.p.get()
+            )
+        })
+        .collect()
+}
+
 /// What a value read from the request stands on, beside its own question: the second view of a listed word,
 /// the words of the request that hold it, the yes that took it. Nothing for a value its own question gave.
 fn stands_on(decision: &Decision, arg: &str) -> Option<String> {

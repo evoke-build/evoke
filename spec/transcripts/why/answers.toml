@@ -22,6 +22,7 @@ route                      = { lights = 0.91, timer = 0.02, volume = 0.01, none 
 "weave.is_lights__room_0"  = { yes = 0.9 }
 "weave.view_lights__state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
 "weave.is_lights__state_1" = { yes = 0.9 }
+"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."kill the lights in the snug"]
 route                      = { lights = 0.92, timer = 0.02, volume = 0.01, none = 0.05 }
@@ -38,3 +39,4 @@ route                      = { lights = 0.92, timer = 0.02, volume = 0.01, none 
 "weave.view_lights__state" = { off = 0.92, on = 0.03, dim = 0.03, unstated = 0.02 }
 "weave.is_lights__room_0"  = { yes = 0.9 }
 "weave.is_lights__state_1" = { yes = 0.95 }
+"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }

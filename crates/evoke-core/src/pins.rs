@@ -47,6 +47,12 @@ pub(crate) fn only(reflex: &LocalName, arg: &ArgName, span: &Span) -> QuestionId
     own(&format!("only_{}_{}", pair(reflex, arg), ends(span)))
 }
 
+/// `weave.left_<reflex>_<from>_<to>`: what a run of the request's words does, by the places of its first and
+/// last word among the request's.
+pub(crate) fn left(reflex: &LocalName, from: usize, to: usize) -> QuestionId {
+    own(&format!("left_{reflex}_{from}_{to}"))
+}
+
 /// A reflex and its argument as one name. Two pairs of a set never share one: `compile` refuses the second.
 pub(crate) fn pair(reflex: &LocalName, arg: &ArgName) -> String {
     format!("{reflex}__{arg}")

@@ -42,6 +42,17 @@
                 "p": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "look up incident"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -150,6 +161,26 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "mark"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 33,
+                  "end": 44,
+                  "text": "status page"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -254,6 +285,17 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 22,
+                  "text": "update the status page"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -344,6 +386,17 @@
             "outcome": "ask",
             "reflex": "incident",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "look up the incident"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -495,6 +548,17 @@
                   "p": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "look up incident"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -605,6 +669,26 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "mark"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 33,
+                    "end": 44,
+                    "text": "status page"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -711,6 +795,17 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 22,
+                    "text": "update the status page"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -819,6 +914,17 @@
               "outcome": "ask",
               "reflex": "incident",
               "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 20,
+                    "text": "look up the incident"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "unconsumed": [],
               "confidence": 0.9,
               "weakest": {

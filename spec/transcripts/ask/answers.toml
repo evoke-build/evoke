@@ -20,6 +20,7 @@ route                      = { timer = 0.92, lights = 0.02, volume = 0.01, none 
 "volume.level"             = { unstated = 1.0 }
 "weave.view_lights__room"  = { unstated = 0.8, den = 0.1, office = 0.1 }
 "weave.view_lights__state" = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
+"weave.left_timer_0_2"     = { action = 0.9, courtesy = 0.1 }
 
 [answers."set the volume to 150 percent"]
 route                                 = { volume = 0.93, lights = 0.02, timer = 0.01, none = 0.04 }
@@ -36,6 +37,8 @@ route                                 = { volume = 0.93, lights = 0.02, timer = 
 "weave.view_lights__state"            = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
 "weave.only_lights__brightness_18_29" = { yes = 0.05 }
 "weave.only_volume__level_18_29"      = { yes = 0.05 }
+"weave.left_volume_0_2"               = { action = 0.9, courtesy = 0.1 }
+"weave.left_volume_4_5"               = { action = 0.9, courtesy = 0.1 }
 
 [answers."kill the lights in the garage"]
 route                      = { lights = 0.92, timer = 0.02, volume = 0.01, none = 0.05 }
@@ -51,3 +54,5 @@ route                      = { lights = 0.92, timer = 0.02, volume = 0.01, none 
 "weave.view_lights__room"  = { none = 0.85, den = 0.05, office = 0.05, unstated = 0.05 }
 "weave.view_lights__state" = { off = 0.9, on = 0.04, dim = 0.04, unstated = 0.02 }
 "weave.is_lights__state_1" = { yes = 0.9 }
+"weave.left_lights_5_5"    = { "arg:room" = 0.85, action = 0.1, courtesy = 0.05 }
+"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }

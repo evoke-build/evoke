@@ -35,6 +35,26 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "grab"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 19,
+                  "end": 36,
+                  "text": "bank transactions"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -105,6 +125,17 @@
             "outcome": "ask",
             "reflex": "invoices",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 4,
+                  "end": 12,
+                  "text": "invoices"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -193,6 +224,17 @@
             "outcome": "ask",
             "reflex": "cards",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 4,
+                  "end": 17,
+                  "text": "card expenses"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -295,6 +337,17 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 4,
+                  "end": 15,
+                  "text": "payroll run"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -367,6 +420,17 @@
             "args": {},
             "call": "reconcile",
             "effect": "read",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 19,
+                  "text": "reconcile the month"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -456,6 +520,17 @@
             "outcome": "ask",
             "reflex": "bank",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 35,
+                  "text": "grab the invoices bank transactions"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -546,6 +621,26 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "grab"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 19,
+                    "end": 36,
+                    "text": "bank transactions"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -632,6 +727,17 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 4,
+                    "end": 12,
+                    "text": "invoices"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -719,6 +825,17 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 4,
+                    "end": 17,
+                    "text": "card expenses"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -806,6 +923,17 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 4,
+                    "end": 15,
+                    "text": "payroll run"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -885,6 +1013,17 @@
               "args": {},
               "call": "reconcile",
               "effect": "read",
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 19,
+                    "text": "reconcile the month"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

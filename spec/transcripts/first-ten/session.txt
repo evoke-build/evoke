@@ -65,6 +65,7 @@ $ evoke try "kill the wifi"
   wifi 0.90 · none 0.06 · power 0.02 · lock 0.02
   state  off 0.72 · on 0.20 · unstated 0.08
          asked a second way: off 0.72 · is it off? yes 0.90
+  words  "kill the wifi" say what to do 0.90
   fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · sleep 0.02 · timer 0.02 · trash 0.02 · volume 0.02
   confirm · wifi state="off" · write · weakest: state 0.72
 $ evoke try "download https://evoke.build/llms.txt and note it"
@@ -72,13 +73,15 @@ $ evoke try "download https://evoke.build/llms.txt and note it"
   2  note · takes path from 1
   1  "download https://evoke.build/llms.txt"
   download 0.97 · none 0.02 · open 0.01
-  url   "https://evoke.build/llms.txt" 0.99 · unstated 0.01
-  fits  download 0.80 · note 0.05 · open 0.02 · awake 0.02 · lock 0.02 · mail 0.02 · power 0.02 · screenshot 0.02 · sleep 0.02 · timer 0.02 · trash 0.02 · volume 0.02 · wifi 0.02
+  url    "https://evoke.build/llms.txt" 0.99 · unstated 0.01
+  words  "download" say what to do 0.90
+  fits   download 0.80 · note 0.05 · open 0.02 · awake 0.02 · lock 0.02 · mail 0.02 · power 0.02 · screenshot 0.02 · sleep 0.02 · timer 0.02 · trash 0.02 · volume 0.02 · wifi 0.02
   run · weakest: to 0.96
   2  "note it"
   note 0.93 · none 0.05 · download 0.02
-  text  unstated 1.00
-  fits  note 0.70 · download 0.06 · awake 0.02 · lock 0.02 · mail 0.02 · open 0.02 · power 0.02 · screenshot 0.02 · sleep 0.02 · timer 0.02 · trash 0.02 · volume 0.02 · wifi 0.02
+  text   unstated 1.00
+  words  "note" say what to do 0.90
+  fits   note 0.70 · download 0.06 · awake 0.02 · lock 0.02 · mail 0.02 · open 0.02 · power 0.02 · screenshot 0.02 · sleep 0.02 · timer 0.02 · trash 0.02 · volume 0.02 · wifi 0.02
   ask text · weakest: route 0.93
 # The collection added again is installed whole already; update is what moves it.
 $ evoke add evoke-build/reflexes

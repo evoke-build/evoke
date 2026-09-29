@@ -74,6 +74,7 @@ impl<'a> One<'a, '_> {
             arg: self.arg.clone(),
             ask: self.argument.ask.clone(),
             because,
+            words: None,
             choices: choices(self.plan, self.reflex, self.arg, source, self.recalled()),
         })
     }
@@ -173,6 +174,7 @@ impl<'a> One<'a, '_> {
                     span: span.clone(),
                     range,
                 },
+                words: None,
                 choices: Choices::Pick {
                     pick: pick.recognizer(),
                     recent: self.recalled(),

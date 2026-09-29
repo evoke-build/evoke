@@ -31,3 +31,4 @@ route                      = { whisper = 0.95, none = 0.05 }
 "weave.view_lights__state" = { unstated = 1.0 }
 "weave.view_power__action" = { unstated = 1.0 }
 "weave.view_shout__tone"   = { unstated = 1.0 }
+"weave.left_whisper_0_0"   = { action = 0.9, courtesy = 0.1 }

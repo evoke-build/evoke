@@ -66,6 +66,18 @@
             "ask": "What should the lights do?",
             "yes": "Switch off.",
             "no": "Another one, or none."
+          },
+          "weave.left_lights_0_2": {
+            "type": "choice",
+            "ask": "In the request, what do the words «kill the lights» do?",
+            "options": {
+              "action": "They say what to do, or to what.",
+              "arg:room": "They answer: Which room?",
+              "arg:state": "They answer: What should the lights do?",
+              "arg:brightness": "They answer: How bright, in percent?",
+              "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
+              "more": "They ask for another thing as well."
+            }
           }
         },
         "proposed": []

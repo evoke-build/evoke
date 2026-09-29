@@ -35,6 +35,17 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -206,6 +217,26 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "list"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 18,
+                  "end": 25,
+                  "text": "deploys"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -310,6 +341,26 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "pull"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 18,
+                  "end": 22,
+                  "text": "logs"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -402,6 +453,17 @@
             "args": {},
             "call": "suspect",
             "effect": "read",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "find the suspect"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -528,6 +590,35 @@
             "outcome": "ask",
             "reflex": "errors",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 21,
+                  "end": 29,
+                  "text": "checkout"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 38,
+                  "end": 46,
+                  "text": "payments"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -665,6 +756,35 @@
               "outcome": "ask",
               "reflex": "errors",
               "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "check the errors"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 21,
+                    "end": 29,
+                    "text": "checkout"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 38,
+                    "end": 46,
+                    "text": "payments"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "unconsumed": [],
               "confidence": 0.9,
               "weakest": {
@@ -790,6 +910,26 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "list"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 18,
+                    "end": 25,
+                    "text": "deploys"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -911,6 +1051,26 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "pull"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 18,
+                    "end": 22,
+                    "text": "logs"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -1021,6 +1181,17 @@
               "args": {},
               "call": "suspect",
               "effect": "read",
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "find the suspect"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

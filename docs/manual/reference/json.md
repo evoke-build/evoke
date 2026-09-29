@@ -24,9 +24,10 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `contenders` | ●   | ●       | ●   | ●       | The ranking: `{ reflex, route, fits? }`                         |
 | `runner_up`  | ○   | ○       | ○   |         | The second reflex, when there is one                            |
 | `prompt`     |     | ●       |     |         | `{ own, template }`: `evoke`'s line and the reflex's question   |
-| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `unconsumed_span`, `two_things`, `merged` |
+| `left`       | ○   | ○       | ○   |         | The words of the input that no value holds, each with what it does: `{ words, does, p }`, `does` one of `action`, `answers` with its `arg`, `nothing`, `more` |
+| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `more`, `unconsumed_span`, `two_things`, `merged` |
 | `unconsumed` |     |         | ●   |         | Typed spans no argument took                                    |
-| `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because` (`unstated`, `out_of_range`, `not_offered` or `unsettled`), `choices`; a pick's `choices.recent` lists the values recalled from this session's results, when any |
+| `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because` (`unstated`, `out_of_range`, `not_offered`, `unsettled` or `unread`), `words` when the input holds words that answer the ask, `choices`; a pick's `choices.recent` lists the values recalled from this session's results, when any |
 | `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call, a round of questions each: `{ adapter, questions, ms }`. Empty when the answers came from the cache |
 | `result`     | ○   |         |     |         | `{ text, data? }` when the body ran                             |
 | `contained`  | ○   |         |     |         | Whenever the body ran, with `result` or `error`: whether this machine held it to its declaration, `{ "type": "full" }`, or `"partial"` or `"none"` with `why`, one sentence |

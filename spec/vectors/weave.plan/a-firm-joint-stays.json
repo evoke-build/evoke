@@ -35,6 +35,26 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "pull"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 17,
+                  "end": 34,
+                  "text": "bank transactions"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -107,6 +127,17 @@
             "args": {},
             "call": "reconcile",
             "effect": "read",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 54,
+                  "text": "reconcile them against the invoices, cards and payroll"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -174,6 +205,17 @@
             "args": {},
             "call": "reconcile",
             "effect": "read",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 35,
+                  "text": "reconcile them against the invoices"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -296,6 +338,26 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "pull"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 17,
+                    "end": 34,
+                    "text": "bank transactions"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -370,6 +432,17 @@
               "args": {},
               "call": "reconcile",
               "effect": "read",
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 54,
+                    "text": "reconcile them against the invoices, cards and payroll"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

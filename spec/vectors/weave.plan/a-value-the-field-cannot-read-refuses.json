@@ -24,6 +24,17 @@
             "args": {},
             "call": "runbook",
             "effect": "destructive",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 17,
+                  "text": "drain the primary"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -103,6 +114,17 @@
             "args": {},
             "call": "drain",
             "effect": "write",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 33,
+                  "text": "drain connections off the primary"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -165,6 +187,26 @@
             "args": {},
             "call": "failover",
             "effect": "destructive",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "fail"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 17,
+                  "end": 24,
+                  "text": "replica"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -236,6 +278,26 @@
             "args": {},
             "call": "verify",
             "effect": "read",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 25,
+                  "text": "check whether writes land"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 33,
+                  "end": 44,
+                  "text": "new primary"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -310,6 +372,26 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "tell"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 13,
+                  "end": 41,
+                  "text": "channel the failover is done"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -377,6 +459,26 @@
             "args": {},
             "call": "failback",
             "effect": "destructive",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 9,
+                  "text": "fail back"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 17,
+                  "end": 28,
+                  "text": "old primary"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -463,6 +565,17 @@
               "args": {},
               "call": "drain",
               "effect": "write",
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 33,
+                    "text": "drain connections off the primary"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -534,6 +647,26 @@
               "args": {},
               "call": "failover",
               "effect": "destructive",
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "fail"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 17,
+                    "end": 24,
+                    "text": "replica"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -614,6 +747,26 @@
               "args": {},
               "call": "verify",
               "effect": "read",
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 25,
+                    "text": "check whether writes land"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 33,
+                    "end": 44,
+                    "text": "new primary"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -713,6 +866,26 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "tell"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 13,
+                    "end": 41,
+                    "text": "channel the failover is done"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -789,6 +962,26 @@
               "args": {},
               "call": "failback",
               "effect": "destructive",
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 9,
+                    "text": "fail back"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 17,
+                    "end": 28,
+                    "text": "old primary"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

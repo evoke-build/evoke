@@ -56,6 +56,17 @@
                   "p": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "move the meeting"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "meeting.day",
@@ -215,6 +226,10 @@
               "unstated": 0.9,
               "checkout": 0.05,
               "payments": 0.05
+            },
+            "weave.left_meeting_0_2": {
+              "action": 0.9,
+              "courtesy": 0.1
             }
           }
         }
@@ -277,6 +292,17 @@
                   "p": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "move the meeting"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "meeting.day",
@@ -432,6 +458,10 @@
               "unstated": 0.9,
               "checkout": 0.05,
               "payments": 0.05
+            },
+            "weave.left_meeting_0_2": {
+              "action": 0.9,
+              "courtesy": 0.1
             }
           },
           "decision": {
@@ -478,6 +508,17 @@
                 "p": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "move the meeting"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "meeting.day",

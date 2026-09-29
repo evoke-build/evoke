@@ -58,6 +58,26 @@
             "args": {},
             "call": "failback",
             "effect": "destructive",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 9,
+                  "text": "fail back"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 17,
+                  "end": 28,
+                  "text": "old primary"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",

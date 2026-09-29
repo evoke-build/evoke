@@ -7,6 +7,7 @@ use std::fmt::Write as _;
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
+use crate::account::{self, Does, Left};
 use crate::adapter::{
     Choice, Fault, Gate, Key, Prob, Question, QuestionId, Raw, Request, State, Text,
 };
@@ -97,6 +98,9 @@ pub struct Winner {
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub basis: IndexMap<ArgName, Basis>,
     pub missing: Vec<Missing>,
+    /// The runs of the request's words that no value holds, with what each does.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub left: Vec<Left>,
     pub unconsumed: Vec<Span>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub runner_up: Option<Contender>,
@@ -199,6 +203,9 @@ pub struct Missing {
     pub arg: ArgName,
     pub ask: Clean,
     pub because: Why,
+    /// The words of the request that answer the ask, where the reading found them.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub words: Option<Span>,
     pub choices: Choices,
 }
 
@@ -214,6 +221,8 @@ pub enum Why {
     NotOffered,
     /// Stated, and read two ways that do not agree.
     Unsettled,
+    /// Stated in words that answer the ask, which nothing read as a value.
+    Unread,
 }
 
 /// What a person may answer with; a vocabulary also prompts to add a word; a pick that names a yielded field
@@ -269,6 +278,9 @@ pub struct Chosen {
     /// What each value read from the request stands on; a value a person gave has none.
     #[serde(skip_serializing_if = "IndexMap::is_empty")]
     pub basis: IndexMap<ArgName, Basis>,
+    /// The runs of the request's words that no value holds, with what each does.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub left: Vec<Left>,
     #[serde(flatten)]
     pub judged: Option<Judged>,
 }
@@ -281,6 +293,8 @@ struct RawChosen {
     effect: Effect,
     #[serde(default)]
     basis: IndexMap<ArgName, Basis>,
+    #[serde(default)]
+    left: Vec<Left>,
     confidence: Option<Prob>,
     weakest: Option<Judgment>,
     judgments: Option<NonEmpty<Judgment>>,
@@ -313,6 +327,7 @@ impl TryFrom<RawChosen> for Chosen {
             call: raw.call,
             effect: raw.effect,
             basis: raw.basis,
+            left: raw.left,
             judged,
         })
     }
@@ -447,6 +462,8 @@ pub struct Asking {
     pub args: IndexMap<ArgName, Value>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub basis: IndexMap<ArgName, Basis>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub left: Vec<Left>,
     pub unconsumed: Vec<Span>,
     #[serde(flatten)]
     pub judged: Judged,
@@ -469,6 +486,10 @@ pub enum Cap {
     /// A value read from words that do not spell it as it is typed: a day misspelt, a code typed with spaces.
     Respelt {
         arg: ArgName,
+    },
+    /// Words of the request that ask for another thing, which the call does not hold.
+    More {
+        words: Span,
     },
     UnconsumedSpan {
         span: Span,
@@ -516,6 +537,9 @@ impl Prompt {
                     let _ = write!(own, " · also {} ({judged})", contender.reflex);
                 }
                 Cap::Merged => own.push_str(" · merged"),
+                Cap::More { words } => {
+                    let _ = write!(own, " · also {}", quoted(words.text().as_str()));
+                }
                 Cap::OneView { arg } | Cap::Respelt { arg } => {
                     if let Some(words) = from(chosen, arg) {
                         let _ = write!(own, " · {arg} from {}", quoted(words.as_str()));
@@ -1206,6 +1230,9 @@ pub(crate) fn top(choice: &Choice, answer: &IndexMap<Key, Prob>) -> Option<(Key,
         .reduce(|best, next| if next.1 > best.1 { next } else { best })
 }
 
+/// At this share a run of words answers an argument's ask, or asks for another thing.
+const LEFT: f64 = 0.5;
+
 /// The validated answers over the request and the plan they were asked from.
 struct Reader<'a> {
     plan: &'a Plan,
@@ -1321,6 +1348,8 @@ impl Reader<'_> {
             .filter(|proposed| proposed.value.is_typed() && !consumed.contains(&&proposed.span))
             .map(|proposed| proposed.span.clone())
             .collect();
+        let left = self.account(&reflex, active, &args, &basis, open);
+        self.answered(&reflex, active, &args, &left, &mut missing);
         Ok((
             judgments,
             Winner {
@@ -1328,10 +1357,98 @@ impl Reader<'_> {
                 args,
                 basis,
                 missing,
+                left,
                 unconsumed,
                 runner_up,
             },
         ))
+    }
+
+    /// Words that answer an ask the call holds no value for: the argument is asked, with the words.
+    fn answered(
+        &self,
+        reflex: &LocalName,
+        active: &Active,
+        args: &IndexMap<ArgName, Value>,
+        left: &[Left],
+        missing: &mut Vec<Missing>,
+    ) {
+        for run in left {
+            let Does::Answers { arg } = &run.does else {
+                continue;
+            };
+            if run.p.get() < LEFT || args.contains_key(arg) {
+                continue;
+            }
+            if let Some(asked) = missing.iter_mut().find(|asked| asked.arg == *arg) {
+                asked.words.get_or_insert_with(|| run.words.clone());
+            } else if let Some(argument) = active.args.get(arg)
+                && let Kind::Value { source, .. } = &argument.kind
+            {
+                missing.push(Missing {
+                    arg: arg.clone(),
+                    ask: argument.ask.clone(),
+                    because: Why::Unread,
+                    words: Some(run.words.clone()),
+                    choices: choices(self.plan, reflex, arg, source, None),
+                });
+            }
+        }
+    }
+
+    /// The account of the winner's text: the runs of its words that no value holds, each read from the answer
+    /// to what it does; a run not asked about yet is put in `open`, and says nothing.
+    fn account(
+        &self,
+        reflex: &LocalName,
+        active: &Active,
+        args: &IndexMap<ArgName, Value>,
+        basis: &IndexMap<ArgName, Basis>,
+        open: &mut IndexMap<QuestionId, Question>,
+    ) -> Vec<Left> {
+        let held: Vec<&Span> = args
+            .iter()
+            .filter_map(|(arg, value)| self.held(reflex, arg, value, basis.get(arg)))
+            .collect();
+        let mut left = Vec::new();
+        for run in account::runs(&self.request.state.request, &held) {
+            let id = pins::left(reflex, run.from, run.to);
+            let question = account::question(&run, &active.args);
+            match self.answers.get(&id) {
+                Some(answer) => left.extend(account::read(&run, &question, answer)),
+                None => {
+                    open.insert(id, question);
+                }
+            }
+        }
+        left
+    }
+
+    /// The words of the request that hold a value: a pick's own span, a listed word's where words hold it.
+    fn held<'v>(
+        &'v self,
+        reflex: &LocalName,
+        arg: &ArgName,
+        value: &'v Value,
+        stands: Option<&'v Basis>,
+    ) -> Option<&'v Span> {
+        match (value, stands) {
+            (Value::Pick { span, .. }, _) => Some(span),
+            (_, Some(Basis::View { words, .. } | Basis::Words { words, .. })) => Some(words),
+            (Value::Option { key }, _) => self.word_held(reflex, arg, key.as_str()),
+            (Value::Word { word, .. }, _) => self.word_held(reflex, arg, word.as_str()),
+            (Value::Flag, _) => None,
+        }
+    }
+
+    /// The words code found that hold a listed word of an argument.
+    fn word_held(&self, reflex: &LocalName, arg: &ArgName, key: &str) -> Option<&Span> {
+        self.request
+            .listed
+            .get(&QuestionId::Arg(reflex.clone(), arg.clone()))?
+            .iter()
+            .find(|held| held.key.as_str() == key)
+            .map(|held| &held.span)
     }
 
     /// The values the request kept for a pick's ask from the session's results, when it kept any.
@@ -1404,6 +1521,7 @@ pub(crate) fn unstated(
         arg: arg.clone(),
         ask: argument.ask.clone(),
         because: Why::Unstated,
+        words: None,
         choices: choices(plan, reflex, arg, source, recent),
     }
 }
@@ -1512,6 +1630,7 @@ pub fn gate(plan: &Plan, reading: Reading, gate: Option<&Gate>) -> Decision {
             reflex: winner.reflex,
             args,
             basis: winner.basis,
+            left: winner.left,
             unconsumed: winner.unconsumed,
             judged,
         },
@@ -1546,6 +1665,7 @@ pub fn carry(
         reflex,
         mut args,
         mut basis,
+        left,
         unconsumed,
         judged,
     } = asking;
@@ -1568,6 +1688,7 @@ pub fn carry(
             reflex,
             args,
             basis,
+            left,
             unconsumed,
             judged,
         },
@@ -1593,6 +1714,7 @@ fn decided(
         },
         effect: active.effect,
         basis: asking.basis,
+        left: asking.left,
         judged: Some(asking.judged),
     };
     capped(active, chosen, asking.unconsumed, gate)
@@ -1644,6 +1766,7 @@ fn settled(
                 arg: arg.clone(),
                 ask: argument.ask.clone(),
                 because,
+                words: None,
                 choices: choices(plan, reflex, arg, source, None),
             }),
             // A flag given anything but itself is absent.
@@ -1730,6 +1853,15 @@ fn capped(active: &Active, chosen: Chosen, unconsumed: Vec<Span>, gate: Option<&
             .basis
             .iter()
             .filter_map(|(arg, stands)| stands.cap(arg)),
+    );
+    because.extend(
+        chosen
+            .left
+            .iter()
+            .filter(|run| run.does == Does::More && run.p.get() >= LEFT)
+            .map(|run| Cap::More {
+                words: run.words.clone(),
+            }),
     );
     because.extend(
         unconsumed
@@ -1898,6 +2030,7 @@ pub fn by_name(plan: &Plan, written: Written) -> Result<Decision, Diagnostic> {
         call: Call { reflex, args },
         effect: active.effect,
         basis: IndexMap::new(),
+        left: Vec::new(),
         judged: None,
     };
     if chosen.effect != Effect::Destructive {

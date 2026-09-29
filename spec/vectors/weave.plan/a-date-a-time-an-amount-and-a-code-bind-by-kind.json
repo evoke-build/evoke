@@ -35,6 +35,17 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 13,
+                  "text": "find a flight"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "flights.to",
@@ -110,6 +121,26 @@
             "outcome": "ask",
             "reflex": "seats",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 17,
+                  "text": "show the seat map"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 26,
+                  "end": 32,
+                  "text": "flight"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -199,6 +230,26 @@
             "outcome": "ask",
             "reflex": "weather",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 17,
+                  "text": "check the weather"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 26,
+                  "end": 29,
+                  "text": "day"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -288,6 +339,26 @@
             "outcome": "ask",
             "reflex": "traffic",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 17,
+                  "text": "check the traffic"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 27,
+                  "end": 36,
+                  "text": "departure"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -377,6 +448,17 @@
             "outcome": "ask",
             "reflex": "convert",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "convert the fare"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -520,6 +602,17 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 13,
+                    "text": "find a flight"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "flights.to",
@@ -597,6 +690,26 @@
               "outcome": "ask",
               "reflex": "seats",
               "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 17,
+                    "text": "show the seat map"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 26,
+                    "end": 32,
+                    "text": "flight"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "unconsumed": [],
               "confidence": 0.9,
               "weakest": {
@@ -705,6 +818,26 @@
               "outcome": "ask",
               "reflex": "weather",
               "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 17,
+                    "text": "check the weather"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 26,
+                    "end": 29,
+                    "text": "day"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "unconsumed": [],
               "confidence": 0.9,
               "weakest": {
@@ -814,6 +947,26 @@
               "outcome": "ask",
               "reflex": "traffic",
               "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 17,
+                    "text": "check the traffic"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 27,
+                    "end": 36,
+                    "text": "departure"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "unconsumed": [],
               "confidence": 0.9,
               "weakest": {
@@ -923,6 +1076,17 @@
               "outcome": "ask",
               "reflex": "convert",
               "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "convert the fare"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "unconsumed": [],
               "confidence": 0.9,
               "weakest": {

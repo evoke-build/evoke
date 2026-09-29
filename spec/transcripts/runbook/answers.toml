@@ -17,6 +17,7 @@ route                      = { runbook = 0.9, drain = 0.08, none = 0.02 }
 "fits.failback"            = { yes = 0.02 }
 "fits.runbook"             = { yes = 0.8 }
 "weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"weave.left_runbook_0_2"   = { action = 0.9, courtesy = 0.1 }
 "weave.ref_2_0"            = { step0 = 0.9, step1 = 0.1 }
 
 [answers."drain connections off the primary"]
@@ -29,6 +30,7 @@ route                      = { drain = 0.9, runbook = 0.06, none = 0.04 }
 "fits.failback"            = { yes = 0.02 }
 "fits.runbook"             = { yes = 0.1 }
 "weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"weave.left_drain_0_4"     = { action = 0.9, courtesy = 0.1 }
 
 [answers."fail over to the replica"]
 route                      = { failover = 0.9, drain = 0.03, none = 0.07 }
@@ -40,6 +42,8 @@ route                      = { failover = 0.9, drain = 0.03, none = 0.07 }
 "fits.failback"            = { yes = 0.02 }
 "fits.runbook"             = { yes = 0.02 }
 "weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"weave.left_failover_0_0"  = { action = 0.9, courtesy = 0.1 }
+"weave.left_failover_4_4"  = { action = 0.9, courtesy = 0.1 }
 
 [answers."check whether writes land on the new primary"]
 route                      = { verify = 0.9, drain = 0.03, none = 0.07 }
@@ -51,6 +55,8 @@ route                      = { verify = 0.9, drain = 0.03, none = 0.07 }
 "fits.failback"            = { yes = 0.02 }
 "fits.runbook"             = { yes = 0.02 }
 "weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"weave.left_verify_0_3"    = { action = 0.9, courtesy = 0.1 }
+"weave.left_verify_6_7"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."tell the ops channel the failover is done"]
 route                      = { tell = 0.9, drain = 0.03, none = 0.07 }
@@ -63,6 +69,8 @@ route                      = { tell = 0.9, drain = 0.03, none = 0.07 }
 "fits.runbook"             = { yes = 0.02 }
 "weave.view_tell__channel" = { "#ops" = 0.9, unstated = 0.1 }
 "weave.is_tell__channel_0" = { yes = 0.9 }
+"weave.left_tell_0_0"      = { action = 0.9, courtesy = 0.1 }
+"weave.left_tell_3_7"      = { action = 0.9, courtesy = 0.1 }
 
 [answers."fail back to the old primary"]
 route                      = { failback = 0.9, drain = 0.03, none = 0.07 }
@@ -74,6 +82,8 @@ route                      = { failback = 0.9, drain = 0.03, none = 0.07 }
 "fits.failback"            = { yes = 0.8 }
 "fits.runbook"             = { yes = 0.02 }
 "weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"weave.left_failback_0_1"  = { action = 0.9, courtesy = 0.1 }
+"weave.left_failback_4_5"  = { action = 0.9, courtesy = 0.1 }
 
 [answers."run the failover runbook"]
 route                      = { runbook = 0.9, failover = 0.03, none = 0.07 }
@@ -86,6 +96,7 @@ route                      = { runbook = 0.9, failover = 0.03, none = 0.07 }
 "fits.runbook"             = { yes = 0.8 }
 "weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
 "weave.is_tell__channel_0" = { yes = 0.05 }
+"weave.left_runbook_0_3"   = { action = 0.9, courtesy = 0.1 }
 
 [answers."switch the database to the replica"]
 route                      = { runbook = 0.9, failover = 0.03, none = 0.07 }
@@ -98,6 +109,8 @@ route                      = { runbook = 0.9, failover = 0.03, none = 0.07 }
 "fits.runbook"             = { yes = 0.8 }
 "weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
 "weave.is_tell__channel_1" = { yes = 0.05 }
+"weave.left_runbook_0_2"   = { action = 0.9, courtesy = 0.1 }
+"weave.left_runbook_5_5"   = { action = 0.9, courtesy = 0.1 }
 
 [answers."the primary is dying, fail over"]
 route                      = { runbook = 0.9, failover = 0.03, none = 0.07 }
@@ -109,3 +122,4 @@ route                      = { runbook = 0.9, failover = 0.03, none = 0.07 }
 "fits.failback"            = { yes = 0.02 }
 "fits.runbook"             = { yes = 0.8 }
 "weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"weave.left_runbook_1_4"   = { action = 0.9, courtesy = 0.1 }

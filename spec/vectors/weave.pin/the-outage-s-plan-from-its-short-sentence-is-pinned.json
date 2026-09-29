@@ -54,6 +54,26 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 5,
+                  "text": "check"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 17,
+                  "end": 23,
+                  "text": "errors"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -184,6 +204,26 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "list"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 16,
+                  "end": 23,
+                  "text": "deploys"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -314,6 +354,26 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 6,
+                  "text": "search"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 18,
+                  "end": 22,
+                  "text": "logs"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -423,6 +483,17 @@
             "args": {},
             "call": "suspect",
             "effect": "read",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 23,
+                  "text": "find the release behind"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -571,6 +642,35 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "roll"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 14,
+                  "end": 18,
+                  "text": "back"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 29,
+                  "end": 36,
+                  "text": "release"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -729,6 +829,26 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "post"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 21,
+                  "end": 28,
+                  "text": "channel"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -842,6 +962,17 @@
                 "reader": 0.9
               }
             },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 22,
+                  "text": "update the status page"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -1218,6 +1349,10 @@
           },
           "weave.is_outage__region_0": {
             "yes": 0.9
+          },
+          "weave.left_outage_2_2": {
+            "action": 0.9,
+            "courtesy": 0.1
           }
         }
       },
@@ -1426,6 +1561,14 @@
           },
           "weave.is_outage__region_0": {
             "yes": 0.05
+          },
+          "weave.left_errors_0_0": {
+            "action": 0.9,
+            "courtesy": 0.1
+          },
+          "weave.left_errors_2_2": {
+            "action": 0.9,
+            "courtesy": 0.1
           }
         }
       },
@@ -1634,6 +1777,14 @@
           },
           "weave.is_outage__region_0": {
             "yes": 0.05
+          },
+          "weave.left_deploys_0_0": {
+            "action": 0.9,
+            "courtesy": 0.1
+          },
+          "weave.left_deploys_2_2": {
+            "action": 0.9,
+            "courtesy": 0.1
           }
         }
       },
@@ -1860,6 +2011,14 @@
           },
           "weave.is_outage__region_0": {
             "yes": 0.05
+          },
+          "weave.left_logs_0_0": {
+            "action": 0.9,
+            "courtesy": 0.1
+          },
+          "weave.left_logs_2_2": {
+            "action": 0.9,
+            "courtesy": 0.1
           }
         }
       },
@@ -2039,6 +2198,10 @@
             "unstated": 0.9,
             "eu-west": 0.05,
             "us-east": 0.05
+          },
+          "weave.left_suspect_0_3": {
+            "action": 0.9,
+            "courtesy": 0.1
           }
         }
       },
@@ -2250,6 +2413,18 @@
           },
           "weave.is_outage__region_0": {
             "yes": 0.05
+          },
+          "weave.left_rollback_0_0": {
+            "action": 0.9,
+            "courtesy": 0.1
+          },
+          "weave.left_rollback_2_2": {
+            "action": 0.9,
+            "courtesy": 0.1
+          },
+          "weave.left_rollback_5_5": {
+            "action": 0.9,
+            "courtesy": 0.1
           }
         }
       },
@@ -2430,6 +2605,14 @@
             "unstated": 0.9,
             "eu-west": 0.05,
             "us-east": 0.05
+          },
+          "weave.left_post_0_0": {
+            "action": 0.9,
+            "courtesy": 0.1
+          },
+          "weave.left_post_4_4": {
+            "action": 0.9,
+            "courtesy": 0.1
           }
         }
       },
@@ -2640,6 +2823,10 @@
           },
           "weave.is_outage__region_1": {
             "yes": 0.05
+          },
+          "weave.left_status_0_3": {
+            "action": 0.9,
+            "courtesy": 0.1
           }
         }
       },

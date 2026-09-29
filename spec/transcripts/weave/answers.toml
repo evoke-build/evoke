@@ -44,6 +44,7 @@ route                      = { lights = 0.91, timer = 0.02, volume = 0.01, none 
 "weave.view_lights__state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
 "weave.view_contact__name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
 "weave.is_lights__state_1" = { yes = 0.9 }
+"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."start a 10 minute timer"]
 route                             = { timer = 0.9, lights = 0.02, volume = 0.02, none = 0.06 }
@@ -66,6 +67,8 @@ route                             = { timer = 0.9, lights = 0.02, volume = 0.02,
 "weave.view_lights__state"        = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "weave.only_timer__duration_8_17" = { yes = 0.05 }
 "weave.view_contact__name"        = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"weave.left_timer_0_0"            = { action = 0.9, courtesy = 0.1 }
+"weave.left_timer_4_4"            = { action = 0.9, courtesy = 0.1 }
 
 [answers."start a 25 minute timer"]
 route                             = { timer = 0.9, lights = 0.02, volume = 0.02, none = 0.06 }
@@ -88,6 +91,8 @@ route                             = { timer = 0.9, lights = 0.02, volume = 0.02,
 "weave.view_lights__state"        = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "weave.only_timer__duration_8_17" = { yes = 0.05 }
 "weave.view_contact__name"        = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"weave.left_timer_0_0"            = { action = 0.9, courtesy = 0.1 }
+"weave.left_timer_4_4"            = { action = 0.9, courtesy = 0.1 }
 
 [answers."look up dana's address"]
 route                      = { contact = 0.9, mail = 0.03, lights = 0.01, none = 0.06 }
@@ -110,6 +115,8 @@ route                      = { contact = 0.9, mail = 0.03, lights = 0.01, none =
 "weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "weave.view_contact__name" = { dana = 0.9, sam = 0.02, unstated = 0.08 }
 "weave.is_contact__name_0" = { yes = 0.9 }
+"weave.left_contact_0_0"   = { action = 0.9, courtesy = 0.1 }
+"weave.left_contact_3_3"   = { action = 0.9, courtesy = 0.1 }
 
 [answers."email them"]
 route                      = { mail = 0.88, contact = 0.04, none = 0.08 }
@@ -131,6 +138,7 @@ route                      = { mail = 0.88, contact = 0.04, none = 0.08 }
 "weave.view_lights__room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
 "weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "weave.view_contact__name" = { unstated = 0.9, dana = 0.05, sam = 0.05 }
+"weave.left_mail_0_1"      = { action = 0.9, courtesy = 0.1 }
 
 [answers."feed the cat"]
 route                      = { none = 0.95, lights = 0.05 }
@@ -201,6 +209,7 @@ route                      = { lights = 0.9, timer = 0.02, volume = 0.02, none =
 "weave.view_lights__state" = { off = 0.58, on = 0.3, dim = 0.1, unstated = 0.02 }
 "weave.view_contact__name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
 "weave.is_lights__state_1" = { yes = 0.9 }
+"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."start a 10 minute timer for them"]
 route                             = { timer = 0.88, lights = 0.02, volume = 0.02, none = 0.08 }
@@ -223,6 +232,9 @@ route                             = { timer = 0.88, lights = 0.02, volume = 0.02
 "weave.view_lights__state"        = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "weave.only_timer__duration_8_17" = { yes = 0.05 }
 "weave.view_contact__name"        = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"weave.left_timer_0_0"            = { action = 0.9, courtesy = 0.1 }
+"weave.left_timer_4_4"            = { action = 0.9, courtesy = 0.1 }
+"weave.left_timer_6_6"            = { action = 0.9, courtesy = 0.1 }
 
 [answers."the office"]
 route                      = { none = 0.9, lights = 0.1 }
@@ -268,6 +280,7 @@ route                      = { lights = 0.92, none = 0.08 }
 "weave.view_lights__state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
 "weave.view_contact__name" = { unstated = 1.0 }
 "weave.is_lights__state_1" = { yes = 0.9 }
+"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."kill the lights in the den and the office"]
 "weave.split_0"            = { yes = 0.2 }
@@ -293,6 +306,8 @@ route                      = { lights = 0.9, timer = 0.01, volume = 0.01, none =
 "weave.view_lights__state" = { off = 0.85, on = 0.05, dim = 0.05, unstated = 0.05 }
 "weave.view_contact__name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
 "weave.is_lights__state_1" = { yes = 0.9 }
+"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+"weave.left_lights_8_8"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."start a 0 minute timer and kill the lights in the den"]
 "weave.split_0" = { yes = 0.95 }
@@ -320,6 +335,7 @@ route                      = { volume = 0.9, lights = 0.02, timer = 0.02, none =
 "weave.view_lights__room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
 "weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "weave.view_contact__name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"weave.left_volume_0_3"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."look up sam's address and copy them on a note to dana@example.com"]
 "weave.split_0" = { yes = 0.9 }
@@ -345,6 +361,8 @@ route                      = { contact = 0.9, mail = 0.03, lights = 0.01, none =
 "weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "weave.view_contact__name" = { sam = 0.9, dana = 0.02, unstated = 0.08 }
 "weave.is_contact__name_1" = { yes = 0.9 }
+"weave.left_contact_0_0"   = { action = 0.9, courtesy = 0.1 }
+"weave.left_contact_3_3"   = { action = 0.9, courtesy = 0.1 }
 
 [answers."copy them on a note to dana@example.com"]
 route                       = { mail = 0.85, contact = 0.05, none = 0.1 }
@@ -369,6 +387,8 @@ route                       = { mail = 0.85, contact = 0.05, none = 0.1 }
 "weave.view_contact__name"  = { unstated = 0.9, dana = 0.05, sam = 0.05 }
 "weave.only_mail__to_23_39" = { yes = 0.05 }
 "weave.only_mail__cc_23_39" = { yes = 0.05 }
+"weave.left_mail_0_1"       = { action = 0.9, courtesy = 0.1 }
+"weave.left_mail_4_4"       = { action = 0.9, courtesy = 0.1 }
 
 [answers."copy sam@example.com on a note to dana@example.com"]
 route                      = { none = 0.8, mail = 0.2 }
@@ -413,6 +433,8 @@ route                             = { timer = 0.9, lights = 0.02, volume = 0.02,
 "weave.view_lights__state"        = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "weave.only_timer__duration_8_16" = { yes = 0.05 }
 "weave.view_contact__name"        = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"weave.left_timer_0_0"            = { action = 0.9, courtesy = 0.1 }
+"weave.left_timer_4_4"            = { action = 0.9, courtesy = 0.1 }
 
 [answers."kill the lights in the den, then be quick"]
 "weave.split_0"            = { yes = 0.59 }
@@ -437,6 +459,8 @@ route                      = { lights = 0.91, timer = 0.02, volume = 0.01, none 
 "weave.view_lights__state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
 "weave.view_contact__name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
 "weave.is_lights__state_1" = { yes = 0.9 }
+"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+"weave.left_lights_8_8"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."be quick"]
 route                      = { none = 0.95, lights = 0.05 }
@@ -506,6 +530,8 @@ route                      = { lights = 1.0 }
 "weave.view_lights__state" = { off = 1.0 }
 "weave.view_contact__name" = { unstated = 1.0 }
 "weave.is_lights__state_1" = { yes = 0.9 }
+"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+"weave.left_lights_7_7"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."email dana@example.com and sam@example.com"]
 "weave.split_0"            = { yes = 0.31 }
@@ -528,6 +554,7 @@ route                      = { mail = 1.0 }
 "weave.view_lights__room"  = { unstated = 1.0 }
 "weave.view_lights__state" = { unstated = 1.0 }
 "weave.view_contact__name" = { unstated = 0.91, dana = 0.08, sam = 0.01 }
+"weave.left_mail_0_3"      = { action = 0.9, courtesy = 0.1 }
 
 [answers."email dana@example.com"]
 route                      = { mail = 1.0 }
@@ -551,6 +578,7 @@ route                      = { mail = 1.0 }
 "weave.view_contact__name" = { dana = 0.93, unstated = 0.07 }
 "weave.only_mail__to_6_22" = { yes = 0.05 }
 "weave.only_mail__cc_6_22" = { yes = 0.05 }
+"weave.left_mail_0_0"      = { action = 0.9, courtesy = 0.1 }
 
 [answers."sam@example.com"]
 route                      = { mail = 0.71, none = 0.29 }

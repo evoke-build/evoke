@@ -62,6 +62,26 @@
             },
             "call": "seats flight=\"TP1043\"",
             "effect": "read",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 17,
+                  "text": "show the seat map"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 26,
+                  "end": 32,
+                  "text": "flight"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -160,6 +180,26 @@
             },
             "call": "weather day=\"2026-05-06\"",
             "effect": "read",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 17,
+                  "text": "check the weather"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 26,
+                  "end": 29,
+                  "text": "day"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -253,6 +293,26 @@
             },
             "call": "traffic departure=\"18:40\"",
             "effect": "read",
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 17,
+                  "text": "check the traffic"
+                },
+                "does": "action",
+                "p": 0.9
+              },
+              {
+                "words": {
+                  "start": 27,
+                  "end": 36,
+                  "text": "departure"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "confidence": 0.9,
             "weakest": {
               "question": "route",

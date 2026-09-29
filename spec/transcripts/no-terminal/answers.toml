@@ -24,6 +24,7 @@ route                      = { lights = 0.9, timer = 0.02, volume = 0.02, none =
 "weave.view_lights__state" = { off = 0.58, on = 0.3, dim = 0.1, unstated = 0.02 }
 "weave.view_power__action" = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
 "weave.is_lights__state_1" = { yes = 0.9 }
+"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."start a timer"]
 route                      = { timer = 0.92, lights = 0.02, volume = 0.01, none = 0.05 }
@@ -41,6 +42,7 @@ route                      = { timer = 0.92, lights = 0.02, volume = 0.01, none 
 "weave.view_lights__room"  = { unstated = 0.8, den = 0.1, office = 0.1 }
 "weave.view_lights__state" = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
 "weave.view_power__action" = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+"weave.left_timer_0_2"     = { action = 0.9, courtesy = 0.1 }
 
 [answers."kill the lights in the den"]
 route                      = { lights = 0.91, timer = 0.02, volume = 0.01, none = 0.06 }
@@ -60,6 +62,7 @@ route                      = { lights = 0.91, timer = 0.02, volume = 0.01, none 
 "weave.view_lights__state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
 "weave.view_power__action" = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
 "weave.is_lights__state_1" = { yes = 0.9 }
+"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."restart the computer"]
 route                      = { power = 0.97, timer = 0.01, none = 0.02 }
@@ -78,6 +81,7 @@ route                      = { power = 0.97, timer = 0.01, none = 0.02 }
 "weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "weave.view_power__action" = { restart = 0.97, sleep = 0.01, shutdown = 0.01, unstated = 0.01 }
 "weave.is_power__action_1" = { yes = 0.9 }
+"weave.left_power_2_2"     = { action = 0.9, courtesy = 0.1 }
 
 [answers."kill the lights and start a 25 minute timer"]
 "weave.split_0" = { yes = 0.95 }
@@ -102,3 +106,5 @@ route                             = { timer = 0.9, lights = 0.02, volume = 0.02,
 "weave.view_lights__state"        = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
 "weave.only_timer__duration_8_17" = { yes = 0.05 }
 "weave.view_power__action"        = { unstated = 0.94, sleep = 0.02, restart = 0.02, shutdown = 0.02 }
+"weave.left_timer_0_0"            = { action = 0.9, courtesy = 0.1 }
+"weave.left_timer_4_4"            = { action = 0.9, courtesy = 0.1 }

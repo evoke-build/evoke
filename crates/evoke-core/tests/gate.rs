@@ -240,6 +240,7 @@ fn reading() -> impl Strategy<Value = Reading> {
                     args,
                     basis: IndexMap::new(),
                     missing: Vec::new(),
+                    left: Vec::new(),
                     unconsumed: Vec::new(),
                     runner_up: Some(runner_up),
                 }),

@@ -63,6 +63,17 @@
           }
         },
         "missing": [],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 18,
+              "text": "roll checkout back"
+            },
+            "does": "action",
+            "p": 0.9
+          }
+        ],
         "unconsumed": [],
         "runner_up": {
           "reflex": "deploys",
@@ -105,6 +116,17 @@
         "yes": 0.92
       }
     },
+    "left": [
+      {
+        "words": {
+          "start": 0,
+          "end": 18,
+          "text": "roll checkout back"
+        },
+        "does": "action",
+        "p": 0.9
+      }
+    ],
     "confidence": 0.92,
     "weakest": {
       "question": "weave.said_rollback__release_22_41",

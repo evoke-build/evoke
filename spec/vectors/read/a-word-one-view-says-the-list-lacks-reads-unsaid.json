@@ -157,6 +157,30 @@
           "ask": "What should the lights do?",
           "yes": "Switch off.",
           "no": "Another one, or none."
+        },
+        "weave.left_lights_0_2": {
+          "type": "choice",
+          "ask": "In the request, what do the words «kill the lights» do?",
+          "options": {
+            "action": "They say what to do, or to what.",
+            "arg:room": "They answer: Which room?",
+            "arg:state": "They answer: What should the lights do?",
+            "arg:brightness": "They answer: How bright, in percent?",
+            "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
+            "more": "They ask for another thing as well."
+          }
+        },
+        "weave.left_lights_5_5": {
+          "type": "choice",
+          "ask": "In the request, what do the words «den» do?",
+          "options": {
+            "action": "They say what to do, or to what.",
+            "arg:room": "They answer: Which room?",
+            "arg:state": "They answer: What should the lights do?",
+            "arg:brightness": "They answer: How bright, in percent?",
+            "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
+            "more": "They ask for another thing as well."
+          }
         }
       },
       "proposed": [],
@@ -223,6 +247,14 @@
       },
       "weave.is_lights__state_1": {
         "yes": 0.9
+      },
+      "weave.left_lights_0_2": {
+        "action": 0.9,
+        "courtesy": 0.1
+      },
+      "weave.left_lights_5_5": {
+        "action": 0.9,
+        "courtesy": 0.1
       }
     }
   },
@@ -293,6 +325,26 @@
                 "office": "The upstairs study."
               }
             }
+          }
+        ],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 15,
+              "text": "kill the lights"
+            },
+            "does": "action",
+            "p": 0.9
+          },
+          {
+            "words": {
+              "start": 23,
+              "end": 26,
+              "text": "den"
+            },
+            "does": "action",
+            "p": 0.9
           }
         ],
         "unconsumed": [],

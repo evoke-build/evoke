@@ -22,6 +22,17 @@
             "outcome": "ask",
             "reflex": "outage",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 4,
+                  "end": 28,
+                  "text": "API pods keep restarting"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
             "unconsumed": [],
             "confidence": 0.54,
             "weakest": {
@@ -144,6 +155,17 @@
               "outcome": "ask",
               "reflex": "outage",
               "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 4,
+                    "end": 28,
+                    "text": "API pods keep restarting"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "unconsumed": [],
               "confidence": 0.54,
               "weakest": {

@@ -43,6 +43,8 @@ These are the reasons a decision stops at confirm, in the order the line names t
   did not agree. The line names the argument and the word: `room from "snug"`.
 - **spelled another way**: a value was read from words that do not spell it as it is typed, like a day misspelt
   or a code typed with a space. The line names the words: `sku from "hs 0409"`.
+- **more words**: the input holds words that ask for another thing, which the call does not hold. The line
+  shows them: `also "lock the door too"`.
 - **an unconsumed span**: you typed something recognizable, like a duration or a URL, and no argument took it. A
   bare number never stops a call.
 - **two things**: a runner-up reflex fits well enough that the input may have asked for two things.
@@ -68,10 +70,12 @@ $ evoke "set the volume to 150 percent"
   volume level="40"  0.93
 volume set to 40%
 $ evoke "kill the lights in the garage"
-  Which room?  what you named is not on the list  [1] den  [2] office  [+] add one  > 2
+  Which room?  "garage" is not on the list  [1] den  [2] office  [+] add one  > 2
   lights room="office" state="off"  0.90
 group-7 lights off
 ```
+
+The prompt names the words of the input that answer the question, where `evoke` found them.
 
 - A choice takes its number or its own text. A pick takes what you type, read the same way as the input. A pick
   is a number, a duration, an address, a URL, a quoted phrase, a date, a time, an amount or a code. A quoted
@@ -138,8 +142,9 @@ distribution, each reflex's `fits`, then the outcome and the weakest judgment. A
 of prints no line, unless it is asked. Answers that would print as `0.00` fold into a count, `8 more under 0.01`;
 `none` and `unstated` always show. On an argument's line, `none` means the input states a value that is not among
 the choices. Under a value's line, a second line says what else the value stands on: what a second question
-about it answered, the words of the input that hold it, and the yes that took it. It shares the cache with a
-real decision. It is never logged.
+about it answered, the words of the input that hold it, and the yes that took it. The `words` line lists the
+words of the input that no value holds, with what each does: `say what to do`, `answer` an argument, `ask for
+nothing`, or `ask for another thing`. It shares the cache with a real decision. It is never logged.
 
 ```text
 $ evoke try "kill the lights"

@@ -44,6 +44,8 @@ route                           = { shipment = 0.9, stock = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.is_late__shipment_0"     = { yes = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_shipment_0_0"       = { action = 0.9, courtesy = 0.1 }
+"weave.left_shipment_3_3"       = { action = 0.9, courtesy = 0.1 }
 
 [answers."check our stock"]
 route                           = { stock = 0.9, shipment = 0.03, none = 0.07 }
@@ -70,6 +72,7 @@ route                           = { stock = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_stock_0_2"          = { action = 0.9, courtesy = 0.1 }
 
 [answers."get supplier quotes"]
 route                           = { quotes = 0.9, shipment = 0.03, none = 0.07 }
@@ -96,6 +99,7 @@ route                           = { quotes = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_quotes_0_2"         = { action = 0.9, courtesy = 0.1 }
 
 [answers."work out the shortfall"]
 route                           = { shortfall = 0.9, shipment = 0.03, none = 0.07 }
@@ -122,6 +126,7 @@ route                           = { shortfall = 0.9, shipment = 0.03, none = 0.0
 "weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_shortfall_0_3"      = { action = 0.9, courtesy = 0.1 }
 
 [answers."reserve each of them"]
 route                           = { reserve = 0.9, shipment = 0.03, none = 0.07 }
@@ -148,6 +153,7 @@ route                           = { reserve = 0.9, shipment = 0.03, none = 0.07 
 "weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_reserve_0_3"        = { action = 0.9, courtesy = 0.1 }
 
 [answers."buy the rest from nordic"]
 route                           = { buy = 0.9, shipment = 0.03, none = 0.07 }
@@ -176,6 +182,7 @@ route                           = { buy = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
 "weave.is_late__supplier_0"     = { yes = 0.05 }
+"weave.left_buy_0_2"            = { action = 0.9, courtesy = 0.1 }
 
 [answers."email ops@example.com"]
 route                           = { email = 0.9, shipment = 0.03, none = 0.07 }
@@ -204,6 +211,7 @@ route                           = { email = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
 "weave.only_late__to_6_21"      = { yes = 0.05 }
+"weave.left_email_0_0"          = { action = 0.9, courtesy = 0.1 }
 
 [answers."the rotterdam shipment is late"]
 route                           = { late = 0.9, shipment = 0.03, none = 0.07 }
@@ -234,6 +242,7 @@ route                           = { late = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { rotterdam = 0.9, unstated = 0.1 }
 "weave.is_late__shipment_0"     = { yes = 0.9 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_late_2_4"           = { action = 0.9, courtesy = 0.1 }
 "weave.ref_2_0"                 = { step0 = 0.9, step1 = 0.1 }
 
 [answers."check our stock for the rotterdam shipment"]
@@ -265,6 +274,8 @@ route                           = { stock = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.is_late__shipment_0"     = { yes = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_stock_0_2"          = { action = 0.9, courtesy = 0.1 }
+"weave.left_stock_6_6"          = { action = 0.9, courtesy = 0.1 }
 
 [answers."get supplier quotes for the rotterdam shipment"]
 route                           = { quotes = 0.9, shipment = 0.03, none = 0.07 }
@@ -295,6 +306,8 @@ route                           = { quotes = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.is_late__shipment_0"     = { yes = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_quotes_0_2"         = { action = 0.9, courtesy = 0.1 }
+"weave.left_quotes_6_6"         = { action = 0.9, courtesy = 0.1 }
 
 [answers."email the update to ops@example.com"]
 route                           = { email = 0.9, shipment = 0.03, none = 0.07 }
@@ -323,6 +336,7 @@ route                           = { email = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
 "weave.only_late__to_20_35"     = { yes = 0.05 }
+"weave.left_email_0_2"          = { action = 0.9, courtesy = 0.1 }
 
 [answers."reserve hs 0409"]
 route                           = { reserve = 0.9, shipment = 0.03, none = 0.07 }
@@ -350,6 +364,7 @@ route                           = { reserve = 0.9, shipment = 0.03, none = 0.07 
 "weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_reserve_0_0"        = { action = 0.9, courtesy = 0.1 }
 
 [answers."email dana dot weiss at example dot org"]
 route                           = { email = 0.9, shipment = 0.03, none = 0.07 }
@@ -378,6 +393,7 @@ route                           = { email = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
 "weave.said_late__to_6_39"      = { yes = 0.05 }
+"weave.left_email_0_0"          = { action = 0.9, courtesy = 0.1 }
 
 [answers."hamburg is running late"]
 route                           = { late = 0.9, shipment = 0.03, none = 0.07 }
@@ -408,6 +424,7 @@ route                           = { late = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { hamburg = 0.9, unstated = 0.1 }
 "weave.is_late__shipment_1"     = { yes = 0.9 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_late_2_3"           = { action = 0.9, courtesy = 0.1 }
 
 [answers."the antwerp container is delayed"]
 route                           = { late = 0.9, shipment = 0.03, none = 0.07 }
@@ -438,6 +455,7 @@ route                           = { late = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { antwerp = 0.9, unstated = 0.1 }
 "weave.is_late__shipment_2"     = { yes = 0.9 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_late_2_4"           = { action = 0.9, courtesy = 0.1 }
 
 [answers."our rotterdam pallets are held up"]
 route                           = { late = 0.9, shipment = 0.03, none = 0.07 }
@@ -472,6 +490,7 @@ route                           = { late = 0.9, shipment = 0.03, none = 0.07 }
 "weave.is_late__shipment_0"     = { yes = 0.9 }
 "weave.is_late__shipment_1"     = { yes = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_late_2_4"           = { action = 0.9, courtesy = 0.1 }
 
 [answers."deal with the delayed hamburg pallets for ops@example.com"]
 route                           = { late = 0.61, email = 0.39, none = 0.0 }
@@ -504,6 +523,9 @@ route                           = { late = 0.61, email = 0.39, none = 0.0 }
 "weave.is_late__shipment_1"     = { yes = 0.9 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
 "weave.only_late__to_42_57"     = { yes = 0.05 }
+"weave.left_late_0_0"           = { action = 0.9, courtesy = 0.1 }
+"weave.left_late_3_3"           = { action = 0.9, courtesy = 0.1 }
+"weave.left_late_5_5"           = { action = 0.9, courtesy = 0.1 }
 
 [answers."antwerp is delayed with baltic ready to cover"]
 route                           = { late = 0.86, buy = 0.03, none = 0.11 }
@@ -536,6 +558,9 @@ route                           = { late = 0.86, buy = 0.03, none = 0.11 }
 "weave.is_late__shipment_2"     = { yes = 0.9 }
 "weave.view_late__supplier"     = { baltic = 0.9, unstated = 0.1 }
 "weave.is_late__supplier_1"     = { yes = 0.9 }
+"weave.left_late_2_2"           = { action = 0.9, courtesy = 0.1 }
+"weave.left_late_5_5"           = { action = 0.9, courtesy = 0.1 }
+"weave.left_late_7_7"           = { action = 0.9, courtesy = 0.1 }
 
 [answers."did the antwerp container clear customs"]
 route                           = { shipment = 0.9, stock = 0.03, none = 0.07 }
@@ -566,6 +591,7 @@ route                           = { shipment = 0.9, stock = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.is_late__shipment_2"     = { yes = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_shipment_3_5"       = { action = 0.9, courtesy = 0.1 }
 
 [answers."the rotterdam container landed on schedule"]
 route                           = { none = 0.9, shipment = 0.1 }
@@ -652,6 +678,8 @@ route                           = { shipment = 0.9, stock = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.is_late__shipment_1"     = { yes = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_shipment_0_0"       = { action = 0.9, courtesy = 0.1 }
+"weave.left_shipment_3_3"       = { action = 0.9, courtesy = 0.1 }
 
 [answers."check our stock for the hamburg shipment"]
 route                           = { stock = 0.9, shipment = 0.03, none = 0.07 }
@@ -682,6 +710,8 @@ route                           = { stock = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.is_late__shipment_1"     = { yes = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_stock_0_2"          = { action = 0.9, courtesy = 0.1 }
+"weave.left_stock_6_6"          = { action = 0.9, courtesy = 0.1 }
 
 [answers."get supplier quotes for the hamburg shipment"]
 route                           = { quotes = 0.9, shipment = 0.03, none = 0.07 }
@@ -712,6 +742,8 @@ route                           = { quotes = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.is_late__shipment_1"     = { yes = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.left_quotes_0_2"         = { action = 0.9, courtesy = 0.1 }
+"weave.left_quotes_6_6"         = { action = 0.9, courtesy = 0.1 }
 
 [answers."buy the rest from baltic"]
 route                           = { buy = 0.9, shipment = 0.03, none = 0.07 }
@@ -740,3 +772,4 @@ route                           = { buy = 0.9, shipment = 0.03, none = 0.07 }
 "weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
 "weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
 "weave.is_late__supplier_1"     = { yes = 0.05 }
+"weave.left_buy_0_2"            = { action = 0.9, courtesy = 0.1 }

@@ -698,7 +698,7 @@ Turn the lights in one room on, off, or dim them.</span>
                 <p><strong>The address becomes the draft's recipient.</strong> contact returns an <code>email</code>, and mail's <code>to</code> takes an <code>email</code>. The kinds match, so the address passes.</p>
                 <p class="on"><strong>The draft is addressed to dana, and nothing is sent.</strong> Two more sentences wait in the tabs above: one where evoke asks first, and one where it stops.</p>
                 <p id="walk-a-look" data-point="look"><strong>«look up dana's address» reads as contact.</strong> <code class="said">contact 0.90 · none 0.06 · mail 0.03 · lights 0.01</code></p>
-                <p id="walk-a-dana" data-point="dana"><strong>«dana» is a word from your own list of people.</strong> <code class="said">name  dana 0.90 · unstated 0.08 · sam 0.02</code></p>
+                <p id="walk-a-dana" data-point="dana"><strong>«dana» is a word from your own list of people.</strong> <code class="said">name   dana 0.90 · unstated 0.08 · sam 0.02</code></p>
                 <p id="walk-a-and" data-point="and"><strong>evoke asks the classifier whether «and» separates two tasks. Here, the answer is yes.</strong> <code class="said">"splits":[{"start":22,"end":27,"word":"and","order":"and","p":0.9}]</code></p>
                 <p id="walk-a-email" data-point="email"><strong>«email them» reads as mail.</strong> <code class="said">mail 0.88 · none 0.08 · contact 0.04</code></p>
                 <p id="walk-a-them" data-point="them"><strong>«them» takes the email that step 1 found, the kind mail's <code>to</code> needs.</strong> <code class="said">"binds":[{"from":1,"to":2,"arg":"to","field":"email","kind":"email","via":"fill"}]</code></p>
@@ -710,7 +710,7 @@ Turn the lights in one room on, off, or dim them.</span>
                 <p><strong>So evoke asks before anything runs.</strong> When «them» points back at a step it can take nothing from, evoke asks first. Here, the answer was yes.</p>
                 <p class="on"><strong>Both steps ran, each on its own.</strong> The address had nowhere to go, so nothing passed.</p>
                 <p id="walk-b-look" data-point="look"><strong>«look up dana's address» reads as contact.</strong> <code class="said">contact 0.90 · none 0.06 · mail 0.03 · lights 0.01</code></p>
-                <p id="walk-b-dana" data-point="dana"><strong>«dana» is a word from your own list of people.</strong> <code class="said">name  dana 0.90 · unstated 0.08 · sam 0.02</code></p>
+                <p id="walk-b-dana" data-point="dana"><strong>«dana» is a word from your own list of people.</strong> <code class="said">name   dana 0.90 · unstated 0.08 · sam 0.02</code></p>
                 <p id="walk-b-and" data-point="and"><strong>evoke asks the classifier whether «and» separates two tasks. Here, the answer is yes.</strong> <code class="said">"splits":[{"start":22,"end":27,"word":"and","order":"and","p":0.9}]</code></p>
                 <p id="walk-b-timer" data-point="timer"><strong>«start a 10 minute timer for them» reads as timer.</strong> <code class="said">timer 0.88 · none 0.08 · lights 0.02 · volume 0.02</code></p>
                 <p id="walk-b-them" data-point="them"><strong>«them» points at step 1, but the timer takes no <code>email</code>.</strong> <code class="said">step 2 refers to step 1, but takes nothing from it</code></p>

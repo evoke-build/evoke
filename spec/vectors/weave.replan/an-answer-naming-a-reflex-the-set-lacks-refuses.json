@@ -30,6 +30,26 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "pull"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 17,
+                    "end": 34,
+                    "text": "bank transactions"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -116,6 +136,17 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 8,
+                    "text": "invoices"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -204,6 +235,17 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 13,
+                    "text": "card expenses"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -292,6 +334,17 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 7,
+                    "text": "payroll"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -367,6 +420,17 @@
               "args": {},
               "call": "reconcile",
               "effect": "read",
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 14,
+                    "text": "reconcile them"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -471,6 +535,26 @@
                   "reader": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 24,
+                    "text": "post the closing entries"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 32,
+                    "end": 38,
+                    "text": "ledger"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.78,
               "weakest": {
                 "question": "route",
@@ -580,6 +664,17 @@
                   "p": 0.9
                 }
               },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 15,
+                    "text": "send the report"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -927,6 +1022,14 @@
             },
             "weave.is_ledger__month_1": {
               "yes": 0.05
+            },
+            "weave.left_bank_0_0": {
+              "action": 0.9,
+              "courtesy": 0.1
+            },
+            "weave.left_bank_2_3": {
+              "action": 0.9,
+              "courtesy": 0.1
             }
           }
         },
@@ -1011,6 +1114,10 @@
               "unstated": 0.9,
               "august": 0.05,
               "september": 0.05
+            },
+            "weave.left_invoices_0_2": {
+              "action": 0.9,
+              "courtesy": 0.1
             }
           }
         },
@@ -1094,6 +1201,10 @@
               "unstated": 0.9,
               "august": 0.05,
               "september": 0.05
+            },
+            "weave.left_payroll_0_0": {
+              "action": 0.9,
+              "courtesy": 0.1
             }
           }
         },
@@ -1178,6 +1289,10 @@
               "unstated": 0.9,
               "august": 0.05,
               "september": 0.05
+            },
+            "weave.left_reconcile_0_1": {
+              "action": 0.9,
+              "courtesy": 0.1
             }
           }
         },
@@ -1262,6 +1377,14 @@
               "unstated": 0.9,
               "august": 0.05,
               "september": 0.05
+            },
+            "weave.left_ledger_0_3": {
+              "action": 0.9,
+              "courtesy": 0.1
+            },
+            "weave.left_ledger_6_6": {
+              "action": 0.9,
+              "courtesy": 0.1
             }
           }
         },
@@ -1350,6 +1473,10 @@
             },
             "weave.only_send__to_19_34": {
               "yes": 0.05
+            },
+            "weave.left_send_0_2": {
+              "action": 0.9,
+              "courtesy": 0.1
             }
           }
         },
@@ -1434,6 +1561,10 @@
               "unstated": 0.9,
               "august": 0.05,
               "september": 0.05
+            },
+            "weave.left_invoices_0_0": {
+              "action": 0.9,
+              "courtesy": 0.1
             }
           }
         },
@@ -1518,6 +1649,10 @@
               "unstated": 0.9,
               "august": 0.05,
               "september": 0.05
+            },
+            "weave.left_cards_0_1": {
+              "action": 0.9,
+              "courtesy": 0.1
             }
           }
         }

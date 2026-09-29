@@ -449,6 +449,7 @@ mod tests {
             },
             effect: Effect::Write,
             basis: IndexMap::new(),
+            left: Vec::new(),
             judged,
         }
     }

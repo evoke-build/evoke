@@ -805,12 +805,21 @@ export type Basis =
   /** The one candidate of its kind, and a yes says it is meant. */
   | { by: "only"; yes: Prob }
 
+/** What a run of words does in the request: it says what to do, answers an argument's ask, asks for nothing, or
+ *  asks for another thing. */
+export type Does = { does: "action" } | { does: "answers"; arg: ArgName } | { does: "nothing" } | { does: "more" }
+
+/** A run of the request's words that no value holds, with what it does and how sure that is. */
+export type Left = { words: Span; p: Prob } & Does
+
 /** The reflex that won the route, with what its arguments read, and what each value read stands on. */
 export interface Winner {
   reflex: LocalName
   args: Record<ArgName, Value>
   basis?: Record<ArgName, Basis>
   missing: Missing[]
+  /** The runs of the request's words that no value holds, with what each does. */
+  left?: Left[]
   /** Typed spans no argument consumed. */
   unconsumed: Span[]
   runner_up?: Contender
@@ -829,17 +838,20 @@ export interface Missing {
   /** The argument's question, as the manifest asks it. */
   ask: Clean
   because: Why
+  /** The words of the request that answer the ask, where the reading found them. */
+  words?: Span
   choices: Choices
 }
 
 /** Why a value is missing: the input never stated it, a pick fell outside its range, the input states one that
- *  is not among what is offered (a word the list lacks, a form no recognizer reads), or it states one that was
- *  read two ways which do not agree. */
+ *  is not among what is offered (a word the list lacks, a form no recognizer reads), it states one that was
+ *  read two ways which do not agree, or it holds words that answer the ask and that nothing read as a value. */
 export type Why =
   | { type: "unstated" }
   | { type: "out_of_range"; span: Span; range: Range }
   | { type: "not_offered" }
   | { type: "unsettled" }
+  | { type: "unread" }
 
 /** What a person may answer with; a vocabulary also prompts to add a word. */
 export type Choices =
@@ -856,7 +868,7 @@ export type Decision =
 
 /** A complete call with its effect, what each value read from the request stands on and, unless called by name,
  *  what the classifier judged. */
-export type Chosen = Call & { effect: Effect; basis?: Record<ArgName, Basis> } & (Judged | Unjudged)
+export type Chosen = Call & { effect: Effect; basis?: Record<ArgName, Basis>; left?: Left[] } & (Judged | Unjudged)
 
 /** Called by name, so nothing was judged: no field of `Judged` is present. */
 export type Unjudged = { [K in keyof Judged]?: never }
@@ -877,6 +889,7 @@ export interface Asking extends Judged {
   reflex: LocalName
   args: Record<ArgName, Value>
   basis?: Record<ArgName, Basis>
+  left?: Left[]
   /** Typed spans no argument consumed. */
   unconsumed: Span[]
 }
@@ -890,6 +903,8 @@ export type Cap =
   | { type: "one_view"; arg: ArgName }
   /** A value read from words that do not spell it as it is typed: a day misspelt, a code typed with spaces. */
   | { type: "respelt"; arg: ArgName }
+  /** Words of the request that ask for another thing, which the call does not hold. */
+  | { type: "more"; words: Span }
   | { type: "unconsumed_span"; span: Span }
   | { type: "two_things"; contender: Contender }
   /** A weave merged a part that matched nothing on its own back into these words: never run unasked. */

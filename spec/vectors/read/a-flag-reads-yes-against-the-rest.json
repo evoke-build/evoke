@@ -4,7 +4,128 @@
       "$ref": "fixtures/plan-screenshot.json"
     },
     "request": {
-      "$ref": "fixtures/request-screenshot-window.json"
+      "state": {
+        "request": "screenshot this window"
+      },
+      "questions": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "screenshot": {
+              "what": "Capture the screen, a window or a selection.\nSaved to the desktop as PNG, or copied to the clipboard.",
+              "not_for": [
+                "recording the screen"
+              ],
+              "examples": [
+                "take a screenshot",
+                "screenshot this window",
+                "grab the screen to the clipboard"
+              ]
+            },
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        },
+        "fits.screenshot": {
+          "type": "yesno",
+          "ask": "Does `screenshot` do the specific thing the request asks for?",
+          "yes": "Capture the screen, a window or a selection.\nSaved to the desktop as PNG, or copied to the clipboard.",
+          "no": "Something else, such as: recording the screen."
+        },
+        "screenshot.area": {
+          "type": "choice",
+          "ask": "The whole screen, a window, or a selection?",
+          "options": {
+            "screen": {
+              "what": "Everything on every display.",
+              "examples": [
+                "grab the screen to the clipboard"
+              ]
+            },
+            "window": {
+              "what": "One window, chosen by clicking it.",
+              "examples": [
+                "screenshot this window"
+              ]
+            },
+            "none": "The request names one that is not in this list.",
+            "unstated": {
+              "what": "The request does not say.",
+              "examples": [
+                "take a screenshot"
+              ]
+            }
+          },
+          "otherwise": "unstated"
+        },
+        "screenshot.clipboard": {
+          "type": "choice",
+          "ask": "To the clipboard instead of a file?",
+          "options": {
+            "yes": {
+              "what": "The request asks for this.",
+              "examples": [
+                "grab the screen to the clipboard"
+              ]
+            },
+            "no": "The request asks for the opposite.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_screenshot__area": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "screen": {
+              "what": "Everything on every display.",
+              "examples": [
+                "grab the screen to the clipboard"
+              ]
+            },
+            "window": {
+              "what": "One window, chosen by clicking it.",
+              "examples": [
+                "screenshot this window"
+              ]
+            },
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.is_screenshot__area_1": {
+          "type": "yesno",
+          "ask": "The whole screen, a window, or a selection?",
+          "yes": "One window, chosen by clicking it.",
+          "no": "Another one, or none."
+        },
+        "weave.left_screenshot_0_0": {
+          "type": "choice",
+          "ask": "In the request, what do the words «screenshot» do?",
+          "options": {
+            "action": "They say what to do, or to what.",
+            "arg:area": "They answer: The whole screen, a window, or a selection?",
+            "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
+            "more": "They ask for another thing as well."
+          }
+        }
+      },
+      "proposed": [],
+      "listed": {
+        "screenshot.area": [
+          {
+            "key": "window",
+            "span": {
+              "start": 16,
+              "end": 22,
+              "text": "window"
+            },
+            "how": "same"
+          }
+        ]
+      }
     },
     "raw": {
       "route": {
@@ -31,6 +152,10 @@
       },
       "weave.is_screenshot__area_1": {
         "yes": 0.9
+      },
+      "weave.left_screenshot_0_0": {
+        "action": 0.9,
+        "courtesy": 0.1
       }
     }
   },
@@ -79,7 +204,18 @@
             "ask": 0.9,
             "reader": 0.9
           }
-        }
+        },
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 10,
+              "text": "screenshot"
+            },
+            "does": "action",
+            "p": 0.9
+          }
+        ]
       },
       "type": "done"
     }

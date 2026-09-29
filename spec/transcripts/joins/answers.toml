@@ -44,6 +44,7 @@ route                         = { errors = 0.9, deploys = 0.03, none = 0.07 }
 "weave.is_deploys__service_0" = { yes = 0.05 }
 "weave.view_logs__service"    = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
 "weave.is_logs__service_0"    = { yes = 0.05 }
+"weave.left_errors_0_2"       = { action = 0.9, courtesy = 0.1 }
 
 [answers."list the checkout deploys"]
 route                         = { deploys = 0.9, errors = 0.03, none = 0.07 }
@@ -66,6 +67,8 @@ route                         = { deploys = 0.9, errors = 0.03, none = 0.07 }
 "weave.is_deploys__service_0" = { yes = 0.9 }
 "weave.view_logs__service"    = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
 "weave.is_logs__service_0"    = { yes = 0.05 }
+"weave.left_deploys_0_0"      = { action = 0.9, courtesy = 0.1 }
+"weave.left_deploys_3_3"      = { action = 0.9, courtesy = 0.1 }
 
 [answers."pull the checkout logs"]
 route                         = { logs = 0.9, errors = 0.03, none = 0.07 }
@@ -88,6 +91,8 @@ route                         = { logs = 0.9, errors = 0.03, none = 0.07 }
 "weave.is_deploys__service_0" = { yes = 0.05 }
 "weave.view_logs__service"    = { checkout = 0.9, unstated = 0.1 }
 "weave.is_logs__service_0"    = { yes = 0.9 }
+"weave.left_logs_0_0"         = { action = 0.9, courtesy = 0.1 }
+"weave.left_logs_3_3"         = { action = 0.9, courtesy = 0.1 }
 
 [answers."find the suspect"]
 route                         = { suspect = 0.9, errors = 0.03, none = 0.07 }
@@ -107,6 +112,7 @@ route                         = { suspect = 0.9, errors = 0.03, none = 0.07 }
 "weave.view_errors__service"  = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
 "weave.view_deploys__service" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
 "weave.view_logs__service"    = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"weave.left_suspect_0_2"      = { action = 0.9, courtesy = 0.1 }
 
 [answers."look up incident 311"]
 route                               = { incident = 0.9, incidents = 0.03, none = 0.07 }
@@ -127,6 +133,7 @@ route                               = { incident = 0.9, incidents = 0.03, none =
 "weave.view_deploys__service"       = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
 "weave.view_logs__service"          = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
 "weave.only_incident__number_17_20" = { yes = 0.05 }
+"weave.left_incident_0_2"           = { action = 0.9, courtesy = 0.1 }
 
 [answers."look up incident 312"]
 route                               = { incident = 0.9, incidents = 0.03, none = 0.07 }
@@ -147,6 +154,7 @@ route                               = { incident = 0.9, incidents = 0.03, none =
 "weave.view_deploys__service"       = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
 "weave.view_logs__service"          = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
 "weave.only_incident__number_17_20" = { yes = 0.05 }
+"weave.left_incident_0_2"           = { action = 0.9, courtesy = 0.1 }
 
 [answers."draft the postmortem"]
 route                         = { postmortem = 0.9, incident = 0.03, none = 0.07 }
@@ -166,3 +174,4 @@ route                         = { postmortem = 0.9, incident = 0.03, none = 0.07
 "weave.view_errors__service"  = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
 "weave.view_deploys__service" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
 "weave.view_logs__service"    = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"weave.left_postmortem_0_2"   = { action = 0.9, courtesy = 0.1 }

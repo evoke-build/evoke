@@ -16,8 +16,9 @@ Hello, Ada!
 # The first reflex tried and run beside the home's reflexes, whose fits print with its own.
 $ evoke try 'say hi to "Ada"'
   hello 0.94 · none 0.06
-  who   "Ada" 0.97 · unstated 0.03
-  fits  hello 0.71 · lights 0.02 · timer 0.02 · volume 0.02
+  who    "Ada" 0.97 · unstated 0.03
+  words  "say" say what to do 0.90
+  fits   hello 0.71 · lights 0.02 · timer 0.02 · volume 0.02
   run · weakest: route 0.94
 $ evoke 'wave at "Grace"'
   hello who="Grace"  0.92

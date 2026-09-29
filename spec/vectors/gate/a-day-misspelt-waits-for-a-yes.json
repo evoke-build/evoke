@@ -87,6 +87,17 @@
           }
         },
         "missing": [],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 16,
+              "text": "move the meeting"
+            },
+            "does": "action",
+            "p": 0.9
+          }
+        ],
         "unconsumed": [],
         "runner_up": {
           "reflex": "calendar",
@@ -148,6 +159,17 @@
         "p": 0.95
       }
     },
+    "left": [
+      {
+        "words": {
+          "start": 0,
+          "end": 16,
+          "text": "move the meeting"
+        },
+        "does": "action",
+        "p": 0.9
+      }
+    ],
     "confidence": 0.9,
     "weakest": {
       "question": "weave.said_meeting__day_20_29",

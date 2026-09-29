@@ -64,6 +64,17 @@
           }
         },
         "missing": [],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 15,
+              "text": "kill the lights"
+            },
+            "does": "action",
+            "p": 0.9
+          }
+        ],
         "unconsumed": [],
         "runner_up": {
           "reflex": "timer",
@@ -107,6 +118,17 @@
         "yes": 0.9
       }
     },
+    "left": [
+      {
+        "words": {
+          "start": 0,
+          "end": 15,
+          "text": "kill the lights"
+        },
+        "does": "action",
+        "p": 0.9
+      }
+    ],
     "confidence": 0.85,
     "weakest": {
       "question": "weave.view_lights__room",
