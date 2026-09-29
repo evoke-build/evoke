@@ -13,7 +13,7 @@ use crate::diagnostic::{Diagnostic, Fix};
 use crate::document::Json;
 use crate::name::{ArgName, LocalName, OptionKey, Word};
 use crate::propose::PickValue;
-use crate::text::Span;
+use crate::text::{Clean, Span};
 
 /// A call resolved and complete; on the wire `{ reflex, args, call }`, the last being its rendering.
 #[derive(Clone, Debug, PartialEq, Deserialize)]
@@ -47,6 +47,9 @@ pub enum Value {
     Pick {
         span: Span,
         value: PickValue,
+        /// The value as it is typed, where the span's words spell it out another way.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        typed: Option<Clean>,
     },
     Flag,
 }
@@ -111,6 +114,9 @@ impl Value {
         match self {
             Self::Option { key } => Some(key.as_str()),
             Self::Word { word, .. } => Some(word.as_str()),
+            Self::Pick {
+                typed: Some(typed), ..
+            } => Some(typed.as_str()),
             Self::Pick { span, .. } => Some(span.text().as_str()),
             Self::Flag => None,
         }

@@ -564,9 +564,12 @@ pub fn replan(path: &str, pinned: &Pinned, plan: &Plan) -> Result<Replanned, Dia
                         Scope::Full,
                         &[],
                     )?;
-                    let raw = answered(pinned, &request).map_err(&refused)?;
-                    let reading = decide::read(plan, &request, raw.clone())
-                        .map_err(|fault| unread(&asked.text, &fault))?;
+                    let (request, raw, reading) = decide::reading(
+                        plan,
+                        request,
+                        |round| answered(pinned, round).map_err(&refused),
+                        |fault| unread(&asked.text, &fault),
+                    )?;
                     let decision = decide::gate(plan, reading, pinned.gate.as_ref());
                     answers.decided.push((asked.clone(), decision.clone()));
                     decided.push(Decided {

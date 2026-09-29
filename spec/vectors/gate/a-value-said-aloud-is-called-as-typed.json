@@ -1,0 +1,163 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "rollback",
+          "route": 0.94,
+          "fits": 0.8
+        },
+        {
+          "reflex": "deploys",
+          "route": 0.02,
+          "fits": 0.02
+        },
+        {
+          "reflex": "meeting",
+          "route": 0,
+          "fits": 0.02
+        },
+        {
+          "reflex": "calendar",
+          "route": 0,
+          "fits": 0.02
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "rollback",
+          "p": 0.94
+        },
+        {
+          "question": "weave.said_rollback__release_22_41",
+          "top": "yes",
+          "p": 0.92
+        }
+      ],
+      "winner": {
+        "reflex": "rollback",
+        "args": {
+          "release": {
+            "type": "pick",
+            "span": {
+              "start": 22,
+              "end": 41,
+              "text": "five dot oh dot two"
+            },
+            "value": {
+              "type": "code",
+              "value": "5.0.2"
+            },
+            "typed": "5.0.2"
+          }
+        },
+        "basis": {
+          "release": {
+            "by": "spelled",
+            "form": "aloud",
+            "yes": 0.92
+          }
+        },
+        "missing": [],
+        "unconsumed": [],
+        "runner_up": {
+          "reflex": "deploys",
+          "route": 0.02,
+          "fits": 0.02
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "outcome": "confirm",
+    "reflex": "rollback",
+    "args": {
+      "release": {
+        "type": "pick",
+        "span": {
+          "start": 22,
+          "end": 41,
+          "text": "five dot oh dot two"
+        },
+        "value": {
+          "type": "code",
+          "value": "5.0.2"
+        },
+        "typed": "5.0.2"
+      }
+    },
+    "call": "rollback release=\"5.0.2\"",
+    "effect": "destructive",
+    "basis": {
+      "release": {
+        "by": "spelled",
+        "form": "aloud",
+        "yes": 0.92
+      }
+    },
+    "confidence": 0.92,
+    "weakest": {
+      "question": "weave.said_rollback__release_22_41",
+      "top": "yes",
+      "p": 0.92
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "rollback",
+        "p": 0.94
+      },
+      {
+        "question": "weave.said_rollback__release_22_41",
+        "top": "yes",
+        "p": 0.92
+      }
+    ],
+    "runner_up": {
+      "reflex": "deploys",
+      "route": 0.02,
+      "fits": 0.02
+    },
+    "contenders": [
+      {
+        "reflex": "rollback",
+        "route": 0.94,
+        "fits": 0.8
+      },
+      {
+        "reflex": "deploys",
+        "route": 0.02,
+        "fits": 0.02
+      },
+      {
+        "reflex": "meeting",
+        "route": 0,
+        "fits": 0.02
+      },
+      {
+        "reflex": "calendar",
+        "route": 0,
+        "fits": 0.02
+      }
+    ],
+    "prompt": {
+      "own": "rollback release=\"5.0.2\" · destructive · weakest: release 0.92",
+      "template": "Roll back 5.0.2?"
+    },
+    "because": [
+      {
+        "type": "destructive"
+      }
+    ]
+  }
+}

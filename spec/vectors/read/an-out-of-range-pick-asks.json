@@ -38,6 +38,26 @@
       },
       "timer.label": {
         "unstated": 1
+      },
+      "weave.view_lights__room": {
+        "den": 0.9,
+        "office": 0.02,
+        "unstated": 0.08
+      },
+      "weave.is_lights__room_0": {
+        "yes": 0.9
+      },
+      "weave.view_lights__state": {
+        "on": 0.02,
+        "off": 0.03,
+        "dim": 0.93,
+        "unstated": 0.02
+      },
+      "weave.is_lights__state_2": {
+        "yes": 0.9
+      },
+      "weave.only_lights__brightness_22_33": {
+        "yes": 0.05
       }
     }
   },
@@ -116,8 +136,21 @@
           "reflex": "timer",
           "route": 0.02,
           "fits": 0.05
+        },
+        "basis": {
+          "room": {
+            "by": "views",
+            "ask": 0.9,
+            "reader": 0.9
+          },
+          "state": {
+            "by": "views",
+            "ask": 0.93,
+            "reader": 0.93
+          }
         }
-      }
+      },
+      "type": "done"
     }
   }
 }

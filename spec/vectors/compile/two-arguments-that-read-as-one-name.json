@@ -1,0 +1,240 @@
+{
+  "input": {
+    "set": {
+      "reflexes": {
+        "count": {
+          "wording": {
+            "ok": {
+              "manifest": {
+                "description": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+                "not_for": [
+                  "keeping the laptop awake",
+                  "alarms at a time of day",
+                  "asking the time"
+                ],
+                "tags": [
+                  "time"
+                ],
+                "effect": "write",
+                "confirm": "Start a {down__by} timer?",
+                "run": "timer.mts",
+                "config": {},
+                "args": {
+                  "down__by": {
+                    "ask": "How long?",
+                    "pick": "duration",
+                    "optional": false,
+                    "was": []
+                  },
+                  "label": {
+                    "ask": "What is the timer for?",
+                    "pick": "quoted",
+                    "optional": true,
+                    "was": []
+                  }
+                },
+                "yields": {},
+                "examples": {
+                  "set a timer for 10 minutes": {
+                    "down__by": "10 minutes"
+                  },
+                  "25 minute timer": {
+                    "down__by": "25 minute"
+                  },
+                  "timer for 3 minutes called \"eggs\"": {
+                    "down__by": "3 minutes",
+                    "label": "eggs"
+                  },
+                  "count down 90 seconds": {
+                    "down__by": "90 seconds"
+                  }
+                },
+                "tests": {
+                  "ping me in 2 hours": {
+                    "down__by": "2 hours"
+                  },
+                  "start a \"laundry\" timer, 45 minutes": {
+                    "down__by": "45 minutes",
+                    "label": "laundry"
+                  },
+                  "start a timer": {
+                    "down__by": false
+                  },
+                  "what time is it": false
+                },
+                "unknown": []
+              },
+              "yours": []
+            }
+          },
+          "consented": "write",
+          "configured": {}
+        },
+        "count__down": {
+          "wording": {
+            "ok": {
+              "manifest": {
+                "description": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+                "not_for": [
+                  "keeping the laptop awake",
+                  "alarms at a time of day",
+                  "asking the time"
+                ],
+                "tags": [
+                  "time"
+                ],
+                "effect": "write",
+                "confirm": "Start a {by} timer?",
+                "run": "timer.mts",
+                "config": {},
+                "args": {
+                  "by": {
+                    "ask": "How long?",
+                    "pick": "duration",
+                    "optional": false,
+                    "was": []
+                  },
+                  "label": {
+                    "ask": "What is the timer for?",
+                    "pick": "quoted",
+                    "optional": true,
+                    "was": []
+                  }
+                },
+                "yields": {},
+                "examples": {
+                  "set a timer for 10 minutes": {
+                    "by": "10 minutes"
+                  },
+                  "25 minute timer": {
+                    "by": "25 minute"
+                  },
+                  "timer for 3 minutes called \"eggs\"": {
+                    "by": "3 minutes",
+                    "label": "eggs"
+                  },
+                  "count down 90 seconds": {
+                    "by": "90 seconds"
+                  }
+                },
+                "tests": {
+                  "ping me in 2 hours": {
+                    "by": "2 hours"
+                  },
+                  "start a \"laundry\" timer, 45 minutes": {
+                    "by": "45 minutes",
+                    "label": "laundry"
+                  },
+                  "start a timer": {
+                    "by": false
+                  },
+                  "what time is it": false
+                },
+                "unknown": []
+              },
+              "yours": []
+            }
+          },
+          "consented": "write",
+          "configured": {}
+        }
+      },
+      "vocab": {},
+      "adapter": "replay",
+      "evoke": "0.1.0"
+    },
+    "values": {}
+  },
+  "expect": {
+    "ok": {
+      "digest": "h1:09d5c0fb649b82bece40b8a45fbac5758304365e289347cb687fbec50d6d53b1",
+      "active": {
+        "count": {
+          "effect": "write",
+          "run": "timer.mts",
+          "confirm": "Start a {down__by} timer?",
+          "args": {
+            "down__by": {
+              "ask": "How long?",
+              "pick": "duration",
+              "optional": false,
+              "was": []
+            },
+            "label": {
+              "ask": "What is the timer for?",
+              "pick": "quoted",
+              "optional": true,
+              "was": []
+            }
+          },
+          "yields": {},
+          "config": {},
+          "tags": [
+            "time"
+          ]
+        }
+      },
+      "inactive": {
+        "count__down": [
+          {
+            "reflex": "count__down",
+            "message": "count__down's argument by and count's argument down__by read as one name, count__down__by",
+            "fix": {
+              "type": "show",
+              "reflex": "count__down"
+            }
+          }
+        ]
+      },
+      "tagged": {
+        "count__down": [
+          "time"
+        ]
+      },
+      "slots": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "count": {
+              "what": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+              "not_for": [
+                "keeping the laptop awake",
+                "alarms at a time of day",
+                "asking the time"
+              ],
+              "examples": [
+                "set a timer for 10 minutes",
+                "25 minute timer",
+                "timer for 3 minutes called \"eggs\"",
+                "count down 90 seconds"
+              ]
+            },
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        },
+        "fits.count": {
+          "type": "yesno",
+          "ask": "Does `count` do the specific thing the request asks for?",
+          "yes": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+          "no": "Something else, such as: keeping the laptop awake; alarms at a time of day; asking the time."
+        },
+        "count.down__by": {
+          "type": "pick",
+          "ask": "How long?",
+          "pick": "duration",
+          "optional": false
+        },
+        "count.label": {
+          "type": "pick",
+          "ask": "What is the timer for?",
+          "pick": "quoted",
+          "optional": true
+        }
+      },
+      "values": {},
+      "deadline": 30000
+    }
+  }
+}

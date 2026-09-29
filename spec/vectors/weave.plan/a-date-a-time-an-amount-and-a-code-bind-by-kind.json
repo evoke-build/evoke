@@ -28,6 +28,13 @@
             },
             "call": "flights to=\"lisbon\"",
             "effect": "read",
+            "basis": {
+              "to": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "flights.to",
@@ -506,6 +513,13 @@
               },
               "call": "flights to=\"lisbon\"",
               "effect": "read",
+              "basis": {
+                "to": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "flights.to",

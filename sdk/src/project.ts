@@ -517,15 +517,27 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
     },
   }
 
-  /** One text asked, answered, read and gated, its raw answers kept beside the decision — for the plan file. */
+  /** One text asked, answered, read and gated, its raw answers kept beside the decision — for the plan file. The
+   *  text's questions are asked, then each round of questions its answers open, until nothing is left to ask. */
   async function decidedText(input: string, options: DecideOptions): Promise<{ decision: Decision<AnyReflexes>; raw: W.Raw }> {
     const invoked = invocation(input)
     const recent = options.recent === undefined || options.recent.length === 0 ? {} : { recent: options.recent }
     const request = call("request", { plan, input, tags: options.tags ?? [], ...(options.only === undefined ? {} : { only: options.only }), scope: "full", ...recent }, invoked)
-    const { raw, trace } = await answered(adapter, request, plan.deadline, options.signal, invoked)
-    const reading = call("read", { plan, request, raw }, invoked)
-    const decision = call("gate", { plan, reading, ...gate })
-    return { decision: lined(decision, { input, plan: plan.digest, trace: [trace] }), raw }
+    const raw: W.Raw = {}
+    const traces: Trace[] = []
+    for (let round = request; ; ) {
+      const answer = await answered(adapter, round, plan.deadline, options.signal, invoked)
+      Object.assign(raw, answer.raw)
+      traces.push(answer.trace)
+      const read = call("read", { plan, request, raw }, invoked)
+      if (read.type === "done") {
+        const { type: _, ...reading } = read
+        const decision = call("gate", { plan, reading, ...gate })
+        return { decision: lined(decision, { input, plan: plan.digest, trace: traces }), raw }
+      }
+      round = read.request
+      Object.assign(request.questions, round.questions)
+    }
   }
 
   /** The plan over the answers gathered so far: the adapter asked and texts decided until it stands, every answer

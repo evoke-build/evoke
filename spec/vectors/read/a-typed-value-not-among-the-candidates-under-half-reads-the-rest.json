@@ -1,0 +1,122 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "request": {
+      "$ref": "fixtures/request-egg-timer.json"
+    },
+    "raw": {
+      "route": {
+        "timer": 0.95,
+        "lights": 0.01,
+        "none": 0.04
+      },
+      "fits.lights": {
+        "yes": 0.02
+      },
+      "lights.room": {
+        "unstated": 1
+      },
+      "lights.state": {
+        "unstated": 1
+      },
+      "lights.brightness": {
+        "unstated": 1
+      },
+      "fits.timer": {
+        "yes": 0.9
+      },
+      "timer.duration": {
+        "10-20": 0.5,
+        "none": 0.45,
+        "unstated": 0.05
+      },
+      "timer.label": {
+        "unstated": 1
+      },
+      "weave.view_lights__room": {
+        "unstated": 1
+      },
+      "weave.view_lights__state": {
+        "unstated": 1
+      },
+      "weave.only_timer__duration_10_20": {
+        "yes": 0.05
+      },
+      "weave.only_timer__label_29_33": {
+        "yes": 0.05
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "ranking": [
+        {
+          "reflex": "timer",
+          "route": 0.95,
+          "fits": 0.9
+        },
+        {
+          "reflex": "lights",
+          "route": 0.01,
+          "fits": 0.02
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "timer",
+          "p": 0.95
+        },
+        {
+          "question": "timer.duration",
+          "top": "10-20",
+          "p": 0.5
+        },
+        {
+          "question": "timer.label",
+          "top": "unstated",
+          "p": 1
+        }
+      ],
+      "winner": {
+        "reflex": "timer",
+        "args": {
+          "duration": {
+            "type": "pick",
+            "span": {
+              "start": 10,
+              "end": 20,
+              "text": "10 minutes"
+            },
+            "value": {
+              "type": "duration",
+              "value": 600
+            }
+          }
+        },
+        "basis": {
+          "duration": {
+            "by": "ask",
+            "p": 0.5
+          }
+        },
+        "missing": [],
+        "unconsumed": [
+          {
+            "start": 29,
+            "end": 33,
+            "text": "eggs"
+          }
+        ],
+        "runner_up": {
+          "reflex": "lights",
+          "route": 0.01,
+          "fits": 0.02
+        }
+      }
+    }
+  }
+}

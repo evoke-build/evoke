@@ -64,6 +64,7 @@ $ evoke teach "what time is it" not timer
 $ evoke try "kill the wifi"
   wifi 0.90 · none 0.06 · power 0.02 · lock 0.02
   state  off 0.72 · on 0.20 · unstated 0.08
+         asked a second way: off 0.72 · is it off? yes 0.90
   fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · sleep 0.02 · timer 0.02 · trash 0.02 · volume 0.02
   confirm · wifi state="off" · write · weakest: state 0.72
 $ evoke try "download https://evoke.build/llms.txt and note it"

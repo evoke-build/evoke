@@ -28,6 +28,13 @@
             },
             "call": "errors service=\"checkout\"",
             "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -192,6 +199,13 @@
             },
             "call": "deploys service=\"checkout\"",
             "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -289,6 +303,13 @@
             },
             "call": "logs service=\"checkout\"",
             "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -762,6 +783,13 @@
               },
               "call": "deploys service=\"checkout\"",
               "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -876,6 +904,13 @@
               },
               "call": "logs service=\"checkout\"",
               "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

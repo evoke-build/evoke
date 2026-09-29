@@ -42,11 +42,22 @@
         "unstated": 0.9,
         "checkout": 0.05,
         "payments": 0.05
+      },
+      "weave.view_calendar__day": {
+        "unstated": 0.9,
+        "tomorrow": 0.05,
+        "monday": 0.05
+      },
+      "weave.view_deploys__service": {
+        "unstated": 0.9,
+        "checkout": 0.05,
+        "payments": 0.05
       }
     }
   },
   "expect": {
     "ok": {
+      "type": "done",
       "ranking": [
         {
           "reflex": "rollback",

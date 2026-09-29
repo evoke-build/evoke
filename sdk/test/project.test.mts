@@ -47,7 +47,8 @@ test("the spec's home decides and runs as the CLI does", async () => {
   equal(d.confidence, 0.85)
   equal(d.input, "kill the lights in the den")
   equal(d.plan, project.plan)
-  equal(d.trace.length, 1)
+  // the text's questions, then the one their answers opened: a round each
+  equal(d.trace.length, 2)
   equal(d.trace[0]?.adapter, "replay")
   deepStrictEqual(await project.run(d), { text: "den lights off", contained: status("file") })
 })

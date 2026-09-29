@@ -99,188 +99,232 @@ $ evoke why
   1  "track the rotterdam shipment"
   shipment 0.90 · none 0.07 · stock 0.03
   shipment  rotterdam 0.90 · unstated 0.10
+            asked a second way: rotterdam 0.90
   fits      shipment 0.80 · stock 0.02 · quotes 0.02 · shortfall 0.02 · reserve 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran shipment shipment="rotterdam" · weakest: route 0.90 · replay, 18 questions
+  ran shipment shipment="rotterdam" · weakest: route 0.90 · replay, 28 questions
   2  "check our stock"
   stock 0.90 · none 0.07 · shipment 0.03
-  fits  stock 0.80 · shipment 0.02 · quotes 0.02 · shortfall 0.02 · reserve 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran stock shipment="rotterdam" · weakest: route 0.90 · shared shipment = rotterdam · replay, 18 questions
+  shipment  unstated 0.90 · rotterdam 0.05 · hamburg 0.05
+            asked a second way: rotterdam 0.90
+  fits      stock 0.80 · shipment 0.02 · quotes 0.02 · shortfall 0.02 · reserve 0.02 · buy 0.02 · email 0.02 · late 0.02
+  ran stock shipment="rotterdam" · weakest: route 0.90 · shared shipment = rotterdam · replay, 24 questions
   3  "get supplier quotes"
   quotes 0.90 · none 0.07 · shipment 0.03
-  fits  quotes 0.80 · shipment 0.02 · stock 0.02 · shortfall 0.02 · reserve 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran quotes shipment="rotterdam" · weakest: route 0.90 · shared shipment = rotterdam · replay, 18 questions
+  shipment  unstated 0.90 · rotterdam 0.05 · hamburg 0.05
+            asked a second way: rotterdam 0.90
+  fits      quotes 0.80 · shipment 0.02 · stock 0.02 · shortfall 0.02 · reserve 0.02 · buy 0.02 · email 0.02 · late 0.02
+  ran quotes shipment="rotterdam" · weakest: route 0.90 · shared shipment = rotterdam · replay, 24 questions
   4  "work out the shortfall"
   shortfall 0.90 · none 0.07 · shipment 0.03
   fits  shortfall 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · reserve 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran shortfall · weakest: route 0.90 · takes shipment from 1, stock from 2, quotes from 3 · replay, 18 questions
+  ran shortfall · weakest: route 0.90 · takes shipment from 1, stock from 2, quotes from 3 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221001" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221001" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221401" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221401" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="HS-040901" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="HS-040901" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221002" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221002" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221402" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221402" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="HS-040902" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="HS-040902" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221003" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221003" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221403" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221403" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="HS-040903" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="HS-040903" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221004" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221004" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221404" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221404" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="HS-040904" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="HS-040904" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221005" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221005" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221405" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221405" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="HS-040905" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="HS-040905" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221006" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221006" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221406" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221406" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="HS-040906" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="HS-040906" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221007" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221007" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221407" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221407" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="HS-040907" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="HS-040907" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221008" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221008" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221408" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221408" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="HS-040908" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="HS-040908" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221009" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221009" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221409" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221409" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="HS-040909" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="HS-040909" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221010" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221010" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221410" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221410" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="HS-040910" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="HS-040910" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221011" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221011" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221411" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221411" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="HS-040911" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="HS-040911" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221012" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221012" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221412" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221412" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="HS-040912" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="HS-040912" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221013" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221013" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   5  "reserve each of them"
   reserve 0.90 · none 0.07 · shipment 0.03
+  sku   unstated 1.00
   fits  reserve 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · buy 0.02 · email 0.02 · late 0.02
-  ran reserve sku="VX-221413" · weakest: route 0.90 · takes sku from 4 · replay, 18 questions
+  ran reserve sku="VX-221413" · weakest: route 0.90 · takes sku from 4 · replay, 24 questions
   6  "buy the rest from nordic"
   buy 0.90 · none 0.07 · shipment 0.03
   supplier  nordic 0.90 · unstated 0.10
+            asked a second way: nordic 0.90
   fits      buy 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · reserve 0.02 · email 0.02 · late 0.02
-  ran buy supplier="nordic" · weakest: route 0.90 · replay, 18 questions
+  ran buy supplier="nordic" · weakest: route 0.90 · replay, 26 questions
   7  "email ops@example.com"
   email 0.90 · none 0.07 · shipment 0.03
   to    "ops@example.com" 0.90 · unstated 0.10
   fits  email 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · reserve 0.02 · buy 0.02 · late 0.02
-  ran email to="ops@example.com" · weakest: route 0.90 · replay, 18 questions
+  ran email to="ops@example.com" · weakest: route 0.90 · replay, 26 questions
 $ evoke try --json "track the rotterdam shipment, check our stock and get supplier quotes, work out the shortfall, reserve each of them, buy the rest from nordic, then email ops@example.com"
-{"input":"track the rotterdam shipment, check our stock and get supplier quotes, work out the shortfall, reserve each of them, buy the rest from nordic, then email ops@example.com","steps":[{"n":1,"text":"track the rotterdam shipment","end":28,"decision":{"outcome":"run","reflex":"shipment","args":{"shipment":{"type":"word","word":"rotterdam"}},"call":"shipment shipment=\"rotterdam\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"shipment","p":0.9},"judgments":[{"question":"route","top":"shipment","p":0.9},{"question":"shipment.shipment","top":"rotterdam","p":0.9}],"runner_up":{"reflex":"stock","route":0.03,"fits":0.02},"contenders":[{"reflex":"shipment","route":0.9,"fits":0.8},{"reflex":"stock","route":0.03,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}]},"reflex":"shipment","effect":"read"},{"n":2,"text":"check our stock","end":45,"decision":{"outcome":"run","reflex":"stock","args":{"shipment":{"type":"word","word":"rotterdam"}},"call":"stock shipment=\"rotterdam\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"stock","p":0.9},"judgments":[{"question":"route","top":"stock","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"stock","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}]},"reflex":"stock","effect":"read","shared":{"shipment":{"word":"rotterdam","via":"fill"}}},{"n":3,"text":"get supplier quotes","end":69,"decision":{"outcome":"run","reflex":"quotes","args":{"shipment":{"type":"word","word":"rotterdam"}},"call":"quotes shipment=\"rotterdam\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"quotes","p":0.9},"judgments":[{"question":"route","top":"quotes","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"quotes","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}]},"reflex":"quotes","effect":"read","shared":{"shipment":{"word":"rotterdam","via":"fill"}}},{"n":4,"text":"work out the shortfall","end":93,"decision":{"outcome":"run","reflex":"shortfall","args":{},"call":"shortfall","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"shortfall","p":0.9},"judgments":[{"question":"route","top":"shortfall","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"shortfall","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}]},"reflex":"shortfall","effect":"read","after":[1,2,3]},{"n":5,"text":"reserve each of them","end":115,"decision":{"outcome":"ask","reflex":"reserve","args":{},"unconsumed":[],"confidence":0.9,"weakest":{"question":"route","top":"reserve","p":0.9},"judgments":[{"question":"route","top":"reserve","p":0.9},{"question":"reserve.sku","top":"unstated","p":1.0}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"reserve","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"missing":[{"arg":"sku","ask":"Which product code?","because":{"type":"unstated"},"choices":{"type":"pick","pick":"code"}}]},"reflex":"reserve","effect":"write","refs":[{"span":{"start":8,"end":20,"text":"each of them"},"from":[0,1,2,3],"how":"pronoun","many":true}],"after":[1,2,3,4]},{"n":6,"text":"buy the rest from nordic","end":141,"decision":{"outcome":"confirm","reflex":"buy","args":{"supplier":{"type":"word","word":"nordic"}},"call":"buy supplier=\"nordic\"","effect":"destructive","confidence":0.9,"weakest":{"question":"route","top":"buy","p":0.9},"judgments":[{"question":"route","top":"buy","p":0.9},{"question":"buy.supplier","top":"nordic","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"buy","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"prompt":{"own":"buy supplier=\"nordic\" · destructive · weakest: route 0.90","template":"Order the shortfall from nordic?"},"because":[{"type":"destructive"}]},"reflex":"buy","effect":"destructive"},{"n":7,"text":"email ops@example.com","end":169,"decision":{"outcome":"confirm","reflex":"email","args":{"to":{"type":"pick","span":{"start":6,"end":21,"text":"ops@example.com"},"value":{"type":"email","value":"ops@example.com"}}},"call":"email to=\"ops@example.com\"","effect":"destructive","confidence":0.9,"weakest":{"question":"route","top":"email","p":0.9},"judgments":[{"question":"route","top":"email","p":0.9},{"question":"email.to","top":"6-21","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"email","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"prompt":{"own":"email to=\"ops@example.com\" · destructive · weakest: route 0.90","template":"Email the shipment update to ops@example.com?"},"because":[{"type":"destructive"}]},"reflex":"email","effect":"destructive","after":[1,2,3,4,5,6]}],"binds":[{"from":1,"to":4,"arg":"shipment","field":"shipment","via":"takes"},{"from":2,"to":4,"arg":"stock","field":"stock","via":"takes"},{"from":3,"to":4,"arg":"quotes","field":"quotes","via":"takes"},{"from":4,"to":5,"arg":"sku","field":"sku","kind":"code","via":"fill","each":"items"}],"stages":[[1],[2],[3],[4],[5],[6],[7]],"verdict":{"outcome":"run"},"exclusive":true,"splits":[{"start":28,"end":30,"word":",","order":"and","p":0.9},{"start":45,"end":50,"word":"and","order":"and","p":0.9},{"start":69,"end":71,"word":",","order":"and","p":0.9},{"start":93,"end":95,"word":",","order":"and","p":0.9},{"start":115,"end":117,"word":",","order":"and","p":0.9},{"start":141,"end":148,"word":"then","order":"then","p":0.9}],"trace":[]}
+{"input":"track the rotterdam shipment, check our stock and get supplier quotes, work out the shortfall, reserve each of them, buy the rest from nordic, then email ops@example.com","steps":[{"n":1,"text":"track the rotterdam shipment","end":28,"decision":{"outcome":"run","reflex":"shipment","args":{"shipment":{"type":"word","word":"rotterdam"}},"call":"shipment shipment=\"rotterdam\"","effect":"read","basis":{"shipment":{"by":"views","ask":0.9,"reader":0.9}},"confidence":0.9,"weakest":{"question":"route","top":"shipment","p":0.9},"judgments":[{"question":"route","top":"shipment","p":0.9},{"question":"shipment.shipment","top":"rotterdam","p":0.9}],"runner_up":{"reflex":"stock","route":0.03,"fits":0.02},"contenders":[{"reflex":"shipment","route":0.9,"fits":0.8},{"reflex":"stock","route":0.03,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}]},"reflex":"shipment","effect":"read"},{"n":2,"text":"check our stock","end":45,"decision":{"outcome":"run","reflex":"stock","args":{"shipment":{"type":"word","word":"rotterdam"}},"call":"stock shipment=\"rotterdam\"","effect":"read","basis":{"shipment":{"by":"views","ask":0.9,"reader":0.9}},"confidence":0.9,"weakest":{"question":"route","top":"stock","p":0.9},"judgments":[{"question":"route","top":"stock","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"stock","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}]},"reflex":"stock","effect":"read","shared":{"shipment":{"word":"rotterdam","via":"fill"}}},{"n":3,"text":"get supplier quotes","end":69,"decision":{"outcome":"run","reflex":"quotes","args":{"shipment":{"type":"word","word":"rotterdam"}},"call":"quotes shipment=\"rotterdam\"","effect":"read","basis":{"shipment":{"by":"views","ask":0.9,"reader":0.9}},"confidence":0.9,"weakest":{"question":"route","top":"quotes","p":0.9},"judgments":[{"question":"route","top":"quotes","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"quotes","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}]},"reflex":"quotes","effect":"read","shared":{"shipment":{"word":"rotterdam","via":"fill"}}},{"n":4,"text":"work out the shortfall","end":93,"decision":{"outcome":"run","reflex":"shortfall","args":{},"call":"shortfall","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"shortfall","p":0.9},"judgments":[{"question":"route","top":"shortfall","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"shortfall","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}]},"reflex":"shortfall","effect":"read","after":[1,2,3]},{"n":5,"text":"reserve each of them","end":115,"decision":{"outcome":"ask","reflex":"reserve","args":{},"unconsumed":[],"confidence":0.9,"weakest":{"question":"route","top":"reserve","p":0.9},"judgments":[{"question":"route","top":"reserve","p":0.9},{"question":"reserve.sku","top":"unstated","p":1.0}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"reserve","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"missing":[{"arg":"sku","ask":"Which product code?","because":{"type":"unstated"},"choices":{"type":"pick","pick":"code"}}]},"reflex":"reserve","effect":"write","refs":[{"span":{"start":8,"end":20,"text":"each of them"},"from":[0,1,2,3],"how":"pronoun","many":true}],"after":[1,2,3,4]},{"n":6,"text":"buy the rest from nordic","end":141,"decision":{"outcome":"confirm","reflex":"buy","args":{"supplier":{"type":"word","word":"nordic"}},"call":"buy supplier=\"nordic\"","effect":"destructive","basis":{"supplier":{"by":"views","ask":0.9,"reader":0.9}},"confidence":0.9,"weakest":{"question":"route","top":"buy","p":0.9},"judgments":[{"question":"route","top":"buy","p":0.9},{"question":"buy.supplier","top":"nordic","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"buy","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"prompt":{"own":"buy supplier=\"nordic\" · destructive · weakest: route 0.90","template":"Order the shortfall from nordic?"},"because":[{"type":"destructive"}]},"reflex":"buy","effect":"destructive"},{"n":7,"text":"email ops@example.com","end":169,"decision":{"outcome":"confirm","reflex":"email","args":{"to":{"type":"pick","span":{"start":6,"end":21,"text":"ops@example.com"},"value":{"type":"email","value":"ops@example.com"}}},"call":"email to=\"ops@example.com\"","effect":"destructive","basis":{"to":{"by":"ask","p":0.9}},"confidence":0.9,"weakest":{"question":"route","top":"email","p":0.9},"judgments":[{"question":"route","top":"email","p":0.9},{"question":"email.to","top":"6-21","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"email","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"prompt":{"own":"email to=\"ops@example.com\" · destructive · weakest: route 0.90","template":"Email the shipment update to ops@example.com?"},"because":[{"type":"destructive"}]},"reflex":"email","effect":"destructive","after":[1,2,3,4,5,6]}],"binds":[{"from":1,"to":4,"arg":"shipment","field":"shipment","via":"takes"},{"from":2,"to":4,"arg":"stock","field":"stock","via":"takes"},{"from":3,"to":4,"arg":"quotes","field":"quotes","via":"takes"},{"from":4,"to":5,"arg":"sku","field":"sku","kind":"code","via":"fill","each":"items"}],"stages":[[1],[2],[3],[4],[5],[6],[7]],"verdict":{"outcome":"run"},"exclusive":true,"splits":[{"start":28,"end":30,"word":",","order":"and","p":0.9},{"start":45,"end":50,"word":"and","order":"and","p":0.9},{"start":69,"end":71,"word":",","order":"and","p":0.9},{"start":93,"end":95,"word":",","order":"and","p":0.9},{"start":115,"end":117,"word":",","order":"and","p":0.9},{"start":141,"end":148,"word":"then","order":"then","p":0.9}],"trace":[]}
 $ evoke --json "track the rotterdam shipment, check our stock and get supplier quotes, work out the shortfall, reserve each of them, buy the rest from nordic, then email ops@example.com"
-{"step":1,"steps":7,"input":"track the rotterdam shipment","outcome":"run","reflex":"shipment","args":{"shipment":{"type":"word","word":"rotterdam"}},"call":"shipment shipment=\"rotterdam\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"shipment","p":0.9},"judgments":[{"question":"route","top":"shipment","p":0.9},{"question":"shipment.shipment","top":"rotterdam","p":0.9}],"runner_up":{"reflex":"stock","route":0.03,"fits":0.02},"contenders":[{"reflex":"shipment","route":0.9,"fits":0.8},{"reflex":"stock","route":0.03,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"trace":[],"contained":{"type":"full"},"result":{"text":"rotterdam: lands thursday 06:00, 4 days late, carrying VX-2210, VX-2214, HS-0409","data":{"shipment":"rotterdam","eta":"thursday 06:00","late_days":4,"skus":["VX-2210","VX-2214","HS-0409"]}},"status":"ran"}
-{"step":2,"steps":7,"input":"check our stock","outcome":"run","reflex":"stock","args":{"shipment":{"type":"word","word":"rotterdam"}},"call":"stock shipment=\"rotterdam\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"stock","p":0.9},"judgments":[{"question":"route","top":"stock","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"stock","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"trace":[],"shared":{"shipment":{"word":"rotterdam","via":"fill"}},"contained":{"type":"full"},"result":{"text":"rotterdam: 40 of VX-2210, 12 of VX-2214, 0 of HS-0409 in the warehouse","data":{"shipment":"rotterdam","levels":[{"sku":"VX-2210","units":40},{"sku":"VX-2214","units":12},{"sku":"HS-0409","units":0}]}},"status":"ran"}
-{"step":3,"steps":7,"input":"get supplier quotes","outcome":"run","reflex":"quotes","args":{"shipment":{"type":"word","word":"rotterdam"}},"call":"quotes shipment=\"rotterdam\"","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"quotes","p":0.9},"judgments":[{"question":"route","top":"quotes","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"quotes","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"trace":[],"shared":{"shipment":{"word":"rotterdam","via":"fill"}},"contained":{"type":"full"},"result":{"text":"rotterdam: HS-0409 at 18.40 from nordic, 21.90 from baltic","data":{"shipment":"rotterdam","quotes":[{"supplier":"nordic","sku":"HS-0409","price":18.4},{"supplier":"baltic","sku":"HS-0409","price":21.9}]}},"status":"ran"}
+{"step":1,"steps":7,"input":"track the rotterdam shipment","outcome":"run","reflex":"shipment","args":{"shipment":{"type":"word","word":"rotterdam"}},"call":"shipment shipment=\"rotterdam\"","effect":"read","basis":{"shipment":{"by":"views","ask":0.9,"reader":0.9}},"confidence":0.9,"weakest":{"question":"route","top":"shipment","p":0.9},"judgments":[{"question":"route","top":"shipment","p":0.9},{"question":"shipment.shipment","top":"rotterdam","p":0.9}],"runner_up":{"reflex":"stock","route":0.03,"fits":0.02},"contenders":[{"reflex":"shipment","route":0.9,"fits":0.8},{"reflex":"stock","route":0.03,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"trace":[],"contained":{"type":"full"},"result":{"text":"rotterdam: lands thursday 06:00, 4 days late, carrying VX-2210, VX-2214, HS-0409","data":{"shipment":"rotterdam","eta":"thursday 06:00","late_days":4,"skus":["VX-2210","VX-2214","HS-0409"]}},"status":"ran"}
+{"step":2,"steps":7,"input":"check our stock","outcome":"run","reflex":"stock","args":{"shipment":{"type":"word","word":"rotterdam"}},"call":"stock shipment=\"rotterdam\"","effect":"read","basis":{"shipment":{"by":"views","ask":0.9,"reader":0.9}},"confidence":0.9,"weakest":{"question":"route","top":"stock","p":0.9},"judgments":[{"question":"route","top":"stock","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"stock","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"trace":[],"shared":{"shipment":{"word":"rotterdam","via":"fill"}},"contained":{"type":"full"},"result":{"text":"rotterdam: 40 of VX-2210, 12 of VX-2214, 0 of HS-0409 in the warehouse","data":{"shipment":"rotterdam","levels":[{"sku":"VX-2210","units":40},{"sku":"VX-2214","units":12},{"sku":"HS-0409","units":0}]}},"status":"ran"}
+{"step":3,"steps":7,"input":"get supplier quotes","outcome":"run","reflex":"quotes","args":{"shipment":{"type":"word","word":"rotterdam"}},"call":"quotes shipment=\"rotterdam\"","effect":"read","basis":{"shipment":{"by":"views","ask":0.9,"reader":0.9}},"confidence":0.9,"weakest":{"question":"route","top":"quotes","p":0.9},"judgments":[{"question":"route","top":"quotes","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"quotes","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"trace":[],"shared":{"shipment":{"word":"rotterdam","via":"fill"}},"contained":{"type":"full"},"result":{"text":"rotterdam: HS-0409 at 18.40 from nordic, 21.90 from baltic","data":{"shipment":"rotterdam","quotes":[{"supplier":"nordic","sku":"HS-0409","price":18.4},{"supplier":"baltic","sku":"HS-0409","price":21.9}]}},"status":"ran"}
 {"step":4,"steps":7,"input":"work out the shortfall","outcome":"run","reflex":"shortfall","args":{},"call":"shortfall","effect":"read","confidence":0.9,"weakest":{"question":"route","top":"shortfall","p":0.9},"judgments":[{"question":"route","top":"shortfall","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"shortfall","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"trace":[],"bound":[{"arg":"shipment","from":1,"field":"shipment"},{"arg":"stock","from":2,"field":"stock"},{"arg":"quotes","from":3,"field":"quotes"}],"contained":{"type":"full"},"result":{"text":"rotterdam: 38 product codes short, 769 units in all","data":{"items":[{"sku":"VX-221001","units":6},{"sku":"VX-221401","units":13},{"sku":"HS-040901","units":20},{"sku":"VX-221002","units":27},{"sku":"VX-221402","units":34},{"sku":"HS-040902","units":11},{"sku":"VX-221003","units":18},{"sku":"VX-221403","units":25},{"sku":"HS-040903","units":32},{"sku":"VX-221004","units":9},{"sku":"VX-221404","units":16},{"sku":"HS-040904","units":23},{"sku":"VX-221005","units":30},{"sku":"VX-221405","units":7},{"sku":"HS-040905","units":14},{"sku":"VX-221006","units":21},{"sku":"VX-221406","units":28},{"sku":"HS-040906","units":35},{"sku":"VX-221007","units":12},{"sku":"VX-221407","units":19},{"sku":"HS-040907","units":26},{"sku":"VX-221008","units":33},{"sku":"VX-221408","units":10},{"sku":"HS-040908","units":17},{"sku":"VX-221009","units":24},{"sku":"VX-221409","units":31},{"sku":"HS-040909","units":8},{"sku":"VX-221010","units":15},{"sku":"VX-221410","units":22},{"sku":"HS-040910","units":29},{"sku":"VX-221011","units":6},{"sku":"VX-221411","units":13},{"sku":"HS-040911","units":20},{"sku":"VX-221012","units":27},{"sku":"VX-221412","units":34},{"sku":"HS-040912","units":11},{"sku":"VX-221013","units":18},{"sku":"VX-221413","units":25}]}},"status":"ran"}
 {"step":5,"steps":7,"input":"reserve each of them","outcome":"run","reflex":"reserve","args":{"sku":{"type":"pick","span":{"start":0,"end":9,"text":"VX-221001"},"value":{"type":"code","value":"VX-221001"}}},"call":"reserve sku=\"VX-221001\"","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"reserve","p":0.9},"judgments":[{"question":"route","top":"reserve","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"reserve","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"trace":[],"bound":[{"arg":"sku","from":4,"field":"sku","value":"VX-221001"}],"contained":{"type":"full"},"result":{"text":"VX-221001 reserved","data":{"sku":"VX-221001","reserved":true}},"status":"ran"}
 {"step":5,"steps":7,"input":"reserve each of them","outcome":"run","reflex":"reserve","args":{"sku":{"type":"pick","span":{"start":0,"end":9,"text":"VX-221401"},"value":{"type":"code","value":"VX-221401"}}},"call":"reserve sku=\"VX-221401\"","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"reserve","p":0.9},"judgments":[{"question":"route","top":"reserve","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"reserve","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"trace":[],"bound":[{"arg":"sku","from":4,"field":"sku","value":"VX-221401"}],"contained":{"type":"full"},"result":{"text":"VX-221401 reserved","data":{"sku":"VX-221401","reserved":true}},"status":"ran"}
@@ -322,8 +366,8 @@ $ evoke --json "track the rotterdam shipment, check our stock and get supplier q
 {"step":5,"steps":7,"input":"reserve each of them","outcome":"run","reflex":"reserve","args":{"sku":{"type":"pick","span":{"start":0,"end":9,"text":"VX-221413"},"value":{"type":"code","value":"VX-221413"}}},"call":"reserve sku=\"VX-221413\"","effect":"write","confidence":0.9,"weakest":{"question":"route","top":"reserve","p":0.9},"judgments":[{"question":"route","top":"reserve","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"reserve","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"trace":[],"bound":[{"arg":"sku","from":4,"field":"sku","value":"VX-221413"}],"contained":{"type":"full"},"result":{"text":"VX-221413 reserved","data":{"sku":"VX-221413","reserved":true}},"status":"ran"}
   6  buy supplier="nordic" · destructive · weakest: route 0.90
   Order the shortfall from nordic?  [y]es [n]o [t]each > n
-{"step":6,"steps":7,"input":"buy the rest from nordic","outcome":"confirm","reflex":"buy","args":{"supplier":{"type":"word","word":"nordic"}},"call":"buy supplier=\"nordic\"","effect":"destructive","confidence":0.9,"weakest":{"question":"route","top":"buy","p":0.9},"judgments":[{"question":"route","top":"buy","p":0.9},{"question":"buy.supplier","top":"nordic","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"buy","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"prompt":{"own":"buy supplier=\"nordic\" · destructive · weakest: route 0.90","template":"Order the shortfall from nordic?"},"because":[{"type":"destructive"}],"trace":[],"status":"declined","why":{"type":"said","message":"buy supplier=\"nordic\" · destructive · weakest: route 0.90"}}
-{"step":7,"steps":7,"input":"email ops@example.com","outcome":"confirm","reflex":"email","args":{"to":{"type":"pick","span":{"start":6,"end":21,"text":"ops@example.com"},"value":{"type":"email","value":"ops@example.com"}}},"call":"email to=\"ops@example.com\"","effect":"destructive","confidence":0.9,"weakest":{"question":"route","top":"email","p":0.9},"judgments":[{"question":"route","top":"email","p":0.9},{"question":"email.to","top":"6-21","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"email","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"prompt":{"own":"email to=\"ops@example.com\" · destructive · weakest: route 0.90","template":"Email the shipment update to ops@example.com?"},"because":[{"type":"destructive"}],"trace":[],"status":"skipped","why":{"type":"earlier_step"}}
+{"step":6,"steps":7,"input":"buy the rest from nordic","outcome":"confirm","reflex":"buy","args":{"supplier":{"type":"word","word":"nordic"}},"call":"buy supplier=\"nordic\"","effect":"destructive","basis":{"supplier":{"by":"views","ask":0.9,"reader":0.9}},"confidence":0.9,"weakest":{"question":"route","top":"buy","p":0.9},"judgments":[{"question":"route","top":"buy","p":0.9},{"question":"buy.supplier","top":"nordic","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"buy","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"email","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"prompt":{"own":"buy supplier=\"nordic\" · destructive · weakest: route 0.90","template":"Order the shortfall from nordic?"},"because":[{"type":"destructive"}],"trace":[],"status":"declined","why":{"type":"said","message":"buy supplier=\"nordic\" · destructive · weakest: route 0.90"}}
+{"step":7,"steps":7,"input":"email ops@example.com","outcome":"confirm","reflex":"email","args":{"to":{"type":"pick","span":{"start":6,"end":21,"text":"ops@example.com"},"value":{"type":"email","value":"ops@example.com"}}},"call":"email to=\"ops@example.com\"","effect":"destructive","basis":{"to":{"by":"ask","p":0.9}},"confidence":0.9,"weakest":{"question":"route","top":"email","p":0.9},"judgments":[{"question":"route","top":"email","p":0.9},{"question":"email.to","top":"6-21","p":0.9}],"runner_up":{"reflex":"shipment","route":0.03,"fits":0.02},"contenders":[{"reflex":"email","route":0.9,"fits":0.8},{"reflex":"shipment","route":0.03,"fits":0.02},{"reflex":"stock","route":0.0,"fits":0.02},{"reflex":"quotes","route":0.0,"fits":0.02},{"reflex":"shortfall","route":0.0,"fits":0.02},{"reflex":"reserve","route":0.0,"fits":0.02},{"reflex":"buy","route":0.0,"fits":0.02},{"reflex":"late","route":0.0,"fits":0.02}],"prompt":{"own":"email to=\"ops@example.com\" · destructive · weakest: route 0.90","template":"Email the shipment update to ops@example.com?"},"because":[{"type":"destructive"}],"trace":[],"status":"skipped","why":{"type":"earlier_step"}}
 [2]
 # The late shipment from its short sentence: the supplier and the address the words leave out are asked before the
 # plan prints; the plan is the playbook's, and the order and the email would each ask again at their turn.
@@ -343,3 +387,20 @@ $ evoke "the rotterdam shipment is late"
 [2]
 $ evoke test late
   late  9 passed · 7 steps route
+# A code typed with a space is read as its code, and waits for a yes with the words as typed.
+$ evoke "reserve hs 0409"
+  reserve sku="hs-0409" · write · weakest: route 0.90 · sku from "hs 0409"
+  Reserve every unit of hs-0409?  [y]es [n]o [t]each > n
+[2]
+# An address said aloud is read as it is typed.
+$ evoke "email dana dot weiss at example dot org"
+  email to="dana.weiss@example.org" · destructive · weakest: route 0.90
+  Email the shipment update to dana.weiss@example.org?  [y]es [n]o [t]each > n
+[2]
+$ evoke why
+  "email dana dot weiss at example dot org"
+  email 0.90 · none 0.07 · shipment 0.03
+  to    unstated 1.00
+        in your words: "dana dot weiss at example dot org" · is it dana.weiss@example.org? yes 0.92
+  fits  email 0.80 · shipment 0.02 · stock 0.02 · quotes 0.02 · shortfall 0.02 · reserve 0.02 · buy 0.02 · late 0.02
+  confirm email to="dana.weiss@example.org" · weakest: route 0.90 · replay, 26 questions

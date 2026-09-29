@@ -33,7 +33,7 @@ export interface Ops {
     input: { plan: T.Plan; input: string; tags: T.Tag[]; only?: T.LocalName; scope: T.Scope; recent?: T.Recent[] }
     output: T.Result<T.Request, T.Diagnostic>
   }
-  read: { input: { plan: T.Plan; request: T.Request; raw: T.Raw }; output: T.Result<T.Reading, T.Fault> }
+  read: { input: { plan: T.Plan; request: T.Request; raw: T.Raw }; output: T.Result<T.Read, T.Fault> }
   gate: { input: { plan: T.Plan; reading: T.Reading; gate?: T.Gate }; output: T.Decision }
   fill: { input: { plan: T.Plan; asking: T.Asking; given: Record<T.ArgName, T.Value>; gate?: T.Gate }; output: T.Decision }
   by_name: { input: { plan: T.Plan; written: T.Written }; output: T.Result<T.Decision, T.Diagnostic> }

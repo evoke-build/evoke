@@ -33,6 +33,18 @@
             },
             "call": "outage service=\"checkout\" region=\"eu-west\"",
             "effect": "destructive",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              },
+              "region": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -156,6 +168,18 @@
             },
             "call": "errors service=\"checkout\" region=\"eu-west\"",
             "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              },
+              "region": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -262,6 +286,18 @@
             },
             "call": "deploys service=\"checkout\" region=\"eu-west\"",
             "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              },
+              "region": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -368,6 +404,18 @@
             },
             "call": "logs service=\"checkout\" region=\"eu-west\"",
             "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              },
+              "region": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -544,6 +592,18 @@
                 "word": "eu-west"
               }
             },
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              },
+              "region": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -665,6 +725,13 @@
             },
             "call": "post channel=\"#incident\"",
             "effect": "write",
+            "basis": {
+              "channel": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -762,6 +829,13 @@
             },
             "call": "status component=\"checkout\"",
             "effect": "write",
+            "basis": {
+              "component": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -895,6 +969,18 @@
               },
               "call": "errors service=\"checkout\" region=\"eu-west\"",
               "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                },
+                "region": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -1013,6 +1099,18 @@
               },
               "call": "deploys service=\"checkout\" region=\"eu-west\"",
               "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                },
+                "region": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -1131,6 +1229,18 @@
               },
               "call": "logs service=\"checkout\" region=\"eu-west\"",
               "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                },
+                "region": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -1354,6 +1464,18 @@
                   "word": "eu-west"
                 }
               },
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                },
+                "region": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "unconsumed": [],
               "confidence": 0.9,
               "weakest": {
@@ -1502,6 +1624,13 @@
               },
               "call": "post channel=\"#incident\"",
               "effect": "write",
+              "basis": {
+                "channel": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -1608,6 +1737,13 @@
               },
               "call": "status component=\"checkout\"",
               "effect": "write",
+              "basis": {
+                "component": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

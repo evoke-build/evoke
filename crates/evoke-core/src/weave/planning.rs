@@ -13,7 +13,7 @@ use super::{
 };
 use crate::adapter::{Fault, Gate, Prob};
 use crate::call::Value;
-use crate::decide::{Cap, Decision, Prompt, fill, merged, words, yielded};
+use crate::decide::{Basis, Cap, Decision, Prompt, carry, merged, words, yielded};
 use crate::manifest::{self, Effect, Kind, MOST_STEPS, Recognizer, Source, Yield};
 use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
 use crate::plan::{Active, Plan};
@@ -1080,6 +1080,7 @@ impl<'a> Planner<'a> {
                 continue;
             };
             let mut given: IndexMap<ArgName, Value> = IndexMap::new();
+            let mut stands: IndexMap<ArgName, Basis> = IndexMap::new();
             let mut carried: IndexMap<ArgName, Word> = IndexMap::new();
             for m in missing.iter() {
                 let Some(Kind::Value {
@@ -1100,13 +1101,17 @@ impl<'a> Planner<'a> {
                         value: None,
                     };
                     given.insert(m.arg.clone(), value);
+                    stands.extend(
+                        self.stood(draft, original, &everyone, vocab, &word)
+                            .map(|basis| (m.arg.clone(), basis)),
+                    );
                     carried.insert(m.arg.clone(), word);
                 }
             }
             if given.is_empty() {
                 continue;
             }
-            let filled = fill(self.plan, asking.clone(), given, self.gate);
+            let filled = carry(self.plan, asking.clone(), given, stands, self.gate);
             draft.decisions[k] = if repair_of(draft, k) == Some(Repair::Merged) {
                 merged(self.plan, filled)
             } else {
@@ -1173,22 +1178,46 @@ impl<'a> Planner<'a> {
         if once && *n != 1 {
             return None;
         }
-        let read = members.iter().any(|(text, decision)| {
-            let Some((_, active)) = self.active_of(decision) else {
-                return false;
-            };
-            args_of(decision).is_some_and(|args| {
-                args.iter().any(|(arg, value)| {
-                    matches!(value, Value::Word { word: read, .. } if read == *word)
-                        && matches!(
-                            active.args.get(arg).map(|argument| &argument.kind),
-                            Some(Kind::Value { source: Source::Vocab(of), .. }) if of == vocab
-                        )
-                        && occurrences(text, word.as_str()) > 0
-                })
-            })
-        });
+        let read = members
+            .iter()
+            .any(|(text, decision)| self.read_as(text, decision, vocab, word).is_some());
         read.then(|| (*word).clone())
+    }
+
+    /// The argument a step read a word as, from its own words, when it read it as one of the vocabulary.
+    fn read_as<'d>(
+        &self,
+        text: &str,
+        decision: &'d Decision,
+        vocab: &VocabName,
+        word: &Word,
+    ) -> Option<&'d ArgName> {
+        let (_, active) = self.active_of(decision)?;
+        let (arg, _) = args_of(decision)?.iter().find(|(arg, value)| {
+            matches!(value, Value::Word { word: read, .. } if read == word)
+                && matches!(
+                    active.args.get(*arg).map(|argument| &argument.kind),
+                    Some(Kind::Value { source: Source::Vocab(of), .. }) if of == vocab
+                )
+                && occurrences(text, word.as_str()) > 0
+        })?;
+        Some(arg)
+    }
+
+    /// What a word stated once stands on, where the first step of the scope read it from its own words.
+    fn stood(
+        &self,
+        draft: &Draft,
+        original: &[String],
+        scope: &[usize],
+        vocab: &VocabName,
+        word: &Word,
+    ) -> Option<Basis> {
+        scope.iter().find_map(|&k| {
+            let decision = &draft.decisions[k];
+            let arg = self.read_as(&original[k], decision, vocab, word)?;
+            basis_of(decision)?.get(arg).cloned()
+        })
     }
 
     /// Whether exactly one active reflex asks for a word of the vocabulary as a required argument: the vocabulary
@@ -2130,6 +2159,15 @@ pub(crate) fn reflex_of(decision: &Decision) -> Option<&LocalName> {
         Decision::Abstain { .. } => None,
         Decision::Run { chosen } | Decision::Confirm { chosen, .. } => Some(&chosen.call.reflex),
         Decision::Ask { asking, .. } => Some(&asking.reflex),
+    }
+}
+
+/// What each value a decision read stands on.
+fn basis_of(decision: &Decision) -> Option<&IndexMap<ArgName, Basis>> {
+    match decision {
+        Decision::Abstain { .. } => None,
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => Some(&chosen.basis),
+        Decision::Ask { asking, .. } => Some(&asking.basis),
     }
 }
 

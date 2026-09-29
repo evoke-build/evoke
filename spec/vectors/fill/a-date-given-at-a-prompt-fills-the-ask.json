@@ -22,6 +22,12 @@
           }
         }
       },
+      "basis": {
+        "day": {
+          "by": "ask",
+          "p": 0.9
+        }
+      },
       "unconsumed": [],
       "confidence": 0.9,
       "weakest": {
@@ -129,6 +135,12 @@
     },
     "call": "meeting day=\"tomorrow\" time=\"3pm\"",
     "effect": "write",
+    "basis": {
+      "day": {
+        "by": "ask",
+        "p": 0.9
+      }
+    },
     "confidence": 0.9,
     "weakest": {
       "question": "meeting.day",

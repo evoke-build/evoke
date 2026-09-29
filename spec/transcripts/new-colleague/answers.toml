@@ -14,61 +14,84 @@ write = 0.8
 "weave.split_3" = { yes = 0.9 }
 
 [answers."look up maria's hire"]
-route           = { hire = 0.9, team = 0.03, none = 0.07 }
-"fits.hire"     = { yes = 0.8 }
-"hire.person"   = { maria = 0.9, unstated = 0.1 }
-"fits.team"     = { yes = 0.02 }
-"team.team"     = { unstated = 0.9, platform = 0.05, sales = 0.05 }
-"fits.accounts" = { yes = 0.02 }
-"fits.order"    = { yes = 0.02 }
-"order.person"  = { unstated = 0.9, maria = 0.05, sam = 0.05 }
-"order.model"   = { unstated = 0.9, air = 0.05, pro = 0.05 }
-"fits.onboard"  = { yes = 0.02 }
+route                      = { hire = 0.9, team = 0.03, none = 0.07 }
+"fits.hire"                = { yes = 0.8 }
+"hire.person"              = { maria = 0.9, unstated = 0.1 }
+"fits.team"                = { yes = 0.02 }
+"team.team"                = { unstated = 0.9, platform = 0.05, sales = 0.05 }
+"fits.accounts"            = { yes = 0.02 }
+"fits.order"               = { yes = 0.02 }
+"order.person"             = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"order.model"              = { unstated = 0.9, air = 0.05, pro = 0.05 }
+"fits.onboard"             = { yes = 0.02 }
+"weave.view_hire__person"  = { maria = 0.9, unstated = 0.1 }
+"weave.is_hire__person_0"  = { yes = 0.9 }
+"weave.view_team__team"    = { unstated = 0.9, platform = 0.05, sales = 0.05 }
+"weave.view_order__person" = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"weave.is_order__person_0" = { yes = 0.05 }
+"weave.view_order__model"  = { unstated = 0.9, air = 0.05, pro = 0.05 }
 
 [answers."the platform team"]
-route           = { team = 0.9, hire = 0.03, none = 0.07 }
-"fits.hire"     = { yes = 0.02 }
-"hire.person"   = { unstated = 0.9, maria = 0.05, sam = 0.05 }
-"fits.team"     = { yes = 0.8 }
-"team.team"     = { platform = 0.9, unstated = 0.1 }
-"fits.accounts" = { yes = 0.02 }
-"fits.order"    = { yes = 0.02 }
-"order.person"  = { unstated = 0.9, maria = 0.05, sam = 0.05 }
-"order.model"   = { unstated = 0.9, air = 0.05, pro = 0.05 }
-"fits.onboard"  = { yes = 0.02 }
+route                      = { team = 0.9, hire = 0.03, none = 0.07 }
+"fits.hire"                = { yes = 0.02 }
+"hire.person"              = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"fits.team"                = { yes = 0.8 }
+"team.team"                = { platform = 0.9, unstated = 0.1 }
+"fits.accounts"            = { yes = 0.02 }
+"fits.order"               = { yes = 0.02 }
+"order.person"             = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"order.model"              = { unstated = 0.9, air = 0.05, pro = 0.05 }
+"fits.onboard"             = { yes = 0.02 }
+"weave.view_hire__person"  = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"weave.view_team__team"    = { platform = 0.9, unstated = 0.1 }
+"weave.is_team__team_0"    = { yes = 0.9 }
+"weave.view_order__person" = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"weave.view_order__model"  = { unstated = 0.9, air = 0.05, pro = 0.05 }
 
 [answers."create her accounts"]
-route           = { accounts = 0.9, hire = 0.03, none = 0.07 }
-"fits.hire"     = { yes = 0.02 }
-"hire.person"   = { unstated = 0.9, maria = 0.05, sam = 0.05 }
-"fits.team"     = { yes = 0.02 }
-"team.team"     = { unstated = 0.9, platform = 0.05, sales = 0.05 }
-"fits.accounts" = { yes = 0.8 }
-"fits.order"    = { yes = 0.02 }
-"order.person"  = { unstated = 0.9, maria = 0.05, sam = 0.05 }
-"order.model"   = { unstated = 0.9, air = 0.05, pro = 0.05 }
-"fits.onboard"  = { yes = 0.02 }
+route                      = { accounts = 0.9, hire = 0.03, none = 0.07 }
+"fits.hire"                = { yes = 0.02 }
+"hire.person"              = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"fits.team"                = { yes = 0.02 }
+"team.team"                = { unstated = 0.9, platform = 0.05, sales = 0.05 }
+"fits.accounts"            = { yes = 0.8 }
+"fits.order"               = { yes = 0.02 }
+"order.person"             = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"order.model"              = { unstated = 0.9, air = 0.05, pro = 0.05 }
+"fits.onboard"             = { yes = 0.02 }
+"weave.view_hire__person"  = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"weave.view_team__team"    = { unstated = 0.9, platform = 0.05, sales = 0.05 }
+"weave.view_order__person" = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"weave.view_order__model"  = { unstated = 0.9, air = 0.05, pro = 0.05 }
 
 [answers."order her a laptop"]
-route           = { order = 0.9, hire = 0.03, none = 0.07 }
-"fits.hire"     = { yes = 0.02 }
-"hire.person"   = { unstated = 0.9, maria = 0.05, sam = 0.05 }
-"fits.team"     = { yes = 0.02 }
-"team.team"     = { unstated = 0.9, platform = 0.05, sales = 0.05 }
-"fits.accounts" = { yes = 0.02 }
-"fits.order"    = { yes = 0.8 }
-"order.person"  = { unstated = 0.9, maria = 0.05, sam = 0.05 }
-"order.model"   = { unstated = 0.9, air = 0.05, pro = 0.05 }
-"fits.onboard"  = { yes = 0.02 }
+route                      = { order = 0.9, hire = 0.03, none = 0.07 }
+"fits.hire"                = { yes = 0.02 }
+"hire.person"              = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"fits.team"                = { yes = 0.02 }
+"team.team"                = { unstated = 0.9, platform = 0.05, sales = 0.05 }
+"fits.accounts"            = { yes = 0.02 }
+"fits.order"               = { yes = 0.8 }
+"order.person"             = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"order.model"              = { unstated = 0.9, air = 0.05, pro = 0.05 }
+"fits.onboard"             = { yes = 0.02 }
+"weave.view_hire__person"  = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"weave.view_team__team"    = { unstated = 0.9, platform = 0.05, sales = 0.05 }
+"weave.view_order__person" = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"weave.view_order__model"  = { unstated = 0.9, air = 0.05, pro = 0.05 }
 
 [answers."book the onboarding"]
-route           = { onboard = 0.9, hire = 0.03, none = 0.07 }
-"fits.hire"     = { yes = 0.02 }
-"hire.person"   = { unstated = 0.9, maria = 0.05, sam = 0.05 }
-"fits.team"     = { yes = 0.02 }
-"team.team"     = { unstated = 0.9, platform = 0.05, sales = 0.05 }
-"fits.accounts" = { yes = 0.02 }
-"fits.order"    = { yes = 0.02 }
-"order.person"  = { unstated = 0.9, maria = 0.05, sam = 0.05 }
-"order.model"   = { unstated = 0.9, air = 0.05, pro = 0.05 }
-"fits.onboard"  = { yes = 0.8 }
+route                      = { onboard = 0.9, hire = 0.03, none = 0.07 }
+"fits.hire"                = { yes = 0.02 }
+"hire.person"              = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"fits.team"                = { yes = 0.02 }
+"team.team"                = { unstated = 0.9, platform = 0.05, sales = 0.05 }
+"fits.accounts"            = { yes = 0.02 }
+"fits.order"               = { yes = 0.02 }
+"order.person"             = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"order.model"              = { unstated = 0.9, air = 0.05, pro = 0.05 }
+"fits.onboard"             = { yes = 0.8 }
+"weave.view_hire__person"  = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"weave.view_team__team"    = { unstated = 0.9, platform = 0.05, sales = 0.05 }
+"weave.view_order__person" = { unstated = 0.9, maria = 0.05, sam = 0.05 }
+"weave.view_order__model"  = { unstated = 0.9, air = 0.05, pro = 0.05 }

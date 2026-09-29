@@ -1,0 +1,128 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "request": {
+      "$ref": "fixtures/request-a-release-said-aloud.json"
+    },
+    "raw": {
+      "route": {
+        "rollback": 0.94,
+        "deploys": 0.02,
+        "none": 0.04
+      },
+      "fits.meeting": {
+        "yes": 0.02
+      },
+      "meeting.day": {
+        "unstated": 1
+      },
+      "meeting.time": {
+        "unstated": 1
+      },
+      "fits.rollback": {
+        "yes": 0.8
+      },
+      "rollback.release": {
+        "none": 0.6,
+        "unstated": 0.4
+      },
+      "fits.calendar": {
+        "yes": 0.02
+      },
+      "calendar.day": {
+        "unstated": 1
+      },
+      "fits.deploys": {
+        "yes": 0.02
+      },
+      "deploys.service": {
+        "unstated": 1
+      },
+      "weave.said_rollback__release_22_41": {
+        "yes": 0.92
+      },
+      "weave.view_calendar__day": {
+        "unstated": 1
+      },
+      "weave.view_deploys__service": {
+        "unstated": 1
+      },
+      "weave.is_deploys__service_0": {
+        "yes": 0.05
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "ranking": [
+        {
+          "reflex": "rollback",
+          "route": 0.94,
+          "fits": 0.8
+        },
+        {
+          "reflex": "deploys",
+          "route": 0.02,
+          "fits": 0.02
+        },
+        {
+          "reflex": "meeting",
+          "route": 0,
+          "fits": 0.02
+        },
+        {
+          "reflex": "calendar",
+          "route": 0,
+          "fits": 0.02
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "rollback",
+          "p": 0.94
+        },
+        {
+          "question": "weave.said_rollback__release_22_41",
+          "top": "yes",
+          "p": 0.92
+        }
+      ],
+      "winner": {
+        "reflex": "rollback",
+        "args": {
+          "release": {
+            "type": "pick",
+            "span": {
+              "start": 22,
+              "end": 41,
+              "text": "five dot oh dot two"
+            },
+            "value": {
+              "type": "code",
+              "value": "5.0.2"
+            },
+            "typed": "5.0.2"
+          }
+        },
+        "basis": {
+          "release": {
+            "by": "spelled",
+            "form": "aloud",
+            "yes": 0.92
+          }
+        },
+        "missing": [],
+        "unconsumed": [],
+        "runner_up": {
+          "reflex": "deploys",
+          "route": 0.02,
+          "fits": 0.02
+        }
+      }
+    }
+  }
+}

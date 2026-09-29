@@ -1,0 +1,153 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "request": {
+      "$ref": "fixtures/request-a-day-misspelt.json"
+    },
+    "raw": {
+      "route": {
+        "meeting": 0.93,
+        "calendar": 0.03,
+        "none": 0.04
+      },
+      "fits.meeting": {
+        "yes": 0.8
+      },
+      "meeting.day": {
+        "none": 0.3,
+        "unstated": 0.7
+      },
+      "meeting.time": {
+        "33-36": 0.95,
+        "unstated": 0.05
+      },
+      "fits.rollback": {
+        "yes": 0.02
+      },
+      "rollback.release": {
+        "unstated": 1
+      },
+      "fits.calendar": {
+        "yes": 0.02
+      },
+      "calendar.day": {
+        "unstated": 1
+      },
+      "fits.deploys": {
+        "yes": 0.02
+      },
+      "deploys.service": {
+        "unstated": 1
+      },
+      "weave.said_meeting__day_20_29": {
+        "yes": 0.9
+      },
+      "weave.only_meeting__time_33_36": {
+        "yes": 0.05
+      },
+      "weave.view_calendar__day": {
+        "unstated": 1
+      },
+      "weave.view_deploys__service": {
+        "unstated": 1
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "ranking": [
+        {
+          "reflex": "meeting",
+          "route": 0.93,
+          "fits": 0.8
+        },
+        {
+          "reflex": "calendar",
+          "route": 0.03,
+          "fits": 0.02
+        },
+        {
+          "reflex": "rollback",
+          "route": 0,
+          "fits": 0.02
+        },
+        {
+          "reflex": "deploys",
+          "route": 0,
+          "fits": 0.02
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "meeting",
+          "p": 0.93
+        },
+        {
+          "question": "weave.said_meeting__day_20_29",
+          "top": "yes",
+          "p": 0.9
+        },
+        {
+          "question": "meeting.time",
+          "top": "33-36",
+          "p": 0.95
+        }
+      ],
+      "winner": {
+        "reflex": "meeting",
+        "args": {
+          "day": {
+            "type": "pick",
+            "span": {
+              "start": 20,
+              "end": 29,
+              "text": "wendesday"
+            },
+            "value": {
+              "type": "date",
+              "value": {
+                "type": "weekday",
+                "weekday": "wednesday"
+              }
+            },
+            "typed": "wednesday"
+          },
+          "time": {
+            "type": "pick",
+            "span": {
+              "start": 33,
+              "end": 36,
+              "text": "3pm"
+            },
+            "value": {
+              "type": "time",
+              "value": "15:00"
+            }
+          }
+        },
+        "basis": {
+          "day": {
+            "by": "spelled",
+            "form": "misspelt",
+            "yes": 0.9
+          },
+          "time": {
+            "by": "ask",
+            "p": 0.95
+          }
+        },
+        "missing": [],
+        "unconsumed": [],
+        "runner_up": {
+          "reflex": "calendar",
+          "route": 0.03,
+          "fits": 0.02
+        }
+      }
+    }
+  }
+}

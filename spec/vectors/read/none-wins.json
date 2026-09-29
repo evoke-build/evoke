@@ -37,6 +37,17 @@
       },
       "timer.label": {
         "unstated": 1
+      },
+      "weave.view_lights__room": {
+        "den": 0.1,
+        "office": 0.1,
+        "unstated": 0.8
+      },
+      "weave.view_lights__state": {
+        "on": 0.1,
+        "off": 0.1,
+        "dim": 0.1,
+        "unstated": 0.7
       }
     }
   },
@@ -60,7 +71,8 @@
           "top": "none",
           "p": 0.7
         }
-      ]
+      ],
+      "type": "done"
     }
   }
 }

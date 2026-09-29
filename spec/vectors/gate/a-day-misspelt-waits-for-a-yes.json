@@ -1,0 +1,212 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "meeting",
+          "route": 0.93,
+          "fits": 0.8
+        },
+        {
+          "reflex": "calendar",
+          "route": 0.03,
+          "fits": 0.02
+        },
+        {
+          "reflex": "rollback",
+          "route": 0,
+          "fits": 0.02
+        },
+        {
+          "reflex": "deploys",
+          "route": 0,
+          "fits": 0.02
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "meeting",
+          "p": 0.93
+        },
+        {
+          "question": "weave.said_meeting__day_20_29",
+          "top": "yes",
+          "p": 0.9
+        },
+        {
+          "question": "meeting.time",
+          "top": "33-36",
+          "p": 0.95
+        }
+      ],
+      "winner": {
+        "reflex": "meeting",
+        "args": {
+          "day": {
+            "type": "pick",
+            "span": {
+              "start": 20,
+              "end": 29,
+              "text": "wendesday"
+            },
+            "value": {
+              "type": "date",
+              "value": {
+                "type": "weekday",
+                "weekday": "wednesday"
+              }
+            },
+            "typed": "wednesday"
+          },
+          "time": {
+            "type": "pick",
+            "span": {
+              "start": 33,
+              "end": 36,
+              "text": "3pm"
+            },
+            "value": {
+              "type": "time",
+              "value": "15:00"
+            }
+          }
+        },
+        "basis": {
+          "day": {
+            "by": "spelled",
+            "form": "misspelt",
+            "yes": 0.9
+          },
+          "time": {
+            "by": "ask",
+            "p": 0.95
+          }
+        },
+        "missing": [],
+        "unconsumed": [],
+        "runner_up": {
+          "reflex": "calendar",
+          "route": 0.03,
+          "fits": 0.02
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    }
+  },
+  "expect": {
+    "outcome": "confirm",
+    "reflex": "meeting",
+    "args": {
+      "day": {
+        "type": "pick",
+        "span": {
+          "start": 20,
+          "end": 29,
+          "text": "wendesday"
+        },
+        "value": {
+          "type": "date",
+          "value": {
+            "type": "weekday",
+            "weekday": "wednesday"
+          }
+        },
+        "typed": "wednesday"
+      },
+      "time": {
+        "type": "pick",
+        "span": {
+          "start": 33,
+          "end": 36,
+          "text": "3pm"
+        },
+        "value": {
+          "type": "time",
+          "value": "15:00"
+        }
+      }
+    },
+    "call": "meeting day=\"wednesday\" time=\"3pm\"",
+    "effect": "write",
+    "basis": {
+      "day": {
+        "by": "spelled",
+        "form": "misspelt",
+        "yes": 0.9
+      },
+      "time": {
+        "by": "ask",
+        "p": 0.95
+      }
+    },
+    "confidence": 0.9,
+    "weakest": {
+      "question": "weave.said_meeting__day_20_29",
+      "top": "yes",
+      "p": 0.9
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "meeting",
+        "p": 0.93
+      },
+      {
+        "question": "weave.said_meeting__day_20_29",
+        "top": "yes",
+        "p": 0.9
+      },
+      {
+        "question": "meeting.time",
+        "top": "33-36",
+        "p": 0.95
+      }
+    ],
+    "runner_up": {
+      "reflex": "calendar",
+      "route": 0.03,
+      "fits": 0.02
+    },
+    "contenders": [
+      {
+        "reflex": "meeting",
+        "route": 0.93,
+        "fits": 0.8
+      },
+      {
+        "reflex": "calendar",
+        "route": 0.03,
+        "fits": 0.02
+      },
+      {
+        "reflex": "rollback",
+        "route": 0,
+        "fits": 0.02
+      },
+      {
+        "reflex": "deploys",
+        "route": 0,
+        "fits": 0.02
+      }
+    ],
+    "prompt": {
+      "own": "meeting day=\"wednesday\" time=\"3pm\" · write · weakest: day 0.90 · day from \"wendesday\"",
+      "template": "Move the meeting to wednesday at 3pm?"
+    },
+    "because": [
+      {
+        "type": "respelt",
+        "arg": "day"
+      }
+    ]
+  }
+}

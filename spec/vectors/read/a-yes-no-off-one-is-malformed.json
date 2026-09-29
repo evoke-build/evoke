@@ -24,6 +24,14 @@
         "yes": 0.45,
         "no": 0.275,
         "unstated": 0.275
+      },
+      "weave.view_screenshot__area": {
+        "screen": 0.05,
+        "window": 0.9,
+        "unstated": 0.05
+      },
+      "weave.is_screenshot__area_1": {
+        "yes": 0.9
       }
     }
   },

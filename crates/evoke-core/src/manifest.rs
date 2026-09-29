@@ -419,6 +419,7 @@ pub fn written(value: &call::Value) -> Option<String> {
         call::Value::Pick {
             span,
             value: PickValue::Quoted { .. },
+            ..
         } => Some(format!("\"{}\"", span.text())),
         _ => value.text().map(str::to_owned),
     }

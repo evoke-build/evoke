@@ -17,434 +17,586 @@ write = 0.8
 "weave.ref_3_0" = { step0 = 0.9, step1 = 0.05, step2 = 0.05 }
 
 [answers."find flights to lisbon"]
-route            = { flights = 0.9, rooms = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.8 }
-"flights.to"     = { lisbon = 0.9, unstated = 0.1 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                        = { flights = 0.9, rooms = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.8 }
+"flights.to"                 = { lisbon = 0.9, unstated = 0.1 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.02 }
+"cancelled.city"             = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"     = { lisbon = 0.9, unstated = 0.1 }
+"weave.is_flights__to_0"     = { yes = 0.9 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_rooms__city_0"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_cancelled__city_0" = { yes = 0.05 }
 
 [answers."rooms there tonight"]
-route            = { rooms = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.8 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 0.9, 12-19 = 0.1 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 0.9, 12-19 = 0.1 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                            = { rooms = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"                   = { yes = 0.02 }
+"flights.to"                     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                     = { yes = 0.8 }
+"rooms.city"                     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"                  = { yes = 0.02 }
+"calendar.day"                   = { unstated = 0.9, 12-19 = 0.1 }
+"fits.book"                      = { yes = 0.02 }
+"book.flight"                    = { unstated = 1.0 }
+"fits.hotel"                     = { yes = 0.02 }
+"fits.meeting"                   = { yes = 0.02 }
+"meeting.day"                    = { unstated = 0.9, 12-19 = 0.1 }
+"fits.tell"                      = { yes = 0.02 }
+"tell.channel"                   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"                 = { yes = 0.02 }
+"cancelled.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"         = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_rooms__city"         = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.only_calendar__day_12_19" = { yes = 0.05 }
+"weave.only_meeting__day_12_19"  = { yes = 0.05 }
+"weave.view_tell__channel"       = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 
 [answers."tomorrow's calendar"]
-route            = { calendar = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.8 }
-"calendar.day"   = { 0-8 = 0.9, unstated = 0.1 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 0.9, 0-8 = 0.1 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                          = { calendar = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"                 = { yes = 0.02 }
+"flights.to"                   = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                   = { yes = 0.02 }
+"rooms.city"                   = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"                = { yes = 0.8 }
+"calendar.day"                 = { 0-8 = 0.9, unstated = 0.1 }
+"fits.book"                    = { yes = 0.02 }
+"book.flight"                  = { unstated = 1.0 }
+"fits.hotel"                   = { yes = 0.02 }
+"fits.meeting"                 = { yes = 0.02 }
+"meeting.day"                  = { unstated = 0.9, 0-8 = 0.1 }
+"fits.tell"                    = { yes = 0.02 }
+"tell.channel"                 = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"               = { yes = 0.02 }
+"cancelled.city"               = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"       = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_rooms__city"       = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.only_calendar__day_0_8" = { yes = 0.05 }
+"weave.only_meeting__day_0_8"  = { yes = 0.05 }
+"weave.view_tell__channel"     = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city"   = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 
 [answers."book that flight"]
-route            = { book = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.8 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                        = { book = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.02 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.8 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.02 }
+"cancelled.city"             = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 
 [answers."book the hotel"]
-route            = { hotel = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.8 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                        = { hotel = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.02 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.8 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.02 }
+"cancelled.city"             = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 
 [answers."move the meetings to tuesday"]
-route            = { meeting = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 0.9, 21-28 = 0.1 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.8 }
-"meeting.day"    = { 21-28 = 0.9, unstated = 0.1 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                            = { meeting = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"                   = { yes = 0.02 }
+"flights.to"                     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                     = { yes = 0.02 }
+"rooms.city"                     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"                  = { yes = 0.02 }
+"calendar.day"                   = { unstated = 0.9, 21-28 = 0.1 }
+"fits.book"                      = { yes = 0.02 }
+"book.flight"                    = { unstated = 1.0 }
+"fits.hotel"                     = { yes = 0.02 }
+"fits.meeting"                   = { yes = 0.8 }
+"meeting.day"                    = { 21-28 = 0.9, unstated = 0.1 }
+"fits.tell"                      = { yes = 0.02 }
+"tell.channel"                   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"                 = { yes = 0.02 }
+"cancelled.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"         = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_rooms__city"         = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.only_calendar__day_21_28" = { yes = 0.05 }
+"weave.only_meeting__day_21_28"  = { yes = 0.05 }
+"weave.view_tell__channel"       = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 
 [answers."tell #travel"]
-route            = { tell = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.8 }
-"tell.channel"   = { "#travel" = 0.9, unstated = 0.1 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                        = { tell = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.02 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.8 }
+"tell.channel"               = { "#travel" = 0.9, unstated = 0.1 }
+"fits.cancelled"             = { yes = 0.02 }
+"cancelled.city"             = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_tell__channel"   = { "#travel" = 0.9, unstated = 0.1 }
+"weave.is_tell__channel_0"   = { yes = 0.9 }
+"weave.view_cancelled__city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 
 [answers."our lisbon flight was cancelled"]
-route            = { cancelled = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.1 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.8 }
-"cancelled.city" = { lisbon = 0.9, unstated = 0.1 }
-"weave.ref_3_0"  = { step0 = 0.9, step1 = 0.05, step2 = 0.05 }
+route                        = { cancelled = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.1 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.8 }
+"cancelled.city"             = { lisbon = 0.9, unstated = 0.1 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_flights__to_0"     = { yes = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_rooms__city_0"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { lisbon = 0.9, unstated = 0.1 }
+"weave.is_cancelled__city_0" = { yes = 0.9 }
+"weave.ref_3_0"              = { step0 = 0.9, step1 = 0.05, step2 = 0.05 }
 
 [answers."find rooms in lisbon"]
-route            = { rooms = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.8 }
-"rooms.city"     = { lisbon = 0.9, unstated = 0.1 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                        = { rooms = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.02 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.8 }
+"rooms.city"                 = { lisbon = 0.9, unstated = 0.1 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.02 }
+"cancelled.city"             = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_flights__to_0"     = { yes = 0.05 }
+"weave.view_rooms__city"     = { lisbon = 0.9, unstated = 0.1 }
+"weave.is_rooms__city_0"     = { yes = 0.9 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_cancelled__city_0" = { yes = 0.05 }
 
 [answers."show tomorrow's calendar"]
-route            = { calendar = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.8 }
-"calendar.day"   = { 5-13 = 0.9, unstated = 0.1 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 0.9, 5-13 = 0.1 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                           = { calendar = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"                  = { yes = 0.02 }
+"flights.to"                    = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                    = { yes = 0.02 }
+"rooms.city"                    = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"                 = { yes = 0.8 }
+"calendar.day"                  = { 5-13 = 0.9, unstated = 0.1 }
+"fits.book"                     = { yes = 0.02 }
+"book.flight"                   = { unstated = 1.0 }
+"fits.hotel"                    = { yes = 0.02 }
+"fits.meeting"                  = { yes = 0.02 }
+"meeting.day"                   = { unstated = 0.9, 5-13 = 0.1 }
+"fits.tell"                     = { yes = 0.02 }
+"tell.channel"                  = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"                = { yes = 0.02 }
+"cancelled.city"                = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"        = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_rooms__city"        = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.only_calendar__day_5_13" = { yes = 0.05 }
+"weave.only_meeting__day_5_13"  = { yes = 0.05 }
+"weave.view_tell__channel"      = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city"    = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 
 [answers."move the meetings"]
-route            = { meeting = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.8 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                        = { meeting = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.02 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.8 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.02 }
+"cancelled.city"             = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 
 [answers."tell the travel channel"]
-route            = { tell = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.8 }
-"tell.channel"   = { "#travel" = 0.9, unstated = 0.1 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                        = { tell = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.02 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.8 }
+"tell.channel"               = { "#travel" = 0.9, unstated = 0.1 }
+"fits.cancelled"             = { yes = 0.02 }
+"cancelled.city"             = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_tell__channel"   = { "#travel" = 0.9, unstated = 0.1 }
+"weave.is_tell__channel_0"   = { yes = 0.9 }
+"weave.view_cancelled__city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
 
 [answers."my madrid flight was cancelled"]
-route            = { cancelled = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.1 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.8 }
-"cancelled.city" = { madrid = 0.9, unstated = 0.1 }
+route                        = { cancelled = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.1 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.8 }
+"cancelled.city"             = { madrid = 0.9, unstated = 0.1 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_flights__to_1"     = { yes = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_rooms__city_1"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { madrid = 0.9, unstated = 0.1 }
+"weave.is_cancelled__city_1" = { yes = 0.9 }
 
 [answers."they cancelled the flight to berlin"]
-route            = { cancelled = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.1 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.8 }
-"cancelled.city" = { berlin = 0.9, unstated = 0.1 }
+route                        = { cancelled = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.1 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.8 }
+"cancelled.city"             = { berlin = 0.9, unstated = 0.1 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_flights__to_2"     = { yes = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_rooms__city_2"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { berlin = 0.9, unstated = 0.1 }
+"weave.is_cancelled__city_2" = { yes = 0.9 }
 
 [answers."the lisbon flight is off"]
-route            = { cancelled = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.1 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.8 }
-"cancelled.city" = { lisbon = 0.9, unstated = 0.1 }
+route                        = { cancelled = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.1 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.8 }
+"cancelled.city"             = { lisbon = 0.9, unstated = 0.1 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_flights__to_0"     = { yes = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_rooms__city_0"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { lisbon = 0.9, unstated = 0.1 }
+"weave.is_cancelled__city_0" = { yes = 0.9 }
 
 [answers."my flight to berlin was cancelled"]
-route            = { cancelled = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.1 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.8 }
-"cancelled.city" = { berlin = 0.9, unstated = 0.1 }
+route                        = { cancelled = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.1 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.8 }
+"cancelled.city"             = { berlin = 0.9, unstated = 0.1 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_flights__to_2"     = { yes = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_rooms__city_2"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { berlin = 0.9, unstated = 0.1 }
+"weave.is_cancelled__city_2" = { yes = 0.9 }
 
 [answers."recover from the cancelled flight to lisbon"]
-route            = { cancelled = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.1 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.8 }
-"cancelled.city" = { lisbon = 0.9, unstated = 0.1 }
+route                        = { cancelled = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.1 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.8 }
+"cancelled.city"             = { lisbon = 0.9, unstated = 0.1 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_flights__to_0"     = { yes = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_rooms__city_0"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { lisbon = 0.9, unstated = 0.1 }
+"weave.is_cancelled__city_0" = { yes = 0.9 }
 
 [answers."the airline scrapped my berlin flight"]
-route            = { cancelled = 0.86, flights = 0.03, none = 0.11 }
-"fits.flights"   = { yes = 0.1 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.8 }
-"cancelled.city" = { berlin = 0.9, unstated = 0.1 }
+route                        = { cancelled = 0.86, flights = 0.03, none = 0.11 }
+"fits.flights"               = { yes = 0.1 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.8 }
+"cancelled.city"             = { berlin = 0.9, unstated = 0.1 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_flights__to_2"     = { yes = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_rooms__city_2"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { berlin = 0.9, unstated = 0.1 }
+"weave.is_cancelled__city_2" = { yes = 0.9 }
 
 [answers."is there a later plane to madrid"]
-route            = { flights = 0.9, rooms = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.8 }
-"flights.to"     = { madrid = 0.9, unstated = 0.1 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                        = { flights = 0.9, rooms = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.8 }
+"flights.to"                 = { madrid = 0.9, unstated = 0.1 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.02 }
+"cancelled.city"             = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"     = { madrid = 0.9, unstated = 0.1 }
+"weave.is_flights__to_1"     = { yes = 0.9 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_rooms__city_1"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_cancelled__city_1" = { yes = 0.05 }
 
 [answers."my flight to lisbon is boarding late"]
-route            = { none = 0.9, flights = 0.1 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                        = { none = 0.9, flights = 0.1 }
+"fits.flights"               = { yes = 0.02 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.02 }
+"cancelled.city"             = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_flights__to_0"     = { yes = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_rooms__city_0"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_cancelled__city_0" = { yes = 0.05 }
 
 [answers."plan a spring trip to berlin"]
-route            = { none = 0.9, flights = 0.1 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                        = { none = 0.9, flights = 0.1 }
+"fits.flights"               = { yes = 0.02 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.02 }
+"cancelled.city"             = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_flights__to_2"     = { yes = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_rooms__city_2"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.is_tell__channel_0"   = { yes = 0.05 }
+"weave.view_cancelled__city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_cancelled__city_2" = { yes = 0.05 }
 
 [answers."cancel my seat on the madrid flight"]
-route            = { none = 0.9, flights = 0.1 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                        = { none = 0.9, flights = 0.1 }
+"fits.flights"               = { yes = 0.02 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.02 }
+"cancelled.city"             = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_flights__to_1"     = { yes = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_rooms__city_1"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_cancelled__city_1" = { yes = 0.05 }
 
 [answers."find flights to madrid"]
-route            = { flights = 0.9, rooms = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.8 }
-"flights.to"     = { madrid = 0.9, unstated = 0.1 }
-"fits.rooms"     = { yes = 0.02 }
-"rooms.city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                        = { flights = 0.9, rooms = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.8 }
+"flights.to"                 = { madrid = 0.9, unstated = 0.1 }
+"fits.rooms"                 = { yes = 0.02 }
+"rooms.city"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.02 }
+"cancelled.city"             = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"     = { madrid = 0.9, unstated = 0.1 }
+"weave.is_flights__to_1"     = { yes = 0.9 }
+"weave.view_rooms__city"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_rooms__city_1"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_cancelled__city_1" = { yes = 0.05 }
 
 [answers."find rooms in madrid"]
-route            = { rooms = 0.9, flights = 0.03, none = 0.07 }
-"fits.flights"   = { yes = 0.02 }
-"flights.to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
-"fits.rooms"     = { yes = 0.8 }
-"rooms.city"     = { madrid = 0.9, unstated = 0.1 }
-"fits.calendar"  = { yes = 0.02 }
-"calendar.day"   = { unstated = 1.0 }
-"fits.book"      = { yes = 0.02 }
-"book.flight"    = { unstated = 1.0 }
-"fits.hotel"     = { yes = 0.02 }
-"fits.meeting"   = { yes = 0.02 }
-"meeting.day"    = { unstated = 1.0 }
-"fits.tell"      = { yes = 0.02 }
-"tell.channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
-"fits.cancelled" = { yes = 0.02 }
-"cancelled.city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+route                        = { rooms = 0.9, flights = 0.03, none = 0.07 }
+"fits.flights"               = { yes = 0.02 }
+"flights.to"                 = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"fits.rooms"                 = { yes = 0.8 }
+"rooms.city"                 = { madrid = 0.9, unstated = 0.1 }
+"fits.calendar"              = { yes = 0.02 }
+"calendar.day"               = { unstated = 1.0 }
+"fits.book"                  = { yes = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"fits.hotel"                 = { yes = 0.02 }
+"fits.meeting"               = { yes = 0.02 }
+"meeting.day"                = { unstated = 1.0 }
+"fits.tell"                  = { yes = 0.02 }
+"tell.channel"               = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"fits.cancelled"             = { yes = 0.02 }
+"cancelled.city"             = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.view_flights__to"     = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_flights__to_1"     = { yes = 0.05 }
+"weave.view_rooms__city"     = { madrid = 0.9, unstated = 0.1 }
+"weave.is_rooms__city_1"     = { yes = 0.9 }
+"weave.view_tell__channel"   = { unstated = 0.9, "#travel" = 0.05, "#team" = 0.05 }
+"weave.view_cancelled__city" = { unstated = 0.9, lisbon = 0.05, madrid = 0.05 }
+"weave.is_cancelled__city_1" = { yes = 0.05 }

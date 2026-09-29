@@ -440,6 +440,7 @@ mod tests {
                         Value::Pick {
                             span: Span::of(&typed, 0, 2).unwrap(),
                             value: PickValue::Number { value: 50.0 },
+                            typed: None,
                         },
                     ),
                 ]
@@ -447,6 +448,7 @@ mod tests {
                 .collect(),
             },
             effect: Effect::Write,
+            basis: IndexMap::new(),
             judged,
         }
     }

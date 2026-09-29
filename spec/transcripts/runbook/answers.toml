@@ -8,92 +8,104 @@ read  = 0.6
 write = 0.8
 
 [answers."drain the primary"]
-route           = { runbook = 0.9, drain = 0.08, none = 0.02 }
-"fits.drain"    = { yes = 0.6 }
-"fits.failover" = { yes = 0.02 }
-"fits.verify"   = { yes = 0.02 }
-"fits.tell"     = { yes = 0.02 }
-"tell.channel"  = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
-"fits.failback" = { yes = 0.02 }
-"fits.runbook"  = { yes = 0.8 }
-"weave.ref_2_0" = { step0 = 0.9, step1 = 0.1 }
+route                      = { runbook = 0.9, drain = 0.08, none = 0.02 }
+"fits.drain"               = { yes = 0.6 }
+"fits.failover"            = { yes = 0.02 }
+"fits.verify"              = { yes = 0.02 }
+"fits.tell"                = { yes = 0.02 }
+"tell.channel"             = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"fits.failback"            = { yes = 0.02 }
+"fits.runbook"             = { yes = 0.8 }
+"weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"weave.ref_2_0"            = { step0 = 0.9, step1 = 0.1 }
 
 [answers."drain connections off the primary"]
-route           = { drain = 0.9, runbook = 0.06, none = 0.04 }
-"fits.drain"    = { yes = 0.8 }
-"fits.failover" = { yes = 0.02 }
-"fits.verify"   = { yes = 0.02 }
-"fits.tell"     = { yes = 0.02 }
-"tell.channel"  = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
-"fits.failback" = { yes = 0.02 }
-"fits.runbook"  = { yes = 0.1 }
+route                      = { drain = 0.9, runbook = 0.06, none = 0.04 }
+"fits.drain"               = { yes = 0.8 }
+"fits.failover"            = { yes = 0.02 }
+"fits.verify"              = { yes = 0.02 }
+"fits.tell"                = { yes = 0.02 }
+"tell.channel"             = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"fits.failback"            = { yes = 0.02 }
+"fits.runbook"             = { yes = 0.1 }
+"weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
 
 [answers."fail over to the replica"]
-route           = { failover = 0.9, drain = 0.03, none = 0.07 }
-"fits.drain"    = { yes = 0.02 }
-"fits.failover" = { yes = 0.8 }
-"fits.verify"   = { yes = 0.02 }
-"fits.tell"     = { yes = 0.02 }
-"tell.channel"  = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
-"fits.failback" = { yes = 0.02 }
-"fits.runbook"  = { yes = 0.02 }
+route                      = { failover = 0.9, drain = 0.03, none = 0.07 }
+"fits.drain"               = { yes = 0.02 }
+"fits.failover"            = { yes = 0.8 }
+"fits.verify"              = { yes = 0.02 }
+"fits.tell"                = { yes = 0.02 }
+"tell.channel"             = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"fits.failback"            = { yes = 0.02 }
+"fits.runbook"             = { yes = 0.02 }
+"weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
 
 [answers."check whether writes land on the new primary"]
-route           = { verify = 0.9, drain = 0.03, none = 0.07 }
-"fits.drain"    = { yes = 0.02 }
-"fits.failover" = { yes = 0.02 }
-"fits.verify"   = { yes = 0.8 }
-"fits.tell"     = { yes = 0.02 }
-"tell.channel"  = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
-"fits.failback" = { yes = 0.02 }
-"fits.runbook"  = { yes = 0.02 }
+route                      = { verify = 0.9, drain = 0.03, none = 0.07 }
+"fits.drain"               = { yes = 0.02 }
+"fits.failover"            = { yes = 0.02 }
+"fits.verify"              = { yes = 0.8 }
+"fits.tell"                = { yes = 0.02 }
+"tell.channel"             = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"fits.failback"            = { yes = 0.02 }
+"fits.runbook"             = { yes = 0.02 }
+"weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
 
 [answers."tell the ops channel the failover is done"]
-route           = { tell = 0.9, drain = 0.03, none = 0.07 }
-"fits.drain"    = { yes = 0.02 }
-"fits.failover" = { yes = 0.02 }
-"fits.verify"   = { yes = 0.02 }
-"fits.tell"     = { yes = 0.8 }
-"tell.channel"  = { "#ops" = 0.9, unstated = 0.1 }
-"fits.failback" = { yes = 0.02 }
-"fits.runbook"  = { yes = 0.02 }
+route                      = { tell = 0.9, drain = 0.03, none = 0.07 }
+"fits.drain"               = { yes = 0.02 }
+"fits.failover"            = { yes = 0.02 }
+"fits.verify"              = { yes = 0.02 }
+"fits.tell"                = { yes = 0.8 }
+"tell.channel"             = { "#ops" = 0.9, unstated = 0.1 }
+"fits.failback"            = { yes = 0.02 }
+"fits.runbook"             = { yes = 0.02 }
+"weave.view_tell__channel" = { "#ops" = 0.9, unstated = 0.1 }
+"weave.is_tell__channel_0" = { yes = 0.9 }
 
 [answers."fail back to the old primary"]
-route           = { failback = 0.9, drain = 0.03, none = 0.07 }
-"fits.drain"    = { yes = 0.02 }
-"fits.failover" = { yes = 0.02 }
-"fits.verify"   = { yes = 0.02 }
-"fits.tell"     = { yes = 0.02 }
-"tell.channel"  = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
-"fits.failback" = { yes = 0.8 }
-"fits.runbook"  = { yes = 0.02 }
+route                      = { failback = 0.9, drain = 0.03, none = 0.07 }
+"fits.drain"               = { yes = 0.02 }
+"fits.failover"            = { yes = 0.02 }
+"fits.verify"              = { yes = 0.02 }
+"fits.tell"                = { yes = 0.02 }
+"tell.channel"             = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"fits.failback"            = { yes = 0.8 }
+"fits.runbook"             = { yes = 0.02 }
+"weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
 
 [answers."run the failover runbook"]
-route           = { runbook = 0.9, failover = 0.03, none = 0.07 }
-"fits.drain"    = { yes = 0.02 }
-"fits.failover" = { yes = 0.1 }
-"fits.verify"   = { yes = 0.02 }
-"fits.tell"     = { yes = 0.02 }
-"tell.channel"  = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
-"fits.failback" = { yes = 0.02 }
-"fits.runbook"  = { yes = 0.8 }
+route                      = { runbook = 0.9, failover = 0.03, none = 0.07 }
+"fits.drain"               = { yes = 0.02 }
+"fits.failover"            = { yes = 0.1 }
+"fits.verify"              = { yes = 0.02 }
+"fits.tell"                = { yes = 0.02 }
+"tell.channel"             = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"fits.failback"            = { yes = 0.02 }
+"fits.runbook"             = { yes = 0.8 }
+"weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"weave.is_tell__channel_0" = { yes = 0.05 }
 
 [answers."switch the database to the replica"]
-route           = { runbook = 0.9, failover = 0.03, none = 0.07 }
-"fits.drain"    = { yes = 0.02 }
-"fits.failover" = { yes = 0.1 }
-"fits.verify"   = { yes = 0.02 }
-"fits.tell"     = { yes = 0.02 }
-"tell.channel"  = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
-"fits.failback" = { yes = 0.02 }
-"fits.runbook"  = { yes = 0.8 }
+route                      = { runbook = 0.9, failover = 0.03, none = 0.07 }
+"fits.drain"               = { yes = 0.02 }
+"fits.failover"            = { yes = 0.1 }
+"fits.verify"              = { yes = 0.02 }
+"fits.tell"                = { yes = 0.02 }
+"tell.channel"             = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"fits.failback"            = { yes = 0.02 }
+"fits.runbook"             = { yes = 0.8 }
+"weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"weave.is_tell__channel_1" = { yes = 0.05 }
 
 [answers."the primary is dying, fail over"]
-route           = { runbook = 0.9, failover = 0.03, none = 0.07 }
-"fits.drain"    = { yes = 0.02 }
-"fits.failover" = { yes = 0.1 }
-"fits.verify"   = { yes = 0.02 }
-"fits.tell"     = { yes = 0.02 }
-"tell.channel"  = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
-"fits.failback" = { yes = 0.02 }
-"fits.runbook"  = { yes = 0.8 }
+route                      = { runbook = 0.9, failover = 0.03, none = 0.07 }
+"fits.drain"               = { yes = 0.02 }
+"fits.failover"            = { yes = 0.1 }
+"fits.verify"              = { yes = 0.02 }
+"fits.tell"                = { yes = 0.02 }
+"tell.channel"             = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }
+"fits.failback"            = { yes = 0.02 }
+"fits.runbook"             = { yes = 0.8 }
+"weave.view_tell__channel" = { unstated = 0.9, "#ops" = 0.05, "#db" = 0.05 }

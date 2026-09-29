@@ -8,29 +8,37 @@ read  = 0.6
 write = 0.8
 
 [answers."say hi to \"ada\""]
-route               = { hello = 0.94, none = 0.06 }
-"fits.hello"        = { yes = 0.71 }
-"fits.lights"       = { yes = 0.02 }
-"fits.timer"        = { yes = 0.02 }
-"fits.volume"       = { yes = 0.02 }
-"hello.who"         = { 11-14 = 0.97, unstated = 0.03 }
-"lights.room"       = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"      = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"timer.label"       = { unstated = 0.98, 11-14 = 0.02 }
-"lights.brightness" = { unstated = 1.0 }
-"timer.duration"    = { unstated = 1.0 }
-"volume.level"      = { unstated = 1.0 }
+route                           = { hello = 0.94, none = 0.06 }
+"fits.hello"                    = { yes = 0.71 }
+"fits.lights"                   = { yes = 0.02 }
+"fits.timer"                    = { yes = 0.02 }
+"fits.volume"                   = { yes = 0.02 }
+"hello.who"                     = { 11-14 = 0.97, unstated = 0.03 }
+"lights.room"                   = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state"                  = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"timer.label"                   = { unstated = 0.98, 11-14 = 0.02 }
+"lights.brightness"             = { unstated = 1.0 }
+"timer.duration"                = { unstated = 1.0 }
+"volume.level"                  = { unstated = 1.0 }
+"weave.view_lights__room"       = { unstated = 0.9, den = 0.05, office = 0.05 }
+"weave.view_lights__state"      = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.only_timer__label_11_14" = { yes = 0.05 }
+"weave.only_hello__who_11_14"   = { yes = 0.05 }
 
 [answers."wave at \"grace\""]
-route               = { hello = 0.92, none = 0.08 }
-"fits.hello"        = { yes = 0.7 }
-"fits.lights"       = { yes = 0.02 }
-"fits.timer"        = { yes = 0.02 }
-"fits.volume"       = { yes = 0.02 }
-"hello.who"         = { 9-14 = 0.95, unstated = 0.05 }
-"lights.room"       = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"      = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"timer.label"       = { unstated = 0.98, 9-14 = 0.02 }
-"lights.brightness" = { unstated = 1.0 }
-"timer.duration"    = { unstated = 1.0 }
-"volume.level"      = { unstated = 1.0 }
+route                          = { hello = 0.92, none = 0.08 }
+"fits.hello"                   = { yes = 0.7 }
+"fits.lights"                  = { yes = 0.02 }
+"fits.timer"                   = { yes = 0.02 }
+"fits.volume"                  = { yes = 0.02 }
+"hello.who"                    = { 9-14 = 0.95, unstated = 0.05 }
+"lights.room"                  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state"                 = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"timer.label"                  = { unstated = 0.98, 9-14 = 0.02 }
+"lights.brightness"            = { unstated = 1.0 }
+"timer.duration"               = { unstated = 1.0 }
+"volume.level"                 = { unstated = 1.0 }
+"weave.view_lights__room"      = { unstated = 0.9, den = 0.05, office = 0.05 }
+"weave.view_lights__state"     = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.only_timer__label_9_14" = { yes = 0.05 }
+"weave.only_hello__who_9_14"   = { yes = 0.05 }

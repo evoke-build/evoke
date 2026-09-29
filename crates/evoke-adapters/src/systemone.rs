@@ -527,20 +527,10 @@ mod tests {
         assert_eq!(body["model"], "jev-1.13.0");
         assert_eq!(body["state"], json!({ "request": "kill the lights" }));
         let questions = body["questions"].as_object().unwrap();
+        // Every question of the request, under its own id and in the request's order.
         let ids: Vec<&str> = questions.keys().map(String::as_str).collect();
-        assert_eq!(
-            ids,
-            [
-                "route",
-                "fits.lights",
-                "lights.room",
-                "lights.state",
-                "lights.brightness",
-                "fits.timer",
-                "timer.duration",
-                "timer.label"
-            ]
-        );
+        let asked: Vec<String> = request.questions.keys().map(ToString::to_string).collect();
+        assert_eq!(ids, asked);
         let route = &questions["route"];
         assert_eq!(route["type"], "choice");
         assert_eq!(route["instructions"], "Which one does the request ask for?");

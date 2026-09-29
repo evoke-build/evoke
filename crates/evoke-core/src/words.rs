@@ -101,6 +101,11 @@ const WEEKDAYS: [&str; 7] = [
 /// The words before a day that make it a recurrence, which is no day.
 const EVERY: [&str; 2] = ["every", "each"];
 
+/// The words a courtesy is made of: a request's «please», a «thanks» at its end.
+const COURTESY: [&str; 10] = [
+    "please", "pls", "plz", "thanks", "thank", "you", "thx", "cheers", "ta", "kindly",
+];
+
 /// The words before a weekday that say which one: «next monday».
 const WHICH: [(&str, Which); 3] = [
     ("next", Which::Next),
@@ -407,6 +412,16 @@ pub(crate) fn distance(a: &str, b: &str) -> usize {
         }
     }
     rows[a.len()][b.len()]
+}
+
+/// Whether words are politeness and nothing else: «thanks», «thank you», «please».
+#[must_use]
+pub(crate) fn courtesy(text: &str) -> bool {
+    let words: Vec<String> = tokens(text).into_iter().map(|token| token.plain).collect();
+    !words.is_empty()
+        && words
+            .iter()
+            .all(|word| word.is_empty() || COURTESY.contains(&word.as_str()))
 }
 
 /// Whether a word of the request is a reflex's own name, whatever its number or tense: «downloaded» is

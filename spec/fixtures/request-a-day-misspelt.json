@@ -1,0 +1,196 @@
+{
+  "state": {
+    "request": "move the meeting to wendesday at 3pm"
+  },
+  "questions": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "meeting": {
+          "what": "Move a meeting to a day and a time.\nThe meeting moves to the day and the time you name.",
+          "not_for": [
+            "showing the calendar",
+            "rolling a release back"
+          ],
+          "examples": [
+            "move the meeting to friday at 10am"
+          ]
+        },
+        "rollback": {
+          "what": "Roll a service back from a release to the one before it.\nEverywhere at once.",
+          "not_for": [
+            "listing deploys",
+            "moving a meeting"
+          ],
+          "examples": [
+            "roll checkout back from 4.12.0"
+          ]
+        },
+        "calendar": {
+          "what": "Show the meetings of a day.\nEach with its title and its time.",
+          "not_for": [
+            "moving a meeting",
+            "rolling a release back"
+          ],
+          "examples": [
+            "what is on my calendar tomorrow"
+          ]
+        },
+        "deploys": {
+          "what": "List the recent deploys of a service.\nEach release, newest first.",
+          "not_for": [
+            "rolling a release back",
+            "moving a meeting"
+          ],
+          "examples": [
+            "list the checkout deploys"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "fits.meeting": {
+      "type": "yesno",
+      "ask": "Does `meeting` do the specific thing the request asks for?",
+      "yes": "Move a meeting to a day and a time.\nThe meeting moves to the day and the time you name.",
+      "no": "Something else, such as: showing the calendar; rolling a release back."
+    },
+    "meeting.day": {
+      "type": "choice",
+      "ask": "To which day?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "meeting.time": {
+      "type": "choice",
+      "ask": "At what time?",
+      "options": {
+        "33-36": "3pm",
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.rollback": {
+      "type": "yesno",
+      "ask": "Does `rollback` do the specific thing the request asks for?",
+      "yes": "Roll a service back from a release to the one before it.\nEverywhere at once.",
+      "no": "Something else, such as: listing deploys; moving a meeting."
+    },
+    "rollback.release": {
+      "type": "choice",
+      "ask": "From which release?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.calendar": {
+      "type": "yesno",
+      "ask": "Does `calendar` do the specific thing the request asks for?",
+      "yes": "Show the meetings of a day.\nEach with its title and its time.",
+      "no": "Something else, such as: moving a meeting; rolling a release back."
+    },
+    "calendar.day": {
+      "type": "choice",
+      "ask": "Which day?",
+      "options": {
+        "tomorrow": "Tomorrow, the day after today.",
+        "monday": "Monday, the first day of the week.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.deploys": {
+      "type": "yesno",
+      "ask": "Does `deploys` do the specific thing the request asks for?",
+      "yes": "List the recent deploys of a service.\nEach release, newest first.",
+      "no": "Something else, such as: rolling a release back; moving a meeting."
+    },
+    "deploys.service": {
+      "type": "choice",
+      "ask": "Which service?",
+      "options": {
+        "checkout": "The checkout service.",
+        "payments": "The payments service.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.said_meeting__day_20_29": {
+      "type": "yesno",
+      "ask": "To which day?",
+      "yes": "«wednesday», written as «wendesday».",
+      "no": "Other words, or none."
+    },
+    "weave.only_meeting__time_33_36": {
+      "type": "yesno",
+      "ask": "At what time?",
+      "yes": "«3pm»",
+      "no": "Other words, or none."
+    },
+    "weave.view_calendar__day": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "tomorrow": "Tomorrow, the day after today.",
+        "monday": "Monday, the first day of the week.",
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.view_deploys__service": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "checkout": "The checkout service.",
+        "payments": "The payments service.",
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    }
+  },
+  "proposed": [
+    {
+      "span": {
+        "start": 33,
+        "end": 36,
+        "text": "3pm"
+      },
+      "value": {
+        "type": "time",
+        "value": "15:00"
+      }
+    }
+  ],
+  "spelled": {
+    "meeting.day": [
+      {
+        "span": {
+          "start": 20,
+          "end": 29,
+          "text": "wendesday"
+        },
+        "typed": "wednesday",
+        "value": {
+          "type": "date",
+          "value": {
+            "type": "weekday",
+            "weekday": "wednesday"
+          }
+        },
+        "form": "misspelt"
+      }
+    ]
+  }
+}

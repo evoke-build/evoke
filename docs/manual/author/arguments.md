@@ -82,6 +82,10 @@ A pick reads a piece of the input, word for word. Nine recognizers exist:
 
 - The classifier chooses among the candidates found. It never invents one. A pick with no candidate reads as
   unstated. If it is required, `evoke` asks for it.
+- A value spelled out is read as it is typed, where the classifier says it is meant: an address, a URL, a code
+  or a number said aloud, `dana dot weiss at example dot org`, `five dot oh dot two`; a weekday misspelt,
+  `wendesday`; a code typed with a space, `hs 0409`. The call shows the typed value. After a misspelt day or a
+  spaced code it confirms, with your words on the line ([Outcomes](../use/outcomes.md)).
 - Text people type freely is never a `quoted` argument, and the body reads it from `input`:
   [rule 21](rules.md#4-words-that-read-each-value).
 - Quotes hide what they enclose. A typed span hides the bare numbers inside it. In *timer for 3 minutes called

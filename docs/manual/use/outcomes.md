@@ -39,6 +39,10 @@ These are the reasons a decision stops at confirm, in the order the line names t
 - **destructive**: a destructive reflex always confirms, however sure.
 - **no gate**: the adapter shipped no thresholds, so nothing runs on its own.
 - **under the floor**: the weakest judgment is under the bar for this effect.
+- **read from your words**: a value from a list was taken from a word of the input, where the answers about it
+  did not agree. The line names the argument and the word: `room from "snug"`.
+- **spelled another way**: a value was read from words that do not spell it as it is typed, like a day misspelt
+  or a code typed with a space. The line names the words: `sku from "hs 0409"`.
 - **an unconsumed span**: you typed something recognizable, like a duration or a URL, and no argument took it. A
   bare number never stops a call.
 - **two things**: a runner-up reflex fits well enough that the input may have asked for two things.
@@ -49,8 +53,9 @@ is read from the terminal, never from stdin. With no terminal, a confirm exits 3
 ## Ask
 
 The winner is clear, but an argument is missing. The input never stated a required one, or the value fell
-outside its range, or the input names a value that is not among the argument's choices. `evoke` asks the
-argument's own question, offers what it may be, and gates again with your answer.
+outside its range, or the input names a value that is not among the argument's choices, or it names one that
+could be read two ways. `evoke` asks the argument's own question, offers what it may be, and gates again with
+your answer.
 
 ```text
 $ evoke "kill the lights"
@@ -132,7 +137,9 @@ gate = { write = 0.85 }
 distribution, each reflex's `fits`, then the outcome and the weakest judgment. An argument the input says nothing
 of prints no line, unless it is asked. Answers that would print as `0.00` fold into a count, `8 more under 0.01`;
 `none` and `unstated` always show. On an argument's line, `none` means the input states a value that is not among
-the choices. It shares the cache with a real decision. It is never logged.
+the choices. Under a value's line, a second line says what else the value stands on: what a second question
+about it answered, the words of the input that hold it, and the yes that took it. It shares the cache with a
+real decision. It is never logged.
 
 ```text
 $ evoke try "kill the lights"
@@ -156,12 +163,16 @@ $ evoke why
   "kill the lights in the den"
   lights 0.91 · none 0.06 · timer 0.02 · volume 0.01
   room   den 0.85 · unstated 0.10 · office 0.05
+         asked a second way: den 0.85
   state  off 0.88 · on 0.05 · dim 0.05 · unstated 0.02
+         asked a second way: off 0.88 · is it off? yes 0.90
   fits   lights 0.70 · timer 0.05 · volume 0.05
-  ran lights room="den" state="off" · weakest: room 0.85 · replay, 10 questions
+  ran lights room="den" state="off" · weakest: room 0.85 · replay, 14 questions in 2 rounds
 ```
 
-When the answers came from the cache, the last line ends in `· cached` in place of the adapter and its count.
+The last line counts the questions the adapter answered, and the rounds they were asked in when the answers to
+the first opened more. When the answers came from the cache, it ends in `· cached` in place of the adapter and
+its count.
 
 ## `run`: by name, no classifier
 

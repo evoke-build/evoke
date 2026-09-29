@@ -14,7 +14,8 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `input`      | ●   | ●       | ●   | ●       | The sentence as decided                                        |
 | `outcome`    | ●   | ●       | ●   | ●       | `"run"`, `"confirm"`, `"ask"`, `"abstain"`                      |
 | `reflex`     | ●   | ●       | ●   |         | The winner's local name                                        |
-| `args`       | ●   | ●       | ●   |         | Per argument, a typed value; partial for an ask                 |
+| `args`       | ●   | ●       | ●   |         | Per argument, a typed value; partial for an ask. A pick read from words that spell it out carries `typed`, the value as it is typed |
+| `basis`      | ○   | ○       | ○   |         | Per value read from the input, what it stands on, by `by`: `ask`, its own question; `views`, two questions that agree; `view`, one of them and the `words` that hold it; `words`, the words and a `yes`; `spelled`, words that spell it out and a `yes`; `only`, the one candidate of its kind and a `yes` |
 | `call`       | ●   | ●       |     |         | The call on one line: `lights room="den" state="off"`           |
 | `effect`     | ●   | ●       |     |         | `"read"`, `"write"`, `"destructive"`                            |
 | `confidence` | ●   | ●       | ●   |         | The weakest judgment's probability                              |
@@ -23,10 +24,10 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `contenders` | ●   | ●       | ●   | ●       | The ranking: `{ reflex, route, fits? }`                         |
 | `runner_up`  | ○   | ○       | ○   |         | The second reflex, when there is one                            |
 | `prompt`     |     | ●       |     |         | `{ own, template }`: `evoke`'s line and the reflex's question   |
-| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `unconsumed_span`, `two_things`, `merged` |
+| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `unconsumed_span`, `two_things`, `merged` |
 | `unconsumed` |     |         | ●   |         | Typed spans no argument took                                    |
-| `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because` (`unstated`, `out_of_range` or `not_offered`), `choices`; a pick's `choices.recent` lists the values recalled from this session's results, when any |
-| `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call: `{ adapter, questions, ms }`. Empty when the answers came from the cache |
+| `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because` (`unstated`, `out_of_range`, `not_offered` or `unsettled`), `choices`; a pick's `choices.recent` lists the values recalled from this session's results, when any |
+| `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call, a round of questions each: `{ adapter, questions, ms }`. Empty when the answers came from the cache |
 | `result`     | ○   |         |     |         | `{ text, data? }` when the body ran                             |
 | `contained`  | ○   |         |     |         | Whenever the body ran, with `result` or `error`: whether this machine held it to its declaration, `{ "type": "full" }`, or `"partial"` or `"none"` with `why`, one sentence |
 | `error`      | ○   |         |     |         | The failure's message when it did not. The line is all that prints; the exit is 1 |

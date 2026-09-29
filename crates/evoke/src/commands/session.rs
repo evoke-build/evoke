@@ -22,7 +22,7 @@ use evoke_core::{
     Answer, Chosen, Contained, Decision, Declared, Diagnostic, Document, Edit, Effective, File,
     Fix, Input, Installed, Item, Lesson, Lock, Manifest, Needs, Owned, Plan, Planning, Project,
     Prompt, Proposed, Raw, Replanned, Request, Scope, Values, Version, Weave, argv, compile,
-    effective, envelope, gate, lock, manifest, overlay, project, project_dts, read, render_lock,
+    effective, envelope, gate, lock, manifest, overlay, project, project_dts, reading, render_lock,
     request, resolve, validated, vocabulary,
 };
 use indexmap::IndexMap;
@@ -952,6 +952,20 @@ impl Session<'_> {
         if let Some(answers) = cached {
             return Ok(answers);
         }
+        let answers = self.asked(adapter, request, trace)?;
+        self.state
+            .keep(&self.plan.digest(), request, &answers)
+            .map_err(Exit::Failed)?;
+        Ok(answers)
+    }
+
+    /// One request answered by the adapter alone, timed, and refused when it does not validate.
+    fn asked(
+        &self,
+        adapter: &dyn Adapter,
+        request: &Request,
+        trace: &mut Vec<Trace>,
+    ) -> Result<Raw, Exit> {
         let deadline = Deadline::after(self.plan.deadline());
         let answers = adapter.answer(request, deadline).map_err(Exit::Adapter)?;
         trace.push(Trace {
@@ -960,9 +974,6 @@ impl Session<'_> {
             ms: deadline.elapsed(),
         });
         validated(request, answers.clone()).map_err(Exit::Adapter)?;
-        self.state
-            .keep(&self.plan.digest(), request, &answers)
-            .map_err(Exit::Failed)?;
         Ok(answers)
     }
 
@@ -988,36 +999,20 @@ impl Session<'_> {
     ) -> Result<Decided, Exit> {
         let request =
             request(&self.plan, input, tags, only, Scope::Full, recent).map_err(Exit::Human)?;
-        let deadline = Deadline::after(self.plan.deadline());
-        let hit = if cached {
-            self.state
-                .answers(&self.plan.digest(), &request)
-                .map_err(Exit::Failed)?
-                .and_then(|answers| {
-                    read(&self.plan, &request, answers.clone())
-                        .ok()
-                        .map(|reading| (answers, reading))
-                })
-        } else {
-            None
-        };
-        let (answers, reading, trace) = if let Some((answers, reading)) = hit {
-            (answers, reading, Vec::new())
-        } else {
-            let answers = adapter.answer(&request, deadline).map_err(Exit::Adapter)?;
-            let trace = Trace {
-                adapter: adapter.declared().id.clone(),
-                questions: request.questions.len(),
-                ms: deadline.elapsed(),
-            };
-            let reading = read(&self.plan, &request, answers.clone()).map_err(Exit::Adapter)?;
-            if cached {
-                self.state
-                    .keep(&self.plan.digest(), &request, &answers)
-                    .map_err(Exit::Failed)?;
-            }
-            (answers, reading, vec![trace])
-        };
+        let mut trace = Vec::new();
+        // The text's questions, then each round its answers open: every round through the cache, or never.
+        let (request, answers, reading) = reading(
+            &self.plan,
+            request,
+            |round| {
+                if cached {
+                    self.own(adapter, round, &mut trace)
+                } else {
+                    self.asked(adapter, round, &mut trace)
+                }
+            },
+            Exit::Adapter,
+        )?;
         let decision = gate(&self.plan, reading, adapter.declared().gate.as_ref());
         Ok(Decided {
             input: request.state.request,

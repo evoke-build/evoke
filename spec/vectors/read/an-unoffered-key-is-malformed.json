@@ -35,6 +35,18 @@
       },
       "timer.label": {
         "unstated": 1
+      },
+      "weave.view_lights__room": {
+        "den": 0.85,
+        "office": 0.05,
+        "unstated": 0.1
+      },
+      "weave.is_lights__room_0": {
+        "yes": 0.9
+      },
+      "weave.view_lights__state": {
+        "bright": 0.9,
+        "unstated": 0.1
       }
     }
   },

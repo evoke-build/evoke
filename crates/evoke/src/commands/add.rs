@@ -20,8 +20,8 @@ use evoke_core::name::{LocalName, Tag};
 use evoke_core::project::{Location, Locked, Reference};
 use evoke_core::{
     Case, Decision, Diagnostic, Document, File, Finding, Fix, Gate, Installed, Item, Manifest,
-    Plan, Routed, Scope, Table, Theft, Version, add_entry, cases, compile, effective, filled, gate,
-    lint, manifest, read, request, thieves,
+    Plan, Raw, Request, Routed, Scope, Table, Theft, Version, add_entry, cases, compile, effective,
+    filled, gate, lint, manifest, reading, request, thieves,
 };
 
 use super::session::{self, Opening, Session};
@@ -589,10 +589,7 @@ fn stolen(
                 &[],
             )
             .map_err(Exit::Human)?;
-            let raw = adapter
-                .answer(&request, Deadline::after(plan.deadline()))
-                .map_err(Exit::Adapter)?;
-            let reading = read(plan, &request, raw).map_err(Exit::Adapter)?;
+            let (_, _, reading) = reading(plan, request, asked(plan, adapter), Exit::Adapter)?;
             busy.tick();
             Ok(reading)
         })?
@@ -610,6 +607,18 @@ fn stolen(
     Ok(thieves(names, &routed, floor))
 }
 
+/// A round of questions asked of the adapter, under the plan's deadline.
+fn asked<'a>(
+    plan: &'a Plan,
+    adapter: &'a dyn Adapter,
+) -> impl FnMut(&Request) -> Result<Raw, Exit> + 'a {
+    move |round| {
+        adapter
+            .answer(round, Deadline::after(plan.deadline()))
+            .map_err(Exit::Adapter)
+    }
+}
+
 /// One playbook's steps decided over the plan: its records decided first, each step filled from the first whose
 /// reading fills every slot — a step no record fills is untested — and decided once, uncached, no body run.
 fn reached(
@@ -625,10 +634,7 @@ fn reached(
         .collect();
     let decide = |text: &str| -> Result<Decision, Exit> {
         let request = request(plan, text, &[], None, Scope::Full, &[]).map_err(Exit::Human)?;
-        let raw = adapter
-            .answer(&request, Deadline::after(plan.deadline()))
-            .map_err(Exit::Adapter)?;
-        let reading = read(plan, &request, raw).map_err(Exit::Adapter)?;
+        let (_, _, reading) = reading(plan, request, asked(plan, adapter), Exit::Adapter)?;
         Ok(gate(plan, reading, adapter.declared().gate.as_ref()))
     };
     let own = {

@@ -38,70 +38,42 @@
       },
       "timer.duration": {
         "unstated": 1
+      },
+      "weave.view_lights__room": {
+        "den": 0.85,
+        "office": 0.05,
+        "unstated": 0.1
+      },
+      "weave.is_lights__room_0": {
+        "yes": 0.9
+      },
+      "weave.view_lights__state": {
+        "on": 0.05,
+        "off": 0.88,
+        "dim": 0.05,
+        "unstated": 0.02
+      },
+      "weave.only_timer__label_28_31": {
+        "yes": 0.05
       }
     }
   },
   "expect": {
     "ok": {
-      "ranking": [
-        {
-          "reflex": "lights",
-          "route": 0.9,
-          "fits": 0.7
+      "type": "open",
+      "request": {
+        "state": {
+          "request": "kill the lights in the den \"now\""
         },
-        {
-          "reflex": "timer",
-          "route": 0.05,
-          "fits": 0.2
-        }
-      ],
-      "judgments": [
-        {
-          "question": "route",
-          "top": "lights",
-          "p": 0.9
-        },
-        {
-          "question": "lights.room",
-          "top": "den",
-          "p": 0.85
-        },
-        {
-          "question": "lights.state",
-          "top": "off",
-          "p": 0.88
-        },
-        {
-          "question": "lights.brightness",
-          "top": "unstated",
-          "p": 1
-        }
-      ],
-      "winner": {
-        "reflex": "lights",
-        "args": {
-          "room": {
-            "type": "word",
-            "word": "den"
-          },
-          "state": {
-            "type": "option",
-            "key": "off"
+        "questions": {
+          "weave.is_lights__state_1": {
+            "type": "yesno",
+            "ask": "What should the lights do?",
+            "yes": "Switch off.",
+            "no": "Another one, or none."
           }
         },
-        "missing": [],
-        "unconsumed": [
-          {
-            "start": 28,
-            "end": 31,
-            "text": "now"
-          }
-        ],
-        "runner_up": {
-          "reflex": "timer",
-          "route": 0.05,
-          "fits": 0.2
-        }
+        "proposed": []
       }
     }
   }

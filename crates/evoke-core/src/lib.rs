@@ -22,10 +22,12 @@ pub mod manifest;
 pub mod name;
 pub mod needs;
 pub mod overlay;
+pub mod pins;
 pub mod plan;
 pub mod project;
 pub mod propose;
 pub mod run;
+mod settle;
 pub mod test;
 pub mod text;
 pub mod vocabulary;
@@ -40,8 +42,9 @@ pub use contract::{
     Change, Consent, ContractDiff, Finding, Level, LintRule, WasViolation, consent, diff, lint,
 };
 pub use decide::{
-    Asking, Cap, Choices, Chosen, Contender, Decision, Judged, Judgment, Missing, Prompt, Reading,
-    Scope, Why, Winner, by_name, fill, gate, merged, picked, read, request, validated,
+    Asking, Basis, Cap, Choices, Chosen, Contender, Decision, Judged, Judgment, Missing, Prompt,
+    Read, Reading, Scope, View, Why, Winner, by_name, fill, gate, merged, picked, read, reading,
+    request, validated,
 };
 pub use diagnostic::{At, Diagnostic, File, Fix};
 pub use digest::{Digest, compose, digest};

@@ -11,6 +11,10 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - A number reads in words up to the hundreds: `two hundred and forty`.
 - An argument is asked when the input names a value that is not among its choices, with the reason on the
   prompt. `try` and `why` print no line for an argument the input says nothing of.
+- An address, a URL, a code or a number said aloud is read as it is typed: `dana dot weiss at example dot org`.
+  A day misspelt and a code typed with a space are read too, and the call confirms with the words as typed.
+- A call confirms when a value from a list was read from a word of the input alone; the prompt names the word.
+  `try` and `why` say under a value what it stands on, and the JSON line carries it as `basis`.
 
 ## [0.15.0] - 2026-09-29
 

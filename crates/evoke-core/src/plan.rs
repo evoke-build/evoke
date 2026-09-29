@@ -20,6 +20,7 @@ use crate::name::{
 };
 use crate::needs::{self, Needs};
 use crate::overlay::Effective;
+use crate::pins;
 use crate::project::{Setting, Version};
 use crate::text::{Clean, NonEmpty};
 use crate::vocabulary::Vocabulary;
@@ -500,9 +501,17 @@ pub fn compile(
     let mut tagged = IndexMap::new();
     let mut route = IndexMap::new();
     let mut own = Vec::new();
+    let mut pairs: IndexMap<String, (&LocalName, &ArgName)> = IndexMap::new();
     for (name, item) in &set.reflexes {
         let plain = values.get(name);
-        match judge(name, item, plain, &set.vocab, platform) {
+        let judged =
+            judge(name, item, plain, &set.vocab, platform).and_then(|(manifest, judged)| {
+                match paired(name, manifest, &mut pairs) {
+                    Some(problem) => Err(NonEmpty::new(problem, Vec::new())),
+                    None => Ok((manifest, judged)),
+                }
+            });
+        match judged {
             Err(problems) => {
                 if let Ok(effective) = &item.wording
                     && !effective.manifest.tags.is_empty()
@@ -557,6 +566,36 @@ pub fn compile(
         values,
         deadline: DEADLINE,
     })
+}
+
+/// A reflex's arguments each under a name of their own among the set's, `<reflex>__<argument>`, which a question
+/// about one of them goes by; or the problem, when two underscores in a name make two of them read alike.
+fn paired<'a>(
+    name: &'a LocalName,
+    manifest: &'a Manifest,
+    pairs: &mut IndexMap<String, (&'a LocalName, &'a ArgName)>,
+) -> Option<Diagnostic> {
+    let taken = manifest
+        .args
+        .keys()
+        .find_map(|arg| pairs.get(&pins::pair(name, arg)).map(|held| (arg, *held)));
+    if let Some((arg, (other, of))) = taken {
+        return Some(Diagnostic {
+            reflex: Some(name.clone()),
+            at: None,
+            message: format!(
+                "{name}'s argument {arg} and {other}'s argument {of} read as one name, {}",
+                pins::pair(name, arg)
+            ),
+            fix: Fix::Show {
+                reflex: Some(name.clone()),
+            },
+        });
+    }
+    for arg in manifest.args.keys() {
+        pairs.insert(pins::pair(name, arg), (name, arg));
+    }
+    None
 }
 
 /// Active with what the decision needs, or every problem with its fix. `plain` holds the values of the settings

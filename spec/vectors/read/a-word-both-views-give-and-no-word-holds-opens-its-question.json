@@ -1,0 +1,75 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "request": {
+      "$ref": "fixtures/request-kill-the-lights.json"
+    },
+    "raw": {
+      "route": {
+        "lights": 0.92,
+        "timer": 0.02,
+        "none": 0.06
+      },
+      "fits.lights": {
+        "yes": 0.7
+      },
+      "lights.room": {
+        "den": 0.1,
+        "office": 0.05,
+        "none": 0.05,
+        "unstated": 0.8
+      },
+      "lights.state": {
+        "off": 0.9,
+        "on": 0.04,
+        "dim": 0.04,
+        "unstated": 0.02
+      },
+      "lights.brightness": {
+        "unstated": 1
+      },
+      "fits.timer": {
+        "yes": 0.05
+      },
+      "timer.duration": {
+        "unstated": 1
+      },
+      "timer.label": {
+        "unstated": 1
+      },
+      "weave.view_lights__room": {
+        "den": 0.1,
+        "office": 0.05,
+        "none": 0.05,
+        "unstated": 0.8
+      },
+      "weave.view_lights__state": {
+        "off": 0.9,
+        "on": 0.04,
+        "dim": 0.04,
+        "unstated": 0.02
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "open",
+      "request": {
+        "state": {
+          "request": "kill the lights"
+        },
+        "questions": {
+          "weave.is_lights__state_1": {
+            "type": "yesno",
+            "ask": "What should the lights do?",
+            "yes": "Switch off.",
+            "no": "Another one, or none."
+          }
+        },
+        "proposed": []
+      }
+    }
+  }
+}

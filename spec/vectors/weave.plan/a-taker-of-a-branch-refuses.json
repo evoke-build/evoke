@@ -323,6 +323,13 @@
             },
             "call": "tell channel=\"#ops\"",
             "effect": "write",
+            "basis": {
+              "channel": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -811,6 +818,13 @@
               },
               "call": "tell channel=\"#ops\"",
               "effect": "write",
+              "basis": {
+                "channel": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

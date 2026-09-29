@@ -46,6 +46,13 @@
             "word": "tomorrow"
           }
         },
+        "basis": {
+          "day": {
+            "by": "views",
+            "ask": 0.9,
+            "reader": 0.9
+          }
+        },
         "missing": [],
         "unconsumed": [
           {
@@ -79,6 +86,13 @@
     },
     "call": "calendar day=\"tomorrow\"",
     "effect": "read",
+    "basis": {
+      "day": {
+        "by": "views",
+        "ask": 0.9,
+        "reader": 0.9
+      }
+    },
     "confidence": 0.9,
     "weakest": {
       "question": "calendar.day",

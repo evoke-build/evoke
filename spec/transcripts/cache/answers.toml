@@ -8,13 +8,17 @@ read  = 0.6
 write = 0.8
 
 [answers."kill the lights in the den"]
-route               = { lights = 0.91, none = 0.09 }
-"fits.lights"       = { yes = 0.7 }
-"fits.timer"        = { yes = 0.05 }
-"fits.volume"       = { yes = 0.05 }
-"lights.room"       = { den = 0.85, office = 0.05, unstated = 0.1 }
-"lights.state"      = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
-"lights.brightness" = { unstated = 1.0 }
-"timer.duration"    = { unstated = 1.0 }
-"timer.label"       = { unstated = 1.0 }
-"volume.level"      = { unstated = 1.0 }
+route                      = { lights = 0.91, none = 0.09 }
+"fits.lights"              = { yes = 0.7 }
+"fits.timer"               = { yes = 0.05 }
+"fits.volume"              = { yes = 0.05 }
+"lights.room"              = { den = 0.85, office = 0.05, unstated = 0.1 }
+"lights.state"             = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
+"lights.brightness"        = { unstated = 1.0 }
+"timer.duration"           = { unstated = 1.0 }
+"timer.label"              = { unstated = 1.0 }
+"volume.level"             = { unstated = 1.0 }
+"weave.view_lights__room"  = { den = 0.85, office = 0.05, unstated = 0.1 }
+"weave.is_lights__room_0"  = { yes = 0.9 }
+"weave.view_lights__state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
+"weave.is_lights__state_1" = { yes = 0.9 }

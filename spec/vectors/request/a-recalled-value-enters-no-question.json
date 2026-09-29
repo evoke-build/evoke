@@ -149,6 +149,28 @@
             "unstated": "The request does not say."
           },
           "otherwise": "unstated"
+        },
+        "weave.view_calendar__day": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "tomorrow": "Tomorrow, the day after today.",
+            "monday": "Monday, the first day of the week.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_deploys__service": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "checkout": "The checkout service.",
+            "payments": "The payments service.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
         }
       },
       "proposed": [],

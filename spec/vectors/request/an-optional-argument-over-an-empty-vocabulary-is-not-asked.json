@@ -48,6 +48,12 @@
             "none": "The request says it, and none of these is it."
           },
           "otherwise": "unstated"
+        },
+        "weave.only_download__url_9_39": {
+          "type": "yesno",
+          "ask": "Which URL?",
+          "yes": "«https://example.com/report.pdf»",
+          "no": "Other words, or none."
         }
       },
       "proposed": [

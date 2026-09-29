@@ -1,0 +1,216 @@
+{
+  "state": {
+    "request": "roll checkout back to five dot oh dot two"
+  },
+  "questions": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "meeting": {
+          "what": "Move a meeting to a day and a time.\nThe meeting moves to the day and the time you name.",
+          "not_for": [
+            "showing the calendar",
+            "rolling a release back"
+          ],
+          "examples": [
+            "move the meeting to friday at 10am"
+          ]
+        },
+        "rollback": {
+          "what": "Roll a service back from a release to the one before it.\nEverywhere at once.",
+          "not_for": [
+            "listing deploys",
+            "moving a meeting"
+          ],
+          "examples": [
+            "roll checkout back from 4.12.0"
+          ]
+        },
+        "calendar": {
+          "what": "Show the meetings of a day.\nEach with its title and its time.",
+          "not_for": [
+            "moving a meeting",
+            "rolling a release back"
+          ],
+          "examples": [
+            "what is on my calendar tomorrow"
+          ]
+        },
+        "deploys": {
+          "what": "List the recent deploys of a service.\nEach release, newest first.",
+          "not_for": [
+            "rolling a release back",
+            "moving a meeting"
+          ],
+          "examples": [
+            "list the checkout deploys"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "fits.meeting": {
+      "type": "yesno",
+      "ask": "Does `meeting` do the specific thing the request asks for?",
+      "yes": "Move a meeting to a day and a time.\nThe meeting moves to the day and the time you name.",
+      "no": "Something else, such as: showing the calendar; rolling a release back."
+    },
+    "meeting.day": {
+      "type": "choice",
+      "ask": "To which day?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "meeting.time": {
+      "type": "choice",
+      "ask": "At what time?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.rollback": {
+      "type": "yesno",
+      "ask": "Does `rollback` do the specific thing the request asks for?",
+      "yes": "Roll a service back from a release to the one before it.\nEverywhere at once.",
+      "no": "Something else, such as: listing deploys; moving a meeting."
+    },
+    "rollback.release": {
+      "type": "choice",
+      "ask": "From which release?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.calendar": {
+      "type": "yesno",
+      "ask": "Does `calendar` do the specific thing the request asks for?",
+      "yes": "Show the meetings of a day.\nEach with its title and its time.",
+      "no": "Something else, such as: moving a meeting; rolling a release back."
+    },
+    "calendar.day": {
+      "type": "choice",
+      "ask": "Which day?",
+      "options": {
+        "tomorrow": "Tomorrow, the day after today.",
+        "monday": "Monday, the first day of the week.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.deploys": {
+      "type": "yesno",
+      "ask": "Does `deploys` do the specific thing the request asks for?",
+      "yes": "List the recent deploys of a service.\nEach release, newest first.",
+      "no": "Something else, such as: rolling a release back; moving a meeting."
+    },
+    "deploys.service": {
+      "type": "choice",
+      "ask": "Which service?",
+      "options": {
+        "checkout": "The checkout service.",
+        "payments": "The payments service.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.said_rollback__release_22_41": {
+      "type": "yesno",
+      "ask": "From which release?",
+      "yes": "«5.0.2», said as «five dot oh dot two».",
+      "no": "Other words, or none."
+    },
+    "weave.view_calendar__day": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "tomorrow": "Tomorrow, the day after today.",
+        "monday": "Monday, the first day of the week.",
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.view_deploys__service": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "checkout": "The checkout service.",
+        "payments": "The payments service.",
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.is_deploys__service_0": {
+      "type": "yesno",
+      "ask": "Which service?",
+      "yes": "The checkout service.",
+      "no": "Another one, or none."
+    }
+  },
+  "proposed": [
+    {
+      "span": {
+        "start": 22,
+        "end": 26,
+        "text": "five"
+      },
+      "value": {
+        "type": "number",
+        "value": 5
+      }
+    },
+    {
+      "span": {
+        "start": 38,
+        "end": 41,
+        "text": "two"
+      },
+      "value": {
+        "type": "number",
+        "value": 2
+      }
+    }
+  ],
+  "listed": {
+    "deploys.service": [
+      {
+        "key": "checkout",
+        "span": {
+          "start": 5,
+          "end": 13,
+          "text": "checkout"
+        },
+        "how": "same"
+      }
+    ]
+  },
+  "spelled": {
+    "rollback.release": [
+      {
+        "span": {
+          "start": 22,
+          "end": 41,
+          "text": "five dot oh dot two"
+        },
+        "typed": "5.0.2",
+        "value": {
+          "type": "code",
+          "value": "5.0.2"
+        },
+        "form": "aloud"
+      }
+    ]
+  }
+}

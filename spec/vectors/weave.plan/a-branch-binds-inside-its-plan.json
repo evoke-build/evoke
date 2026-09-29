@@ -303,6 +303,13 @@
             },
             "call": "tell channel=\"#ops\"",
             "effect": "write",
+            "basis": {
+              "channel": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -444,7 +451,464 @@
     "ok": {
       "type": "done",
       "weave": {
-        "$ref": "fixtures/weave-runbook.json"
+        "input": "drain the primary",
+        "steps": [
+          {
+            "n": 1,
+            "text": "drain connections off the primary",
+            "end": 17,
+            "decision": {
+              "outcome": "run",
+              "reflex": "drain",
+              "args": {},
+              "call": "drain",
+              "effect": "write",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "drain",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "drain",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "runbook",
+                "route": 0.06,
+                "fits": 0.1
+              },
+              "contenders": [
+                {
+                  "reflex": "drain",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "runbook",
+                  "route": 0.06,
+                  "fits": 0.1
+                },
+                {
+                  "reflex": "failover",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "verify",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "tell",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "failback",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "drain",
+            "effect": "write",
+            "from": [
+              {
+                "playbook": "runbook",
+                "step": 1,
+                "slots": {}
+              }
+            ]
+          },
+          {
+            "n": 2,
+            "text": "fail over to the replica",
+            "end": 17,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "failover",
+              "args": {},
+              "call": "failover",
+              "effect": "destructive",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "failover",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "failover",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "drain",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "failover",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "drain",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "verify",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "tell",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "failback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "runbook",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "prompt": {
+                "own": "failover · destructive · weakest: route 0.90",
+                "template": "Promote the replica now?"
+              },
+              "because": [
+                {
+                  "type": "destructive"
+                }
+              ]
+            },
+            "reflex": "failover",
+            "effect": "destructive",
+            "from": [
+              {
+                "playbook": "runbook",
+                "step": 2,
+                "slots": {}
+              }
+            ]
+          },
+          {
+            "n": 3,
+            "text": "check whether writes land on the new primary",
+            "end": 17,
+            "decision": {
+              "outcome": "run",
+              "reflex": "verify",
+              "args": {},
+              "call": "verify",
+              "effect": "read",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "verify",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "verify",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "drain",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "verify",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "drain",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "failover",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "tell",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "failback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "runbook",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "verify",
+            "effect": "read",
+            "refs": [
+              {
+                "span": {
+                  "start": 29,
+                  "end": 44,
+                  "text": "the new primary"
+                },
+                "from": [
+                  0
+                ],
+                "how": "engine",
+                "weak": true,
+                "noun": "primary",
+                "p": 0.9
+              }
+            ],
+            "from": [
+              {
+                "playbook": "runbook",
+                "step": 3,
+                "slots": {}
+              }
+            ]
+          },
+          {
+            "n": 4,
+            "text": "tell the ops channel the failover is done",
+            "end": 17,
+            "decision": {
+              "outcome": "run",
+              "reflex": "tell",
+              "args": {
+                "channel": {
+                  "type": "word",
+                  "word": "#ops"
+                }
+              },
+              "call": "tell channel=\"#ops\"",
+              "effect": "write",
+              "basis": {
+                "channel": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "tell",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "tell",
+                  "p": 0.9
+                },
+                {
+                  "question": "tell.channel",
+                  "top": "#ops",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "drain",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "tell",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "drain",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "failover",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "verify",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "failback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "runbook",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "tell",
+            "effect": "write",
+            "after": [
+              3
+            ],
+            "from": [
+              {
+                "playbook": "runbook",
+                "step": 4,
+                "slots": {}
+              }
+            ],
+            "when": {
+              "step": 3,
+              "field": "landing",
+              "is": "yes"
+            }
+          },
+          {
+            "n": 5,
+            "text": "fail back to the old primary",
+            "end": 17,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "failback",
+              "args": {},
+              "call": "failback",
+              "effect": "destructive",
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "failback",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "failback",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "drain",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "failback",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "drain",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "failover",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "verify",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "tell",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "runbook",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ],
+              "prompt": {
+                "own": "failback · destructive · weakest: route 0.90",
+                "template": "Fail back to the old primary?"
+              },
+              "because": [
+                {
+                  "type": "destructive"
+                }
+              ]
+            },
+            "reflex": "failback",
+            "effect": "destructive",
+            "after": [
+              3
+            ],
+            "from": [
+              {
+                "playbook": "runbook",
+                "step": 5,
+                "slots": {}
+              }
+            ],
+            "when": {
+              "step": 3,
+              "field": "landing",
+              "is": "no"
+            }
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ],
+          [
+            5
+          ]
+        ],
+        "verdict": {
+          "outcome": "confirm",
+          "because": [
+            {
+              "type": "reviewed",
+              "step": 1,
+              "playbook": "runbook",
+              "text": "drain the primary",
+              "prompt": {
+                "own": "runbook · destructive · weakest: route 0.90 · also drain (fits 0.60), step 1",
+                "template": "Run the failover runbook?"
+              }
+            }
+          ]
+        },
+        "exclusive": true
       }
     }
   }

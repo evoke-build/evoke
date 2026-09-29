@@ -36,6 +36,12 @@
             },
             "call": "incident number=\"311\"",
             "effect": "read",
+            "basis": {
+              "number": {
+                "by": "ask",
+                "p": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -132,6 +138,18 @@
             },
             "call": "status component=\"checkout\" state=\"resolved\"",
             "effect": "write",
+            "basis": {
+              "component": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              },
+              "state": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -229,6 +247,13 @@
             },
             "call": "status component=\"checkout\"",
             "effect": "write",
+            "basis": {
+              "component": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -464,6 +489,12 @@
               },
               "call": "incident number=\"311\"",
               "effect": "read",
+              "basis": {
+                "number": {
+                  "by": "ask",
+                  "p": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -562,6 +593,18 @@
               },
               "call": "status component=\"checkout\" state=\"resolved\"",
               "effect": "write",
+              "basis": {
+                "component": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                },
+                "state": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -661,6 +704,13 @@
               },
               "call": "status component=\"checkout\"",
               "effect": "write",
+              "basis": {
+                "component": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

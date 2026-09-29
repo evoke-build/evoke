@@ -15,14 +15,11 @@
       "fits.lights": {
         "yes": 0.7
       },
-      "fits.timer": {
-        "yes": 0.05
-      },
       "lights.room": {
-        "den": 0.5,
+        "den": 0.85,
         "office": 0.05,
-        "none": 0.4,
-        "unstated": 0.05
+        "none": 0.02,
+        "unstated": 0.08
       },
       "lights.state": {
         "on": 0.02,
@@ -31,18 +28,44 @@
         "unstated": 0.02
       },
       "lights.brightness": {
-        "unstated": 1
+        "22-33": 0.2,
+        "unstated": 0.8
+      },
+      "fits.timer": {
+        "yes": 0.05
       },
       "timer.duration": {
         "unstated": 1
       },
       "timer.label": {
         "unstated": 1
+      },
+      "weave.view_lights__room": {
+        "den": 0.85,
+        "office": 0.05,
+        "none": 0.02,
+        "unstated": 0.08
+      },
+      "weave.is_lights__room_0": {
+        "yes": 0.9
+      },
+      "weave.view_lights__state": {
+        "on": 0.02,
+        "off": 0.02,
+        "dim": 0.94,
+        "unstated": 0.02
+      },
+      "weave.is_lights__state_2": {
+        "yes": 0.9
+      },
+      "weave.only_lights__brightness_22_33": {
+        "yes": 0.9
       }
     }
   },
   "expect": {
     "ok": {
+      "type": "done",
       "ranking": [
         {
           "reflex": "lights",
@@ -64,7 +87,7 @@
         {
           "question": "lights.room",
           "top": "den",
-          "p": 0.5
+          "p": 0.85
         },
         {
           "question": "lights.state",
@@ -72,9 +95,9 @@
           "p": 0.94
         },
         {
-          "question": "lights.brightness",
-          "top": "unstated",
-          "p": 1
+          "question": "weave.only_lights__brightness_22_33",
+          "top": "yes",
+          "p": 0.9
         }
       ],
       "winner": {
@@ -89,7 +112,40 @@
             "key": "dim"
           }
         },
-        "missing": [],
+        "basis": {
+          "room": {
+            "by": "views",
+            "ask": 0.85,
+            "reader": 0.85
+          },
+          "state": {
+            "by": "views",
+            "ask": 0.94,
+            "reader": 0.94
+          }
+        },
+        "missing": [
+          {
+            "arg": "brightness",
+            "ask": "How bright, in percent?",
+            "because": {
+              "type": "out_of_range",
+              "span": {
+                "start": 22,
+                "end": 33,
+                "text": "150 percent"
+              },
+              "range": [
+                1,
+                100
+              ]
+            },
+            "choices": {
+              "type": "pick",
+              "pick": "number"
+            }
+          }
+        ],
         "unconsumed": [],
         "runner_up": {
           "reflex": "timer",

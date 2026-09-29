@@ -108,6 +108,51 @@
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
+    },
+    "weave.view_lights__room": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "den": "The TV room downstairs; also 'the snug'.",
+        "office": "The upstairs study.",
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.is_lights__room_0": {
+      "type": "yesno",
+      "ask": "Which room?",
+      "yes": "The TV room downstairs; also 'the snug'.",
+      "no": "Another one, or none."
+    },
+    "weave.view_lights__state": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "on": {
+          "what": "Switch on.",
+          "examples": [
+            "turn on the kitchen lights"
+          ]
+        },
+        "off": "Switch off.",
+        "dim": {
+          "what": "Lower the brightness without switching off.",
+          "examples": [
+            "dim the office to 30 percent"
+          ]
+        },
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.only_timer__label_28_31": {
+      "type": "yesno",
+      "ask": "What is the timer for?",
+      "yes": "«now»",
+      "no": "Other words, or none."
     }
   },
   "proposed": [

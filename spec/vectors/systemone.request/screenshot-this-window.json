@@ -74,6 +74,34 @@
           "no": "The request asks for the opposite.",
           "unstated": "The request does not say."
         }
+      },
+      "weave.view_screenshot__area": {
+        "type": "choice",
+        "instructions": "Which of these does the request name?",
+        "criteria": {
+          "screen": {
+            "what": "Everything on every display.",
+            "examples": [
+              "grab the screen to the clipboard"
+            ]
+          },
+          "window": {
+            "what": "One window, chosen by clicking it.",
+            "examples": [
+              "screenshot this window"
+            ]
+          },
+          "none": "One that is not in this list.",
+          "unstated": "None: the request names none."
+        }
+      },
+      "weave.is_screenshot__area_1": {
+        "type": "noul",
+        "instructions": "The whole screen, a window, or a selection?",
+        "criteria": {
+          "true": "One window, chosen by clicking it.",
+          "false": "Another one, or none."
+        }
       }
     }
   }

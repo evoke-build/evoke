@@ -15,9 +15,6 @@
       "fits.lights": {
         "yes": 0.02
       },
-      "fits.timer": {
-        "yes": 0.9
-      },
       "lights.room": {
         "unstated": 1
       },
@@ -27,6 +24,9 @@
       "lights.brightness": {
         "unstated": 1
       },
+      "fits.timer": {
+        "yes": 0.9
+      },
       "timer.duration": {
         "none": 0.9,
         "unstated": 0.1
@@ -34,11 +34,24 @@
       "timer.label": {
         "none": 0.2,
         "unstated": 0.8
+      },
+      "weave.view_lights__room": {
+        "unstated": 1
+      },
+      "weave.view_lights__state": {
+        "unstated": 1
+      },
+      "weave.only_timer__duration_10_20": {
+        "yes": 0.05
+      },
+      "weave.only_timer__label_29_33": {
+        "yes": 0.05
       }
     }
   },
   "expect": {
     "ok": {
+      "type": "done",
       "ranking": [
         {
           "reflex": "timer",

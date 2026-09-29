@@ -29,6 +29,13 @@
             },
             "call": "errors service=\"checkout\"",
             "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -126,6 +133,13 @@
             },
             "call": "errors service=\"checkout\"",
             "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -224,6 +238,13 @@
             },
             "call": "errors service=\"payments\"",
             "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -285,6 +306,13 @@
               },
               "call": "errors service=\"checkout\"",
               "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -384,6 +412,13 @@
               },
               "call": "errors service=\"payments\"",
               "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

@@ -1,5 +1,4 @@
 # What the replay adapter answers, keyed by utterance identity (spec/README.md): a folder the vocabulary has no
-# word for, so the ask offers [+] add one, and the word added at the prompt takes its path there.
 id = "replay"
 
 [gate]
@@ -9,6 +8,7 @@ read  = 0.6
 write = 0.8
 
 [answers."list the photos"]
-route        = { list = 0.9, none = 0.1 }
-"fits.list"  = { yes = 0.8, no = 0.2 }
-"list.place" = { unstated = 0.9, desktop = 0.1 }
+route                    = { list = 0.9, none = 0.1 }
+"fits.list"              = { yes = 0.8, no = 0.2 }
+"list.place"             = { unstated = 0.9, desktop = 0.1 }
+"weave.view_list__place" = { unstated = 0.9, desktop = 0.1 }

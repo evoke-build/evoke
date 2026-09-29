@@ -11,8 +11,9 @@ use std::fmt::Write as _;
 
 use evoke_core::adapter::QuestionId;
 use evoke_core::calibrate::{self, BarRow, BinRow, Calibration, LogBlock, Miss, QuestionRow};
+use evoke_core::call::Value;
 use evoke_core::contract::Change;
-use evoke_core::decide::{Missing, Why};
+use evoke_core::decide::{Basis, Missing, View, Why};
 use evoke_core::manifest::{Effect, Manifest, Recognizer, Run, Sentence, written as slotted};
 use evoke_core::name::{ArgName, FieldName, LocalName};
 use evoke_core::test::{Claim, Expected, Mismatch};
@@ -21,7 +22,7 @@ use evoke_core::weave::{Because, Bound, From, Shared, Status, Step, When, Why as
 use evoke_core::{
     At, Call, Case, Chosen, Clean, Contained, Contender, ContractDiff, Decision, Diagnostic,
     Digest, Effective, File, Finding, Fix, Gate, Input, Json, KeyPath, Level, Needs, Prompt,
-    Proposed, Raw, Regression, Verdict, Version, Weave, render,
+    Proposed, Raw, Regression, Span, Verdict, Version, Weave, render,
 };
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
@@ -606,6 +607,27 @@ pub fn why(lines: &[Line]) -> Text {
     indented(shown)
 }
 
+/// The adapter's calls, those of one adapter in a row told as one: its questions, and in how many rounds they
+/// were asked when in more than one.
+fn asked(trace: &[Trace]) -> Vec<String> {
+    let mut told: Vec<(&Trace, usize, usize)> = Vec::new();
+    for call in trace {
+        match told.last_mut() {
+            Some((first, questions, rounds)) if first.adapter == call.adapter => {
+                *questions += call.questions;
+                *rounds += 1;
+            }
+            _ => told.push((call, call.questions, 1)),
+        }
+    }
+    told.into_iter()
+        .map(|(call, questions, rounds)| match rounds {
+            1 => format!("{}, {questions} questions", call.adapter),
+            _ => format!("{}, {questions} questions in {rounds} rounds", call.adapter),
+        })
+        .collect()
+}
+
 /// What came of a decision, then where its answers came from: the plan file, the adapter calls it took, or
 /// `cached`.
 fn became(line: &Line) -> Text {
@@ -619,11 +641,7 @@ fn became(line: &Line) -> Text {
         .iter()
         .map(|pinned| format!("from {}", pinned.file))
         .collect();
-    calls.extend(
-        line.trace
-            .iter()
-            .map(|trace| format!("{}, {} questions", trace.adapter, trace.questions)),
-    );
+    calls.extend(asked(&line.trace));
     let calls = if calls.is_empty() {
         "cached".to_owned()
     } else {
@@ -1301,7 +1319,7 @@ pub fn ask_prompt(missing: &Missing, retry: Option<&str>) -> String {
 pub fn because(missing: &Missing) -> Option<String> {
     use evoke_core::decide::Choices;
     match (&missing.because, &missing.choices) {
-        (Why::Unstated, _) | (Why::NotOffered, Choices::Pick { .. }) => None,
+        (Why::Unstated | Why::Unsettled, _) | (Why::NotOffered, Choices::Pick { .. }) => None,
         (Why::OutOfRange { span, range }, _) => Some(format!(
             "{} is outside {}–{}",
             span.text(),
@@ -2664,7 +2682,7 @@ fn toml(value: &Json) -> String {
 
 /// The ranking, the winner's argument lines, the values an ask recalled and the fits line, unindented; on each
 /// distribution the top answer carries the weight. An argument the request says nothing of is no line, unless
-/// the decision asks for it.
+/// the decision asks for it or holds a value for it.
 fn block(
     winner: Option<&LocalName>,
     answers: &Raw,
@@ -2678,8 +2696,17 @@ fn block(
         Decision::Ask { missing, .. } => missing.iter().map(|m| m.arg.as_str()).collect(),
         _ => Vec::new(),
     };
+    let held = |arg: &str| {
+        let args = match decision {
+            Decision::Run { chosen } | Decision::Confirm { chosen, .. } => &chosen.call.args,
+            Decision::Ask { asking, .. } => &asking.args,
+            Decision::Abstain { .. } => return false,
+        };
+        args.keys().any(|name| name.as_str() == arg)
+    };
     let quiet = |arg: &str, question: &String| {
         !asked.contains(&arg)
+            && !held(arg)
             && sorted(answers, question)
                 .first()
                 .is_some_and(|(top, _)| top == "unstated")
@@ -2712,6 +2739,9 @@ fn block(
             candidate(key, proposed)
         }));
         lines.push(line);
+        if let Some(detail) = stands_on(decision, arg) {
+            lines.push(Text::from(format!("{:<width$}{detail}", "")));
+        }
     }
     for (arg, values) in recalled {
         lines.push(Text::from(format!(
@@ -2755,6 +2785,70 @@ const SHOWN: f64 = 0.005;
 /// A question's answers as sorted, `key p` each: the top one weighted; the ones that would print as `0.00`
 /// folded into a count — but the sentinels `none` and `unstated`, which always show, since they are what the
 /// answer was weighed against. `shown` writes a key as the person reads it.
+/// What a value read from the request stands on, beside its own question: the second view of a listed word,
+/// the words of the request that hold it, the yes that took it. Nothing for a value its own question gave.
+fn stands_on(decision: &Decision, arg: &str) -> Option<String> {
+    let (args, basis) = match decision {
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
+            (&chosen.call.args, &chosen.basis)
+        }
+        Decision::Ask { asking, .. } => (&asking.args, &asking.basis),
+        Decision::Abstain { .. } => return None,
+    };
+    let (name, stands) = basis.iter().find(|(name, _)| name.as_str() == arg)?;
+    let value = args.get(name)?;
+    let shown = value.text().unwrap_or_default();
+    let said = |words: &Span| plain(&quoted(words.text().as_str()));
+    Some(match stands {
+        Basis::Ask { .. } => return None,
+        Basis::Views {
+            reader, yes: None, ..
+        } => format!("asked a second way: {shown} {:.2}", reader.get()),
+        Basis::Views {
+            reader,
+            yes: Some(yes),
+            ..
+        } => format!(
+            "asked a second way: {shown} {:.2} · is it {shown}? yes {:.2}",
+            reader.get(),
+            yes.get()
+        ),
+        Basis::View {
+            view: View::Ask,
+            other,
+            words,
+            ..
+        } => format!(
+            "asked a second way: {other} · in your words: {}",
+            said(words)
+        ),
+        Basis::View {
+            view: View::Reader,
+            p,
+            words,
+            ..
+        } => format!(
+            "asked a second way: {shown} {:.2} · in your words: {}",
+            p.get(),
+            said(words)
+        ),
+        Basis::Words { words, yes, .. } => format!(
+            "in your words: {} · is it {shown}? yes {:.2}",
+            said(words),
+            yes.get()
+        ),
+        Basis::Spelled { yes, .. } => match value {
+            Value::Pick { span, .. } => format!(
+                "in your words: {} · is it {shown}? yes {:.2}",
+                said(span),
+                yes.get()
+            ),
+            _ => return None,
+        },
+        Basis::Only { yes } => format!("the only one of its kind: yes {:.2}", yes.get()),
+    })
+}
+
 fn distribution(sorted: &[(String, f64)], shown: impl Fn(&str) -> String) -> Text {
     let mut text = Text::new();
     let mut folded = 0;
@@ -2841,11 +2935,7 @@ fn judged_call(chosen: &Chosen) -> Text {
 
 /// `weakest: <argument or question> <p>`, as the confirm prompt names it.
 fn weakest(judgment: &evoke_core::Judgment) -> String {
-    let name = match &judgment.question {
-        QuestionId::Arg(_, arg) => arg.to_string(),
-        question => question.to_string(),
-    };
-    format!("weakest: {name} {:.2}", judgment.p.get())
+    format!("weakest: {} {:.2}", judgment.about(), judgment.p.get())
 }
 
 fn indented(lines: Vec<Text>) -> Text {

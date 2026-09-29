@@ -16,5 +16,6 @@ $ evoke why
   lights 0.92 · none 0.05 · timer 0.02 · volume 0.01
   room   none 0.85 · den 0.05 · office 0.05 · unstated 0.05
   state  off 0.90 · on 0.04 · dim 0.04 · unstated 0.02
+         asked a second way: off 0.90 · is it off? yes 0.90
   fits   lights 0.80 · timer 0.05 · volume 0.05
-  ran lights room="office" state="off" · weakest: state 0.90 · replay, 10 questions
+  ran lights room="office" state="off" · weakest: state 0.90 · replay, 13 questions in 2 rounds

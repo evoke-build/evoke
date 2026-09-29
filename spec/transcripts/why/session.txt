@@ -5,6 +5,22 @@ $ evoke why
   "kill the lights in the den"
   lights 0.91 · none 0.06 · timer 0.02 · volume 0.01
   room   den 0.85 · unstated 0.10 · office 0.05
+         asked a second way: den 0.85
   state  off 0.88 · on 0.05 · dim 0.05 · unstated 0.02
+         asked a second way: off 0.88 · is it off? yes 0.90
   fits   lights 0.70 · timer 0.05 · volume 0.05
-  ran lights room="den" state="off" · weakest: room 0.85 · replay, 10 questions
+  ran lights room="den" state="off" · weakest: room 0.85 · replay, 14 questions in 2 rounds
+# A value read from a word of the input waits for a yes, and the line names the word.
+$ evoke "kill the lights in the snug"
+  lights room="den" state="off" · write · weakest: room 0.82 · room from "snug"
+  Set the den lights off?  [y]es [n]o [t]each > y
+den lights off
+$ evoke why
+  "kill the lights in the snug"
+  lights 0.92 · none 0.05 · timer 0.02 · volume 0.01
+  room   den 0.82 · unstated 0.10 · none 0.05 · office 0.03
+         asked a second way: unstated · in your words: "snug"
+  state  off 0.90 · on 0.04 · dim 0.04 · unstated 0.02
+         asked a second way: off 0.92 · is it off? yes 0.95
+  fits   lights 0.80 · timer 0.05 · volume 0.05
+  ran lights room="den" state="off" · weakest: room 0.82 · replay, 14 questions in 2 rounds

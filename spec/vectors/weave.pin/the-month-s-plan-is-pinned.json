@@ -38,6 +38,13 @@
             },
             "call": "bank month=\"september\"",
             "effect": "read",
+            "basis": {
+              "month": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -117,6 +124,13 @@
             },
             "call": "invoices month=\"september\"",
             "effect": "read",
+            "basis": {
+              "month": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -198,6 +212,13 @@
             },
             "call": "cards month=\"september\"",
             "effect": "read",
+            "basis": {
+              "month": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -279,6 +300,13 @@
             },
             "call": "payroll month=\"september\"",
             "effect": "read",
+            "basis": {
+              "month": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -451,6 +479,13 @@
             },
             "call": "ledger month=\"september\"",
             "effect": "write",
+            "basis": {
+              "month": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.78,
             "weakest": {
               "question": "route",
@@ -554,6 +589,12 @@
             },
             "call": "send to=\"cfo@example.com\"",
             "effect": "destructive",
+            "basis": {
+              "to": {
+                "by": "ask",
+                "p": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -817,6 +858,45 @@
           },
           "send.to": {
             "unstated": 1
+          },
+          "weave.view_bank__month": {
+            "september": 0.9,
+            "unstated": 0.1
+          },
+          "weave.is_bank__month_1": {
+            "yes": 0.9
+          },
+          "weave.view_invoices__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.is_invoices__month_1": {
+            "yes": 0.05
+          },
+          "weave.view_cards__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.is_cards__month_1": {
+            "yes": 0.05
+          },
+          "weave.view_payroll__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.is_payroll__month_1": {
+            "yes": 0.05
+          },
+          "weave.view_ledger__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.is_ledger__month_1": {
+            "yes": 0.05
           }
         }
       },
@@ -876,6 +956,31 @@
           },
           "send.to": {
             "unstated": 1
+          },
+          "weave.view_bank__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_invoices__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_cards__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_payroll__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_ledger__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
           }
         }
       },
@@ -935,6 +1040,31 @@
           },
           "send.to": {
             "unstated": 1
+          },
+          "weave.view_bank__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_invoices__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_cards__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_payroll__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_ledger__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
           }
         }
       },
@@ -994,6 +1124,31 @@
           },
           "send.to": {
             "unstated": 1
+          },
+          "weave.view_bank__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_invoices__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_cards__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_payroll__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_ledger__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
           }
         }
       },
@@ -1053,6 +1208,31 @@
           },
           "send.to": {
             "unstated": 1
+          },
+          "weave.view_bank__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_invoices__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_cards__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_payroll__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_ledger__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
           }
         }
       },
@@ -1113,6 +1293,34 @@
           "send.to": {
             "19-34": 0.9,
             "unstated": 0.1
+          },
+          "weave.view_bank__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_invoices__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_cards__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_payroll__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_ledger__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.only_send__to_19_34": {
+            "yes": 0.05
           }
         }
       },
@@ -1172,6 +1380,31 @@
           },
           "send.to": {
             "unstated": 1
+          },
+          "weave.view_bank__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_invoices__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_cards__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_payroll__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_ledger__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
           }
         }
       },
@@ -1231,6 +1464,31 @@
           },
           "send.to": {
             "unstated": 1
+          },
+          "weave.view_bank__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_invoices__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_cards__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_payroll__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
+          },
+          "weave.view_ledger__month": {
+            "unstated": 0.9,
+            "august": 0.05,
+            "september": 0.05
           }
         }
       }

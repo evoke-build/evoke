@@ -43,11 +43,27 @@
         "unstated": 0.9,
         "checkout": 0.05,
         "payments": 0.05
+      },
+      "weave.view_calendar__day": {
+        "tomorrow": 0.9,
+        "unstated": 0.1
+      },
+      "weave.is_calendar__day_0": {
+        "yes": 0.9
+      },
+      "weave.is_calendar__day_1": {
+        "yes": 0.05
+      },
+      "weave.view_deploys__service": {
+        "unstated": 0.9,
+        "checkout": 0.05,
+        "payments": 0.05
       }
     }
   },
   "expect": {
     "ok": {
+      "type": "done",
       "ranking": [
         {
           "reflex": "calendar",
@@ -88,6 +104,13 @@
           "day": {
             "type": "word",
             "word": "tomorrow"
+          }
+        },
+        "basis": {
+          "day": {
+            "by": "views",
+            "ask": 0.9,
+            "reader": 0.9
           }
         },
         "missing": [],

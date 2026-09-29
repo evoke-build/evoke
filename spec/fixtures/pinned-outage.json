@@ -24,6 +24,18 @@
           },
           "call": "errors service=\"checkout\" region=\"eu-west\"",
           "effect": "read",
+          "basis": {
+            "service": {
+              "by": "views",
+              "ask": 0.9,
+              "reader": 0.9
+            },
+            "region": {
+              "by": "views",
+              "ask": 0.9,
+              "reader": 0.9
+            }
+          },
           "confidence": 0.9,
           "weakest": {
             "question": "route",
@@ -142,6 +154,18 @@
           },
           "call": "deploys service=\"checkout\" region=\"eu-west\"",
           "effect": "read",
+          "basis": {
+            "service": {
+              "by": "views",
+              "ask": 0.9,
+              "reader": 0.9
+            },
+            "region": {
+              "by": "views",
+              "ask": 0.9,
+              "reader": 0.9
+            }
+          },
           "confidence": 0.9,
           "weakest": {
             "question": "route",
@@ -260,6 +284,18 @@
           },
           "call": "logs service=\"checkout\" region=\"eu-west\"",
           "effect": "read",
+          "basis": {
+            "service": {
+              "by": "views",
+              "ask": 0.9,
+              "reader": 0.9
+            },
+            "region": {
+              "by": "views",
+              "ask": 0.9,
+              "reader": 0.9
+            }
+          },
           "confidence": 0.9,
           "weakest": {
             "question": "route",
@@ -505,6 +541,18 @@
               "word": "eu-west"
             }
           },
+          "basis": {
+            "service": {
+              "by": "views",
+              "ask": 0.9,
+              "reader": 0.9
+            },
+            "region": {
+              "by": "views",
+              "ask": 0.9,
+              "reader": 0.9
+            }
+          },
           "unconsumed": [],
           "confidence": 0.9,
           "weakest": {
@@ -656,6 +704,13 @@
           },
           "call": "post channel=\"#incident\"",
           "effect": "write",
+          "basis": {
+            "channel": {
+              "by": "views",
+              "ask": 0.9,
+              "reader": 0.9
+            }
+          },
           "confidence": 0.9,
           "weakest": {
             "question": "route",
@@ -762,6 +817,13 @@
           },
           "call": "status component=\"checkout\"",
           "effect": "write",
+          "basis": {
+            "component": {
+              "by": "views",
+              "ask": 0.9,
+              "reader": 0.9
+            }
+          },
           "confidence": 0.9,
           "weakest": {
             "question": "route",
@@ -1105,6 +1167,102 @@
         "outage.region": {
           "eu-west": 0.9,
           "unstated": 0.1
+        },
+        "weave.view_errors__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_errors__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_errors__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_errors__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_deploys__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_deploys__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_deploys__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_deploys__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_logs__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_logs__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_logs__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_logs__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_rollback__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_rollback__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_rollback__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_rollback__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_post__channel": {
+          "unstated": 0.9,
+          "#incident": 0.05,
+          "#ops": 0.05
+        },
+        "weave.view_status__component": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_status__component_0": {
+          "yes": 0.05
+        },
+        "weave.view_status__state": {
+          "unstated": 0.9,
+          "investigating": 0.05,
+          "identified": 0.05
+        },
+        "weave.view_outage__service": {
+          "checkout": 0.9,
+          "unstated": 0.1
+        },
+        "weave.is_outage__service_0": {
+          "yes": 0.9
+        },
+        "weave.view_outage__region": {
+          "eu-west": 0.9,
+          "unstated": 0.1
+        },
+        "weave.is_outage__region_0": {
+          "yes": 0.9
         }
       }
     },
@@ -1217,6 +1375,102 @@
           "unstated": 0.9,
           "eu-west": 0.05,
           "us-east": 0.05
+        },
+        "weave.view_errors__service": {
+          "checkout": 0.9,
+          "unstated": 0.1
+        },
+        "weave.is_errors__service_0": {
+          "yes": 0.9
+        },
+        "weave.view_errors__region": {
+          "eu-west": 0.9,
+          "unstated": 0.1
+        },
+        "weave.is_errors__region_0": {
+          "yes": 0.9
+        },
+        "weave.view_deploys__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_deploys__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_deploys__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_deploys__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_logs__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_logs__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_logs__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_logs__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_rollback__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_rollback__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_rollback__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_rollback__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_post__channel": {
+          "unstated": 0.9,
+          "#incident": 0.05,
+          "#ops": 0.05
+        },
+        "weave.view_status__component": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_status__component_0": {
+          "yes": 0.05
+        },
+        "weave.view_status__state": {
+          "unstated": 0.9,
+          "investigating": 0.05,
+          "identified": 0.05
+        },
+        "weave.view_outage__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_outage__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_outage__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_outage__region_0": {
+          "yes": 0.05
         }
       }
     },
@@ -1329,6 +1583,102 @@
           "unstated": 0.9,
           "eu-west": 0.05,
           "us-east": 0.05
+        },
+        "weave.view_errors__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_errors__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_errors__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_errors__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_deploys__service": {
+          "checkout": 0.9,
+          "unstated": 0.1
+        },
+        "weave.is_deploys__service_0": {
+          "yes": 0.9
+        },
+        "weave.view_deploys__region": {
+          "eu-west": 0.9,
+          "unstated": 0.1
+        },
+        "weave.is_deploys__region_0": {
+          "yes": 0.9
+        },
+        "weave.view_logs__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_logs__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_logs__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_logs__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_rollback__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_rollback__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_rollback__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_rollback__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_post__channel": {
+          "unstated": 0.9,
+          "#incident": 0.05,
+          "#ops": 0.05
+        },
+        "weave.view_status__component": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_status__component_0": {
+          "yes": 0.05
+        },
+        "weave.view_status__state": {
+          "unstated": 0.9,
+          "investigating": 0.05,
+          "identified": 0.05
+        },
+        "weave.view_outage__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_outage__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_outage__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_outage__region_0": {
+          "yes": 0.05
         }
       }
     },
@@ -1441,6 +1791,120 @@
           "unstated": 0.9,
           "eu-west": 0.05,
           "us-east": 0.05
+        },
+        "weave.view_errors__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_errors__service_0": {
+          "yes": 0.05
+        },
+        "weave.is_errors__service_2": {
+          "yes": 0.05
+        },
+        "weave.view_errors__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_errors__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_deploys__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_deploys__service_0": {
+          "yes": 0.05
+        },
+        "weave.is_deploys__service_2": {
+          "yes": 0.05
+        },
+        "weave.view_deploys__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_deploys__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_logs__service": {
+          "checkout": 0.9,
+          "unstated": 0.1
+        },
+        "weave.is_logs__service_0": {
+          "yes": 0.9
+        },
+        "weave.is_logs__service_2": {
+          "yes": 0.05
+        },
+        "weave.view_logs__region": {
+          "eu-west": 0.9,
+          "unstated": 0.1
+        },
+        "weave.is_logs__region_0": {
+          "yes": 0.9
+        },
+        "weave.view_rollback__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_rollback__service_0": {
+          "yes": 0.05
+        },
+        "weave.is_rollback__service_2": {
+          "yes": 0.05
+        },
+        "weave.view_rollback__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_rollback__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_post__channel": {
+          "unstated": 0.9,
+          "#incident": 0.05,
+          "#ops": 0.05
+        },
+        "weave.view_status__component": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_status__component_0": {
+          "yes": 0.05
+        },
+        "weave.is_status__component_2": {
+          "yes": 0.05
+        },
+        "weave.view_status__state": {
+          "unstated": 0.9,
+          "investigating": 0.05,
+          "identified": 0.05
+        },
+        "weave.view_outage__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_outage__service_0": {
+          "yes": 0.05
+        },
+        "weave.is_outage__service_2": {
+          "yes": 0.05
+        },
+        "weave.view_outage__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_outage__region_0": {
+          "yes": 0.05
         }
       }
     },
@@ -1552,6 +2016,71 @@
           "payments": 0.05
         },
         "outage.region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.view_errors__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.view_errors__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.view_deploys__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.view_deploys__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.view_logs__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.view_logs__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.view_rollback__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.view_rollback__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.view_post__channel": {
+          "unstated": 0.9,
+          "#incident": 0.05,
+          "#ops": 0.05
+        },
+        "weave.view_status__component": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.view_status__state": {
+          "unstated": 0.9,
+          "investigating": 0.05,
+          "identified": 0.05
+        },
+        "weave.view_outage__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.view_outage__region": {
           "unstated": 0.9,
           "eu-west": 0.05,
           "us-east": 0.05
@@ -1667,6 +2196,105 @@
           "unstated": 0.9,
           "eu-west": 0.05,
           "us-east": 0.05
+        },
+        "weave.view_errors__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_errors__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_errors__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_errors__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_deploys__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_deploys__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_deploys__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_deploys__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_logs__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_logs__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_logs__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_logs__region_0": {
+          "yes": 0.05
+        },
+        "weave.view_rollback__service": {
+          "checkout": 0.9,
+          "unstated": 0.1
+        },
+        "weave.is_rollback__service_0": {
+          "yes": 0.9
+        },
+        "weave.view_rollback__region": {
+          "eu-west": 0.9,
+          "unstated": 0.1
+        },
+        "weave.is_rollback__region_0": {
+          "yes": 0.9
+        },
+        "weave.view_post__channel": {
+          "unstated": 0.9,
+          "#incident": 0.05,
+          "#ops": 0.05
+        },
+        "weave.view_status__component": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_status__component_0": {
+          "yes": 0.05
+        },
+        "weave.view_status__state": {
+          "unstated": 0.9,
+          "investigating": 0.05,
+          "identified": 0.05
+        },
+        "weave.is_status__state_3": {
+          "yes": 0.05
+        },
+        "weave.view_outage__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_outage__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_outage__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_outage__region_0": {
+          "yes": 0.05
         }
       }
     },
@@ -1777,6 +2405,73 @@
           "payments": 0.05
         },
         "outage.region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.view_errors__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.view_errors__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.view_deploys__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.view_deploys__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.view_logs__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.view_logs__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.view_rollback__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.view_rollback__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.view_post__channel": {
+          "#incident": 0.9,
+          "unstated": 0.1
+        },
+        "weave.is_post__channel_0": {
+          "yes": 0.9
+        },
+        "weave.view_status__component": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.view_status__state": {
+          "unstated": 0.9,
+          "investigating": 0.05,
+          "identified": 0.05
+        },
+        "weave.view_outage__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.view_outage__region": {
           "unstated": 0.9,
           "eu-west": 0.05,
           "us-east": 0.05
@@ -1893,6 +2588,103 @@
           "unstated": 0.9,
           "eu-west": 0.05,
           "us-east": 0.05
+        },
+        "weave.view_errors__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_errors__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_errors__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_errors__region_1": {
+          "yes": 0.05
+        },
+        "weave.view_deploys__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_deploys__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_deploys__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_deploys__region_1": {
+          "yes": 0.05
+        },
+        "weave.view_logs__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_logs__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_logs__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_logs__region_1": {
+          "yes": 0.05
+        },
+        "weave.view_rollback__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_rollback__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_rollback__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_rollback__region_1": {
+          "yes": 0.05
+        },
+        "weave.view_post__channel": {
+          "unstated": 0.9,
+          "#incident": 0.05,
+          "#ops": 0.05
+        },
+        "weave.view_status__component": {
+          "checkout": 0.9,
+          "unstated": 0.1
+        },
+        "weave.is_status__component_0": {
+          "yes": 0.9
+        },
+        "weave.view_status__state": {
+          "unstated": 0.9,
+          "investigating": 0.05,
+          "identified": 0.05
+        },
+        "weave.view_outage__service": {
+          "unstated": 0.9,
+          "checkout": 0.05,
+          "payments": 0.05
+        },
+        "weave.is_outage__service_0": {
+          "yes": 0.05
+        },
+        "weave.view_outage__region": {
+          "unstated": 0.9,
+          "eu-west": 0.05,
+          "us-east": 0.05
+        },
+        "weave.is_outage__region_1": {
+          "yes": 0.05
         }
       }
     },

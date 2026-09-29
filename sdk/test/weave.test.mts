@@ -42,7 +42,8 @@ test("weave runs the steps in the words' order, each round its own decision and 
     ],
   )
   equal(woven.steps[0]?.rounds[0]?.decision.plan, project.plan)
-  equal(woven.steps[0]?.rounds[0]?.decision.trace.length, 1)
+  // the text's questions, then the one their answers opened: a round each
+  equal(woven.steps[0]?.rounds[0]?.decision.trace.length, 2)
 })
 
 test("a pronoun takes the address the step before yielded, into the ask it fills", async () => {

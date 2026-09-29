@@ -58,6 +58,7 @@ fn pick(input: &str, start: usize, end: usize, value: PickValue) -> Value {
     Value::Pick {
         span: Span::of(&input, start, end).unwrap(),
         value,
+        typed: None,
     }
 }
 
@@ -237,6 +238,7 @@ fn reading() -> impl Strategy<Value = Reading> {
                 winner: Some(Winner {
                     reflex: winner,
                     args,
+                    basis: IndexMap::new(),
                     missing: Vec::new(),
                     unconsumed: Vec::new(),
                     runner_up: Some(runner_up),

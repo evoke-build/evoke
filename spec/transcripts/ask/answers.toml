@@ -8,37 +8,46 @@ read  = 0.6
 write = 0.8
 
 [answers."start a timer"]
-route               = { timer = 0.92, lights = 0.02, volume = 0.01, none = 0.05 }
-"fits.lights"       = { yes = 0.05 }
-"fits.timer"        = { yes = 0.8 }
-"fits.volume"       = { yes = 0.05 }
-"lights.room"       = { unstated = 0.8, den = 0.1, office = 0.1 }
-"lights.state"      = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
-"lights.brightness" = { unstated = 1.0 }
-"timer.duration"    = { unstated = 1.0 }
-"timer.label"       = { unstated = 1.0 }
-"volume.level"      = { unstated = 1.0 }
+route                      = { timer = 0.92, lights = 0.02, volume = 0.01, none = 0.05 }
+"fits.lights"              = { yes = 0.05 }
+"fits.timer"               = { yes = 0.8 }
+"fits.volume"              = { yes = 0.05 }
+"lights.room"              = { unstated = 0.8, den = 0.1, office = 0.1 }
+"lights.state"             = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
+"lights.brightness"        = { unstated = 1.0 }
+"timer.duration"           = { unstated = 1.0 }
+"timer.label"              = { unstated = 1.0 }
+"volume.level"             = { unstated = 1.0 }
+"weave.view_lights__room"  = { unstated = 0.8, den = 0.1, office = 0.1 }
+"weave.view_lights__state" = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
 
 [answers."set the volume to 150 percent"]
-route               = { volume = 0.93, lights = 0.02, timer = 0.01, none = 0.04 }
-"fits.lights"       = { yes = 0.05 }
-"fits.timer"        = { yes = 0.05 }
-"fits.volume"       = { yes = 0.8 }
-"lights.room"       = { unstated = 0.8, den = 0.1, office = 0.1 }
-"lights.state"      = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
-"lights.brightness" = { 18-29 = 0.1, unstated = 0.9 }
-"volume.level"      = { 18-29 = 0.95, unstated = 0.05 }
-"timer.duration"    = { unstated = 1.0 }
-"timer.label"       = { unstated = 1.0 }
+route                                 = { volume = 0.93, lights = 0.02, timer = 0.01, none = 0.04 }
+"fits.lights"                         = { yes = 0.05 }
+"fits.timer"                          = { yes = 0.05 }
+"fits.volume"                         = { yes = 0.8 }
+"lights.room"                         = { unstated = 0.8, den = 0.1, office = 0.1 }
+"lights.state"                        = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
+"lights.brightness"                   = { 18-29 = 0.1, unstated = 0.9 }
+"volume.level"                        = { 18-29 = 0.95, unstated = 0.05 }
+"timer.duration"                      = { unstated = 1.0 }
+"timer.label"                         = { unstated = 1.0 }
+"weave.view_lights__room"             = { unstated = 0.8, den = 0.1, office = 0.1 }
+"weave.view_lights__state"            = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
+"weave.only_lights__brightness_18_29" = { yes = 0.05 }
+"weave.only_volume__level_18_29"      = { yes = 0.05 }
 
 [answers."kill the lights in the garage"]
-route               = { lights = 0.92, timer = 0.02, volume = 0.01, none = 0.05 }
-"fits.lights"       = { yes = 0.8 }
-"fits.timer"        = { yes = 0.05 }
-"fits.volume"       = { yes = 0.05 }
-"lights.room"       = { none = 0.85, den = 0.05, office = 0.05, unstated = 0.05 }
-"lights.state"      = { off = 0.9, on = 0.04, dim = 0.04, unstated = 0.02 }
-"lights.brightness" = { unstated = 1.0 }
-"timer.duration"    = { unstated = 1.0 }
-"timer.label"       = { unstated = 1.0 }
-"volume.level"      = { unstated = 1.0 }
+route                      = { lights = 0.92, timer = 0.02, volume = 0.01, none = 0.05 }
+"fits.lights"              = { yes = 0.8 }
+"fits.timer"               = { yes = 0.05 }
+"fits.volume"              = { yes = 0.05 }
+"lights.room"              = { none = 0.85, den = 0.05, office = 0.05, unstated = 0.05 }
+"lights.state"             = { off = 0.9, on = 0.04, dim = 0.04, unstated = 0.02 }
+"lights.brightness"        = { unstated = 1.0 }
+"timer.duration"           = { unstated = 1.0 }
+"timer.label"              = { unstated = 1.0 }
+"volume.level"             = { unstated = 1.0 }
+"weave.view_lights__room"  = { none = 0.85, den = 0.05, office = 0.05, unstated = 0.05 }
+"weave.view_lights__state" = { off = 0.9, on = 0.04, dim = 0.04, unstated = 0.02 }
+"weave.is_lights__state_1" = { yes = 0.9 }

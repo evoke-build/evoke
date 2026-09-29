@@ -28,6 +28,13 @@
             },
             "call": "bank month=\"september\"",
             "effect": "read",
+            "basis": {
+              "month": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -282,6 +289,13 @@
               },
               "call": "bank month=\"september\"",
               "effect": "read",
+              "basis": {
+                "month": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

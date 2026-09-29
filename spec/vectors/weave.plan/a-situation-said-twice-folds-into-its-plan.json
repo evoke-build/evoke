@@ -28,6 +28,13 @@
             },
             "call": "outage service=\"payments\"",
             "effect": "destructive",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -252,6 +259,14 @@
             },
             "call": "errors service=\"payments\"",
             "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9,
+                "yes": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -354,6 +369,14 @@
             },
             "call": "deploys service=\"payments\"",
             "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9,
+                "yes": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -456,6 +479,14 @@
             },
             "call": "logs service=\"payments\"",
             "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9,
+                "yes": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -643,6 +674,13 @@
                 "word": "payments"
               }
             },
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "unconsumed": [],
             "confidence": 0.9,
             "weakest": {
@@ -764,6 +802,13 @@
             },
             "call": "post channel=\"#incident\"",
             "effect": "write",
+            "basis": {
+              "channel": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -861,6 +906,13 @@
             },
             "call": "status component=\"payments\"",
             "effect": "write",
+            "basis": {
+              "component": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -995,6 +1047,14 @@
               },
               "call": "errors service=\"payments\"",
               "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9,
+                  "yes": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -1108,6 +1168,14 @@
               },
               "call": "deploys service=\"payments\"",
               "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9,
+                  "yes": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -1221,6 +1289,14 @@
               },
               "call": "logs service=\"payments\"",
               "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9,
+                  "yes": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -1461,6 +1537,13 @@
                   "word": "payments"
                 }
               },
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "unconsumed": [],
               "confidence": 0.9,
               "weakest": {
@@ -1611,6 +1694,13 @@
               },
               "call": "post channel=\"#incident\"",
               "effect": "write",
+              "basis": {
+                "channel": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -1717,6 +1807,13 @@
               },
               "call": "status component=\"payments\"",
               "effect": "write",
+              "basis": {
+                "component": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

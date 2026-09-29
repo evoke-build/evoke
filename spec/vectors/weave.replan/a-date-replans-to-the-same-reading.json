@@ -46,6 +46,16 @@
               },
               "call": "meeting day=\"tomorrow\" time=\"3pm\"",
               "effect": "write",
+              "basis": {
+                "day": {
+                  "by": "ask",
+                  "p": 0.9
+                },
+                "time": {
+                  "by": "ask",
+                  "p": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "meeting.day",
@@ -186,6 +196,25 @@
               "unstated": 0.9,
               "checkout": 0.05,
               "payments": 0.05
+            },
+            "weave.only_meeting__day_20_28": {
+              "yes": 0.05
+            },
+            "weave.only_meeting__time_32_35": {
+              "yes": 0.05
+            },
+            "weave.view_calendar__day": {
+              "unstated": 0.9,
+              "tomorrow": 0.05,
+              "monday": 0.05
+            },
+            "weave.is_calendar__day_0": {
+              "yes": 0.05
+            },
+            "weave.view_deploys__service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
             }
           }
         }
@@ -238,6 +267,16 @@
               },
               "call": "meeting day=\"tomorrow\" time=\"3pm\"",
               "effect": "write",
+              "basis": {
+                "day": {
+                  "by": "ask",
+                  "p": 0.9
+                },
+                "time": {
+                  "by": "ask",
+                  "p": 0.9
+                }
+              },
               "confidence": 0.9,
               "weakest": {
                 "question": "meeting.day",
@@ -374,6 +413,25 @@
               "unstated": 0.9,
               "checkout": 0.05,
               "payments": 0.05
+            },
+            "weave.only_meeting__day_20_28": {
+              "yes": 0.05
+            },
+            "weave.only_meeting__time_32_35": {
+              "yes": 0.05
+            },
+            "weave.view_calendar__day": {
+              "unstated": 0.9,
+              "tomorrow": 0.05,
+              "monday": 0.05
+            },
+            "weave.is_calendar__day_0": {
+              "yes": 0.05
+            },
+            "weave.view_deploys__service": {
+              "unstated": 0.9,
+              "checkout": 0.05,
+              "payments": 0.05
             }
           },
           "decision": {
@@ -410,6 +468,16 @@
             },
             "call": "meeting day=\"tomorrow\" time=\"3pm\"",
             "effect": "write",
+            "basis": {
+              "day": {
+                "by": "ask",
+                "p": 0.9
+              },
+              "time": {
+                "by": "ask",
+                "p": 0.9
+              }
+            },
             "confidence": 0.9,
             "weakest": {
               "question": "meeting.day",
