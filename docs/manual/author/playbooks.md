@@ -153,9 +153,10 @@ told #ops
 ## What the person adds to the sentence
 
 A part of the sentence that repeats a step of the plan folds into that step, and the plan says so:
-`folded "show me the error rate" into 1`. A part that says what not to do beside a plan is refused, and so is a
-sentence that opens with a condition, `if`, `unless` or `in case`: `evoke` judges no condition, so it asks for the
-check first and the plan after.
+`folded "show me the error rate" into 1`. A part that states the situation a second time, *payments keep timing
+out, customers can't pay*, folds into the plan the first part opened, so the plan holds each step once. A part
+that says what not to do beside a plan is refused, and so is a sentence that opens with a condition, `if`,
+`unless` or `in case`: `evoke` judges no condition, so it asks for the check first and the plan after.
 
 ## What is contract
 

@@ -99,11 +99,13 @@ struct Origin {
     when: Option<manifest::When>,
 }
 
-/// A playbook expanded: the part that picked it, the playbook, its decision's prompt before the runner-up's step
-/// is named, the runner-up whose `fits` capped it, and the effect it claims.
+/// A playbook expanded: the part that picked it, the playbook, the values its sentences were filled from, its
+/// decision's prompt before the runner-up's step is named, the runner-up whose `fits` capped it, and the effect
+/// it claims.
 struct Expansion {
     text: String,
     playbook: LocalName,
+    args: IndexMap<ArgName, Value>,
     prompt: Prompt,
     runner_up: Option<LocalName>,
     effect: Effect,
@@ -224,6 +226,33 @@ impl Draft {
     /// The step number a segment id stands at now, from 1.
     fn position(&self, id: usize) -> usize {
         self.ids.iter().position(|i| *i == id).map_or(0, |i| i + 1)
+    }
+
+    /// Segment `k`, a part of the person's own, folded into the step of this id: gone, its words kept as typed.
+    fn fold_into(&mut self, k: usize, into: usize) {
+        let text = self.typed[k]
+            .clone()
+            .unwrap_or_else(|| self.segs[k].text.clone());
+        self.folded.push((text, into));
+        self.remove(k);
+    }
+
+    /// The first step, by its id, of a plan this playbook already wrote from values that hold every value `read`.
+    fn expanded(&self, playbook: &LocalName, read: &IndexMap<ArgName, Value>) -> Option<usize> {
+        let expansion = self.expansions.iter().position(|expansion| {
+            expansion.playbook == *playbook
+                && read.iter().all(|(arg, value)| {
+                    expansion
+                        .args
+                        .get(arg)
+                        .is_some_and(|theirs| stated(theirs) == stated(value))
+                })
+        })?;
+        let first = self
+            .origins
+            .iter()
+            .position(|chain| chain.iter().any(|origin| origin.expansion == expansion))?;
+        Some(self.ids[first])
     }
 }
 
@@ -413,21 +442,17 @@ impl<'a> Planner<'a> {
                 continue;
             }
             let chain = &draft.origins[k];
-            // A step that may not run is one step: it never opens a plan of its own.
-            if chain.last().is_some_and(|origin| origin.when.is_some()) {
-                draft
-                    .refusals
-                    .push((id, Refused::BranchIntoPlan(reflex.clone())));
-                k += 1;
+            // A part of the person's own that picks a playbook whose plan already stands, every value it read
+            // equal to that plan's, says the situation twice: it folds into the plan, as a repeated step does.
+            if chain.is_empty()
+                && foldable(decision)
+                && let Some(into) = draft.expanded(&reflex, args)
+            {
+                draft.fold_into(k, into);
                 continue;
             }
-            if chain.iter().any(|origin| origin.from.playbook == reflex) {
-                draft.refusals.push((id, Refused::Nested(reflex.clone())));
-                k += 1;
-                continue;
-            }
-            if chain.len() >= HOPS {
-                draft.refusals.push((id, Refused::TooDeep(reflex.clone())));
+            if let Some(refused) = refusal(chain, &reflex) {
+                draft.refusals.push((id, refused));
                 k += 1;
                 continue;
             }
@@ -443,6 +468,7 @@ impl<'a> Planner<'a> {
             draft.expansions.push(Expansion {
                 text: seg.text.clone(),
                 playbook: reflex.clone(),
+                args: args.clone(),
                 prompt,
                 runner_up,
                 effect: active.effect,
@@ -1908,7 +1934,8 @@ fn listed(
 /// The fold. A part of the person's own that repeats a step a playbook wrote — the same reflex, every value it
 /// read equal to that step's, a run or a confirm capped by the effect or the runner-up alone — is removed and
 /// recorded in the person's words, so the step runs once. An ask never folds as it stands, nor a part with a cap
-/// of its own.
+/// of its own. A part that picks a playbook whose plan already stands folds by the same rule where the playbook
+/// would expand.
 fn fold(draft: &mut Draft) {
     let mut k = 0;
     while k < draft.segs.len() {
@@ -1936,15 +1963,23 @@ fn fold(draft: &mut Draft) {
                 })
         });
         match target {
-            Some(j) => {
-                let text = draft.typed[k]
-                    .clone()
-                    .unwrap_or_else(|| draft.segs[k].text.clone());
-                draft.folded.push((text, draft.ids[j]));
-                draft.remove(k);
-            }
+            Some(j) => draft.fold_into(k, draft.ids[j]),
             None => k += 1,
         }
+    }
+}
+
+/// Why a step that routes to a playbook opens no plan, when it does not: the step may not run, and a branch is
+/// one step; the playbook is on the step's own chain; the chain is as deep as a plan goes.
+fn refusal(chain: &[Origin], playbook: &LocalName) -> Option<Refused> {
+    if chain.last().is_some_and(|origin| origin.when.is_some()) {
+        Some(Refused::BranchIntoPlan(playbook.clone()))
+    } else if chain.iter().any(|origin| origin.from.playbook == *playbook) {
+        Some(Refused::Nested(playbook.clone()))
+    } else if chain.len() >= HOPS {
+        Some(Refused::TooDeep(playbook.clone()))
+    } else {
+        None
     }
 }
 

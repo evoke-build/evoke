@@ -152,6 +152,19 @@ $ evoke "checkout is failing in eu-west, show me the error rate"
   outage service="checkout" region="eu-west" · destructive · weakest: route 0.90 · also errors (fits 0.60), step 1
   Run the outage plan for checkout?  [y]es [n]o [t]each > n
 [2]
+# The situation said twice: the second clause folds into the plan the first one opened.
+$ evoke "payments keep timing out, customers can't pay"
+  1  errors service="payments"  0.90 · outage 1
+  2  deploys service="payments"  0.90 · outage 2
+  3  logs service="payments"  0.90 · outage 3
+  4  suspect  0.90 · takes errors from 1, deploys from 2, logs from 3 · outage 4
+  5  rollback service="payments" · takes release from 4 · outage 5
+  6  post channel="#incident"  0.90 · outage 6
+  7  status component="payments"  0.90 · outage 7 · service as component
+  folded "customers can't pay" into 1
+  outage service="payments" · destructive · weakest: route 0.90
+  Run the outage plan for payments?  [y]es [n]o [t]each > n
+[2]
 # A slot the sentence does not state is asked before the plan prints.
 $ evoke "we have an outage"
   1  outage · asks service

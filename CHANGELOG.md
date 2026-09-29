@@ -7,6 +7,7 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 ## [Unreleased]
 
 - A code reads in small letters too: `inc-311`, `tp1043`, `c02xk1abjg5m`.
+- A sentence that states a playbook's situation twice gets one plan: the second part folds into the first.
 
 ## [0.14.0] - 2026-09-28
 
