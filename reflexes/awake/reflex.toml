@@ -1,14 +1,20 @@
 reflex = 1
 
 description = """
-Keep the laptop awake, display on.
-For a duration, or until you cancel it."""
+Keep the laptop awake, with the display on.
+For a duration, or until you stop it; it changes no setting, and the laptop sleeps as usual afterwards."""
 
-not_for   = ["timers and reminders", "putting the laptop to sleep", "screen brightness"]
-tags      = ["power"]
-effect    = "write"
-confirm   = "Keep the laptop awake?"
-run       = "awake.mts"
+not_for = [
+  "setting a timer or an alarm",
+  "putting the laptop to sleep",
+  "letting the laptop sleep again",
+  "changing the sleep settings",
+  "changing the screen brightness",
+]
+tags = ["power"]
+effect = "write"
+confirm = "Keep the laptop awake?"
+run = "awake.mts"
 platforms = ["macos"]
 
 [needs]
@@ -20,12 +26,14 @@ pick     = "duration"
 optional = true
 
 [examples]
-"keep the laptop awake for 2 hours" = { duration = "2 hours" }
-"don't let the laptop sleep"        = { duration = false }
-"stay awake for 45 minutes"         = { duration = "45 minutes" }
+"keep my laptop awake for 2 hours"    = { duration = "2 hours" }
+"keep the screen on for half an hour" = { duration = "half an hour" }
+"stop my mac from going to sleep"     = { duration = false }
+"stay awake until I say so"           = { duration = false }
 
 [tests]
-"no sleeping for the next 3 hours" = { duration = "3 hours" }
-"stop the screen from going dark"  = { duration = false }
-"wake me up in 20 minutes"         = false
-"put the laptop to sleep"          = false
+"prevent sleep for forty minutes"               = { duration = "forty minutes" }
+"keep the display from dimming while I present" = { duration = false }
+"buzz me in twenty minutes"                     = false
+"put the computer into standby mode"            = false
+"let the mac sleep again"                       = false

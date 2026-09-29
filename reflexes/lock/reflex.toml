@@ -2,25 +2,33 @@ reflex = 1
 
 description = """
 Lock the screen.
-Everything keeps running behind it."""
+This laptop's screen only; apps keep running behind it, and your password opens it again."""
 
-not_for   = ["sleeping, restarting or shutting down", "logging out", "turning the display off"]
-tags      = ["screen"]
-effect    = "write"
-confirm   = "Lock the screen?"
-run       = "lock.mts"
+not_for = [
+  "putting the laptop to sleep",
+  "shutting down or restarting",
+  "logging out",
+  "turning only the display off",
+  "locking a door",
+  "locking a lost or stolen laptop",
+]
+tags = ["screen"]
+effect = "write"
+confirm = "Lock the screen?"
+run = "lock.mts"
 platforms = ["macos"]
 
 [needs]
 runs = ["open"]
 
 [examples]
-"lock the screen"            = {}
-"lock my laptop"             = {}
-"I'm stepping away, lock it" = {}
+"lock the screen"                     = {}
+"lock my laptop"                      = {}
+"lock the computer before I step out" = {}
 
 [tests]
-"lock"                    = {}
-"secure the screen"       = {}
-"log me out"              = false
-"put the laptop to sleep" = false
+"lock up this mac"                 = {}
+"secure the screen while I'm away" = {}
+"sign me out of my account"        = false
+"put the mac in sleep mode"        = false
+"lock the front door"              = false

@@ -1,14 +1,20 @@
 reflex = 1
 
 description = """
-Append a line to your notes file.
-Plain text, dated, one note per line."""
+Add a note to your notes file.
+The note is the text in quotes, "like this", written as one dated line at the end; nothing else in the file changes."""
 
-not_for   = ["reading notes back", "reminders and timers", "the clipboard"]
-tags      = ["text"]
-effect    = "write"
-confirm   = 'Note "{text}"?'
-run       = "note.mts"
+not_for = [
+  "reading your notes back",
+  "setting a reminder for later",
+  "copying text to the clipboard",
+  "writing an email",
+  "opening the Notes app",
+]
+tags = ["text"]
+effect = "write"
+confirm = 'Add "{text}" to your notes?'
+run = "note.mts"
 platforms = ["macos"]
 
 [needs]
@@ -22,12 +28,15 @@ ask  = "What should the note say?"
 pick = "quoted"
 
 [examples]
-'note "buy milk"'                                   = { text = "buy milk" }
-'jot down "call the dentist on monday"'             = { text = "call the dentist on monday" }
-'write this down: "the spare key is under the mat"' = { text = "the spare key is under the mat" }
+'note "pick up the dry cleaning"'                 = { text = "pick up the dry cleaning" }
+'jot down "gate code 4417"'                       = { text = "gate code 4417" }
+'add "ask Priya about the invoice" to my notes'   = { text = "ask Priya about the invoice" }
+'save a note that says "renew the car insurance"' = { text = "renew the car insurance" }
 
 [tests]
-'add a note "renew the passport"' = { text = "renew the passport" }
-'remember "ana owes me 20"'       = { text = "ana owes me 20" }
-"make a note"                     = { text = false }
-"read me my notes"                = false
+'put "try the new ramen place" in my notes' = { text = "try the new ramen place" }
+'keep a note of "locker 31"'                = { text = "locker 31" }
+"take a note"                               = { text = false }
+"what did I write in my notes"              = false
+"remind me to call mom at 6pm"              = false
+'copy "see you soon" to the clipboard'      = false

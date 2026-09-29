@@ -20,7 +20,7 @@ What holds, in any description of `evoke`:
 - When it is not sure enough, it asks. When nothing fits, it abstains and shows the ranking. The user teaches it with one line in an overlay, which no update touches.
 - Git is the registry. A reflex is pinned by tag, commit and content hash. No code runs at install time. A fetched reflex runs as the user, held by the kernel to what its manifest declares.
 - Each decision is one request to the classifier, with the user's own key: the sentence, and the questions built from the installed manifests. A sentence with several steps makes one request to find its steps, then at least one for each step. At the terminal, a repeated sentence is answered from a local cache, with no request, as long as the installed reflexes and the user's own words for them have not changed. Nothing reaches evoke.build, which sets no cookie and runs no analytics.
-- The first-party collection's thirteen reflexes are for macOS. The classifier's provider says it is most accurate in English. Every live decision needs a network request and a key.
+- The first-party collection's fourteen reflexes are for macOS. The classifier's provider says it is most accurate in English. Every live decision needs a network request and a key.
 - The reflex format is frozen at version 1. The manual's sessions are transcripts the test suite replays against the built binary on every change.
 - `evoke` is a project of its own, not affiliated with TypeSafe AI. Jev is TypeSafe AI's model.
 - Apache-2.0. The collection is MIT. The name and the logo are trademarks: except for displaying the licence details and identifying us as the origin of the software, there is no right under the licence to use them.

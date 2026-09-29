@@ -72,7 +72,7 @@
       ], hold: 3200 },
       { step: 2, say: 'evoke "restart the computer"', busy: "", lines: [
         { text: '  {n:power} action="restart" · destructive · weakest: route {hi:0.97}', set: { power: "asked" } },
-        { ask: "  Really restart now?  [y]es [n]o [t]each > ", answer: "n" },
+        { ask: "  Make the laptop restart now?  [y]es [n]o [t]each > ", answer: "n" },
         { text: "[2]" },
       ], hold: 3200 },
     ] },

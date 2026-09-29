@@ -168,7 +168,7 @@ $ evoke run lights room=den state=off
 den lights off
 $ evoke run power action=restart
   power action="restart" · destructive
-  Really restart now?  [y]es [n]o > y
+  Make the laptop restart now?  [y]es [n]o > y
 restart in 5 seconds
 $ evoke run lights state=off
   lights: lights needs room  →  evoke show lights

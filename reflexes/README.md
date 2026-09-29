@@ -3,28 +3,31 @@
 The first-party reflexes for [evoke](https://evoke.build): what a Mac does at a word. The word
 is decided by [Jev](https://typesafe.ai), TypeSafe AI's classifier. Each reflex is one directory, with
 `reflex.toml` and the file it runs, where it runs one. There is nothing to build.
-Eleven of the thirteen run a file and need Node 24 or newer on your `PATH`; `open` and `trash` run a program
+Twelve of the fourteen run a file and need Node 24 or newer on your `PATH`; `open` and `trash` run a program
 the Mac has.
 
 ```bash
 evoke add evoke-build/reflexes
 ```
 
-| Reflex                               | Does                                                          | Effect      | Yours to set     |
-| :----------------------------------- | :------------------------------------------------------------ | :---------- | :--------------- |
-| [awake](awake/reflex.toml)           | Keeps the laptop awake for a duration, or until `pkill caffeinate` | write  |                  |
-| [download](download/reflex.toml)     | Saves a URL's file to `~/Downloads`, or to a place you name   | write       | `places`         |
-| [lock](lock/reflex.toml)             | Locks the screen                                              | write       |                  |
-| [mail](mail/reflex.toml)             | Starts an email in your mail app                              | write       |                  |
-| [note](note/reflex.toml)             | Appends a dated line to your notes file                       | write       | `file`           |
-| [open](open/reflex.toml)             | Opens one of your folders                                     | read        | `places`         |
-| [power](power/reflex.toml)           | Sleeps, restarts or shuts down                                | destructive |                  |
-| [screenshot](screenshot/reflex.toml) | Captures the screen, a window or a selection                  | write       |                  |
-| [timer](timer/reflex.toml)           | Counts down, then rings                                       | write       |                  |
-| [trash](trash/reflex.toml)           | Empties the trash                                             | destructive |                  |
-| [visit](visit/reflex.toml)           | Opens one of your sites, in a private window on request       | read        | `sites`          |
-| [volume](volume/reflex.toml)         | Sets the output volume                                        | write       |                  |
-| [wifi](wifi/reflex.toml)             | Turns Wi-Fi on or off                                         | write       |                  |
+| Reflex                               | Does                                                               | Effect      | Reads from your words                                                    | Yields | Yours to set |
+| :----------------------------------- | :----------------------------------------------------------------- | :---------- | :----------------------------------------------------------------------- | :----- | :----------- |
+| [awake](awake/reflex.toml)           | Keeps the laptop awake for a duration, or until `pkill caffeinate` | write       | `duration`, a duration, optional                                         |        |              |
+| [download](download/reflex.toml)     | Saves a URL's file to `~/Downloads`, or to a place you name        | write       | `url`, a URL; `to`, one of your `places`, optional                       | `path` | `places`     |
+| [lock](lock/reflex.toml)             | Locks the screen                                                   | write       |                                                                          |        |              |
+| [mail](mail/reflex.toml)             | Starts an email in your mail app                                   | write       | `to`, an address; `subject`, text in quotes, optional                    |        |              |
+| [note](note/reflex.toml)             | Appends a dated line to your notes file                            | write       | `text`, text in quotes                                                   |        | `file`       |
+| [open](open/reflex.toml)             | Opens one of your folders                                          | read        | `place`, one of your `places`                                            |        | `places`     |
+| [power](power/reflex.toml)           | Restarts or shuts down                                             | destructive | `action`, `restart` or `shutdown`                                        |        |              |
+| [screenshot](screenshot/reflex.toml) | Captures the screen, a window or a selection                       | write       | `area`, `screen`, `window` or `selection`, optional; `clipboard`, a flag | `path` |              |
+| [sleep](sleep/reflex.toml)           | Puts the laptop to sleep                                           | write       |                                                                          |        |              |
+| [timer](timer/reflex.toml)           | Counts down, then rings                                            | write       | `duration`, a duration; `label`, text in quotes, optional                |        |              |
+| [trash](trash/reflex.toml)           | Empties the trash                                                  | destructive |                                                                          |        |              |
+| [visit](visit/reflex.toml)           | Opens one of your sites, in a private window on request            | read        | `site`, one of your `sites`; `incognito`, a flag                         |        | `sites`      |
+| [volume](volume/reflex.toml)         | Sets the output volume                                             | write       | `level`, a number from 0 to 100                                          |        |              |
+| [wifi](wifi/reflex.toml)             | Turns Wi-Fi on or off                                              | write       | `state`, `on` or `off`                                                   |        |              |
+
+No reflex returns a whole result under a name, and none takes one.
 
 ## Yours to set
 

@@ -1,0 +1,35 @@
+reflex = 1
+
+description = """
+Put the laptop to sleep.
+It sleeps at once and wakes on the lid or a key; apps and open work stay as they are."""
+
+not_for = [
+  "restarting or shutting down",
+  "locking the screen",
+  "keeping the laptop awake",
+  "turning only the display off",
+  "changing the sleep settings",
+  "a timer that rings later",
+]
+tags = ["power"]
+effect = "write"
+confirm = "Put the laptop to sleep?"
+run = "sleep.mts"
+platforms = ["macos"]
+
+[needs]
+runs = ["pmset"]
+
+[examples]
+"put my macbook to sleep" = {}
+"sleep the laptop"        = {}
+"send the mac to sleep"   = {}
+
+[tests]
+"let the mac doze off"                = {}
+"suspend this computer"               = {}
+"power the laptop down for the night" = false
+"stop the screen from sleeping"       = false
+"lock up this mac"                    = false
+"change when the display sleeps"      = false

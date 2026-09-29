@@ -2,13 +2,21 @@ reflex = 1
 
 description = """
 Turn Wi-Fi on or off.
-The laptop's radio; which network to join is chosen elsewhere."""
+The laptop's Wi-Fi radio only; which network it joins is left to the system."""
 
-not_for   = ["joining or leaving a network", "Bluetooth", "airplane mode"]
-tags      = ["network"]
-effect    = "write"
-confirm   = "Turn Wi-Fi {state}?"
-run       = "wifi.mts"
+not_for = [
+  "joining or leaving a network",
+  "turning Bluetooth on or off",
+  "turning on airplane mode",
+  "asking for the Wi-Fi password",
+  "checking the connection speed",
+  "restarting the router",
+  "switching a smart plug",
+]
+tags = ["network"]
+effect = "write"
+confirm = "Turn Wi-Fi {state}?"
+run = "wifi.mts"
 platforms = ["macos"]
 
 [needs]
@@ -17,15 +25,18 @@ runs = ["networksetup"]
 [args.state]
 ask         = "On or off?"
 options.on  = "Switch the radio on."
-options.off = "Switch the radio off."
+options.off = "Switch the radio off, which takes the laptop offline."
 
 [examples]
-"turn off the wifi" = { state = "off" }
-"wifi on"           = { state = "on" }
-"go offline"        = { state = "off" }
+"turn the wi-fi off"         = { state = "off" }
+"wifi back on please"        = { state = "on" }
+"take the laptop offline"    = { state = "off" }
+"bring the wireless back up" = { state = "on" }
 
 [tests]
-"switch the wireless back on" = { state = "on" }
-"kill the wifi"               = { state = "off" }
-"toggle wifi"                 = { state = false }
-"connect to the hotel wifi"   = false
+"switch on the wireless radio"    = { state = "on" }
+"cut the wifi for now"            = { state = "off" }
+"flip the wi-fi switch"           = { state = false }
+"join the cafe network"           = false
+"pair my bluetooth headphones"    = false
+"tell me the wi-fi password here" = false

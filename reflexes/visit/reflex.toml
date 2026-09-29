@@ -2,13 +2,19 @@ reflex = 1
 
 description = """
 Open one of your sites in the browser.
-The sites named in your vocabulary; in a private window on request."""
+Only the sites in your sites list, in a private window when you ask; nothing is downloaded or changed."""
 
-not_for   = ["folders and files on this machine", "downloading a file", "searching the web"]
-tags      = ["web"]
-effect    = "read"
-confirm   = "Open {site} in the browser?"
-run       = "visit.mts"
+not_for = [
+  "opening a folder on this machine",
+  "downloading a file",
+  "searching the web",
+  "starting an email",
+  "closing a tab or the browser",
+]
+tags = ["web"]
+effect = "read"
+confirm = "Open {site} in the browser?"
+run = "visit.mts"
 platforms = ["macos"]
 
 [needs]
@@ -24,11 +30,15 @@ ask  = "In a private window?"
 flag = true
 
 [examples]
-"open github"                        = {}
-"go to the docs in a private window" = { incognito = true }
-"take me to my mail"                 = {}
+"pull up the docs site"      = {}
+"open the news in incognito" = { incognito = true }
+"take me to my webmail"      = {}
+"visit the calendar site"    = {}
 
 [tests]
-"visit the bank site incognito" = { incognito = true }
-"open my downloads folder"      = false
-"search the web for laptops"    = false
+"bring up the wiki"                  = {}
+"browse the store privately"         = { incognito = true }
+"load the team dashboard"            = { incognito = false }
+"go into the music folder"           = false
+"search the web for standing desks"  = false
+"email the landlord about the lease" = false

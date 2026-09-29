@@ -63,7 +63,7 @@ drafted to dana@example.com
 One sentence asked for two reflexes, and the plan showed before anything ran. Step 2 takes the email step 1
 finds, because `contact` says its result holds an email and `mail`'s `to` takes one. The lookup ran, the draft was
 addressed, and nothing was sent. `contact` and `mail` are illustrations from the tests. The reflexes you can
-install are in [the collection](https://evoke.build/manual/collection.html): thirteen, for a Mac.
+install are in [the collection](https://evoke.build/manual/collection.html): fourteen, for a Mac.
 
 ```bash
 curl -fsSL https://evoke.build/install.sh | sh    # the CLI, on macOS and Linux
@@ -89,7 +89,7 @@ nothing that cannot be undone ran without a yes:
 ```text
 $ evoke "restart the computer"
   power action="restart" · destructive · weakest: route 0.97
-  Really restart now?  [y]es [n]o [t]each > n
+  Make the laptop restart now?  [y]es [n]o [t]each > n
 [2]
 $ evoke "set the volume to 150 percent"
   How loud, in percent?  150 percent is outside 0–100  > 40

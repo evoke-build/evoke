@@ -16,7 +16,7 @@
         <p class="crumb"><a href="/examples.html">Examples</a> · 01 of 06</p>
         <h1>Run everyday Mac tasks from the terminal, <em>in plain words.</em></h1>
         <p class="lede"><strong>Type "set the volume to 40 percent" in your terminal, and evoke sets it.</strong> A reflex
-          is a small program you install and ask for in your words. Thirteen reflexes for everyday Mac tasks install with
+          is a small program you install and ask for in your words. Fourteen reflexes for everyday Mac tasks install with
           one line. This example runs today on a Mac, and every file is on GitHub.</p>
         <div class="cta"><a class="button primary" href="#set-up">Run this example</a></div>
       </div>
@@ -64,7 +64,7 @@
           <div class="strip" style="--lines: 6" aria-live="off">
             <span class="line say show"><span class="p">$</span> <span class="in">evoke "restart the computer"</span></span>
             <span class="line own show">  <b>power</b> action="restart" · destructive · weakest: route <i>0.97</i></span>
-            <span class="line own show">  Really restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span></span>
+            <span class="line own show">  Make the laptop restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span></span>
             <span class="line own show">[2]</span>
           </div>
         </div>
@@ -88,7 +88,7 @@
 
     <section id="reflexes">
       <div class="rule"><p class="label">The collection</p><span class="num">02</span></div>
-      <h2>What each of the thirteen reflexes does.</h2>
+      <h2>What each of the fourteen reflexes does.</h2>
       <p class="sub">Together they are evoke's collection, and one command installs them all. <strong>Each prints one
         short line about what it did.</strong></p>
       <div class="table tagged"><table>
@@ -100,8 +100,9 @@
           <tr><td><code>mail</code></td><td>Starts an email in your mail app. Nothing is sent until you press send.</td><td>write</td></tr>
           <tr><td><code>note</code></td><td>Adds a dated line to your notes file.</td><td>write</td></tr>
           <tr><td><code>open</code></td><td>Opens one of your folders.</td><td>read</td></tr>
-          <tr><td><code>power</code></td><td>Puts the laptop to sleep, restarts it or shuts it down.</td><td>destructive</td></tr>
+          <tr><td><code>power</code></td><td>Restarts the laptop or shuts it down.</td><td>destructive</td></tr>
           <tr><td><code>screenshot</code></td><td>Captures the screen, a window or a selection.</td><td>write</td></tr>
+          <tr><td><code>sleep</code></td><td>Puts the laptop to sleep.</td><td>write</td></tr>
           <tr><td><code>timer</code></td><td>Counts down, then rings.</td><td>write</td></tr>
           <tr><td><code>trash</code></td><td>Empties the trash.</td><td>destructive</td></tr>
           <tr><td><code>visit</code></td><td>Opens one of your sites, in a private window if you ask for one.</td><td>read</td></tr>
@@ -114,7 +115,7 @@
           0.6 or above, one that writes at 0.8, and a destructive one always asks.</span></li>
         <li><b>2</b><span><strong>Three start inactive.</strong> <code>open</code> needs your folders, <code>visit</code>
           your sites and <code>note</code> your notes file. Step 5 below gives them what they need.</span></li>
-        <li><b>3</b><span><strong>Eleven run a JavaScript file</strong>, so they need Node 24 or newer. <code>open</code>
+        <li><b>3</b><span><strong>Twelve run a JavaScript file</strong>, so they need Node 24 or newer. <code>open</code>
           and <code>trash</code> run a program the Mac already has.</span></li>
       </ol>
       <p class="after"><a class="more" href="/manual/collection.html">The collection, in the manual →</a></p>
@@ -137,14 +138,20 @@
 <pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
 
 <span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
-<span class="s">Set the output volume.</span>
-<span class="s">A percentage of the maximum; 0 is silent."""</span>
+<span class="s">Set the output volume to a percentage.</span>
+<span class="s">From 0, silent, to 100, for everything the laptop plays."""</span>
 
-<span class="k">not_for</span>   <span class="o">=</span> <span class="o">[</span><span class="s">"muting and unmuting"</span><span class="o">,</span> <span class="s">"screen brightness"</span><span class="o">,</span> <span class="s">"one app's volume"</span><span class="o">,</span> <span class="s">"turning it up or down by an amount"</span><span class="o">]</span>
-<span class="k">tags</span>      <span class="o">=</span> <span class="o">[</span><span class="s">"sound"</span><span class="o">]</span>
-<span class="k">effect</span>    <span class="o">=</span> <span class="s">"write"</span>
-<span class="k">confirm</span>   <span class="o">=</span> <span class="s">"Set the volume to <span class="ph">{level}</span>?"</span>
-<span class="k">run</span>       <span class="o">=</span> <span class="s">"volume.mts"</span>
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span>
+  <span class="s">"muting or unmuting"</span><span class="o">,</span>
+  <span class="s">"turning it up or down by an amount"</span><span class="o">,</span>
+  <span class="s">"one app's volume"</span><span class="o">,</span>
+  <span class="s">"changing the screen brightness"</span><span class="o">,</span>
+  <span class="s">"asking what the volume is"</span><span class="o">,</span>
+<span class="o">]</span>
+<span class="k">tags</span> <span class="o">=</span> <span class="o">[</span><span class="s">"sound"</span><span class="o">]</span>
+<span class="k">effect</span> <span class="o">=</span> <span class="s">"write"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Set the volume to <span class="ph">{level}</span>?"</span>
+<span class="k">run</span> <span class="o">=</span> <span class="s">"volume.mts"</span>
 <span class="k">platforms</span> <span class="o">=</span> <span class="o">[</span><span class="s">"macos"</span><span class="o">]</span>
 
 <span class="t">[needs]</span>
@@ -156,15 +163,19 @@
 <span class="k">range</span> <span class="o">=</span> <span class="o">[</span><span class="n">0</span><span class="o">,</span> <span class="n">100</span><span class="o">]</span>
 
 <span class="t">[examples]</span>
-<span class="s">"set the volume to 40 percent"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"40 percent"</span> <span class="o">}</span>
-<span class="s">"volume 15"</span>                    <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"15"</span> <span class="o">}</span>
-<span class="s">"turn the sound up to 80"</span>      <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"80"</span> <span class="o">}</span>
-<span class="s">"mute the sound"</span>               <span class="o">=</span> <span class="n">false</span>
+<span class="s">"set the volume to 35 percent"</span>  <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"35 percent"</span> <span class="o">}</span>
+<span class="s">"volume 60%"</span>                    <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"60%"</span> <span class="o">}</span>
+<span class="s">"bring the sound up to seventy"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"seventy"</span> <span class="o">}</span>
+<span class="s">"drop the volume to 20 percent"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"20 percent"</span> <span class="o">}</span>
+<span class="s">"mute the sound"</span>                <span class="o">=</span> <span class="n">false</span>
 
 <span class="t">[tests]</span>
-<span class="s">"make it 100 percent loud"</span>   <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"100 percent"</span> <span class="o">}</span>
-<span class="s">"turn the volume down a bit"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="n">false</span> <span class="o">}</span>
-<span class="s">"set the brightness to 50"</span>   <span class="o">=</span> <span class="n">false</span></pre>
+<span class="s">"put the volume at 100 percent"</span>         <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"100 percent"</span> <span class="o">}</span>
+<span class="s">"make the speakers twenty five percent"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"twenty five percent"</span> <span class="o">}</span>
+<span class="s">"lower the volume a little"</span>             <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="n">false</span> <span class="o">}</span>
+<span class="s">"unmute my speakers"</span>                    <span class="o">=</span> <span class="n">false</span>
+<span class="s">"turn the brightness up to 70"</span>          <span class="o">=</span> <span class="n">false</span>
+<span class="s">"how loud is it right now"</span>              <span class="o">=</span> <span class="n">false</span></pre>
           </div>
           <div role="tabpanel" id="p2" aria-labelledby="t2" hidden>
             <div class="file">volume/volume.mts<span class="who">the collection's</span></div>
@@ -238,7 +249,7 @@
         <a href="/start.html?example=desktop#help">Each stop and its fix, on Get started →</a></p>
       <ul class="needs">
         <li class="ok"><b>macOS</b>The collection's programs are for a Mac. evoke itself also runs on Linux.</li>
-        <li class="ok"><b>Node 24 or newer</b>Eleven of the thirteen reflexes run a JavaScript file.</li>
+        <li class="ok"><b>Node 24 or newer</b>Twelve of the fourteen reflexes run a JavaScript file.</li>
         <li class="ok"><b>git</b><code>evoke add</code> fetches the collection from GitHub, at its newest version.</li>
         <li class="ok"><b>A key from TypeSafe AI</b>For Jev, the classifier that reads your sentences. TypeSafe AI bills
           each request to your key.</li>
@@ -274,7 +285,7 @@
         <li>
           <div>
             <h3>Have Node 24 or newer</h3>
-            <p>Eleven reflexes run a JavaScript file, so <code>evoke add</code> looks for <code>node</code> on your
+            <p>Twelve reflexes run a JavaScript file, so <code>evoke add</code> looks for <code>node</code> on your
               <code>PATH</code> and records where it is. Install Node 24 or newer from <a href="https://nodejs.org">nodejs.org</a>
               first. If you install it later, <code>evoke sync</code> records it.</p>
           </div>
@@ -295,6 +306,7 @@
 <span class="add">+ open        evoke-build/reflexes/open 0.1.0        read         runs open</span>
 <span class="add">+ power       evoke-build/reflexes/power 0.1.0       destructive  runs power.mts</span>
 <span class="add">+ screenshot  evoke-build/reflexes/screenshot 0.1.0  write        runs screenshot.mts</span>
+<span class="add">+ sleep       evoke-build/reflexes/sleep 0.1.0       write        runs sleep.mts</span>
 <span class="add">+ timer       evoke-build/reflexes/timer 0.1.0       write        runs timer.mts</span>
 <span class="add">+ trash       evoke-build/reflexes/trash 0.1.0       destructive  runs osascript</span>
 <span class="add">+ visit       evoke-build/reflexes/visit 0.1.0       read         runs visit.mts</span>
@@ -335,7 +347,7 @@
 <pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke try &quot;kill the wifi&quot;</span>
 <span class="own">  wifi 0.90 · none 0.06 · power 0.02 · lock 0.02</span>
 <span class="own">  state  off 0.72 · on 0.20 · unstated 0.08</span>
-<span class="own">  fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · timer 0.02 · trash 0.02 · volume 0.02</span>
+<span class="own">  fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · sleep 0.02 · timer 0.02 · trash 0.02 · volume 0.02</span>
 <span class="own">  confirm · wifi state=&quot;off&quot; · write · weakest: state 0.72</span></pre>
             </div>
           </div>

@@ -2,22 +2,30 @@ reflex = 1
 
 description = """
 Empty the trash.
-Everything in it is gone for good."""
+Everything in it is deleted for good and cannot be brought back."""
 
-not_for   = ["deleting one file", "clearing downloads or caches"]
-tags      = ["files"]
-effect    = "destructive"
-confirm   = "Empty the trash?"
-run       = ["osascript", "-e", 'tell application "Finder" to empty the trash']
+not_for = [
+  "deleting or trashing one file",
+  "putting a file back from the trash",
+  "looking inside the trash",
+  "clearing downloads or caches",
+  "running the vacuum cleaner",
+]
+tags = ["files"]
+effect = "destructive"
+confirm = "Empty the trash?"
+run = ["osascript", "-e", 'tell application "Finder" to empty the trash']
 platforms = ["macos"]
 
 [examples]
-"empty the trash"           = {}
-"empty the bin"             = {}
-"clear out the recycle bin" = {}
+"clear the trash"                         = {}
+"empty the recycle bin"                   = {}
+"delete everything in the trash for good" = {}
 
 [tests]
-"empty the trash can"  = {}
-"purge the trash"      = {}
-"delete the old draft" = false
-"clear my downloads"   = false
+"empty the wastebasket"             = {}
+"get rid of what's in the trash"    = {}
+"delete the file called draft.txt"  = false
+"put back the photo I just deleted" = false
+"vacuum the living room"            = false
+"clear my browser cache"            = false

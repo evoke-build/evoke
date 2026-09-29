@@ -36,7 +36,7 @@
 
     <div class="choose" id="route">
       <div class="routes" role="group" aria-label="Choose the route">
-        <button class="route" type="button" data-route="terminal" aria-pressed="true"><b>Try in my terminal</b><span>The evoke CLI on macOS or Linux, then thirteen ready-made reflexes on a Mac. Five lines to type, once you have git, Node and a TypeSafe AI key.</span></button>
+        <button class="route" type="button" data-route="terminal" aria-pressed="true"><b>Try in my terminal</b><span>The evoke CLI on macOS or Linux, then fourteen ready-made reflexes on a Mac. Five lines to type, once you have git, Node and a TypeSafe AI key.</span></button>
         <button class="route" type="button" data-route="sdk" aria-pressed="false"><b>Use in my app</b><span>The TypeScript SDK in a Node app, reading sentences by the same rules as the CLI. One install line and one file.</span></button>
       </div>
       <p>Each button switches every step below.</p>
@@ -49,11 +49,11 @@
         <div>
           <h2>What you need before you start</h2>
           <ul class="needs general">
-            <li class="only terminal"><b>macOS or Linux</b>evoke runs on both. The collection, thirteen ready-made reflexes
+            <li class="only terminal"><b>macOS or Linux</b>evoke runs on both. The collection, fourteen ready-made reflexes
               this route adds, is for a Mac. On Linux, install evoke in step 2, skip the collection, and start with
               <a href="/manual/author/body.html#an-argv-body">a command you already run</a>. Wrapping it takes one short
               file, with no code and no Node.</li>
-            <li class="only terminal"><b>Node 24 or newer</b>Eleven of the thirteen run a JavaScript file, so install Node
+            <li class="only terminal"><b>Node 24 or newer</b>Twelve of the fourteen run a JavaScript file, so install Node
               before you add them. The other two run a command the Mac already has, and need no Node. Neither does a
               reflex you write around a command.</li>
             <li class="only terminal"><b>git</b><code>evoke add</code> fetches reflexes from a git repository. Your own git
@@ -91,7 +91,7 @@
               your <code>PATH</code>, the script's last lines print the command that adds it.</p>
             <div class="cmd"><code>curl -fsSL https://evoke.build/install.sh | sh</code><button type="button" data-copy aria-label="Copy the install command">Copy</button></div>
             <div class="general">
-              <p><strong>Add the collection.</strong> This line fetches thirteen reflexes for a Mac from git, and pins each
+              <p><strong>Add the collection.</strong> This line fetches fourteen reflexes for a Mac from git, and pins each
                 one to its version. Install Node first, because <code>evoke add</code> records where it is.</p>
               <div class="cmd"><code>evoke add evoke-build/reflexes</code><button type="button" data-copy aria-label="Copy the add command">Copy</button></div>
               <p>It prints one row per reflex. <code>note</code>, <code>open</code> and <code>visit</code> stay inactive
@@ -154,7 +154,7 @@ console<span class="o">.</span>log<span class="o">(</span>handled<span class="o"
               <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke try</div>
 <pre data-flow="first-ten"><span class="own">  <span class="name">wifi</span> <span class="hi">0.90</span> · none 0.06 · power 0.02 · lock 0.02
   state  <span class="name">off</span> <span class="mid">0.72</span> · on 0.20 · unstated 0.08
-  fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · timer 0.02 · trash 0.02 · volume 0.02
+  fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · sleep 0.02 · timer 0.02 · trash 0.02 · volume 0.02
   <span class="name">confirm</span> · wifi state="off" · write · weakest: state <span class="mid">0.72</span></span></pre>
             </div>
             <p class="caption">Turning Wi-Fi off changes something, so <code>wifi</code> is a <code>write</code> reflex. A
@@ -310,7 +310,7 @@ console<span class="o">.</span>log<span class="o">(</span>handled<span class="o"
       <div class="qa">
         <h3><code>evoke add</code> reports that Node is missing.</h3>
         <div>
-          <p>Eleven of the collection's reflexes run JavaScript files, and <code>evoke add</code> records where Node is.
+          <p>Twelve of the collection's reflexes run JavaScript files, and <code>evoke add</code> records where Node is.
             Install Node 24 or newer, then run <code>evoke sync</code>. It records Node, and the reflexes can run.</p>
           <a class="go" href="/manual/use/installing.html#the-runtime">How evoke finds Node, in the manual →</a>
         </div>
@@ -374,7 +374,7 @@ console<span class="o">.</span>log<span class="o">(</span>handled<span class="o"
       const main = document.querySelector("main"), routes = [...document.querySelectorAll("button[data-route]")]
       const kept = document.querySelector("[data-kept]"), title = kept.querySelector("[data-kept-title]"), note = kept.querySelector("[data-kept-note]"), link = kept.querySelector("[data-kept-link]")
       const examples = {
-        desktop: { title: "Everyday Mac tasks", route: "terminal", note: "The steps below install the thirteen reflexes it shows. Then you try one of its sentences and run another.", link: "See the example →" },
+        desktop: { title: "Everyday Mac tasks", route: "terminal", note: "The steps below install the fourteen reflexes it shows. Then you try one of its sentences and run another.", link: "See the example →" },
         "contact-to-draft": { title: "Pass a result to the next step", route: "terminal", note: "These steps install evoke and set your key. The example's setup then has you write the contact reflex and add the collection's mail beside it.", setUp: "The setup makes a project in <code>~/dev</code>, has you write a contact reflex whose result holds an email address, and adds the collection's <code>mail</code> beside it. It ends with the sentence that passes the address along." },
         ops: { title: "kubectl operations in your team's words", route: "terminal", note: "These steps install evoke and set your key. The example needs no Mac collection, and its scale reflex runs kubectl with no Node.", setUp: "The setup builds the <code>scale</code> reflex from its page: a manifest around kubectl, and word lists for your services and environments. It ends with one sentence to try, then run." },
         inbox: { title: "Triage typed requests", route: "terminal", note: "These steps install evoke and set your key. The example's setup feeds a file of requests to the ops example's scale reflex.", setUp: "The setup feeds a file of three requests to the ops example's <code>scale</code> reflex: at your terminal, with no terminal attached, and from a Node app." },

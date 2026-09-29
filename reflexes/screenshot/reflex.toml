@@ -1,14 +1,19 @@
 reflex = 1
 
 description = """
-Capture the screen, a window or a selection.
-Saved to the desktop as PNG, or copied to the clipboard."""
+Take a screenshot of the screen, a window or a selection.
+Saved to the desktop as a PNG, or copied to the clipboard in place of what was there."""
 
-not_for   = ["recording the screen", "photos from the camera"]
-tags      = ["screen"]
-effect    = "write"
-confirm   = "Take a screenshot?"
-run       = "screenshot.mts"
+not_for = [
+  "recording a video of the screen",
+  "taking a photo with the camera",
+  "copying text to the clipboard",
+  "printing the page",
+]
+tags = ["screen"]
+effect = "write"
+confirm = "Take a screenshot?"
+run = "screenshot.mts"
 platforms = ["macos"]
 
 [needs]
@@ -30,12 +35,16 @@ flag = true
 path = "quoted"
 
 [examples]
-"take a screenshot"                        = { area = false }
-"screenshot this window"                   = { area = "window" }
-"grab part of the screen to the clipboard" = { area = "selection", clipboard = true }
+"grab a screenshot"                     = { area = false }
+"screenshot the window I'm in"          = { area = "window" }
+"copy a selected area of the screen"    = { area = "selection", clipboard = true }
+"capture everything on screen as a png" = { area = "screen" }
 
 [tests]
-"snap the whole screen"              = { area = "screen" }
-"screenshot a selection"             = { area = "selection" }
-"copy a screenshot to the clipboard" = { area = false, clipboard = true }
-"record my screen"                   = false
+"full screenshot please"                = { area = "screen" }
+"screenshot a single window"            = { area = "window" }
+"let me drag out an area to capture"    = { area = "selection" }
+"a screenshot straight to my clipboard" = { area = false, clipboard = true }
+"get me a screen grab"                  = { area = false }
+"start recording my screen"             = false
+"snap a photo of me with the camera"    = false

@@ -1,33 +1,42 @@
 reflex = 1
 
 description = """
-Sleep, restart or shut down the laptop.
-Apps are asked to quit first; unsaved work can block it or be lost."""
+Restart or shut down the laptop.
+Apps are asked to quit first, as the Apple menu does; unsaved work can block it or be lost for good."""
 
-not_for   = ["locking the screen", "turning the display off", "keeping the laptop awake"]
-tags      = ["power"]
-effect    = "destructive"
-confirm   = "Really {action} now?"
-run       = "power.mts"
+not_for = [
+  "putting the laptop to sleep",
+  "locking the screen",
+  "logging out",
+  "turning only the display off",
+  "restarting or quitting an app",
+  "turning Wi-Fi off and on",
+]
+tags = ["power"]
+effect = "destructive"
+confirm = "Make the laptop {action} now?"
+run = "power.mts"
 platforms = ["macos"]
 
 [needs]
-runs = ["pmset", "osascript"]
+runs = ["osascript"]
 
 [args.action]
-ask              = "Sleep, restart or shut down?"
-options.sleep    = "Suspend; wakes on the lid or a key."
+ask              = "Restart or shut down?"
 options.restart  = "Reboot."
 options.shutdown = "Power off."
 
 [examples]
-"put the laptop to sleep" = { action = "sleep" }
-"restart the computer"    = { action = "restart" }
-"shut down"               = { action = "shutdown" }
+"restart this computer" = { action = "restart" }
+"shut the laptop down"  = { action = "shutdown" }
+"reboot the macbook"    = { action = "restart" }
 
 [tests]
-"reboot"           = { action = "restart" }
-"power off"        = { action = "shutdown" }
-"go to sleep"      = { action = "sleep" }
-"lock the screen"  = false
-"restart the wifi" = false
+"give my mac a fresh reboot"          = { action = "restart" }
+"power the laptop down for the night" = { action = "shutdown" }
+"press the power button for me"       = { action = false }
+"let the mac doze off"                = false
+"sign out of this mac"                = false
+"restart the music app"               = false
+"turn off just the display"           = false
+"reset the router"                    = false

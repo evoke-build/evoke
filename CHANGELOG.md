@@ -8,6 +8,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 - A code reads in small letters too: `inc-311`, `tp1043`, `c02xk1abjg5m`.
 - A sentence that states a playbook's situation twice gets one plan: the second part folds into the first.
+- The collection: every manifest is reworded, `sleep` is a reflex of its own, and `power` restarts or shuts
+  down.
 
 ## [0.14.0] - 2026-09-28
 

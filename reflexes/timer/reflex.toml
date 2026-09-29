@@ -1,14 +1,20 @@
 reflex = 1
 
 description = """
-Count down a duration, then sound an alert.
-Seconds to hours; runs until it rings or you cancel it."""
+Set a timer that rings after a duration.
+From seconds to hours, named in quotes if you like, "like this"; it rings with a notification and a sound."""
 
-not_for   = ["keeping the laptop awake", "alarms at a time of day", "asking the time"]
-tags      = ["time"]
-effect    = "write"
-confirm   = "Start a {duration} timer?"
-run       = "timer.mts"
+not_for = [
+  "keeping the laptop awake for a while",
+  "an alarm or a reminder at a time of day",
+  "asking what time it is",
+  "stopping or cancelling a timer",
+  "a stopwatch that counts up",
+]
+tags = ["time"]
+effect = "write"
+confirm = "Start a {duration} timer?"
+run = "timer.mts"
 platforms = ["macos"]
 
 [needs]
@@ -24,13 +30,17 @@ pick     = "quoted"
 optional = true
 
 [examples]
-"set a timer for 10 minutes"        = { duration = "10 minutes" }
-"25 minute timer"                   = { duration = "25 minute" }
-'timer for 3 minutes called "eggs"' = { duration = "3 minutes", label = "eggs" }
-"count down 90 seconds"             = { duration = "90 seconds" }
+"set a timer for 12 minutes"             = { duration = "12 minutes" }
+"40 second timer"                        = { duration = "40 second" }
+'start a 20 minute timer called "pasta"' = { duration = "20 minute", label = "pasta" }
+"count down three minutes"               = { duration = "three minutes" }
 
 [tests]
-"ping me in 2 hours"                  = { duration = "2 hours" }
-'start a "laundry" timer, 45 minutes' = { duration = "45 minutes", label = "laundry" }
-"start a timer"                       = { duration = false }
-"what time is it"                     = false
+"buzz me in half an hour"            = { duration = "half an hour" }
+'a "laundry" timer for 45 minutes'   = { duration = "45 minutes", label = "laundry" }
+"give me a two hour countdown"       = { duration = "two hour", label = false }
+"I need a countdown"                 = { duration = false }
+"ring at 6:30 am"                    = false
+"cancel the pasta timer"             = false
+"hold the display on for 20 minutes" = false
+"is it past five yet"                = false

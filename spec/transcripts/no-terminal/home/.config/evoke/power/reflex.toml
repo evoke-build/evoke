@@ -7,7 +7,7 @@ Apps are asked to quit first; unsaved work can block it or be lost."""
 not_for = ["locking the screen", "turning the display off", "keeping the laptop awake"]
 tags    = ["power"]
 effect  = "destructive"
-confirm = "Really {action} now?"
+confirm = "Make the laptop {action} now?"
 run     = "power.mts"
 
 [args.action]

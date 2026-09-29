@@ -44,10 +44,10 @@
         <tbody>
           <tr><td><code>open</code></td><td>Opens one of your folders.</td><td>read</td></tr>
           <tr><td><code>volume</code></td><td>Sets the output volume.</td><td>write</td></tr>
-          <tr><td><code>power</code></td><td>Puts the laptop to sleep, restarts it or shuts it down.</td><td>destructive</td></tr>
+          <tr><td><code>power</code></td><td>Restarts the laptop or shuts it down.</td><td>destructive</td></tr>
         </tbody>
       </table></div>
-      <p class="caption">Three of the thirteen reflexes in <a href="/manual/collection.html">evoke's collection</a> for a
+      <p class="caption">Three of the fourteen reflexes in <a href="/manual/collection.html">evoke's collection</a> for a
         Mac.</p>
     </section>
 
@@ -101,7 +101,7 @@
 <span class="out">wi-fi off</span>
 <span class="p">$</span> <span class="in">evoke "restart the computer"</span>
 <span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: route <span class="hi">0.97</span>
-  Really restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
+  Make the laptop restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
 [2]</span>
 <span class="p">$</span> <span class="in">evoke "what time is it"</span>
 <span class="own">  <span class="name">none</span> <span class="hi">0.70</span> · timer 0.20 · awake 0.05 · lock 0.05
@@ -145,8 +145,8 @@
         <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="run"><span class="p">$</span> <span class="in">evoke run --json power action=restart</span>
 <span class="own">  <span class="name">power</span> action="restart" · destructive
-  Really restart now?  [y]es [n]o &gt; <span class="in">n</span></span>
-<span class="out">{"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","template":"Really restart now?"},"because":[{"type":"destructive"}],"trace":[]}</span>
+  Make the laptop restart now?  [y]es [n]o &gt; <span class="in">n</span></span>
+<span class="out">{"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","template":"Make the laptop restart now?"},"because":[{"type":"destructive"}],"trace":[]}</span>
 <span class="own">[2]</span></pre>
       </div>
       <p class="caption"><code>power</code> here comes from evoke's tests. These lines are what evoke printed in its

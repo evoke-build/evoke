@@ -155,21 +155,27 @@
 <pre><span class="k">reflex</span> <span class="o">=</span> <span class="n">1</span>
 
 <span class="k">description</span> <span class="o">=</span> <span class="s">"""</span>
-<span class="s">Start an email in your mail app.</span>
-<span class="s">To one address, with an optional subject; nothing goes out until you press send."""</span>
+<span class="s">Start an email to an address in your mail app.</span>
+<span class="s">A subject goes in quotes, "like this"; nothing is sent until you press send."""</span>
 
-<span class="k">not_for</span>   <span class="o">=</span> <span class="o">[</span><span class="s">"reading or searching mail"</span><span class="o">,</span> <span class="s">"chat and text messages"</span><span class="o">]</span>
-<span class="k">tags</span>      <span class="o">=</span> <span class="o">[</span><span class="s">"mail"</span><span class="o">]</span>
-<span class="k">effect</span>    <span class="o">=</span> <span class="s">"write"</span>
-<span class="k">confirm</span>   <span class="o">=</span> <span class="s">"Write to <span class="ph">{to}</span>?"</span>
-<span class="k">run</span>       <span class="o">=</span> <span class="s">"mail.mts"</span>
+<span class="k">not_for</span> <span class="o">=</span> <span class="o">[</span>
+  <span class="s">"checking or searching the inbox"</span><span class="o">,</span>
+  <span class="s">"replying to or forwarding an email"</span><span class="o">,</span>
+  <span class="s">"sending a text or a chat message"</span><span class="o">,</span>
+  <span class="s">"opening your webmail in the browser"</span><span class="o">,</span>
+  <span class="s">"jotting down a note"</span><span class="o">,</span>
+<span class="o">]</span>
+<span class="k">tags</span> <span class="o">=</span> <span class="o">[</span><span class="s">"mail"</span><span class="o">]</span>
+<span class="k">effect</span> <span class="o">=</span> <span class="s">"write"</span>
+<span class="k">confirm</span> <span class="o">=</span> <span class="s">"Start an email to <span class="ph">{to}</span>?"</span>
+<span class="k">run</span> <span class="o">=</span> <span class="s">"mail.mts"</span>
 <span class="k">platforms</span> <span class="o">=</span> <span class="o">[</span><span class="s">"macos"</span><span class="o">]</span>
 
 <span class="t">[needs]</span>
 <span class="k">runs</span> <span class="o">=</span> <span class="o">[</span><span class="s">"open"</span><span class="o">]</span>
 
 <span class="t">[args.to]</span>
-<span class="k">ask</span>  <span class="o">=</span> <span class="s">"To which address?"</span>
+<span class="k">ask</span>  <span class="o">=</span> <span class="s">"To which email address?"</span>
 <span class="k">pick</span> <span class="o">=</span> <span class="s">"email"</span>
 
 <span class="t">[args.subject]</span>
@@ -178,15 +184,17 @@
 <span class="k">optional</span> <span class="o">=</span> <span class="n">true</span>
 
 <span class="t">[examples]</span>
-<span class="s">"email ana@example.com"</span>                                 <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"ana@example.com"</span> <span class="o">}</span>
-<span class="s">'write to sam@example.com about "friday"'</span>               <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"sam@example.com"</span><span class="o">,</span> <span class="k">subject</span> <span class="o">=</span> <span class="s">"friday"</span> <span class="o">}</span>
-<span class="s">'new mail to team@example.com, subject "standup notes"'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"team@example.com"</span><span class="o">,</span> <span class="k">subject</span> <span class="o">=</span> <span class="s">"standup notes"</span> <span class="o">}</span>
+<span class="s">"write an email to lee@example.com"</span>                              <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"lee@example.com"</span> <span class="o">}</span>
+<span class="s">'email priya@example.com about "tuesday lunch"'</span>                  <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"priya@example.com"</span><span class="o">,</span> <span class="k">subject</span> <span class="o">=</span> <span class="s">"tuesday lunch"</span> <span class="o">}</span>
+<span class="s">'start a mail to ops@example.com with the subject "server move"'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"ops@example.com"</span><span class="o">,</span> <span class="k">subject</span> <span class="o">=</span> <span class="s">"server move"</span> <span class="o">}</span>
 
 <span class="t">[tests]</span>
-<span class="s">"send a message to jo@example.com"</span>         <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"jo@example.com"</span> <span class="o">}</span>
-<span class="s">'compose "invoice" to billing@example.com'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"billing@example.com"</span><span class="o">,</span> <span class="k">subject</span> <span class="o">=</span> <span class="s">"invoice"</span> <span class="o">}</span>
-<span class="s">"email ana"</span>                                <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="n">false</span> <span class="o">}</span>
-<span class="s">"check my inbox"</span>                           <span class="o">=</span> <span class="n">false</span></pre>
+<span class="s">"email jo@example.com"</span>                                           <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"jo@example.com"</span><span class="o">,</span> <span class="k">subject</span> <span class="o">=</span> <span class="n">false</span> <span class="o">}</span>
+<span class="s">'open a new email to billing@example.com titled "march invoice"'</span> <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="s">"billing@example.com"</span><span class="o">,</span> <span class="k">subject</span> <span class="o">=</span> <span class="s">"march invoice"</span> <span class="o">}</span>
+<span class="s">"email my landlord"</span>                                              <span class="o">=</span> <span class="o">{</span> <span class="k">to</span> <span class="o">=</span> <span class="n">false</span><span class="o">,</span> <span class="k">subject</span> <span class="o">=</span> <span class="n">false</span> <span class="o">}</span>
+<span class="s">"any new mail from the bank"</span>                                     <span class="o">=</span> <span class="n">false</span>
+<span class="s">"text ana that I'm running late"</span>                                 <span class="o">=</span> <span class="n">false</span>
+<span class="s">"reply to the last email from hr"</span>                                <span class="o">=</span> <span class="n">false</span></pre>
             <div class="file">mail/mail.mts<span class="who">the collection's</span></div>
 <pre><span class="c">// Start an email in the default mail app: a `mailto:` URL opened, with the subject when one was given; nothing is</span>
 <span class="c">// sent.</span>

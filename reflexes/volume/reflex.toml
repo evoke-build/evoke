@@ -1,14 +1,20 @@
 reflex = 1
 
 description = """
-Set the output volume.
-A percentage of the maximum; 0 is silent."""
+Set the output volume to a percentage.
+From 0, silent, to 100, for everything the laptop plays."""
 
-not_for   = ["muting and unmuting", "screen brightness", "one app's volume", "turning it up or down by an amount"]
-tags      = ["sound"]
-effect    = "write"
-confirm   = "Set the volume to {level}?"
-run       = "volume.mts"
+not_for = [
+  "muting or unmuting",
+  "turning it up or down by an amount",
+  "one app's volume",
+  "changing the screen brightness",
+  "asking what the volume is",
+]
+tags = ["sound"]
+effect = "write"
+confirm = "Set the volume to {level}?"
+run = "volume.mts"
 platforms = ["macos"]
 
 [needs]
@@ -20,12 +26,16 @@ pick  = "number"
 range = [0, 100]
 
 [examples]
-"set the volume to 40 percent" = { level = "40 percent" }
-"volume 15"                    = { level = "15" }
-"turn the sound up to 80"      = { level = "80" }
-"mute the sound"               = false
+"set the volume to 35 percent"  = { level = "35 percent" }
+"volume 60%"                    = { level = "60%" }
+"bring the sound up to seventy" = { level = "seventy" }
+"drop the volume to 20 percent" = { level = "20 percent" }
+"mute the sound"                = false
 
 [tests]
-"make it 100 percent loud"   = { level = "100 percent" }
-"turn the volume down a bit" = { level = false }
-"set the brightness to 50"   = false
+"put the volume at 100 percent"         = { level = "100 percent" }
+"make the speakers twenty five percent" = { level = "twenty five percent" }
+"lower the volume a little"             = { level = false }
+"unmute my speakers"                    = false
+"turn the brightness up to 70"          = false
+"how loud is it right now"              = false

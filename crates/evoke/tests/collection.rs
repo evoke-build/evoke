@@ -100,7 +100,7 @@ fn runtime_dir() -> PathBuf {
 #[test]
 fn every_reflex_checks_clean() {
     let dirs = reflexes();
-    assert!(dirs.len() >= 13, "only {} reflexes found", dirs.len());
+    assert!(dirs.len() >= 14, "only {} reflexes found", dirs.len());
     let home = home();
     let path = format!(
         "{}:{}:{}",

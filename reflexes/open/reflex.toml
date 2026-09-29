@@ -1,14 +1,20 @@
 reflex = 1
 
 description = """
-Open one of your folders.
-The places named in your vocabulary, in the file manager."""
+Open one of your folders in Finder.
+Only the folders in your places list; it shows the folder and changes nothing in it."""
 
-not_for   = ["websites", "applications", "files by name"]
-tags      = ["files"]
-effect    = "read"
-confirm   = "Open {place}?"
-run       = ["open", "{place}"]
+not_for = [
+  "opening a web site",
+  "launching an app",
+  "opening one file by its name",
+  "downloading a file into a folder",
+  "closing a folder or a window",
+]
+tags = ["files"]
+effect = "read"
+confirm = "Open {place}?"
+run = ["open", "{place}"]
 platforms = ["macos"]
 
 [needs]
@@ -19,12 +25,13 @@ ask   = "Which folder?"
 vocab = "places"
 
 [examples]
-"open my downloads folder"   = {}
-"show me the desktop folder" = {}
-"open the projects folder"   = {}
+"open my documents folder"      = {}
+"show me my photos folder"      = {}
+"pull up the desktop in finder" = {}
 
 [tests]
-"go to my downloads"              = {}
-"open the folder with the photos" = {}
-"open github"                     = false
-"open the terminal"               = false
+"open up the invoices folder" = {}
+"browse my music folder"      = {}
+"open the calculator app"     = false
+"open the budget spreadsheet" = false
+"go to the news site"         = false

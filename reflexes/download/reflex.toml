@@ -2,13 +2,18 @@ reflex = 1
 
 description = """
 Download a file from a URL.
-Into your downloads folder or a place you name; nothing is opened or run."""
+Saved into your Downloads folder or a folder you name, never over a file already there; nothing is opened or run."""
 
-not_for   = ["opening a page in the browser", "cloning a repository"]
-tags      = ["web", "files"]
-effect    = "write"
-confirm   = "Download {url}?"
-run       = "download.mts"
+not_for = [
+  "opening a web page in the browser",
+  "opening the Downloads folder",
+  "cloning a git repository",
+  "uploading or sending a file",
+]
+tags = ["web", "files"]
+effect = "write"
+confirm = "Download {url}?"
+run = "download.mts"
 platforms = ["macos"]
 
 [needs]
@@ -28,12 +33,14 @@ optional = true
 path = "quoted"
 
 [examples]
-"download https://example.com/report.pdf"             = { url = "https://example.com/report.pdf" }
-"fetch https://example.com/photos.zip to the desktop" = { url = "https://example.com/photos.zip" }
-"save https://example.com/notes.txt"                  = { url = "https://example.com/notes.txt" }
+"download https://example.com/files/budget.xlsx"          = { url = "https://example.com/files/budget.xlsx" }
+"save https://example.org/photos/beach.jpg to my desktop" = { url = "https://example.org/photos/beach.jpg" }
+"grab the file at https://example.net/manual.pdf"         = { url = "https://example.net/manual.pdf" }
 
 [tests]
-"grab https://example.com/data.csv into my projects folder" = { url = "https://example.com/data.csv" }
-"get https://example.com/setup.sh"                          = { url = "https://example.com/setup.sh" }
-"download the file"                                         = { url = false }
-"open https://example.com in the browser"                   = false
+"fetch https://example.org/slides/deck.key into my projects folder" = { url = "https://example.org/slides/deck.key" }
+"pull down a copy of https://example.com/tools/setup.dmg"           = { url = "https://example.com/tools/setup.dmg" }
+"download the latest invoice"                                       = { url = false }
+"show https://example.com/pricing in the browser"                   = false
+"what's sitting in my downloads"                                    = false
+"clone https://example.com/team/tool.git"                           = false

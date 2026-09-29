@@ -23,7 +23,7 @@ $ evoke "lock the screen"
 
 ## 2. Install the collection
 
-`evoke-build/reflexes` is the first-party collection: thirteen reflexes for what a Mac does at a word. Installing
+`evoke-build/reflexes` is the first-party collection: fourteen reflexes for what a Mac does at a word. Installing
 a repository installs every reflex in it.
 
 ```text
@@ -41,9 +41,11 @@ $ evoke add evoke-build/reflexes
 + open        evoke-build/reflexes/open 0.1.0        read         runs open
               needs reads {place}
 + power       evoke-build/reflexes/power 0.1.0       destructive  runs power.mts
-              needs runs pmset osascript
+              needs runs osascript
 + screenshot  evoke-build/reflexes/screenshot 0.1.0  write        runs screenshot.mts
               needs writes ~/Desktop · runs screencapture
++ sleep       evoke-build/reflexes/sleep 0.1.0       write        runs sleep.mts
+              needs runs pmset
 + timer       evoke-build/reflexes/timer 0.1.0       write        runs timer.mts
               needs runs osascript
 + trash       evoke-build/reflexes/trash 0.1.0       destructive  runs osascript
@@ -94,7 +96,7 @@ A destructive one always confirms, however sure:
 ```text
 $ evoke "restart the computer"
   power action="restart" · destructive · weakest: route 0.97
-  Really restart now?  [y]es [n]o [t]each > n
+  Make the laptop restart now?  [y]es [n]o [t]each > n
 [2]
 ```
 
@@ -152,7 +154,7 @@ installed, or one reflex as it is used, with `+` next to every line that is your
 $ evoke try "kill the wifi"
   wifi 0.90 · none 0.06 · power 0.02 · lock 0.02
   state  off 0.72 · on 0.20 · unstated 0.08
-  fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · timer 0.02 · trash 0.02 · volume 0.02
+  fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · sleep 0.02 · timer 0.02 · trash 0.02 · volume 0.02
   confirm · wifi state="off" · write · weakest: state 0.72
 ```
 
