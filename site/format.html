@@ -517,8 +517,9 @@ Ceiling and lamp lights only."""</span>
           exporting a function by default. It is self-contained: web APIs and <code>node:</code> builtins are there,
           anything else is bundled into the file. It receives <code>(args, { input, config, signal })</code>:
           per argument, an option's key, a word's value or the word, a pick's value, or <code>true</code> for a flag;
-          the sentence as typed; each config key as a string, secrets resolved for this run only; and a signal that is
-          aborted at the deadline, on a decline, and on <code>SIGTERM</code>. It returns a string, or
+          the person's own words, or the step's words when a plan runs the reflex; each config key as a string,
+          secrets resolved for this run only; and a signal that is aborted at the deadline, on <code>Ctrl-C</code> or
+          <code>SIGTERM</code>, and when an application cancels the run. It returns a string, or
           <code>{ text, data? }</code>. Throwing is failure.</p>
       </div>
       <div class="clause">
@@ -529,7 +530,7 @@ Ceiling and lamp lights only."""</span>
           <li><strong>A word's value or a plain setting that begins with <code>~/</code></strong> reaches the body as a path under the home, so the value, the argv and the declaration name one path.</li>
           <li><strong>The deadline is 30 seconds per decision</strong>, shared with the classifier's answer. Anything that must outlive the run detaches and returns at once.</li>
           <li><strong>A body's own stdout goes to stderr</strong>, so a stray line never corrupts a result. The result is what the function returns.</li>
-          <li><strong>The runtime starts once the decision is made</strong>, in the body's directory. <strong>The process group is ended</strong> on timeout or decline: <code>SIGTERM</code>, a second's grace, then <code>SIGKILL</code>. A body's life is bounded by its caller's.</li>
+          <li><strong>The runtime starts once the decision is made</strong>, in the body's directory. <strong>The process group is ended</strong> at the deadline and on <code>Ctrl-C</code>: <code>SIGTERM</code>, a short grace, then <code>SIGKILL</code>. A body's life is bounded by its caller's.</li>
           <li><strong>An argv runs directly, never through a shell.</strong> The program is a name on <code>PATH</code> or an absolute path, never a path relative to wherever the tool runs.</li>
         </ul>
       </div>
