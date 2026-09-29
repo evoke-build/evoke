@@ -72,6 +72,7 @@
           "ask": "To which day?",
           "options": {
             "20-28": "tomorrow",
+            "none": "The request says it, and none of these is it.",
             "unstated": "The request does not say."
           },
           "otherwise": "unstated"
@@ -81,6 +82,7 @@
           "ask": "At what time?",
           "options": {
             "32-35": "3pm",
+            "none": "The request says it, and none of these is it.",
             "unstated": "The request does not say."
           },
           "otherwise": "unstated"
@@ -90,6 +92,15 @@
           "ask": "Does `rollback` do the specific thing the request asks for?",
           "yes": "Roll a service back from a release to the one before it.\nEverywhere at once.",
           "no": "Something else, such as: listing deploys; moving a meeting."
+        },
+        "rollback.release": {
+          "type": "choice",
+          "ask": "From which release?",
+          "options": {
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
         },
         "fits.calendar": {
           "type": "yesno",
@@ -103,6 +114,7 @@
           "options": {
             "tomorrow": "Tomorrow, the day after today.",
             "monday": "Monday, the first day of the week.",
+            "none": "The request names one that is not in this list.",
             "unstated": "The request does not say."
           },
           "otherwise": "unstated"
@@ -119,6 +131,7 @@
           "options": {
             "checkout": "The checkout service.",
             "payments": "The payments service.",
+            "none": "The request names one that is not in this list.",
             "unstated": "The request does not say."
           },
           "otherwise": "unstated"

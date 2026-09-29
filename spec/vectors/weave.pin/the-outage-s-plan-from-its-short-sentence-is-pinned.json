@@ -542,6 +542,11 @@
                 "p": 0.9
               },
               {
+                "question": "rollback.release",
+                "top": "unstated",
+                "p": 1
+              },
+              {
                 "question": "rollback.region",
                 "top": "eu-west",
                 "p": 0.9
@@ -1004,6 +1009,9 @@
             "checkout": 0.05,
             "payments": 0.05
           },
+          "rollback.release": {
+            "unstated": 1
+          },
           "rollback.region": {
             "unstated": 0.9,
             "eu-west": 0.05,
@@ -1022,6 +1030,9 @@
           },
           "fits.incident": {
             "yes": 0.02
+          },
+          "incident.number": {
+            "unstated": 1
           },
           "fits.postmortem": {
             "yes": 0.02
@@ -1108,6 +1119,9 @@
             "checkout": 0.05,
             "payments": 0.05
           },
+          "rollback.release": {
+            "unstated": 1
+          },
           "rollback.region": {
             "unstated": 0.9,
             "eu-west": 0.05,
@@ -1126,6 +1140,9 @@
           },
           "fits.incident": {
             "yes": 0.02
+          },
+          "incident.number": {
+            "unstated": 1
           },
           "fits.postmortem": {
             "yes": 0.02
@@ -1214,6 +1231,9 @@
             "checkout": 0.05,
             "payments": 0.05
           },
+          "rollback.release": {
+            "unstated": 1
+          },
           "rollback.region": {
             "unstated": 0.9,
             "eu-west": 0.05,
@@ -1232,6 +1252,9 @@
           },
           "fits.incident": {
             "yes": 0.02
+          },
+          "incident.number": {
+            "unstated": 1
           },
           "fits.postmortem": {
             "yes": 0.02
@@ -1320,6 +1343,9 @@
             "checkout": 0.05,
             "payments": 0.05
           },
+          "rollback.release": {
+            "unstated": 1
+          },
           "rollback.region": {
             "unstated": 0.9,
             "eu-west": 0.05,
@@ -1338,6 +1364,9 @@
           },
           "fits.incident": {
             "yes": 0.02
+          },
+          "incident.number": {
+            "unstated": 1
           },
           "fits.postmortem": {
             "yes": 0.02
@@ -1428,6 +1457,9 @@
             "checkout": 0.05,
             "payments": 0.05
           },
+          "rollback.release": {
+            "unstated": 1
+          },
           "rollback.region": {
             "unstated": 0.9,
             "eu-west": 0.05,
@@ -1446,6 +1478,9 @@
           },
           "fits.incident": {
             "yes": 0.02
+          },
+          "incident.number": {
+            "unstated": 1
           },
           "fits.postmortem": {
             "yes": 0.02
@@ -1535,6 +1570,9 @@
             "checkout": 0.9,
             "unstated": 0.1
           },
+          "rollback.release": {
+            "unstated": 1
+          },
           "rollback.region": {
             "eu-west": 0.9,
             "unstated": 0.1
@@ -1552,6 +1590,9 @@
           },
           "fits.incident": {
             "yes": 0.02
+          },
+          "incident.number": {
+            "unstated": 1
           },
           "fits.postmortem": {
             "yes": 0.02
@@ -1642,6 +1683,9 @@
             "checkout": 0.05,
             "payments": 0.05
           },
+          "rollback.release": {
+            "unstated": 1
+          },
           "rollback.region": {
             "unstated": 0.9,
             "eu-west": 0.05,
@@ -1659,6 +1703,9 @@
           },
           "fits.incident": {
             "yes": 0.02
+          },
+          "incident.number": {
+            "unstated": 1
           },
           "fits.postmortem": {
             "yes": 0.02
@@ -1749,6 +1796,9 @@
             "checkout": 0.05,
             "payments": 0.05
           },
+          "rollback.release": {
+            "unstated": 1
+          },
           "rollback.region": {
             "unstated": 0.9,
             "eu-west": 0.05,
@@ -1767,6 +1817,9 @@
           },
           "fits.incident": {
             "yes": 0.02
+          },
+          "incident.number": {
+            "unstated": 1
           },
           "fits.postmortem": {
             "yes": 0.02

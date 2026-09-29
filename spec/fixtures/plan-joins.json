@@ -265,6 +265,7 @@
       "options": {
         "checkout": "The checkout service: cart, payment and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -281,6 +282,7 @@
       "options": {
         "checkout": "The checkout service: cart, payment and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -297,6 +299,7 @@
       "options": {
         "checkout": "The checkout service: cart, payment and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"

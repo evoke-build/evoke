@@ -63,6 +63,16 @@
       "options": {
         "21-29": "tomorrow",
         "34-40": "monday",
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "meeting.time": {
+      "type": "choice",
+      "ask": "At what time?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -72,6 +82,15 @@
       "ask": "Does `rollback` do the specific thing the request asks for?",
       "yes": "Roll a service back from a release to the one before it.\nEverywhere at once.",
       "no": "Something else, such as: listing deploys; moving a meeting."
+    },
+    "rollback.release": {
+      "type": "choice",
+      "ask": "From which release?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
     },
     "fits.calendar": {
       "type": "yesno",
@@ -85,6 +104,7 @@
       "options": {
         "tomorrow": "Tomorrow, the day after today.",
         "monday": "Monday, the first day of the week.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -101,6 +121,7 @@
       "options": {
         "checkout": "The checkout service.",
         "payments": "The payments service.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -135,5 +156,27 @@
         }
       }
     }
-  ]
+  ],
+  "listed": {
+    "calendar.day": [
+      {
+        "key": "tomorrow",
+        "span": {
+          "start": 21,
+          "end": 29,
+          "text": "tomorrow"
+        },
+        "how": "same"
+      },
+      {
+        "key": "monday",
+        "span": {
+          "start": 34,
+          "end": 40,
+          "text": "monday"
+        },
+        "how": "same"
+      }
+    ]
+  }
 }

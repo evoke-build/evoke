@@ -4,33 +4,36 @@
       "$ref": "fixtures/plan.json"
     },
     "request": {
-      "$ref": "fixtures/request-den-off.json"
+      "$ref": "fixtures/request-dim-150.json"
     },
     "raw": {
       "route": {
-        "lights": 0.91,
-        "timer": 0.03,
+        "lights": 0.92,
+        "timer": 0.02,
         "none": 0.06
       },
       "fits.lights": {
         "yes": 0.7
       },
-      "lights.room": {
-        "den": 0.1,
-        "office": 0.8,
-        "unstated": 0.1
+      "fits.timer": {
+        "yes": 0.05
       },
-      "lights.state": {
-        "on": 0.05,
-        "off": 0.88,
-        "dim": 0.05,
+      "lights.room": {
+        "den": 0.9,
+        "office": 0.05,
+        "none": 0.03,
         "unstated": 0.02
       },
-      "fits.timer": {
-        "yes": 0.1
+      "lights.state": {
+        "on": 0.02,
+        "off": 0.02,
+        "dim": 0.94,
+        "unstated": 0.02
       },
       "lights.brightness": {
-        "unstated": 1
+        "22-33": 0.1,
+        "none": 0.85,
+        "unstated": 0.05
       },
       "timer.duration": {
         "unstated": 1
@@ -45,35 +48,35 @@
       "ranking": [
         {
           "reflex": "lights",
-          "route": 0.91,
+          "route": 0.92,
           "fits": 0.7
         },
         {
           "reflex": "timer",
-          "route": 0.03,
-          "fits": 0.1
+          "route": 0.02,
+          "fits": 0.05
         }
       ],
       "judgments": [
         {
           "question": "route",
           "top": "lights",
-          "p": 0.91
+          "p": 0.92
         },
         {
           "question": "lights.room",
-          "top": "office",
-          "p": 0.8
+          "top": "den",
+          "p": 0.9
         },
         {
           "question": "lights.state",
-          "top": "off",
-          "p": 0.88
+          "top": "dim",
+          "p": 0.94
         },
         {
           "question": "lights.brightness",
-          "top": "unstated",
-          "p": 1
+          "top": "none",
+          "p": 0.85
         }
       ],
       "winner": {
@@ -81,20 +84,31 @@
         "args": {
           "room": {
             "type": "word",
-            "word": "office",
-            "value": "group-7"
+            "word": "den"
           },
           "state": {
             "type": "option",
-            "key": "off"
+            "key": "dim"
           }
         },
-        "missing": [],
+        "missing": [
+          {
+            "arg": "brightness",
+            "ask": "How bright, in percent?",
+            "because": {
+              "type": "not_offered"
+            },
+            "choices": {
+              "type": "pick",
+              "pick": "number"
+            }
+          }
+        ],
         "unconsumed": [],
         "runner_up": {
           "reflex": "timer",
-          "route": 0.03,
-          "fits": 0.1
+          "route": 0.02,
+          "fits": 0.05
         }
       }
     }

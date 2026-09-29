@@ -524,6 +524,11 @@
               "p": 0.9
             },
             {
+              "question": "rollback.release",
+              "top": "unstated",
+              "p": 1
+            },
+            {
               "question": "rollback.region",
               "top": "eu-west",
               "p": 0.9
@@ -938,34 +943,34 @@
     "read": 0.6,
     "write": 0.8
   },
-  "set": "h1:2605baa60e0ce6097645ffffa0a6a107d93da822a83f57b2a08454448a4c335d",
+  "set": "h1:c0b70ed3cdec399934cfd66d9c8971ca978eb94026302001eaf09d538bb2c0ea",
   "reflexes": {
     "errors": {
-      "item": "h1:9ec5fd48bff81672e066bebc4767bfe471ddc0e922aac3d5b9099b85259b50bf",
+      "item": "h1:1f9acbfabf353d8c96490f7e353815438f74a439fc043941cc2ebade08dfd2fe",
       "path": "./errors"
     },
     "deploys": {
-      "item": "h1:230c0f4e7088da2269b01e4c386b6f4d9e7c9d435cadcdf87ba940f4f397296c",
+      "item": "h1:f6675d4fde36f34ad00a5b50e7f5b305c9c08bae66e12de2509f3cad4fe1220d",
       "path": "./deploys"
     },
     "logs": {
-      "item": "h1:041127b10435a5f49bd1f310444496aaa50283c5ef4d3d8d818a74e19bd102e0",
+      "item": "h1:4f87e7099fa50e5368df62bc2bef4c72b0b81c6b05e0c9f1700c5993346834e4",
       "path": "./logs"
     },
     "suspect": {
-      "item": "h1:012bf14a5896fd65edd22c2630ff8600e1d0ddb140cd89a4faebc962c2ddaa28",
+      "item": "h1:23e0e0cf0d98b30717382c6a097a48bd69f22f5fe08137305651315650e35c87",
       "path": "./suspect"
     },
     "rollback": {
-      "item": "h1:4e6d545710cc187e294c65276228763b5db5af1fa2953d1a0594eff063b8be33",
+      "item": "h1:6bb2cc26f1a914608666eac1774bda6a59a8e25e2a17b1b60c7ada6877965546",
       "path": "./rollback"
     },
     "post": {
-      "item": "h1:5a25c067689593e1789a0ab735365a4df5ede04ca7fec07355de1f2d0899621b",
+      "item": "h1:f4cfec78db564c27fdab1b32bbfc886e51a07b36c1bb637b448c21cdc5bdf7b7",
       "path": "./post"
     },
     "incidents": {
-      "item": "h1:22f437433b406fab5a821f4ac73eb7bd8114b998cd2fc5c0dbdade7193a7f32b",
+      "item": "h1:7db04868e04c36fea22c86f75fce444f43342b714a7c7230be93b3bf941dfcea",
       "path": "./incidents"
     },
     "incident": {
@@ -973,15 +978,15 @@
       "path": "./incident"
     },
     "postmortem": {
-      "item": "h1:11c434d7d24dab8798c9fafdd207c305e982e510e70d219b31270eb24059a867",
+      "item": "h1:1c82328f910d6758ea81ad829583efa52b91ab95c7af742f31cf8f844554325d",
       "path": "./postmortem"
     },
     "status": {
-      "item": "h1:524ee57a73a76204b39b63dc5bc44f6d76cfacd12bf4da0a1e879578591fb59a",
+      "item": "h1:e5a4f9d5e9d48f8e712d6af96fb33683bb3d353c2a42b5068a50802fb968a738",
       "path": "./status"
     },
     "outage": {
-      "item": "h1:45436c71bcefe3fcb856ae0482c20ca7a4055c93446d9164d62441c336abda19",
+      "item": "h1:a2a2ddb2b323259d1af09e01e6613b1914914ae87dbba327dc9142062f20e266",
       "path": "./outage"
     }
   },
@@ -1049,6 +1054,9 @@
           "checkout": 0.05,
           "payments": 0.05
         },
+        "rollback.release": {
+          "unstated": 1
+        },
         "rollback.region": {
           "unstated": 0.9,
           "eu-west": 0.05,
@@ -1067,6 +1075,9 @@
         },
         "fits.incident": {
           "yes": 0.02
+        },
+        "incident.number": {
+          "unstated": 1
         },
         "fits.postmortem": {
           "yes": 0.02
@@ -1153,6 +1164,9 @@
           "checkout": 0.05,
           "payments": 0.05
         },
+        "rollback.release": {
+          "unstated": 1
+        },
         "rollback.region": {
           "unstated": 0.9,
           "eu-west": 0.05,
@@ -1171,6 +1185,9 @@
         },
         "fits.incident": {
           "yes": 0.02
+        },
+        "incident.number": {
+          "unstated": 1
         },
         "fits.postmortem": {
           "yes": 0.02
@@ -1259,6 +1276,9 @@
           "checkout": 0.05,
           "payments": 0.05
         },
+        "rollback.release": {
+          "unstated": 1
+        },
         "rollback.region": {
           "unstated": 0.9,
           "eu-west": 0.05,
@@ -1277,6 +1297,9 @@
         },
         "fits.incident": {
           "yes": 0.02
+        },
+        "incident.number": {
+          "unstated": 1
         },
         "fits.postmortem": {
           "yes": 0.02
@@ -1365,6 +1388,9 @@
           "checkout": 0.05,
           "payments": 0.05
         },
+        "rollback.release": {
+          "unstated": 1
+        },
         "rollback.region": {
           "unstated": 0.9,
           "eu-west": 0.05,
@@ -1383,6 +1409,9 @@
         },
         "fits.incident": {
           "yes": 0.02
+        },
+        "incident.number": {
+          "unstated": 1
         },
         "fits.postmortem": {
           "yes": 0.02
@@ -1473,6 +1502,9 @@
           "checkout": 0.05,
           "payments": 0.05
         },
+        "rollback.release": {
+          "unstated": 1
+        },
         "rollback.region": {
           "unstated": 0.9,
           "eu-west": 0.05,
@@ -1491,6 +1523,9 @@
         },
         "fits.incident": {
           "yes": 0.02
+        },
+        "incident.number": {
+          "unstated": 1
         },
         "fits.postmortem": {
           "yes": 0.02
@@ -1580,6 +1615,9 @@
           "checkout": 0.9,
           "unstated": 0.1
         },
+        "rollback.release": {
+          "unstated": 1
+        },
         "rollback.region": {
           "eu-west": 0.9,
           "unstated": 0.1
@@ -1597,6 +1635,9 @@
         },
         "fits.incident": {
           "yes": 0.02
+        },
+        "incident.number": {
+          "unstated": 1
         },
         "fits.postmortem": {
           "yes": 0.02
@@ -1687,6 +1728,9 @@
           "checkout": 0.05,
           "payments": 0.05
         },
+        "rollback.release": {
+          "unstated": 1
+        },
         "rollback.region": {
           "unstated": 0.9,
           "eu-west": 0.05,
@@ -1704,6 +1748,9 @@
         },
         "fits.incident": {
           "yes": 0.02
+        },
+        "incident.number": {
+          "unstated": 1
         },
         "fits.postmortem": {
           "yes": 0.02
@@ -1794,6 +1841,9 @@
           "checkout": 0.05,
           "payments": 0.05
         },
+        "rollback.release": {
+          "unstated": 1
+        },
         "rollback.region": {
           "unstated": 0.9,
           "eu-west": 0.05,
@@ -1812,6 +1862,9 @@
         },
         "fits.incident": {
           "yes": 0.02
+        },
+        "incident.number": {
+          "unstated": 1
         },
         "fits.postmortem": {
           "yes": 0.02

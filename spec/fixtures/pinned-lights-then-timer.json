@@ -45,6 +45,11 @@
               "question": "lights.state",
               "top": "off",
               "p": 0.9
+            },
+            {
+              "question": "lights.brightness",
+              "top": "unstated",
+              "p": 1
             }
           ],
           "runner_up": {
@@ -122,6 +127,11 @@
               "question": "timer.duration",
               "top": "8-17",
               "p": 0.9
+            },
+            {
+              "question": "timer.label",
+              "top": "unstated",
+              "p": 1
             }
           ],
           "runner_up": {
@@ -252,11 +262,23 @@
           "off": 0.9,
           "unstated": 0.1
         },
+        "lights.brightness": {
+          "unstated": 1
+        },
         "fits.timer": {
           "yes": 0.1
         },
+        "timer.duration": {
+          "unstated": 1
+        },
+        "timer.label": {
+          "unstated": 1
+        },
         "fits.volume": {
           "yes": 0.02
+        },
+        "volume.level": {
+          "unstated": 1
         },
         "fits.contact": {
           "yes": 0.02
@@ -268,6 +290,12 @@
         },
         "fits.mail": {
           "yes": 0.02
+        },
+        "mail.to": {
+          "unstated": 1
+        },
+        "mail.subject": {
+          "unstated": 1
         }
       }
     },
@@ -292,6 +320,9 @@
           "on": 0.05,
           "off": 0.05
         },
+        "lights.brightness": {
+          "unstated": 1
+        },
         "fits.timer": {
           "yes": 0.8
         },
@@ -299,8 +330,14 @@
           "8-17": 0.9,
           "unstated": 0.1
         },
+        "timer.label": {
+          "unstated": 1
+        },
         "fits.volume": {
           "yes": 0.02
+        },
+        "volume.level": {
+          "unstated": 1
         },
         "fits.contact": {
           "yes": 0.02
@@ -312,6 +349,12 @@
         },
         "fits.mail": {
           "yes": 0.02
+        },
+        "mail.to": {
+          "unstated": 1
+        },
+        "mail.subject": {
+          "unstated": 1
         }
       }
     }

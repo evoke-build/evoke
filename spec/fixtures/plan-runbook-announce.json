@@ -225,6 +225,7 @@
       "options": {
         "#ops": "The operations team's channel, where a failover is announced.",
         "#db": "The database team's channel.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"

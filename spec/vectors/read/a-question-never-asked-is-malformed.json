@@ -30,7 +30,16 @@
         "yes": 0.1
       },
       "lights.colour": {
-        "warm": 1.0
+        "warm": 1
+      },
+      "lights.brightness": {
+        "unstated": 1
+      },
+      "timer.duration": {
+        "unstated": 1
+      },
+      "timer.label": {
+        "unstated": 1
       }
     }
   },

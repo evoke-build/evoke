@@ -1,5 +1,4 @@
 # What the replay adapter answers, keyed by utterance identity (spec/README.md): the first ten minutes over the
-# collection, installed from its own directories, every question the plan asks at each step.
 id = "replay"
 
 [gate]
@@ -26,7 +25,17 @@ route                  = { volume = 0.93, awake = 0.01, timer = 0.01, none = 0.0
 "screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
 "screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
 "wifi.state"           = { unstated = 0.9, on = 0.05, off = 0.05 }
-"volume.level"         = { "18-28" = 0.95, unstated = 0.05 }
+"volume.level"         = { 18-28 = 0.95, unstated = 0.05 }
+"awake.duration"       = { unstated = 1.0 }
+"download.url"         = { unstated = 1.0 }
+"mail.to"              = { unstated = 1.0 }
+"mail.subject"         = { unstated = 1.0 }
+"timer.duration"       = { unstated = 1.0 }
+"timer.label"          = { unstated = 1.0 }
+"download.to"          = { unstated = 1.0 }
+"open.place"           = { unstated = 1.0 }
+"fits.note"            = { yes = 0.02 }
+"note.text"            = { unstated = 1.0 }
 
 [answers."kill the wifi"]
 route                  = { wifi = 0.9, power = 0.02, lock = 0.02, none = 0.06 }
@@ -46,10 +55,17 @@ route                  = { wifi = 0.9, power = 0.02, lock = 0.02, none = 0.06 }
 "screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
 "screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
 "wifi.state"           = { off = 0.72, on = 0.2, unstated = 0.08 }
-# Once places has a word, open is active and download's optional `to` has a question: the flow's last step asks.
-"download.to" = { unstated = 0.97, desktop = 0.03 }
-"open.place"  = { unstated = 0.96, desktop = 0.04 }
-"fits.note"   = { yes = 0.02 }
+"download.to"          = { unstated = 0.97, desktop = 0.03 }
+"open.place"           = { unstated = 0.96, desktop = 0.04 }
+"fits.note"            = { yes = 0.02 }
+"awake.duration"       = { unstated = 1.0 }
+"download.url"         = { unstated = 1.0 }
+"mail.to"              = { unstated = 1.0 }
+"mail.subject"         = { unstated = 1.0 }
+"timer.duration"       = { unstated = 1.0 }
+"timer.label"          = { unstated = 1.0 }
+"volume.level"         = { unstated = 1.0 }
+"note.text"            = { unstated = 1.0 }
 
 [answers."restart the computer"]
 route                  = { power = 0.97, wifi = 0.01, none = 0.02 }
@@ -69,6 +85,17 @@ route                  = { power = 0.97, wifi = 0.01, none = 0.02 }
 "screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
 "screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
 "wifi.state"           = { unstated = 0.9, on = 0.05, off = 0.05 }
+"awake.duration"       = { unstated = 1.0 }
+"download.url"         = { unstated = 1.0 }
+"mail.to"              = { unstated = 1.0 }
+"mail.subject"         = { unstated = 1.0 }
+"timer.duration"       = { unstated = 1.0 }
+"timer.label"          = { unstated = 1.0 }
+"volume.level"         = { unstated = 1.0 }
+"download.to"          = { unstated = 1.0 }
+"open.place"           = { unstated = 1.0 }
+"fits.note"            = { yes = 0.02 }
+"note.text"            = { unstated = 1.0 }
 
 [answers."what time is it"]
 route                  = { none = 0.7, timer = 0.2, awake = 0.05, lock = 0.05 }
@@ -88,6 +115,17 @@ route                  = { none = 0.7, timer = 0.2, awake = 0.05, lock = 0.05 }
 "screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
 "screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
 "wifi.state"           = { unstated = 0.9, on = 0.05, off = 0.05 }
+"awake.duration"       = { unstated = 1.0 }
+"download.url"         = { unstated = 1.0 }
+"mail.to"              = { unstated = 1.0 }
+"mail.subject"         = { unstated = 1.0 }
+"timer.duration"       = { unstated = 1.0 }
+"timer.label"          = { unstated = 1.0 }
+"volume.level"         = { unstated = 1.0 }
+"download.to"          = { unstated = 1.0 }
+"open.place"           = { unstated = 1.0 }
+"fits.note"            = { yes = 0.02 }
+"note.text"            = { unstated = 1.0 }
 
 [answers."open my desktop folder"]
 route                  = { open = 0.91, download = 0.02, lock = 0.01, none = 0.06 }
@@ -109,14 +147,22 @@ route                  = { open = 0.91, download = 0.02, lock = 0.01, none = 0.0
 "screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
 "screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
 "wifi.state"           = { unstated = 0.9, on = 0.05, off = 0.05 }
+"awake.duration"       = { unstated = 1.0 }
+"download.url"         = { unstated = 1.0 }
+"mail.to"              = { unstated = 1.0 }
+"mail.subject"         = { unstated = 1.0 }
+"timer.duration"       = { unstated = 1.0 }
+"timer.label"          = { unstated = 1.0 }
+"volume.level"         = { unstated = 1.0 }
+"fits.note"            = { yes = 0.02 }
+"note.text"            = { unstated = 1.0 }
 
-# One sentence over two collection reflexes, tried at the end: the plan takes note's text from download's path.
 [answers."download https://evoke.build/llms.txt and note it"]
 "weave.split_0" = { yes = 0.9 }
 
 [answers."download https://evoke.build/llms.txt"]
 route                  = { download = 0.97, open = 0.01, none = 0.02 }
-"download.url"         = { "9-37" = 0.99, unstated = 0.01 }
+"download.url"         = { 9-37 = 0.99, unstated = 0.01 }
 "download.to"          = { unstated = 0.96, desktop = 0.04 }
 "fits.awake"           = { yes = 0.02 }
 "fits.download"        = { yes = 0.8 }
@@ -136,6 +182,13 @@ route                  = { download = 0.97, open = 0.01, none = 0.02 }
 "screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
 "screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
 "wifi.state"           = { unstated = 0.9, on = 0.05, off = 0.05 }
+"awake.duration"       = { unstated = 1.0 }
+"mail.to"              = { unstated = 1.0 }
+"mail.subject"         = { unstated = 1.0 }
+"timer.duration"       = { unstated = 1.0 }
+"timer.label"          = { unstated = 1.0 }
+"volume.level"         = { unstated = 1.0 }
+"note.text"            = { unstated = 1.0 }
 
 [answers."note it"]
 route                  = { note = 0.93, download = 0.02, none = 0.05 }
@@ -158,3 +211,11 @@ route                  = { note = 0.93, download = 0.02, none = 0.05 }
 "screenshot.area"      = { unstated = 0.94, screen = 0.02, window = 0.02, selection = 0.02 }
 "screenshot.clipboard" = { no = 0.9, yes = 0.05, unstated = 0.05 }
 "wifi.state"           = { unstated = 0.9, on = 0.05, off = 0.05 }
+"awake.duration"       = { unstated = 1.0 }
+"download.url"         = { unstated = 1.0 }
+"mail.to"              = { unstated = 1.0 }
+"mail.subject"         = { unstated = 1.0 }
+"note.text"            = { unstated = 1.0 }
+"timer.duration"       = { unstated = 1.0 }
+"timer.label"          = { unstated = 1.0 }
+"volume.level"         = { unstated = 1.0 }

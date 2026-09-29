@@ -40,7 +40,9 @@
               "error rate of payments in eu-west": {},
               "is search throwing errors": {},
               "how many checkout requests are erroring": {},
-              "show me the 5xx on search in us-east": {}
+              "show me the 5xx on search in us-east": {},
+              "what is the error rate of checkout": {},
+              "is search failing in us east": {}
             },
             "tests": {
               "how flaky is payments right now": {},
@@ -102,7 +104,9 @@
               "list the deploys of payments": {},
               "recent releases of search in us-east": {},
               "who shipped to payments in eu-west": {},
-              "what went out on checkout": {}
+              "what went out on checkout": {},
+              "who released payments last": {},
+              "show the deploys of search in us east": {}
             },
             "tests": {
               "show the deploy log for search": {},
@@ -156,7 +160,9 @@
               "search the payments logs in eu-west": {},
               "what do the search logs say": {},
               "what is checkout logging in us-east": {},
-              "top log errors for payments": {}
+              "top log errors for payments": {},
+              "search the logs of checkout": {},
+              "what errors are in the payments logs in eu west": {}
             },
             "tests": {
               "dig through the search logs": {},
@@ -202,7 +208,8 @@
               "find the suspect": {},
               "which deploy broke it": {},
               "find the release behind the outage": {},
-              "what release caused this": {}
+              "what release caused this": {},
+              "find the release to blame": {}
             },
             "tests": {
               "pin down the bad release": {},
@@ -274,6 +281,12 @@
               },
               "roll back the last payments deploy": {
                 "release": false
+              },
+              "roll back 4.12.0": {
+                "release": "4.12.0"
+              },
+              "revert release 4.12.0 of payments": {
+                "release": "4.12.0"
               }
             },
             "tests": {
@@ -335,7 +348,8 @@
               "tell #ops the deploy is done": {},
               "let #incident know it is fixed": {},
               "drop a line in #ops about payments": {},
-              "give #incident an update on search": {}
+              "give #incident an update on search": {},
+              "write in the incident channel that we are on it": {}
             },
             "tests": {
               "share in #ops that search recovered": {},
@@ -382,7 +396,8 @@
               "list the open incidents": {},
               "what incidents are open": {},
               "which incidents are still going": {},
-              "show me active incidents": {}
+              "show me active incidents": {},
+              "any incidents right now": {}
             },
             "tests": {
               "how many incidents are ongoing": {},
@@ -489,7 +504,8 @@
               "draft the postmortem": {},
               "get the postmortem written": {},
               "start a postmortem for it": {},
-              "write the incident review": {}
+              "write the incident review": {},
+              "write the postmortem for it": {}
             },
             "tests": {
               "put together a post-incident report": {},
@@ -558,6 +574,12 @@
                 "state": "identified"
               },
               "put payments in monitoring on the status page": {
+                "state": "monitoring"
+              },
+              "mark search as investigating": {
+                "state": "investigating"
+              },
+              "tell customers we are monitoring search": {
                 "state": "monitoring"
               }
             },

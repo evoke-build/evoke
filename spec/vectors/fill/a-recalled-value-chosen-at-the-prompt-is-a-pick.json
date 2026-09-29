@@ -18,6 +18,11 @@
           "question": "route",
           "top": "rollback",
           "p": 0.95
+        },
+        {
+          "question": "rollback.release",
+          "top": "unstated",
+          "p": 1
         }
       ],
       "runner_up": {

@@ -331,6 +331,11 @@
                 "question": "route",
                 "top": "incident",
                 "p": 0.9
+              },
+              {
+                "question": "incident.number",
+                "top": "unstated",
+                "p": 1
               }
             ],
             "runner_up": {
@@ -776,6 +781,11 @@
                   "question": "route",
                   "top": "incident",
                   "p": 0.9
+                },
+                {
+                  "question": "incident.number",
+                  "top": "unstated",
+                  "p": 1
                 }
               ],
               "runner_up": {

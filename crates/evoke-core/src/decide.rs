@@ -17,7 +17,9 @@ use crate::manifest::{
     self, Argument, Effect, Kind, Pick, Piece, Range, Recognizer, Source, Yield,
 };
 use crate::name::{self, ArgName, FieldName, LocalName, OptionKey, Tag, VocabName, Word};
-use crate::plan::{Active, Plan, Slot, unstated as unstated_key, unstated_text};
+use crate::plan::{
+    Active, Plan, Slot, none as none_key, not_among, unstated as unstated_key, unstated_text,
+};
 use crate::propose::{PickValue, Proposed, propose};
 use crate::text::{Clean, Input, NonEmpty, Span};
 use crate::words::{self, Form, Listed, Spelled};
@@ -92,7 +94,12 @@ pub struct Missing {
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Why {
     Unstated,
-    OutOfRange { span: Span, range: Range<f64> },
+    OutOfRange {
+        span: Span,
+        range: Range<f64>,
+    },
+    /// Stated, but not among what is offered: a word the list lacks, a form no recognizer reads.
+    NotOffered,
 }
 
 /// What a person may answer with; a vocabulary also prompts to add a word; a pick that names a yielded field
@@ -406,8 +413,8 @@ impl Prompt {
 }
 
 /// The one call of `answer`: an input over the cap is refused; `--tag` narrows the set, or `only` narrows it to
-/// one reflex — what a weave decides a fragment or a rewritten step by; a pick is asked over its candidates, or
-/// not at all. `recent` is what the session's bodies returned, newest first: a pick that names a yielded field
+/// one reflex — what a weave decides a fragment or a rewritten step by; a pick is asked over its candidates.
+/// `recent` is what the session's bodies returned, newest first: a pick that names a yielded field
 /// keeps the values under it that its recognizer reads whole, for its ask to list; no question offers them.
 pub fn request(
     plan: &Plan,
@@ -463,9 +470,8 @@ pub fn request(
             if !id.reflex().is_some_and(|name| narrowed.contains(&name)) {
                 continue;
             }
-            if let Some(question) = asked(plan, id, slot, &proposed, recent, &mut recalled) {
-                questions.insert(id.clone(), question);
-            }
+            let question = asked(plan, id, slot, &proposed, recent, &mut recalled);
+            questions.insert(id.clone(), question);
         }
     }
     let (listed, spelled) = if scope == Scope::Full {
@@ -484,8 +490,8 @@ pub fn request(
 }
 
 /// One slot of the plan as the request asks it: a question that does not depend on the input as it stands; a
-/// pick over the input's candidates of its kind, or not at all when it has none. Beside it, for a pick that
-/// names a yielded field, the values the session's results returned under it.
+/// pick over the input's candidates of its kind, and over `none` when the input states one that is not among
+/// them. Beside it, for a pick that names a yielded field, the values the session's results returned under it.
 fn asked(
     plan: &Plan,
     id: &QuestionId,
@@ -493,9 +499,9 @@ fn asked(
     proposed: &[Proposed],
     recent: &[Recent],
     recalled: &mut IndexMap<QuestionId, Vec<String>>,
-) -> Option<Question> {
+) -> Question {
     let (ask, pick, field) = match slot {
-        Slot::Ready(question) => return Some(question.clone()),
+        Slot::Ready(question) => return question.clone(),
         Slot::Pick {
             ask, pick, recent, ..
         } => (ask, *pick, recent),
@@ -517,7 +523,7 @@ fn asked(
             recalled.insert(id.clone(), values);
         }
     }
-    let options: IndexMap<Key, Text> = proposed
+    let mut options: IndexMap<Key, Text> = proposed
         .iter()
         .filter(|proposed| proposes(pick, &proposed.value))
         .map(|proposed| {
@@ -527,14 +533,13 @@ fn asked(
             )
         })
         .collect();
-    if options.is_empty() {
-        return None;
-    }
-    Some(Question::Choice(Choice::closed(
+    let said = not_among(pick, options.len());
+    options.insert(none_key(), Text::Plain(said));
+    Question::Choice(Choice::closed(
         ask.clone(),
         options,
         (unstated_key(), Text::Plain(unstated_text())),
-    )))
+    ))
 }
 
 /// What code finds in the input's own words for the arguments of the reflexes asked about, by each argument's
@@ -993,8 +998,7 @@ impl<'a> Reader<'a> {
                 .get(&question)
                 .zip(self.answers.get(&question));
             let Some((Question::Choice(choice), answer)) = asked else {
-                // A pick with no candidate is not asked and reads unstated; its ask lists what the session's
-                // results returned, when the request kept any.
+                // An optional argument over an empty vocabulary is not asked and reads unstated.
                 if let Some(source) = required(argument) {
                     let recent = self.recalled(&question);
                     missing.push(unstated(self.plan, &reflex, arg, argument, source, recent));
@@ -1057,6 +1061,16 @@ impl<'a> Reader<'a> {
                 }
                 None => Settled::Nothing,
             });
+        }
+        // Stated, but not among these: asked, required or optional, and never read as the nearest of them.
+        if *top == none_key() {
+            let recent = self.recalled(&judgment.question);
+            return Ok(Settled::Missing(Missing {
+                arg: arg.clone(),
+                ask: argument.ask.clone(),
+                because: Why::NotOffered,
+                choices: choices(self.plan, reflex, arg, source, recent),
+            }));
         }
         let value = match source {
             Source::Options(options) => {
@@ -1125,8 +1139,11 @@ impl<'a> Reader<'a> {
     }
 }
 
+/// At this share `none` asks its argument; under it the argument reads as the best of the other answers.
+const NOT_OFFERED: f64 = 0.5;
+
 /// One argument's judgment: the top key and its probability; a flag reads `yes` at or above one half, against the
-/// rest.
+/// rest; a value reads `none` only from one half up, and as the best of the other answers under it.
 fn judge(
     question: QuestionId,
     argument: &Argument,
@@ -1147,7 +1164,15 @@ fn judge(
             )
         }
         Kind::Value { .. } => {
-            top(choice, answer).ok_or_else(|| malformed(question.clone(), "no options"))?
+            let none = none_key();
+            let stated = probability(answer, &none).get() >= NOT_OFFERED;
+            choice
+                .options()
+                .keys()
+                .filter(|key| stated || **key != none)
+                .map(|key| (key.clone(), probability(answer, key)))
+                .reduce(|best, next| if next.1 > best.1 { next } else { best })
+                .ok_or_else(|| malformed(question.clone(), "no options"))?
         }
     };
     Ok(Judgment { question, top, p })

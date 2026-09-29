@@ -283,6 +283,7 @@
       "options": {
         "lisbon": "Lisbon, where the client meeting is.",
         "madrid": "Madrid, the southern office.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -383,6 +384,7 @@
       "options": {
         "lisbon": "Lisbon, where the client meeting is.",
         "madrid": "Madrid, the southern office.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"

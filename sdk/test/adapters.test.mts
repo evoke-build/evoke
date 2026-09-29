@@ -189,7 +189,7 @@ test("replay answers from the spec's recording and faults on a miss", async () =
   equal(adapter.id, "replay")
   deepStrictEqual(adapter.gate, { route: 0.5, fits: 0.3, read: 0.6, write: 0.8 })
   const raw = await adapter.answer(request.state, request.questions, AbortSignal.timeout(1000))
-  deepStrictEqual(Object.keys(raw), ["route", "fits.lights", "lights.room", "lights.state", "fits.timer"])
+  deepStrictEqual(Object.keys(raw), Object.keys(request.questions))
   await rejects(
     adapter.answer({ request: "what time is it" }, request.questions, AbortSignal.timeout(1000)),
     (error: FaultError) => error.message.startsWith('"what time is it" is not recorded  →  replay("') && error.message.endsWith('answers.toml", { record: jev() })'),

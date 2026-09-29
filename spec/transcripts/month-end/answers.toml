@@ -29,8 +29,10 @@ route            = { bank = 0.9, invoices = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."invoices, card expenses"]
 route            = { invoices = 0.55, cards = 0.03, none = 0.42 }
@@ -46,8 +48,10 @@ route            = { invoices = 0.55, cards = 0.03, none = 0.42 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."payroll"]
 route            = { payroll = 0.9, bank = 0.03, none = 0.07 }
@@ -63,8 +67,10 @@ route            = { payroll = 0.9, bank = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."reconcile them"]
 route            = { reconcile = 0.9, bank = 0.03, none = 0.07 }
@@ -80,8 +86,10 @@ route            = { reconcile = 0.9, bank = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."post the closing entries to the ledger"]
 route            = { ledger = 0.78, bank = 0.03, none = 0.19 }
@@ -97,8 +105,10 @@ route            = { ledger = 0.78, bank = 0.03, none = 0.19 }
 "fits.ledger"    = { yes = 0.8 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."send the report to cfo@example.com"]
 route            = { send = 0.9, bank = 0.03, none = 0.07 }
@@ -133,8 +143,10 @@ route            = { invoices = 0.9, bank = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."card expenses"]
 route            = { cards = 0.9, bank = 0.03, none = 0.07 }
@@ -150,8 +162,10 @@ route            = { cards = 0.9, bank = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."close september"]
 route            = { close = 0.9, ledger = 0.03, none = 0.07 }
@@ -167,8 +181,10 @@ route            = { close = 0.9, ledger = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.1 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.8 }
 "close.month"    = { september = 0.9, unstated = 0.1 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."list september's invoices"]
 route            = { invoices = 0.9, bank = 0.03, none = 0.07 }
@@ -184,8 +200,10 @@ route            = { invoices = 0.9, bank = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."list september's card expenses"]
 route            = { cards = 0.9, bank = 0.03, none = 0.07 }
@@ -201,8 +219,10 @@ route            = { cards = 0.9, bank = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."show september's payroll run"]
 route            = { payroll = 0.9, bank = 0.03, none = 0.07 }
@@ -218,8 +238,10 @@ route            = { payroll = 0.9, bank = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."post september's closing entries to the ledger"]
 route            = { ledger = 0.9, bank = 0.03, none = 0.07 }
@@ -235,8 +257,10 @@ route            = { ledger = 0.9, bank = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.8 }
 "ledger.month"   = { september = 0.9, unstated = 0.1 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."close out august"]
 route            = { close = 0.9, ledger = 0.03, none = 0.07 }
@@ -252,8 +276,10 @@ route            = { close = 0.9, ledger = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.1 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.8 }
 "close.month"    = { august = 0.9, unstated = 0.1 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."do the october close"]
 route            = { close = 0.9, ledger = 0.03, none = 0.07 }
@@ -269,8 +295,10 @@ route            = { close = 0.9, ledger = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.1 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.8 }
 "close.month"    = { october = 0.9, unstated = 0.1 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."let's close the books for september"]
 route            = { close = 0.9, ledger = 0.03, none = 0.07 }
@@ -286,8 +314,10 @@ route            = { close = 0.9, ledger = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.1 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.8 }
 "close.month"    = { september = 0.9, unstated = 0.1 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."do the month-end for october, report to anna@example.com"]
 route            = { close = 0.9, send = 0.03, none = 0.07 }
@@ -341,8 +371,10 @@ route            = { payroll = 0.9, bank = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."reopen the books for august"]
 route            = { none = 0.9, bank = 0.1 }
@@ -358,8 +390,10 @@ route            = { none = 0.9, bank = 0.1 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."remind acme that their invoice is overdue"]
 route            = { none = 0.9, bank = 0.1 }
@@ -375,8 +409,10 @@ route            = { none = 0.9, bank = 0.1 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."pull august's bank transactions"]
 route            = { bank = 0.9, invoices = 0.03, none = 0.07 }
@@ -392,8 +428,10 @@ route            = { bank = 0.9, invoices = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."list august's invoices"]
 route            = { invoices = 0.9, bank = 0.03, none = 0.07 }
@@ -409,8 +447,10 @@ route            = { invoices = 0.9, bank = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."list august's card expenses"]
 route            = { cards = 0.9, bank = 0.03, none = 0.07 }
@@ -426,8 +466,10 @@ route            = { cards = 0.9, bank = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."show august's payroll run"]
 route            = { payroll = 0.9, bank = 0.03, none = 0.07 }
@@ -443,8 +485,10 @@ route            = { payroll = 0.9, bank = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.02 }
 "ledger.month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."post august's closing entries to the ledger"]
 route            = { ledger = 0.9, bank = 0.03, none = 0.07 }
@@ -460,8 +504,10 @@ route            = { ledger = 0.9, bank = 0.03, none = 0.07 }
 "fits.ledger"    = { yes = 0.8 }
 "ledger.month"   = { august = 0.9, unstated = 0.1 }
 "fits.send"      = { yes = 0.02 }
+"send.to"        = { unstated = 1.0 }
 "fits.close"     = { yes = 0.02 }
 "close.month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"close.to"       = { unstated = 1.0 }
 
 [answers."send the report to anna@example.com"]
 route            = { send = 0.9, bank = 0.03, none = 0.07 }

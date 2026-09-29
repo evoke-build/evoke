@@ -1,5 +1,5 @@
 {
-  "digest": "h1:ce9fc0fdcd574c8d1801199a6a7ec5a034e9f538bdac90dd719aafde7eb74756",
+  "digest": "h1:3e1f4d02490c04efebe7f78bc46c6a0f67097905b47034a3fd7a68ccc3baf427",
   "active": {
     "bank": {
       "effect": "read",
@@ -139,7 +139,9 @@
             "get august's bank feed",
             "what went through the bank in october",
             "bank statement for september",
-            "every payment in or out of the bank in august"
+            "every payment in or out of the bank in august",
+            "show me the bank account for august",
+            "what went through the business account in august"
           ]
         },
         "invoices": {
@@ -155,7 +157,8 @@
             "which invoices went out in august",
             "invoices for october",
             "how many of september's invoices are paid",
-            "what did we bill customers in august"
+            "what did we bill customers in august",
+            "which invoices of october are still unpaid"
           ]
         },
         "cards": {
@@ -171,7 +174,9 @@
             "what did we spend on cards in august",
             "pull the october card charges",
             "which card charges in september have no receipt",
-            "company card spend for october"
+            "company card spend for october",
+            "what was charged on the company cards in august",
+            "company card charges for october"
           ]
         },
         "payroll": {
@@ -185,7 +190,9 @@
             "show september's payroll",
             "what did payroll cost in august",
             "payroll breakdown for october",
-            "payroll taxes for september"
+            "payroll taxes for september",
+            "how much was payroll in october",
+            "how much did the salaries cost in august"
           ]
         },
         "reconcile": {
@@ -200,7 +207,8 @@
             "reconcile them",
             "reconcile the books",
             "match everything up",
-            "match them against the bank"
+            "match them against the bank",
+            "reconcile the four"
           ]
         },
         "ledger": {
@@ -217,7 +225,8 @@
             "post september to the ledger",
             "book the october entries",
             "post the closing entries for september",
-            "post october's entries to the general ledger"
+            "post october's entries to the general ledger",
+            "write october's closing to the ledger"
           ]
         },
         "none": "None of these."
@@ -237,6 +246,7 @@
         "august": "August.",
         "september": "September.",
         "october": "October.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -254,6 +264,7 @@
         "august": "August.",
         "september": "September.",
         "october": "October.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -271,6 +282,7 @@
         "august": "August.",
         "september": "September.",
         "october": "October.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -288,6 +300,7 @@
         "august": "August.",
         "september": "September.",
         "october": "October.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -311,6 +324,7 @@
         "august": "August.",
         "september": "September.",
         "october": "October.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"

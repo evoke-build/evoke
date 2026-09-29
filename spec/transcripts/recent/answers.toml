@@ -21,11 +21,13 @@ route              = { deploys = 0.9, errors = 0.03, none = 0.07 }
 "fits.suspect"     = { yes = 0.02 }
 "fits.rollback"    = { yes = 0.02 }
 "rollback.service" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"rollback.release" = { unstated = 1.0 }
 "rollback.region"  = { unstated = 0.9, eu-west = 0.05, us-east = 0.05 }
 "fits.post"        = { yes = 0.02 }
 "post.channel"     = { unstated = 0.9, "#incident" = 0.05, "#ops" = 0.05 }
 "fits.incidents"   = { yes = 0.02 }
 "fits.incident"    = { yes = 0.02 }
+"incident.number"  = { unstated = 1.0 }
 "fits.postmortem"  = { yes = 0.02 }
 "fits.status"      = { yes = 0.02 }
 "status.component" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
@@ -45,11 +47,13 @@ route              = { rollback = 0.9, errors = 0.03, none = 0.07 }
 "fits.suspect"     = { yes = 0.02 }
 "fits.rollback"    = { yes = 0.8 }
 "rollback.service" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"rollback.release" = { unstated = 1.0 }
 "rollback.region"  = { unstated = 0.9, eu-west = 0.05, us-east = 0.05 }
 "fits.post"        = { yes = 0.02 }
 "post.channel"     = { unstated = 0.9, "#incident" = 0.05, "#ops" = 0.05 }
 "fits.incidents"   = { yes = 0.02 }
 "fits.incident"    = { yes = 0.02 }
+"incident.number"  = { unstated = 1.0 }
 "fits.postmortem"  = { yes = 0.02 }
 "fits.status"      = { yes = 0.02 }
 "status.component" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
@@ -72,6 +76,7 @@ route              = { rollback = 0.9, errors = 0.03, none = 0.07 }
 "fits.suspect"     = { yes = 0.02 }
 "fits.rollback"    = { yes = 0.8 }
 "rollback.service" = { unstated = 0.9, checkout = 0.05, payments = 0.05 }
+"rollback.release" = { unstated = 1.0 }
 "rollback.region"  = { unstated = 0.9, eu-west = 0.05, us-east = 0.05 }
 "fits.post"        = { yes = 0.02 }
 "post.channel"     = { unstated = 0.9, "#incident" = 0.05, "#ops" = 0.05 }

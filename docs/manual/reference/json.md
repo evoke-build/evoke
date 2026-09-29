@@ -25,7 +25,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `prompt`     |     | ●       |     |         | `{ own, template }`: `evoke`'s line and the reflex's question   |
 | `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `unconsumed_span`, `two_things`, `merged` |
 | `unconsumed` |     |         | ●   |         | Typed spans no argument took                                    |
-| `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because`, `choices`; a pick's `choices.recent` lists the values recalled from this session's results, when any |
+| `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because` (`unstated`, `out_of_range` or `not_offered`), `choices`; a pick's `choices.recent` lists the values recalled from this session's results, when any |
 | `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call: `{ adapter, questions, ms }`. Empty when the answers came from the cache |
 | `result`     | ○   |         |     |         | `{ text, data? }` when the body ran                             |
 | `contained`  | ○   |         |     |         | Whenever the body ran, with `result` or `error`: whether this machine held it to its declaration, `{ "type": "full" }`, or `"partial"` or `"none"` with `why`, one sentence |
@@ -102,13 +102,13 @@ in character offsets of the input.
 A run, from `evoke try --json`:
 
 ```json
-{"input":"kill the lights in the den","outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","confidence":0.85,"weakest":{"question":"lights.room","top":"den","p":0.85},"judgments":[{"question":"route","top":"lights","p":0.91},{"question":"lights.room","top":"den","p":0.85},{"question":"lights.state","top":"off","p":0.88}],"runner_up":{"reflex":"timer","route":0.02,"fits":0.05},"contenders":[{"reflex":"lights","route":0.91,"fits":0.7},{"reflex":"timer","route":0.02,"fits":0.05},{"reflex":"volume","route":0.01,"fits":0.05}],"trace":[]}
+{"input":"kill the lights in the den","outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","confidence":0.85,"weakest":{"question":"lights.room","top":"den","p":0.85},"judgments":[{"question":"route","top":"lights","p":0.91},{"question":"lights.room","top":"den","p":0.85},{"question":"lights.state","top":"off","p":0.88},{"question":"lights.brightness","top":"unstated","p":1.0}],"runner_up":{"reflex":"timer","route":0.02,"fits":0.05},"contenders":[{"reflex":"lights","route":0.91,"fits":0.7},{"reflex":"timer","route":0.02,"fits":0.05},{"reflex":"volume","route":0.01,"fits":0.05}],"trace":[]}
 ```
 
 An ask, from a filter with no terminal. The line stands for the prompt that could not be shown, exit 3:
 
 ```json
-{"input":"kill the lights","outcome":"ask","reflex":"lights","args":{"state":{"type":"option","key":"off"}},"unconsumed":[],"confidence":0.58,"weakest":{"question":"lights.state","top":"off","p":0.58},"judgments":[{"question":"route","top":"lights","p":0.9},{"question":"lights.room","top":"unstated","p":0.75},{"question":"lights.state","top":"off","p":0.58}],"runner_up":{"reflex":"timer","route":0.02,"fits":0.05},"contenders":[{"reflex":"lights","route":0.9,"fits":0.7},{"reflex":"timer","route":0.02,"fits":0.05},{"reflex":"volume","route":0.02,"fits":0.05}],"missing":[{"arg":"room","ask":"Which room?","because":{"type":"unstated"},"choices":{"type":"vocab","words":{"den":"The TV room downstairs; also 'the snug'.","office":"The upstairs study."}}}],"trace":[]}
+{"input":"kill the lights","outcome":"ask","reflex":"lights","args":{"state":{"type":"option","key":"off"}},"unconsumed":[],"confidence":0.58,"weakest":{"question":"lights.state","top":"off","p":0.58},"judgments":[{"question":"route","top":"lights","p":0.9},{"question":"lights.room","top":"unstated","p":0.75},{"question":"lights.state","top":"off","p":0.58},{"question":"lights.brightness","top":"unstated","p":1.0}],"runner_up":{"reflex":"timer","route":0.02,"fits":0.05},"contenders":[{"reflex":"lights","route":0.9,"fits":0.7},{"reflex":"timer","route":0.02,"fits":0.05},{"reflex":"volume","route":0.02,"fits":0.05}],"missing":[{"arg":"room","ask":"Which room?","because":{"type":"unstated"},"choices":{"type":"vocab","words":{"den":"The TV room downstairs; also 'the snug'.","office":"The upstairs study."}}}],"trace":[]}
 ```
 
 ## Questions
@@ -116,7 +116,8 @@ An ask, from a filter with no terminal. The line stands for the prompt that coul
 A question id is `route`, `fits.<reflex>`, `<reflex>.<argument>`, or `weave.<name>`: a question `evoke` asks on
 its own account, beside a reflex's, and no reflex is named `weave`. A choice's keys are option keys, vocabulary
 words, `<start>-<end>` for a pick's candidates, `yes` and `no` for a flag, local names for the route, and the
-sentinels `none` and `unstated`.
+sentinels `none` and `unstated`. On an argument's question, `none` says the input states a value that is not
+among the choices.
 
 ## `evoke calibrate --json`
 

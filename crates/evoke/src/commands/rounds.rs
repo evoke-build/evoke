@@ -6,7 +6,7 @@
 //! `Exit`, every line printed and logged.
 
 use evoke_core::call::Value;
-use evoke_core::decide::{Choices, Missing, Recent, Why};
+use evoke_core::decide::{Choices, Missing, Recent};
 use evoke_core::document::Json;
 use evoke_core::manifest::{Kind, Recognizer, Source, written};
 use evoke_core::name::{ArgName, LocalName, OptionKey, Tag, VocabName, Word};
@@ -894,10 +894,7 @@ impl Rounds<'_> {
         missing: &Missing,
         vocabulary: Option<&VocabName>,
     ) -> Result<Option<Value>, Exit> {
-        let mut retry: Option<String> = match &missing.because {
-            Why::Unstated => None,
-            Why::OutOfRange { .. } => Some(report::because(&missing.because)),
-        };
+        let mut retry: Option<String> = report::because(missing);
         loop {
             let prompt = report::ask_prompt(missing, retry.as_deref());
             let Some(typed) = self.session.prompt(&prompt)? else {

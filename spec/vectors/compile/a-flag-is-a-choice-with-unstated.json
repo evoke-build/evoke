@@ -99,7 +99,8 @@
               "examples": [
                 "take a screenshot"
               ]
-            }
+            },
+            "none": "The request names one that is not in this list."
           },
           "otherwise": "unstated"
         },

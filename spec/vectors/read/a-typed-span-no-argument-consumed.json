@@ -32,6 +32,12 @@
       "timer.label": {
         "28-31": 0.3,
         "unstated": 0.7
+      },
+      "lights.brightness": {
+        "unstated": 1
+      },
+      "timer.duration": {
+        "unstated": 1
       }
     }
   },
@@ -64,6 +70,11 @@
           "question": "lights.state",
           "top": "off",
           "p": 0.88
+        },
+        {
+          "question": "lights.brightness",
+          "top": "unstated",
+          "p": 1
         }
       ],
       "winner": {

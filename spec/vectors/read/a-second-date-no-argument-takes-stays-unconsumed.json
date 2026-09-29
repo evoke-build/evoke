@@ -20,8 +20,14 @@
         "21-29": 0.05,
         "34-40": 0.05
       },
+      "meeting.time": {
+        "unstated": 1
+      },
       "fits.rollback": {
         "yes": 0.02
+      },
+      "rollback.release": {
+        "unstated": 1
       },
       "fits.calendar": {
         "yes": 0.8

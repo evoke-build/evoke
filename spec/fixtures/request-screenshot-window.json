@@ -44,6 +44,7 @@
             "screenshot this window"
           ]
         },
+        "none": "The request names one that is not in this list.",
         "unstated": {
           "what": "The request does not say.",
           "examples": [
@@ -69,5 +70,18 @@
       "otherwise": "unstated"
     }
   },
-  "proposed": []
+  "proposed": [],
+  "listed": {
+    "screenshot.area": [
+      {
+        "key": "window",
+        "span": {
+          "start": 16,
+          "end": 22,
+          "text": "window"
+        },
+        "how": "same"
+      }
+    ]
+  }
 }

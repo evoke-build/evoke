@@ -570,7 +570,7 @@ pub fn tried(decided: &Decided, route_floor: Option<evoke_core::Prob>) -> Text {
         winner.as_ref(),
         &decided.answers,
         &decided.proposed,
-        contenders(&decided.decision),
+        &decided.decision,
         under,
         &IndexMap::new(),
     );
@@ -594,7 +594,7 @@ pub fn why(lines: &[Line]) -> Text {
             line.reflex(),
             &line.answers,
             &line.proposed,
-            contenders(&line.decision),
+            &line.decision,
             None,
             &line.recalled,
         ));
@@ -1295,13 +1295,21 @@ pub fn ask_prompt(missing: &Missing, retry: Option<&str>) -> String {
     line
 }
 
-/// Why an argument is asked again: `150 percent is outside 0–100`.
+/// Why an argument is asked, where the question alone does not say: `150 percent is outside 0–100`, or that what
+/// the request names is not on the list.
 #[must_use]
-pub fn because(why: &Why) -> String {
-    match why {
-        Why::Unstated => String::new(),
-        Why::OutOfRange { span, range } => {
-            format!("{} is outside {}–{}", span.text(), range.min(), range.max())
+pub fn because(missing: &Missing) -> Option<String> {
+    use evoke_core::decide::Choices;
+    match (&missing.because, &missing.choices) {
+        (Why::Unstated, _) | (Why::NotOffered, Choices::Pick { .. }) => None,
+        (Why::OutOfRange { span, range }, _) => Some(format!(
+            "{} is outside {}–{}",
+            span.text(),
+            range.min(),
+            range.max()
+        )),
+        (Why::NotOffered, Choices::Options { .. } | Choices::Vocab { .. }) => {
+            Some("what you named is not on the list".to_owned())
         }
     }
 }
@@ -2655,15 +2663,27 @@ fn toml(value: &Json) -> String {
 }
 
 /// The ranking, the winner's argument lines, the values an ask recalled and the fits line, unindented; on each
-/// distribution the top answer carries the weight.
+/// distribution the top answer carries the weight. An argument the request says nothing of is no line, unless
+/// the decision asks for it.
 fn block(
     winner: Option<&LocalName>,
     answers: &Raw,
     proposed: &[Proposed],
-    contenders: &[Contender],
+    decision: &Decision,
     under_floor: Option<evoke_core::Prob>,
     recalled: &IndexMap<ArgName, Vec<String>>,
 ) -> Vec<Text> {
+    let contenders = contenders(decision);
+    let asked: Vec<&str> = match decision {
+        Decision::Ask { missing, .. } => missing.iter().map(|m| m.arg.as_str()).collect(),
+        _ => Vec::new(),
+    };
+    let quiet = |arg: &str, question: &String| {
+        !asked.contains(&arg)
+            && sorted(answers, question)
+                .first()
+                .is_some_and(|(top, _)| top == "unstated")
+    };
     let mut lines = vec![ranking(answers, under_floor)];
     let arguments: Vec<(&str, &String)> = winner
         .map(|winner| {
@@ -2676,6 +2696,7 @@ fn block(
                     }
                     _ => None,
                 })
+                .filter(|(arg, question)| !quiet(arg, question))
                 .collect()
         })
         .unwrap_or_default();

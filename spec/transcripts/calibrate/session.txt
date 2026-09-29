@@ -22,7 +22,7 @@ $ evoke calibrate
   each judgment on its own
     route   12 judgments  right 100% (76–100) · claimed 0.89
     options  3 judgments  right  67% (21–94) · claimed 0.80
-    pick     9 judgments  right 100% (70–100) · claimed 0.91
+    pick    10 judgments  right 100% (72–100) · claimed 0.92
   Brier 0.048 · reliability 0.046 · resolution 0.090
   misses
     "make it darker in here"  ask lights 0.60 · state: expected "dim", read "off"
@@ -40,7 +40,7 @@ $ evoke calibrate timer
   near write 0.80   at 0.70 7 run, 0 wrong · at 0.75 7, 0 · at 0.80 7, 0 · at 0.85 7, 0 · at 0.90 6, 0
   each judgment on its own
     route   8 judgments  right 100% (68–100) · claimed 0.90
-    pick    8 judgments  right 100% (68–100) · claimed 0.91
+    pick    9 judgments  right 100% (70–100) · claimed 0.92
   Brier 0.009 · reliability 0.009 · resolution 0.000
   the log · 3 decisions under replay · 1 ran · 1 confirmed and stopped · 1 abstained
     stopped at confirm, by confidence   0.60–0.80 1
@@ -59,7 +59,7 @@ $ evoke calibrate --repeat 3
   each judgment on its own
     route   12 judgments  right 100% (76–100) · claimed 0.89
     options  3 judgments  right  67% (21–94) · claimed 0.80
-    pick     9 judgments  right 100% (70–100) · claimed 0.91
+    pick    10 judgments  right 100% (72–100) · claimed 0.92
   Brier 0.048 · reliability 0.046 · resolution 0.090
   misses
     "make it darker in here"  ask lights 0.60 · state: expected "dim", read "off" · 3 of 3 repeats
@@ -69,7 +69,7 @@ $ evoke calibrate --repeat 3
     3 were records · right 2 · 67% (21–94)
   thin: under 100 calls in every bin, nothing proven at any bar
 $ evoke calibrate --json
-{"adapter":"replay","records":12,"reflexes":2,"inputs":12,"repeats":1,"outcomes":{"run":7,"confirm":0,"ask":3,"abstain":2},"bins":[{"lo":0.6,"hi":0.8,"calls":1,"right":0,"interval":[0.0,0.7934506882081973],"claimed":0.6,"thin":true,"over_confident":false},{"lo":0.8,"hi":1.0,"calls":9,"right":9,"interval":[0.700854948272956,1.0],"claimed":0.8922222222222224,"thin":true,"over_confident":false}],"unknown":0,"abstained":{"count":2,"right":2,"interval":[0.3423802239546494,1.0]},"bars":{"write":{"bar":0.8,"wrong":0,"calls":9,"per_thousand":0.0,"at_most":283.12883556311357,"near":[{"at":0.7,"run":9,"wrong":0},{"at":0.75,"run":9,"wrong":0},{"at":0.8,"run":9,"wrong":0},{"at":0.85,"run":8,"wrong":0},{"at":0.9,"run":7,"wrong":0}]}},"questions":[{"kind":"route","judgments":12,"right":12,"interval":[0.7575059904469021,1.0],"claimed":0.8925000000000001},{"kind":"options","judgments":3,"right":2,"interval":[0.2076595988078242,0.9385080559790691],"claimed":0.7999999999999999},{"kind":"pick","judgments":9,"right":9,"interval":[0.700854948272956,1.0],"claimed":0.9055555555555556}],"brier":{"brier":0.04757000000000001,"reliability":0.046454444444444416,"resolution":0.09,"uncertainty":0.08999999999999998},"misses":[{"case":{"reflex":"lights","utterance":{"text":"make it darker in here","id":"make it darker in here"},"expect":{"state":"dim"},"from":"tests"},"outcome":"ask","reflex":"lights","confidence":0.6,"mismatch":{"type":"arg","arg":"state","read":"off"},"wrong":1}],"log":{"adapter":"replay","decisions":3,"ran":1,"confirmed_ran":0,"confirmed_stopped":1,"asked":0,"abstained":1,"failed":0,"skipped":0,"stopped_by_confidence":[{"lo":0.6,"hi":0.8,"count":1}],"records":{"count":3,"right":2,"interval":[0.2076595988078242,0.9385080559790691]},"unread":0}}
+{"adapter":"replay","records":12,"reflexes":2,"inputs":12,"repeats":1,"outcomes":{"run":7,"confirm":0,"ask":3,"abstain":2},"bins":[{"lo":0.6,"hi":0.8,"calls":1,"right":0,"interval":[0.0,0.7934506882081973],"claimed":0.6,"thin":true,"over_confident":false},{"lo":0.8,"hi":1.0,"calls":9,"right":9,"interval":[0.700854948272956,1.0],"claimed":0.8922222222222224,"thin":true,"over_confident":false}],"unknown":0,"abstained":{"count":2,"right":2,"interval":[0.3423802239546494,1.0]},"bars":{"write":{"bar":0.8,"wrong":0,"calls":9,"per_thousand":0.0,"at_most":283.12883556311357,"near":[{"at":0.7,"run":9,"wrong":0},{"at":0.75,"run":9,"wrong":0},{"at":0.8,"run":9,"wrong":0},{"at":0.85,"run":8,"wrong":0},{"at":0.9,"run":7,"wrong":0}]}},"questions":[{"kind":"route","judgments":12,"right":12,"interval":[0.7575059904469021,1.0],"claimed":0.8925000000000001},{"kind":"options","judgments":3,"right":2,"interval":[0.2076595988078242,0.9385080559790691],"claimed":0.7999999999999999},{"kind":"pick","judgments":10,"right":10,"interval":[0.7224671969739421,0.9999999999999999],"claimed":0.915}],"brier":{"brier":0.04757000000000001,"reliability":0.046454444444444416,"resolution":0.09,"uncertainty":0.08999999999999998},"misses":[{"case":{"reflex":"lights","utterance":{"text":"make it darker in here","id":"make it darker in here"},"expect":{"state":"dim"},"from":"tests"},"outcome":"ask","reflex":"lights","confidence":0.6,"mismatch":{"type":"arg","arg":"state","read":"off"},"wrong":1}],"log":{"adapter":"replay","decisions":3,"ran":1,"confirmed_ran":0,"confirmed_stopped":1,"asked":0,"abstained":1,"failed":0,"skipped":0,"stopped_by_confidence":[{"lo":0.6,"hi":0.8,"count":1}],"records":{"count":3,"right":2,"interval":[0.2076595988078242,0.9385080559790691]},"unread":0}}
 # The same engine a week later: a write call wrong at 0.85 fails the report, and a bin claims more than it earned.
 $ EVOKE_ANSWERS=~/drift.toml evoke calibrate
   replay · 12 records over 2 reflexes · 12 inputs, decided once
@@ -83,7 +83,7 @@ $ EVOKE_ANSWERS=~/drift.toml evoke calibrate
   each judgment on its own
     route   12 judgments  right  92% (65–99) · claimed 0.89
     options  3 judgments  right  33% (6–79) · claimed 0.78
-    pick     8 judgments  right  88% (53–98) · claimed 0.89
+    pick     9 judgments  right  89% (57–98) · claimed 0.90
   Brier 0.188 · reliability 0.103 · resolution 0.127
   misses
     "turn on the kitchen lights"  run lights 0.85 · state: expected "on", read "off"

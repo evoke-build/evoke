@@ -19,8 +19,14 @@
         "20-28": 0.9,
         "unstated": 0.1
       },
+      "meeting.time": {
+        "unstated": 1
+      },
       "fits.rollback": {
         "yes": 0.02
+      },
+      "rollback.release": {
+        "unstated": 1
       },
       "fits.calendar": {
         "yes": 0.02
@@ -74,6 +80,11 @@
           "question": "meeting.day",
           "top": "20-28",
           "p": 0.9
+        },
+        {
+          "question": "meeting.time",
+          "top": "unstated",
+          "p": 1
         }
       ],
       "winner": {

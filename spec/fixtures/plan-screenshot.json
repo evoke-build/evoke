@@ -71,6 +71,7 @@
             "screenshot this window"
           ]
         },
+        "none": "The request names one that is not in this list.",
         "unstated": {
           "what": "The request does not say.",
           "examples": [

@@ -177,7 +177,8 @@
           "options": {
             "den": "The TV room downstairs; also 'the snug'.",
             "office": "The upstairs study.",
-            "unstated": "The request does not say."
+            "unstated": "The request does not say.",
+            "none": "The request names one that is not in this list."
           },
           "otherwise": "unstated"
         },
@@ -198,7 +199,8 @@
                 "dim the office to 30 percent"
               ]
             },
-            "unstated": "The request does not say."
+            "unstated": "The request does not say.",
+            "none": "The request names one that is not in this list."
           },
           "otherwise": "unstated"
         },
@@ -236,7 +238,8 @@
                 "shut down"
               ]
             },
-            "unstated": "The request does not say."
+            "unstated": "The request does not say.",
+            "none": "The request names one that is not in this list."
           },
           "otherwise": "unstated"
         }

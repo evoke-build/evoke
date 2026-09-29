@@ -28,6 +28,7 @@ route             = { device = 0.9, sessions = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -45,6 +46,7 @@ route             = { sessions = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -62,6 +64,7 @@ route             = { keys = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -79,6 +82,7 @@ route             = { lock = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.8 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -96,6 +100,7 @@ route             = { wipe = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.8 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -113,6 +118,7 @@ route             = { revoke = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.8 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -130,6 +136,7 @@ route             = { rotate = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.8 }
 "fits.alert"      = { yes = 0.02 }
@@ -147,6 +154,7 @@ route             = { alert = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.8 }
@@ -164,6 +172,7 @@ route             = { stolen = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -185,6 +194,7 @@ route             = { sessions = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -202,6 +212,7 @@ route             = { keys = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { sam = 0.9, unstated = 0.1 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -219,6 +230,7 @@ route             = { alert = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.8 }
@@ -236,6 +248,7 @@ route             = { stolen = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -253,6 +266,7 @@ route             = { stolen = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -270,6 +284,7 @@ route             = { stolen = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -287,6 +302,7 @@ route             = { stolen = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -304,6 +320,7 @@ route             = { stolen = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -321,6 +338,7 @@ route             = { stolen = 0.86, device = 0.03, none = 0.11 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -338,6 +356,7 @@ route             = { sessions = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -355,6 +374,7 @@ route             = { none = 0.9, device = 0.1 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -372,6 +392,7 @@ route             = { none = 0.9, device = 0.1 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -389,6 +410,7 @@ route             = { none = 0.9, device = 0.1 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -406,6 +428,7 @@ route             = { device = 0.9, sessions = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -423,6 +446,7 @@ route             = { sessions = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
@@ -440,6 +464,7 @@ route             = { keys = 0.9, device = 0.03, none = 0.07 }
 "keys.person"     = { ana = 0.9, unstated = 0.1 }
 "fits.lock"       = { yes = 0.02 }
 "fits.wipe"       = { yes = 0.02 }
+"wipe.serial"     = { unstated = 1.0 }
 "fits.revoke"     = { yes = 0.02 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }

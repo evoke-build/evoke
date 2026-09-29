@@ -6,3 +6,15 @@ $ evoke "set the volume to 150 percent"
   How loud, in percent?  150 percent is outside 0–100  > 40
   volume level="40"  0.93
 volume set to 40%
+# A room the list does not hold is asked, and the prompt says so.
+$ evoke "kill the lights in the garage"
+  Which room?  what you named is not on the list  [1] den  [2] office  [+] add one  > 2
+  lights room="office" state="off"  0.90
+group-7 lights off
+$ evoke why
+  "kill the lights in the garage"
+  lights 0.92 · none 0.05 · timer 0.02 · volume 0.01
+  room   none 0.85 · den 0.05 · office 0.05 · unstated 0.05
+  state  off 0.90 · on 0.04 · dim 0.04 · unstated 0.02
+  fits   lights 0.80 · timer 0.05 · volume 0.05
+  ran lights room="office" state="off" · weakest: state 0.90 · replay, 10 questions

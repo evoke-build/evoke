@@ -1,3 +1,4 @@
+# What the replay adapter answers, keyed by utterance identity.
 id = "replay"
 
 [gate]
@@ -7,17 +8,22 @@ read  = 0.6
 write = 0.8
 
 [answers."whisper hello there"]
-route          = { whisper = 0.95, none = 0.05 }
-"fits.lights"  = { yes = 0.01 }
-"fits.timer"   = { yes = 0.01 }
-"fits.volume"  = { yes = 0.01 }
-"fits.power"   = { yes = 0.01 }
-"fits.shout"   = { yes = 0.02 }
-"fits.whisper" = { yes = 0.9 }
-"fits.fail"    = { yes = 0.01 }
-"fits.big"     = { yes = 0.01 }
-"fits.throws"  = { yes = 0.01 }
-"lights.room"  = { unstated = 1.0 }
-"lights.state" = { unstated = 1.0 }
-"power.action" = { unstated = 1.0 }
-"shout.tone"   = { unstated = 1.0 }
+route               = { whisper = 0.95, none = 0.05 }
+"fits.lights"       = { yes = 0.01 }
+"fits.timer"        = { yes = 0.01 }
+"fits.volume"       = { yes = 0.01 }
+"fits.power"        = { yes = 0.01 }
+"fits.shout"        = { yes = 0.02 }
+"fits.whisper"      = { yes = 0.9 }
+"fits.fail"         = { yes = 0.01 }
+"fits.big"          = { yes = 0.01 }
+"fits.throws"       = { yes = 0.01 }
+"lights.room"       = { unstated = 1.0 }
+"lights.state"      = { unstated = 1.0 }
+"power.action"      = { unstated = 1.0 }
+"shout.tone"        = { unstated = 1.0 }
+"lights.brightness" = { unstated = 1.0 }
+"timer.duration"    = { unstated = 1.0 }
+"timer.label"       = { unstated = 1.0 }
+"volume.level"      = { unstated = 1.0 }
+"shout.word"        = { unstated = 1.0 }

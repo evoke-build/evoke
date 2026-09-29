@@ -535,7 +535,10 @@ mod tests {
                 "fits.lights",
                 "lights.room",
                 "lights.state",
-                "fits.timer"
+                "lights.brightness",
+                "fits.timer",
+                "timer.duration",
+                "timer.label"
             ]
         );
         let route = &questions["route"];

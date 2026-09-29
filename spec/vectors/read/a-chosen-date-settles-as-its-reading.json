@@ -26,6 +26,9 @@
       "fits.rollback": {
         "yes": 0.02
       },
+      "rollback.release": {
+        "unstated": 1
+      },
       "fits.calendar": {
         "yes": 0.02
       },

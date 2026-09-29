@@ -182,6 +182,7 @@
       "options": {
         "tomorrow": "Tomorrow, the day after today.",
         "monday": "Monday, the first day of the week.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -198,6 +199,7 @@
       "options": {
         "checkout": "The checkout service.",
         "payments": "The payments service.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"

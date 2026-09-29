@@ -440,6 +440,11 @@
                 "p": 0.9
               },
               {
+                "question": "rollback.release",
+                "top": "unstated",
+                "p": 1
+              },
+              {
                 "question": "rollback.region",
                 "top": "unstated",
                 "p": 0.9
@@ -868,6 +873,11 @@
                 "question": "rollback.service",
                 "top": "checkout",
                 "p": 0.9
+              },
+              {
+                "question": "rollback.release",
+                "top": "unstated",
+                "p": 1
               },
               {
                 "question": "rollback.region",
@@ -1299,6 +1309,11 @@
                   "question": "rollback.service",
                   "top": "checkout",
                   "p": 0.9
+                },
+                {
+                  "question": "rollback.release",
+                  "top": "unstated",
+                  "p": 1
                 },
                 {
                   "question": "rollback.region",

@@ -56,7 +56,8 @@
         "criteria": {
           "den": "The TV room downstairs; also 'the snug'.",
           "office": "The upstairs study.",
-          "unstated": "The request does not say."
+          "unstated": "The request does not say.",
+          "none": "The request names one that is not in this list."
         }
       },
       "lights.state": {
@@ -76,7 +77,8 @@
               "dim the office to 30 percent"
             ]
           },
-          "unstated": "The request does not say."
+          "unstated": "The request does not say.",
+          "none": "The request names one that is not in this list."
         }
       },
       "fits.timer": {
@@ -85,6 +87,30 @@
         "criteria": {
           "true": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
           "false": "Something else, such as: keeping the laptop awake; alarms at a time of day; asking the time."
+        }
+      },
+      "lights.brightness": {
+        "type": "choice",
+        "instructions": "How bright, in percent?",
+        "criteria": {
+          "none": "The request says it, and none of these is it.",
+          "unstated": "The request does not say."
+        }
+      },
+      "timer.duration": {
+        "type": "choice",
+        "instructions": "How long?",
+        "criteria": {
+          "none": "The request says it, and none of these is it.",
+          "unstated": "The request does not say."
+        }
+      },
+      "timer.label": {
+        "type": "choice",
+        "instructions": "What is the timer for?",
+        "criteria": {
+          "none": "The request says it, in words that are not between quotes.",
+          "unstated": "The request does not say."
         }
       }
     }

@@ -8,7 +8,8 @@ read  = 0.6
 write = 0.8
 
 [answers."kill the lights in the den"]
-route          = { lights = 0.91, none = 0.09 }
-"fits.lights"  = { yes = 0.7 }
-"lights.room"  = { den = 0.85, office = 0.05, unstated = 0.1 }
-"lights.state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
+route               = { lights = 0.91, none = 0.09 }
+"fits.lights"       = { yes = 0.7 }
+"lights.room"       = { den = 0.85, office = 0.05, unstated = 0.1 }
+"lights.state"      = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
+"lights.brightness" = { unstated = 1.0 }

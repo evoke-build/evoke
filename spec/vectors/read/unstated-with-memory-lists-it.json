@@ -15,8 +15,17 @@
       "fits.meeting": {
         "yes": 0.02
       },
+      "meeting.day": {
+        "unstated": 1
+      },
+      "meeting.time": {
+        "unstated": 1
+      },
       "fits.rollback": {
         "yes": 0.8
+      },
+      "rollback.release": {
+        "unstated": 1
       },
       "fits.calendar": {
         "yes": 0.02
@@ -65,6 +74,11 @@
           "question": "route",
           "top": "rollback",
           "p": 0.95
+        },
+        {
+          "question": "rollback.release",
+          "top": "unstated",
+          "p": 1
         }
       ],
       "winner": {

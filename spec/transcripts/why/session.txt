@@ -7,4 +7,4 @@ $ evoke why
   room   den 0.85 · unstated 0.10 · office 0.05
   state  off 0.88 · on 0.05 · dim 0.05 · unstated 0.02
   fits   lights 0.70 · timer 0.05 · volume 0.05
-  ran lights room="den" state="off" · weakest: room 0.85 · replay, 6 questions
+  ran lights room="den" state="off" · weakest: room 0.85 · replay, 10 questions

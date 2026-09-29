@@ -9,6 +9,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - `reflex.d.ts` says what `input` holds and what aborts `signal`; `evoke check` writes it again.
 - The collection's manifests hold more examples of how people ask.
 - A number reads in words up to the hundreds: `two hundred and forty`.
+- An argument is asked when the input names a value that is not among its choices, with the reason on the
+  prompt. `try` and `why` print no line for an argument the input says nothing of.
 
 ## [0.15.0] - 2026-09-29
 

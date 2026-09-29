@@ -8,9 +8,13 @@ read  = 0.6
 write = 0.8
 
 [answers."dim the office"]
-route          = { lights = 0.92, timer = 0.01, volume = 0.02, none = 0.05 }
-"fits.lights"  = { yes = 0.7 }
-"fits.timer"   = { yes = 0.05 }
-"fits.volume"  = { yes = 0.05 }
-"lights.room"  = { office = 0.9, den = 0.02, unstated = 0.08 }
-"lights.state" = { dim = 0.7, off = 0.2, on = 0.05, unstated = 0.05 }
+route               = { lights = 0.92, timer = 0.01, volume = 0.02, none = 0.05 }
+"fits.lights"       = { yes = 0.7 }
+"fits.timer"        = { yes = 0.05 }
+"fits.volume"       = { yes = 0.05 }
+"lights.room"       = { office = 0.9, den = 0.02, unstated = 0.08 }
+"lights.state"      = { dim = 0.7, off = 0.2, on = 0.05, unstated = 0.05 }
+"lights.brightness" = { unstated = 1.0 }
+"timer.duration"    = { unstated = 1.0 }
+"timer.label"       = { unstated = 1.0 }
+"volume.level"      = { unstated = 1.0 }

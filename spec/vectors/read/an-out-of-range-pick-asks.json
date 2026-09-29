@@ -32,6 +32,12 @@
       },
       "fits.timer": {
         "yes": 0.05
+      },
+      "timer.duration": {
+        "unstated": 1
+      },
+      "timer.label": {
+        "unstated": 1
       }
     }
   },

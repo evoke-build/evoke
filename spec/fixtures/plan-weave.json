@@ -222,6 +222,7 @@
       "options": {
         "den": "The TV room downstairs; also 'the snug'.",
         "office": "The upstairs study.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -243,6 +244,7 @@
             "dim the office to 30 percent"
           ]
         },
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -295,6 +297,7 @@
       "options": {
         "dana": "Dana Ortiz, operations.",
         "sam": "Sam Lee, sales.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"

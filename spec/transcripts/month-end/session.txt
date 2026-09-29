@@ -26,31 +26,27 @@ $ evoke why
   bank 0.90 · none 0.07 · invoices 0.03
   month  september 0.90 · unstated 0.10
   fits   bank 0.80 · invoices 0.02 · cards 0.02 · payroll 0.02 · reconcile 0.02 · ledger 0.02 · send 0.02 · close 0.02
-  ran bank month="september" · weakest: route 0.90 · replay, 15 questions
+  ran bank month="september" · weakest: route 0.90 · replay, 17 questions
   2  "invoices"
   invoices 0.90 · none 0.07 · bank 0.03
-  month  unstated 0.90 · august 0.05 · september 0.05
-  fits   invoices 0.80 · bank 0.02 · cards 0.02 · payroll 0.02 · reconcile 0.02 · ledger 0.02 · send 0.02 · close 0.02
-  ran invoices month="september" · weakest: route 0.90 · shared month = september · replay, 15 questions
+  fits  invoices 0.80 · bank 0.02 · cards 0.02 · payroll 0.02 · reconcile 0.02 · ledger 0.02 · send 0.02 · close 0.02
+  ran invoices month="september" · weakest: route 0.90 · shared month = september · replay, 17 questions
   3  "card expenses"
   cards 0.90 · none 0.07 · bank 0.03
-  month  unstated 0.90 · august 0.05 · september 0.05
-  fits   cards 0.80 · bank 0.02 · invoices 0.02 · payroll 0.02 · reconcile 0.02 · ledger 0.02 · send 0.02 · close 0.02
-  ran cards month="september" · weakest: route 0.90 · shared month = september · replay, 15 questions
+  fits  cards 0.80 · bank 0.02 · invoices 0.02 · payroll 0.02 · reconcile 0.02 · ledger 0.02 · send 0.02 · close 0.02
+  ran cards month="september" · weakest: route 0.90 · shared month = september · replay, 17 questions
   4  "payroll"
   payroll 0.90 · none 0.07 · bank 0.03
-  month  unstated 0.90 · august 0.05 · september 0.05
-  fits   payroll 0.80 · bank 0.02 · invoices 0.02 · cards 0.02 · reconcile 0.02 · ledger 0.02 · send 0.02 · close 0.02
-  ran payroll month="september" · weakest: route 0.90 · shared month = september · replay, 15 questions
+  fits  payroll 0.80 · bank 0.02 · invoices 0.02 · cards 0.02 · reconcile 0.02 · ledger 0.02 · send 0.02 · close 0.02
+  ran payroll month="september" · weakest: route 0.90 · shared month = september · replay, 17 questions
   5  "reconcile them"
   reconcile 0.90 · none 0.07 · bank 0.03
   fits  reconcile 0.80 · bank 0.02 · invoices 0.02 · cards 0.02 · payroll 0.02 · ledger 0.02 · send 0.02 · close 0.02
-  ran reconcile · weakest: route 0.90 · takes transactions from 1, invoices from 2, expenses from 3, payroll from 4 · replay, 15 questions
+  ran reconcile · weakest: route 0.90 · takes transactions from 1, invoices from 2, expenses from 3, payroll from 4 · replay, 17 questions
   6  "post the closing entries to the ledger"
   ledger 0.78 · none 0.19 · bank 0.03
-  month  unstated 0.90 · august 0.05 · september 0.05
-  fits   ledger 0.80 · bank 0.02 · invoices 0.02 · cards 0.02 · payroll 0.02 · reconcile 0.02 · send 0.02 · close 0.02
-  ran ledger month="september" · weakest: route 0.78 · shared month = september · replay, 15 questions
+  fits  ledger 0.80 · bank 0.02 · invoices 0.02 · cards 0.02 · payroll 0.02 · reconcile 0.02 · send 0.02 · close 0.02
+  ran ledger month="september" · weakest: route 0.78 · shared month = september · replay, 17 questions
   7  "send the report to cfo@example.com"
   send 0.90 · none 0.07 · bank 0.03
   to    "cfo@example.com" 0.90 · unstated 0.10

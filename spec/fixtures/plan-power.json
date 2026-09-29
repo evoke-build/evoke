@@ -75,6 +75,7 @@
             "shut down"
           ]
         },
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"

@@ -10,7 +10,7 @@
       "route": {
         "lights": 1.2,
         "timer": -0.2,
-        "none": 0.0
+        "none": 0
       },
       "fits.lights": {
         "yes": 0.7
@@ -28,6 +28,15 @@
       },
       "fits.timer": {
         "yes": 0.1
+      },
+      "lights.brightness": {
+        "unstated": 1
+      },
+      "timer.duration": {
+        "unstated": 1
+      },
+      "timer.label": {
+        "unstated": 1
       }
     }
   },

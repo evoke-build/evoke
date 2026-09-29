@@ -72,6 +72,15 @@ pub const DEADLINE: Millis = Millis(30_000);
 const UNSTATED: &str = "unstated";
 const UNSTATED_TEXT: &str = "The request does not say.";
 
+/// The answer every value's choice carries beside its sentinel: stated, but not among what is offered.
+const NONE: &str = "none";
+
+/// What `none` says of a value: over a list, over the candidates a recognizer read, and of a text when no
+/// quotes hold one.
+const NOT_LISTED: &str = "The request names one that is not in this list.";
+const NOT_AMONG: &str = "The request says it, and none of these is it.";
+const NOT_QUOTED: &str = "The request says it, in words that are not between quotes.";
+
 /// The compiled set: read through its accessors, built by `compile` alone.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(try_from = "RawPlan")]
@@ -809,7 +818,8 @@ fn too_many_options(
 }
 
 /// One slot per argument: a choice with `unstated`, its examples attached to the options they assert; or a pick.
-/// An optional argument over an empty vocabulary has none: never asked, never stated.
+/// A value's choice carries `none` beside its sentinel: stated, but not among these. An optional argument over an
+/// empty vocabulary has no slot: never asked, never stated.
 fn argument_slots(
     name: &LocalName,
     manifest: &Manifest,
@@ -831,6 +841,10 @@ fn argument_slots(
                 };
             let ask = argument.ask.clone();
             let sentinel = || (unstated(), teach(UNSTATED, &unstated_text()));
+            let listed = |mut options: IndexMap<Key, Text>| {
+                options.insert(none(), Text::Plain(clean(NOT_LISTED)));
+                options
+            };
             let slot = match &argument.kind {
                 Kind::Flag => Slot::Ready(Question::Choice(Choice::closed(
                     ask,
@@ -862,10 +876,12 @@ fn argument_slots(
                     ..
                 } => Slot::Ready(Question::Choice(Choice::closed(
                     ask,
-                    options
-                        .iter()
-                        .map(|(key, what)| (Key::from(key), teach(key.as_str(), what)))
-                        .collect(),
+                    listed(
+                        options
+                            .iter()
+                            .map(|(key, what)| (Key::from(key), teach(key.as_str(), what)))
+                            .collect(),
+                    ),
                     sentinel(),
                 ))),
                 Kind::Value {
@@ -882,12 +898,14 @@ fn argument_slots(
                     }
                     Slot::Ready(Question::Choice(Choice::closed(
                         ask,
-                        words
-                            .into_iter()
-                            .map(|(word, meaning)| {
-                                (Key::from(word), teach(word.as_str(), &meaning.what))
-                            })
-                            .collect(),
+                        listed(
+                            words
+                                .into_iter()
+                                .map(|(word, meaning)| {
+                                    (Key::from(word), teach(word.as_str(), &meaning.what))
+                                })
+                                .collect(),
+                        ),
                         sentinel(),
                     )))
                 }
@@ -930,6 +948,21 @@ pub(crate) fn unstated() -> Key {
 
 pub(crate) fn unstated_text() -> Clean {
     clean(UNSTATED_TEXT)
+}
+
+/// The answer of every value's choice that says a value is stated and not among those offered.
+pub(crate) fn none() -> Key {
+    key(NONE)
+}
+
+/// What `none` says over a recognizer's candidates: of a text with no candidate, that no quotes hold it; of any
+/// other value, that none of these is it.
+pub(crate) fn not_among(pick: Recognizer, candidates: usize) -> Clean {
+    if pick == Recognizer::Quoted && candidates == 0 {
+        clean(NOT_QUOTED)
+    } else {
+        clean(NOT_AMONG)
+    }
 }
 
 fn key(literal: &str) -> Key {

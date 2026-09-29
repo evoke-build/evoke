@@ -105,6 +105,11 @@
             "question": "route",
             "top": "seats",
             "p": 0.9
+          },
+          {
+            "question": "seats.flight",
+            "top": "unstated",
+            "p": 1
           }
         ],
         "runner_up": {
@@ -208,6 +213,11 @@
             "question": "route",
             "top": "weather",
             "p": 0.9
+          },
+          {
+            "question": "weather.day",
+            "top": "unstated",
+            "p": 1
           }
         ],
         "runner_up": {
@@ -312,6 +322,11 @@
             "question": "route",
             "top": "traffic",
             "p": 0.9
+          },
+          {
+            "question": "traffic.departure",
+            "top": "unstated",
+            "p": 1
           }
         ],
         "runner_up": {
@@ -416,6 +431,11 @@
             "question": "route",
             "top": "convert",
             "p": 0.9
+          },
+          {
+            "question": "convert.fare",
+            "top": "unstated",
+            "p": 1
           }
         ],
         "runner_up": {

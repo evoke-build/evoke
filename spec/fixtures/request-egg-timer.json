@@ -48,6 +48,7 @@
       "options": {
         "den": "The TV room downstairs; also 'the snug'.",
         "office": "The upstairs study.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -69,6 +70,16 @@
             "dim the office to 30 percent"
           ]
         },
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "lights.brightness": {
+      "type": "choice",
+      "ask": "How bright, in percent?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -84,6 +95,7 @@
       "ask": "How long?",
       "options": {
         "10-20": "10 minutes",
+        "none": "The request says it, and none of these is it.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -93,6 +105,7 @@
       "ask": "What is the timer for?",
       "options": {
         "29-33": "eggs",
+        "none": "The request says it, and none of these is it.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"

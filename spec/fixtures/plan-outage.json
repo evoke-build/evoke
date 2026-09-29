@@ -1,5 +1,5 @@
 {
-  "digest": "h1:ad8a3ad9634151d71d1423e56de5e329fde28201b4991bcc416b7623562d988d",
+  "digest": "h1:d0295d0a23cec9f6a5502be9d3b2323d923e87fa4610dbdfb167fc092e7077ba",
   "active": {
     "errors": {
       "effect": "read",
@@ -257,7 +257,9 @@
             "error rate of payments in eu-west",
             "is search throwing errors",
             "how many checkout requests are erroring",
-            "show me the 5xx on search in us-east"
+            "show me the 5xx on search in us-east",
+            "what is the error rate of checkout",
+            "is search failing in us east"
           ]
         },
         "deploys": {
@@ -272,7 +274,9 @@
             "list the deploys of payments",
             "recent releases of search in us-east",
             "who shipped to payments in eu-west",
-            "what went out on checkout"
+            "what went out on checkout",
+            "who released payments last",
+            "show the deploys of search in us east"
           ]
         },
         "logs": {
@@ -286,7 +290,9 @@
             "search the payments logs in eu-west",
             "what do the search logs say",
             "what is checkout logging in us-east",
-            "top log errors for payments"
+            "top log errors for payments",
+            "search the logs of checkout",
+            "what errors are in the payments logs in eu west"
           ]
         },
         "suspect": {
@@ -300,7 +306,8 @@
             "find the suspect",
             "which deploy broke it",
             "find the release behind the outage",
-            "what release caused this"
+            "what release caused this",
+            "find the release to blame"
           ]
         },
         "rollback": {
@@ -317,7 +324,9 @@
             "revert payments from 2.3.1 in eu-west",
             "undo the 7.0.2 release of search",
             "back out 5.4.1 on checkout in us-east",
-            "roll back the last payments deploy"
+            "roll back the last payments deploy",
+            "roll back 4.12.0",
+            "revert release 4.12.0 of payments"
           ]
         },
         "post": {
@@ -334,7 +343,8 @@
             "tell #ops the deploy is done",
             "let #incident know it is fixed",
             "drop a line in #ops about payments",
-            "give #incident an update on search"
+            "give #incident an update on search",
+            "write in the incident channel that we are on it"
           ]
         },
         "incidents": {
@@ -349,7 +359,8 @@
             "list the open incidents",
             "what incidents are open",
             "which incidents are still going",
-            "show me active incidents"
+            "show me active incidents",
+            "any incidents right now"
           ]
         },
         "incident": {
@@ -379,7 +390,8 @@
             "draft the postmortem",
             "get the postmortem written",
             "start a postmortem for it",
-            "write the incident review"
+            "write the incident review",
+            "write the postmortem for it"
           ]
         },
         "status": {
@@ -395,7 +407,9 @@
             "mark payments as resolved on the status page",
             "set the search status to investigating",
             "show checkout as identified on the status page",
-            "put payments in monitoring on the status page"
+            "put payments in monitoring on the status page",
+            "mark search as investigating",
+            "tell customers we are monitoring search"
           ]
         },
         "none": "None of these."
@@ -415,6 +429,7 @@
         "checkout": "The checkout service: cart and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
         "search": "The search service: product search and suggestions.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -425,6 +440,7 @@
       "options": {
         "eu-west": "Europe, the Ireland region.",
         "us-east": "The United States, the Virginia region.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -442,6 +458,7 @@
         "checkout": "The checkout service: cart and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
         "search": "The search service: product search and suggestions.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -452,6 +469,7 @@
       "options": {
         "eu-west": "Europe, the Ireland region.",
         "us-east": "The United States, the Virginia region.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -469,6 +487,7 @@
         "checkout": "The checkout service: cart and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
         "search": "The search service: product search and suggestions.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -479,6 +498,7 @@
       "options": {
         "eu-west": "Europe, the Ireland region.",
         "us-east": "The United States, the Virginia region.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -502,6 +522,7 @@
         "checkout": "The checkout service: cart and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
         "search": "The search service: product search and suggestions.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -519,6 +540,7 @@
       "options": {
         "eu-west": "Europe, the Ireland region.",
         "us-east": "The United States, the Virginia region.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -535,6 +557,7 @@
       "options": {
         "#incident": "Where an outage is handled.",
         "#ops": "The operations team's channel.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -576,6 +599,7 @@
         "checkout": "The checkout service: cart and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
         "search": "The search service: product search and suggestions.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -587,7 +611,8 @@
         "investigating": {
           "what": "Looking into a problem.",
           "examples": [
-            "set the search status to investigating"
+            "set the search status to investigating",
+            "mark search as investigating"
           ]
         },
         "identified": {
@@ -599,7 +624,8 @@
         "monitoring": {
           "what": "A fix is out; watching.",
           "examples": [
-            "put payments in monitoring on the status page"
+            "put payments in monitoring on the status page",
+            "tell customers we are monitoring search"
           ]
         },
         "resolved": {
@@ -608,6 +634,7 @@
             "mark payments as resolved on the status page"
           ]
         },
+        "none": "The request names one that is not in this list.",
         "unstated": {
           "what": "The request does not say.",
           "examples": [

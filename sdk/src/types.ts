@@ -808,10 +808,12 @@ export interface Missing {
   choices: Choices
 }
 
-/** Why a value is missing: the input never stated it, or a pick fell outside its range. */
+/** Why a value is missing: the input never stated it, a pick fell outside its range, or the input states one that
+ *  is not among what is offered: a word the list lacks, a form no recognizer reads. */
 export type Why =
   | { type: "unstated" }
   | { type: "out_of_range"; span: Span; range: Range }
+  | { type: "not_offered" }
 
 /** What a person may answer with; a vocabulary also prompts to add a word. */
 export type Choices =

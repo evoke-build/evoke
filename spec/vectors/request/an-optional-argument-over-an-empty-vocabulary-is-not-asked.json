@@ -44,7 +44,8 @@
           "ask": "Which URL?",
           "options": {
             "9-39": "https://example.com/report.pdf",
-            "unstated": "The request does not say."
+            "unstated": "The request does not say.",
+            "none": "The request says it, and none of these is it."
           },
           "otherwise": "unstated"
         }

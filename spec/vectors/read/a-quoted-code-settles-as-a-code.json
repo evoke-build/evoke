@@ -15,6 +15,12 @@
       "fits.meeting": {
         "yes": 0.02
       },
+      "meeting.day": {
+        "unstated": 1
+      },
+      "meeting.time": {
+        "unstated": 1
+      },
       "fits.rollback": {
         "yes": 0.8
       },

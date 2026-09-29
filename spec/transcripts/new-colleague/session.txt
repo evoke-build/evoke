@@ -30,9 +30,7 @@ $ evoke why
   ran accounts · weakest: route 0.90 · takes hire from 1 · replay, 10 questions
   4  "order her a laptop"
   order 0.90 · none 0.07 · hire 0.03
-  person  unstated 0.90 · maria 0.05 · sam 0.05
-  model   unstated 0.90 · air 0.05 · pro 0.05
-  fits    order 0.80 · hire 0.02 · team 0.02 · accounts 0.02 · onboard 0.02
+  fits  order 0.80 · hire 0.02 · team 0.02 · accounts 0.02 · onboard 0.02
   ran order person="maria" · weakest: route 0.90 · shared person = maria · replay, 10 questions
   5  "book the onboarding"
   onboard 0.90 · none 0.07 · hire 0.03

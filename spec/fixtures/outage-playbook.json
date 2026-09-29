@@ -45,7 +45,9 @@
     "search is broken": {},
     "we have an outage on checkout": {},
     "checkout is on fire in eu-west": {},
-    "payments stopped working": {}
+    "payments stopped working": {},
+    "checkout is down": {},
+    "handle the search outage": {}
   },
   "tests": {
     "checkout is failing in eu-west": {},

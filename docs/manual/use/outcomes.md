@@ -48,9 +48,9 @@ is read from the terminal, never from stdin. With no terminal, a confirm exits 3
 
 ## Ask
 
-The winner is clear, but a required argument is missing. Either the input never stated it, or the value fell
-outside its range. `evoke` asks the argument's own question, offers what it may be, and gates again with your
-answer.
+The winner is clear, but an argument is missing. The input never stated a required one, or the value fell
+outside its range, or the input names a value that is not among the argument's choices. `evoke` asks the
+argument's own question, offers what it may be, and gates again with your answer.
 
 ```text
 $ evoke "kill the lights"
@@ -62,6 +62,10 @@ $ evoke "set the volume to 150 percent"
   How loud, in percent?  150 percent is outside 0–100  > 40
   volume level="40"  0.93
 volume set to 40%
+$ evoke "kill the lights in the garage"
+  Which room?  what you named is not on the list  [1] den  [2] office  [+] add one  > 2
+  lights room="office" state="off"  0.90
+group-7 lights off
 ```
 
 - A choice takes its number or its own text. A pick takes what you type, read the same way as the input. A pick
@@ -125,9 +129,10 @@ gate = { write = 0.85 }
 ## `try`: decide, and show the work
 
 `evoke try "<input>"` decides without running, and prints every judgment: the ranking, each argument's
-distribution, each reflex's `fits`, then the outcome and the weakest judgment. Answers that would print as `0.00`
-fold into a count, `8 more under 0.01`; `none` and `unstated` always show. It shares the cache with a real
-decision. It is never logged.
+distribution, each reflex's `fits`, then the outcome and the weakest judgment. An argument the input says nothing
+of prints no line, unless it is asked. Answers that would print as `0.00` fold into a count, `8 more under 0.01`;
+`none` and `unstated` always show. On an argument's line, `none` means the input states a value that is not among
+the choices. It shares the cache with a real decision. It is never logged.
 
 ```text
 $ evoke try "kill the lights"
@@ -153,7 +158,7 @@ $ evoke why
   room   den 0.85 · unstated 0.10 · office 0.05
   state  off 0.88 · on 0.05 · dim 0.05 · unstated 0.02
   fits   lights 0.70 · timer 0.05 · volume 0.05
-  ran lights room="den" state="off" · weakest: room 0.85 · replay, 6 questions
+  ran lights room="den" state="off" · weakest: room 0.85 · replay, 10 questions
 ```
 
 When the answers came from the cache, the last line ends in `· cached` in place of the adapter and its count.

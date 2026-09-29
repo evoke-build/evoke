@@ -1,0 +1,107 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "request": {
+      "$ref": "fixtures/request-egg-timer.json"
+    },
+    "raw": {
+      "route": {
+        "timer": 0.95,
+        "lights": 0.01,
+        "none": 0.04
+      },
+      "fits.lights": {
+        "yes": 0.02
+      },
+      "fits.timer": {
+        "yes": 0.9
+      },
+      "lights.room": {
+        "unstated": 1
+      },
+      "lights.state": {
+        "unstated": 1
+      },
+      "lights.brightness": {
+        "unstated": 1
+      },
+      "timer.duration": {
+        "none": 0.9,
+        "unstated": 0.1
+      },
+      "timer.label": {
+        "none": 0.2,
+        "unstated": 0.8
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "ranking": [
+        {
+          "reflex": "timer",
+          "route": 0.95,
+          "fits": 0.9
+        },
+        {
+          "reflex": "lights",
+          "route": 0.01,
+          "fits": 0.02
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "timer",
+          "p": 0.95
+        },
+        {
+          "question": "timer.duration",
+          "top": "none",
+          "p": 0.9
+        },
+        {
+          "question": "timer.label",
+          "top": "unstated",
+          "p": 0.8
+        }
+      ],
+      "winner": {
+        "reflex": "timer",
+        "args": {},
+        "missing": [
+          {
+            "arg": "duration",
+            "ask": "How long?",
+            "because": {
+              "type": "not_offered"
+            },
+            "choices": {
+              "type": "pick",
+              "pick": "duration"
+            }
+          }
+        ],
+        "unconsumed": [
+          {
+            "start": 10,
+            "end": 20,
+            "text": "10 minutes"
+          },
+          {
+            "start": 29,
+            "end": 33,
+            "text": "eggs"
+          }
+        ],
+        "runner_up": {
+          "reflex": "lights",
+          "route": 0.01,
+          "fits": 0.02
+        }
+      }
+    }
+  }
+}

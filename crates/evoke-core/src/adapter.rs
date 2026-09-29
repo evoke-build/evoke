@@ -199,13 +199,15 @@ impl Choice {
         }
     }
 
-    /// The same choice over the options kept; the sentinel always stays.
+    /// The same choice over the options kept; the sentinel always stays, and so does `none`.
     #[must_use]
     pub fn narrowed(&self, keep: impl Fn(&Key) -> bool) -> Self {
         let options = self
             .options
             .iter()
-            .filter(|(key, _)| keep(key) || Some(*key) == self.otherwise.as_ref())
+            .filter(|(key, _)| {
+                keep(key) || Some(*key) == self.otherwise.as_ref() || **key == crate::plan::none()
+            })
             .map(|(key, text)| (key.clone(), text.clone()))
             .collect();
         Self {

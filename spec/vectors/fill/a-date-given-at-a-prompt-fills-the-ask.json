@@ -39,6 +39,11 @@
           "question": "meeting.day",
           "top": "20-28",
           "p": 0.9
+        },
+        {
+          "question": "meeting.time",
+          "top": "unstated",
+          "p": 1
         }
       ],
       "runner_up": {

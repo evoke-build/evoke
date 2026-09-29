@@ -577,6 +577,11 @@
                 "p": 0.9
               },
               {
+                "question": "rollback.release",
+                "top": "unstated",
+                "p": 1
+              },
+              {
                 "question": "rollback.region",
                 "top": "eu-west",
                 "p": 0.9
@@ -1402,6 +1407,11 @@
                   "question": "rollback.service",
                   "top": "checkout",
                   "p": 0.9
+                },
+                {
+                  "question": "rollback.release",
+                  "top": "unstated",
+                  "p": 1
                 },
                 {
                   "question": "rollback.region",

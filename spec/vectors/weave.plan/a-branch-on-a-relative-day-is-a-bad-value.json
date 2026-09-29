@@ -207,6 +207,11 @@
                 "question": "route",
                 "top": "book",
                 "p": 0.9
+              },
+              {
+                "question": "book.flight",
+                "top": "unstated",
+                "p": 1
               }
             ],
             "runner_up": {
@@ -475,6 +480,11 @@
                   "question": "route",
                   "top": "book",
                   "p": 0.9
+                },
+                {
+                  "question": "book.flight",
+                  "top": "unstated",
+                  "p": 1
                 }
               ],
               "runner_up": {

@@ -48,6 +48,7 @@
       "options": {
         "den": "The TV room downstairs; also 'the snug'.",
         "office": "The upstairs study.",
+        "none": "The request names one that is not in this list.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -69,6 +70,16 @@
             "dim the office to 30 percent"
           ]
         },
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "lights.brightness": {
+      "type": "choice",
+      "ask": "How bright, in percent?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
@@ -78,6 +89,24 @@
       "ask": "Does `timer` do the specific thing the request asks for?",
       "yes": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
       "no": "Something else, such as: keeping the laptop awake; alarms at a time of day; asking the time."
+    },
+    "timer.duration": {
+      "type": "choice",
+      "ask": "How long?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "timer.label": {
+      "type": "choice",
+      "ask": "What is the timer for?",
+      "options": {
+        "none": "The request says it, in words that are not between quotes.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
     }
   },
   "proposed": []
