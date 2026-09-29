@@ -50,7 +50,7 @@ An argv body gets the same five, plus:
 | Variable              | Holds                                          |
 | :-------------------- | :--------------------------------------------- |
 | `EVOKE_CONFIG_<KEY>`  | Each `[config]` key, upper-cased, as its value; a plain one under the home expanded |
-| `EVOKE_INPUT`         | The sentence as typed                          |
+| `EVOKE_INPUT`         | The person's own words; the step's words when a plan runs the reflex; empty under `evoke run` |
 
 Secrets reach a body only this way, for the length of one run.
 

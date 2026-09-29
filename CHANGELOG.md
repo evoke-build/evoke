@@ -16,6 +16,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   when a playbook's step reaches a reflex without the playbook's tag.
 - `evoke new --playbook <name>` writes a playbook from the template.
 - The SDK's `Manifest` carries `effect_absent` when its file left `effect` out.
+- The manual: one page holds the rules for writing a reflex, a playbook and a collection, with three
+  checklists, in place of the wording page.
 
 ## [0.14.0] - 2026-09-28
 

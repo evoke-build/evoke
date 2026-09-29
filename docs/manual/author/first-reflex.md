@@ -52,6 +52,14 @@ export default (async ({ who }) => `Hello, ${who}!`) satisfies Reflex
 `reflex.d.ts` is generated from the manifest. It holds `Args`, with `who: string`, and the `Reflex` type that
 checks the body's arguments and its return. The body imports that one file and nothing else.
 
+For a [playbook](playbooks.md), a reflex whose body is a plan of steps, `evoke new --playbook <name>` writes
+`reflex.toml` alone:
+
+```text
+$ evoke new --playbook drill
++ drill/reflex.toml
+```
+
 ## 2. Check it
 
 ```text
@@ -110,7 +118,12 @@ Hello, Grace!
 ## 4. Make it yours
 
 From here, three pages carry the rest: the [manifest](manifest.md) key by key, the four kinds of
-[argument](arguments.md), and what a [body](body.md) receives and returns. Then [wording](wording.md), which
-decides accuracy more than anything else. And [publishing](publishing.md), which is a git tag.
+[argument](arguments.md), and what a [body](body.md) receives and returns. Then [the rules](rules.md), which say how
+to write a manifest so that what people type reaches your reflex. And [publishing](publishing.md), which is a git
+tag.
+
+This page took you through the first steps of working on a reflex. [Rule 45](rules.md#10-how-to-work) lists every
+step, in the order that finds each fault first. Read your reflex against the [checklist](rules.md#checklists) before
+its first tag.
 
 **Next:** [The manifest](manifest.md).

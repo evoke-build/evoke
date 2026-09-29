@@ -45,11 +45,18 @@ trailing `.` `!` `?` or `…` dropped. Such records are one record, and duplicat
 user's line naming a shipped utterance replaces it. So the highest layer decides each utterance's table and
 value.
 
-## How many, and which
+## Which records to write
 
-Each reflex in the collection carries at least three examples and three tests. One of the tests is `false`.
-Cover each option at least once. Cover each pick. Include one *unstated* case for an optional argument. Make the
-`false` cases the near neighbours: what a person might say that this reflex must not take.
+[The rules](rules.md) say which records to write, and why:
+
+- At least three examples, as people type the request: [rule 14](rules.md#3-words-that-reach-the-right-reflex).
+- Each near neighbour, a sentence that sounds like the reflex's request and is not, as a `false` test in words no
+  example uses: [rule 15](rules.md#3-words-that-reach-the-right-reflex).
+- For each option or pick argument, one record that leaves it out, `{ area = false }`:
+  [rule 15](rules.md#3-words-that-reach-the-right-reflex).
+- No record that opens with a negation or a condition: [rule 15](rules.md#3-words-that-reach-the-right-reflex).
+- For a playbook, records that state the situation it handles, never one of its steps:
+  [rule 6](rules.md#2-when-to-write-a-playbook).
 
 ## `evoke test`
 
@@ -75,13 +82,18 @@ A case that passed at the last run and fails now is decided twice more. Two of t
 **regression**. `test` exits 1 when a case failed. It never blocks an install.
 
 A playbook's steps are tested after its records ([Playbooks](playbooks.md)): each filled from the first record
-whose reading fills every slot it holds, decided over the whole set, and passed when it reaches a reflex. Its
-line counts them, `outage  14 passed · 7 steps route`, and a step that reaches nothing, or its own plan, or that
-no record fills, prints under it.
+whose reading fills every required slot it holds, decided over the whole set, and passed when it reaches a reflex
+other than its own playbook. Its line counts them, `outage  14 passed · 7 steps route`, and a step that reaches
+nothing, or its own plan, fails and prints under it. These print under it too, and never fail:
+
+- A step no record fills, marked untested.
+- The step before a branch, when its reflex yields no field the branch waits on.
+- A step that reaches a tighter effect than the playbook claims.
 
 ## Lint
 
-Records count against lint: at most 40 per table, and 200 characters per utterance. Lint reports at `add` and
-`check`.
+Records count against lint: at most 40 per table, and 200 characters per utterance. Lint also reports fewer than
+three examples that are not `false`, an option or pick argument that no record leaves out, and a `quoted` argument
+that no example shows in quotes. Lint reports at `add` and `check`.
 
-**Next:** [Wording](wording.md).
+**Next:** [The rules](rules.md).

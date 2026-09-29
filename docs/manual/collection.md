@@ -4,7 +4,7 @@
 `evoke-build/reflexes` is the first-party collection: fourteen reflexes for what a Mac does at a word. Each
 reflex is one directory, with `reflex.toml` and the file it runs, where it runs one. There is nothing to build.
 Twelve of the fourteen run a file and need Node 24 or newer on your `PATH`; `open` and `trash` run a program
-the Mac has.
+the Mac has. Every one follows [the rules](author/rules.md), so each is a manifest to copy from.
 
 ```bash
 evoke add evoke-build/reflexes

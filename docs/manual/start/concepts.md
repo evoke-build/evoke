@@ -15,7 +15,7 @@ line is documentation, tuning, test and customization at once:
 ```
 
 A reflex is a package of such wording plus the program it describes. `evoke` fetches, versions and refines that
-wording, and runs the program.
+wording, and runs the program. [The rules](../author/rules.md) say how to write it so that it is read right.
 
 ## The words
 

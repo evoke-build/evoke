@@ -18,6 +18,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tomllib
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -34,6 +35,11 @@ LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)\)")
 TOKEN = re.compile(r"--([a-z-]+):\s*([^;]+);")
 UNLISTED = {"404.html", "print.html", "toc.html"}
 UNINDEXED = {"404.html", "use-cases.html"}  # the page for an address that is not there, and one that sends readers on
+# The addresses the manual once had, which mdBook answers with a page that sends the reader on (site/book.toml)
+MOVED = {
+    OUT / "manual" / was.lstrip("/")
+    for was in tomllib.loads((SITE / "book.toml").read_text())["output"]["html"].get("redirect", {})
+}
 BRAND = re.compile(r"^evoke - |\s+-\s+evoke(?: manual)?$", re.IGNORECASE)
 SETTINGS = re.compile(r"\A(?:<!-- (?:title|description): .+? -->\n)+")
 FLOW = re.compile(r'<pre[^>]*\sdata-flow="([\w-]+)"[^>]*>(.*?)</pre>', re.DOTALL)
@@ -832,7 +838,9 @@ for page in site_pages:
     phrased(page)
     widowless(page)
     labelled(page)
-manual_pages = sorted(OUT.glob("manual/**/*.html"))
+for page in MOVED:  # no search result lands on a page that only sends the reader on
+    page.write_text(page.read_text().replace("</head>", '<meta name="robots" content="noindex">\n  </head>', 1))
+manual_pages = sorted(page for page in OUT.glob("manual/**/*.html") if page not in MOVED)
 for page in manual_pages:
     furnished(page)
     described(page)

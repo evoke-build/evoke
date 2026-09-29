@@ -39,7 +39,8 @@ These are the reasons a decision stops at confirm, in the order the line names t
 - **destructive**: a destructive reflex always confirms, however sure.
 - **no gate**: the adapter shipped no thresholds, so nothing runs on its own.
 - **under the floor**: the weakest judgment is under the bar for this effect.
-- **an unconsumed span**: you typed something recognizable, like a number or a URL, and no argument took it.
+- **an unconsumed span**: you typed something recognizable, like a duration or a URL, and no argument took it. A
+  bare number never stops a call.
 - **two things**: a runner-up reflex fits well enough that the input may have asked for two things.
 
 `[t]each` records only what the input stated. An argument you filled in at a prompt is not recorded. The answer

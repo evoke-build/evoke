@@ -18,3 +18,7 @@ no-section-label   = true
 default-theme      = "coal"
 smart-punctuation  = false
 additional-css     = ["manual.css"]
+
+# An address the manual once had, sent to the page that took its place.
+[output.html.redirect]
+"/author/wording.html" = "rules.html"

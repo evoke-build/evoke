@@ -57,7 +57,8 @@ runs   = ["screencapture"]
 ## Writing one
 
 `evoke new <name>` writes a working reflex to start from. `evoke check` reads the manifest, loads the body, and
-writes `reflex.d.ts`, the one file a body imports. The whole craft is in
-[the manual](https://evoke.build/manual/author/first-reflex.html). Here, `npm ci` then `npm run check` and
+writes `reflex.d.ts`, the one file a body imports. Every reflex here follows
+[the rules](https://evoke.build/manual/author/rules.html) of the manual, which starts at
+[your first reflex](https://evoke.build/manual/author/first-reflex.html). Here, `npm ci` then `npm run check` and
 `npm test` type-check every body and run the tests. Licence: [MIT](LICENSE). Issues and changes:
 [evoke-build/evoke](https://github.com/evoke-build/evoke).

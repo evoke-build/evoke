@@ -14,11 +14,12 @@ adapter, and the words of a weave.
 | **Branch**       | Steps of a playbook that run only under a value an earlier step yields, `{ say = "…", when = { landing = "yes" } }`, listed right after that step; the plan prints every one, the result picks, the rest are skipped clean |
 | **Call**         | A reflex with its arguments filled, on one line: `lights room="den" state="off"`                          |
 | **Cap**          | A reason a complete call stops at confirm: destructive, no gate, under floor, an unconsumed span, two things |
+| **Change**       | A reflex whose `effect` is `write` or `destructive`: it changes something, where a lookup only reads     |
 | **Collection**   | A repository of reflex directories                                                                        |
 | **Confidence**   | The lowest top probability among the route and every argument question of the winner                     |
 | **Confirm**      | The outcome when a call is complete but capped: `[y]es [n]o [t]each`                                      |
 | **Contract**     | What a user cannot override: `run` or `steps`, argument names and sources, option keys, ranges, config keys, what a reflex yields, returns and takes |
-| **Effect**       | What running a reflex does: `read`, `write` or `destructive`. Absent means destructive                    |
+| **Effect**       | What running a reflex does: `read`, `write` or `destructive`. Absent means destructive, so a manifest always writes it |
 | **Effective manifest** | The shipped manifest with your overlay merged in; what `show <name>` prints                         |
 | **Fits**         | The yes/no question per reflex: does it do what was asked? Its runner-up floor marks an input asking for two things |
 | **Flag**         | A yes/no argument. The body receives `true` or nothing                                                    |
@@ -32,7 +33,9 @@ adapter, and the words of a weave.
 | **Inactive**     | A reflex left out of every decision until a problem is fixed: an empty vocabulary, an unset setting, an overlay that does not read |
 | **Local name**   | The key under `[reflexes]`: what the classifier reads and what the overlay file is named after            |
 | **Lock**         | `evoke.lock`: per remote reflex, the ref, tag, commit, `h1` and consented effect. Also the adapter         |
+| **Lookup**       | A reflex whose `effect` is `read`: it finds or shows something, and changes nothing                      |
 | **Manifest**     | `reflex.toml`: what the classifier reads and what the body receives                                       |
+| **Near neighbour** | What a person might type that sounds like a reflex's request and is not: named under `not_for`, and written as a `false` test |
 | **Overlay**      | `overlays/<name>.toml`: your wording for one reflex, merged over the shipped one                          |
 | **Pick**         | An argument read from an exact span of the input: `number`, `duration`, `email`, `url`, `quoted`, `date`, `time`, `amount`, `code` |
 | **Recalled**     | A value an earlier body of this session returned under the field a pick's `recent` names, listed at the ask and chosen by you |
@@ -49,6 +52,7 @@ adapter, and the words of a weave.
 | **Route**        | The one choice over every installed reflex plus *none*                                                    |
 | **Run**          | The outcome when a call clears its floor. Also the key naming the body                                    |
 | **Runtime**      | What runs a body: Node for a file, nothing for an argv                                                    |
+| **Situation**    | What a person faces, typed in one sentence, a problem or a routine: *checkout is failing in eu-west*, *close the month*. A playbook is reached by its situation |
 | **Slot**         | An argument named in a step of a playbook, `{service}`: filled from the sentence or asked before the plan prints; in square brackets, written only when stated |
 | **Span**         | An exact piece of the input, by character offsets                                                         |
 | **Step**         | One part of a weave, decided as one input is, a playbook's sentences among them; numbered as the plan prints it, run at its turn |
