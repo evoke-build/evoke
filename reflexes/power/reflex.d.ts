@@ -9,10 +9,10 @@ export interface Config {}
 
 /** What the body receives beside its arguments. */
 export interface Context {
-  /** The input as it was typed. */
+  /** The person's own words, or the step's words in a plan. Empty when `evoke run` calls it by name. */
   input: string
   config: Config
-  /** Aborted at the deadline or on a decline: stop, never guess. */
+  /** Aborted at the deadline, on Ctrl-C or SIGTERM, when an app cancels the run, and when evoke ends: stop. */
   signal: AbortSignal
 }
 

@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- `reflex.d.ts` says what `input` holds and what aborts `signal`; `evoke check` writes it again.
+
 ## [0.15.0] - 2026-09-29
 
 - A code reads in small letters too: `inc-311`, `tp1043`, `c02xk1abjg5m`.
