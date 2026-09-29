@@ -521,7 +521,7 @@
             "text": "send the report to cfo@example.com",
             "end": 168,
             "decision": {
-              "outcome": "run",
+              "outcome": "confirm",
               "reflex": "send",
               "args": {
                 "to": {
@@ -538,7 +538,7 @@
                 }
               },
               "call": "send to=\"cfo@example.com\"",
-              "effect": "write",
+              "effect": "destructive",
               "confidence": 0.9,
               "weakest": {
                 "question": "route",
@@ -598,10 +598,19 @@
                   "route": 0,
                   "fits": 0.02
                 }
+              ],
+              "prompt": {
+                "own": "send to=\"cfo@example.com\" · destructive · weakest: route 0.90",
+                "template": "Email the closing report to cfo@example.com?"
+              },
+              "because": [
+                {
+                  "type": "destructive"
+                }
               ]
             },
             "reflex": "send",
-            "effect": "write",
+            "effect": "destructive",
             "after": [
               1,
               2,
@@ -725,39 +734,39 @@
         "read": 0.6,
         "write": 0.8
       },
-      "set": "h1:0269ef759b443af71f94e363acd388921ea3adb90b2569d1e06336b3b4dbe4b7",
+      "set": "h1:86ca6380adce604443ee1cb6d91fb253e5ac5dbc351c857c5d45b3202c78fcd6",
       "reflexes": {
         "bank": {
-          "item": "h1:634ab46701e191fa8909fd6f76e83e84e4c4c453861d79fe8fec2e2af5897e52",
+          "item": "h1:db5ee0337719871b52559478c068c8f771451b409099372970bf5bb06c50519e",
           "path": "./bank"
         },
         "invoices": {
-          "item": "h1:59b7af7d0a41068c365dac6b8e54a2de77bf685e1f1805986c808d53717d92c9",
+          "item": "h1:e26bf18c23bfda3dc1d10b577c89b013b8f6ca982c63bda21afc698c8b9baa85",
           "path": "./invoices"
         },
         "cards": {
-          "item": "h1:5d5c1cc2c1275b36bb812fad8c8d14531c6ca7ec44116b9fdc2fe68e46a06812",
+          "item": "h1:a58c56a6d75d26ee2a4b5feaf9a519703e69606a56e933a7d42f6e0d1f0e4acd",
           "path": "./cards"
         },
         "payroll": {
-          "item": "h1:fa1646e1742c8d7133cc7aa97966f6892711698b9c2f28e64a0e852ff2862d03",
+          "item": "h1:081249a6de62553f9cea8dae33d10cb617d6c469a2b2763d8248675b0ba7fafa",
           "path": "./payroll"
         },
         "reconcile": {
-          "item": "h1:d734361956482631cb6312ec5eeed2be6f067bd3e87053a0b50183609e75965c",
+          "item": "h1:8be45ff4b1f3dc4eccb4cebbdde89cfacfbcabe72af68f40073b46dff25ad082",
           "path": "./reconcile"
         },
         "ledger": {
-          "item": "h1:6a0a5d0596032969b672ef100806e83bcf2ac5f3e9ed18c1697a5d38fb9ad0ed",
+          "item": "h1:dbccb603842620f7418cb21974647ff9e6f87b9db11badd048ba8b84a349cd3e",
           "path": "./ledger"
         },
         "send": {
-          "item": "h1:ebfebd049702fb4525e8fcd88dd570a1bb377c60c78354967ef39057e82b524f",
+          "item": "h1:444e16eed9172e5ec9879e5727703caaaea582574494c2a09e0dd413dcc838e8",
           "path": "./send"
         }
       },
       "vocab": {
-        "months": "h1:0ece05e677ed64a2b4cdf0766f87dfddb2762ed1790845eb3200227bd0f9adcf"
+        "months": "h1:effcbf4e2dac21d23bf8872ba8fce8bd2d3253564bfc759108087262e9cc1745"
       },
       "answers": [
         {

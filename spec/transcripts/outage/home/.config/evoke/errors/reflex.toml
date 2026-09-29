@@ -2,11 +2,16 @@ reflex = 1
 
 description = """
 Show the error rate of a service.
-The rate over the last hour and when it rose, in one region or all."""
-not_for = ["logs of a service", "releases and deploys", "the status page"]
-tags = ["errors"]
+The share of its requests failing over the last hour and when it rose, in one region or all."""
+not_for = [
+  "the error messages in a service's logs",
+  "what was deployed and when",
+  "a service that is down or broken",
+  "response times and latency",
+]
+tags = ["errors", "outage"]
 effect = "read"
-confirm = "Check the errors of {service}?"
+confirm = "Show the error rate of {service}?"
 run = "errors.mts"
 returns = "errors"
 
@@ -20,6 +25,15 @@ vocab    = "regions"
 optional = true
 
 [examples]
-"check the errors for checkout"     = {}
-"error rate of payments in eu-west" = {}
-"is search throwing errors"         = {}
+"check the errors for checkout"           = {}
+"error rate of payments in eu-west"       = {}
+"is search throwing errors"               = {}
+"how many checkout requests are erroring" = {}
+"show me the 5xx on search in us-east"    = {}
+
+[tests]
+"how flaky is payments right now"   = {}
+"any timeouts in the checkout logs" = false
+"what version is search on"         = false
+"search just went down"             = false
+"why is checkout so slow"           = false

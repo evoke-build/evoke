@@ -10,9 +10,15 @@ whole plan prints before anything runs.
 reflex = 1
 
 description = """
-Handle a service outage.
-Looks at the service's errors, deploys and logs, finds the release behind it, rolls it back, tells the incident channel and updates the status page."""
-not_for = ["one lookup on its own", "an incident's postmortem", "a service that is healthy"]
+Handle a service that is down or failing.
+Checks its errors, deploys and logs, finds the release behind the failure, rolls it back, tells the incident channel and updates the status page; the rollback asks again before it runs."""
+not_for = [
+  "rolling back one release on its own",
+  "asking whether a service is healthy",
+  "a slow service that still answers",
+]
+tags    = ["outage"]
+effect  = "destructive"
 confirm = "Run the outage plan for {service}?"
 steps = [
   "check {service}'s errors[ in {region}]",
@@ -25,7 +31,7 @@ steps = [
 ]
 
 [args.service]
-ask   = "Which service?"
+ask   = "Which service is down?"
 vocab = "services"
 
 [args.region]
@@ -34,11 +40,13 @@ vocab    = "regions"
 optional = true
 
 [examples]
-"payments is down in us-east" = {}
-"search is broken"            = {}
+"payments is down in us-east"   = {}
+"search is broken"              = {}
+"we have an outage on checkout" = {}
 
 [tests]
-"checkout is failing in eu-west" = {}
+"checkout is failing in eu-west"       = {}
+"checkout feels sluggish this morning" = false
 ```
 
 ```text
@@ -77,7 +85,7 @@ only in a bracket; a required one never does.
 ```text
 $ evoke "we have an outage"
   1  outage · asks service
-  Which service?  [1] checkout  [2] payments  [3] search  [+] add one  > 2
+  Which service is down?  [1] checkout  [2] payments  [3] search  [+] add one  > 2
   1  errors service="payments"  0.90 · outage 1
   …
 ```
@@ -175,7 +183,7 @@ numbered, a step that may not run ending in its `when`.
 
 ```text
 $ evoke test outage
-  outage  4 passed · 7 steps route
+  outage  14 passed · 7 steps route
 ```
 
 ## In the SDK

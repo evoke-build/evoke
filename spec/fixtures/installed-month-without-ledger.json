@@ -4,17 +4,20 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "Pull the bank transactions of a month.\nEvery debit and credit on the business account.",
+            "description": "Pull a month's bank transactions.\nEvery debit and credit on the business account, and its balance on the month's last day.",
             "not_for": [
-              "invoices",
-              "card expenses",
-              "payroll"
+              "charges on the company cards",
+              "which invoices customers paid",
+              "salaries and payroll taxes",
+              "matching the bank against the books",
+              "moving money or paying a bill"
             ],
             "tags": [
-              "bank"
+              "bank",
+              "close"
             ],
             "effect": "read",
-            "confirm": "Pull the bank transactions for {month}?",
+            "confirm": "Pull {month}'s bank transactions?",
             "run": "bank.mts",
             "config": {},
             "args": {
@@ -30,9 +33,19 @@
             "examples": {
               "pull the bank transactions for september": {},
               "get august's bank feed": {},
-              "what went through the bank in october": {}
+              "what went through the bank in october": {},
+              "bank statement for september": {},
+              "every payment in or out of the bank in august": {}
             },
-            "tests": {},
+            "tests": {
+              "show me october's bank activity": {},
+              "which transfers hit the account in august": {},
+              "what did the team put on the company cards in september": false,
+              "which of october's invoices are still unpaid": false,
+              "what did salaries come to in august": false,
+              "tie out the bank to the books for september": false,
+              "wire 3000 to the supplier's account": false
+            },
             "unknown": []
           },
           "yours": []
@@ -45,17 +58,19 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "List the invoices of a month.\nWhat was billed, and what was paid.",
+            "description": "List a month's invoices.\nWhat was billed to customers that month, and which invoices are paid.",
             "not_for": [
-              "bank transactions",
-              "card expenses",
-              "sending an invoice"
+              "sending, creating or chasing an invoice",
+              "bills that suppliers send us",
+              "money that came into the bank",
+              "receipts for card charges"
             ],
             "tags": [
-              "invoices"
+              "invoices",
+              "close"
             ],
             "effect": "read",
-            "confirm": "List the invoices of {month}?",
+            "confirm": "List {month}'s invoices?",
             "run": "invoices.mts",
             "config": {},
             "args": {
@@ -71,9 +86,18 @@
             "examples": {
               "list september's invoices": {},
               "which invoices went out in august": {},
-              "invoices for october": {}
+              "invoices for october": {},
+              "how many of september's invoices are paid": {},
+              "what did we bill customers in august": {}
             },
-            "tests": {},
+            "tests": {
+              "show the invoices we issued in october": {},
+              "what's still unpaid from august's billing": {},
+              "send acme their invoice for september": false,
+              "what do we owe our vendors for october": false,
+              "deposits into the business account in august": false,
+              "where's the receipt for october's hotel charge": false
+            },
             "unknown": []
           },
           "yours": []
@@ -86,17 +110,19 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "List the company card expenses of a month.\nEvery charge, with its receipt when there is one.",
+            "description": "List a month's company card expenses.\nEvery charge on the company cards, and which of them lack a receipt.",
             "not_for": [
-              "bank transactions",
-              "invoices",
-              "payroll"
+              "debits on the business account",
+              "salaries and wages",
+              "out-of-pocket costs to pay back",
+              "freezing a card or ordering a new one"
             ],
             "tags": [
-              "cards"
+              "cards",
+              "close"
             ],
             "effect": "read",
-            "confirm": "List the card expenses of {month}?",
+            "confirm": "List {month}'s card expenses?",
             "run": "cards.mts",
             "config": {},
             "args": {
@@ -112,9 +138,18 @@
             "examples": {
               "card expenses for september": {},
               "what did we spend on cards in august": {},
-              "pull the october card charges": {}
+              "pull the october card charges": {},
+              "which card charges in september have no receipt": {},
+              "company card spend for october": {}
             },
-            "tests": {},
+            "tests": {
+              "show august's charges on the corporate cards": {},
+              "the corporate card statement for september": {},
+              "what left our current account in september": false,
+              "how much did we pay in wages in october": false,
+              "reimburse sam for the train tickets he bought himself": false,
+              "freeze the card that went missing": false
+            },
             "unknown": []
           },
           "yours": []
@@ -127,17 +162,18 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "Show the payroll run of a month.\nSalaries, taxes and the total paid.",
+            "description": "Show a month's payroll run.\nThe salaries, taxes and total of a run already made. It pays no one.",
             "not_for": [
-              "bank transactions",
-              "card expenses",
-              "invoices"
+              "running payroll or paying salaries",
+              "one person's payslip",
+              "adding someone to payroll or changing a salary"
             ],
             "tags": [
-              "payroll"
+              "payroll",
+              "close"
             ],
             "effect": "read",
-            "confirm": "Show the payroll of {month}?",
+            "confirm": "Show {month}'s payroll run?",
             "run": "payroll.mts",
             "config": {},
             "args": {
@@ -153,9 +189,16 @@
             "examples": {
               "show september's payroll": {},
               "what did payroll cost in august": {},
-              "the october payroll run": {}
+              "payroll breakdown for october": {},
+              "payroll taxes for september": {}
             },
-            "tests": {},
+            "tests": {
+              "october's wage bill": {},
+              "gross pay for september": {},
+              "pay everyone their october salary": false,
+              "ana's payslip for august": false,
+              "put maria on payroll from october": false
+            },
             "unknown": []
           },
           "yours": []
@@ -168,17 +211,19 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "Reconcile a month's books.\nMatches its bank transactions against its invoices, card expenses and payroll, and lists what is left to review.",
+            "description": "Reconcile a month's bank transactions with its invoices, card expenses and payroll.\nIt works on what was pulled just before it and lists what is left to review. It marks nothing.",
             "not_for": [
-              "posting to the ledger",
-              "sending a report",
-              "pulling transactions"
+              "closing the month in the ledger",
+              "pulling the bank transactions",
+              "emailing the closing report",
+              "marking one transaction as matched"
             ],
             "tags": [
-              "reconcile"
+              "reconcile",
+              "close"
             ],
             "effect": "read",
-            "confirm": "Reconcile the month?",
+            "confirm": "Reconcile the transactions with the invoices, expenses and payroll?",
             "run": "reconcile.mts",
             "config": {},
             "args": {},
@@ -192,9 +237,17 @@
             "examples": {
               "reconcile them": {},
               "reconcile the books": {},
-              "match everything up": {}
+              "match everything up": {},
+              "match them against the bank": {}
             },
-            "tests": {},
+            "tests": {
+              "reconcile the lot": {},
+              "square them all up": {},
+              "wrap up october's books": false,
+              "fetch the business account's transactions for september": false,
+              "mail the reconciliation to controller@example.com": false,
+              "mark the rent payment as reconciled": false
+            },
             "unknown": []
           },
           "yours": []
@@ -207,22 +260,24 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "Email the month's closing report.\nTo one address.",
+            "description": "Email the month's closing report.\nOnly the closing report, to the one address you type; once sent it cannot be taken back.",
             "not_for": [
-              "posting to the ledger",
-              "chat messages",
-              "reconciling"
+              "writing someone an email",
+              "sending an invoice to a customer",
+              "sharing the report in a chat channel",
+              "emailing a statement or a payslip"
             ],
             "tags": [
-              "send"
+              "send",
+              "close"
             ],
-            "effect": "write",
-            "confirm": "Send the report to {to}?",
+            "effect": "destructive",
+            "confirm": "Email the closing report to {to}?",
             "run": "send.mts",
             "config": {},
             "args": {
               "to": {
-                "ask": "To which address?",
+                "ask": "To which email address?",
                 "pick": "email",
                 "optional": false,
                 "was": []
@@ -233,33 +288,47 @@
               "send the report to cfo@example.com": {
                 "to": "cfo@example.com"
               },
-              "email the close to omar@example.com": {
+              "email the month-end pack to omar@example.com": {
                 "to": "omar@example.com"
               },
               "mail the month's report to board@example.com": {
                 "to": "board@example.com"
+              },
+              "get the closing report over to finance@example.com": {
+                "to": "finance@example.com"
               }
             },
-            "tests": {},
+            "tests": {
+              "forward the closing report to auditor@example.com": {
+                "to": "auditor@example.com"
+              },
+              "email the closing report to the finance lead": {
+                "to": false
+              },
+              "send acme@example.com their invoice": false,
+              "email ana@example.com about the team lunch": false,
+              "put the report on slack for finance": false,
+              "email lena@example.com the august payslips": false
+            },
             "unknown": []
           },
           "yours": []
         }
       },
-      "consented": "write",
+      "consented": "destructive",
       "configured": {}
     }
   },
   "vocab": {
     "months": {
       "august": {
-        "what": "August, the month before last."
+        "what": "August."
       },
       "september": {
-        "what": "September, last month."
+        "what": "September."
       },
       "october": {
-        "what": "October, this month."
+        "what": "October."
       }
     }
   },

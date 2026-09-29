@@ -2,22 +2,31 @@ reflex = 1
 
 description = """
 Find a person's laptop in device management.
-Its serial, its model and when it last checked in."""
-not_for = ["their signed-in sessions", "their API keys", "locking or wiping a laptop"]
-tags = ["device"]
+Its serial, its model and when it last checked in; nothing on the laptop changes."""
+not_for = ["where a person is signed in", "a person's API keys", "locking or wiping a laptop", "ordering a new laptop"]
+tags = ["device", "stolen"]
 effect = "read"
-confirm = "Look up the laptop of {person}?"
+confirm = "Find {person}'s laptop?"
 run = "device.mts"
 returns = "device"
 
 [args.person]
-ask   = "Whose laptop?"
+ask   = "Which colleague's laptop?"
 vocab = "people"
 
 [yields]
 serial = "code"
 
 [examples]
-"find sam's laptop"                = {}
-"where was ana's laptop last seen" = {}
-"look up jo's device"              = {}
+"find sam's laptop"                        = {}
+"when did ana's laptop last check in"      = {}
+"look up jo's device"                      = {}
+"get me the serial of sam's work computer" = {}
+
+[tests]
+"which model of laptop does ana use"    = {}
+"what hardware does jo have"            = {}
+"is sam connected to the vpn right now" = false
+"find jo's tokens"                      = false
+"disable ana's laptop remotely"         = false
+"buy sam a new laptop"                  = false

@@ -2,8 +2,13 @@ reflex = 1
 
 description = """
 Look up an incident by its number.
-What happened, when it opened, and which service it hit."""
-not_for = ["listing every incident", "writing a postmortem", "error rates"]
+What happened, when it opened and which service it hit."""
+not_for = [
+  "listing the open incidents",
+  "drafting a postmortem",
+  "closing or resolving an incident",
+  "declaring a new incident",
+]
 tags = ["incident"]
 effect = "read"
 confirm = "Look up incident {number}?"
@@ -18,3 +23,11 @@ pick = "number"
 "look up incident 311"         = { number = "311" }
 "what happened in incident 42" = { number = "42" }
 "show me incident 1207"        = { number = "1207" }
+"details on incident 88"       = { number = "88" }
+
+[tests]
+"what's the story with incident 64"      = { number = "64" }
+"show me that incident's details"        = { number = false }
+"close incident 311"                     = false
+"prepare the postmortem for incident 97" = false
+"how many incidents remain unresolved"   = false

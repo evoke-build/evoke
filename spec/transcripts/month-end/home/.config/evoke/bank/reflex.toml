@@ -1,12 +1,18 @@
 reflex = 1
 
 description = """
-Pull the bank transactions of a month.
-Every debit and credit on the business account."""
-not_for = ["invoices", "card expenses", "payroll"]
-tags = ["bank"]
+Pull a month's bank transactions.
+Every debit and credit on the business account, and its balance on the month's last day."""
+not_for = [
+  "charges on the company cards",
+  "which invoices customers paid",
+  "salaries and payroll taxes",
+  "matching the bank against the books",
+  "moving money or paying a bill",
+]
+tags = ["bank", "close"]
 effect = "read"
-confirm = "Pull the bank transactions for {month}?"
+confirm = "Pull {month}'s bank transactions?"
 run = "bank.mts"
 returns = "transactions"
 
@@ -15,6 +21,17 @@ ask   = "Which month?"
 vocab = "months"
 
 [examples]
-"pull the bank transactions for september" = {}
-"get august's bank feed"                   = {}
-"what went through the bank in october"    = {}
+"pull the bank transactions for september"      = {}
+"get august's bank feed"                        = {}
+"what went through the bank in october"         = {}
+"bank statement for september"                  = {}
+"every payment in or out of the bank in august" = {}
+
+[tests]
+"show me october's bank activity"                         = {}
+"which transfers hit the account in august"               = {}
+"what did the team put on the company cards in september" = false
+"which of october's invoices are still unpaid"            = false
+"what did salaries come to in august"                     = false
+"tie out the bank to the books for september"             = false
+"wire 3000 to the supplier's account"                     = false

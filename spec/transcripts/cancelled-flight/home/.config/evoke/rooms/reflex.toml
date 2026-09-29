@@ -2,19 +2,27 @@ reflex = 1
 
 description = """
 Find hotel rooms in a city for tonight.
-Each hotel with its price a night, the cheapest first."""
-not_for = ["flights", "booking a room", "the day's meetings"]
-tags = ["rooms"]
+Each hotel with its price a night, the cheapest first; nothing is booked."""
+not_for = ["booking the hotel", "finding flights to a city", "a meeting room at the office"]
+tags = ["rooms", "cancelled"]
 effect = "read"
 confirm = "Find rooms in {city}?"
 run = "rooms.mts"
 returns = "rooms"
 
 [args.city]
-ask   = "In which city?"
+ask   = "In which city do you need a room?"
 vocab = "cities"
 
 [examples]
-"find a room in lisbon"        = {}
-"hotels in madrid for tonight" = {}
-"where can i stay in berlin"   = {}
+"look for a hotel room in madrid"   = {}
+"hotels in berlin with a free room" = {}
+"what rooms are free in lisbon"     = {}
+
+[tests]
+"a place to stay in lisbon"        = {}
+"cheap accommodation in madrid"    = {}
+"any vacancies near the airport"   = {}
+"reserve the top one on that list" = false
+"planes to berlin"                 = false
+"reserve the boardroom for 3pm"    = false

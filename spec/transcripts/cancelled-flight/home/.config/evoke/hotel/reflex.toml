@@ -2,9 +2,14 @@ reflex = 1
 
 description = """
 Book a hotel room for tonight.
-The first of the rooms found, one night, charged to the travel account."""
-not_for = ["finding rooms", "booking a flight", "moving a meeting"]
-tags = ["hotel"]
+One night at the first hotel of the rooms just found, on the travel account; the booking can be cancelled."""
+not_for = [
+  "finding hotel rooms in a city",
+  "booking a seat on a flight",
+  "booking a taxi or a table",
+  "telling a channel where you are staying",
+]
+tags = ["hotel", "cancelled"]
 effect = "write"
 confirm = "Book the hotel?"
 run = "hotel.mts"
@@ -13,6 +18,14 @@ run = "hotel.mts"
 takes = "rooms"
 
 [examples]
-"book the hotel"      = {}
-"take the first room" = {}
-"get me the room"     = {}
+"book the first hotel"    = {}
+"take the cheapest room"  = {}
+"book one of those rooms" = {}
+
+[tests]
+"reserve a night at the top one"        = {}
+"grab the top place on that list"       = {}
+"which places in lisbon have vacancies" = false
+"reserve AZ0611 for me"                 = false
+"reserve a table for two at eight"      = false
+"ping #team that our lodging is sorted" = false

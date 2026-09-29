@@ -1,12 +1,19 @@
 reflex = 1
 
 description = """
-Check what the warehouse holds of a shipment's products.
-The units of each product it carries, as of now."""
-not_for = ["where the shipment is", "supplier quotes", "reserving stock"]
-tags = ["stock"]
+Check the warehouse stock of a shipment's products.
+The units on hand of each product code on the shipment, counted now; nothing is set aside or ordered."""
+not_for = [
+  "where a shipment is or when it lands",
+  "setting units aside for waiting orders",
+  "what a late shipment leaves us short of",
+  "restocking from a supplier",
+  "share prices on the stock market",
+  "prices other suppliers would charge",
+]
+tags = ["stock", "late"]
 effect = "read"
-confirm = "Check the stock for the {shipment} shipment?"
+confirm = "Check the warehouse stock for the {shipment} shipment?"
 run = "stock.mts"
 returns = "stock"
 
@@ -15,6 +22,17 @@ ask   = "Which shipment?"
 vocab = "shipments"
 
 [examples]
-"what do we hold of the rotterdam shipment's goods"   = {}
-"stock levels for what hamburg carries"               = {}
-"how much of the antwerp shipment do we already hold" = {}
+"stock check on the antwerp container's products"            = {}
+"inventory for what the hamburg pallets bring"               = {}
+"our stock levels for everything on the rotterdam container" = {}
+"how well stocked are we for the hamburg pallets"            = {}
+
+[tests]
+"warehouse figures for the rotterdam items"             = {}
+"how much do we have on hand"                           = {}
+"is the hamburg container due in soon"                  = false
+"block off HS-040911 for the pending sales orders"      = false
+"what will run out while rotterdam is held up"          = false
+"restock HS-0409 through baltic"                        = false
+"how are our shares trading on the exchange"            = false
+"what would other vendors charge for the hamburg goods" = false

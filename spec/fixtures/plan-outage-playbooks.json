@@ -1,10 +1,10 @@
 {
-  "digest": "h1:167e2ab871ec5755c0354474d76796af6cdea2aae324ad83c11c5f007db622a2",
+  "digest": "h1:491f81331df766200c353abe911da119e3758ab4a0f7d1bea39da8261e3c40d1",
   "active": {
     "errors": {
       "effect": "read",
       "run": "errors.mts",
-      "confirm": "Check the errors of {service}?",
+      "confirm": "Show the error rate of {service}?",
       "args": {
         "service": {
           "ask": "Which service?",
@@ -23,7 +23,8 @@
       "returns": "errors",
       "config": {},
       "tags": [
-        "errors"
+        "errors",
+        "outage"
       ]
     },
     "deploys": {
@@ -54,7 +55,8 @@
       "returns": "deploys",
       "config": {},
       "tags": [
-        "deploys"
+        "deploys",
+        "outage"
       ]
     },
     "logs": {
@@ -79,13 +81,14 @@
       "returns": "logs",
       "config": {},
       "tags": [
-        "logs"
+        "logs",
+        "outage"
       ]
     },
     "suspect": {
       "effect": "read",
       "run": "suspect.mts",
-      "confirm": "Find the suspect?",
+      "confirm": "Find the release behind the failure?",
       "args": {},
       "takes": {
         "errors": "errors",
@@ -97,7 +100,8 @@
       },
       "config": {},
       "tags": [
-        "suspect"
+        "suspect",
+        "outage"
       ]
     },
     "rollback": {
@@ -128,7 +132,8 @@
       "yields": {},
       "config": {},
       "tags": [
-        "rollback"
+        "rollback",
+        "outage"
       ]
     },
     "post": {
@@ -146,7 +151,8 @@
       "yields": {},
       "config": {},
       "tags": [
-        "post"
+        "post",
+        "outage"
       ]
     },
     "incidents": {
@@ -213,7 +219,7 @@
           "was": []
         },
         "state": {
-          "ask": "Which state?",
+          "ask": "What should the page say: investigating, identified, monitoring or resolved?",
           "options": {
             "investigating": "Looking into a problem.",
             "identified": "The cause is known.",
@@ -227,7 +233,8 @@
       "yields": {},
       "config": {},
       "tags": [
-        "status"
+        "status",
+        "outage"
       ]
     },
     "outage": {
@@ -244,7 +251,7 @@
       "confirm": "Run the outage plan for {service}?",
       "args": {
         "service": {
-          "ask": "Which service?",
+          "ask": "Which service is down?",
           "vocab": "services",
           "optional": false,
           "was": []
@@ -296,146 +303,177 @@
       "ask": "Which one does the request ask for?",
       "options": {
         "errors": {
-          "what": "Show the error rate of a service.\nThe rate over the last hour and when it rose, in one region or all.",
+          "what": "Show the error rate of a service.\nThe share of its requests failing over the last hour and when it rose, in one region or all.",
           "not_for": [
-            "logs of a service",
-            "releases and deploys",
-            "the status page"
+            "the error messages in a service's logs",
+            "what was deployed and when",
+            "a service that is down or broken",
+            "response times and latency"
           ],
           "examples": [
             "check the errors for checkout",
             "error rate of payments in eu-west",
-            "is search throwing errors"
+            "is search throwing errors",
+            "how many checkout requests are erroring",
+            "show me the 5xx on search in us-east"
           ]
         },
         "deploys": {
-          "what": "List the recent deploys of a service.\nEach release, when it went out and who shipped it.",
+          "what": "List the recent deploys of a service.\nEach release with when it went out and who shipped it, in one region or all.",
           "not_for": [
-            "error rates",
-            "logs of a service",
-            "rolling a release back"
+            "rolling back a deploy",
+            "which deploy broke something",
+            "shipping a new release"
           ],
           "examples": [
-            "what was deployed to checkout today",
+            "what got deployed to checkout recently",
             "list the deploys of payments",
-            "recent releases of search in us-east"
+            "recent releases of search in us-east",
+            "who shipped to payments in eu-west",
+            "what went out on checkout"
           ]
         },
         "logs": {
-          "what": "Search a service's logs for the last hour.\nThe most frequent errors and how often each came.",
+          "what": "Search a service's logs from the last hour.\nIts most frequent error messages and how often each came, in one region or all.",
           "not_for": [
-            "error rates",
-            "releases and deploys",
-            "posting to a channel"
+            "a service's error rate",
+            "a service's deploy log or release history"
           ],
           "examples": [
             "pull the logs for checkout",
             "search the payments logs in eu-west",
-            "what do the search logs say"
+            "what do the search logs say",
+            "what is checkout logging in us-east",
+            "top log errors for payments"
           ]
         },
         "suspect": {
-          "what": "Find the release most likely behind a failure.\nWeighs a service's errors, its deploys and its logs, and names the release.",
+          "what": "Find the release most likely behind a failure.\nWeighs the errors, deploys and logs found before it in the same request, and names one release.",
           "not_for": [
-            "listing deploys",
-            "rolling a release back",
-            "error rates alone"
+            "listing a service's deploys",
+            "rolling the release back",
+            "who shipped a release"
           ],
           "examples": [
             "find the suspect",
             "which deploy broke it",
-            "find the release behind the outage"
+            "find the release behind the outage",
+            "what release caused this"
           ]
         },
         "rollback": {
-          "what": "Roll a service back from a release to the one before it.\nEverywhere, or in one region.",
+          "what": "Roll a service back from a release to the one before it.\nEverywhere or in one region; live traffic moves to the older release, and only a new deploy brings the newer one back.",
           "not_for": [
-            "listing deploys",
+            "listing what was deployed",
             "finding which release broke something",
-            "restarting a service"
+            "shipping a new release",
+            "restarting a service",
+            "a config change or a feature flag"
           ],
           "examples": [
             "roll checkout back from 4.12.0",
             "revert payments from 2.3.1 in eu-west",
-            "undo the 7.0.2 release of search"
+            "undo the 7.0.2 release of search",
+            "back out 5.4.1 on checkout in us-east",
+            "roll back the last payments deploy"
           ]
         },
         "post": {
-          "what": "Post a message to a chat channel.\nThe message is what you typed about it.",
+          "what": "Post a message to a chat channel.\nTo one of your team's chat channels; the message is the words that asked for it.",
           "not_for": [
-            "email",
-            "the status page",
-            "reading a channel"
+            "sending an email",
+            "updating the status page",
+            "paging someone on call",
+            "a direct message to one person",
+            "reading what a channel says"
           ],
           "examples": [
             "post to #incident that we are on it",
             "tell #ops the deploy is done",
-            "let #incident know it is fixed"
+            "let #incident know it is fixed",
+            "drop a line in #ops about payments",
+            "give #incident an update on search"
           ]
         },
         "incidents": {
-          "what": "List the open incidents.\nEach with its number and the service it hit.",
+          "what": "List the open incidents.\nEach with its number and the service it hit; closed ones are left out.",
           "not_for": [
-            "one incident by its number",
-            "error rates",
-            "the status page"
+            "looking up one incident by its number",
+            "declaring a new incident",
+            "closing or resolving an incident",
+            "incidents already closed"
           ],
           "examples": [
             "list the open incidents",
             "what incidents are open",
-            "which incidents are still going"
+            "which incidents are still going",
+            "show me active incidents"
           ]
         },
         "incident": {
-          "what": "Look up an incident by its number.\nWhat happened, when it opened, and which service it hit.",
+          "what": "Look up an incident by its number.\nWhat happened, when it opened and which service it hit.",
           "not_for": [
-            "listing every incident",
-            "writing a postmortem",
-            "error rates"
+            "listing the open incidents",
+            "drafting a postmortem",
+            "closing or resolving an incident",
+            "declaring a new incident"
           ],
           "examples": [
             "look up incident 311",
             "what happened in incident 42",
-            "show me incident 1207"
+            "show me incident 1207",
+            "details on incident 88"
           ]
         },
         "postmortem": {
-          "what": "Draft the postmortem of an incident.\nA document from what the incident record says, saved for review.",
+          "what": "Draft the postmortem of an incident.\nWritten from the incident looked up before it in the same request, and saved as a draft for review.",
           "not_for": [
-            "looking up an incident",
-            "posting to a channel",
-            "the status page"
+            "looking up what happened in an incident",
+            "reading a postmortem already written",
+            "posting a summary to a channel",
+            "a status page update"
           ],
           "examples": [
             "draft the postmortem",
-            "write up the postmortem",
-            "start a postmortem for it"
+            "get the postmortem written",
+            "start a postmortem for it",
+            "write the incident review"
           ]
         },
         "status": {
-          "what": "Update the status page for a service.\nIts state as customers see it.",
+          "what": "Update the status page for a service.\nWhat customers see until the next update: investigating, identified, monitoring or resolved; monitoring when none is named.",
           "not_for": [
-            "chat channels",
-            "email",
-            "error rates"
+            "asking how a service is doing",
+            "opening the status page",
+            "posting in a chat channel",
+            "emailing customers"
           ],
           "examples": [
             "update the status page for checkout",
             "mark payments as resolved on the status page",
-            "set the search status to investigating"
+            "set the search status to investigating",
+            "show checkout as identified on the status page",
+            "put payments in monitoring on the status page"
           ]
         },
         "outage": {
-          "what": "Handle a service outage.\nLooks at the service's errors, deploys and logs, finds the release behind it, rolls it back, tells #incident and updates the status page.",
+          "what": "Handle a service that is down or failing.\nChecks its errors, deploys and logs, finds the release behind the failure, rolls it back, tells the incident channel and updates the status page; the rollback asks again before it runs.",
           "not_for": [
-            "one lookup on its own",
-            "an incident's postmortem",
-            "a service that is healthy"
+            "a service's error rate on its own",
+            "listing a service's deploys on its own",
+            "pulling a service's logs on its own",
+            "rolling back one release on its own",
+            "posting to a channel or updating the status page on its own",
+            "writing up an incident's postmortem",
+            "asking whether a service is healthy",
+            "a slow service that still answers"
           ],
           "examples": [
             "payments is down in us-east",
             "search is broken",
-            "we have an outage on checkout"
+            "we have an outage on checkout",
+            "checkout is on fire in eu-west",
+            "payments stopped working"
           ]
         },
         "escalate": {
@@ -457,14 +495,14 @@
     "fits.errors": {
       "type": "yesno",
       "ask": "Does `errors` do the specific thing the request asks for?",
-      "yes": "Show the error rate of a service.\nThe rate over the last hour and when it rose, in one region or all.",
-      "no": "Something else, such as: logs of a service; releases and deploys; the status page."
+      "yes": "Show the error rate of a service.\nThe share of its requests failing over the last hour and when it rose, in one region or all.",
+      "no": "Something else, such as: the error messages in a service's logs; what was deployed and when; a service that is down or broken; response times and latency."
     },
     "errors.service": {
       "type": "choice",
       "ask": "Which service?",
       "options": {
-        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "checkout": "The checkout service: cart and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
         "search": "The search service: product search and suggestions.",
         "unstated": "The request does not say."
@@ -484,14 +522,14 @@
     "fits.deploys": {
       "type": "yesno",
       "ask": "Does `deploys` do the specific thing the request asks for?",
-      "yes": "List the recent deploys of a service.\nEach release, when it went out and who shipped it.",
-      "no": "Something else, such as: error rates; logs of a service; rolling a release back."
+      "yes": "List the recent deploys of a service.\nEach release with when it went out and who shipped it, in one region or all.",
+      "no": "Something else, such as: rolling back a deploy; which deploy broke something; shipping a new release."
     },
     "deploys.service": {
       "type": "choice",
       "ask": "Which service?",
       "options": {
-        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "checkout": "The checkout service: cart and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
         "search": "The search service: product search and suggestions.",
         "unstated": "The request does not say."
@@ -511,14 +549,14 @@
     "fits.logs": {
       "type": "yesno",
       "ask": "Does `logs` do the specific thing the request asks for?",
-      "yes": "Search a service's logs for the last hour.\nThe most frequent errors and how often each came.",
-      "no": "Something else, such as: error rates; releases and deploys; posting to a channel."
+      "yes": "Search a service's logs from the last hour.\nIts most frequent error messages and how often each came, in one region or all.",
+      "no": "Something else, such as: a service's error rate; a service's deploy log or release history."
     },
     "logs.service": {
       "type": "choice",
       "ask": "Which service?",
       "options": {
-        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "checkout": "The checkout service: cart and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
         "search": "The search service: product search and suggestions.",
         "unstated": "The request does not say."
@@ -538,20 +576,20 @@
     "fits.suspect": {
       "type": "yesno",
       "ask": "Does `suspect` do the specific thing the request asks for?",
-      "yes": "Find the release most likely behind a failure.\nWeighs a service's errors, its deploys and its logs, and names the release.",
-      "no": "Something else, such as: listing deploys; rolling a release back; error rates alone."
+      "yes": "Find the release most likely behind a failure.\nWeighs the errors, deploys and logs found before it in the same request, and names one release.",
+      "no": "Something else, such as: listing a service's deploys; rolling the release back; who shipped a release."
     },
     "fits.rollback": {
       "type": "yesno",
       "ask": "Does `rollback` do the specific thing the request asks for?",
-      "yes": "Roll a service back from a release to the one before it.\nEverywhere, or in one region.",
-      "no": "Something else, such as: listing deploys; finding which release broke something; restarting a service."
+      "yes": "Roll a service back from a release to the one before it.\nEverywhere or in one region; live traffic moves to the older release, and only a new deploy brings the newer one back.",
+      "no": "Something else, such as: listing what was deployed; finding which release broke something; shipping a new release; restarting a service; a config change or a feature flag."
     },
     "rollback.service": {
       "type": "choice",
       "ask": "Which service?",
       "options": {
-        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "checkout": "The checkout service: cart and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
         "search": "The search service: product search and suggestions.",
         "unstated": "The request does not say."
@@ -578,8 +616,8 @@
     "fits.post": {
       "type": "yesno",
       "ask": "Does `post` do the specific thing the request asks for?",
-      "yes": "Post a message to a chat channel.\nThe message is what you typed about it.",
-      "no": "Something else, such as: email; the status page; reading a channel."
+      "yes": "Post a message to a chat channel.\nTo one of your team's chat channels; the message is the words that asked for it.",
+      "no": "Something else, such as: sending an email; updating the status page; paging someone on call; a direct message to one person; reading what a channel says."
     },
     "post.channel": {
       "type": "choice",
@@ -594,14 +632,14 @@
     "fits.incidents": {
       "type": "yesno",
       "ask": "Does `incidents` do the specific thing the request asks for?",
-      "yes": "List the open incidents.\nEach with its number and the service it hit.",
-      "no": "Something else, such as: one incident by its number; error rates; the status page."
+      "yes": "List the open incidents.\nEach with its number and the service it hit; closed ones are left out.",
+      "no": "Something else, such as: looking up one incident by its number; declaring a new incident; closing or resolving an incident; incidents already closed."
     },
     "fits.incident": {
       "type": "yesno",
       "ask": "Does `incident` do the specific thing the request asks for?",
-      "yes": "Look up an incident by its number.\nWhat happened, when it opened, and which service it hit.",
-      "no": "Something else, such as: listing every incident; writing a postmortem; error rates."
+      "yes": "Look up an incident by its number.\nWhat happened, when it opened and which service it hit.",
+      "no": "Something else, such as: listing the open incidents; drafting a postmortem; closing or resolving an incident; declaring a new incident."
     },
     "incident.number": {
       "type": "pick",
@@ -612,20 +650,20 @@
     "fits.postmortem": {
       "type": "yesno",
       "ask": "Does `postmortem` do the specific thing the request asks for?",
-      "yes": "Draft the postmortem of an incident.\nA document from what the incident record says, saved for review.",
-      "no": "Something else, such as: looking up an incident; posting to a channel; the status page."
+      "yes": "Draft the postmortem of an incident.\nWritten from the incident looked up before it in the same request, and saved as a draft for review.",
+      "no": "Something else, such as: looking up what happened in an incident; reading a postmortem already written; posting a summary to a channel; a status page update."
     },
     "fits.status": {
       "type": "yesno",
       "ask": "Does `status` do the specific thing the request asks for?",
-      "yes": "Update the status page for a service.\nIts state as customers see it.",
-      "no": "Something else, such as: chat channels; email; error rates."
+      "yes": "Update the status page for a service.\nWhat customers see until the next update: investigating, identified, monitoring or resolved; monitoring when none is named.",
+      "no": "Something else, such as: asking how a service is doing; opening the status page; posting in a chat channel; emailing customers."
     },
     "status.component": {
       "type": "choice",
       "ask": "Which service?",
       "options": {
-        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "checkout": "The checkout service: cart and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
         "search": "The search service: product search and suggestions.",
         "unstated": "The request does not say."
@@ -634,7 +672,7 @@
     },
     "status.state": {
       "type": "choice",
-      "ask": "Which state?",
+      "ask": "What should the page say: investigating, identified, monitoring or resolved?",
       "options": {
         "investigating": {
           "what": "Looking into a problem.",
@@ -642,29 +680,44 @@
             "set the search status to investigating"
           ]
         },
-        "identified": "The cause is known.",
-        "monitoring": "A fix is out; watching.",
+        "identified": {
+          "what": "The cause is known.",
+          "examples": [
+            "show checkout as identified on the status page"
+          ]
+        },
+        "monitoring": {
+          "what": "A fix is out; watching.",
+          "examples": [
+            "put payments in monitoring on the status page"
+          ]
+        },
         "resolved": {
           "what": "Back to normal.",
           "examples": [
             "mark payments as resolved on the status page"
           ]
         },
-        "unstated": "The request does not say."
+        "unstated": {
+          "what": "The request does not say.",
+          "examples": [
+            "update the status page for checkout"
+          ]
+        }
       },
       "otherwise": "unstated"
     },
     "fits.outage": {
       "type": "yesno",
       "ask": "Does `outage` do the specific thing the request asks for?",
-      "yes": "Handle a service outage.\nLooks at the service's errors, deploys and logs, finds the release behind it, rolls it back, tells #incident and updates the status page.",
-      "no": "Something else, such as: one lookup on its own; an incident's postmortem; a service that is healthy."
+      "yes": "Handle a service that is down or failing.\nChecks its errors, deploys and logs, finds the release behind the failure, rolls it back, tells the incident channel and updates the status page; the rollback asks again before it runs.",
+      "no": "Something else, such as: a service's error rate on its own; listing a service's deploys on its own; pulling a service's logs on its own; rolling back one release on its own; posting to a channel or updating the status page on its own; writing up an incident's postmortem; asking whether a service is healthy; a slow service that still answers."
     },
     "outage.service": {
       "type": "choice",
-      "ask": "Which service?",
+      "ask": "Which service is down?",
       "options": {
-        "checkout": "The checkout service: cart, payment and order confirmation.",
+        "checkout": "The checkout service: cart and order confirmation.",
         "payments": "The payments service: card charges and refunds.",
         "search": "The search service: product search and suggestions.",
         "unstated": "The request does not say."

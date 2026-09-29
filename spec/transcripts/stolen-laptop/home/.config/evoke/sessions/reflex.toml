@@ -2,19 +2,33 @@ reflex = 1
 
 description = """
 List a person's signed-in sessions.
-Each app they are signed into and since when."""
-not_for = ["their laptop", "their API keys", "signing them out"]
-tags = ["sessions"]
+Each app they are signed into and since when; nobody is signed out."""
+not_for = [
+  "signing a person out",
+  "where a person's laptop is",
+  "a person's API keys",
+  "whether someone is online in chat",
+]
+tags = ["sessions", "stolen"]
 effect = "read"
-confirm = "List the sessions of {person}?"
+confirm = "List {person}'s sessions?"
 run = "sessions.mts"
 returns = "sessions"
 
 [args.person]
-ask   = "Whose sessions?"
+ask   = "Which colleague's sessions?"
 vocab = "people"
 
 [examples]
-"list sam's sessions"    = {}
-"where is ana signed in" = {}
-"what is jo logged into" = {}
+"list sam's sessions"            = {}
+"what is jo logged into"         = {}
+"which apps is ana signed in to" = {}
+"sessions for jo"                = {}
+
+[tests]
+"what is sam using at the moment"     = {}
+"since when has jo been on the vpn"   = {}
+"kick ana off everything"             = false
+"has ana's macbook checked in lately" = false
+"the tokens sam owns"                 = false
+"is jo around on slack"               = false

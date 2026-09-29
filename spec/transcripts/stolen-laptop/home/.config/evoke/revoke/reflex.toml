@@ -2,9 +2,14 @@ reflex = 1
 
 description = """
 Sign a person out of every app at once.
-Each listed session ends; they sign in again on a trusted device."""
-not_for = ["rotating keys", "listing sessions", "locking a laptop"]
-tags = ["revoke"]
+Each session found for them ends; they sign in again on a trusted device."""
+not_for = [
+  "revoking or rotating API keys",
+  "listing where a person is signed in",
+  "removing a person's account or access",
+  "logging out of this computer",
+]
+tags = ["revoke", "stolen"]
 effect = "write"
 confirm = "Revoke the sessions?"
 run = "revoke.mts"
@@ -13,6 +18,15 @@ run = "revoke.mts"
 takes = "sessions"
 
 [examples]
-"revoke the sessions"      = {}
-"sign them out everywhere" = {}
-"end every session"        = {}
+"revoke the sessions"        = {}
+"sign them out everywhere"   = {}
+"end every session"          = {}
+"boot them out of every app" = {}
+
+[tests]
+"cut off all their logins"                = {}
+"make them re-authenticate"               = {}
+"pull jo's api credentials"               = false
+"does sam still have a login anywhere"    = false
+"remove sam's access to the shared drive" = false
+"sign me off this computer"               = false

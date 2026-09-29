@@ -2,8 +2,13 @@ reflex = 1
 
 description = """
 List the open incidents.
-Each with its number and the service it hit."""
-not_for = ["one incident by its number", "error rates", "the status page"]
+Each with its number and the service it hit; closed ones are left out."""
+not_for = [
+  "looking up one incident by its number",
+  "declaring a new incident",
+  "closing or resolving an incident",
+  "incidents already closed",
+]
 tags = ["incidents"]
 effect = "read"
 confirm = "List the open incidents?"
@@ -16,3 +21,11 @@ incidents = { each = { number = "number" } }
 "list the open incidents"         = {}
 "what incidents are open"         = {}
 "which incidents are still going" = {}
+"show me active incidents"        = {}
+
+[tests]
+"how many incidents are ongoing"   = {}
+"declare an incident for payments" = false
+"pull up incident 312"             = false
+"incidents we closed last week"    = false
+"resolve every open incident"      = false

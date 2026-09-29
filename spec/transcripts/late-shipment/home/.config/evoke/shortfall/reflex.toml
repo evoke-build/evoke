@@ -1,10 +1,17 @@
 reflex = 1
 
 description = """
-Work out what a late shipment leaves short.
-Weighs the shipment, the stock held and the quotes, and lists each product code short with its units."""
-not_for = ["tracking the shipment", "reserving stock", "buying from a supplier"]
-tags = ["shortfall"]
+Work out what a late shipment leaves us short of.
+From the shipment, the stock and the quotes found earlier in the same request: each product code short, with its units. Nothing changes."""
+not_for = [
+  "the stock we hold right now",
+  "prices other suppliers would charge",
+  "ordering what is missing from a supplier",
+  "setting what we hold aside",
+  "how late a shipment is",
+  "a cash or budget shortfall",
+]
+tags = ["shortfall", "late"]
 effect = "read"
 confirm = "Work out the shortfall?"
 run = "shortfall.mts"
@@ -23,6 +30,17 @@ takes = "quotes"
 items = { each = { sku = "code" } }
 
 [examples]
-"work out the shortfall"        = {}
-"what are we short"             = {}
-"what runs out before it lands" = {}
+"calculate the shortfall"                           = {}
+"figure out which product codes we'll run short on" = {}
+"tally the units we'll be lacking"                  = {}
+"weigh them up to see what's short"                 = {}
+
+[tests]
+"how big is our gap"                                 = {}
+"list what stays uncovered"                          = {}
+"what's physically in the warehouse at the moment"   = false
+"what do vendors want for the pieces we need"        = false
+"get nordic to make up the difference"               = false
+"ring-fence our remaining units for the open orders" = false
+"is the hamburg delivery on time"                    = false
+"do we have a revenue shortfall for september"       = false

@@ -1,10 +1,16 @@
 reflex = 1
 
 description = """
-Track a shipment with its carrier.
-When it now lands, how many days late that is, and which products it carries."""
-not_for = ["stock held in the warehouse", "supplier quotes", "what is short"]
-tags = ["shipment"]
+Track an incoming shipment with its carrier.
+Its new landing time, how many days late that is and which product codes it carries; nothing changes."""
+not_for = [
+  "what the warehouse holds of its products",
+  "prices from other suppliers",
+  "what the delay leaves us short of",
+  "a parcel or an online order of your own",
+  "emailing someone a shipment update",
+]
+tags = ["shipment", "late"]
 effect = "read"
 confirm = "Track the {shipment} shipment?"
 run = "shipment.mts"
@@ -15,6 +21,16 @@ ask   = "Which shipment?"
 vocab = "shipments"
 
 [examples]
-"where is the rotterdam shipment" = {}
-"is the hamburg shipment late"    = {}
-"track the antwerp container"     = {}
+"how many days late is the rotterdam container"   = {}
+"when does the antwerp container land now"        = {}
+"what's the hamburg shipment carrying"            = {}
+"get the carrier's latest on the hamburg pallets" = {}
+
+[tests]
+"is antwerp still on schedule"                           = {}
+"is our container running behind"                        = {}
+"how many units of the antwerp goods sit on our shelves" = false
+"what would baltic charge for the rotterdam products"    = false
+"what will we be out of until hamburg arrives"           = false
+"where is my parcel from the bookshop"                   = false
+"let planning@example.com know about the delay"          = false

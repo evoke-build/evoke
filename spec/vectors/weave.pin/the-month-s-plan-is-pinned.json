@@ -536,7 +536,7 @@
           "text": "send the report to cfo@example.com",
           "end": 168,
           "decision": {
-            "outcome": "run",
+            "outcome": "confirm",
             "reflex": "send",
             "args": {
               "to": {
@@ -553,7 +553,7 @@
               }
             },
             "call": "send to=\"cfo@example.com\"",
-            "effect": "write",
+            "effect": "destructive",
             "confidence": 0.9,
             "weakest": {
               "question": "route",
@@ -613,10 +613,19 @@
                 "route": 0,
                 "fits": 0.02
               }
+            ],
+            "prompt": {
+              "own": "send to=\"cfo@example.com\" · destructive · weakest: route 0.90",
+              "template": "Email the closing report to cfo@example.com?"
+            },
+            "because": [
+              {
+                "type": "destructive"
+              }
             ]
           },
           "reflex": "send",
-          "effect": "write",
+          "effect": "destructive",
           "after": [
             1,
             2,

@@ -209,7 +209,7 @@
                 "choices": {
                   "type": "vocab",
                   "words": {
-                    "checkout": "The checkout service: cart, payment and order confirmation.",
+                    "checkout": "The checkout service: cart and order confirmation.",
                     "payments": "The payments service: card charges and refunds.",
                     "search": "The search service: product search and suggestions."
                   }
@@ -322,7 +322,7 @@
                 "choices": {
                   "type": "vocab",
                   "words": {
-                    "checkout": "The checkout service: cart, payment and order confirmation.",
+                    "checkout": "The checkout service: cart and order confirmation.",
                     "payments": "The payments service: card charges and refunds.",
                     "search": "The search service: product search and suggestions."
                   }
@@ -708,7 +708,7 @@
                 "choices": {
                   "type": "vocab",
                   "words": {
-                    "checkout": "The checkout service: cart, payment and order confirmation.",
+                    "checkout": "The checkout service: cart and order confirmation.",
                     "payments": "The payments service: card charges and refunds.",
                     "search": "The search service: product search and suggestions."
                   }
@@ -824,7 +824,7 @@
                 "choices": {
                   "type": "vocab",
                   "words": {
-                    "checkout": "The checkout service: cart, payment and order confirmation.",
+                    "checkout": "The checkout service: cart and order confirmation.",
                     "payments": "The payments service: card charges and refunds.",
                     "search": "The search service: product search and suggestions."
                   }

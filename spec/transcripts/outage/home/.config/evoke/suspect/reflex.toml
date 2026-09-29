@@ -2,11 +2,11 @@ reflex = 1
 
 description = """
 Find the release most likely behind a failure.
-Weighs a service's errors, its deploys and its logs, and names the release."""
-not_for = ["listing deploys", "rolling a release back", "error rates alone"]
-tags = ["suspect"]
+Weighs the errors, deploys and logs found before it in the same request, and names one release."""
+not_for = ["listing a service's deploys", "rolling the release back", "who shipped a release"]
+tags = ["suspect", "outage"]
 effect = "read"
-confirm = "Find the suspect?"
+confirm = "Find the release behind the failure?"
 run = "suspect.mts"
 
 [args.errors]
@@ -25,3 +25,9 @@ release = "code"
 "find the suspect"                   = {}
 "which deploy broke it"              = {}
 "find the release behind the outage" = {}
+"what release caused this"           = {}
+
+[tests]
+"pin down the bad release"              = {}
+"pull the bad release off search"       = false
+"every payments release from this week" = false

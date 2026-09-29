@@ -2,9 +2,14 @@ reflex = 1
 
 description = """
 Rotate a person's API keys.
-Each listed key is replaced by a new one; the old ones stop working."""
-not_for = ["revoking sessions", "listing keys", "wiping a laptop"]
-tags = ["rotate"]
+Each key found for them is replaced by a new one; the old ones stop working."""
+not_for = [
+  "revoking a person's sessions",
+  "listing a person's API keys",
+  "resetting a person's password",
+  "rotating the screen or a photo",
+]
+tags = ["rotate", "stolen"]
 effect = "write"
 confirm = "Rotate the keys?"
 run = "rotate.mts"
@@ -16,3 +21,12 @@ takes = "keys"
 "rotate the keys"                = {}
 "rotate their api keys"          = {}
 "replace the keys with new ones" = {}
+"issue them fresh api keys"      = {}
+
+[tests]
+"cycle those credentials"      = {}
+"roll over their keys"         = {}
+"terminate sam's sessions"     = false
+"count the keys jo owns"       = false
+"give jo a new password"       = false
+"rotate my screen to portrait" = false

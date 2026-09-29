@@ -1,12 +1,17 @@
 reflex = 1
 
 description = """
-Reconcile a month's books.
-Matches its bank transactions against its invoices, card expenses and payroll, and lists what is left to review."""
-not_for = ["posting to the ledger", "sending a report", "pulling transactions"]
-tags = ["reconcile"]
+Reconcile a month's bank transactions with its invoices, card expenses and payroll.
+It works on what was pulled just before it and lists what is left to review. It marks nothing."""
+not_for = [
+  "closing the month in the ledger",
+  "pulling the bank transactions",
+  "emailing the closing report",
+  "marking one transaction as matched",
+]
+tags = ["reconcile", "close"]
 effect = "read"
-confirm = "Reconcile the month?"
+confirm = "Reconcile the transactions with the invoices, expenses and payroll?"
 run = "reconcile.mts"
 
 [args.transactions]
@@ -22,6 +27,15 @@ takes = "expenses"
 takes = "payroll"
 
 [examples]
-"reconcile them"      = {}
-"reconcile the books" = {}
-"match everything up" = {}
+"reconcile them"              = {}
+"reconcile the books"         = {}
+"match everything up"         = {}
+"match them against the bank" = {}
+
+[tests]
+"reconcile the lot"                                       = {}
+"square them all up"                                      = {}
+"wrap up october's books"                                 = false
+"fetch the business account's transactions for september" = false
+"mail the reconciliation to controller@example.com"       = false
+"mark the rent payment as reconciled"                     = false

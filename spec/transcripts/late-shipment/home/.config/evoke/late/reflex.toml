@@ -1,0 +1,51 @@
+reflex = 1
+
+description = """
+Deal with a late shipment.
+Tracks it, checks the stock and the supplier quotes, works out the shortfall, reserves what we hold, orders the rest and emails the update; the order and the email each ask again."""
+not_for = [
+  "tracking a shipment on its own",
+  "checking the warehouse stock on its own",
+  "asking suppliers for a price",
+  "reserving one product code",
+  "a shipment that is on time",
+  "a customer's order that is late",
+  "a payment that is late",
+]
+tags = ["late"]
+effect = "destructive"
+confirm = "Run the late shipment plan for {shipment}, ordering from {supplier}, the update to {to}?"
+steps = [
+  "track the {shipment} shipment",
+  "check our stock for the {shipment} shipment",
+  "get supplier quotes for the {shipment} shipment",
+  "work out the shortfall",
+  "reserve each of them",
+  "buy the rest from {supplier}",
+  "email the update to {to}",
+]
+
+[args.shipment]
+ask   = "Which shipment is late?"
+vocab = "shipments"
+
+[args.supplier]
+ask   = "Which of our suppliers covers the rest?"
+vocab = "suppliers"
+
+[args.to]
+ask  = "To which email address does the update go?"
+pick = "email"
+
+[examples]
+"hamburg is running late"           = { to = false }
+"the antwerp container is delayed"  = { to = false }
+"our rotterdam pallets are held up" = { to = false }
+
+[tests]
+"the rotterdam shipment is late"                            = { to = false }
+"deal with the delayed hamburg pallets for ops@example.com" = { to = "ops@example.com" }
+"antwerp is delayed with baltic ready to cover"             = { to = false }
+"did the antwerp container clear customs"                   = false
+"the rotterdam container landed on schedule"                = false
+"acme says their parcel has not arrived"                    = false

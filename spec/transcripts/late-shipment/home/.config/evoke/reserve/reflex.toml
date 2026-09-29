@@ -1,12 +1,18 @@
 reflex = 1
 
 description = """
-Set aside what we hold of one product code for the orders waiting on it.
-Held until the shipment lands; nothing is bought."""
-not_for = ["buying from a supplier", "checking the stock", "working out the shortfall"]
-tags = ["reserve"]
+Reserve what we hold of one product code for the orders waiting on it.
+Every unit on hand stays held for those orders until the late shipment lands; nothing is bought."""
+not_for = [
+  "buying more from a supplier",
+  "how much of a product we hold",
+  "releasing units already held",
+  "asking what is already reserved",
+  "reserving a table, a seat, a room or a taxi",
+]
+tags = ["reserve", "late"]
 effect = "write"
-confirm = "Reserve {sku}?"
+confirm = "Reserve every unit of {sku}?"
 run = "reserve.mts"
 
 [args.sku]
@@ -14,6 +20,17 @@ ask  = "Which product code?"
 pick = "code"
 
 [examples]
-"reserve VX-221004"                               = { sku = "VX-221004" }
-"hold the stock of HS-040902 for the open orders" = { sku = "HS-040902" }
-"put VX-221411 aside"                             = { sku = "VX-221411" }
+"reserve HS-0409 for the waiting orders"           = { sku = "HS-0409" }
+"earmark VX-2214 for the customers who ordered it" = { sku = "VX-2214" }
+"hold every unit of VX-221007 we have"             = { sku = "VX-221007" }
+"set VX-2210 aside for the backorders"             = { sku = "VX-2210" }
+
+[tests]
+"save hs-040903 for the clients who paid"        = { sku = "hs-040903" }
+"keep the remainder back for those in the queue" = { sku = false }
+"get more HS-0409 from nordic"                   = false
+"how many VX-2214 are left in the warehouse"     = false
+"release the hold on VX-2210"                    = false
+"which orders is HS-040902 being held for"       = false
+"reserve a spot at the harbour cafe for two"     = false
+"reserve a window seat on LX1420"                = false

@@ -1,12 +1,17 @@
 reflex = 1
 
 description = """
-List the company card expenses of a month.
-Every charge, with its receipt when there is one."""
-not_for = ["bank transactions", "invoices", "payroll"]
-tags = ["cards"]
+List a month's company card expenses.
+Every charge on the company cards, and which of them lack a receipt."""
+not_for = [
+  "debits on the business account",
+  "salaries and wages",
+  "out-of-pocket costs to pay back",
+  "freezing a card or ordering a new one",
+]
+tags = ["cards", "close"]
 effect = "read"
-confirm = "List the card expenses of {month}?"
+confirm = "List {month}'s card expenses?"
 run = "cards.mts"
 returns = "expenses"
 
@@ -15,6 +20,16 @@ ask   = "Which month?"
 vocab = "months"
 
 [examples]
-"card expenses for september"          = {}
-"what did we spend on cards in august" = {}
-"pull the october card charges"        = {}
+"card expenses for september"                     = {}
+"what did we spend on cards in august"            = {}
+"pull the october card charges"                   = {}
+"which card charges in september have no receipt" = {}
+"company card spend for october"                  = {}
+
+[tests]
+"show august's charges on the corporate cards"          = {}
+"the corporate card statement for september"            = {}
+"what left our current account in september"            = false
+"how much did we pay in wages in october"               = false
+"reimburse sam for the train tickets he bought himself" = false
+"freeze the card that went missing"                     = false

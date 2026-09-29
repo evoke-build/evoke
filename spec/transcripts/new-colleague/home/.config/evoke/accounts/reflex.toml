@@ -1,18 +1,35 @@
 reflex = 1
 
 description = """
-Create a new hire's accounts.
-Mail, chat and the VPN, from the hire record; the invites go to their personal address."""
-not_for = ["ordering a laptop", "booking onboarding", "looking up the hire"]
+Create a new hire's mail, chat and VPN accounts.
+Those three only, made from their hire record; the invites go to their personal address."""
+not_for = [
+  "resetting a password or unlocking an account",
+  "closing the accounts of someone who is leaving",
+  "access to another app or a shared drive",
+  "a customer or bank account",
+  "asking what someone's email address is",
+]
 tags = ["accounts"]
 effect = "write"
-confirm = "Create the accounts?"
+confirm = "Create the new hire's accounts?"
 run = "accounts.mts"
 
 [args.hire]
 takes = "hire"
 
 [examples]
-"create her accounts"                      = {}
-"set up the accounts"                      = {}
-"get the mail, chat and vpn accounts made" = {}
+"create her accounts"          = {}
+"set up his work email"        = {}
+"make logins for the new hire" = {}
+"get her onto the vpn"         = {}
+
+[tests]
+"open a company mailbox for her"         = {}
+"give him vpn access"                    = {}
+"maria is locked out of her mail"        = false
+"close omar's accounts on his last day"  = false
+"share the finance drive with maria"     = false
+"open an account for acme in the crm"    = false
+"balance the accounts for september"     = false
+"what email address did sam end up with" = false

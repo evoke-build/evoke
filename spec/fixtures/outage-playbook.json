@@ -1,9 +1,14 @@
 {
-  "description": "Handle a service outage.\nLooks at the service's errors, deploys and logs, finds the release behind it, rolls it back, tells #incident and updates the status page.",
+  "description": "Handle a service that is down or failing.\nChecks its errors, deploys and logs, finds the release behind the failure, rolls it back, tells the incident channel and updates the status page; the rollback asks again before it runs.",
   "not_for": [
-    "one lookup on its own",
-    "an incident's postmortem",
-    "a service that is healthy"
+    "a service's error rate on its own",
+    "listing a service's deploys on its own",
+    "pulling a service's logs on its own",
+    "rolling back one release on its own",
+    "posting to a channel or updating the status page on its own",
+    "writing up an incident's postmortem",
+    "asking whether a service is healthy",
+    "a slow service that still answers"
   ],
   "tags": [
     "outage"
@@ -22,7 +27,7 @@
   "config": {},
   "args": {
     "service": {
-      "ask": "Which service?",
+      "ask": "Which service is down?",
       "vocab": "services",
       "optional": false,
       "was": []
@@ -38,10 +43,20 @@
   "examples": {
     "payments is down in us-east": {},
     "search is broken": {},
-    "we have an outage on checkout": {}
+    "we have an outage on checkout": {},
+    "checkout is on fire in eu-west": {},
+    "payments stopped working": {}
   },
   "tests": {
-    "checkout is failing in eu-west": {}
+    "checkout is failing in eu-west": {},
+    "we lost search in us-east": {},
+    "how bad are the errors on payments right now": false,
+    "downgrade search from 6.0.1": false,
+    "ping #ops that checkout recovered": false,
+    "flip the status page to resolved for search": false,
+    "prepare a retro on the checkout outage": false,
+    "is the search service doing fine": false,
+    "checkout feels sluggish this morning": false
   },
   "unknown": []
 }

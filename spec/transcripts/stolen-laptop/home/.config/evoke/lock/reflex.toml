@@ -1,10 +1,15 @@
 reflex = 1
 
 description = """
-Lock a laptop remotely.
-It locks at its next check-in and stays locked; nothing on it is erased."""
-not_for = ["wiping a laptop", "finding a laptop", "signing sessions out"]
-tags = ["lock"]
+Lock a person's laptop remotely.
+The laptop found in device management locks at its next check-in; it can be unlocked, and nothing on it is erased."""
+not_for = [
+  "wiping or erasing a laptop",
+  "finding a person's laptop",
+  "signing a person out",
+  "locking this computer's screen",
+]
+tags = ["lock", "stolen"]
 effect = "write"
 confirm = "Lock the laptop?"
 run = "lock.mts"
@@ -16,3 +21,12 @@ takes = "device"
 "lock the laptop"       = {}
 "lock it remotely"      = {}
 "lock that device down" = {}
+"lock the macbook"      = {}
+
+[tests]
+"block access to the laptop"           = {}
+"put a passcode on it"                 = {}
+"delete all the data on the laptop"    = false
+"track down sam's laptop"              = false
+"force ana to sign in again"           = false
+"lock this screen while I grab coffee" = false

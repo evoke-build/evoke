@@ -1,0 +1,44 @@
+reflex = 1
+
+description = """
+Respond to a lost or stolen laptop.
+Finds the person's laptop, sessions and keys, locks and wipes the laptop, signs them out everywhere, rotates their keys and alerts the security channel; the wipe asks again before it runs."""
+not_for = [
+  "finding a person's laptop on its own",
+  "locking a laptop without wiping it",
+  "signing a person out of their apps",
+  "rotating a person's API keys",
+  "a laptop that was found again",
+  "a laptop that will not start",
+  "ordering a new laptop",
+]
+tags = ["stolen"]
+effect = "destructive"
+confirm = "Run the stolen laptop plan for {person}?"
+steps = [
+  "find {person}'s laptop",
+  "list {person}'s sessions",
+  "list {person}'s keys",
+  "lock the laptop",
+  "wipe it",
+  "revoke the sessions",
+  "rotate the keys",
+  "alert the security channel",
+]
+
+[args.person]
+ask   = "Which colleague's laptop is gone?"
+vocab = "people"
+
+[examples]
+"ana's laptop was taken from the train" = {}
+"jo lost their laptop"                  = {}
+"someone stole sam's macbook"           = {}
+
+[tests]
+"sam's laptop was stolen"              = {}
+"ana left her work computer in a taxi" = {}
+"what is jo still logged into"         = false
+"sam's laptop turned up again"         = false
+"jo's screen stays black"              = false
+"sam needs a newer laptop"             = false

@@ -5,6 +5,7 @@ Fail the database over to its replica.
 Drains the primary, promotes the replica and checks that writes land on it; tells the ops channel when they do, fails back when they do not."""
 not_for = ["draining the primary on its own", "checking writes on their own", "a replica that is primary already"]
 tags = ["failover"]
+effect = "destructive"
 confirm = "Run the failover runbook?"
 steps = [
   "drain connections off the primary",

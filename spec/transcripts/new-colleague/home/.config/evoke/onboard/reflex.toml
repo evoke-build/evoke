@@ -1,12 +1,17 @@
 reflex = 1
 
 description = """
-Book a new hire's onboarding.
-The first week's sessions with their team, on both calendars."""
-not_for = ["creating accounts", "ordering a laptop", "listing a team"]
+Book a new hire's onboarding sessions with their team.
+Three sessions in their first week, on their calendar and the team's."""
+not_for = [
+  "onboarding a new customer",
+  "booking one meeting or a room",
+  "moving or cancelling a session already booked",
+  "what is on someone's calendar",
+]
 tags = ["onboard"]
 effect = "write"
-confirm = "Book the onboarding?"
+confirm = "Book the new hire's onboarding?"
 run = "onboard.mts"
 
 [args.hire]
@@ -16,6 +21,15 @@ takes = "hire"
 takes = "team"
 
 [examples]
-"book the onboarding"              = {}
-"set up her first week"            = {}
-"schedule the onboarding sessions" = {}
+"book the onboarding"                   = {}
+"schedule her first week with the team" = {}
+"set up his welcome sessions"           = {}
+"put the onboarding on their calendars" = {}
+
+[tests]
+"arrange his introductions"                  = {}
+"line up her induction"                      = {}
+"onboard acme onto the product"              = false
+"reserve the boardroom for friday afternoon" = false
+"move ana's welcome chat to wednesday"       = false
+"what does sam have on monday"               = false

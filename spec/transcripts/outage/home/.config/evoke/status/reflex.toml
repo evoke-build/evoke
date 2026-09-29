@@ -2,9 +2,14 @@ reflex = 1
 
 description = """
 Update the status page for a service.
-Its state as customers see it."""
-not_for = ["chat channels", "email", "error rates"]
-tags = ["status"]
+What customers see until the next update: investigating, identified, monitoring or resolved; monitoring when none is named."""
+not_for = [
+  "asking how a service is doing",
+  "opening the status page",
+  "posting in a chat channel",
+  "emailing customers",
+]
+tags = ["status", "outage"]
 effect = "write"
 confirm = "Update the status page for {component}?"
 run = "status.mts"
@@ -14,7 +19,7 @@ ask   = "Which service?"
 vocab = "services"
 
 [args.state]
-ask                   = "Which state?"
+ask                   = "What should the page say: investigating, identified, monitoring or resolved?"
 options.investigating = "Looking into a problem."
 options.identified    = "The cause is known."
 options.monitoring    = "A fix is out; watching."
@@ -22,6 +27,18 @@ options.resolved      = "Back to normal."
 optional              = true
 
 [examples]
-"update the status page for checkout"          = {}
-"mark payments as resolved on the status page" = { state = "resolved" }
-"set the search status to investigating"       = { state = "investigating" }
+"update the status page for checkout"            = { state = false }
+"mark payments as resolved on the status page"   = { state = "resolved" }
+"set the search status to investigating"         = { state = "investigating" }
+"show checkout as identified on the status page" = { state = "identified" }
+"put payments in monitoring on the status page"  = { state = "monitoring" }
+
+[tests]
+"tell customers search is all clear"                 = { state = "resolved" }
+"let customers know we're digging into checkout"     = { state = "investigating" }
+"have the status page say we found the payments bug" = { state = "identified" }
+"let customers see search is under observation"      = { state = "monitoring" }
+"revise the payments status page"                    = { state = false }
+"what's the status of checkout"                      = false
+"open the status page"                               = false
+"ping #incident about the search fix"                = false

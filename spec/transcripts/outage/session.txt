@@ -168,7 +168,7 @@ $ evoke "payments keep timing out, customers can't pay"
 # A slot the sentence does not state is asked before the plan prints.
 $ evoke "we have an outage"
   1  outage · asks service
-  Which service?  [1] checkout  [2] payments  [3] search  [+] add one  > 2
+  Which service is down?  [1] checkout  [2] payments  [3] search  [+] add one  > 2
   1  errors service="payments"  0.90 · outage 1
   2  deploys service="payments"  0.90 · outage 2
   3  logs service="payments"  0.90 · outage 3
@@ -210,8 +210,8 @@ $ evoke run ~/outage.plan.json
   Run the plan as it stands?  [y]es [n]o > n
 [2]
 $ evoke show outage
-  description = "Handle a service outage.\nLooks at the service's errors, deploys and logs, finds the release behind it, rolls it back, tells #incident and updates the status page."
-  not_for = ["one lookup on its own", "an incident's postmortem", "a service that is healthy"]
+  description = "Handle a service that is down or failing.\nChecks its errors, deploys and logs, finds the release behind the failure, rolls it back, tells the incident channel and updates the status page; the rollback asks again before it runs."
+  not_for = ["a service's error rate on its own", "listing a service's deploys on its own", "pulling a service's logs on its own", "rolling back one release on its own", "posting to a channel or updating the status page on its own", "writing up an incident's postmortem", "asking whether a service is healthy", "a slow service that still answers"]
   tags = ["outage"]
   effect = "destructive"
   confirm = "Run the outage plan for {service}?"
@@ -225,7 +225,7 @@ $ evoke show outage
     7  update the status page for {service}
 
   [args.service]
-  ask = "Which service?"
+  ask = "Which service is down?"
   vocab = "services"
 
   [args.region]
@@ -237,8 +237,18 @@ $ evoke show outage
   "payments is down in us-east" = {}
   "search is broken" = {}
   "we have an outage on checkout" = {}
+  "checkout is on fire in eu-west" = {}
+  "payments stopped working" = {}
 
   [tests]
   "checkout is failing in eu-west" = {}
+  "we lost search in us-east" = {}
+  "how bad are the errors on payments right now" = false
+  "downgrade search from 6.0.1" = false
+  "ping #ops that checkout recovered" = false
+  "flip the status page to resolved for search" = false
+  "prepare a retro on the checkout outage" = false
+  "is the search service doing fine" = false
+  "checkout feels sluggish this morning" = false
 $ evoke test outage
-  outage  4 passed · 7 steps route
+  outage  14 passed · 7 steps route

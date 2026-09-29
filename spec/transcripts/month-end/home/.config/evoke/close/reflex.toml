@@ -1,0 +1,46 @@
+reflex = 1
+
+description = """
+Close the month's books.
+Pulls the bank transactions, the invoices, the card expenses and the payroll, reconciles them, posts the closing entries to the ledger and emails the closing report; the email asks again before it goes."""
+not_for = [
+  "one month's bank transactions on their own",
+  "listing a month's invoices or card expenses",
+  "reconciling without closing the month",
+  "posting to the ledger on its own",
+  "emailing the closing report on its own",
+  "reopening a closed month",
+  "chasing an unpaid invoice",
+]
+tags = ["close"]
+effect = "destructive"
+confirm = "Run the month-end plan for {month}, the report to {to}?"
+steps = [
+  "pull {month}'s bank transactions",
+  "list {month}'s invoices",
+  "list {month}'s card expenses",
+  "show {month}'s payroll run",
+  "reconcile them",
+  "post {month}'s closing entries to the ledger",
+  "send the report to {to}",
+]
+
+[args.month]
+ask   = "Which month of the books?"
+vocab = "months"
+
+[args.to]
+ask  = "To which email address does the report go?"
+pick = "email"
+
+[examples]
+"close out august"                    = { to = false }
+"do the october close"                = { to = false }
+"let's close the books for september" = { to = false }
+
+[tests]
+"close september"                            = { to = false }
+"wrap up august's books for cfo@example.com" = { to = "cfo@example.com" }
+"how much did we pay in salaries in october" = false
+"reopen the books for august"                = false
+"remind acme that their invoice is overdue"  = false

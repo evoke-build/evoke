@@ -2,22 +2,31 @@ reflex = 1
 
 description = """
 Find the next flights to a city.
-Each alternative with its code and departure time, the best one first."""
-not_for = ["hotel rooms", "the day's meetings", "booking a seat"]
-tags = ["flights"]
+Tonight's flights, each with its code and departure time, the best first; nothing is booked."""
+not_for = ["booking a seat on a flight", "finding hotel rooms in a city", "whether a flight is on time"]
+tags = ["flights", "cancelled"]
 effect = "read"
 confirm = "Find flights to {to}?"
 run = "flights.mts"
 returns = "flights"
 
 [args.to]
-ask   = "To which city?"
+ask   = "Which city are you flying to?"
 vocab = "cities"
 
 [yields]
 flight = "code"
 
 [examples]
-"find flights to lisbon"            = {}
-"what else flies to madrid tonight" = {}
-"next flight to berlin"             = {}
+"search for a flight to berlin"    = {}
+"any other flights to lisbon"      = {}
+"which flights still go to madrid" = {}
+"i need another flight to berlin"  = {}
+
+[tests]
+"planes leaving for madrid this evening"   = {}
+"list the departures heading for lisbon"   = {}
+"what else is flying out"                  = {}
+"reserve IB3107 for me"                    = false
+"is VY8460 running late"                   = false
+"accommodation in berlin near the airport" = false

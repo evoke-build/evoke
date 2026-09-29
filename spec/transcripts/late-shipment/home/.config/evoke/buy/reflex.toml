@@ -1,11 +1,21 @@
 reflex = 1
 
 description = """
-Order the shortfall from a supplier.
-The purchase order goes out at once, at the quoted price."""
-not_for = ["getting quotes", "reserving stock", "sending an email"]
-tags = ["buy"]
-confirm = "Order from {supplier}?"
+Order what we are short of from one of our suppliers.
+One purchase order at the quoted price, sent at once; it spends money and cannot be called back."""
+not_for = [
+  "asking suppliers for a price",
+  "setting aside stock we hold",
+  "telling a supplier about the delay",
+  "cancelling or changing an order",
+  "whether an order has gone out",
+  "ordering a laptop for a new hire",
+  "ordering food or shopping for yourself",
+  "counting what we will run out of",
+]
+tags = ["buy", "late"]
+effect = "destructive"
+confirm = "Order the shortfall from {supplier}?"
 run = "buy.mts"
 
 [args.supplier]
@@ -13,6 +23,18 @@ ask   = "From which supplier?"
 vocab = "suppliers"
 
 [examples]
-"buy the shortfall from nordic" = {}
-"order it from baltic"          = {}
-"place the order with nordic"   = {}
+"order the shortfall from baltic"                       = {}
+"raise a purchase order with nordic for what's missing" = {}
+"get baltic to supply the rest"                         = {}
+"source the shortage through nordic"                    = {}
+
+[tests]
+"top us up from baltic"                              = {}
+"how much would nordic want for each item"           = false
+"hang on to what's left for our regulars"            = false
+"let baltic know we're behind schedule"              = false
+"cancel what we ordered from baltic"                 = false
+"has nordic confirmed our order yet"                 = false
+"order a new macbook for the designer starting soon" = false
+"buy some printer paper for my home office"          = false
+"work out how many units we lack"                    = false

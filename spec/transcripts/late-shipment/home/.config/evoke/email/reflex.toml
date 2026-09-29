@@ -1,19 +1,35 @@
 reflex = 1
 
 description = """
-Email an update on the shipment.
-To one address: what is late, what was reserved and what was ordered."""
-not_for = ["placing an order", "tracking the shipment", "reserving stock"]
-tags = ["email"]
-effect = "write"
-confirm = "Email {to}?"
+Email an update on a late shipment to one address.
+What is late, what was set aside and what was ordered, to the address you type; once sent it cannot be taken back."""
+not_for = [
+  "sending a purchase order to a supplier",
+  "a note to a colleague about a meeting",
+  "posting in a chat channel",
+  "emailing the month's closing report",
+  "reading or answering your email",
+]
+tags = ["email", "late"]
+effect = "destructive"
+confirm = "Email the shipment update to {to}?"
 run = "email.mts"
 
 [args.to]
-ask  = "To which address?"
+ask  = "To which email address?"
 pick = "email"
 
 [examples]
-"email ops@example.com"                = { to = "ops@example.com" }
-"let lena@example.com know"            = { to = "lena@example.com" }
-"send the update to sales@example.com" = { to = "sales@example.com" }
+"fill ops@example.com in on the delay"                  = { to = "ops@example.com" }
+"email planning@example.com the shipment news"          = { to = "planning@example.com" }
+"brief lena@example.com on the late container by email" = { to = "lena@example.com" }
+"email sales@example.com the delay update"              = { to = "sales@example.com" }
+
+[tests]
+"loop in support@example.com about the late pallets" = { to = "support@example.com" }
+"write to the warehouse team about the setback"      = { to = false }
+"send orders@nordic.example our restock request"     = false
+"email mia@example.com about the team lunch"         = false
+"ping the logistics channel with a status"           = false
+"send controller@example.com the month-end figures"  = false
+"open the carrier's reply in my inbox"               = false

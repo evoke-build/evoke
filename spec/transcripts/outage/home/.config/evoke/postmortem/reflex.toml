@@ -2,8 +2,13 @@ reflex = 1
 
 description = """
 Draft the postmortem of an incident.
-A document from what the incident record says, saved for review."""
-not_for = ["looking up an incident", "posting to a channel", "the status page"]
+Written from the incident looked up before it in the same request, and saved as a draft for review."""
+not_for = [
+  "looking up what happened in an incident",
+  "reading a postmortem already written",
+  "posting a summary to a channel",
+  "a status page update",
+]
 tags = ["postmortem"]
 effect = "write"
 confirm = "Draft the postmortem?"
@@ -16,6 +21,13 @@ takes = "incident"
 path = "quoted"
 
 [examples]
-"draft the postmortem"      = {}
-"write up the postmortem"   = {}
-"start a postmortem for it" = {}
+"draft the postmortem"       = {}
+"get the postmortem written" = {}
+"start a postmortem for it"  = {}
+"write the incident review"  = {}
+
+[tests]
+"put together a post-incident report" = {}
+"open last month's postmortem"        = false
+"send the incident summary to #ops"   = false
+"which service did incident 311 hit"  = false

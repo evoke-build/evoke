@@ -2,9 +2,15 @@ reflex = 1
 
 description = """
 Move a day's meetings to another day.
-Every meeting of that day, to the day you name, or else the day after."""
-not_for = ["showing the calendar", "booking a flight", "telling a channel"]
-tags = ["meeting"]
+Every meeting of the day the calendar just showed, to the day you name or else the day after; a later move puts them back."""
+not_for = [
+  "showing a day's meetings",
+  "cancelling a meeting",
+  "adding a new meeting",
+  "changing a flight to another day",
+  "telling a channel the meetings moved",
+]
+tags = ["meeting", "cancelled"]
 effect = "write"
 confirm = "Move the meetings?"
 run = "meeting.mts"
@@ -18,6 +24,16 @@ optional = true
 takes = "calendar"
 
 [examples]
-"move the meetings to tuesday" = {}
-"push my meetings back a day"  = {}
-"shift them to monday"         = {}
+"move them to thursday"                  = { day = "thursday" }
+"shift those meetings to this wednesday" = { day = "this wednesday" }
+"move the meetings to the 14th"          = { day = "the 14th" }
+"shift everything to tomorrow"           = { day = "tomorrow" }
+
+[tests]
+"postpone them until monday"                   = { day = "monday" }
+"bump the lot back by a day"                   = { day = false }
+"list monday's calls"                          = false
+"call off tomorrow's one on one"               = false
+"arrange a call with jo for monday"            = false
+"switch my return trip to thursday"            = false
+"message #team that we meet on friday instead" = false

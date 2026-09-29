@@ -2,9 +2,15 @@ reflex = 1
 
 description = """
 Post a message to a chat channel.
-The message is what you typed about it."""
-not_for = ["email", "the status page", "reading a channel"]
-tags = ["post"]
+To one of your team's chat channels; the message is the words that asked for it."""
+not_for = [
+  "sending an email",
+  "updating the status page",
+  "paging someone on call",
+  "a direct message to one person",
+  "reading what a channel says",
+]
+tags = ["post", "outage"]
 effect = "write"
 confirm = "Post to {channel}?"
 run = "post.mts"
@@ -17,3 +23,12 @@ vocab = "channels"
 "post to #incident that we are on it" = {}
 "tell #ops the deploy is done"        = {}
 "let #incident know it is fixed"      = {}
+"drop a line in #ops about payments"  = {}
+"give #incident an update on search"  = {}
+
+[tests]
+"share in #ops that search recovered"                = {}
+"email the on-call team about checkout"              = false
+"tell customers payments is back on the status page" = false
+"page the on-call engineer for search"               = false
+"message ana that checkout looks fine"               = false

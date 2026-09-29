@@ -1,10 +1,10 @@
 reflex = 1
 
 description = """
-Show the meetings of a day.
-Each with its title and its time."""
-not_for = ["moving a meeting", "flights", "hotel rooms"]
-tags = ["calendar"]
+Show the meetings on your calendar for a day.
+Each meeting's title and time; nothing on the calendar changes."""
+not_for = ["moving meetings to another day", "adding a meeting or an event", "asking what the date is"]
+tags = ["calendar", "cancelled"]
 effect = "read"
 confirm = "Show the calendar for {day}?"
 run = "calendar.mts"
@@ -15,6 +15,15 @@ ask  = "Which day?"
 pick = "date"
 
 [examples]
-"what is on my calendar tomorrow" = {}
-"show monday's meetings"          = {}
-"what do i have on tuesday"       = {}
+"which meetings fall on thursday"        = { day = "thursday" }
+"my calendar for the day after tomorrow" = { day = "the day after tomorrow" }
+"show my schedule for this monday"       = { day = "this monday" }
+"how does today look on my calendar"     = { day = "today" }
+
+[tests]
+"any calls lined up for friday"    = { day = "friday" }
+"agenda for the 21st"              = { day = "the 21st" }
+"pull up my diary"                 = { day = false }
+"push wednesday's calls to monday" = false
+"set up lunch with ana on friday"  = false
+"which day of the month are we on" = false

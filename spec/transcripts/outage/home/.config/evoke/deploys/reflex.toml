@@ -2,9 +2,9 @@ reflex = 1
 
 description = """
 List the recent deploys of a service.
-Each release, when it went out and who shipped it."""
-not_for = ["error rates", "logs of a service", "rolling a release back"]
-tags = ["deploys"]
+Each release with when it went out and who shipped it, in one region or all."""
+not_for = ["rolling back a deploy", "which deploy broke something", "shipping a new release"]
+tags = ["deploys", "outage"]
 effect = "read"
 confirm = "List the deploys of {service}?"
 run = "deploys.mts"
@@ -23,6 +23,14 @@ optional = true
 deploys = { each = { release = "code" } }
 
 [examples]
-"what was deployed to checkout today"  = {}
-"list the deploys of payments"         = {}
-"recent releases of search in us-east" = {}
+"what got deployed to checkout recently" = {}
+"list the deploys of payments"           = {}
+"recent releases of search in us-east"   = {}
+"who shipped to payments in eu-west"     = {}
+"what went out on checkout"              = {}
+
+[tests]
+"show the deploy log for search"          = {}
+"take checkout off its latest deploy"     = false
+"is the newest payments release to blame" = false
+"push 4.13.0 out to checkout"             = false

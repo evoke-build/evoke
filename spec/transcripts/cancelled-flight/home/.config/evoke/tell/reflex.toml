@@ -1,19 +1,27 @@
 reflex = 1
 
 description = """
-Tell a chat channel where things stand.
-The message is what you typed about it."""
-not_for = ["booking a flight", "booking a hotel", "moving a meeting"]
-tags = ["tell"]
+Post a message to a chat channel.
+The message is the words that asked for it, posted to one of your team's own channels and nowhere else."""
+not_for = ["an email or a message to one person", "a reminder for yourself", "reading what a channel said"]
+tags = ["tell", "cancelled"]
 effect = "write"
 confirm = "Tell {channel}?"
 run = "tell.mts"
 
 [args.channel]
-ask   = "Which channel?"
+ask   = "Which chat channel?"
 vocab = "channels"
 
 [examples]
-"tell #travel the flight was cancelled" = {}
-"let #team know i land at midnight"     = {}
-"post to #travel that i am rebooked"    = {}
+"tell #travel i land late"                 = {}
+"let #team know the client review moved"   = {}
+"post in #travel that the hotel is booked" = {}
+
+[tests]
+"message #team that i'm working from the airport lounge" = {}
+"ping #travel with an update on the trip"                = {}
+"share my new arrival time in chat"                      = {}
+"email ana the new itinerary"                            = false
+"remind me to call the airline at noon"                  = false
+"what did #travel reply earlier"                         = false

@@ -1,10 +1,10 @@
 reflex = 1
 
 description = """
-Search a service's logs for the last hour.
-The most frequent errors and how often each came."""
-not_for = ["error rates", "releases and deploys", "posting to a channel"]
-tags = ["logs"]
+Search a service's logs from the last hour.
+Its most frequent error messages and how often each came, in one region or all."""
+not_for = ["a service's error rate", "a service's deploy log or release history"]
+tags = ["logs", "outage"]
 effect = "read"
 confirm = "Search the logs of {service}?"
 run = "logs.mts"
@@ -23,3 +23,10 @@ optional = true
 "pull the logs for checkout"          = {}
 "search the payments logs in eu-west" = {}
 "what do the search logs say"         = {}
+"what is checkout logging in us-east" = {}
+"top log errors for payments"         = {}
+
+[tests]
+"dig through the search logs"         = {}
+"what percent of checkout calls fail" = false
+"deploy history of payments"          = false

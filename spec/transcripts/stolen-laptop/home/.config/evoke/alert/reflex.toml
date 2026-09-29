@@ -2,18 +2,32 @@ reflex = 1
 
 description = """
 Alert a chat channel.
-The message is what you typed about it."""
-not_for = ["locking a laptop", "signing sessions out", "rotating keys"]
-tags = ["alert"]
+The message is the words that asked for it, posted to that one channel."""
+not_for = [
+  "setting an alarm or a reminder",
+  "messaging one person directly",
+  "sending an email",
+  "alerting me when something happens later",
+]
+tags = ["alert", "stolen"]
 effect = "write"
 confirm = "Alert {channel}?"
 run = "alert.mts"
 
 [args.channel]
-ask   = "Which channel?"
+ask   = "Which chat channel?"
 vocab = "channels"
 
 [examples]
-"alert #security"              = {}
-"tell #it a laptop is missing" = {}
-"let #security know"           = {}
+"alert #security about sam's laptop" = {}
+"give #it a heads-up"                = {}
+"let #security know"                 = {}
+"warn #security about jo's macbook"  = {}
+
+[tests]
+"send #it a quick note"                      = {}
+"post the news in #it"                       = {}
+"alert me in twenty minutes"                 = false
+"dm ana about the laptop"                    = false
+"email helpdesk@example.com about the theft" = false
+"notify me once the laptop checks in"        = false

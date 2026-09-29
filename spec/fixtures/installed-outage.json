@@ -4,17 +4,19 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "Show the error rate of a service.\nThe rate over the last hour and when it rose, in one region or all.",
+            "description": "Show the error rate of a service.\nThe share of its requests failing over the last hour and when it rose, in one region or all.",
             "not_for": [
-              "logs of a service",
-              "releases and deploys",
-              "the status page"
+              "the error messages in a service's logs",
+              "what was deployed and when",
+              "a service that is down or broken",
+              "response times and latency"
             ],
             "tags": [
-              "errors"
+              "errors",
+              "outage"
             ],
             "effect": "read",
-            "confirm": "Check the errors of {service}?",
+            "confirm": "Show the error rate of {service}?",
             "run": "errors.mts",
             "config": {},
             "args": {
@@ -36,9 +38,17 @@
             "examples": {
               "check the errors for checkout": {},
               "error rate of payments in eu-west": {},
-              "is search throwing errors": {}
+              "is search throwing errors": {},
+              "how many checkout requests are erroring": {},
+              "show me the 5xx on search in us-east": {}
             },
-            "tests": {},
+            "tests": {
+              "how flaky is payments right now": {},
+              "any timeouts in the checkout logs": false,
+              "what version is search on": false,
+              "search just went down": false,
+              "why is checkout so slow": false
+            },
             "unknown": []
           },
           "yours": []
@@ -51,14 +61,15 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "List the recent deploys of a service.\nEach release, when it went out and who shipped it.",
+            "description": "List the recent deploys of a service.\nEach release with when it went out and who shipped it, in one region or all.",
             "not_for": [
-              "error rates",
-              "logs of a service",
-              "rolling a release back"
+              "rolling back a deploy",
+              "which deploy broke something",
+              "shipping a new release"
             ],
             "tags": [
-              "deploys"
+              "deploys",
+              "outage"
             ],
             "effect": "read",
             "confirm": "List the deploys of {service}?",
@@ -87,11 +98,18 @@
             },
             "returns": "deploys",
             "examples": {
-              "what was deployed to checkout today": {},
+              "what got deployed to checkout recently": {},
               "list the deploys of payments": {},
-              "recent releases of search in us-east": {}
+              "recent releases of search in us-east": {},
+              "who shipped to payments in eu-west": {},
+              "what went out on checkout": {}
             },
-            "tests": {},
+            "tests": {
+              "show the deploy log for search": {},
+              "take checkout off its latest deploy": false,
+              "is the newest payments release to blame": false,
+              "push 4.13.0 out to checkout": false
+            },
             "unknown": []
           },
           "yours": []
@@ -104,14 +122,14 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "Search a service's logs for the last hour.\nThe most frequent errors and how often each came.",
+            "description": "Search a service's logs from the last hour.\nIts most frequent error messages and how often each came, in one region or all.",
             "not_for": [
-              "error rates",
-              "releases and deploys",
-              "posting to a channel"
+              "a service's error rate",
+              "a service's deploy log or release history"
             ],
             "tags": [
-              "logs"
+              "logs",
+              "outage"
             ],
             "effect": "read",
             "confirm": "Search the logs of {service}?",
@@ -136,9 +154,15 @@
             "examples": {
               "pull the logs for checkout": {},
               "search the payments logs in eu-west": {},
-              "what do the search logs say": {}
+              "what do the search logs say": {},
+              "what is checkout logging in us-east": {},
+              "top log errors for payments": {}
             },
-            "tests": {},
+            "tests": {
+              "dig through the search logs": {},
+              "what percent of checkout calls fail": false,
+              "deploy history of payments": false
+            },
             "unknown": []
           },
           "yours": []
@@ -151,17 +175,18 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "Find the release most likely behind a failure.\nWeighs a service's errors, its deploys and its logs, and names the release.",
+            "description": "Find the release most likely behind a failure.\nWeighs the errors, deploys and logs found before it in the same request, and names one release.",
             "not_for": [
-              "listing deploys",
-              "rolling a release back",
-              "error rates alone"
+              "listing a service's deploys",
+              "rolling the release back",
+              "who shipped a release"
             ],
             "tags": [
-              "suspect"
+              "suspect",
+              "outage"
             ],
             "effect": "read",
-            "confirm": "Find the suspect?",
+            "confirm": "Find the release behind the failure?",
             "run": "suspect.mts",
             "config": {},
             "args": {},
@@ -176,9 +201,14 @@
             "examples": {
               "find the suspect": {},
               "which deploy broke it": {},
-              "find the release behind the outage": {}
+              "find the release behind the outage": {},
+              "what release caused this": {}
             },
-            "tests": {},
+            "tests": {
+              "pin down the bad release": {},
+              "pull the bad release off search": false,
+              "every payments release from this week": false
+            },
             "unknown": []
           },
           "yours": []
@@ -191,14 +221,17 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "Roll a service back from a release to the one before it.\nEverywhere, or in one region.",
+            "description": "Roll a service back from a release to the one before it.\nEverywhere or in one region; live traffic moves to the older release, and only a new deploy brings the newer one back.",
             "not_for": [
-              "listing deploys",
+              "listing what was deployed",
               "finding which release broke something",
-              "restarting a service"
+              "shipping a new release",
+              "restarting a service",
+              "a config change or a feature flag"
             ],
             "tags": [
-              "rollback"
+              "rollback",
+              "outage"
             ],
             "effect": "destructive",
             "confirm": "Roll back {release}?",
@@ -235,9 +268,31 @@
               },
               "undo the 7.0.2 release of search": {
                 "release": "7.0.2"
+              },
+              "back out 5.4.1 on checkout in us-east": {
+                "release": "5.4.1"
+              },
+              "roll back the last payments deploy": {
+                "release": false
               }
             },
-            "tests": {},
+            "tests": {
+              "pull 6.2.3 off search in every region": {
+                "release": "6.2.3"
+              },
+              "pull 3.9.0 from payments": {
+                "release": "3.9.0"
+              },
+              "downgrade checkout from its newest release": {
+                "release": false
+              },
+              "put search back on the previous release": {
+                "release": false
+              },
+              "restart checkout in eu-west": false,
+              "what made payments fall over": false,
+              "ship 4.13.0 to search": false
+            },
             "unknown": []
           },
           "yours": []
@@ -250,14 +305,17 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "Post a message to a chat channel.\nThe message is what you typed about it.",
+            "description": "Post a message to a chat channel.\nTo one of your team's chat channels; the message is the words that asked for it.",
             "not_for": [
-              "email",
-              "the status page",
-              "reading a channel"
+              "sending an email",
+              "updating the status page",
+              "paging someone on call",
+              "a direct message to one person",
+              "reading what a channel says"
             ],
             "tags": [
-              "post"
+              "post",
+              "outage"
             ],
             "effect": "write",
             "confirm": "Post to {channel}?",
@@ -275,9 +333,17 @@
             "examples": {
               "post to #incident that we are on it": {},
               "tell #ops the deploy is done": {},
-              "let #incident know it is fixed": {}
+              "let #incident know it is fixed": {},
+              "drop a line in #ops about payments": {},
+              "give #incident an update on search": {}
             },
-            "tests": {},
+            "tests": {
+              "share in #ops that search recovered": {},
+              "email the on-call team about checkout": false,
+              "tell customers payments is back on the status page": false,
+              "page the on-call engineer for search": false,
+              "message ana that checkout looks fine": false
+            },
             "unknown": []
           },
           "yours": []
@@ -290,11 +356,12 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "List the open incidents.\nEach with its number and the service it hit.",
+            "description": "List the open incidents.\nEach with its number and the service it hit; closed ones are left out.",
             "not_for": [
-              "one incident by its number",
-              "error rates",
-              "the status page"
+              "looking up one incident by its number",
+              "declaring a new incident",
+              "closing or resolving an incident",
+              "incidents already closed"
             ],
             "tags": [
               "incidents"
@@ -314,9 +381,16 @@
             "examples": {
               "list the open incidents": {},
               "what incidents are open": {},
-              "which incidents are still going": {}
+              "which incidents are still going": {},
+              "show me active incidents": {}
             },
-            "tests": {},
+            "tests": {
+              "how many incidents are ongoing": {},
+              "declare an incident for payments": false,
+              "pull up incident 312": false,
+              "incidents we closed last week": false,
+              "resolve every open incident": false
+            },
             "unknown": []
           },
           "yours": []
@@ -329,11 +403,12 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "Look up an incident by its number.\nWhat happened, when it opened, and which service it hit.",
+            "description": "Look up an incident by its number.\nWhat happened, when it opened and which service it hit.",
             "not_for": [
-              "listing every incident",
-              "writing a postmortem",
-              "error rates"
+              "listing the open incidents",
+              "drafting a postmortem",
+              "closing or resolving an incident",
+              "declaring a new incident"
             ],
             "tags": [
               "incident"
@@ -361,9 +436,22 @@
               },
               "show me incident 1207": {
                 "number": "1207"
+              },
+              "details on incident 88": {
+                "number": "88"
               }
             },
-            "tests": {},
+            "tests": {
+              "what's the story with incident 64": {
+                "number": "64"
+              },
+              "show me that incident's details": {
+                "number": false
+              },
+              "close incident 311": false,
+              "prepare the postmortem for incident 97": false,
+              "how many incidents remain unresolved": false
+            },
             "unknown": []
           },
           "yours": []
@@ -376,11 +464,12 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "Draft the postmortem of an incident.\nA document from what the incident record says, saved for review.",
+            "description": "Draft the postmortem of an incident.\nWritten from the incident looked up before it in the same request, and saved as a draft for review.",
             "not_for": [
-              "looking up an incident",
-              "posting to a channel",
-              "the status page"
+              "looking up what happened in an incident",
+              "reading a postmortem already written",
+              "posting a summary to a channel",
+              "a status page update"
             ],
             "tags": [
               "postmortem"
@@ -398,10 +487,16 @@
             },
             "examples": {
               "draft the postmortem": {},
-              "write up the postmortem": {},
-              "start a postmortem for it": {}
+              "get the postmortem written": {},
+              "start a postmortem for it": {},
+              "write the incident review": {}
             },
-            "tests": {},
+            "tests": {
+              "put together a post-incident report": {},
+              "open last month's postmortem": false,
+              "send the incident summary to #ops": false,
+              "which service did incident 311 hit": false
+            },
             "unknown": []
           },
           "yours": []
@@ -414,14 +509,16 @@
       "wording": {
         "ok": {
           "manifest": {
-            "description": "Update the status page for a service.\nIts state as customers see it.",
+            "description": "Update the status page for a service.\nWhat customers see until the next update: investigating, identified, monitoring or resolved; monitoring when none is named.",
             "not_for": [
-              "chat channels",
-              "email",
-              "error rates"
+              "asking how a service is doing",
+              "opening the status page",
+              "posting in a chat channel",
+              "emailing customers"
             ],
             "tags": [
-              "status"
+              "status",
+              "outage"
             ],
             "effect": "write",
             "confirm": "Update the status page for {component}?",
@@ -435,7 +532,7 @@
                 "was": []
               },
               "state": {
-                "ask": "Which state?",
+                "ask": "What should the page say: investigating, identified, monitoring or resolved?",
                 "options": {
                   "investigating": "Looking into a problem.",
                   "identified": "The cause is known.",
@@ -448,15 +545,42 @@
             },
             "yields": {},
             "examples": {
-              "update the status page for checkout": {},
+              "update the status page for checkout": {
+                "state": false
+              },
               "mark payments as resolved on the status page": {
                 "state": "resolved"
               },
               "set the search status to investigating": {
                 "state": "investigating"
+              },
+              "show checkout as identified on the status page": {
+                "state": "identified"
+              },
+              "put payments in monitoring on the status page": {
+                "state": "monitoring"
               }
             },
-            "tests": {},
+            "tests": {
+              "tell customers search is all clear": {
+                "state": "resolved"
+              },
+              "let customers know we're digging into checkout": {
+                "state": "investigating"
+              },
+              "have the status page say we found the payments bug": {
+                "state": "identified"
+              },
+              "let customers see search is under observation": {
+                "state": "monitoring"
+              },
+              "revise the payments status page": {
+                "state": false
+              },
+              "what's the status of checkout": false,
+              "open the status page": false,
+              "ping #incident about the search fix": false
+            },
             "unknown": []
           },
           "yours": []
@@ -485,7 +609,7 @@
     },
     "services": {
       "checkout": {
-        "what": "The checkout service: cart, payment and order confirmation."
+        "what": "The checkout service: cart and order confirmation."
       },
       "payments": {
         "what": "The payments service: card charges and refunds."

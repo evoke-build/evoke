@@ -1,7 +1,7 @@
 // Closing the month through the SDK, over its flow's home and recording: the long sentence planned, the month
 // stated once reaching every lookup and the ledger, and the ledger post — under the write floor — waiting in a
-// queue for a second person, who reads the decision as plain data and answers it; the weave picks up where it
-// waited, and nothing ran twice. The pattern of the maker-checker example, inside one plan. Then the whole plan
+// queue for a second person, who reads the decision as plain data and answers it, then the email, which no one
+// takes back; the weave picks up where it waited, and nothing ran twice. The pattern of the maker-checker example, inside one plan. Then the whole plan
 // handed over: the maker seals it with `steps`, the checker reads it back with `weave` over the same project, says
 // yes to the plan and to the ledger, and a checker whose engine is another is refused.
 
@@ -36,14 +36,14 @@ test("the month stated once reaches every lookup and the ledger, and a joint the
       ["payroll", "run", undefined, { month: "september by fill" }],
       ["reconcile", "run", undefined, {}],
       ["ledger", "confirm", undefined, { month: "september by fill" }],
-      ["send", "run", undefined, {}],
+      ["send", "confirm", undefined, {}],
     ],
   )
   deepStrictEqual(plan.verdict, { outcome: "run" })
   deepStrictEqual(plan.binds?.map(b => `${b.from}→${b.to} ${b.field} ${b.via}`), ["1→5 transactions takes", "2→5 invoices takes", "3→5 expenses takes", "4→5 payroll takes"])
 })
 
-test("the ledger post waits in a queue for a second person, who answers the decision as plain data", async () => {
+test("the ledger post and the email wait in a queue for a second person, who answers each decision as plain data", async () => {
   const project = await load({ root: home, adapter: replay(answers) })
   const queue: Waiting[] = []
   // The maker: the sentence, its plan run, every confirm handed to whoever reads the queue.
@@ -61,6 +61,16 @@ test("the ledger post waits in a queue for a second person, who answers the deci
   equal(decision.effect, "write")
   deepStrictEqual(decision.because.map(cap => cap.type), ["under_floor"])
   waiting.answer(true)
+  // The email asks at its turn, whatever the engine made of it.
+  while (queue.length === 1) await new Promise(resolve => setTimeout(resolve, 5))
+  const email = queue[1]
+  ok(email !== undefined)
+  equal(email.step, 7)
+  const sending = JSON.parse(email.decision) as Confirm
+  equal(sending.call, 'send to="cfo@example.com"')
+  equal(sending.effect, "destructive")
+  deepStrictEqual(sending.because.map(cap => cap.type), ["destructive"])
+  email.answer(true)
   const done = await woven
   equal(done.status, "ran")
   deepStrictEqual(
@@ -75,7 +85,7 @@ test("the ledger post waits in a queue for a second person, who answers the deci
       [7, "ran", "sent to cfo@example.com"],
     ],
   )
-  equal(queue.length, 1)
+  equal(queue.length, 2)
 })
 
 test("a second person's no ends the weave at the ledger, and nothing after it runs", async () => {
@@ -98,7 +108,7 @@ test("a second person's no ends the weave at the ledger, and nothing after it ru
   )
 })
 
-test("the maker seals the plan as a file, and the checker runs it whole from the file, answering the ledger", async () => {
+test("the maker seals the plan as a file, and the checker runs it whole from the file, answering the ledger and the email", async () => {
   const maker = await load({ root: home, adapter: replay(answers) })
   const pinned = await maker.steps(sentence)
   equal(pinned.plan, 1)
@@ -106,7 +116,7 @@ test("the maker seals the plan as a file, and the checker runs it whole from the
   equal(pinned.set, maker.plan)
   deepStrictEqual(pinned.adapter, { name: "replay", id: "replay" })
   deepStrictEqual(pinned.gate, { route: 0.5, fits: 0.3, read: 0.6, write: 0.8 })
-  deepStrictEqual(Object.keys(pinned.reflexes), ["bank", "invoices", "cards", "payroll", "reconcile", "ledger", "send"])
+  deepStrictEqual(Object.keys(pinned.reflexes), ["bank", "invoices", "cards", "payroll", "reconcile", "ledger", "send", "close"])
   deepStrictEqual(Object.keys(pinned.vocab), ["months"])
   // The weave's own questions under the sentence, then each text decided: nine entries, none the engine's numbers.
   equal(pinned.answers.length, 9)
@@ -120,11 +130,11 @@ test("the maker seals the plan as a file, and the checker runs it whole from the
     proceed: (plan: Pinned) => plan.input === sentence,
     confirm: (decision: Confirm, turn) => {
       confirmed.push(turn.step)
-      return decision.reflex === "ledger"
+      return decision.reflex === "ledger" || decision.reflex === "send"
     },
   })
   equal(woven.status, "ran")
-  deepStrictEqual(confirmed, [6])
+  deepStrictEqual(confirmed, [6, 7])
   deepStrictEqual(
     woven.steps.map(step => [step.step, step.status, step.rounds[0]?.result?.text]),
     [

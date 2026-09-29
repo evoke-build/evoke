@@ -1,12 +1,17 @@
 reflex = 1
 
 description = """
-Get supplier quotes for what a shipment carries.
-A price per unit from each supplier who can deliver sooner."""
-not_for = ["where the shipment is", "stock in the warehouse", "placing the order"]
-tags = ["quotes"]
+Get supplier quotes for a shipment's products.
+A price per unit from each supplier who can deliver sooner; nothing is ordered."""
+not_for = [
+  "placing the order with a supplier",
+  "where a shipment is or when it lands",
+  "what the warehouse already holds",
+  "a famous or motivational quotation",
+]
+tags = ["quotes", "late"]
 effect = "read"
-confirm = "Get quotes for the {shipment} shipment?"
+confirm = "Get supplier quotes for the {shipment} shipment?"
 run = "quotes.mts"
 returns = "quotes"
 
@@ -15,6 +20,15 @@ ask   = "Which shipment?"
 vocab = "shipments"
 
 [examples]
-"get quotes for the rotterdam shipment"    = {}
-"who else can supply what hamburg carries" = {}
-"supplier prices for the antwerp goods"    = {}
+"compare supplier prices for the rotterdam goods"                 = {}
+"which suppliers could ship the antwerp items faster"             = {}
+"ask around for quotes on the hamburg goods"                      = {}
+"price per unit from other suppliers for the rotterdam container" = {}
+
+[tests]
+"get us rates on the hamburg lot from alternative vendors" = {}
+"who else sells the antwerp lines"                         = {}
+"go ahead with nordic's offer"                             = false
+"has the rotterdam load cleared customs"                   = false
+"what have we got on the shelves for rotterdam"            = false
+"give me an inspiring quote for the team"                  = false

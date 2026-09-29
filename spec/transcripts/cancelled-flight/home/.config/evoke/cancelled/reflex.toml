@@ -1,0 +1,42 @@
+reflex = 1
+
+description = """
+Recover from a cancelled flight.
+Finds the next flights and a room in the city, shows tomorrow's meetings, books the flight and the hotel, moves the meetings and tells the travel channel; the flight asks again before it is booked."""
+not_for = [
+  "finding flights on their own",
+  "finding a hotel room on its own",
+  "moving a day's meetings on their own",
+  "a flight that is only delayed",
+  "booking a trip from scratch",
+  "cancelling a flight yourself",
+]
+tags = ["cancelled"]
+effect = "destructive"
+confirm = "Run the cancelled flight plan for {city}?"
+steps = [
+  "find flights to {city}",
+  "find rooms in {city}",
+  "show tomorrow's calendar",
+  "book that flight",
+  "book the hotel",
+  "move the meetings",
+  "tell the travel channel",
+]
+
+[args.city]
+ask   = "Which city were you flying to?"
+vocab = "cities"
+
+[examples]
+"my madrid flight was cancelled"      = {}
+"they cancelled the flight to berlin" = {}
+"the lisbon flight is off"            = {}
+
+[tests]
+"our lisbon flight was cancelled"       = {}
+"the airline scrapped my berlin flight" = {}
+"is there a later plane to madrid"      = false
+"my flight to lisbon is boarding late"  = false
+"plan a spring trip to berlin"          = false
+"cancel my seat on the madrid flight"   = false

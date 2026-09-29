@@ -1,4 +1,4 @@
-# What the replay adapter answers, keyed by utterance identity (spec/README.md): the stolen laptop's stand-ins, one sentence over all eight.
+# What the replay adapter answers, keyed by utterance identity (spec/README.md): the stolen laptop, its long sentence over all eight stand-ins and its situation over the playbook.
 id = "replay"
 
 [gate]
@@ -32,6 +32,8 @@ route             = { device = 0.9, sessions = 0.03, none = 0.07 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
 "alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 
 [answers."sessions"]
 route             = { sessions = 0.9, device = 0.03, none = 0.07 }
@@ -47,6 +49,8 @@ route             = { sessions = 0.9, device = 0.03, none = 0.07 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
 "alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 
 [answers."keys"]
 route             = { keys = 0.9, device = 0.03, none = 0.07 }
@@ -62,6 +66,8 @@ route             = { keys = 0.9, device = 0.03, none = 0.07 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
 "alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 
 [answers."lock the laptop"]
 route             = { lock = 0.9, device = 0.03, none = 0.07 }
@@ -77,6 +83,8 @@ route             = { lock = 0.9, device = 0.03, none = 0.07 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
 "alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 
 [answers."wipe it"]
 route             = { wipe = 0.9, device = 0.03, none = 0.07 }
@@ -92,6 +100,8 @@ route             = { wipe = 0.9, device = 0.03, none = 0.07 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
 "alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 
 [answers."revoke the sessions"]
 route             = { revoke = 0.9, device = 0.03, none = 0.07 }
@@ -107,6 +117,8 @@ route             = { revoke = 0.9, device = 0.03, none = 0.07 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.02 }
 "alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 
 [answers."rotate the keys"]
 route             = { rotate = 0.9, device = 0.03, none = 0.07 }
@@ -122,6 +134,8 @@ route             = { rotate = 0.9, device = 0.03, none = 0.07 }
 "fits.rotate"     = { yes = 0.8 }
 "fits.alert"      = { yes = 0.02 }
 "alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
 
 [answers."alert #security"]
 route             = { alert = 0.9, device = 0.03, none = 0.07 }
@@ -137,3 +151,264 @@ route             = { alert = 0.9, device = 0.03, none = 0.07 }
 "fits.rotate"     = { yes = 0.02 }
 "fits.alert"      = { yes = 0.8 }
 "alert.channel"   = { "#security" = 0.9, unstated = 0.1 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+
+[answers."sam's laptop was stolen"]
+route             = { stolen = 0.9, device = 0.03, none = 0.07 }
+"fits.device"     = { yes = 0.1 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.02 }
+"sessions.person" = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.keys"       = { yes = 0.02 }
+"keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.8 }
+"stolen.person"   = { sam = 0.9, unstated = 0.1 }
+"weave.ref_3_0"   = { step0 = 0.9, step1 = 0.05, step2 = 0.05 }
+"weave.ref_4_0"   = { step0 = 0.9, step1 = 0.04, step2 = 0.03, step3 = 0.03 }
+"weave.ref_5_0"   = { step1 = 0.9, step0 = 0.04, step2 = 0.02, step3 = 0.02, step4 = 0.02 }
+"weave.ref_6_0"   = { step2 = 0.9, step0 = 0.02, step1 = 0.02, step3 = 0.02, step4 = 0.02, step5 = 0.02 }
+
+[answers."list sam's sessions"]
+route             = { sessions = 0.9, device = 0.03, none = 0.07 }
+"fits.device"     = { yes = 0.02 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.8 }
+"sessions.person" = { sam = 0.9, unstated = 0.1 }
+"fits.keys"       = { yes = 0.02 }
+"keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+
+[answers."list sam's keys"]
+route             = { keys = 0.9, device = 0.03, none = 0.07 }
+"fits.device"     = { yes = 0.02 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.02 }
+"sessions.person" = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.keys"       = { yes = 0.8 }
+"keys.person"     = { sam = 0.9, unstated = 0.1 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+
+[answers."alert the security channel"]
+route             = { alert = 0.9, device = 0.03, none = 0.07 }
+"fits.device"     = { yes = 0.02 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.02 }
+"sessions.person" = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.keys"       = { yes = 0.02 }
+"keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.8 }
+"alert.channel"   = { "#security" = 0.9, unstated = 0.1 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+
+[answers."ana's laptop was taken from the train"]
+route             = { stolen = 0.9, device = 0.03, none = 0.07 }
+"fits.device"     = { yes = 0.1 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.02 }
+"sessions.person" = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.keys"       = { yes = 0.02 }
+"keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.8 }
+"stolen.person"   = { ana = 0.9, unstated = 0.1 }
+
+[answers."jo lost their laptop"]
+route             = { stolen = 0.9, device = 0.03, none = 0.07 }
+"fits.device"     = { yes = 0.1 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.02 }
+"sessions.person" = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.keys"       = { yes = 0.02 }
+"keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.8 }
+"stolen.person"   = { jo = 0.9, unstated = 0.1 }
+
+[answers."someone stole sam's macbook"]
+route             = { stolen = 0.9, device = 0.03, none = 0.07 }
+"fits.device"     = { yes = 0.1 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.02 }
+"sessions.person" = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.keys"       = { yes = 0.02 }
+"keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.8 }
+"stolen.person"   = { sam = 0.9, unstated = 0.1 }
+
+[answers."ana left her work computer in a taxi"]
+route             = { stolen = 0.86, device = 0.03, none = 0.11 }
+"fits.device"     = { yes = 0.1 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.02 }
+"sessions.person" = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.keys"       = { yes = 0.02 }
+"keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.8 }
+"stolen.person"   = { ana = 0.9, unstated = 0.1 }
+
+[answers."what is jo still logged into"]
+route             = { sessions = 0.9, device = 0.03, none = 0.07 }
+"fits.device"     = { yes = 0.02 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.8 }
+"sessions.person" = { jo = 0.9, unstated = 0.1 }
+"fits.keys"       = { yes = 0.02 }
+"keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+
+[answers."sam's laptop turned up again"]
+route             = { none = 0.9, device = 0.1 }
+"fits.device"     = { yes = 0.02 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.02 }
+"sessions.person" = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.keys"       = { yes = 0.02 }
+"keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+
+[answers."jo's screen stays black"]
+route             = { none = 0.9, device = 0.1 }
+"fits.device"     = { yes = 0.02 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.02 }
+"sessions.person" = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.keys"       = { yes = 0.02 }
+"keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+
+[answers."sam needs a newer laptop"]
+route             = { none = 0.9, device = 0.1 }
+"fits.device"     = { yes = 0.02 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.02 }
+"sessions.person" = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.keys"       = { yes = 0.02 }
+"keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+
+[answers."find ana's laptop"]
+route             = { device = 0.9, sessions = 0.03, none = 0.07 }
+"fits.device"     = { yes = 0.8 }
+"device.person"   = { ana = 0.9, unstated = 0.1 }
+"fits.sessions"   = { yes = 0.02 }
+"sessions.person" = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.keys"       = { yes = 0.02 }
+"keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+
+[answers."list ana's sessions"]
+route             = { sessions = 0.9, device = 0.03, none = 0.07 }
+"fits.device"     = { yes = 0.02 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.8 }
+"sessions.person" = { ana = 0.9, unstated = 0.1 }
+"fits.keys"       = { yes = 0.02 }
+"keys.person"     = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+
+[answers."list ana's keys"]
+route             = { keys = 0.9, device = 0.03, none = 0.07 }
+"fits.device"     = { yes = 0.02 }
+"device.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.sessions"   = { yes = 0.02 }
+"sessions.person" = { unstated = 0.9, sam = 0.05, ana = 0.05 }
+"fits.keys"       = { yes = 0.8 }
+"keys.person"     = { ana = 0.9, unstated = 0.1 }
+"fits.lock"       = { yes = 0.02 }
+"fits.wipe"       = { yes = 0.02 }
+"fits.revoke"     = { yes = 0.02 }
+"fits.rotate"     = { yes = 0.02 }
+"fits.alert"      = { yes = 0.02 }
+"alert.channel"   = { unstated = 0.9, "#security" = 0.05, "#it" = 0.05 }
+"fits.stolen"     = { yes = 0.02 }
+"stolen.person"   = { unstated = 0.9, sam = 0.05, ana = 0.05 }

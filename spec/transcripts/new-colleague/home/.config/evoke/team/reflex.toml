@@ -1,20 +1,37 @@
 reflex = 1
 
 description = """
-List a team's members.
-Who sits on it today, by first name."""
-not_for = ["one person's hire", "booking onboarding", "creating accounts"]
+List the members of a team.
+Who is on it today, by first name; someone who has not started yet is not listed."""
+not_for = [
+  "which team a person is on",
+  "who is joining a team",
+  "adding someone to a team or moving them",
+  "sending a team a message",
+  "booking time with a team",
+]
 tags = ["team"]
 effect = "read"
-confirm = "List the members of {team}?"
+confirm = "List the {team} team's members?"
 run = "team.mts"
 returns = "team"
 
 [args.team]
-ask   = "Which team?"
+ask   = "Which team in the company?"
 vocab = "teams"
 
 [examples]
-"who is on the platform team" = {}
 "list the sales team"         = {}
-"show me platform's members"  = {}
+"who do we have on platform"  = {}
+"show me the platform roster" = {}
+"the people in sales"         = {}
+
+[tests]
+"name everybody on platform"            = {}
+"who's currently in the sales group"    = {}
+"who belongs to the team"               = {}
+"which team is ana joining"             = false
+"who's coming into sales"               = false
+"transfer jo to platform"               = false
+"let the sales team know about friday"  = false
+"set up a call with the platform folks" = false

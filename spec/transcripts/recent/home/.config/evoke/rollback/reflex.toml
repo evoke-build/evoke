@@ -5,6 +5,7 @@ Roll a service back from a release to the one before it.
 Everywhere, or in one region."""
 not_for = ["listing deploys", "finding which release broke something", "restarting a service"]
 tags = ["rollback"]
+effect = "destructive"
 confirm = "Roll back {release}?"
 run = "rollback.mts"
 

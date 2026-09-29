@@ -2,9 +2,16 @@ reflex = 1
 
 description = """
 Post a month's closing entries to the ledger.
-Once posted, the month is closed."""
-not_for = ["reconciling", "sending a report", "chat messages"]
-tags = ["ledger"]
+Only the closing entries, in the ledger. A posted month can be reopened and its entries reversed."""
+not_for = [
+  "looking up the ledger or its balances",
+  "recording a single entry",
+  "reopening a closed month",
+  "reconciling the books",
+  "posting a message in a chat channel",
+  "the whole month-end close",
+]
+tags = ["ledger", "close"]
 effect = "write"
 confirm = "Post {month} to the ledger?"
 run = "ledger.mts"
@@ -14,6 +21,16 @@ ask   = "Which month?"
 vocab = "months"
 
 [examples]
-"post september to the ledger" = {}
-"close august in the books"    = {}
-"book the october entries"     = {}
+"post september to the ledger"                 = {}
+"book the october entries"                     = {}
+"post the closing entries for september"       = {}
+"post october's entries to the general ledger" = {}
+
+[tests]
+"put august's closing journal through"                 = {}
+"commit september's closing adjustments to the ledger" = {}
+"pull up august's trial balance"                       = false
+"record the office rent as an expense"                 = false
+"reopen july in the books"                             = false
+"match october's bank lines to the invoices"           = false
+"post the totals in the finance channel"               = false

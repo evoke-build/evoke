@@ -1,20 +1,37 @@
 reflex = 1
 
 description = """
-Look up a new hire.
-Their role and the day they start."""
-not_for = ["a team's members", "creating accounts", "ordering a laptop"]
+Look up a new hire's role and start date.
+Only someone who has not started yet; their hire record is read, never changed."""
+not_for = [
+  "recruiting for an open role",
+  "the job of someone already working here",
+  "someone who is leaving",
+  "a person's email address or phone number",
+  "hiring a car",
+]
 tags = ["hire"]
 effect = "read"
-confirm = "Look up the hire of {person}?"
+confirm = "Look up {person}'s hire?"
 run = "hire.mts"
 returns = "hire"
 
 [args.person]
-ask   = "Which person?"
+ask   = "Who is the new hire?"
 vocab = "people"
 
 [examples]
-"look up maria's hire"        = {}
-"when does sam start"         = {}
-"what role is ana joining in" = {}
+"look up maria's hire"          = {}
+"when does sam start"           = {}
+"what role did we hire ana for" = {}
+"maria's start date"            = {}
+
+[tests]
+"when will ana join us"            = {}
+"what's sam's job going to be"     = {}
+"is the new designer due soon"     = {}
+"we need to hire another designer" = false
+"hire a van for the office move"   = false
+"what does leila do here"          = false
+"when is omar leaving"             = false
+"how do i reach maria"             = false

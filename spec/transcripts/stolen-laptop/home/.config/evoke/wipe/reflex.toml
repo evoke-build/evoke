@@ -1,18 +1,33 @@
 reflex = 1
 
 description = """
-Erase a laptop remotely by its serial.
-Everything on it is gone at its next check-in; there is no undo."""
-not_for = ["locking a laptop", "finding a laptop", "rotating keys"]
-tags = ["wipe"]
+Wipe a laptop remotely by its serial.
+Everything on it is erased at its next check-in; there is no undo."""
+not_for = [
+  "locking a laptop",
+  "finding a laptop's serial",
+  "clearing a person's sessions",
+  "erasing this computer's own disk",
+]
+tags = ["wipe", "stolen"]
+effect = "destructive"
 confirm = "Wipe {serial}?"
 run = "wipe.mts"
 
 [args.serial]
-ask  = "Which serial?"
+ask  = "What is the laptop's serial?"
 pick = "code"
 
 [examples]
-"wipe C02XK1ABJG5M"                         = { serial = "C02XK1ABJG5M" }
-"erase the laptop with serial FVFH3KLMN2Q7" = { serial = "FVFH3KLMN2Q7" }
-"remote wipe C02G80T3MD6R"                  = { serial = "C02G80T3MD6R" }
+"wipe C02XK1ABJG5M"                       = { serial = "C02XK1ABJG5M" }
+"remote wipe c02g80t3md6r"                = { serial = "c02g80t3md6r" }
+"erase everything on laptop FVFH3KLMN2Q7" = { serial = "FVFH3KLMN2Q7" }
+"wipe the macbook DMPX93KLQ1GH clean"     = { serial = "DMPX93KLQ1GH" }
+
+[tests]
+"clear every file off G8WQ02HJK5TZ"    = { serial = "G8WQ02HJK5TZ" }
+"wipe sam's laptop"                    = { serial = false }
+"put a lock on sam's laptop"           = false
+"which serial belongs to jo's macbook" = false
+"wipe ana's sessions"                  = false
+"reformat my own hard drive"           = false

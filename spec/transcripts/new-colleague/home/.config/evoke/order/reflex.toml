@@ -2,23 +2,42 @@ reflex = 1
 
 description = """
 Order a laptop for a new hire.
-The air or the pro, shipped to the office; the order is placed at once."""
-not_for = ["creating accounts", "booking onboarding", "a team's members"]
+A MacBook Air unless the Pro is asked for, at their desk by their first day; the purchase is made at once and cannot be undone."""
+not_for = [
+  "a lost or stolen laptop",
+  "repairing or returning a laptop",
+  "whether an ordered laptop has arrived",
+  "ordering lunch, a monitor or a phone",
+  "stock or supplies from a supplier",
+]
 tags = ["order"]
+effect = "destructive"
 confirm = "Order a laptop for {person}?"
 run = "order.mts"
 
 [args.person]
-ask   = "For whom?"
+ask   = "Which new hire is the laptop for?"
 vocab = "people"
 
 [args.model]
-ask         = "Which model?"
-options.air = "The light one, for most roles."
-options.pro = "The powerful one, for engineers and designers."
+ask         = "Which laptop, the Air or the Pro?"
+options.air = "The MacBook Air, the lighter one."
+options.pro = "The MacBook Pro, the more powerful one."
 optional    = true
 
 [examples]
-"order a laptop for maria"         = {}
-"order sam a pro laptop"           = {}
-"get ana an air before she starts" = {}
+"order her a laptop"            = { model = false }
+"buy maria a macbook air"       = { model = "air" }
+"request a macbook pro for ana" = { model = "pro" }
+"get a laptop ordered for sam"  = { model = false }
+
+[tests]
+"sam should get an air for his desk"       = { model = "air" }
+"put maria down for a pro laptop"          = { model = "pro" }
+"sort ana out with a laptop"               = { model = false }
+"maria left her laptop in a taxi"          = false
+"send sam's laptop back for repair"        = false
+"has ana's laptop been delivered yet"      = false
+"order two monitors for the platform team" = false
+"order lunch for sam's first day"          = false
+"restock printer paper from our supplier"  = false

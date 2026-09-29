@@ -169,9 +169,9 @@
                 "choices": {
                   "type": "vocab",
                   "words": {
-                    "august": "August, the month before last.",
-                    "september": "September, last month.",
-                    "october": "October, this month."
+                    "august": "August.",
+                    "september": "September.",
+                    "october": "October."
                   }
                 }
               }
@@ -257,9 +257,9 @@
                 "choices": {
                   "type": "vocab",
                   "words": {
-                    "august": "August, the month before last.",
-                    "september": "September, last month.",
-                    "october": "October, this month."
+                    "august": "August.",
+                    "september": "September.",
+                    "october": "October."
                   }
                 }
               }
@@ -478,9 +478,9 @@
                 "choices": {
                   "type": "vocab",
                   "words": {
-                    "august": "August, the month before last.",
-                    "september": "September, last month.",
-                    "october": "October, this month."
+                    "august": "August.",
+                    "september": "September.",
+                    "october": "October."
                   }
                 }
               }

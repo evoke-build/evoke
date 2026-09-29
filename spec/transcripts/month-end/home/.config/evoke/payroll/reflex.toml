@@ -1,12 +1,16 @@
 reflex = 1
 
 description = """
-Show the payroll run of a month.
-Salaries, taxes and the total paid."""
-not_for = ["bank transactions", "card expenses", "invoices"]
-tags = ["payroll"]
+Show a month's payroll run.
+The salaries, taxes and total of a run already made. It pays no one."""
+not_for = [
+  "running payroll or paying salaries",
+  "one person's payslip",
+  "adding someone to payroll or changing a salary",
+]
+tags = ["payroll", "close"]
 effect = "read"
-confirm = "Show the payroll of {month}?"
+confirm = "Show {month}'s payroll run?"
 run = "payroll.mts"
 returns = "payroll"
 
@@ -17,4 +21,12 @@ vocab = "months"
 [examples]
 "show september's payroll"        = {}
 "what did payroll cost in august" = {}
-"the october payroll run"         = {}
+"payroll breakdown for october"   = {}
+"payroll taxes for september"     = {}
+
+[tests]
+"october's wage bill"               = {}
+"gross pay for september"           = {}
+"pay everyone their october salary" = false
+"ana's payslip for august"          = false
+"put maria on payroll from october" = false

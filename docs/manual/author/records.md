@@ -76,7 +76,7 @@ A case that passed at the last run and fails now is decided twice more. Two of t
 
 A playbook's steps are tested after its records ([Playbooks](playbooks.md)): each filled from the first record
 whose reading fills every slot it holds, decided over the whole set, and passed when it reaches a reflex. Its
-line counts them, `outage  4 passed · 7 steps route`, and a step that reaches nothing, or its own plan, or that
+line counts them, `outage  14 passed · 7 steps route`, and a step that reaches nothing, or its own plan, or that
 no record fills, prints under it.
 
 ## Lint

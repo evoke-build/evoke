@@ -1,10 +1,11 @@
 adapter = "replay"
 
 [reflexes]
-flights  = "./flights"
-rooms    = "./rooms"
-calendar = "./calendar"
-book     = "./book"
-hotel    = "./hotel"
-meeting  = "./meeting"
-tell     = "./tell"
+flights   = "./flights"
+rooms     = "./rooms"
+calendar  = "./calendar"
+book      = "./book"
+hotel     = "./hotel"
+meeting   = "./meeting"
+tell      = "./tell"
+cancelled = "./cancelled"

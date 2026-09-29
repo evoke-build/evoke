@@ -2,9 +2,16 @@ reflex = 1
 
 description = """
 Roll a service back from a release to the one before it.
-Everywhere, or in one region."""
-not_for = ["listing deploys", "finding which release broke something", "restarting a service"]
-tags = ["rollback"]
+Everywhere or in one region; live traffic moves to the older release, and only a new deploy brings the newer one back."""
+not_for = [
+  "listing what was deployed",
+  "finding which release broke something",
+  "shipping a new release",
+  "restarting a service",
+  "a config change or a feature flag",
+]
+tags = ["rollback", "outage"]
+effect = "destructive"
 confirm = "Roll back {release}?"
 run = "rollback.mts"
 
@@ -27,3 +34,14 @@ optional = true
 "roll checkout back from 4.12.0"        = { release = "4.12.0" }
 "revert payments from 2.3.1 in eu-west" = { release = "2.3.1" }
 "undo the 7.0.2 release of search"      = { release = "7.0.2" }
+"back out 5.4.1 on checkout in us-east" = { release = "5.4.1" }
+"roll back the last payments deploy"    = { release = false }
+
+[tests]
+"pull 6.2.3 off search in every region"      = { release = "6.2.3" }
+"pull 3.9.0 from payments"                   = { release = "3.9.0" }
+"downgrade checkout from its newest release" = { release = false }
+"put search back on the previous release"    = { release = false }
+"restart checkout in eu-west"                = false
+"what made payments fall over"               = false
+"ship 4.13.0 to search"                      = false

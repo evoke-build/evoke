@@ -2,18 +2,32 @@ reflex = 1
 
 description = """
 Email the month's closing report.
-To one address."""
-not_for = ["posting to the ledger", "chat messages", "reconciling"]
-tags = ["send"]
-effect = "write"
-confirm = "Send the report to {to}?"
+Only the closing report, to the one address you type; once sent it cannot be taken back."""
+not_for = [
+  "writing someone an email",
+  "sending an invoice to a customer",
+  "sharing the report in a chat channel",
+  "emailing a statement or a payslip",
+]
+tags = ["send", "close"]
+effect = "destructive"
+confirm = "Email the closing report to {to}?"
 run = "send.mts"
 
 [args.to]
-ask  = "To which address?"
+ask  = "To which email address?"
 pick = "email"
 
 [examples]
-"send the report to cfo@example.com"           = { to = "cfo@example.com" }
-"email the close to omar@example.com"          = { to = "omar@example.com" }
-"mail the month's report to board@example.com" = { to = "board@example.com" }
+"send the report to cfo@example.com"                 = { to = "cfo@example.com" }
+"email the month-end pack to omar@example.com"       = { to = "omar@example.com" }
+"mail the month's report to board@example.com"       = { to = "board@example.com" }
+"get the closing report over to finance@example.com" = { to = "finance@example.com" }
+
+[tests]
+"forward the closing report to auditor@example.com" = { to = "auditor@example.com" }
+"email the closing report to the finance lead"      = { to = false }
+"send acme@example.com their invoice"               = false
+"email ana@example.com about the team lunch"        = false
+"put the report on slack for finance"               = false
+"email lena@example.com the august payslips"        = false
