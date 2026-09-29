@@ -1,5 +1,6 @@
-# What the replay adapter answers, keyed by utterance identity (spec/README.md): the two lines the manual's
-# first-reflex page shows; nothing for the installed examples, so the theft test at add cannot finish and says so.
+# What the replay adapter answers, keyed by utterance identity (spec/README.md): the first reflex's two sentences,
+# decided beside the home's reflexes; nothing for the installed examples, so the theft test at add cannot finish
+# and says so.
 id = "replay"
 
 [gate]

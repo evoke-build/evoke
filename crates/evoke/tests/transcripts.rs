@@ -132,6 +132,11 @@ fn new() {
 }
 
 #[test]
+fn first_reflex() {
+    flow("first-reflex");
+}
+
+#[test]
 fn check() {
     flow("check");
 }

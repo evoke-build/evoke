@@ -100,14 +100,14 @@ project's own files, not to the reflexes.
 ```text
 $ cd ~/dev && evoke trust
 + trusted ~/dev
-$ evoke add ./hello
+$ cd ~/dev && evoke add ./hello
 + hello  ./hello  read  runs hello.mts
-$ evoke try 'say hi to "Ada"'
+$ cd ~/dev && evoke try 'say hi to "Ada"'
   hello 0.94 · none 0.06
   who   "Ada" 0.97 · unstated 0.03
   fits  hello 0.71
   run · weakest: route 0.94
-$ evoke 'wave at "Grace"'
+$ cd ~/dev && evoke 'wave at "Grace"'
   hello who="Grace"  0.92
 Hello, Grace!
 ```

@@ -13,7 +13,7 @@ $ evoke add ./hello
 $ evoke run hello who=Ada
   hello who="Ada"
 Hello, Ada!
-# The first reflex tried and run, as the manual's first-reflex page shows.
+# The first reflex tried and run beside the home's reflexes, whose fits print with its own.
 $ evoke try 'say hi to "Ada"'
   hello 0.94 · none 0.06
   who   "Ada" 0.97 · unstated 0.03
