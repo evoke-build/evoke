@@ -15,6 +15,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   A day misspelt and a code typed with a space are read too, and the call confirms with the words as typed.
 - A call confirms when a value from a list was read from a word of the input alone; the prompt names the word.
   `try` and `why` say under a value what it stands on, and the JSON line carries it as `basis`.
+- A sentence that asks one thing is one step, whatever its connectives. Two parts that read as the same call
+  are one step. A value one part states reaches another part that points at it. A playbook takes a value the
+  sentence states for one of its steps. A part that asks for nothing is set aside, and the plan says so.
 - A text typed without quotes is read for a `quoted` argument, and the call confirms: in `set a timer for 10
   minutes called tea` the label is `tea`.
 - An ask names the words of the input that answer it: `"garage" is not on the list`. A call confirms when the

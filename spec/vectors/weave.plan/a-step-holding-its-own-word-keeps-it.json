@@ -732,6 +732,16 @@
         },
         "weave.split_3": {
           "yes": 0.9
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
+        }
+      },
+      "verified": {
+        "weave.share_0_48_errors__service": {
+          "yes": 0.05
         }
       },
       "referred": {
@@ -786,6 +796,11 @@
                 }
               ],
               "unconsumed": [],
+              "held": [
+                {
+                  "type": "merged"
+                }
+              ],
               "confidence": 0.9,
               "weakest": {
                 "question": "route",

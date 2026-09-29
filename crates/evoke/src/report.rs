@@ -868,7 +868,8 @@ fn run_line(chosen: &Chosen) -> Text {
 /// The plan, one line per step, numbered as the run refers to them: a call with its confidence; the own line of
 /// a step that will confirm; `asks <arg>` for what a step still needs; `takes <field> from <n>` where a result
 /// threads in; `after <n>` where the words order it; `with <n>` where the step runs beside earlier ones; `no
-/// reflex` where nothing matched. Then what was left out, when the request said what not to do.
+/// reflex` where nothing matched. Then what was folded into a step, what was set aside as a remark or kept out
+/// of the plan as words that may add a detail, and what was left out, when the request said what not to do.
 #[must_use]
 pub fn planned(weave: &Weave) -> Text {
     let mut lines: Vec<Text> = weave
@@ -882,6 +883,13 @@ pub fn planned(weave: &Weave) -> Text {
             quoted(&folded.text),
             folded.into
         )));
+    }
+    for aside in &weave.asides {
+        lines.push(Text::from(if aside.remark {
+            format!("set aside {}", quoted(&aside.text))
+        } else {
+            format!("not in the plan {}", quoted(&aside.text))
+        }));
     }
     if !weave.excluded.is_empty() {
         let parts: Vec<String> = weave.excluded.iter().map(|part| quoted(part)).collect();
@@ -2900,6 +2908,11 @@ fn stands_on(decision: &Decision, arg: &str) -> Option<String> {
             _ => return None,
         },
         Basis::Only { yes } => format!("the only one of its kind: yes {:.2}", yes.get()),
+        Basis::Shared { from, yes } => format!(
+            "said once, in {} · is it {shown}? yes {:.2}",
+            plain(&quoted(from)),
+            yes.get()
+        ),
         Basis::Text { p, others } if others.is_empty() => {
             format!("read without quotes: {shown} {:.2}", p.get())
         }

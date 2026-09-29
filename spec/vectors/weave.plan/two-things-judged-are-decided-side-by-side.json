@@ -15,19 +15,9 @@
     }
   },
   "expect": {
-    "ok": {
-      "type": "need",
-      "need": {
-        "type": "decide",
-        "asked": [
-          {
-            "text": "kill the lights in the den"
-          },
-          {
-            "text": "start a 10 minute timer"
-          }
-        ]
-      }
+    "err": {
+      "type": "unanswered",
+      "question": "weave.count"
     }
   }
 }

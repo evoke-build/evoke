@@ -230,6 +230,9 @@ impl fmt::Display for Template {
 /// The most steps a playbook may hold, and a plan after expansion: past it the plan is too big to read.
 pub const MOST_STEPS: usize = 24;
 
+/// What follows a slot to say that what comes next is its own.
+const POSSESSIVE: [&str; 2] = ["'s", "\u{2019}s"];
+
 /// One step of a playbook: a sentence with `{slot}`s, each an argument of the manifest, and phrases in brackets
 /// that go only with the slots inside them — written when every one is filled, dropped whole when one is not;
 /// and, for a step that may not run, what picks it. On the wire a string, or `{ say, when }` for a step with
@@ -408,6 +411,42 @@ impl Sentence {
         let mut slots = IndexMap::new();
         write(&self.parts, args, &mut text, &mut slots)?;
         Some((text, slots))
+    }
+
+    /// The sentence as far as the values go: a slot with a value filled, a slot without one left out of the
+    /// words, and a bracket left out whole unless every slot in it is filled. What a step's words route to
+    /// is asked of it where a value is still to come; never a step's own words.
+    #[must_use]
+    pub fn sketched(&self, args: &IndexMap<ArgName, call::Value>) -> String {
+        let mut text = String::new();
+        let mut left_out = false;
+        for part in &self.parts {
+            match part {
+                // What a slot left out owned goes with it: «{service}'s errors» is «errors».
+                Part::Text(piece) => {
+                    let piece = piece.as_str();
+                    let owned = POSSESSIVE
+                        .iter()
+                        .find_map(|mark| piece.strip_prefix(mark))
+                        .filter(|_| left_out);
+                    text.push_str(owned.unwrap_or(piece));
+                    left_out = false;
+                }
+                Part::Slot(name) => {
+                    let value = args.get(name).and_then(written);
+                    left_out = value.is_none();
+                    text.extend(value);
+                }
+                Part::Optional(inner) => {
+                    let phrase = Self {
+                        parts: inner.clone(),
+                        when: None,
+                    };
+                    text.extend(phrase.filled(args).map(|(filled, _)| filled));
+                }
+            }
+        }
+        text.split_whitespace().collect::<Vec<_>>().join(" ")
     }
 }
 

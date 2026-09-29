@@ -291,3 +291,68 @@ $ evoke show outage
   "checkout feels sluggish this morning" = false
 $ evoke test outage
   outage  16 passed · 7 steps route
+# Two parts that read as one call are one step; the second part's words are kept as folded.
+$ evoke "check the errors for checkout, and the errors in eu-west"
+  errors service="checkout" region="eu-west"  0.90
+checkout: 8.4% errors since 14:02
+$ evoke why
+  "check the errors for checkout eu-west"
+  errors 0.90 · none 0.10
+  service  checkout 0.90 · unstated 0.10
+           asked a second way: checkout 0.90
+  region   eu-west 0.90 · unstated 0.10
+           asked a second way: eu-west 0.90
+  words    "check the errors" say what to do 0.90 · "errors" say what to do 0.90
+  fits     errors 0.80
+  ran errors service="checkout" region="eu-west" · weakest: route 0.90 · replay, 9 questions in 2 rounds
+# A request that asks one thing is one step, whatever its connectives.
+$ evoke "check the errors for checkout, and only in eu-west"
+  errors service="checkout" region="eu-west"  0.90
+checkout: 8.4% errors since 14:02
+$ evoke why
+  "check the errors for checkout, and only in eu-west"
+  errors 0.90 · none 0.07 · deploys 0.03
+  service  checkout 0.90 · unstated 0.10
+           asked a second way: checkout 0.90
+  region   eu-west 0.90 · unstated 0.10
+           asked a second way: eu-west 0.90
+  words    "check the errors" say what to do 0.90 · "only" say what to do 0.90
+  fits     errors 0.80 · deploys 0.02 · logs 0.02 · suspect 0.02 · rollback 0.02 · post 0.02 · incidents 0.02 · incident 0.02 · postmortem 0.02 · status 0.02 · outage 0.02
+  ran errors service="checkout" region="eu-west" · weakest: route 0.90 · replay, 53 questions in 2 rounds
+# A part that asks for nothing is set aside, and the plan says so.
+$ evoke "check the errors for checkout, thanks a lot for this"
+  errors service="checkout"  0.90
+checkout: 8.4% errors since 14:02
+$ evoke why
+  "check the errors for checkout"
+  errors 0.90 · none 0.07 · deploys 0.03
+  service  checkout 0.90 · unstated 0.10
+           asked a second way: checkout 0.90
+  words    "check the errors" say what to do 0.90
+  fits     errors 0.80 · deploys 0.02 · logs 0.02 · suspect 0.02 · rollback 0.02 · post 0.02 · incidents 0.02 · incident 0.02 · postmortem 0.02 · status 0.02 · outage 0.02
+  ran errors service="checkout" · weakest: route 0.90 · cached
+# A value one part states is another's where a yes says so.
+$ evoke "check the errors for checkout in eu-west, then pull its logs there"
+  1  errors service="checkout" region="eu-west"  0.90
+  2  logs service="checkout" region="eu-west"  0.90 · after 1
+checkout: 8.4% errors since 14:02
+checkout: 412 timeouts calling payments
+$ evoke why
+  1  "check the errors for checkout in eu-west"
+  errors 0.90 · none 0.07 · deploys 0.03
+  service  checkout 0.90 · unstated 0.10
+           asked a second way: checkout 0.90
+  region   eu-west 0.90 · unstated 0.10
+           asked a second way: eu-west 0.90
+  words    "check the errors" say what to do 0.90
+  fits     errors 0.80 · deploys 0.02 · logs 0.02 · suspect 0.02 · rollback 0.02 · post 0.02 · incidents 0.02 · incident 0.02 · postmortem 0.02 · status 0.02 · outage 0.02
+  ran errors service="checkout" region="eu-west" · weakest: route 0.90 · replay, 52 questions in 2 rounds
+  2  "pull its logs there"
+  logs 0.90 · none 0.07 · errors 0.03
+  service  unstated 0.90 · checkout 0.05 · payments 0.05
+           asked a second way: checkout 0.90
+  region   unstated 0.90 · eu-west 0.05 · us-east 0.05
+           said once, in "check the errors for checkout in eu-west" · is it eu-west? yes 0.90
+  words    "pull its logs" say what to do 0.90
+  fits     logs 0.80 · errors 0.02 · deploys 0.02 · suspect 0.02 · rollback 0.02 · post 0.02 · incidents 0.02 · incident 0.02 · postmortem 0.02 · status 0.02 · outage 0.02
+  ran logs service="checkout" region="eu-west" · weakest: route 0.90 · shared service = checkout · replay, 41 questions in 2 rounds

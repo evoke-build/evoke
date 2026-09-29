@@ -15,7 +15,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `outcome`    | ●   | ●       | ●   | ●       | `"run"`, `"confirm"`, `"ask"`, `"abstain"`                      |
 | `reflex`     | ●   | ●       | ●   |         | The winner's local name                                        |
 | `args`       | ●   | ●       | ●   |         | Per argument, a typed value; partial for an ask. A pick read from words that spell it out carries `typed`, the value as it is typed |
-| `basis`      | ○   | ○       | ○   |         | Per value read from the input, what it stands on, by `by`: `ask`, its own question; `views`, two questions that agree; `view`, one of them and the `words` that hold it; `words`, the words and a `yes`; `spelled`, words that spell it out and a `yes`; `only`, the one candidate of its kind and a `yes`; `text`, a text typed without quotes, with the `others` it could have been |
+| `basis`      | ○   | ○       | ○   |         | Per value read from the input, what it stands on, by `by`: `ask`, its own question; `views`, two questions that agree; `view`, one of them and the `words` that hold it; `words`, the words and a `yes`; `spelled`, words that spell it out and a `yes`; `only`, the one candidate of its kind and a `yes`; `text`, a text typed without quotes, with the `others` it could have been; `shared`, a value another part of the sentence states, `from` its words, and a `yes` |
 | `call`       | ●   | ●       |     |         | The call on one line: `lights room="den" state="off"`           |
 | `effect`     | ●   | ●       |     |         | `"read"`, `"write"`, `"destructive"`                            |
 | `confidence` | ●   | ●       | ●   |         | The weakest judgment's probability                              |
@@ -25,7 +25,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `runner_up`  | ○   | ○       | ○   |         | The second reflex, when there is one                            |
 | `prompt`     |     | ●       |     |         | `{ own, template }`: `evoke`'s line and the reflex's question   |
 | `left`       | ○   | ○       | ○   |         | The words of the input that no value holds, each with what it does: `{ words, does, p }`, `does` one of `action`, `answers` with its `arg`, `nothing`, `more` |
-| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `unconsumed_span`, `two_things`, `merged` |
+| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `detail`, `unconsumed_span`, `two_things`, `merged` |
 | `unconsumed` |     |         | ●   |         | Typed spans no argument took                                    |
 | `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because` (`unstated`, `out_of_range`, `not_offered`, `unsettled` or `unread`), `words` when the input holds words that answer the ask, `choices`; a pick's `choices.recent` lists the values recalled from this session's results, when any |
 | `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call, a round of questions each: `{ adapter, questions, ms }`. Empty when the answers came from the cache |
@@ -63,9 +63,11 @@ In the plan `evoke try --json` prints, a step's `refs` count the steps they may 
 part decided on its own: `narrowed` or `spliced`, an item of its neighbour's task; `merged`, a part read with
 its neighbour; `split`, a part of a joint the classifier read as one thing. A binding's `via` is `fill`,
 `rewrite` or `takes`, a whole result by the name its source returns, with no `kind`; the verdict's `because`
-names `no_source` and `several_sources` where such a result stops the plan. A plan a playbook wrote carries
-`from` on each of its steps, `when` on a step that may not run, and `folded`, `[{ text, into }]`, the parts of
-the sentence folded into a step; its verdict's `because` holds `reviewed` per playbook, with the step, the
+names `no_source` and `several_sources` where such a result stops the plan. A plan carries `folded`,
+`[{ text, into }]`, the parts of the sentence folded into a step, and `asides`, `[{ text, remark }]`, the parts
+that ask for nothing: a remark set aside, or words that may add a detail to a step. A plan a playbook wrote
+carries `from` on each of its steps and `when` on a step that may not run; its verdict's `because` holds
+`reviewed` per playbook, with the step, the
 sentence's `text` and its `prompt`, and names what refused it: `nested`, `too_deep`, `too_long`, `conditional`,
 `excluded`, or, for a branch, `no_field`, `bad_value`, `maybe_source` or `branch_into_plan`.
 

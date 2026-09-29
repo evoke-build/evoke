@@ -553,6 +553,10 @@ pub fn replan(path: &str, pinned: &Pinned, plan: &Plan) -> Result<Replanned, Dia
             Need::Refer { request } => {
                 answers.referred = Some(answered(pinned, &request).map_err(&refused)?);
             }
+            Need::Verify { request } => {
+                let raw = answered(pinned, &request).map_err(&refused)?;
+                answers.verified.get_or_insert_default().0.extend(raw.0);
+            }
             Need::Decide { asked } => {
                 for asked in asked {
                     // A file holds no memory: no result of any session reaches a text decided again from it.

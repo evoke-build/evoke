@@ -1,0 +1,717 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "input": "update the status page for checkout, update the status page for payments, and mark the second one as resolved",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "update the status page for checkout"
+          },
+          {
+            "outcome": "run",
+            "reflex": "status",
+            "args": {
+              "component": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "status component=\"checkout\"",
+            "effect": "write",
+            "basis": {
+              "component": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 22,
+                  "text": "update the status page"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "status",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "status",
+                "p": 0.9
+              },
+              {
+                "question": "status.component",
+                "top": "checkout",
+                "p": 0.9
+              },
+              {
+                "question": "status.state",
+                "top": "unstated",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "status",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "update the status page for payments"
+          },
+          {
+            "outcome": "run",
+            "reflex": "status",
+            "args": {
+              "component": {
+                "type": "word",
+                "word": "payments"
+              }
+            },
+            "call": "status component=\"payments\"",
+            "effect": "write",
+            "basis": {
+              "component": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 22,
+                  "text": "update the status page"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "status",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "status",
+                "p": 0.9
+              },
+              {
+                "question": "status.component",
+                "top": "payments",
+                "p": 0.9
+              },
+              {
+                "question": "status.state",
+                "top": "unstated",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "status",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "mark the second one as resolved"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "status",
+            "args": {
+              "state": {
+                "type": "option",
+                "key": "resolved"
+              }
+            },
+            "basis": {
+              "state": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 19,
+                  "text": "mark the second one"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
+            "unconsumed": [],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "status",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "status",
+                "p": 0.9
+              },
+              {
+                "question": "status.component",
+                "top": "unstated",
+                "p": 0.9
+              },
+              {
+                "question": "status.state",
+                "top": "resolved",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "status",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "component",
+                "ask": "Which service?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "checkout": "The checkout service: cart and order confirmation.",
+                    "payments": "The payments service: card charges and refunds.",
+                    "search": "The search service: product search and suggestions."
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        },
+        "weave.split_1": {
+          "yes": 0.9
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
+        }
+      },
+      "verified": {
+        "weave.share_78_0_status__component": {
+          "yes": 0.05
+        },
+        "weave.share_78_37_status__component": {
+          "yes": 0.05
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "update the status page for checkout, update the status page for payments, and mark the second one as resolved",
+        "steps": [
+          {
+            "n": 1,
+            "text": "update the status page for checkout",
+            "end": 35,
+            "decision": {
+              "outcome": "run",
+              "reflex": "status",
+              "args": {
+                "component": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "status component=\"checkout\"",
+              "effect": "write",
+              "basis": {
+                "component": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 22,
+                    "text": "update the status page"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "status",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "status",
+                  "p": 0.9
+                },
+                {
+                  "question": "status.component",
+                  "top": "checkout",
+                  "p": 0.9
+                },
+                {
+                  "question": "status.state",
+                  "top": "unstated",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "status",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "status",
+            "effect": "write"
+          },
+          {
+            "n": 2,
+            "text": "update the status page for payments",
+            "end": 72,
+            "decision": {
+              "outcome": "run",
+              "reflex": "status",
+              "args": {
+                "component": {
+                  "type": "word",
+                  "word": "payments"
+                },
+                "state": {
+                  "type": "option",
+                  "key": "resolved"
+                }
+              },
+              "call": "status component=\"payments\" state=\"resolved\"",
+              "effect": "write",
+              "basis": {
+                "component": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                },
+                "state": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 22,
+                    "text": "update the status page"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 19,
+                    "text": "mark the second one"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "status",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "status",
+                  "p": 0.9
+                },
+                {
+                  "question": "status.component",
+                  "top": "payments",
+                  "p": 0.9
+                },
+                {
+                  "question": "status.state",
+                  "top": "unstated",
+                  "p": 0.9
+                },
+                {
+                  "question": "status.state",
+                  "top": "resolved",
+                  "p": 0.9
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "status",
+                  "route": 0.9,
+                  "fits": 0.8
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "post",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0,
+                  "fits": 0.02
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0,
+                  "fits": 0.02
+                }
+              ]
+            },
+            "reflex": "status",
+            "effect": "write",
+            "refs": [
+              {
+                "span": {
+                  "start": 7,
+                  "end": 17,
+                  "text": "the status"
+                },
+                "from": [
+                  0
+                ],
+                "how": "phrase",
+                "weak": true,
+                "noun": "statu"
+              }
+            ]
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": true,
+        "folded": [
+          {
+            "text": "mark the second one as resolved",
+            "into": 2
+          }
+        ],
+        "splits": [
+          {
+            "start": 35,
+            "end": 37,
+            "word": ",",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 72,
+            "end": 78,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          }
+        ]
+      }
+    }
+  }
+}

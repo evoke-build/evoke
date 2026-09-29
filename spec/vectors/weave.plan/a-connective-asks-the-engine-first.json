@@ -24,6 +24,16 @@
               "ask": "At «and», does the request ask for two things to be done — «kill the lights in the den», and separately «start a 10 minute timer»?",
               "yes": "Two things to do: what follows the connective is another task, or the same task again for another item.",
               "no": "One thing to do: what follows the connective is part of the same task — a second value it takes, a detail, a name, or a time."
+            },
+            "weave.count": {
+              "type": "choice",
+              "ask": "How many separate things does the request ask to be done?",
+              "options": {
+                "one": "One thing.",
+                "two": "Two things.",
+                "more": "Three things or more.",
+                "none": "Nothing: it asks for no action."
+              }
             }
           },
           "proposed": []

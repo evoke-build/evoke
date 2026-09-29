@@ -12,6 +12,7 @@ write = 0.8
 "weave.split_1" = { yes = 0.9 }
 "weave.split_2" = { yes = 0.9 }
 "weave.split_3" = { yes = 0.9 }
+"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."look up maria's hire"]
 route                      = { hire = 0.9, team = 0.03, none = 0.07 }

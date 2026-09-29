@@ -712,6 +712,7 @@ fn weave_of(model: &Model) -> Weave {
         steps,
         excluded: Vec::new(),
         folded: Vec::new(),
+        asides: Vec::new(),
         binds,
         exclusive: exclusive(&effects),
         stages: model.stages.clone(),

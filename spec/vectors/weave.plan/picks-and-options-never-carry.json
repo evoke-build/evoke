@@ -498,17 +498,11 @@
         },
         "weave.split_2": {
           "yes": 0.9
-        }
-      },
-      "referred": {
-        "weave.ref_2_0": {
-          "step1": 0.9,
-          "step0": 0.1
         },
-        "weave.ref_3_0": {
-          "step0": 0.9,
-          "step1": 0.05,
-          "step2": 0.05
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
         }
       }
     }
@@ -554,6 +548,15 @@
                     "start": 0,
                     "end": 16,
                     "text": "look up incident"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 20,
+                    "text": "look up the incident"
                   },
                   "does": "action",
                   "p": 0.9
@@ -687,6 +690,15 @@
                   },
                   "does": "action",
                   "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 22,
+                    "text": "update the status page"
+                  },
+                  "does": "action",
+                  "p": 0.9
                 }
               ],
               "confidence": 0.9,
@@ -772,267 +784,6 @@
             },
             "reflex": "status",
             "effect": "write"
-          },
-          {
-            "n": 3,
-            "text": "update the status page for checkout",
-            "end": 103,
-            "decision": {
-              "outcome": "run",
-              "reflex": "status",
-              "args": {
-                "component": {
-                  "type": "word",
-                  "word": "checkout"
-                }
-              },
-              "call": "status component=\"checkout\"",
-              "effect": "write",
-              "basis": {
-                "component": {
-                  "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
-                }
-              },
-              "left": [
-                {
-                  "words": {
-                    "start": 0,
-                    "end": 22,
-                    "text": "update the status page"
-                  },
-                  "does": "action",
-                  "p": 0.9
-                }
-              ],
-              "confidence": 0.9,
-              "weakest": {
-                "question": "route",
-                "top": "status",
-                "p": 0.9
-              },
-              "judgments": [
-                {
-                  "question": "route",
-                  "top": "status",
-                  "p": 0.9
-                },
-                {
-                  "question": "status.component",
-                  "top": "checkout",
-                  "p": 0.9
-                },
-                {
-                  "question": "status.state",
-                  "top": "unstated",
-                  "p": 0.9
-                }
-              ],
-              "runner_up": {
-                "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.02
-              },
-              "contenders": [
-                {
-                  "reflex": "status",
-                  "route": 0.9,
-                  "fits": 0.8
-                },
-                {
-                  "reflex": "errors",
-                  "route": 0.03,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "deploys",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "logs",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "suspect",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "rollback",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "post",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "incidents",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "incident",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "postmortem",
-                  "route": 0,
-                  "fits": 0.02
-                }
-              ]
-            },
-            "reflex": "status",
-            "effect": "write",
-            "refs": [
-              {
-                "span": {
-                  "start": 7,
-                  "end": 17,
-                  "text": "the status"
-                },
-                "from": [
-                  1
-                ],
-                "how": "engine",
-                "weak": true,
-                "noun": "statu",
-                "p": 0.9
-              }
-            ]
-          },
-          {
-            "n": 4,
-            "text": "look up the incident",
-            "end": 128,
-            "decision": {
-              "outcome": "ask",
-              "reflex": "incident",
-              "args": {},
-              "left": [
-                {
-                  "words": {
-                    "start": 0,
-                    "end": 20,
-                    "text": "look up the incident"
-                  },
-                  "does": "action",
-                  "p": 0.9
-                }
-              ],
-              "unconsumed": [],
-              "confidence": 0.9,
-              "weakest": {
-                "question": "route",
-                "top": "incident",
-                "p": 0.9
-              },
-              "judgments": [
-                {
-                  "question": "route",
-                  "top": "incident",
-                  "p": 0.9
-                },
-                {
-                  "question": "incident.number",
-                  "top": "unstated",
-                  "p": 1
-                }
-              ],
-              "runner_up": {
-                "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.02
-              },
-              "contenders": [
-                {
-                  "reflex": "incident",
-                  "route": 0.9,
-                  "fits": 0.8
-                },
-                {
-                  "reflex": "errors",
-                  "route": 0.03,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "deploys",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "logs",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "suspect",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "rollback",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "post",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "incidents",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "postmortem",
-                  "route": 0,
-                  "fits": 0.02
-                },
-                {
-                  "reflex": "status",
-                  "route": 0,
-                  "fits": 0.02
-                }
-              ],
-              "missing": [
-                {
-                  "arg": "number",
-                  "ask": "Which incident number?",
-                  "because": {
-                    "type": "unstated"
-                  },
-                  "choices": {
-                    "type": "pick",
-                    "pick": "number"
-                  }
-                }
-              ]
-            },
-            "reflex": "incident",
-            "effect": "read",
-            "refs": [
-              {
-                "span": {
-                  "start": 8,
-                  "end": 20,
-                  "text": "the incident"
-                },
-                "from": [
-                  0
-                ],
-                "how": "engine",
-                "weak": true,
-                "noun": "incident",
-                "p": 0.9
-              }
-            ]
           }
         ],
         "stages": [
@@ -1041,25 +792,22 @@
           ],
           [
             2
-          ],
-          [
-            3
-          ],
-          [
-            4
           ]
         ],
         "verdict": {
-          "outcome": "ask",
-          "because": [
-            {
-              "type": "needs",
-              "step": 4,
-              "arg": "number"
-            }
-          ]
+          "outcome": "run"
         },
         "exclusive": true,
+        "folded": [
+          {
+            "text": "update the status page for checkout",
+            "into": 2
+          },
+          {
+            "text": "look up the incident",
+            "into": 1
+          }
+        ],
         "splits": [
           {
             "start": 20,

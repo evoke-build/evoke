@@ -14,6 +14,7 @@ write = 0.8
 "weave.split_3" = { yes = 0.9 }
 "weave.split_4" = { yes = 0.9 }
 "weave.split_5" = { yes = 0.9 }
+"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."track the rotterdam shipment"]
 route                           = { shipment = 0.9, stock = 0.03, none = 0.07 }

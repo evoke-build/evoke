@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc c1d3c7ae2f721d42c714fcfcc8d01a9d31b6536d3975fbb68053d434c2f37243 # shrinks to request = Request { lookups: [Lookup { reflex: Errors, service: None, read: true }, Lookup { reflex: Errors, service: None, read: true }], joins: [And], judged: [0.8] }

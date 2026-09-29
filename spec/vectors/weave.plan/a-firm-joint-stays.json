@@ -306,6 +306,11 @@
         },
         "weave.split_2": {
           "yes": 0.2
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
         }
       }
     }

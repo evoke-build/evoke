@@ -171,18 +171,43 @@ pub(super) fn planned_under(
         match planning::plan(plan, Some(&gate()), input, &[], &answers)
             .expect("the answers validate")
         {
-            Planning::Done { weave } => return weave,
+            // A plan holds together: it reads back from its own wire form, which checks every step, stage,
+            // binding and fold against the steps it has.
+            Planning::Done { weave } => {
+                let wire = serde_json::to_value(&weave).expect("a plan has a wire form");
+                let read: Weave = serde_json::from_value(wire).expect("the plan reads back");
+                assert_eq!(read, weave);
+                return weave;
+            }
             Planning::Need { need } => match need {
                 Need::Judge { request: judge } => {
                     let mut raw = IndexMap::new();
                     for (n, id) in judge.questions.keys().enumerate() {
                         let mut answer = IndexMap::new();
-                        answer.insert("yes".to_owned(), judged[n]);
+                        // The request asks several things: its last question, how many, says so.
+                        match judged.get(n) {
+                            Some(yes) => answer.insert("yes".to_owned(), *yes),
+                            None => answer.insert("more".to_owned(), 1.0),
+                        };
                         raw.insert(id.to_string(), answer);
                     }
                     answers.judged = Some(Raw(raw));
                 }
                 Need::Refer { .. } => panic!("no part refers back"),
+                // No part points at another's value and every part reads as a reflex, or the words say
+                // nothing of it: every value stays its part's, and a part that matches nothing asks.
+                Need::Verify { request } => {
+                    let raw = answers.verified.get_or_insert_default();
+                    for id in request.questions.keys() {
+                        let answer = if id.to_string().starts_with("weave.part_") {
+                            "asks"
+                        } else {
+                            "no"
+                        };
+                        let answer = [(answer.to_owned(), 1.0)].into_iter().collect();
+                        raw.0.insert(id.to_string(), answer);
+                    }
+                }
                 Need::Decide { asked } => {
                     for asked in asked {
                         let decided = if asked.only.is_some() {
@@ -198,39 +223,101 @@ pub(super) fn planned_under(
     }
 }
 
-/// A part of a request over the joins plan: a lookup that returns its name, or the suspect that takes the three.
+/// The service a lookup names: two lookups of one reflex are one call over one service, and two over two.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Service {
+    Checkout,
+    Payments,
+}
+
+impl Service {
+    fn word(self) -> &'static str {
+        match self {
+            Self::Checkout => "checkout",
+            Self::Payments => "payments",
+        }
+    }
+}
+
+/// A part of a request over the joins plan: a lookup of a service that returns its name, or the suspect that
+/// takes the three.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Lookup {
-    Errors,
-    Deploys,
-    Logs,
+    Errors(Service),
+    Deploys(Service),
+    Logs(Service),
     Suspect,
 }
 
 impl Lookup {
-    fn text(self) -> &'static str {
-        match self {
-            Self::Errors => "errors checkout",
-            Self::Deploys => "deploys checkout",
-            Self::Logs => "logs checkout",
-            Self::Suspect => "suspect",
+    fn text(self) -> String {
+        match self.service() {
+            Some(service) => format!("{} {}", self.reflex(), service.word()),
+            None => self.reflex().to_owned(),
         }
     }
 
     fn reflex(self) -> &'static str {
         match self {
-            Self::Errors => "errors",
-            Self::Deploys => "deploys",
-            Self::Logs => "logs",
+            Self::Errors(_) => "errors",
+            Self::Deploys(_) => "deploys",
+            Self::Logs(_) => "logs",
             Self::Suspect => "suspect",
         }
     }
 
+    fn service(self) -> Option<Service> {
+        match self {
+            Self::Errors(service) | Self::Deploys(service) | Self::Logs(service) => Some(service),
+            Self::Suspect => None,
+        }
+    }
+
     fn of_text(text: &str) -> Self {
-        [Self::Errors, Self::Deploys, Self::Logs, Self::Suspect]
+        let service = [Service::Checkout, Service::Payments]
             .into_iter()
-            .find(|part| part.text() == text)
-            .unwrap_or_else(|| panic!("no part reads «{text}»"))
+            .find(|service| text.ends_with(service.word()))
+            .unwrap_or(Service::Checkout);
+        [
+            Self::Errors(service),
+            Self::Deploys(service),
+            Self::Logs(service),
+            Self::Suspect,
+        ]
+        .into_iter()
+        .find(|part| part.text() == text)
+        .unwrap_or_else(|| panic!("no part reads «{text}»"))
+    }
+
+    /// The fixture's decision of the reflex, its service the one the words name.
+    fn decision(self) -> evoke_core::Decision {
+        let decided = decision(self.reflex());
+        let Some(service) = self.service() else {
+            return decided;
+        };
+        let mut json = serde_json::to_value(&decided).expect("a decision has a wire form");
+        let name = self.reflex();
+        json["args"]["service"]["word"] = serde_json::Value::from(service.word());
+        json["call"] = serde_json::Value::from(format!("{name} service=\"{}\"", service.word()));
+        json["judgments"][1]["top"] = serde_json::Value::from(service.word());
+        json["weakest"] = json["judgments"]
+            .as_array()
+            .expect("judgments are a list")
+            .iter()
+            .min_by(|a, b| {
+                a["p"]
+                    .as_f64()
+                    .partial_cmp(&b["p"].as_f64())
+                    .expect("numbers")
+            })
+            .expect("a judgment")
+            .clone();
+        serde_json::from_value(json).expect("the patched decision reads")
+    }
+
+    /// Whether the part returns the name: a lookup of that reflex, whatever its service.
+    fn returns(self, name: &str) -> bool {
+        self != Self::Suspect && self.reflex() == name
     }
 }
 
@@ -244,20 +331,24 @@ struct Joined {
 
 impl Joined {
     fn text(&self) -> String {
-        let mut text = self.parts[0].text().to_owned();
+        let mut text = self.parts[0].text();
         for (join, part) in self.joins.iter().zip(&self.parts[1..]) {
             text.push_str(join.words());
-            text.push_str(part.text());
+            text.push_str(&part.text());
         }
         text
     }
 }
 
+fn service() -> impl Strategy<Value = Service> {
+    prop_oneof![Just(Service::Checkout), Just(Service::Payments)]
+}
+
 fn lookup() -> impl Strategy<Value = Lookup> {
     prop_oneof![
-        2 => Just(Lookup::Errors),
-        2 => Just(Lookup::Deploys),
-        2 => Just(Lookup::Logs),
+        2 => service().prop_map(Lookup::Errors),
+        2 => service().prop_map(Lookup::Deploys),
+        2 => service().prop_map(Lookup::Logs),
         3 => Just(Lookup::Suspect)
     ]
 }
@@ -268,7 +359,11 @@ fn parts() -> impl Strategy<Value = Vec<Lookup>> {
     prop_oneof![
         2 => vec(lookup(), 1..=6),
         1 => (0u8..6, vec(lookup(), 0..=2)).prop_map(|(order, rest)| {
-            let mut three = vec![Lookup::Errors, Lookup::Deploys, Lookup::Logs];
+            let mut three = vec![
+                Lookup::Errors(Service::Checkout),
+                Lookup::Deploys(Service::Checkout),
+                Lookup::Logs(Service::Checkout),
+            ];
             let first = three.remove(usize::from(order) % 3);
             let second = three.remove(usize::from(order / 3) % 2);
             let mut parts = vec![first, second, three[0], Lookup::Suspect];
@@ -291,6 +386,18 @@ fn joined() -> impl Strategy<Value = Joined> {
     })
 }
 
+/// «Two parts that read as the same call, their values in accord, are one call»: every part of these requests
+/// reads as its reflex with the same values, so the first of each reflex stands for the rest.
+fn first_of_each<P: Copy + PartialEq>(parts: &[P]) -> Vec<P> {
+    let mut kept: Vec<P> = Vec::new();
+    for part in parts {
+        if !kept.contains(part) {
+            kept.push(*part);
+        }
+    }
+    kept
+}
+
 /// «A taker's argument is bound to the one step before it whose reflex returns that name … none, two, or one
 /// step run once per record: the request is refused before anything runs.» Per suspect, per name: the one
 /// source, or the refusal the plan must carry.
@@ -302,15 +409,11 @@ fn bound_by_name(parts: &[Lookup]) -> (Vec<(usize, usize, &'static str)>, Vec<Be
             continue;
         }
         let step = i + 1;
-        for (name, returner) in [
-            ("errors", Lookup::Errors),
-            ("deploys", Lookup::Deploys),
-            ("logs", Lookup::Logs),
-        ] {
+        for name in ["errors", "deploys", "logs"] {
             let sources: Vec<usize> = parts[..i]
                 .iter()
                 .enumerate()
-                .filter(|(_, p)| **p == returner)
+                .filter(|(_, p)| p.returns(name))
                 .map(|(j, _)| j + 1)
                 .collect();
             let name = evoke_core::name::FieldName::new(name).expect("a name");
@@ -363,9 +466,12 @@ proptest! {
     #[test]
     fn the_schedule_is_the_designs_under_any_plan(request in request()) {
         let weave = planned(&request);
-        // «Every sentence is read for its steps»: one step per part, in the words' order, decided as its reflex.
-        prop_assert_eq!(weave.steps.len(), request.parts.len());
-        for (step, part) in weave.steps.iter().zip(&request.parts) {
+        // «Every sentence is read for its steps»: one step per part, in the words' order, decided as its reflex;
+        // «two parts that read as the same call are one call»: a part that repeats one before it folds into it.
+        let parts = first_of_each(&request.parts);
+        prop_assert_eq!(weave.steps.len(), parts.len());
+        prop_assert_eq!(weave.folded.len(), request.parts.len() - parts.len());
+        for (step, part) in weave.steps.iter().zip(&parts) {
             prop_assert_eq!(step.text.as_str(), part.text());
             prop_assert_eq!(step.reflex.as_ref().map(LocalName::as_str), Some(part.reflex()));
             prop_assert_eq!(step.effect, Some(request.effect(*part)));
@@ -405,12 +511,14 @@ proptest! {
     #[test]
     fn joins_bind_by_name_under_any_plan(request in joined()) {
         let plan = joins();
-        let weave = planned_under(&plan, &request.text(), &request.judged, |text| decision(Lookup::of_text(text).reflex()));
-        prop_assert_eq!(weave.steps.len(), request.parts.len());
-        for (step, part) in weave.steps.iter().zip(&request.parts) {
+        let weave = planned_under(&plan, &request.text(), &request.judged, |text| Lookup::of_text(text).decision());
+        // A part that repeats one before it is that call, and returns its name once.
+        let parts = first_of_each(&request.parts);
+        prop_assert_eq!(weave.steps.len(), parts.len());
+        for (step, part) in weave.steps.iter().zip(&parts) {
             prop_assert_eq!(step.reflex.as_ref().map(LocalName::as_str), Some(part.reflex()));
         }
-        let (binds, refusals) = bound_by_name(&request.parts);
+        let (binds, refusals) = bound_by_name(&parts);
         // Every binding is a whole result by name, `takes`, and none carries a kind or a list.
         let planned: Vec<(usize, usize, &str)> = weave.binds.iter().map(|b| {
             prop_assert_eq!(b.via, Via::Takes);
@@ -444,7 +552,7 @@ proptest! {
 }
 
 /// The joins generator draws the shapes its invariants speak of: a suspect bound over all three, one refused for
-/// want of a source, one refused over two sources, and a chain of two suspects.
+/// want of a source, one refused over two sources, and a suspect said twice.
 #[test]
 fn the_joins_generator_reaches_every_shape() {
     use proptest::strategy::ValueTree;
@@ -453,7 +561,7 @@ fn the_joins_generator_reaches_every_shape() {
     let mut seen = [0usize; 4];
     for _ in 0..300 {
         let request = joined().new_tree(&mut runner).expect("a request").current();
-        let (binds, refusals) = bound_by_name(&request.parts);
+        let (binds, refusals) = bound_by_name(&first_of_each(&request.parts));
         let suspects: Vec<usize> = request
             .parts
             .iter()
@@ -482,7 +590,7 @@ fn the_joins_generator_reaches_every_shape() {
         "a suspect over three",
         "a name no step returns",
         "a name two steps return",
-        "two suspects bound",
+        "a suspect said twice, one call",
     ];
     for (count, name) in seen.iter().zip(names) {
         assert!(*count >= 15, "{name} drawn {count} times of 300");

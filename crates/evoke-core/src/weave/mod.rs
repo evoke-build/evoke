@@ -46,6 +46,10 @@ pub enum Need {
     Refer { request: Request },
     /// Decide each text, side by side where the host can.
     Decide { asked: Vec<Asked> },
+    /// Ask the adapter what the plan asks of the request once its parts are decided: what a part that matches
+    /// nothing does, `weave.part_<start>_<end>`, and whether a value one part states is another's,
+    /// `weave.share_<taker>_<giver>_<reflex>__<argument>`. Every answer is kept beside those before it.
+    Verify { request: Request },
 }
 
 /// What a host gathered for the plan so far.
@@ -57,6 +61,9 @@ pub struct Answers {
     pub referred: Option<crate::adapter::Raw>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub decided: Vec<(Asked, Decision)>,
+    /// What the plan asked of the request once its parts were decided, every round's answers together.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub verified: Option<crate::adapter::Raw>,
 }
 
 /// The plan, or what it needs first.
@@ -96,6 +103,14 @@ pub struct From {
     /// From 1, as the playbook lists its steps.
     pub step: usize,
     pub slots: IndexMap<ArgName, String>,
+}
+
+/// A part of the request that matches no reflex and asks for nothing: a remark, set aside; or words that may add
+/// a detail to the step beside them, which then waits for a yes.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Aside {
+    pub text: String,
+    pub remark: bool,
 }
 
 /// A part of the request that repeated a step a playbook wrote: folded into it, run once.
@@ -285,6 +300,9 @@ pub struct Weave {
     /// Parts of the request that repeated a step a playbook wrote, each folded into that step.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub folded: Vec<Folded>,
+    /// Parts of the request that match no reflex and ask for nothing: set aside, never decided as steps.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub asides: Vec<Aside>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub splits: Vec<Split>,
 }
@@ -299,6 +317,8 @@ struct RawWeave {
     excluded: Vec<String>,
     #[serde(default)]
     folded: Vec<Folded>,
+    #[serde(default)]
+    asides: Vec<Aside>,
     #[serde(default)]
     binds: Vec<Binding>,
     exclusive: bool,
@@ -401,6 +421,7 @@ impl TryFrom<RawWeave> for Weave {
             exclusive: raw.exclusive,
             excluded: raw.excluded,
             folded: raw.folded,
+            asides: raw.asides,
             splits: raw.splits,
         })
     }

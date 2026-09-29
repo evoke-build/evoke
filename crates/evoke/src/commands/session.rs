@@ -129,6 +129,8 @@ pub struct Woven {
     pub judged: Option<Raw>,
     /// The engine's answers to which earlier step each reference names, when it was asked.
     pub referred: Option<Raw>,
+    /// The engine's answers to what the plan asked of the request once its parts were decided.
+    pub verified: Option<Raw>,
 }
 
 impl Woven {
@@ -155,6 +157,7 @@ impl Woven {
             trace: Vec::new(),
             judged: None,
             referred: None,
+            verified: None,
         }
     }
 
@@ -165,6 +168,7 @@ impl Woven {
         self.judged
             .iter()
             .chain(&self.referred)
+            .chain(&self.verified)
             .map(|raw| Answer {
                 text: self.weave.input.clone(),
                 raw: raw.clone(),
@@ -901,6 +905,7 @@ impl Session<'_> {
                         trace,
                         judged: answers.judged,
                         referred: answers.referred,
+                        verified: answers.verified,
                     });
                 }
                 Planning::Need { need } => need,
@@ -911,6 +916,10 @@ impl Session<'_> {
                 }
                 Need::Refer { request } => {
                     answers.referred = Some(self.own(adapter, &request, &mut trace)?);
+                }
+                Need::Verify { request } => {
+                    let raw = self.own(adapter, &request, &mut trace)?;
+                    answers.verified.get_or_insert_default().0.extend(raw.0);
                 }
                 Need::Decide { asked } => {
                     for asked in asked {

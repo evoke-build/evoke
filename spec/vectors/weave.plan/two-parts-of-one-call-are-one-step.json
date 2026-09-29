@@ -1,0 +1,475 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.6,
+      "write": 0.8
+    },
+    "input": "check the errors for checkout, and the errors in eu-west",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "check the errors for checkout"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "errors service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.9
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 0.9
+              },
+              {
+                "question": "errors.region",
+                "top": "unstated",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "deploys",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "the errors in eu-west"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "errors",
+            "args": {
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "basis": {
+              "region": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 4,
+                  "end": 10,
+                  "text": "errors"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
+            "unconsumed": [],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.9
+              },
+              {
+                "question": "errors.service",
+                "top": "unstated",
+                "p": 0.9
+              },
+              {
+                "question": "errors.region",
+                "top": "eu-west",
+                "p": 0.9
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0.03,
+              "fits": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.9,
+                "fits": 0.8
+              },
+              {
+                "reflex": "deploys",
+                "route": 0.03,
+                "fits": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "suspect",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "rollback",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "post",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incidents",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "incident",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0,
+                "fits": 0.02
+              },
+              {
+                "reflex": "status",
+                "route": 0,
+                "fits": 0.02
+              }
+            ],
+            "missing": [
+              {
+                "arg": "service",
+                "ask": "Which service?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "checkout": "The checkout service: cart and order confirmation.",
+                    "payments": "The payments service: card charges and refunds.",
+                    "search": "The search service: product search and suggestions."
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the errors for checkout eu-west",
+            "only": "errors"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              },
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "call": "errors service=\"checkout\" region=\"eu-west\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              },
+              "region": {
+                "by": "views",
+                "ask": 0.9,
+                "reader": 0.9
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.9
+              }
+            ],
+            "confidence": 0.9,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.9
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 0.9
+              },
+              {
+                "question": "errors.region",
+                "top": "eu-west",
+                "p": 0.9
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.9,
+                "fits": 0.8
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "check the errors for checkout, and the errors in eu-west",
+        "steps": [
+          {
+            "n": 1,
+            "text": "check the errors for checkout eu-west",
+            "end": 29,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                },
+                "region": {
+                  "type": "word",
+                  "word": "eu-west"
+                }
+              },
+              "call": "errors service=\"checkout\" region=\"eu-west\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                },
+                "region": {
+                  "by": "views",
+                  "ask": 0.9,
+                  "reader": 0.9
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "check the errors"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                },
+                {
+                  "words": {
+                    "start": 4,
+                    "end": 10,
+                    "text": "errors"
+                  },
+                  "does": "action",
+                  "p": 0.9
+                }
+              ],
+              "confidence": 0.9,
+              "weakest": {
+                "question": "route",
+                "top": "errors",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "errors",
+                  "p": 0.9
+                },
+                {
+                  "question": "errors.service",
+                  "top": "checkout",
+                  "p": 0.9
+                },
+                {
+                  "question": "errors.region",
+                  "top": "eu-west",
+                  "p": 0.9
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.9,
+                  "fits": 0.8
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read",
+            "shared": {
+              "region": {
+                "word": "eu-west",
+                "via": "rewrite"
+              }
+            }
+          }
+        ],
+        "stages": [
+          [
+            1
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": false,
+        "folded": [
+          {
+            "text": "the errors in eu-west",
+            "into": 1
+          }
+        ],
+        "splits": [
+          {
+            "start": 29,
+            "end": 35,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          }
+        ]
+      }
+    }
+  }
+}

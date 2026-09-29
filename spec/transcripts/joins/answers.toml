@@ -12,16 +12,20 @@ write = 0.8
 "weave.split_1" = { yes = 0.9 }
 "weave.split_2" = { yes = 0.9 }
 "weave.ref_2_0" = { step0 = 0.6, step1 = 0.4 }
+"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."check the errors for checkout, then find the suspect"]
 "weave.split_0" = { yes = 0.9 }
+"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."look up incident 311 and look up incident 312, then draft the postmortem"]
 "weave.split_0" = { yes = 0.9 }
 "weave.split_1" = { yes = 0.9 }
+"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."look up incident 311, then draft the postmortem"]
 "weave.split_0" = { yes = 0.9 }
+"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."check the errors for checkout"]
 route                         = { errors = 0.9, deploys = 0.03, none = 0.07 }

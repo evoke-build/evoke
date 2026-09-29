@@ -20,6 +20,8 @@ den lights off
   classifier is asked whether it does. "kill the lights in the den and start a 10 minute timer" is two things.
   "set a timer for 10 minutes and 30 seconds" is one. A sentence with more than two dozen such points, a pasted
   list, is decided as one input.
+- With the connectives, the classifier is asked how many things the sentence asks for. Where it says one, the
+  sentence is one step, and no connective cuts it: "check the errors for checkout, and only in eu-west".
 - Each part is decided as one input is: routed, gated, its arguments read. A part that matches nothing on its own
   is tried as another item of its neighbour's task first: "check stock for widgets and gadgets" is two stock
   checks. So is a part that is only a determiner and one word, "the office" in "kill the lights in the den and
@@ -43,6 +45,19 @@ den lights off
   never a number, a date, an address, a quoted value or an option. And only a word no one reflex owns: a vocabulary one
   reflex alone asks for, the folder `open` opens, is that reflex's own and never reaches another step. The plan
   shows the word on each step it reached, and `evoke why` says which words were shared.
+- A value one part states can be another part's where the classifier says so. It is asked only for a part whose
+  words point at something, "it", "there", "the same", or for a word from a vocabulary that several reflexes
+  ask for: in "check the errors for checkout in eu-west, then pull its logs there", the logs are pulled in
+  eu-west. `evoke why` says where the value came from.
+- Two parts that read as the same call, no value of one differing from the other's, are one step: "check the
+  errors for checkout, and the errors in eu-west" is one check, of checkout in eu-west. Where a part could repeat
+  either of two calls, its own words pick one, "the second one", "the last", or it stays a step of its own. The
+  plan names the part: `folded "the errors in eu-west" into 1`.
+- A part that matches no reflex and asks for nothing is set aside, and the plan runs without it: `set aside
+  "thanks a lot for this"`. Where the classifier says the part may add a detail to the step beside it, that step
+  confirms before it runs, its line ending in `without "the ones since noon"`, and the plan names the part: `not in
+  the plan "the ones since noon"`. A part that asks for something and matches nothing still refuses the whole
+  request.
 - Two items the classifier read as one thing, "invoices, card expenses", are two steps when each is a reflex of
   its own: the joint is split, and a word the sentence says once reaches both. A joint it read firmly as one
   task stays one.
@@ -139,8 +154,10 @@ $ evoke "checkout is failing in eu-west"
   Run the outage plan for checkout?  [y]es [n]o [t]each > y
 ```
 
-A slot the sentence does not state is asked before the plan prints. A part of your sentence that repeats a step
-of the plan folds into that step, and the plan says so: `folded "show me the error rate" into 1`. A part that
+A slot the sentence does not state is asked before the plan prints, unless a part of the sentence states it for
+a step the playbook writes: in "we have an outage, check the errors for payments", the service is payments. A
+part of your sentence that repeats a step of the plan folds into that step, and the plan says so: `folded "show
+me the error rate" into 1`. A part that
 says what not to do beside such a plan is refused, since the step it may have meant is already there. A sentence
 that opens with a condition, `if`, `unless` or `in case`, is refused whatever follows: `evoke` judges no
 condition, so ask for the check first, then type what to do. A step of the plan that matches nothing here, or
@@ -177,8 +194,9 @@ in, the name a field's or a whole result's, `after <n>` where the words ordered 
 runs beside earlier ones, `<playbook> <n>` where a playbook wrote the step, `then <n> on "<value>"` where the
 step's result picks among later steps, `if <n> yields <field> "<value>"` where the step runs only under that
 value, `no reflex` where nothing matched.
-Under the plan, `folded "…" into <n>` names a part that repeats a step a playbook wrote, and `left out "…"` a
-part that said what not to do.
+Under the plan, `folded "…" into <n>` names a part that repeats another step, `set aside "…"` a part that asks
+for nothing, `not in the plan "…"` a part that may add a detail to a step, and `left out "…"` a part that said
+what not to do.
 
 ## At each step's turn
 

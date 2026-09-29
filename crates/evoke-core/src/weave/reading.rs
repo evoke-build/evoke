@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::adapter::{Choice, Key, Prob, Question, QuestionId, Raw, Request, Scope, State, Text};
 use crate::decide::validated;
-use crate::name::WeaveName;
+use crate::name::{ArgName, LocalName, WeaveName};
 use crate::text::{Clean, Input};
 
 /// What a connective does: `then` orders what follows after what precedes; the rest coordinate.
@@ -731,7 +731,105 @@ pub(crate) fn judging(
             },
         );
     }
+    questions.insert(own(COUNT), counting());
     Ok(Some((asked, request_of(request, questions)?)))
+}
+
+/// The name of the question that rides the split points': how many things the request asks.
+const COUNT: &str = "count";
+
+/// How many things a request asks, and its four answers.
+const HOW_MANY: &str = "How many separate things does the request ask to be done?";
+const ONE: &str = "One thing.";
+const TWO: &str = "Two things.";
+const MORE: &str = "Three things or more.";
+const NOTHING: &str = "Nothing: it asks for no action.";
+
+/// The question of how many things the request asks.
+fn counting() -> Question {
+    let options = [
+        ("one", ONE),
+        ("two", TWO),
+        ("more", MORE),
+        ("none", NOTHING),
+    ]
+    .into_iter()
+    .map(|(answer, text)| (key(answer), Text::Plain(plain(text))))
+    .collect();
+    Question::Choice(
+        Choice::new(plain(HOW_MANY), options, None).expect("a choice without a sentinel is one"),
+    )
+}
+
+/// The share of *one thing* among the answers to how many things the request asks; none where it was not
+/// asked.
+pub(crate) fn one_thing(raw: &Raw) -> Option<Prob> {
+    let answer = raw.0.get(&own(COUNT).to_string())?;
+    Prob::new(answer.get("one").copied().unwrap_or(0.0))
+}
+
+/// What a part of the request does, and its three answers.
+const PART_ASKS: &str = "It asks for something to be done.";
+const PART_DETAIL: &str = "It adds a detail to another part of the request.";
+const PART_ASIDE: &str = "It gives a reason, a circumstance or a remark, and asks for nothing.";
+
+/// The no of a value one part states, asked of another.
+const ANOTHER: &str = "Another one, or none.";
+
+/// What a part of the request does: `weave.part_<start>_<end>`, by where its words stand in the request.
+pub(crate) fn part(seg: &Segment) -> Result<(QuestionId, Question), Unclean> {
+    let ask = Clean::new(&format!(
+        "In the request, what does the part «{}» do?",
+        seg.text
+    ))
+    .map_err(|_| Unclean)?;
+    let options = [
+        ("asks", PART_ASKS),
+        ("detail", PART_DETAIL),
+        ("aside", PART_ASIDE),
+    ]
+    .into_iter()
+    .map(|(answer, text)| (key(answer), Text::Plain(plain(text))))
+    .collect();
+    let choice = Choice::new(ask, options, None).map_err(|_| Unclean)?;
+    Ok((
+        own(&format!("part_{}_{}", seg.start, seg.end)),
+        Question::Choice(choice),
+    ))
+}
+
+/// Whether a value one part states is another part's: `weave.share_<taker>_<giver>_<reflex>__<argument>`, the
+/// parts by where their words begin; the argument's own ask of the taker's words, a yes the value as shown.
+pub(crate) fn shared(
+    taker: &Segment,
+    giver: &Segment,
+    reflex: &LocalName,
+    arg: &ArgName,
+    ask: &Clean,
+    shown: &str,
+) -> Result<(QuestionId, Question), Unclean> {
+    let ask = Clean::new(&format!("For the part «{}»: {ask}", taker.text)).map_err(|_| Unclean)?;
+    Ok((
+        own(&format!(
+            "share_{}_{}_{}",
+            taker.start,
+            giver.start,
+            crate::pins::pair(reflex, arg)
+        )),
+        Question::YesNo {
+            ask,
+            yes: Text::Plain(Clean::new(shown).map_err(|_| Unclean)?),
+            no: Text::Plain(plain(ANOTHER)),
+        },
+    ))
+}
+
+/// A request of the plan's own about the whole request.
+pub(crate) fn asking(
+    request: &str,
+    questions: IndexMap<QuestionId, Question>,
+) -> Result<Request, Unclean> {
+    request_of(request, questions)
 }
 
 /// A request's words that the engine cannot be asked about: a control character among them.
@@ -1099,7 +1197,7 @@ mod tests {
         let (asked, request) = judging(text, &all).unwrap().unwrap();
         assert_eq!(asked, [0, 1]);
         let ids: Vec<String> = request.questions.keys().map(ToString::to_string).collect();
-        assert_eq!(ids, ["weave.split_0", "weave.split_1"]);
+        assert_eq!(ids, ["weave.split_0", "weave.split_1", "weave.count"]);
         let Some(Question::YesNo { ask, .. }) = request.questions.get(&own("split_1")) else {
             panic!("a yes/no");
         };
@@ -1108,9 +1206,11 @@ mod tests {
             "At «then», does the request ask for two things to be done — «generate the sales report and the inventory report», and separately «combine them»?"
         );
         let raw: Raw = serde_json::from_value(serde_json::json!({
-            "weave.split_0": { "yes": 0.9 }, "weave.split_1": { "yes": 0.95 }
+            "weave.split_0": { "yes": 0.9 }, "weave.split_1": { "yes": 0.95 },
+            "weave.count": { "one": 0.1, "two": 0.2, "more": 0.7 }
         }))
         .unwrap();
+        assert_eq!(one_thing(&raw).map(Prob::get), Some(0.1));
         let judged = judged(&all, &asked, &request, raw).unwrap();
         assert_eq!(judged[0].p.map(Prob::get), Some(0.9));
     }

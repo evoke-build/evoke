@@ -134,17 +134,9 @@
     }
   },
   "expect": {
-    "ok": {
-      "type": "need",
-      "need": {
-        "type": "decide",
-        "asked": [
-          {
-            "text": "feed the cat",
-            "only": "lights"
-          }
-        ]
-      }
+    "err": {
+      "type": "unanswered",
+      "question": "weave.count"
     }
   }
 }

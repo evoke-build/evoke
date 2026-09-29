@@ -90,9 +90,11 @@ route                      = { power = 0.97, timer = 0.01, none = 0.02 }
 
 [answers."kill the lights and start a 25 minute timer"]
 "weave.split_0" = { yes = 0.95 }
+"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."start a 25 minute timer and kill the lights in the den"]
 "weave.split_0" = { yes = 0.95 }
+"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."start a 25 minute timer"]
 route                                = { timer = 0.9, lights = 0.02, volume = 0.02, none = 0.06 }

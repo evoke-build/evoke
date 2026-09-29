@@ -14,6 +14,7 @@ write = 0.8
 "weave.split_3" = { yes = 0.9 }
 "weave.split_4" = { yes = 0.9 }
 "weave.split_5" = { yes = 0.9 }
+"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 "weave.ref_3_0" = { step0 = 0.9, step1 = 0.05, step2 = 0.05 }
 
 [answers."find flights to lisbon"]

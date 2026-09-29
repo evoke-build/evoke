@@ -194,6 +194,7 @@ route                         = { open = 0.91, download = 0.02, lock = 0.01, non
 
 [answers."download https://evoke.build/llms.txt and note it"]
 "weave.split_0" = { yes = 0.9 }
+"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."download https://evoke.build/llms.txt"]
 route                           = { download = 0.97, open = 0.01, none = 0.02 }

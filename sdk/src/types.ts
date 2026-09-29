@@ -808,6 +808,8 @@ export type Basis =
   | { by: "only"; yes: Prob }
   /** A text typed without quotes: the reading the last choice took, and the readings beside it. */
   | { by: "text"; p: Prob; others?: Span[] }
+  /** A value another part of the request states, which a yes says is this part's too: that part's words. */
+  | { by: "shared"; from: string; yes: Prob }
 
 /** What a run of words does in the request: it says what to do, answers an argument's ask, asks for nothing, or
  *  asks for another thing. */
@@ -896,6 +898,8 @@ export interface Asking extends Judged {
   left?: Left[]
   /** Typed spans no argument consumed. */
   unconsumed: Span[]
+  /** Why the call waits for a yes once it is complete, whatever is answered: what a plan held it for. */
+  held?: Cap[]
 }
 
 /** Why a decision stops at confirm; `because` lists them in this order. */
@@ -915,6 +919,9 @@ export type Cap =
   | { type: "two_things"; contender: Contender }
   /** A weave merged a part that matched nothing on its own back into these words: never run unasked. */
   | { type: "merged" }
+  /** A part of the request beside these words that asks for nothing and may add a detail the call does not
+   *  hold. */
+  | { type: "detail"; words: string }
 
 /** The confirm prompt: `evoke`'s own line, then the manifest's template filled in. */
 export interface Prompt {
@@ -990,12 +997,18 @@ export type Need =
   | { type: "judge"; request: Request }
   | { type: "refer"; request: Request }
   | { type: "decide"; asked: Asked[] }
+  /** Ask the adapter what the plan asks of the request once its parts are decided: what a part that matches
+   *  nothing does, and whether a value one part states is another's. Every answer is kept beside those before
+   *  it. */
+  | { type: "verify"; request: Request }
 
 /** What a host gathered for the plan so far. */
 export interface Answers {
   judged?: Raw
   referred?: Raw
   decided?: [Asked, Decision][]
+  /** What the plan asked of the request once its parts were decided, every round's answers together. */
+  verified?: Raw
 }
 
 /** The plan, or what it needs first. */
@@ -1082,6 +1095,13 @@ export interface Folded {
   into: number
 }
 
+/** A part of the request that matches no reflex and asks for nothing: a remark, set aside; or words that may add
+ *  a detail to the step beside them, which then waits for a yes. */
+export interface Aside {
+  text: string
+  remark: boolean
+}
+
 /** What picks a step that may not run: the step (from 1) whose result does, the field, and the value under which
  *  this step runs, compared as text at its turn; another value skips the step clean. */
 export interface When {
@@ -1158,6 +1178,8 @@ export interface Weave {
   excluded?: string[]
   /** Parts of the request that repeated a step a playbook wrote, each folded into that step. */
   folded?: Folded[]
+  /** Parts of the request that match no reflex and ask for nothing: set aside, never decided as steps. */
+  asides?: Aside[]
   binds?: Binding[]
   /** Whether a write is among the steps, so none may run beside another. */
   exclusive: boolean

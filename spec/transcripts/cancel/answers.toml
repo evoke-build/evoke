@@ -9,9 +9,11 @@ write = 0.8
 
 [answers."wait a while and start a 10 minute timer"]
 "weave.split_0" = { yes = 0.95 }
+"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."pause a moment and start a 10 minute timer"]
 "weave.split_0" = { yes = 0.95 }
+"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."wait a while"]
 route                 = { wait = 0.9, pause = 0.04, timer = 0.01, none = 0.05 }

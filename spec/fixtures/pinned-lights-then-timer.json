@@ -290,6 +290,11 @@
       "raw": {
         "weave.split_0": {
           "yes": 0.95
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
         }
       }
     },

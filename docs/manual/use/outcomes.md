@@ -47,6 +47,8 @@ These are the reasons a decision stops at confirm, in the order the line names t
   argument: `label without quotes`.
 - **more words**: the input holds words that ask for another thing, which the call does not hold. The line
   shows them: `also "lock the door too"`.
+- **a detail beside it**: a part of the sentence that is not in the plan may add a detail to this step. The
+  line shows the part: `without "the ones since noon"` ([Weaving](weaving.md)).
 - **an unconsumed span**: you typed something recognizable, like a duration or a URL, and no argument took it. A
   bare number never stops a call.
 - **two things**: a runner-up reflex fits well enough that the input may have asked for two things.

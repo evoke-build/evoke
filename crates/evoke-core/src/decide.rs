@@ -140,6 +140,8 @@ pub enum Basis {
         #[serde(default, skip_serializing_if = "Vec::is_empty")]
         others: Vec<Span>,
     },
+    /// A value another part of the request states, which a yes says is this part's too: that part's words.
+    Shared { from: String, yes: Prob },
 }
 
 impl Basis {
@@ -155,7 +157,10 @@ impl Basis {
                     *ask
                 }
             }
-            Self::Words { yes, .. } | Self::Spelled { yes, .. } | Self::Only { yes } => *yes,
+            Self::Words { yes, .. }
+            | Self::Spelled { yes, .. }
+            | Self::Only { yes }
+            | Self::Shared { yes, .. } => *yes,
         }
     }
 
@@ -168,9 +173,11 @@ impl Basis {
                 ..
             } => Some(Cap::Respelt { arg: arg.clone() }),
             Self::Text { .. } => Some(Cap::TextRead { arg: arg.clone() }),
-            Self::Ask { .. } | Self::Views { .. } | Self::Spelled { .. } | Self::Only { .. } => {
-                None
-            }
+            Self::Ask { .. }
+            | Self::Views { .. }
+            | Self::Spelled { .. }
+            | Self::Only { .. }
+            | Self::Shared { .. } => None,
         }
     }
 }
@@ -464,6 +471,9 @@ pub struct Asking {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub left: Vec<Left>,
     pub unconsumed: Vec<Span>,
+    /// Why the call waits for a yes once it is complete, whatever is answered: what a plan held it for.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub held: Vec<Cap>,
     #[serde(flatten)]
     pub judged: Judged,
 }
@@ -502,6 +512,11 @@ pub enum Cap {
     },
     /// A weave merged a part that matched nothing on its own back into these words: never run unasked.
     Merged,
+    /// A part of the request beside these words that asks for nothing and may add a detail the call does not
+    /// hold.
+    Detail {
+        words: String,
+    },
 }
 
 /// The confirm prompt: `evoke`'s own line, then the manifest's template filled in.
@@ -540,6 +555,9 @@ impl Prompt {
                     let _ = write!(own, " · also {} ({judged})", contender.reflex);
                 }
                 Cap::Merged => own.push_str(" · merged"),
+                Cap::Detail { words } => {
+                    let _ = write!(own, " · without {}", quoted(words));
+                }
                 Cap::More { words } => {
                     let _ = write!(own, " · also {}", quoted(words.text().as_str()));
                 }
@@ -1817,6 +1835,7 @@ pub fn gate(plan: &Plan, reading: Reading, gate: Option<&Gate>) -> Decision {
             basis: winner.basis,
             left: winner.left,
             unconsumed: winner.unconsumed,
+            held: Vec::new(),
             judged,
         },
         missing,
@@ -1852,6 +1871,7 @@ pub fn carry(
         mut basis,
         left,
         unconsumed,
+        held,
         judged,
     } = asking;
     let Some(active) = plan.active().get(&reflex) else {
@@ -1875,6 +1895,7 @@ pub fn carry(
             basis,
             left,
             unconsumed,
+            held,
             judged,
         },
         missing,
@@ -1902,7 +1923,7 @@ fn decided(
         left: asking.left,
         judged: Some(asking.judged),
     };
-    capped(active, chosen, asking.unconsumed, gate)
+    capped(active, chosen, asking.unconsumed, asking.held, gate)
 }
 
 /// The values a reflex can use, in its argument order, and what it still lacks: a value of the wrong kind or out
@@ -2009,7 +2030,13 @@ fn typed(
 }
 
 /// Run, or confirm for every named cap in the fixed order.
-fn capped(active: &Active, chosen: Chosen, unconsumed: Vec<Span>, gate: Option<&Gate>) -> Decision {
+fn capped(
+    active: &Active,
+    chosen: Chosen,
+    unconsumed: Vec<Span>,
+    held: Vec<Cap>,
+    gate: Option<&Gate>,
+) -> Decision {
     let floors = gate.zip(chosen.judged.as_ref());
     let mut because = Vec::new();
     if chosen.effect == Effect::Destructive {
@@ -2061,6 +2088,11 @@ fn capped(active: &Active, chosen: Chosen, unconsumed: Vec<Span>, gate: Option<&
             contender: runner_up.clone(),
         });
     }
+    for cap in held {
+        if !because.contains(&cap) {
+            because.push(cap);
+        }
+    }
     let prompt = Prompt::of(&chosen, active, &because);
     match NonEmpty::try_from(because) {
         Ok(because) => Decision::Confirm {
@@ -2076,28 +2108,45 @@ fn capped(active: &Active, chosen: Chosen, unconsumed: Vec<Span>, gate: Option<&
 /// with the cap, a confirm gains it, once; an ask stands, capped once it is answered; an abstain stands.
 #[must_use]
 pub fn merged(plan: &Plan, decision: Decision) -> Decision {
-    let active = match &decision {
-        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
-            plan.active().get(&chosen.call.reflex)
-        }
-        Decision::Ask { .. } | Decision::Abstain { .. } => None,
-    };
-    let Some(active) = active else {
-        return decision;
-    };
+    held(plan, decision, Cap::Merged)
+}
+
+/// A decision a plan holds for a yes: a run confirms with the cap, a confirm gains it, once; an ask keeps it
+/// for the call it becomes; an abstain stands.
+#[must_use]
+pub fn held(plan: &Plan, decision: Decision, cap: Cap) -> Decision {
     let (chosen, because) = match decision {
-        Decision::Run { chosen } => (chosen, NonEmpty::new(Cap::Merged, Vec::new())),
+        Decision::Run { chosen } => (chosen, NonEmpty::new(cap, Vec::new())),
         Decision::Confirm {
             chosen,
             mut because,
             ..
         } => {
-            if !because.iter().any(|cap| *cap == Cap::Merged) {
-                because.push(Cap::Merged);
+            if !because.iter().any(|held| *held == cap) {
+                because.push(cap);
             }
             (chosen, because)
         }
-        Decision::Ask { .. } | Decision::Abstain { .. } => return decision,
+        Decision::Ask {
+            mut asking,
+            missing,
+        } => {
+            if !asking.held.contains(&cap) {
+                asking.held.push(cap);
+            }
+            return Decision::Ask { asking, missing };
+        }
+        Decision::Abstain { .. } => return decision,
+    };
+    let Some(active) = plan.active().get(&chosen.call.reflex) else {
+        return Decision::Confirm {
+            prompt: Prompt {
+                own: render(&chosen.call),
+                template: Clean::default(),
+            },
+            chosen,
+            because,
+        };
     };
     let caps: Vec<Cap> = because.iter().cloned().collect();
     let prompt = Prompt::of(&chosen, active, &caps);
@@ -2106,6 +2155,131 @@ pub fn merged(plan: &Plan, decision: Decision) -> Decision {
         prompt,
         because,
     }
+}
+
+/// A reading given a value another part of the request states, with what the value stands on: the call
+/// complete or asking, gated again with it. The reading as it stands, when it is none of a reflex.
+#[must_use]
+pub fn given(
+    plan: &Plan,
+    decision: Decision,
+    value: (ArgName, Value),
+    stands: Basis,
+    gate: Option<&Gate>,
+) -> Decision {
+    let Some((asking, _)) = read_of(&decision) else {
+        return decision;
+    };
+    let (arg, value) = value;
+    let stands = [(arg.clone(), stands)].into_iter().collect();
+    carry(
+        plan,
+        asking,
+        [(arg, value)].into_iter().collect(),
+        stands,
+        gate,
+    )
+}
+
+/// Two readings of one call made one. The first's values stand; the second adds the values the first lacks,
+/// each with what it stands on; what either asks and neither holds is still asked; the call waits where either
+/// waited. The first as it stands, when the two are not complete readings of one reflex.
+#[must_use]
+pub fn joined(plan: &Plan, first: Decision, second: &Decision, gate: Option<&Gate>) -> Decision {
+    let (Some((mut one, mut asked)), Some((other, also))) = (read_of(&first), read_of(second))
+    else {
+        return first;
+    };
+    let Some(active) = plan.active().get(&one.reflex) else {
+        return first;
+    };
+    if one.reflex != other.reflex {
+        return first;
+    }
+    let mut judgments: Vec<Judgment> = one.judged.judgments.iter().cloned().collect();
+    for (arg, value) in other.args {
+        if one.args.contains_key(&arg) {
+            continue;
+        }
+        judgments.extend(
+            other
+                .judged
+                .judgments
+                .iter()
+                .filter(|judged| {
+                    judged.question != QuestionId::Route && judged.about() == arg.as_str()
+                })
+                .cloned(),
+        );
+        if let Some(stands) = other.basis.get(&arg) {
+            one.basis.insert(arg.clone(), stands.clone());
+        }
+        one.args.insert(arg, value);
+    }
+    one.left.extend(other.left);
+    one.unconsumed.extend(other.unconsumed);
+    for cap in other.held {
+        if !one.held.contains(&cap) {
+            one.held.push(cap);
+        }
+    }
+    asked.extend(also);
+    asked.retain(|asked| !one.args.contains_key(&asked.arg));
+    if let Ok(judgments) = NonEmpty::try_from(judgments) {
+        let weakest = weakest(&judgments).clone();
+        one.judged = Judged {
+            confidence: weakest.p,
+            weakest,
+            judgments,
+            runner_up: one.judged.runner_up,
+            contenders: one.judged.contenders,
+        };
+    }
+    let (args, missing) = settled(plan, &one.reflex, active, &one.args, &asked);
+    one.args = args;
+    decided(active, one, missing, gate)
+}
+
+/// A decision's reading as an ask in flight, with what it asks: a complete call asks nothing, and keeps the
+/// reasons it waited that a gate does not find again. None for an abstain and for a call by name.
+fn read_of(decision: &Decision) -> Option<(Asking, Vec<Missing>)> {
+    match decision {
+        Decision::Abstain { .. } => None,
+        Decision::Ask { asking, missing } => {
+            Some((asking.clone(), missing.iter().cloned().collect()))
+        }
+        Decision::Run { chosen } => Some((asking_of(chosen, &[])?, Vec::new())),
+        Decision::Confirm {
+            chosen, because, ..
+        } => {
+            let caps: Vec<Cap> = because.iter().cloned().collect();
+            Some((asking_of(chosen, &caps)?, Vec::new()))
+        }
+    }
+}
+
+/// A complete call as an ask in flight: its values, what they stand on, the spans no argument took and the
+/// reasons a plan held it for.
+fn asking_of(chosen: &Chosen, because: &[Cap]) -> Option<Asking> {
+    Some(Asking {
+        reflex: chosen.call.reflex.clone(),
+        args: chosen.call.args.clone(),
+        basis: chosen.basis.clone(),
+        left: chosen.left.clone(),
+        unconsumed: because
+            .iter()
+            .filter_map(|cap| match cap {
+                Cap::UnconsumedSpan { span } => Some(span.clone()),
+                _ => None,
+            })
+            .collect(),
+        held: because
+            .iter()
+            .filter(|cap| matches!(cap, Cap::Merged | Cap::Detail { .. }))
+            .cloned()
+            .collect(),
+        judged: chosen.judged.clone()?,
+    })
 }
 
 /// Typed text run through a pick's recognizer, as the prompt and a call by name read it: a candidate of its kind

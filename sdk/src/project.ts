@@ -558,7 +558,8 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
       const { raw } = await answered(adapter, need.request, plan.deadline, options.signal, invoked)
       entries.push({ text: need.request.state.request, raw })
       if (need.type === "judge") answers.judged = raw
-      else answers.referred = raw
+      else if (need.type === "refer") answers.referred = raw
+      else answers.verified = { ...answers.verified, ...raw }
     }
   }
 

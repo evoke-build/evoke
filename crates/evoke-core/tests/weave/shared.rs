@@ -141,6 +141,13 @@ impl Lookup {
     }
 }
 
+/// A step of the plan: the lookup whose words it keeps, and the service it holds.
+#[derive(Clone, Copy, Debug)]
+struct Held {
+    lookup: Lookup,
+    service: Option<Service>,
+}
+
 /// A request: its lookups, the connectives between them, and the engine's judgment of each split point.
 #[derive(Clone, Debug)]
 struct Request {
@@ -157,6 +164,38 @@ impl Request {
             text.push_str(&lookup.text());
         }
         text
+    }
+
+    /// The steps the plan holds: a lookup that reads as the reflex of one before it, no word of the two
+    /// differing, is that call, and brings its word where the first had none; each step with the word it holds
+    /// once the word stated once was carried.
+    fn steps(&self) -> Vec<Held> {
+        let carried = self.carried();
+        let mut steps: Vec<Held> = Vec::new();
+        for lookup in &self.lookups {
+            let service = match (lookup.service, lookup.read) {
+                (Some(own), true) => Some(own),
+                (Some(_), false) => None,
+                (None, _) => carried,
+            };
+            let could: Vec<usize> = steps
+                .iter()
+                .enumerate()
+                .filter(|(_, held)| {
+                    held.lookup.reflex == lookup.reflex
+                        && (held.service.is_none() || service.is_none() || held.service == service)
+                })
+                .map(|(i, _)| i)
+                .collect();
+            match could.as_slice() {
+                [one] => steps[*one].service = steps[*one].service.or(service),
+                _ => steps.push(Held {
+                    lookup: *lookup,
+                    service,
+                }),
+            }
+        }
+        steps
     }
 
     /// «A required argument takes the one distinct word of its vocabulary the request states, however often,
@@ -233,9 +272,13 @@ proptest! {
     #[test]
     fn a_word_stated_once_reaches_every_step_that_lacks_it(request in request()) {
         let weave = planned(&request);
-        prop_assert_eq!(weave.steps.len(), request.lookups.len());
+        // «Two parts that read as the same call, their values in accord, are one call»: the steps are the
+        // lookups less those that repeat one before them, each with the word it read, took or was handed.
+        let steps = request.steps();
+        prop_assert_eq!(weave.steps.len(), steps.len());
         let carried = request.carried();
-        for (step, lookup) in weave.steps.iter().zip(&request.lookups) {
+        for (step, expected) in weave.steps.iter().zip(&steps) {
+            let lookup = expected.lookup;
             prop_assert_eq!(step.reflex.as_ref().map(LocalName::as_str), Some(lookup.reflex.name()));
             // No optional word is stated, so no step's words are rewritten.
             let text = lookup.text();
@@ -245,29 +288,17 @@ proptest! {
                 Decision::Ask { .. } => None,
                 Decision::Confirm { .. } | Decision::Abstain { .. } => return Err(TestCaseError::fail("a lookup runs or asks")),
             };
-            match (lookup.service, lookup.read, carried) {
-                // A step that read its own word keeps it, and shares nothing.
-                (Some(own), true, _) => {
-                    prop_assert_eq!(service.as_deref(), Some(own.word()));
-                    prop_assert!(step.shared.is_empty(), "step {} read its own word", step.n);
-                }
-                // A step whose words hold the word it did not read asks for it: nothing reaches it.
-                (Some(_), false, _) => {
-                    prop_assert_eq!(service, None);
-                    prop_assert!(step.shared.is_empty(), "step {} holds a word of the vocabulary", step.n);
-                }
+            prop_assert_eq!(service.as_deref(), expected.service.map(Service::word), "step {}'s service", step.n);
+            match (lookup.service, carried) {
                 // A step lacking the word takes the one word stated and read, as a fill.
-                (None, _, Some(word)) => {
-                    prop_assert_eq!(service.as_deref(), Some(word.word()));
+                (None, Some(word)) => {
                     let shared = step.shared.get("service").expect("the fill is on the step");
                     prop_assert_eq!(shared.word.as_str(), word.word());
                     prop_assert_eq!(shared.via, Via::Fill);
                 }
-                // Two words stated, or none read: nothing is carried, and the step asks.
-                (None, _, None) => {
-                    prop_assert_eq!(service, None);
-                    prop_assert!(step.shared.is_empty(), "step {} took a word no step read, or one of two", step.n);
-                }
+                // A step that read its own word, or whose words hold one it did not read, shares nothing; and
+                // two words stated, or none read, carry nothing.
+                _ => prop_assert!(step.shared.is_empty(), "step {} shares nothing", step.n),
             }
         }
         // «The verdict stands before anything runs»: an ask left is the plan's.
