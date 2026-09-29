@@ -30,6 +30,7 @@ pub mod test;
 pub mod text;
 pub mod vocabulary;
 pub mod weave;
+pub mod words;
 
 pub use adapter::{Declared, Fault, Gate, Key, Limits, Prob, Question, QuestionId, Raw, Request};
 pub use calibrate::{Calibration, LogBlock, Logged, calibrate, log_block};
@@ -66,3 +67,4 @@ pub use weave::pinned::{
     Answer, Decided, Pinned, PinnedReflex, Replanned, pin, pinned, replan, stale,
 };
 pub use weave::{Executed, Planning, Running, Weave};
+pub use words::{Listed, Spelled, listed, spelled};

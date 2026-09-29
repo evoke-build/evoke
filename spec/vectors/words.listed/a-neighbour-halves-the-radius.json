@@ -1,0 +1,11 @@
+{
+  "input": {
+    "input": "close the books for jule",
+    "list": {
+      "june": "June.",
+      "july": "July.",
+      "september": "September."
+    }
+  },
+  "expect": []
+}

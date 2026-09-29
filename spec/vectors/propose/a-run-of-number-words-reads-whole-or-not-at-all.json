@@ -1,17 +1,17 @@
 {
   "input": {
-    "input": "volume twenty, not two hundred, a hundred and fifty or seven thirty"
+    "input": "twenty five or seven thirty, a thousand and two million"
   },
   "expect": [
     {
       "span": {
-        "start": 7,
-        "end": 13,
-        "text": "twenty"
+        "start": 0,
+        "end": 11,
+        "text": "twenty five"
       },
       "value": {
         "type": "number",
-        "value": 20
+        "value": 25
       }
     }
   ]

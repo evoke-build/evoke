@@ -1,0 +1,29 @@
+{
+  "input": {
+    "input": "tell #ops about the outage",
+    "list": {
+      "#incident": "Where an outage is handled.",
+      "#ops": "Where deploys are announced."
+    }
+  },
+  "expect": [
+    {
+      "key": "#incident",
+      "span": {
+        "start": 20,
+        "end": 26,
+        "text": "outage"
+      },
+      "how": "meaning"
+    },
+    {
+      "key": "#ops",
+      "span": {
+        "start": 5,
+        "end": 9,
+        "text": "#ops"
+      },
+      "how": "same"
+    }
+  ]
+}

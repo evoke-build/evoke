@@ -1,0 +1,11 @@
+{
+  "input": {
+    "input": "order a laptop for anna",
+    "list": {
+      "maria": "Maria, who joins the platform team.",
+      "sam": "Sam, who joins sales.",
+      "ana": "Ana, who joins design."
+    }
+  },
+  "expect": []
+}

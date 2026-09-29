@@ -1,0 +1,7 @@
+{
+  "input": {
+    "input": "remind me every mondya",
+    "kind": "date"
+  },
+  "expect": []
+}

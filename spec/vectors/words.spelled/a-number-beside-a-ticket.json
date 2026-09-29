@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "hold 50 of br 2210",
+    "kind": "code"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 11,
+        "end": 18,
+        "text": "br 2210"
+      },
+      "typed": "br-2210",
+      "value": {
+        "type": "code",
+        "value": "br-2210"
+      },
+      "form": "spaced"
+    }
+  ]
+}

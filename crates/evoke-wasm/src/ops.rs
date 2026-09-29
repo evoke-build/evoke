@@ -15,15 +15,15 @@ use evoke_core::plan::Millis;
 use evoke_core::project::Location;
 use evoke_core::text::NonEmpty;
 use evoke_core::{
-    Active, Answer, Baseline, Call, Case, Chosen, Decision, Declared, Digest, Document, Facts,
-    Fault, Fix, Gate, Input, Installed, Lesson, Limits, Lock, Logged, Manifest, Needs, Overlay,
-    Pinned, Plan, Policy, Prob, Project, Raw, Request, Routed, Scope, Utterance, Value, Values,
-    Verdict, Weave, Written, add_entry, argv, baseline, by_name, calibrate, call as call_grammar,
-    cases, compile, compose, consent, diff, effective, envelope, fill, gate, identity, judge,
-    landlock, lint, lock, log_block, manifest, needs, node_flags, overlay, picked, pin, pinned,
-    project, project_dts, propose, read, reference, reflex_dts, regressions, remove_entry,
-    render_lock, replan, report, request, resolve, seatbelt, set_config, stale, teach, thieves,
-    vocab_edit, vocabulary, weave, widens,
+    Active, Answer, Baseline, Call, Case, Chosen, Clean, Decision, Declared, Digest, Document,
+    Facts, Fault, Fix, Gate, Input, Installed, Key, Lesson, Limits, Lock, Logged, Manifest, Needs,
+    Overlay, Pinned, Plan, Policy, Prob, Project, Raw, Request, Routed, Scope, Utterance, Value,
+    Values, Verdict, Weave, Written, add_entry, argv, baseline, by_name, calibrate,
+    call as call_grammar, cases, compile, compose, consent, diff, effective, envelope, fill, gate,
+    identity, judge, landlock, lint, listed, lock, log_block, manifest, needs, node_flags, overlay,
+    picked, pin, pinned, project, project_dts, propose, read, reference, reflex_dts, regressions,
+    remove_entry, render_lock, replan, report, request, resolve, seatbelt, set_config, spelled,
+    stale, teach, thieves, vocab_edit, vocabulary, weave, widens,
 };
 use indexmap::IndexMap;
 use serde::Serialize;
@@ -97,6 +97,18 @@ fn decide(op: &str, input: &Json) -> Reply {
             opt::<Platform>(input, "platform")?,
         )),
         "propose" => ok(propose(&arg::<Input>(input, "input")?)),
+        "words.listed" => ok(listed(
+            &arg::<Input>(input, "input")?,
+            &arg::<IndexMap<Key, Clean>>(input, "list")?,
+        )),
+        "words.spelled" => {
+            let said = arg::<Input>(input, "input")?;
+            ok(spelled(
+                &said,
+                arg::<Recognizer>(input, "kind")?,
+                &propose(&said),
+            ))
+        }
         "request" => result(request(
             &arg::<Plan>(input, "plan")?,
             text(input, "input")?,

@@ -1,0 +1,7 @@
+{
+  "input": {
+    "input": "download https colon slash slash example dot com slash report",
+    "kind": "url"
+  },
+  "expect": []
+}

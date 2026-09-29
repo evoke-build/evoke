@@ -16,10 +16,11 @@ use crate::document::Json;
 use crate::manifest::{
     self, Argument, Effect, Kind, Pick, Piece, Range, Recognizer, Source, Yield,
 };
-use crate::name::{ArgName, FieldName, LocalName, OptionKey, Tag, VocabName, Word};
+use crate::name::{self, ArgName, FieldName, LocalName, OptionKey, Tag, VocabName, Word};
 use crate::plan::{Active, Plan, Slot, unstated as unstated_key, unstated_text};
-use crate::propose::{PickValue, propose};
+use crate::propose::{PickValue, Proposed, propose};
 use crate::text::{Clean, Input, NonEmpty, Span};
+use crate::words::{self, Form, Listed, Spelled};
 
 /// The most values an ask lists from the session's results.
 const MOST_RECENT: usize = 5;
@@ -459,63 +460,167 @@ pub fn request(
     let mut recalled = IndexMap::new();
     if scope == Scope::Full {
         for (id, slot) in plan.slots() {
-            let Some(reflex) = id.reflex().filter(|name| narrowed.contains(name)) else {
+            if !id.reflex().is_some_and(|name| narrowed.contains(&name)) {
                 continue;
-            };
-            let question = match slot {
-                Slot::Ready(question) => question.clone(),
-                Slot::Pick {
-                    ask,
-                    pick,
-                    recent: field,
-                    ..
-                } => {
-                    if let (Some(field), QuestionId::Arg(_, arg)) = (field, id) {
-                        let values = plan
-                            .active()
-                            .get(reflex)
-                            .and_then(|active| active.args.get(arg))
-                            .map(|argument| match &argument.kind {
-                                Kind::Value {
-                                    source: Source::Pick(pick),
-                                    ..
-                                } => recalled_values(plan, recent, field, pick),
-                                _ => Vec::new(),
-                            })
-                            .unwrap_or_default();
-                        if !values.is_empty() {
-                            recalled.insert(id.clone(), values);
-                        }
-                    }
-                    let options: IndexMap<Key, Text> = proposed
-                        .iter()
-                        .filter(|proposed| proposes(*pick, &proposed.value))
-                        .map(|proposed| {
-                            (
-                                candidate(&proposed.span),
-                                Text::Plain(proposed.span.text().clone()),
-                            )
-                        })
-                        .collect();
-                    if options.is_empty() {
-                        continue;
-                    }
-                    Question::Choice(Choice::closed(
-                        ask.clone(),
-                        options,
-                        (unstated_key(), Text::Plain(unstated_text())),
-                    ))
-                }
-            };
-            questions.insert(id.clone(), question);
+            }
+            if let Some(question) = asked(plan, id, slot, &proposed, recent, &mut recalled) {
+                questions.insert(id.clone(), question);
+            }
         }
     }
+    let (listed, spelled) = if scope == Scope::Full {
+        found(plan, &narrowed, &input, &proposed)
+    } else {
+        (IndexMap::new(), IndexMap::new())
+    };
     Ok(Request {
         state: State { request: input },
         questions,
         proposed,
         recent: recalled,
+        listed,
+        spelled,
     })
+}
+
+/// One slot of the plan as the request asks it: a question that does not depend on the input as it stands; a
+/// pick over the input's candidates of its kind, or not at all when it has none. Beside it, for a pick that
+/// names a yielded field, the values the session's results returned under it.
+fn asked(
+    plan: &Plan,
+    id: &QuestionId,
+    slot: &Slot,
+    proposed: &[Proposed],
+    recent: &[Recent],
+    recalled: &mut IndexMap<QuestionId, Vec<String>>,
+) -> Option<Question> {
+    let (ask, pick, field) = match slot {
+        Slot::Ready(question) => return Some(question.clone()),
+        Slot::Pick {
+            ask, pick, recent, ..
+        } => (ask, *pick, recent),
+    };
+    if let (Some(field), QuestionId::Arg(reflex, arg)) = (field, id) {
+        let values = plan
+            .active()
+            .get(reflex)
+            .and_then(|active| active.args.get(arg))
+            .map(|argument| match &argument.kind {
+                Kind::Value {
+                    source: Source::Pick(pick),
+                    ..
+                } => recalled_values(plan, recent, field, pick),
+                _ => Vec::new(),
+            })
+            .unwrap_or_default();
+        if !values.is_empty() {
+            recalled.insert(id.clone(), values);
+        }
+    }
+    let options: IndexMap<Key, Text> = proposed
+        .iter()
+        .filter(|proposed| proposes(pick, &proposed.value))
+        .map(|proposed| {
+            (
+                candidate(&proposed.span),
+                Text::Plain(proposed.span.text().clone()),
+            )
+        })
+        .collect();
+    if options.is_empty() {
+        return None;
+    }
+    Some(Question::Choice(Choice::closed(
+        ask.clone(),
+        options,
+        (unstated_key(), Text::Plain(unstated_text())),
+    )))
+}
+
+/// What code finds in the input's own words for the arguments of the reflexes asked about, by each argument's
+/// question: the listed words they hold, and the values they spell out in a form no recognizer reads as typed.
+/// A word that is the reflex's own name says what to do and is no value; a word the reflex's own words hold is
+/// no part of a code typed with spaces.
+fn found(
+    plan: &Plan,
+    narrowed: &[&LocalName],
+    input: &Input,
+    proposed: &[Proposed],
+) -> (
+    IndexMap<QuestionId, Vec<Listed>>,
+    IndexMap<QuestionId, Vec<Spelled>>,
+) {
+    let mut listed = IndexMap::new();
+    let mut spelled = IndexMap::new();
+    for (id, slot) in plan.slots() {
+        let QuestionId::Arg(reflex, _) = id else {
+            continue;
+        };
+        if !narrowed.contains(&reflex) {
+            continue;
+        }
+        match slot {
+            Slot::Ready(Question::Choice(choice)) => {
+                let list: IndexMap<Key, Clean> = choice
+                    .options()
+                    .iter()
+                    .filter(|(key, _)| !sentinel(key))
+                    .map(|(key, text)| (key.clone(), text.what().clone()))
+                    .collect();
+                let held: Vec<Listed> = words::listed(input, &list)
+                    .into_iter()
+                    .filter(|held| !words::names(held.span.text().as_str(), reflex.as_str()))
+                    .collect();
+                if !held.is_empty() {
+                    listed.insert(id.clone(), held);
+                }
+            }
+            Slot::Pick { pick, .. } => {
+                let own = own_words(plan, reflex);
+                let said: Vec<Spelled> = words::spelled(input, *pick, proposed)
+                    .into_iter()
+                    .filter(|said| {
+                        said.form != Form::Spaced
+                            || !words::tokens(said.span.text().as_str())
+                                .iter()
+                                .any(|token| own.contains(&token.plain))
+                    })
+                    .collect();
+                if !said.is_empty() {
+                    spelled.insert(id.clone(), said);
+                }
+            }
+            Slot::Ready(Question::YesNo { .. }) => {}
+        }
+    }
+    (listed, spelled)
+}
+
+/// Whether a key is one of the sentinels a choice carries, which no list holds.
+fn sentinel(key: &Key) -> bool {
+    name::RESERVED.contains(&key.as_str())
+}
+
+/// The words a reflex says of itself, lowered: its name, its description, its examples and its asks.
+fn own_words(plan: &Plan, reflex: &LocalName) -> Vec<String> {
+    let mut texts: Vec<String> = vec![reflex.to_string()];
+    if let Some(Text::Rich { what, examples, .. }) = plan.route().options().get(reflex.as_str()) {
+        texts.push(what.to_string());
+        texts.extend(examples.iter().map(ToString::to_string));
+    }
+    if let Some(active) = plan.active().get(reflex) {
+        texts.extend(
+            active
+                .args
+                .values()
+                .map(|argument| argument.ask.to_string()),
+        );
+    }
+    texts
+        .iter()
+        .flat_map(|text| words::tokens(text))
+        .map(|token| token.plain)
+        .collect()
 }
 
 /// The values of `field` among the session's results, newest first: each read whole by the pick's recognizer

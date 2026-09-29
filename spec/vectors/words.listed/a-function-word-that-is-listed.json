@@ -1,0 +1,20 @@
+{
+  "input": {
+    "input": "switch it off",
+    "list": {
+      "on": "Switch it on.",
+      "off": "Switch it off."
+    }
+  },
+  "expect": [
+    {
+      "key": "off",
+      "span": {
+        "start": 10,
+        "end": 13,
+        "text": "off"
+      },
+      "how": "same"
+    }
+  ]
+}

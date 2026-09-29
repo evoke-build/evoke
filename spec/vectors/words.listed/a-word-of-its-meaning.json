@@ -1,0 +1,20 @@
+{
+  "input": {
+    "input": "what failed in virginia",
+    "list": {
+      "eu-west": "The region in Ireland.",
+      "us-east": "The region in Virginia."
+    }
+  },
+  "expect": [
+    {
+      "key": "us-east",
+      "span": {
+        "start": 15,
+        "end": 23,
+        "text": "virginia"
+      },
+      "how": "meaning"
+    }
+  ]
+}

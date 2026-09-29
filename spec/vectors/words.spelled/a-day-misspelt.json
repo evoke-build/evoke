@@ -1,0 +1,24 @@
+{
+  "input": {
+    "input": "am i in anything on mondya",
+    "kind": "date"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 20,
+        "end": 26,
+        "text": "mondya"
+      },
+      "typed": "monday",
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "weekday",
+          "weekday": "monday"
+        }
+      },
+      "form": "misspelt"
+    }
+  ]
+}

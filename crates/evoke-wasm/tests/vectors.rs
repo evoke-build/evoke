@@ -189,6 +189,8 @@ families! {
     fix_vectors => "fix",
     values_vectors => "values",
     picked_vectors => "picked",
+    words_listed_vectors => "words.listed",
+    words_spelled_vectors => "words.spelled",
     vocabulary_vectors => "vocabulary",
     project_vectors => "project",
     name_vectors => "name",

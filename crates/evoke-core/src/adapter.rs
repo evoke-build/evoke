@@ -11,6 +11,7 @@ use crate::diagnostic::Fix;
 use crate::name::{AdapterId, ArgName, LocalName, OptionKey, VarName, WeaveName, Word};
 use crate::propose::Proposed;
 use crate::text::{Clean, Identity, Input};
+use crate::words::{Listed, Spelled};
 
 /// A choice's key exactly as offered: an option key, a word, a candidate `<start>-<end>`, a flag's `yes` or `no`, a
 /// local name, `none` or `unstated`. The plan's slot gives it meaning at read.
@@ -270,7 +271,9 @@ pub struct State {
 
 /// One call of `answer`: the state, the questions, the candidate spans the pick questions were built from, and,
 /// per pick that names a yielded field, the values the session's results returned under it — the ask's closed
-/// choices, which no question offers; absent when none.
+/// choices, which no question offers; absent when none. Beside them, what code found in the request's own
+/// words before any question: per listed argument the listed words they hold, per typed argument the values
+/// they spell out; absent when none.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Request {
     pub state: State,
@@ -278,6 +281,10 @@ pub struct Request {
     pub proposed: Vec<Proposed>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub recent: IndexMap<QuestionId, Vec<String>>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub listed: IndexMap<QuestionId, Vec<Listed>>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub spelled: IndexMap<QuestionId, Vec<Spelled>>,
 }
 
 /// A finite number in `[0, 1]`.

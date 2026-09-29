@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "set aside v x dash twenty three hundred",
+    "kind": "code"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 10,
+        "end": 39,
+        "text": "v x dash twenty three hundred"
+      },
+      "typed": "vx-2300",
+      "value": {
+        "type": "code",
+        "value": "vx-2300"
+      },
+      "form": "aloud"
+    }
+  ]
+}

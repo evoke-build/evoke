@@ -1,0 +1,7 @@
+{
+  "input": {
+    "input": "write to dana@example.org",
+    "kind": "email"
+  },
+  "expect": []
+}

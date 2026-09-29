@@ -851,6 +851,8 @@ fn request_of(
         questions,
         proposed: Vec::new(),
         recent: IndexMap::new(),
+        listed: IndexMap::new(),
+        spelled: IndexMap::new(),
     })
 }
 

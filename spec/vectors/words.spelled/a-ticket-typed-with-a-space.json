@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "reserve all of HS 0409",
+    "kind": "code"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 15,
+        "end": 22,
+        "text": "HS 0409"
+      },
+      "typed": "HS-0409",
+      "value": {
+        "type": "code",
+        "value": "HS-0409"
+      },
+      "form": "spaced"
+    }
+  ]
+}

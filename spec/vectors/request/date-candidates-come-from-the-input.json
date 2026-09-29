@@ -150,7 +150,20 @@
             "value": "15:00"
           }
         }
-      ]
+      ],
+      "listed": {
+        "calendar.day": [
+          {
+            "key": "tomorrow",
+            "span": {
+              "start": 20,
+              "end": 28,
+              "text": "tomorrow"
+            },
+            "how": "same"
+          }
+        ]
+      }
     }
   }
 }

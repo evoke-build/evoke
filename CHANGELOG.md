@@ -7,6 +7,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 ## [Unreleased]
 
 - `reflex.d.ts` says what `input` holds and what aborts `signal`; `evoke check` writes it again.
+- The collection's manifests hold more examples of how people ask.
+- A number reads in words up to the hundreds: `two hundred and forty`.
 
 ## [0.15.0] - 2026-09-29
 

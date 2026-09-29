@@ -1,0 +1,20 @@
+{
+  "input": {
+    "input": "what failed in EU West, please",
+    "list": {
+      "eu-west": "The region in Ireland.",
+      "us-east": "The region in Virginia."
+    }
+  },
+  "expect": [
+    {
+      "key": "eu-west",
+      "span": {
+        "start": 15,
+        "end": 22,
+        "text": "EU West"
+      },
+      "how": "form"
+    }
+  ]
+}

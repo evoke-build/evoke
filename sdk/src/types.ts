@@ -562,12 +562,15 @@ export interface State {
 
 /** One call of `answer`: the state, the questions, the candidate spans the pick questions were built from, and
  *  per pick question the values recalled from the process's results, offered at the ask and never asked of the
- *  adapter. */
+ *  adapter. Beside them, what code found in the request's own words: per listed argument the listed words they
+ *  hold, per typed argument the values they spell out. */
 export interface Request {
   state: State
   questions: Record<QuestionId, Question>
   proposed: Proposed[]
   recent?: Record<QuestionId, string[]>
+  listed?: Record<QuestionId, Listed[]>
+  spelled?: Record<QuestionId, Spelled[]>
 }
 
 /** A result the process holds, newest first as the host hands them: the reflex that returned it and its `data`,
@@ -710,6 +713,32 @@ export type PickValue =
   | { type: "time"; value: string } // HH:MM
   | { type: "amount"; value: Amount }
   | { type: "code"; value: Clean }
+
+// words.rs
+
+/** How the request's words hold a listed word: the word itself, another form of it, the same word with an ending,
+ *  a spelling near it, or a word of what it means. */
+export type How = "same" | "form" | "stem" | "spelling" | "meaning"
+
+/** A listed word the request's own words hold: the word, where they stand, and how they hold it. */
+export interface Listed {
+  key: Key
+  span: Span
+  how: How
+}
+
+/** How a form that no recognizer reads as typed was read: said aloud, a day's name misspelt, a code typed with
+ *  spaces. */
+export type Form = "aloud" | "misspelt" | "spaced"
+
+/** A value the request's words spell out: the words, the form they stand for as it would be typed, what that form
+ *  reads as, and how it was read. */
+export interface Spelled {
+  span: Span
+  typed: Clean
+  value: PickValue
+  form: Form
+}
 
 // calendar.rs
 

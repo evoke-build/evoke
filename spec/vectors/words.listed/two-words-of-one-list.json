@@ -1,0 +1,30 @@
+{
+  "input": {
+    "input": "compare june with july",
+    "list": {
+      "june": "June.",
+      "july": "July.",
+      "september": "September."
+    }
+  },
+  "expect": [
+    {
+      "key": "june",
+      "span": {
+        "start": 8,
+        "end": 12,
+        "text": "june"
+      },
+      "how": "same"
+    },
+    {
+      "key": "july",
+      "span": {
+        "start": 18,
+        "end": 22,
+        "text": "july"
+      },
+      "how": "same"
+    }
+  ]
+}

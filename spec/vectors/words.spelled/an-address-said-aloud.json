@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "write to dana dot weiss at example dot org",
+    "kind": "email"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 9,
+        "end": 42,
+        "text": "dana dot weiss at example dot org"
+      },
+      "typed": "dana.weiss@example.org",
+      "value": {
+        "type": "email",
+        "value": "dana.weiss@example.org"
+      },
+      "form": "aloud"
+    }
+  ]
+}

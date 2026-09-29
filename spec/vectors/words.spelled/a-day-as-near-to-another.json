@@ -1,0 +1,7 @@
+{
+  "input": {
+    "input": "what is on munday",
+    "kind": "date"
+  },
+  "expect": []
+}

@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "when does Maria's laptop come",
+    "list": {
+      "maria": "Maria, who joins the platform team.",
+      "sam": "Sam, who joins sales.",
+      "ana": "Ana, who joins design."
+    }
+  },
+  "expect": [
+    {
+      "key": "maria",
+      "span": {
+        "start": 10,
+        "end": 17,
+        "text": "Maria's"
+      },
+      "how": "stem"
+    }
+  ]
+}

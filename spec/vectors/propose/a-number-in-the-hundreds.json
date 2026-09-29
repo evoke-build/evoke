@@ -1,0 +1,51 @@
+{
+  "input": {
+    "input": "two hundred, a hundred and fifty, three hundred forty seven or eight hundred"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 0,
+        "end": 11,
+        "text": "two hundred"
+      },
+      "value": {
+        "type": "number",
+        "value": 200
+      }
+    },
+    {
+      "span": {
+        "start": 13,
+        "end": 32,
+        "text": "a hundred and fifty"
+      },
+      "value": {
+        "type": "number",
+        "value": 150
+      }
+    },
+    {
+      "span": {
+        "start": 34,
+        "end": 59,
+        "text": "three hundred forty seven"
+      },
+      "value": {
+        "type": "number",
+        "value": 347
+      }
+    },
+    {
+      "span": {
+        "start": 63,
+        "end": 76,
+        "text": "eight hundred"
+      },
+      "value": {
+        "type": "number",
+        "value": 800
+      }
+    }
+  ]
+}

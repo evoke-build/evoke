@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "what happened in five oh two",
+    "kind": "number"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 17,
+        "end": 28,
+        "text": "five oh two"
+      },
+      "typed": "502",
+      "value": {
+        "type": "number",
+        "value": 502
+      },
+      "form": "aloud"
+    }
+  ]
+}

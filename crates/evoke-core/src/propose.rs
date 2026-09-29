@@ -3,8 +3,9 @@
 //! a code, a date, a time and a duration hide what they cover; a number stands last. A form of a kind refused
 //! whole — a slashed date either way round, `5:30` with no half of the day, `every monday` — hides its parts, so
 //! no part of it is a candidate; a run of number words that reads as nothing is passed over and hides nothing.
-//! A number and a duration read spelled out as they read in digits; a date reads relative, resolved at the body's
-//! door; a bare hour is a number, since a half of the day would be invented.
+//! A number and a duration read spelled out as they read in digits, the hundreds with what follows them; a date
+//! reads relative, resolved at the body's door; a bare hour is a number, since a half of the day would be
+//! invented.
 
 use std::ops::Range;
 
@@ -493,20 +494,24 @@ fn thousands_head(tokens: &[Token]) -> Option<f64> {
     }
 }
 
-/// `<small>`, `a hundred [and <small>]` or `<small> hundred [and <small>]`.
+/// `<small>`, `a hundred [[and] <small>]` or `<small> hundred [[and] <small>]`.
 fn hundreds_or_small(tokens: &[Token]) -> Option<f64> {
+    if let [Token::A, Token::Hundred, rest @ ..] = tokens {
+        return Some(100.0 + after_hundred(rest)?);
+    }
+    let (small, rest) = small_prefix(tokens)?;
+    match rest {
+        [] => Some(small),
+        [Token::Hundred, rest @ ..] => Some(small * 100.0 + after_hundred(rest)?),
+        _ => None,
+    }
+}
+
+/// What follows «hundred»: nothing, or a small number, with «and» before it or without.
+fn after_hundred(tokens: &[Token]) -> Option<f64> {
     match tokens {
-        [Token::A, Token::Hundred] => Some(100.0),
-        [Token::A, Token::Hundred, Token::And, small @ ..] => Some(100.0 + small_value(small)?),
-        _ => {
-            let (small, rest) = small_prefix(tokens)?;
-            match rest {
-                [] => Some(small),
-                [Token::Hundred] => Some(small * 100.0),
-                [Token::Hundred, Token::And, more @ ..] => Some(small * 100.0 + small_value(more)?),
-                _ => None,
-            }
-        }
+        [] => Some(0.0),
+        [Token::And, small @ ..] | small => small_value(small),
     }
 }
 
@@ -1720,19 +1725,13 @@ struct Words {
 /// The run of number words at `i` — the words to nineteen, the tens, «hundred» and the words beyond it, «a»
 /// before those and «and» after them — joined by one space or one hyphen, with a word boundary at each end:
 /// «tenant» and «one-off» hold none. It reads as one word to ninety, a tens word joined to a word from one to
-/// nine, «a hundred» or «one hundred»; a longer run — «two hundred», «a hundred and fifty», «seven thirty» —
-/// reads as nothing, whole, so no part of it is a candidate.
+/// nine, and hundreds with what follows them, «a hundred», «two hundred ninety four», «a hundred and fifty»;
+/// any other run — «seven thirty», «two thousand» — reads as nothing, whole, so no part of it is a candidate.
 fn words(chars: &[char], i: usize) -> Option<Words> {
     let (tokens, end) = run(chars, i)?;
-    let value = match tokens[..] {
-        [Token::Ones(value) | Token::Tens(value)] => Some(value),
-        [Token::Tens(tens), Token::Ones(ones)] if (1..=9).contains(&ones) => Some(tens + ones),
-        [Token::A | Token::Ones(1), Token::Hundred] => Some(100),
-        _ => None,
-    };
     Some(Words {
         end,
-        value: value.map(f64::from),
+        value: hundreds_or_small(&tokens),
     })
 }
 
@@ -2033,7 +2032,15 @@ mod tests {
         );
         assert_eq!(spans("One Hundred Percent"), [(0, 11, number(100.0))]);
         assert_eq!(spans("one hundred percent"), [(0, 19, number(100.0))]);
-        assert!(spans("two hundred, a hundred and fifty, seven thirty, a thousand").is_empty());
+        assert_eq!(
+            spans("two hundred, a hundred and fifty or three hundred forty seven"),
+            [
+                (0, 11, number(200.0)),
+                (13, 32, number(150.0)),
+                (36, 61, number(347.0))
+            ]
+        );
+        assert!(spans("seven thirty, a thousand and two million").is_empty());
         assert!(spans("tenant one-off fifty5 twenty-fiveish").is_empty());
         assert_eq!(spans("5fifty"), [(0, 1, number(5.0))]);
         assert_eq!(
@@ -2237,7 +2244,8 @@ mod tests {
             kinds("wake me at 5:30 and set the volume to 10"),
             ["number 10"]
         );
-        none("at six thirty, 4 o'clock, half past five and eight hundred");
+        none("at six thirty, 4 o'clock and half past five");
+        assert_eq!(kinds("at eight hundred"), ["number eight hundred"]);
         none("the deploy at 21:05:17 or 24:00");
         assert_eq!(kinds("at seven a m"), ["number seven"]);
         assert_eq!(

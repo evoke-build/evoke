@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "book me on qr nineteen forty",
+    "kind": "code"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 11,
+        "end": 28,
+        "text": "qr nineteen forty"
+      },
+      "typed": "qr1940",
+      "value": {
+        "type": "code",
+        "value": "qr1940"
+      },
+      "form": "aloud"
+    }
+  ]
+}

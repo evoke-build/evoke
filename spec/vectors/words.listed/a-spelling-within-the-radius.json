@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "close the books for setpember",
+    "list": {
+      "june": "June.",
+      "july": "July.",
+      "september": "September."
+    }
+  },
+  "expect": [
+    {
+      "key": "september",
+      "span": {
+        "start": 20,
+        "end": 29,
+        "text": "setpember"
+      },
+      "how": "spelling"
+    }
+  ]
+}

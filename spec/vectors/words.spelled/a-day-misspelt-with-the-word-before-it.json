@@ -1,0 +1,25 @@
+{
+  "input": {
+    "input": "move them to next thrusday",
+    "kind": "date"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 13,
+        "end": 26,
+        "text": "next thrusday"
+      },
+      "typed": "next thursday",
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "weekday",
+          "weekday": "thursday",
+          "which": "next"
+        }
+      },
+      "form": "misspelt"
+    }
+  ]
+}

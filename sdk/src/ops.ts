@@ -27,6 +27,8 @@ export interface Ops {
   // decide
   compile: { input: { set: T.Installed; values?: T.Values; limits?: T.Limits; platform?: T.Platform }; output: T.Result<T.Plan, T.Diagnostic> }
   propose: { input: { input: T.Input }; output: T.Proposed[] }
+  "words.listed": { input: { input: T.Input; list: Record<T.Key, T.Clean> }; output: T.Listed[] }
+  "words.spelled": { input: { input: T.Input; kind: T.Recognizer }; output: T.Spelled[] }
   request: {
     input: { plan: T.Plan; input: string; tags: T.Tag[]; only?: T.LocalName; scope: T.Scope; recent?: T.Recent[] }
     output: T.Result<T.Request, T.Diagnostic>

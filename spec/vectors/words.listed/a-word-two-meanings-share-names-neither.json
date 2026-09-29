@@ -1,0 +1,10 @@
+{
+  "input": {
+    "input": "get me the list from the supplier",
+    "list": {
+      "baltic": "The supplier in Riga.",
+      "nordic": "The supplier in Oslo."
+    }
+  },
+  "expect": []
+}

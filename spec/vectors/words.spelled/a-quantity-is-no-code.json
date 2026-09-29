@@ -1,0 +1,7 @@
+{
+  "input": {
+    "input": "wait ab 10 minutes",
+    "kind": "code"
+  },
+  "expect": []
+}

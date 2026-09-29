@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "roll back five dot oh dot two",
+    "kind": "code"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 10,
+        "end": 29,
+        "text": "five dot oh dot two"
+      },
+      "typed": "5.0.2",
+      "value": {
+        "type": "code",
+        "value": "5.0.2"
+      },
+      "form": "aloud"
+    }
+  ]
+}

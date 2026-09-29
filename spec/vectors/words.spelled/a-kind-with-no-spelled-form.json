@@ -1,0 +1,7 @@
+{
+  "input": {
+    "input": "a timer for ten minutes called tea",
+    "kind": "duration"
+  },
+  "expect": []
+}

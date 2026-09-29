@@ -1,0 +1,24 @@
+{
+  "input": {
+    "input": "show me fridays meetings",
+    "kind": "date"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 8,
+        "end": 15,
+        "text": "fridays"
+      },
+      "typed": "friday",
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "weekday",
+          "weekday": "friday"
+        }
+      },
+      "form": "misspelt"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "input": {
+    "input": "wipe c02 xk1 abj g5m too",
+    "kind": "code"
+  },
+  "expect": [
+    {
+      "span": {
+        "start": 5,
+        "end": 20,
+        "text": "c02 xk1 abj g5m"
+      },
+      "typed": "c02xk1abjg5m",
+      "value": {
+        "type": "code",
+        "value": "c02xk1abjg5m"
+      },
+      "form": "spaced"
+    }
+  ]
+}
