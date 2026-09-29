@@ -33,6 +33,8 @@ optional = true
 "write an email to lee@example.com"                              = { to = "lee@example.com" }
 'email priya@example.com about "tuesday lunch"'                  = { to = "priya@example.com", subject = "tuesday lunch" }
 'start a mail to ops@example.com with the subject "server move"' = { to = "ops@example.com", subject = "server move" }
+'new mail to bob@example.com with subject "Invoice"'             = { to = "bob@example.com", subject = "Invoice" }
+'write to sam@example.org, subject "Invoice 42"'                 = { to = "sam@example.org", subject = "Invoice 42" }
 
 [tests]
 "email jo@example.com"                                           = { to = "jo@example.com", subject = false }

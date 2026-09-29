@@ -24,6 +24,8 @@ vocab = "shipments"
 "which suppliers could ship the antwerp items faster"             = {}
 "ask around for quotes on the hamburg goods"                      = {}
 "price per unit from other suppliers for the rotterdam container" = {}
+"get quotes for the rotterdam container"                          = {}
+"ask for prices for antwerp"                                      = {}
 
 [tests]
 "get us rates on the hamburg lot from alternative vendors" = {}

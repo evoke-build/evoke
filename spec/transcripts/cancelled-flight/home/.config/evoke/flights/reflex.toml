@@ -22,6 +22,8 @@ flight = "code"
 "any other flights to lisbon"      = {}
 "which flights still go to madrid" = {}
 "i need another flight to berlin"  = {}
+"find flights to berlin"           = {}
+"next flight to lisbon tonight"    = {}
 
 [tests]
 "planes leaving for madrid this evening"   = {}

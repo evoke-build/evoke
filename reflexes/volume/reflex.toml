@@ -30,6 +30,8 @@ range = [0, 100]
 "volume 60%"                    = { level = "60%" }
 "bring the sound up to seventy" = { level = "seventy" }
 "drop the volume to 20 percent" = { level = "20 percent" }
+"set the volume to 40"          = { level = "40" }
+"turn the sound down to 10"     = { level = "10" }
 "mute the sound"                = false
 
 [tests]

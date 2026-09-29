@@ -34,6 +34,8 @@ optional = true
 "40 second timer"                        = { duration = "40 second" }
 'start a 20 minute timer called "pasta"' = { duration = "20 minute", label = "pasta" }
 "count down three minutes"               = { duration = "three minutes" }
+'timer 5 minutes "tea"'                  = { duration = "5 minutes", label = "tea" }
+'start a 25 minute timer for "focus"'    = { duration = "25 minute", label = "focus" }
 
 [tests]
 "buzz me in half an hour"            = { duration = "half an hour" }

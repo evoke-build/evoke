@@ -25,6 +25,7 @@ vocab = "months"
 "book the october entries"                     = {}
 "post the closing entries for september"       = {}
 "post october's entries to the general ledger" = {}
+"write october's closing to the ledger"        = {}
 
 [tests]
 "put august's closing journal through"                 = {}

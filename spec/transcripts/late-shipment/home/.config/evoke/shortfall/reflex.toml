@@ -34,6 +34,8 @@ items = { each = { sku = "code" } }
 "figure out which product codes we'll run short on" = {}
 "tally the units we'll be lacking"                  = {}
 "weigh them up to see what's short"                 = {}
+"what are we short of"                              = {}
+"how many units are we missing"                     = {}
 
 [tests]
 "how big is our gap"                                 = {}

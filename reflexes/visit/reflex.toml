@@ -30,10 +30,12 @@ ask  = "In a private window?"
 flag = true
 
 [examples]
-"pull up the docs site"      = {}
-"open the news in incognito" = { incognito = true }
-"take me to my webmail"      = {}
-"visit the calendar site"    = {}
+"pull up the docs site"             = {}
+"open the news in incognito"        = { incognito = true }
+"take me to my webmail"             = {}
+"visit the calendar site"           = {}
+"open github"                       = {}
+"go to my bank in a private window" = { incognito = true }
 
 [tests]
 "bring up the wiki"                  = {}

@@ -28,6 +28,8 @@ deploys = { each = { release = "code" } }
 "recent releases of search in us-east"   = {}
 "who shipped to payments in eu-west"     = {}
 "what went out on checkout"              = {}
+"who released payments last"             = {}
+"show the deploys of search in us east"  = {}
 
 [tests]
 "show the deploy log for search"          = {}

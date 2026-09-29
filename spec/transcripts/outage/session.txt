@@ -239,6 +239,8 @@ $ evoke show outage
   "we have an outage on checkout" = {}
   "checkout is on fire in eu-west" = {}
   "payments stopped working" = {}
+  "checkout is down" = {}
+  "handle the search outage" = {}
 
   [tests]
   "checkout is failing in eu-west" = {}
@@ -251,4 +253,4 @@ $ evoke show outage
   "is the search service doing fine" = false
   "checkout feels sluggish this morning" = false
 $ evoke test outage
-  outage  14 passed · 7 steps route
+  outage  16 passed · 7 steps route

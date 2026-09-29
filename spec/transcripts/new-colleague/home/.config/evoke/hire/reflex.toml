@@ -21,10 +21,14 @@ ask   = "Who is the new hire?"
 vocab = "people"
 
 [examples]
-"look up maria's hire"          = {}
-"when does sam start"           = {}
-"what role did we hire ana for" = {}
-"maria's start date"            = {}
+"look up maria's hire"                      = {}
+"when does sam start"                       = {}
+"what role did we hire ana for"             = {}
+"maria's start date"                        = {}
+"look up maria"                             = {}
+"what is ana's role"                        = {}
+"find the new hire Ana"                     = {}
+"what is Sam's role and when does he start" = {}
 
 [tests]
 "when will ana join us"            = {}

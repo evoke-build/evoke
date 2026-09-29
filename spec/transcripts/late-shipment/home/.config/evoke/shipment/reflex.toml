@@ -25,6 +25,8 @@ vocab = "shipments"
 "when does the antwerp container land now"        = {}
 "what's the hamburg shipment carrying"            = {}
 "get the carrier's latest on the hamburg pallets" = {}
+"where is the rotterdam container"                = {}
+"track the hamburg pallets"                       = {}
 
 [tests]
 "is antwerp still on schedule"                           = {}

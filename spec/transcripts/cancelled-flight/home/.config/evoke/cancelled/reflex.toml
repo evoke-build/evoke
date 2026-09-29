@@ -29,9 +29,11 @@ ask   = "Which city were you flying to?"
 vocab = "cities"
 
 [examples]
-"my madrid flight was cancelled"      = {}
-"they cancelled the flight to berlin" = {}
-"the lisbon flight is off"            = {}
+"my madrid flight was cancelled"              = {}
+"they cancelled the flight to berlin"         = {}
+"the lisbon flight is off"                    = {}
+"my flight to berlin was cancelled"           = {}
+"recover from the cancelled flight to lisbon" = {}
 
 [tests]
 "our lisbon flight was cancelled"       = {}

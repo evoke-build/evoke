@@ -15,9 +15,12 @@ ask   = "In which city do you need a room?"
 vocab = "cities"
 
 [examples]
-"look for a hotel room in madrid"   = {}
-"hotels in berlin with a free room" = {}
-"what rooms are free in lisbon"     = {}
+"look for a hotel room in madrid"      = {}
+"hotels in berlin with a free room"    = {}
+"what rooms are free in lisbon"        = {}
+"find rooms in madrid"                 = {}
+"I need a hotel in berlin for tonight" = {}
+"where can I sleep in lisbon tonight"  = {}
 
 [tests]
 "a place to stay in lisbon"        = {}

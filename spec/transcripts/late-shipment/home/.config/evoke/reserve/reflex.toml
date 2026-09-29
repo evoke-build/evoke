@@ -24,6 +24,8 @@ pick = "code"
 "earmark VX-2214 for the customers who ordered it" = { sku = "VX-2214" }
 "hold every unit of VX-221007 we have"             = { sku = "VX-221007" }
 "set VX-2210 aside for the backorders"             = { sku = "VX-2210" }
+"reserve HS-0409"                                  = { sku = "HS-0409" }
+"set aside all the VX-2214 we have"                = { sku = "VX-2214" }
 
 [tests]
 "save hs-040903 for the clients who paid"        = { sku = "hs-040903" }

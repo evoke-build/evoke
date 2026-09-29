@@ -28,6 +28,8 @@ takes = "calendar"
 "shift those meetings to this wednesday" = { day = "this wednesday" }
 "move the meetings to the 14th"          = { day = "the 14th" }
 "shift everything to tomorrow"           = { day = "tomorrow" }
+"push my meetings to thursday"           = { day = "thursday" }
+"move the meetings"                      = { day = false }
 
 [tests]
 "postpone them until monday"                   = { day = "monday" }

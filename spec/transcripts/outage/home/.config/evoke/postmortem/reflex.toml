@@ -21,10 +21,11 @@ takes = "incident"
 path = "quoted"
 
 [examples]
-"draft the postmortem"       = {}
-"get the postmortem written" = {}
-"start a postmortem for it"  = {}
-"write the incident review"  = {}
+"draft the postmortem"        = {}
+"get the postmortem written"  = {}
+"start a postmortem for it"   = {}
+"write the incident review"   = {}
+"write the postmortem for it" = {}
 
 [tests]
 "put together a post-incident report" = {}

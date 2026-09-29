@@ -20,9 +20,11 @@ ask  = "What is the flight's code?"
 pick = "code"
 
 [examples]
-"book me onto LX1830"    = { flight = "LX1830" }
-"buy a ticket on FR8342" = { flight = "FR8342" }
-"rebook me on tp1051"    = { flight = "tp1051" }
+"book me onto LX1830"     = { flight = "LX1830" }
+"buy a ticket on FR8342"  = { flight = "FR8342" }
+"rebook me on tp1051"     = { flight = "tp1051" }
+"book flight LX1830"      = { flight = "LX1830" }
+"get me a seat on TP1051" = { flight = "TP1051" }
 
 [tests]
 "reserve IB3107 please"               = { flight = "IB3107" }

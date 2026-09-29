@@ -30,6 +30,8 @@ optional = true
 "keep the screen on for half an hour" = { duration = "half an hour" }
 "stop my mac from going to sleep"     = { duration = false }
 "stay awake until I say so"           = { duration = false }
+"keep the laptop awake"               = { duration = false }
+"stay awake for 30 minutes"           = { duration = "30 minutes" }
 
 [tests]
 "prevent sleep for forty minutes"               = { duration = "forty minutes" }

@@ -21,6 +21,8 @@ platforms = ["macos"]
 "clear the trash"                         = {}
 "empty the recycle bin"                   = {}
 "delete everything in the trash for good" = {}
+"empty the trash"                         = {}
+"empty the bin"                           = {}
 
 [tests]
 "empty the wastebasket"             = {}

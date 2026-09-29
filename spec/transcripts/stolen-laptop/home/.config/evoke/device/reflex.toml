@@ -18,10 +18,12 @@ vocab = "people"
 serial = "code"
 
 [examples]
-"find sam's laptop"                        = {}
-"when did ana's laptop last check in"      = {}
-"look up jo's device"                      = {}
-"get me the serial of sam's work computer" = {}
+"find sam's laptop"                         = {}
+"when did ana's laptop last check in"       = {}
+"look up jo's device"                       = {}
+"get me the serial of sam's work computer"  = {}
+"what is the serial of jo's laptop"         = {}
+"look up ana's laptop in device management" = {}
 
 [tests]
 "which model of laptop does ana use"    = {}

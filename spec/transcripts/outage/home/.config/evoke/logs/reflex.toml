@@ -20,11 +20,13 @@ vocab    = "regions"
 optional = true
 
 [examples]
-"pull the logs for checkout"          = {}
-"search the payments logs in eu-west" = {}
-"what do the search logs say"         = {}
-"what is checkout logging in us-east" = {}
-"top log errors for payments"         = {}
+"pull the logs for checkout"                      = {}
+"search the payments logs in eu-west"             = {}
+"what do the search logs say"                     = {}
+"what is checkout logging in us-east"             = {}
+"top log errors for payments"                     = {}
+"search the logs of checkout"                     = {}
+"what errors are in the payments logs in eu west" = {}
 
 [tests]
 "dig through the search logs"         = {}

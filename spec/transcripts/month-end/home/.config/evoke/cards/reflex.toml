@@ -25,6 +25,8 @@ vocab = "months"
 "pull the october card charges"                   = {}
 "which card charges in september have no receipt" = {}
 "company card spend for october"                  = {}
+"what was charged on the company cards in august" = {}
+"company card charges for october"                = {}
 
 [tests]
 "show august's charges on the corporate cards"          = {}

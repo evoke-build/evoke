@@ -34,9 +34,10 @@ ask  = "To which email address does the report go?"
 pick = "email"
 
 [examples]
-"close out august"                    = { to = false }
-"do the october close"                = { to = false }
-"let's close the books for september" = { to = false }
+"close out august"                                         = { to = false }
+"do the october close"                                     = { to = false }
+"let's close the books for september"                      = { to = false }
+"do the month-end for october, report to anna@example.com" = { to = "anna@example.com" }
 
 [tests]
 "close september"                            = { to = false }

@@ -19,6 +19,8 @@ pick = "date"
 "my calendar for the day after tomorrow" = { day = "the day after tomorrow" }
 "show my schedule for this monday"       = { day = "this monday" }
 "how does today look on my calendar"     = { day = "today" }
+"show my calendar for tomorrow"          = { day = "tomorrow" }
+"what meetings do I have on friday"      = { day = "friday" }
 
 [tests]
 "any calls lined up for friday"    = { day = "friday" }

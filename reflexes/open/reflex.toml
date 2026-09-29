@@ -28,6 +28,7 @@ vocab = "places"
 "open my documents folder"      = {}
 "show me my photos folder"      = {}
 "pull up the desktop in finder" = {}
+"open projects"                 = {}
 
 [tests]
 "open up the invoices folder" = {}

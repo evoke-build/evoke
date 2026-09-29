@@ -22,6 +22,7 @@ incidents = { each = { number = "number" } }
 "what incidents are open"         = {}
 "which incidents are still going" = {}
 "show me active incidents"        = {}
+"any incidents right now"         = {}
 
 [tests]
 "how many incidents are ongoing"   = {}

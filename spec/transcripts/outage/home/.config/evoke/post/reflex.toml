@@ -20,11 +20,12 @@ ask   = "Which channel?"
 vocab = "channels"
 
 [examples]
-"post to #incident that we are on it" = {}
-"tell #ops the deploy is done"        = {}
-"let #incident know it is fixed"      = {}
-"drop a line in #ops about payments"  = {}
-"give #incident an update on search"  = {}
+"post to #incident that we are on it"             = {}
+"tell #ops the deploy is done"                    = {}
+"let #incident know it is fixed"                  = {}
+"drop a line in #ops about payments"              = {}
+"give #incident an update on search"              = {}
+"write in the incident channel that we are on it" = {}
 
 [tests]
 "share in #ops that search recovered"                = {}

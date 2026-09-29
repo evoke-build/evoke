@@ -23,6 +23,8 @@ vocab = "channels"
 "give #it a heads-up"                = {}
 "let #security know"                 = {}
 "warn #security about jo's macbook"  = {}
+"alert #security"                    = {}
+"post an alert in the it channel"    = {}
 
 [tests]
 "send #it a quick note"                      = {}

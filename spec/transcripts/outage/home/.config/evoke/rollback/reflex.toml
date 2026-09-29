@@ -36,6 +36,8 @@ optional = true
 "undo the 7.0.2 release of search"      = { release = "7.0.2" }
 "back out 5.4.1 on checkout in us-east" = { release = "5.4.1" }
 "roll back the last payments deploy"    = { release = false }
+"roll back 4.12.0"                      = { release = "4.12.0" }
+"revert release 4.12.0 of payments"     = { release = "4.12.0" }
 
 [tests]
 "pull 6.2.3 off search in every region"      = { release = "6.2.3" }

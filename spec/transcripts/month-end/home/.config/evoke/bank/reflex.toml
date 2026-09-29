@@ -21,11 +21,13 @@ ask   = "Which month?"
 vocab = "months"
 
 [examples]
-"pull the bank transactions for september"      = {}
-"get august's bank feed"                        = {}
-"what went through the bank in october"         = {}
-"bank statement for september"                  = {}
-"every payment in or out of the bank in august" = {}
+"pull the bank transactions for september"         = {}
+"get august's bank feed"                           = {}
+"what went through the bank in october"            = {}
+"bank statement for september"                     = {}
+"every payment in or out of the bank in august"    = {}
+"show me the bank account for august"              = {}
+"what went through the business account in august" = {}
 
 [tests]
 "show me october's bank activity"                         = {}

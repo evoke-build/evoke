@@ -32,6 +32,8 @@ pick = "quoted"
 'jot down "gate code 4417"'                       = { text = "gate code 4417" }
 'add "ask Priya about the invoice" to my notes'   = { text = "ask Priya about the invoice" }
 'save a note that says "renew the car insurance"' = { text = "renew the car insurance" }
+'write down "the demo moved to Thursday"'         = { text = "the demo moved to Thursday" }
+'add a note "call the dentist"'                   = { text = "call the dentist" }
 
 [tests]
 'put "try the new ramen place" in my notes' = { text = "try the new ramen place" }

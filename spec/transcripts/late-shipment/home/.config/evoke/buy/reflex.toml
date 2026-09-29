@@ -27,6 +27,8 @@ vocab = "suppliers"
 "raise a purchase order with nordic for what's missing" = {}
 "get baltic to supply the rest"                         = {}
 "source the shortage through nordic"                    = {}
+"buy the rest from nordic"                              = {}
+"order what is missing from baltic"                     = {}
 
 [tests]
 "top us up from baltic"                              = {}

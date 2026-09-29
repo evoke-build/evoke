@@ -32,6 +32,7 @@ options.off = "Switch the radio off, which takes the laptop offline."
 "wifi back on please"        = { state = "on" }
 "take the laptop offline"    = { state = "off" }
 "bring the wireless back up" = { state = "on" }
+"disable wi-fi"              = { state = "off" }
 
 [tests]
 "switch on the wireless radio"    = { state = "on" }

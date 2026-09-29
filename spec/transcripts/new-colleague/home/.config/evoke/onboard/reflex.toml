@@ -21,10 +21,11 @@ takes = "hire"
 takes = "team"
 
 [examples]
-"book the onboarding"                   = {}
-"schedule her first week with the team" = {}
-"set up his welcome sessions"           = {}
-"put the onboarding on their calendars" = {}
+"book the onboarding"                            = {}
+"schedule her first week with the team"          = {}
+"set up his welcome sessions"                    = {}
+"put the onboarding on their calendars"          = {}
+"schedule his onboarding sessions with the team" = {}
 
 [tests]
 "arrange his introductions"                  = {}

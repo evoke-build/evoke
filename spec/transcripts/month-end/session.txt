@@ -85,4 +85,4 @@ $ evoke "close september"
   Run the month-end plan for september, the report to cfo@example.com?  [y]es [n]o [t]each > n
 [2]
 $ evoke test close
-  close  8 passed · 7 steps route
+  close  9 passed · 7 steps route

@@ -35,10 +35,12 @@ flag = true
 path = "quoted"
 
 [examples]
-"grab a screenshot"                     = { area = false }
-"screenshot the window I'm in"          = { area = "window" }
-"copy a selected area of the screen"    = { area = "selection", clipboard = true }
-"capture everything on screen as a png" = { area = "screen" }
+"grab a screenshot"                         = { area = false }
+"screenshot the window I'm in"              = { area = "window" }
+"copy a selected area of the screen"        = { area = "selection", clipboard = true }
+"capture everything on screen as a png"     = { area = "screen" }
+"take a screenshot"                         = { area = false }
+"capture the whole screen to the clipboard" = { area = "screen", clipboard = true }
 
 [tests]
 "full screenshot please"                = { area = "screen" }

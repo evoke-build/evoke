@@ -34,6 +34,8 @@ vocab = "people"
 "ana's laptop was taken from the train" = {}
 "jo lost their laptop"                  = {}
 "someone stole sam's macbook"           = {}
+"run the stolen laptop plan for jo"     = {}
+"respond to jo's lost laptop"           = {}
 
 [tests]
 "sam's laptop was stolen"              = {}

@@ -25,6 +25,7 @@ runs = ["pmset"]
 "put my macbook to sleep" = {}
 "sleep the laptop"        = {}
 "send the mac to sleep"   = {}
+"sleep now"               = {}
 
 [tests]
 "let the mac doze off"                = {}

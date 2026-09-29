@@ -26,6 +26,8 @@ vocab = "shipments"
 "inventory for what the hamburg pallets bring"               = {}
 "our stock levels for everything on the rotterdam container" = {}
 "how well stocked are we for the hamburg pallets"            = {}
+"check the stock for the rotterdam container"                = {}
+"how much do we have of what is on the hamburg pallets"      = {}
 
 [tests]
 "warehouse figures for the rotterdam items"             = {}

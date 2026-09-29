@@ -26,6 +26,7 @@ release = "code"
 "which deploy broke it"              = {}
 "find the release behind the outage" = {}
 "what release caused this"           = {}
+"find the release to blame"          = {}
 
 [tests]
 "pin down the bad release"              = {}

@@ -30,6 +30,8 @@ options.shutdown = "Power off."
 "restart this computer" = { action = "restart" }
 "shut the laptop down"  = { action = "shutdown" }
 "reboot the macbook"    = { action = "restart" }
+"reboot"                = { action = "restart" }
+"shut down the mac"     = { action = "shutdown" }
 
 [tests]
 "give my mac a fresh reboot"          = { action = "restart" }

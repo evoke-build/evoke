@@ -19,6 +19,8 @@ vocab = "people"
 "which keys does ana hold"   = {}
 "every api key sam has"      = {}
 "jo's keys in the key store" = {}
+"list sam's api keys"        = {}
+"which api keys does jo own" = {}
 
 [tests]
 "when was sam's deploy key made"              = {}

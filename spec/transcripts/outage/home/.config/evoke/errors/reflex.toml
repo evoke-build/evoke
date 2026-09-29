@@ -30,6 +30,8 @@ optional = true
 "is search throwing errors"               = {}
 "how many checkout requests are erroring" = {}
 "show me the 5xx on search in us-east"    = {}
+"what is the error rate of checkout"      = {}
+"is search failing in us east"            = {}
 
 [tests]
 "how flaky is payments right now"   = {}

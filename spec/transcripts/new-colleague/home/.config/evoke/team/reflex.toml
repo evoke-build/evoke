@@ -21,10 +21,12 @@ ask   = "Which team in the company?"
 vocab = "teams"
 
 [examples]
-"list the sales team"         = {}
-"who do we have on platform"  = {}
-"show me the platform roster" = {}
-"the people in sales"         = {}
+"list the sales team"             = {}
+"who do we have on platform"      = {}
+"show me the platform roster"     = {}
+"the people in sales"             = {}
+"who is on the platform team"     = {}
+"show me the members of platform" = {}
 
 [tests]
 "name everybody on platform"            = {}

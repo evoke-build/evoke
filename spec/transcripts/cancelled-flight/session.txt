@@ -84,4 +84,4 @@ $ evoke "our lisbon flight was cancelled"
   Run the cancelled flight plan for lisbon?  [y]es [n]o [t]each > n
 [2]
 $ evoke test cancelled
-  cancelled  9 passed · 7 steps route
+  cancelled  11 passed · 7 steps route

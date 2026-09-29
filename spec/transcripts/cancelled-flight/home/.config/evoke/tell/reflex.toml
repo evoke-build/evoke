@@ -14,9 +14,11 @@ ask   = "Which chat channel?"
 vocab = "channels"
 
 [examples]
-"tell #travel i land late"                 = {}
-"let #team know the client review moved"   = {}
-"post in #travel that the hotel is booked" = {}
+"tell #travel i land late"                        = {}
+"let #team know the client review moved"          = {}
+"post in #travel that the hotel is booked"        = {}
+"tell the travel channel my flight was cancelled" = {}
+"let my team know I am stuck in madrid"           = {}
 
 [tests]
 "message #team that i'm working from the airport lounge" = {}

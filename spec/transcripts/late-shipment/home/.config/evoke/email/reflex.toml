@@ -24,6 +24,8 @@ pick = "email"
 "email planning@example.com the shipment news"          = { to = "planning@example.com" }
 "brief lena@example.com on the late container by email" = { to = "lena@example.com" }
 "email sales@example.com the delay update"              = { to = "sales@example.com" }
+"send the shipment update to sales@example.com"         = { to = "sales@example.com" }
+"let ops@example.com know about the late shipment"      = { to = "ops@example.com" }
 
 [tests]
 "loop in support@example.com about the late pallets" = { to = "support@example.com" }

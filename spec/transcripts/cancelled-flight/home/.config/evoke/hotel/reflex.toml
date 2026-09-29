@@ -18,9 +18,11 @@ run = "hotel.mts"
 takes = "rooms"
 
 [examples]
-"book the first hotel"    = {}
-"take the cheapest room"  = {}
-"book one of those rooms" = {}
+"book the first hotel"       = {}
+"take the cheapest room"     = {}
+"book one of those rooms"    = {}
+"book the hotel"             = {}
+"book that room for tonight" = {}
 
 [tests]
 "reserve a night at the top one"        = {}

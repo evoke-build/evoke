@@ -20,11 +20,12 @@ ask   = "Which month?"
 vocab = "months"
 
 [examples]
-"list september's invoices"                 = {}
-"which invoices went out in august"         = {}
-"invoices for october"                      = {}
-"how many of september's invoices are paid" = {}
-"what did we bill customers in august"      = {}
+"list september's invoices"                  = {}
+"which invoices went out in august"          = {}
+"invoices for october"                       = {}
+"how many of september's invoices are paid"  = {}
+"what did we bill customers in august"       = {}
+"which invoices of october are still unpaid" = {}
 
 [tests]
 "show the invoices we issued in october"         = {}

@@ -19,10 +19,11 @@ run = "accounts.mts"
 takes = "hire"
 
 [examples]
-"create her accounts"          = {}
-"set up his work email"        = {}
-"make logins for the new hire" = {}
-"get her onto the vpn"         = {}
+"create her accounts"                = {}
+"set up his work email"              = {}
+"make logins for the new hire"       = {}
+"get her onto the vpn"               = {}
+"make the accounts for the new hire" = {}
 
 [tests]
 "open a company mailbox for her"         = {}

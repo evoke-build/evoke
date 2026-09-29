@@ -32,6 +32,8 @@ optional              = true
 "set the search status to investigating"         = { state = "investigating" }
 "show checkout as identified on the status page" = { state = "identified" }
 "put payments in monitoring on the status page"  = { state = "monitoring" }
+"mark search as investigating"                   = { state = "investigating" }
+"tell customers we are monitoring search"        = { state = "monitoring" }
 
 [tests]
 "tell customers search is all clear"                 = { state = "resolved" }

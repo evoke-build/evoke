@@ -19,10 +19,12 @@ ask   = "Which month?"
 vocab = "months"
 
 [examples]
-"show september's payroll"        = {}
-"what did payroll cost in august" = {}
-"payroll breakdown for october"   = {}
-"payroll taxes for september"     = {}
+"show september's payroll"                 = {}
+"what did payroll cost in august"          = {}
+"payroll breakdown for october"            = {}
+"payroll taxes for september"              = {}
+"how much was payroll in october"          = {}
+"how much did the salaries cost in august" = {}
 
 [tests]
 "october's wage bill"               = {}

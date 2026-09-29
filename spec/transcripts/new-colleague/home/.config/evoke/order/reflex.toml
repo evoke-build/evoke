@@ -30,6 +30,8 @@ optional    = true
 "buy maria a macbook air"       = { model = "air" }
 "request a macbook pro for ana" = { model = "pro" }
 "get a laptop ordered for sam"  = { model = false }
+"order a laptop for ana"        = { model = false }
+"order a macbook pro for maria" = { model = "pro" }
 
 [tests]
 "sam should get an air for his desk"       = { model = "air" }

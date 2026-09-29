@@ -23,6 +23,7 @@ pick = "email"
 "email the month-end pack to omar@example.com"       = { to = "omar@example.com" }
 "mail the month's report to board@example.com"       = { to = "board@example.com" }
 "get the closing report over to finance@example.com" = { to = "finance@example.com" }
+"the closing report goes to board@example.org"       = { to = "board@example.org" }
 
 [tests]
 "forward the closing report to auditor@example.com" = { to = "auditor@example.com" }
