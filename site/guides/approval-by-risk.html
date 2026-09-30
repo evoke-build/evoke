@@ -104,7 +104,7 @@
   Make the laptop restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
 [2]</span>
 <span class="p">$</span> <span class="in">evoke "what time is it"</span>
-<span class="own">  <span class="name">none</span> <span class="hi">0.85</span> · timer 0.10 · awake 0.03 · lock 0.02
+<span class="own">  <span class="name">none of them</span> <span class="hi">0.85</span> · timer 0.10 · awake 0.03 · lock 0.02
   note, open and visit are inactive  →  evoke show
 [2]</span></pre>
         </div>
@@ -146,7 +146,7 @@
 <pre data-flow="run"><span class="p">$</span> <span class="in">evoke run --json power action=restart</span>
 <span class="own">  <span class="name">power</span> action="restart" · destructive
   Make the laptop restart now?  [y]es [n]o &gt; <span class="in">n</span></span>
-<span class="out">{"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","template":"Make the laptop restart now?"},"because":[{"type":"destructive"}],"trace":[]}</span>
+<span class="out">{"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","reason":"it cannot be undone, so it always waits for a yes","template":"Make the laptop restart now?"},"because":[{"type":"destructive"}],"trace":[]}</span>
 <span class="own">[2]</span></pre>
       </div>
       <p class="caption"><code>power</code> here comes from evoke's tests. These lines are what evoke printed in its

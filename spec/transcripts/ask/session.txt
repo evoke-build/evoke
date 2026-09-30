@@ -8,28 +8,41 @@ $ evoke "set the volume to 150 percent"
 volume set to 40%
 # A room the list does not hold is asked, and the prompt says so.
 $ evoke "kill the lights in the garage"
-  Which room?  "garage" is not on the list  [1] den  [2] office  [+] add one  > 2
+  Which room?  "garage" is not on the list  [1] den  [2] office  [+] add one  [0] none of these  > 2
   lights room="office" state="off"  0.95
 group-7 lights off
 $ evoke why
   "kill the lights in the garage"
-  lights 0.96 · none 0.02 · timer 0.01 · volume 0.01
-  room   none 0.92 · den 0.03 · office 0.03 · unstated 0.02
-  state  off 0.95 · on 0.02 · dim 0.02 · unstated 0.01
-         asked a second way: off 0.95 · is it off? yes 0.95
-  words  "kill the lights" say what to do 0.90 · "garage" answer room 0.85
-  whole  holds all you said 0.90
-  ran lights room="office" state="off" · weakest: state 0.95 · replay, 13 questions in 3 rounds
+
+  which reflex            lights 0.96   (none of them 0.02 · timer 0.01)
+                          Turn the lights in one room on, off, or dim them.
+  room                    said, and not on the list 0.92   (den 0.03 · office 0.03)
+                          your words: "garage"
+                          your answer: office
+  state                   off 0.95   (on 0.02 · dim 0.02)
+                          asked a second way: off 0.95; the less sure of the two counts
+                          is it off? yes 0.95
+  holds all you said      0.90
+  → ran: lights room="office" state="off"  0.95
+    a write runs at 0.90 or more, and its least sure judgment is state, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  replay answered 13 questions in 3 rounds
 # A text typed without quotes is read from the words as typed, and waits for a yes.
 $ evoke "set a timer for 10 minutes called tea"
-  timer duration="10 minutes" label="tea" · write · weakest: label 0.91 · label without quotes
+  timer duration="10 minutes" label="tea" · write · weakest: label 0.91
+    label was typed without quotes, which always waits for a yes
   Start a 10 minutes timer?  [y]es [n]o [t]each > y
 10 minute timer started
 $ evoke why
   "set a timer for 10 minutes called tea"
-  timer 0.96 · none 0.02 · lights 0.01 · volume 0.01
-  duration  "10 minutes" 0.97 · unstated 0.03
-  label     none 0.85 · unstated 0.15
-            read without quotes: "tea" 0.91 · other readings: "called tea"
-  words     "set a timer" say what to do 0.95
-  ran timer duration="10 minutes" label="tea" · weakest: label 0.91 · replay, 22 questions in 4 rounds
+
+  which reflex            timer 0.96   (none of them 0.02 · lights 0.01)
+                          Count down a duration, then sound an alert.
+  duration                "10 minutes" 0.97   (not said 0.03)
+  label                   said, without quotes 0.85   (not said 0.15)
+                          read from your own words: "tea" 0.91
+                          other readings: "called tea"
+  → ran at your yes: timer duration="10 minutes" label="tea" · write · weakest: label 0.91
+    label was typed without quotes, which always waits for a yes
+
+  replay answered 22 questions in 4 rounds

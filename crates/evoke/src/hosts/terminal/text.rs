@@ -63,6 +63,12 @@ impl Text {
         Self::default()
     }
 
+    /// Whether the text holds nothing.
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.pieces.is_empty()
+    }
+
     /// Plain text on the end.
     pub fn push(&mut self, text: &str) -> &mut Self {
         self.piece(None, text)
@@ -100,6 +106,43 @@ impl Text {
             text.append(line);
         }
         text
+    }
+
+    /// Plain text on the end of the first line, before whatever stands under it.
+    pub fn end_first(&mut self, text: &str) -> &mut Self {
+        let Some(at) = self
+            .pieces
+            .iter()
+            .position(|piece| piece.text.contains('\n'))
+        else {
+            return self.push(text);
+        };
+        let piece = &mut self.pieces[at];
+        let cut = piece.text.find('\n').expect("the piece holds a line end");
+        let rest = piece.text.split_off(cut);
+        let role = piece.role;
+        // The first line's end keeps the piece's role; what stood under it follows in a piece of its own.
+        self.pieces.insert(at + 1, Piece { role, text: rest });
+        self.pieces.insert(
+            at + 1,
+            Piece {
+                role: None,
+                text: text.to_owned(),
+            },
+        );
+        self
+    }
+
+    /// Every line after the first moved right by `by` spaces: a block under the head of its first line.
+    #[must_use]
+    pub fn hang(mut self, by: usize) -> Self {
+        let under = format!("\n{}", " ".repeat(by));
+        for piece in &mut self.pieces {
+            if piece.text.contains('\n') {
+                piece.text = piece.text.replace('\n', &under);
+            }
+        }
+        self
     }
 
     /// Without the spaces a padded column leaves at the end of a line.
@@ -206,6 +249,19 @@ mod tests {
         assert_eq!(
             text.styled(),
             "\x1b[32mread\x1b[0m\x1b[33mwrite\x1b[0m\x1b[31mdestructive\x1b[0m\x1b[32m+\x1b[0m\x1b[31m-\x1b[0m\x1b[36m→\x1b[0m"
+        );
+    }
+
+    #[test]
+    fn a_block_hangs_under_its_first_line() {
+        let mut text = Text::from("1  call");
+        text.push("\n  ").roled(Role::Weak, "why");
+        assert_eq!(text.clone().hang(3).to_string(), "1  call\n     why");
+        text.end_first(" · skipped");
+        assert_eq!(text.to_string(), "1  call · skipped\n  why");
+        assert_eq!(
+            Text::from("call").end_first(" · skipped").to_string(),
+            "call · skipped"
         );
     }
 

@@ -143,6 +143,7 @@
     ],
     "prompt": {
       "own": "rollback release=\"4.12.0\" · destructive · weakest: route 0.97",
+      "reason": "it cannot be undone, so it always waits for a yes",
       "template": "Roll back 4.12.0?"
     },
     "because": [

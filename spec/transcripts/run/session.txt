@@ -9,10 +9,12 @@ $ evoke run timer duration="10 minutes"
 10 minute timer started
 $ evoke run power action=restart
   power action="restart" · destructive
+    it cannot be undone, so it always waits for a yes
   Make the laptop restart now?  [y]es [n]o > n
 [2]
 $ evoke run power action=restart
   power action="restart" · destructive
+    it cannot be undone, so it always waits for a yes
   Make the laptop restart now?  [y]es [n]o > y
 restart in 5 seconds
 $ evoke run lights room=attic state=off
@@ -28,8 +30,9 @@ $ evoke run --json lights room=den state=off
 {"input":"","outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","trace":[],"contained":{"type":"full"},"result":{"text":"den lights off"}}
 $ evoke run --json power action=restart
   power action="restart" · destructive
+    it cannot be undone, so it always waits for a yes
   Make the laptop restart now?  [y]es [n]o > y
-{"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","template":"Make the laptop restart now?"},"because":[{"type":"destructive"}],"trace":[],"contained":{"type":"full"},"result":{"text":"restart in 5 seconds"}}
+{"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","reason":"it cannot be undone, so it always waits for a yes","template":"Make the laptop restart now?"},"because":[{"type":"destructive"}],"trace":[],"contained":{"type":"full"},"result":{"text":"restart in 5 seconds"}}
 $ evoke run --json lights room=attic state=off
 {"reflex":"lights","message":"\"attic\" is not in vocabulary \"rooms\"","fix":{"type":"vocab_add","vocab":"rooms"}}
 [3]
@@ -67,8 +70,9 @@ $ evoke run --json throws 2>/dev/null
 [1]
 $ evoke run --json power action=restart
   power action="restart" · destructive
+    it cannot be undone, so it always waits for a yes
   Make the laptop restart now?  [y]es [n]o > n
-{"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","template":"Make the laptop restart now?"},"because":[{"type":"destructive"}],"trace":[]}
+{"input":"","outcome":"confirm","reflex":"power","args":{"action":{"type":"option","key":"restart"}},"call":"power action=\"restart\"","effect":"destructive","prompt":{"own":"power action=\"restart\" · destructive","reason":"it cannot be undone, so it always waits for a yes","template":"Make the laptop restart now?"},"because":[{"type":"destructive"}],"trace":[]}
 [2]
 # A flag where the call is, or a name should be, is refused as a flag.
 $ evoke run lights room=den state=off --json

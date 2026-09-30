@@ -17,34 +17,48 @@ $ evoke --json "check the errors for checkout, list the checkout deploys and pul
 {"step":3,"steps":4,"input":"pull the checkout logs","outcome":"run","reflex":"logs","args":{"service":{"type":"word","word":"checkout"}},"call":"logs service=\"checkout\"","effect":"read","basis":{"service":{"by":"views","ask":0.95,"reader":0.95}},"left":[{"words":{"start":0,"end":4,"text":"pull"},"does":"action","p":0.9},{"words":{"start":18,"end":22,"text":"logs"},"does":"action","p":0.9}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"logs","p":0.95},"judgments":[{"question":"route","top":"logs","p":0.95},{"question":"logs.service","top":"checkout","p":0.95}],"runner_up":{"reflex":"errors","route":0.02},"contenders":[{"reflex":"logs","route":0.95},{"reflex":"errors","route":0.02},{"reflex":"deploys","route":0.0},{"reflex":"suspect","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0}],"trace":[],"contained":{"type":"full"},"result":{"text":"checkout: 412 timeouts calling payments","data":{"service":"checkout","count":412,"top":"timeout calling payments"}},"status":"ran"}
 {"step":4,"steps":4,"input":"find the suspect","outcome":"run","reflex":"suspect","args":{},"call":"suspect","effect":"read","left":[{"words":{"start":0,"end":16,"text":"find the suspect"},"does":"action","p":0.9}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"suspect","p":0.95},"judgments":[{"question":"route","top":"suspect","p":0.95}],"runner_up":{"reflex":"errors","route":0.02},"contenders":[{"reflex":"suspect","route":0.95},{"reflex":"errors","route":0.02},{"reflex":"deploys","route":0.0},{"reflex":"logs","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0}],"trace":[],"bound":[{"arg":"errors","from":1,"field":"errors"},{"arg":"deploys","from":2,"field":"deploys"},{"arg":"logs","from":3,"field":"logs"}],"contained":{"type":"full"},"result":{"text":"4.12.0 at 13:58, four minutes before 8.4% errors and 412 timeouts","data":{"release":"4.12.0"}},"status":"ran"}
 $ evoke why
-  1  "check the errors for checkout"
-  errors 0.95 · none 0.03 · deploys 0.02
-  service  checkout 0.95 · unstated 0.05
-           asked a second way: checkout 0.95
-  words    "check the errors" say what to do 0.90
-  whole    holds all you said 0.90
-  ran errors service="checkout" · weakest: route 0.95 · cached
-  2  "list the checkout deploys"
-  deploys 0.95 · none 0.03 · errors 0.02
-  service  checkout 0.95 · unstated 0.05
-           asked a second way: checkout 0.95
-  words    "list" say what to do 0.90 · "deploys" say what to do 0.90
-  whole    holds all you said 0.90
-  ran deploys service="checkout" · weakest: route 0.95 · cached
-  3  "pull the checkout logs"
-  logs 0.95 · none 0.03 · errors 0.02
-  service  checkout 0.95 · unstated 0.05
-           asked a second way: checkout 0.95
-  words    "pull" say what to do 0.90 · "logs" say what to do 0.90
-  whole    holds all you said 0.90
-  ran logs service="checkout" · weakest: route 0.95 · cached
-  4  "find the suspect"
-  suspect 0.95 · none 0.03 · errors 0.02
-  words  "find the suspect" say what to do 0.90
-  whole  holds all you said 0.90
-  ran suspect · weakest: route 0.95 · takes errors from 1, deploys from 2, logs from 3 · cached
+  "check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect"
+
+  one thing, or several   several 0.95: cut at "," 0.90, "and" 0.90, ", then" 0.90
+
+  1 · check the errors for checkout
+    which reflex            errors 0.95   (none of them 0.03 · deploys 0.02)
+                            Show the error rate of a service.
+    service                 checkout 0.95   (not said 0.05)
+                            asked a second way: checkout 0.95; the less sure of the two counts
+    holds all you said      0.90
+    → ran: errors service="checkout"  0.95
+      a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  2 · list the checkout deploys
+    which reflex            deploys 0.95   (none of them 0.03 · errors 0.02)
+                            List the recent deploys of a service.
+    service                 checkout 0.95   (not said 0.05)
+                            asked a second way: checkout 0.95; the less sure of the two counts
+    holds all you said      0.90
+    → ran: deploys service="checkout"  0.95
+      a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  3 · pull the checkout logs
+    which reflex            logs 0.95   (none of them 0.03 · errors 0.02)
+                            Search a service's logs for the last hour.
+    service                 checkout 0.95   (not said 0.05)
+                            asked a second way: checkout 0.95; the less sure of the two counts
+    holds all you said      0.90
+    → ran: logs service="checkout"  0.95
+      a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  4 · find the suspect
+    which reflex            suspect 0.95   (none of them 0.03 · errors 0.02)
+                            Find the release most likely behind a failure.
+    holds all you said      0.90
+    takes                   errors from step 1, deploys from step 2, logs from step 3
+    → ran: suspect  0.95
+      a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  answered from the cache
 $ evoke try --json "check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect"
-{"input":"check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect","steps":[{"n":1,"text":"check the errors for checkout","end":29,"decision":{"outcome":"run","reflex":"errors","args":{"service":{"type":"word","word":"checkout"}},"call":"errors service=\"checkout\"","effect":"read","basis":{"service":{"by":"views","ask":0.95,"reader":0.95}},"left":[{"words":{"start":0,"end":16,"text":"check the errors"},"does":"action","p":0.9}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"errors","p":0.95},"judgments":[{"question":"route","top":"errors","p":0.95},{"question":"errors.service","top":"checkout","p":0.95}],"runner_up":{"reflex":"deploys","route":0.02},"contenders":[{"reflex":"errors","route":0.95},{"reflex":"deploys","route":0.02},{"reflex":"logs","route":0.0},{"reflex":"suspect","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0}]},"reflex":"errors","effect":"read"},{"n":2,"text":"list the checkout deploys","end":56,"decision":{"outcome":"run","reflex":"deploys","args":{"service":{"type":"word","word":"checkout"}},"call":"deploys service=\"checkout\"","effect":"read","basis":{"service":{"by":"views","ask":0.95,"reader":0.95}},"left":[{"words":{"start":0,"end":4,"text":"list"},"does":"action","p":0.9},{"words":{"start":18,"end":25,"text":"deploys"},"does":"action","p":0.9}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"deploys","p":0.95},"judgments":[{"question":"route","top":"deploys","p":0.95},{"question":"deploys.service","top":"checkout","p":0.95}],"runner_up":{"reflex":"errors","route":0.02},"contenders":[{"reflex":"deploys","route":0.95},{"reflex":"errors","route":0.02},{"reflex":"logs","route":0.0},{"reflex":"suspect","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0}]},"reflex":"deploys","effect":"read","refs":[{"span":{"start":5,"end":17,"text":"the checkout"},"from":[0],"how":"phrase","weak":true,"noun":"checkout"}]},{"n":3,"text":"pull the checkout logs","end":83,"decision":{"outcome":"run","reflex":"logs","args":{"service":{"type":"word","word":"checkout"}},"call":"logs service=\"checkout\"","effect":"read","basis":{"service":{"by":"views","ask":0.95,"reader":0.95}},"left":[{"words":{"start":0,"end":4,"text":"pull"},"does":"action","p":0.9},{"words":{"start":18,"end":22,"text":"logs"},"does":"action","p":0.9}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"logs","p":0.95},"judgments":[{"question":"route","top":"logs","p":0.95},{"question":"logs.service","top":"checkout","p":0.95}],"runner_up":{"reflex":"errors","route":0.02},"contenders":[{"reflex":"logs","route":0.95},{"reflex":"errors","route":0.02},{"reflex":"deploys","route":0.0},{"reflex":"suspect","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0}]},"reflex":"logs","effect":"read","refs":[{"span":{"start":5,"end":17,"text":"the checkout"},"from":[0],"how":"engine","weak":true,"noun":"checkout","p":0.6}]},{"n":4,"text":"find the suspect","end":106,"decision":{"outcome":"run","reflex":"suspect","args":{},"call":"suspect","effect":"read","left":[{"words":{"start":0,"end":16,"text":"find the suspect"},"does":"action","p":0.9}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"suspect","p":0.95},"judgments":[{"question":"route","top":"suspect","p":0.95}],"runner_up":{"reflex":"errors","route":0.02},"contenders":[{"reflex":"suspect","route":0.95},{"reflex":"errors","route":0.02},{"reflex":"deploys","route":0.0},{"reflex":"logs","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0}]},"reflex":"suspect","effect":"read","after":[1,2,3]}],"binds":[{"from":1,"to":4,"arg":"errors","field":"errors","via":"takes"},{"from":2,"to":4,"arg":"deploys","field":"deploys","via":"takes"},{"from":3,"to":4,"arg":"logs","field":"logs","via":"takes"}],"stages":[[1,2,3],[4]],"verdict":{"outcome":"run"},"exclusive":false,"splits":[{"start":29,"end":31,"word":",","order":"and","p":0.9},{"start":56,"end":61,"word":"and","order":"and","p":0.9},{"start":83,"end":90,"word":"then","order":"then","p":0.9}],"trace":[]}
+{"input":"check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect","steps":[{"n":1,"text":"check the errors for checkout","end":29,"decision":{"outcome":"run","reflex":"errors","args":{"service":{"type":"word","word":"checkout"}},"call":"errors service=\"checkout\"","effect":"read","basis":{"service":{"by":"views","ask":0.95,"reader":0.95}},"left":[{"words":{"start":0,"end":16,"text":"check the errors"},"does":"action","p":0.9}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"errors","p":0.95},"judgments":[{"question":"route","top":"errors","p":0.95},{"question":"errors.service","top":"checkout","p":0.95}],"runner_up":{"reflex":"deploys","route":0.02},"contenders":[{"reflex":"errors","route":0.95},{"reflex":"deploys","route":0.02},{"reflex":"logs","route":0.0},{"reflex":"suspect","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0}]},"reflex":"errors","effect":"read"},{"n":2,"text":"list the checkout deploys","end":56,"decision":{"outcome":"run","reflex":"deploys","args":{"service":{"type":"word","word":"checkout"}},"call":"deploys service=\"checkout\"","effect":"read","basis":{"service":{"by":"views","ask":0.95,"reader":0.95}},"left":[{"words":{"start":0,"end":4,"text":"list"},"does":"action","p":0.9},{"words":{"start":18,"end":25,"text":"deploys"},"does":"action","p":0.9}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"deploys","p":0.95},"judgments":[{"question":"route","top":"deploys","p":0.95},{"question":"deploys.service","top":"checkout","p":0.95}],"runner_up":{"reflex":"errors","route":0.02},"contenders":[{"reflex":"deploys","route":0.95},{"reflex":"errors","route":0.02},{"reflex":"logs","route":0.0},{"reflex":"suspect","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0}]},"reflex":"deploys","effect":"read","refs":[{"span":{"start":5,"end":17,"text":"the checkout"},"from":[0],"how":"phrase","weak":true,"noun":"checkout"}]},{"n":3,"text":"pull the checkout logs","end":83,"decision":{"outcome":"run","reflex":"logs","args":{"service":{"type":"word","word":"checkout"}},"call":"logs service=\"checkout\"","effect":"read","basis":{"service":{"by":"views","ask":0.95,"reader":0.95}},"left":[{"words":{"start":0,"end":4,"text":"pull"},"does":"action","p":0.9},{"words":{"start":18,"end":22,"text":"logs"},"does":"action","p":0.9}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"logs","p":0.95},"judgments":[{"question":"route","top":"logs","p":0.95},{"question":"logs.service","top":"checkout","p":0.95}],"runner_up":{"reflex":"errors","route":0.02},"contenders":[{"reflex":"logs","route":0.95},{"reflex":"errors","route":0.02},{"reflex":"deploys","route":0.0},{"reflex":"suspect","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0}]},"reflex":"logs","effect":"read","refs":[{"span":{"start":5,"end":17,"text":"the checkout"},"from":[0],"how":"engine","weak":true,"noun":"checkout","p":0.6}]},{"n":4,"text":"find the suspect","end":106,"decision":{"outcome":"run","reflex":"suspect","args":{},"call":"suspect","effect":"read","left":[{"words":{"start":0,"end":16,"text":"find the suspect"},"does":"action","p":0.9}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"suspect","p":0.95},"judgments":[{"question":"route","top":"suspect","p":0.95}],"runner_up":{"reflex":"errors","route":0.02},"contenders":[{"reflex":"suspect","route":0.95},{"reflex":"errors","route":0.02},{"reflex":"deploys","route":0.0},{"reflex":"logs","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0}]},"reflex":"suspect","effect":"read","after":[1,2,3]}],"binds":[{"from":1,"to":4,"arg":"errors","field":"errors","via":"takes"},{"from":2,"to":4,"arg":"deploys","field":"deploys","via":"takes"},{"from":3,"to":4,"arg":"logs","field":"logs","via":"takes"}],"stages":[[1,2,3],[4]],"verdict":{"outcome":"run"},"exclusive":false,"splits":[{"start":29,"end":31,"word":",","order":"and","p":0.9,"cut":true},{"start":56,"end":61,"word":"and","order":"and","p":0.9,"cut":true},{"start":83,"end":90,"word":"then","order":"then","p":0.9,"cut":true}],"count":{"one":0.05},"trace":[]}
 # A result by name reaches an argument named otherwise: the postmortem's record takes the incident.
 $ evoke "look up incident 311, then draft the postmortem"
   1  incident number="311"  0.95

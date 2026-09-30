@@ -83,6 +83,7 @@ A less certain decision confirms first. `[t]each` records what you meant, then r
 ```text
 $ evoke "kill the wifi"
   wifi state="off" · write · weakest: state 0.86
+    a write runs at 0.90 or more
   Turn Wi-Fi off?  [y]es [n]o [t]each > t
 + overlays/wifi.toml  [examples] "kill the wifi" = { state = "off" }
 wi-fi off
@@ -96,6 +97,7 @@ A destructive one always confirms, however sure:
 ```text
 $ evoke "restart the computer"
   power action="restart" · destructive · weakest: route 0.98
+    it cannot be undone, so it always waits for a yes
   Make the laptop restart now?  [y]es [n]o [t]each > n
 [2]
 ```
@@ -105,7 +107,7 @@ you the ranking, and reminds you of what is not yet in play:
 
 ```text
 $ evoke "what time is it"
-  none 0.85 · timer 0.10 · awake 0.03 · lock 0.02
+  none of them 0.85 · timer 0.10 · awake 0.03 · lock 0.02
   note, open and visit are inactive  →  evoke show
 [2]
 ```
@@ -147,18 +149,26 @@ $ evoke teach "what time is it" not timer
 
 ## 6. Look inside
 
-`try` decides without running and shows every judgment. `why` explains the last decision. `show` prints what is
+`try` decides without running and shows every judgment. `why` explains the last sentence. `show` prints what is
 installed, or one reflex as it is used, with `+` next to every line that is yours.
 
 ```text
 $ evoke try "kill the wifi"
-  wifi 0.95 · none 0.03 · power 0.01 · lock 0.01
-  state  off 0.86 · on 0.10 · unstated 0.04
-  confirm · wifi state="off" · write · weakest: state 0.86
+  "kill the wifi"
+
+  which reflex            wifi 0.95   (none of them 0.03 · power 0.01)
+                          Turn Wi-Fi on or off.
+  state                   off 0.86   (on 0.10 · not said 0.04)
+                          asked a second way: off 0.86; the less sure of the two counts
+                          is it off? yes 0.95
+  → waits for a yes: wifi state="off" · write · weakest: state 0.86
+    a write runs at 0.90 or more
+
+  replay answered 22 questions in 2 rounds
 ```
 
-The ranking, then each argument, then how well every active reflex fits; the last line is what would happen. The
-weakest answer is the confidence. It sits under the write bar, so this one would ask.
+Which reflex, then each value with what it stands on, then what would happen and why. The weakest answer is the
+confidence. It sits under the write bar, so this one would wait for a yes.
 
 ## Where things are
 

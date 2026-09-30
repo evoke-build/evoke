@@ -103,11 +103,16 @@ $ cd ~/dev && evoke trust
 $ cd ~/dev && evoke add ./hello
 + hello  ./hello  read  runs hello.mts
 $ cd ~/dev && evoke try 'say hi to "Ada"'
-  hello 0.97 · none 0.03
-  who    "Ada" 0.98 · unstated 0.02
-  words  "say" say what to do 0.90
-  whole  holds all you said 0.90
-  run · weakest: route 0.97
+  "say hi to \"Ada\""
+
+  which reflex            hello 0.97   (none of them 0.03)
+                          Say hello to someone.
+  who                     "Ada" 0.98   (not said 0.02)
+  holds all you said      0.90
+  → runs: hello who="Ada"  0.97
+    a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.97; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  replay answered 5 questions in 2 rounds
 $ cd ~/dev && evoke 'wave at "Grace"'
   hello who="Grace"  0.96
 Hello, Grace!

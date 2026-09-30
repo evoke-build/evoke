@@ -81,7 +81,8 @@
     ],
     "prompt": {
       "own": "power action=\"restart\" · destructive · weakest: route 0.97",
-      "template": "Really restart now?"
+      "template": "Really restart now?",
+      "reason": "it cannot be undone, so it always waits for a yes"
     },
     "because": [
       {

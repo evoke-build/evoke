@@ -18,7 +18,7 @@ use evoke_core::weave::{self, Asked, Because, Outcome, Status, Why as Stopped};
 use evoke_core::{Clean, Decision, Diagnostic, Fix, Prompt, fill};
 use indexmap::IndexMap;
 
-use super::rounds::{Answered, Engine, Handed, Rounds, Teach, whole_plan};
+use super::rounds::{Answered, Engine, Handed, Rounds, Teach, Told, whole_plan};
 use super::session::{self, Decided, Opening, Woven};
 use super::r#try::refused_for;
 use super::{Decline, Exit};
@@ -44,6 +44,7 @@ pub fn run(command: &Command, arguments: &Arguments, environment: &Environment) 
             tags: arguments.tags.clone(),
             pinned: None,
             results: Vec::new(),
+            sentence: Told::default(),
         },
         arguments,
     };
@@ -111,19 +112,29 @@ impl Using<'_> {
         let exit = match woven.single(&self.arguments.tags, &self.rounds.session.plan) {
             Some(decided) => {
                 let decision = decided.decision.clone();
+                let step = woven.weave.steps.first();
                 let handed = Handed {
                     bound: &[],
                     taken: &IndexMap::new(),
                     shared: &IndexMap::new(),
                     from: &[],
                     when: None,
+                    typed: step.and_then(|step| step.typed.as_deref()),
+                    repair: step.and_then(|step| step.repair),
                 };
+                if !self.arguments.json {
+                    let noted = report::noted(&woven.weave);
+                    if !noted.is_empty() {
+                        terminal::note(&noted);
+                    }
+                }
                 self.rounds
                     .round(input, None, &decided, decision, handed)
                     .exit
             }
             None => self.many(input, woven),
         };
+        self.rounds.told();
         if interrupt::interrupted() {
             interrupt::end();
         }
@@ -133,13 +144,16 @@ impl Using<'_> {
     /// The input read into its steps through the adapter, `seeded` decisions standing in for the planner's own.
     fn woven(&mut self, input: &str, seeded: Vec<(Asked, Decided)>) -> Result<Woven, Exit> {
         let adapter = self.rounds.engine.resolved(&self.rounds.session, input)?;
-        self.rounds.session.weave(
+        let woven = self.rounds.session.weave(
             adapter,
             input,
             &self.arguments.tags,
             seeded,
             &self.rounds.results,
-        )
+        )?;
+        let gate = self.rounds.session.declared.gate;
+        self.rounds.sentence.planned(&woven, gate.as_ref());
+        Ok(woven)
     }
 
     /// A weave: the plan's own questions first — a step's argument nothing binds, asked as at its turn, and
@@ -191,17 +205,11 @@ impl Using<'_> {
             return self.rounds.refused(input, &woven);
         }
         if woven.weave.verdict.outcome == Outcome::Confirm {
-            let reasons: Vec<String> = woven
-                .weave
-                .verdict
-                .because
-                .iter()
-                .map(report::verdict)
-                .collect();
+            let because = &woven.weave.verdict.because;
+            let reasons: Vec<String> = because.iter().map(report::verdict).collect();
+            let own = (reasons.join("; "), report::reasons(None, because));
             let (template, teach) = reviewed(&woven);
-            let proceed = self
-                .rounds
-                .proceed(input, &woven, reasons.join("; "), template, teach);
+            let proceed = self.rounds.proceed(input, &woven, own, template, teach);
             if let Err(exit) = proceed {
                 return exit;
             }
@@ -261,7 +269,10 @@ impl Using<'_> {
         while woven.weave.verdict.outcome == Outcome::Ask {
             let fresh = match self.asked_up_front(&woven, &mut shown) {
                 Ok(UpFront::Seeded(fresh)) => fresh,
-                Ok(UpFront::Declined { step, ask }) => {
+                Ok(UpFront::Declined { step, ask, arg }) => {
+                    if !self.arguments.json {
+                        terminal::note(&report::declined(&arg, Some(step)));
+                    }
                     let exit = Exit::Declined(Decline::Refused);
                     return Err(self.rounds.stopped_whole(input, &woven, exit, |s| {
                         if s.n == step {
@@ -381,7 +392,9 @@ impl Using<'_> {
             }
             let given = match self.rounds.answers(&step.text, &asking.reflex, &asks)? {
                 Answered::Given(given) => given,
-                Answered::Declined { ask } => return Ok(UpFront::Declined { step: n, ask }),
+                Answered::Declined { ask, arg } => {
+                    return Ok(UpFront::Declined { step: n, ask, arg });
+                }
             };
             let filled = fill(
                 &self.rounds.session.plan,
@@ -419,7 +432,11 @@ fn expanded(step: &weave::Step, seeded: &Decision) -> bool {
 /// The plan's own questions asked up front: the decisions answered into, or the step whose question was declined.
 enum UpFront {
     Seeded(Vec<(Asked, Decided)>),
-    Declined { step: usize, ask: String },
+    Declined {
+        step: usize,
+        ask: String,
+        arg: ArgName,
+    },
 }
 
 /// Why the other steps never ran when one's question was declined before anything did.

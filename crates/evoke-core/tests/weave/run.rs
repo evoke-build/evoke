@@ -678,6 +678,7 @@ fn weave_of(model: &Model) -> Weave {
             after: spec.after(),
             from: Vec::new(),
             when: None,
+            typed: None,
         })
         .collect();
     let binds: Vec<Binding> = model
@@ -709,6 +710,7 @@ fn weave_of(model: &Model) -> Weave {
     Weave {
         input: "the model's request".to_owned(),
         splits: Vec::new(),
+        count: None,
         steps,
         excluded: Vec::new(),
         folded: Vec::new(),

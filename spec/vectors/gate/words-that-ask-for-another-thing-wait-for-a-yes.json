@@ -178,7 +178,8 @@
       }
     ],
     "prompt": {
-      "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.92 · also \"lock the door too\"",
+      "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.92",
+      "reason": "\"lock the door too\" asks for another thing",
       "template": "Set the den lights off?"
     },
     "because": [

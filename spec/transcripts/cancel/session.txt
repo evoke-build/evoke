@@ -13,17 +13,26 @@ waiting
 $ pgrep -g "$(cat wait.pid)" || echo none
 none
 $ evoke why
-  1  "wait a while"
-  wait 0.95 · pause 0.02 · none 0.02 · timer 0.01
-  words  "wait a while" say what to do 0.90
-  whole  holds all you said 0.90
-  skipped wait · weakest: route 0.95 · cancelled · replay, 5 questions in 2 rounds
-  2  "start a 10 minute timer"
-  timer 0.95 · none 0.03 · wait 0.01 · pause 0.01
-  duration  "10 minute" 0.95 · unstated 0.05
-  words     "start" say what to do 0.90 · "timer" say what to do 0.90
-  whole     holds all you said 0.90
-  skipped timer duration="10 minute" · weakest: route 0.95 · cancelled · replay, 12 questions in 3 rounds
+  "wait a while and start a 10 minute timer"
+
+  one thing, or several   several 0.95: cut at "and" 0.95
+
+  1 · wait a while
+    which reflex            wait 0.95   (pause 0.02 · none of them 0.02)
+                            Wait, doing nothing, until told to stop.
+    holds all you said      0.90
+    → skipped: wait  0.95
+      cancelled
+
+  2 · start a 10 minute timer
+    which reflex            timer 0.95   (none of them 0.03 · wait 0.01)
+                            Count down a duration, then sound an alert.
+    duration                "10 minute" 0.95   (not said 0.05)
+    holds all you said      0.90
+    → skipped: timer duration="10 minute"  0.95
+      cancelled
+
+  replay answered 19 questions in 4 rounds
 $ evoke --json "pause a moment and start a 10 minute timer"
 waiting
 ^C
@@ -46,7 +55,11 @@ waiting
 [130]
 $ evoke why
   "wait a while"
-  wait 0.95 · pause 0.02 · none 0.02 · timer 0.01
-  words  "wait a while" say what to do 0.90
-  whole  holds all you said 0.90
-  cancelled wait · weakest: route 0.95 · cached
+
+  which reflex            wait 0.95   (pause 0.02 · none of them 0.02)
+                          Wait, doing nothing, until told to stop.
+  holds all you said      0.90
+  → cancelled: wait  0.95
+    running wait: interrupted
+
+  answered from the cache

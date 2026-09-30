@@ -127,6 +127,7 @@ checkout: 2 deploys today, the last 4.12.0 at 13:58
 > roll back the last deploy
   From which release?  [1] 4.12.0  [2] 4.11.3  > 1
   rollback release="4.12.0" · destructive · weakest: route 0.95
+    it cannot be undone, so it always waits for a yes
   Roll back 4.12.0?  [y]es [n]o [t]each > y
 ```
 

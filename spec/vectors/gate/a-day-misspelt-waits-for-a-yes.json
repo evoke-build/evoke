@@ -212,7 +212,8 @@
       }
     ],
     "prompt": {
-      "own": "meeting day=\"wednesday\" time=\"3pm\" · write · weakest: day 0.95 · day from \"wendesday\"",
+      "own": "meeting day=\"wednesday\" time=\"3pm\" · write · weakest: day 0.95",
+      "reason": "day was read from \"wendesday\"",
       "template": "Move the meeting to wednesday at 3pm?"
     },
     "because": [

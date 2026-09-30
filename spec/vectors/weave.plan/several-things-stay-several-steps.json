@@ -480,9 +480,13 @@
             "end": 35,
             "word": "and",
             "order": "and",
-            "p": 0.6
+            "p": 0.6,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.3
+        }
       }
     }
   }

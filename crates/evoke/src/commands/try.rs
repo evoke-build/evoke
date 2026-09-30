@@ -7,10 +7,10 @@
 
 use std::path::Path;
 
-use evoke_core::weave::{Because, Outcome};
-use evoke_core::{Decision, Diagnostic, Fix, Gate, pin};
+use evoke_core::weave::{Because, Bound, Outcome, Status};
+use evoke_core::{Decision, Diagnostic, Fix, pin};
 
-use super::rounds::refusal_fix;
+use super::rounds::{described, expanded, refusal_fix};
 use super::session::{self, Opening, Session, Woven};
 use super::{Decline, Exit, each_line};
 use crate::adapter::Adapter;
@@ -18,7 +18,8 @@ use crate::args::{Arguments, Command, Inputs};
 use crate::hosts::files::{self, Landed};
 use crate::hosts::terminal::Text;
 use crate::hosts::{Environment, terminal};
-use crate::report;
+use crate::report::sentence::{self, Sentence};
+use crate::report::{self, Line, StepLine};
 
 pub fn run(command: &Command, arguments: &Arguments, environment: &Environment) -> Exit {
     let session = match session::open(command, arguments.json, environment, Opening::Deciding) {
@@ -38,10 +39,10 @@ pub fn run(command: &Command, arguments: &Arguments, environment: &Environment) 
     }
 }
 
-/// One input: read into its steps and shown; any decision exits 0. One step is shown as it always was; more are
-/// the plan, then each step's judgments under its number, its word the plan's and the words shared into it named
-/// — or, under `--json`, the plan whole on one line, with every adapter call it took. With `--save`, the plan's
-/// lines and the file.
+/// One input: read into its steps and shown; any decision exits 0. The plan where it holds several steps, then
+/// the sentence as it was read: each step with its reflex, its values and what each stands on, the call, what
+/// would become of it and why — or, under `--json`, one step's line, or the plan whole on one line, with every
+/// adapter call it took. With `--save`, the plan's lines and the file.
 fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, input: &str) -> Exit {
     let woven = match session.weave(adapter, input, &arguments.tags, Vec::new(), &[]) {
         Ok(woven) => woven,
@@ -50,51 +51,77 @@ fn tried(session: &Session<'_>, adapter: &dyn Adapter, arguments: &Arguments, in
     if let Some(file) = &arguments.save {
         return saved(session, arguments, input, &woven, file);
     }
-    let floor = adapter.declared().gate.as_ref().map(Gate::route);
-    if let Some(decided) = woven.single(&arguments.tags, &session.plan) {
-        if arguments.json {
-            terminal::result(&report::Line::of(&decided).json());
-        } else {
-            terminal::answer(&report::tried(&decided, floor));
-            if matches!(decided.decision, Decision::Abstain { .. })
-                && let Some(hint) = report::left_out(session.plan.inactive().keys())
-            {
-                terminal::note(&hint);
-            }
-        }
-        return Exit::Ran;
-    }
+    let single = woven.single(&arguments.tags, &session.plan);
     if arguments.json {
-        terminal::result(&report::plan_json(&woven));
-        return Exit::Ran;
-    }
-    if woven.weave.steps.is_empty() {
-        terminal::answer(&report::nothing_to_do(refused_for(&woven)));
-        return Exit::Ran;
-    }
-    terminal::answer(&report::planned(&woven.weave));
-    let of = woven.weave.steps.len();
-    let mut abstained = false;
-    for step in &woven.weave.steps {
-        let Some(decided) = woven.planned(step, &arguments.tags) else {
-            continue;
-        };
-        terminal::answer(&report::step(
-            step.n,
-            of,
-            Text::from(report::quoted(&step.text)),
-        ));
-        terminal::answer(&report::tried(&decided, floor));
-        if let Some(origin) = report::shared(&step.shared) {
-            terminal::answer(&Text::from(format!("  {origin}")));
+        match &single {
+            Some(decided) => terminal::result(&report::Line::of(decided).json()),
+            None => terminal::result(&report::plan_json(&woven)),
         }
-        abstained |= matches!(decided.decision, Decision::Abstain { .. });
+        return Exit::Ran;
     }
-    // A part that matched nothing may have asked for an inactive reflex, as one input's abstain says.
+    let mut told = Sentence::of(&woven, adapter.declared().gate.as_ref());
+    told.asked.more(&woven.trace, woven.rounds);
+    let lines = if let Some(decided) = &single {
+        let mut line = described(session, decided);
+        if let Some(step) = woven.weave.steps.first() {
+            line.typed.clone_from(&step.typed);
+            line.repair = step.repair;
+        }
+        vec![line]
+    } else {
+        if !woven.weave.steps.is_empty() {
+            terminal::answer(&report::planned(&woven.weave));
+            terminal::answer(&Text::new());
+        }
+        stepped(session, arguments, &woven)
+    };
+    terminal::answer(&sentence::reading(Some(&told), &lines, true));
+    // A part that matched nothing may have asked for an inactive reflex.
+    let abstained = lines
+        .iter()
+        .any(|line| matches!(line.decision, Decision::Abstain { .. }));
     if abstained && let Some(hint) = report::left_out(session.plan.inactive().keys()) {
         terminal::note(&hint);
     }
     Exit::Ran
+}
+
+/// A plan's lines as the run would log them, nothing having run: each playbook's expansion, then each step with
+/// what the plan binds into it.
+fn stepped(session: &Session<'_>, arguments: &Arguments, woven: &Woven) -> Vec<Line> {
+    let of = woven.weave.steps.len();
+    let mut lines = expanded(session, woven);
+    for step in &woven.weave.steps {
+        let Some(decided) = woven.planned(step, &arguments.tags) else {
+            continue;
+        };
+        let mut line = described(session, &decided);
+        line.typed.clone_from(&step.typed);
+        line.repair = step.repair;
+        line.step = Some(StepLine {
+            n: step.n,
+            of,
+            status: Status::Ran,
+            why: None,
+            bound: woven
+                .weave
+                .binds
+                .iter()
+                .filter(|bind| bind.to == step.n)
+                .map(|bind| Bound {
+                    arg: bind.arg.clone(),
+                    from: bind.from,
+                    field: bind.field.clone(),
+                    value: None,
+                })
+                .collect(),
+            shared: step.shared.clone(),
+            from: step.from.clone(),
+            when: step.when.clone(),
+        });
+        lines.push(line);
+    }
+    lines
 }
 
 /// `--save <file>`: the plan's lines — the plan whole on one line under `--json` — then the plan sealed with its

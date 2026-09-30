@@ -8,20 +8,28 @@ checkout: 2 deploys today, the last 4.12.0 at 13:58
 > roll back the last deploy
   From which release?  [1] 4.12.0  [2] 4.11.3  > 1
   rollback release="4.12.0" · destructive · weakest: route 0.95
+    it cannot be undone, so it always waits for a yes
   Roll back 4.12.0?  [y]es [n]o [t]each > y
 checkout rolled back from 4.12.0 to 4.11.3
 >
 $ evoke why
   "roll back the last deploy"
-  rollback 0.95 · none 0.03 · errors 0.02
-  release  unstated 1.00
-  release  recalled 4.12.0 · 4.11.3
-  words    "roll back the last deploy" say what to do 0.95
-  ran rollback release="4.12.0" · weakest: route 0.95 · replay, 27 questions in 2 rounds
+
+  which reflex            rollback 0.95   (none of them 0.03 · errors 0.02)
+                          Roll a service back from a release to the one before it.
+  release                 "4.12.0"
+                          your answer
+                          recalled: 4.12.0 · 4.11.3
+  → ran at your yes: rollback release="4.12.0" · destructive · weakest: route 0.95
+    it cannot be undone, so it always waits for a yes
+
+  replay answered 27 questions in 2 rounds
 $ evoke "roll back the last deploy"
   From which release?  >
+  nothing runs without release
 [2]
 $ evoke "list the checkout deploys, then roll back the last one"
   2  rollback · asks release · after 1
   From which release?  >
+  nothing runs: step 2 has no release
 [2]

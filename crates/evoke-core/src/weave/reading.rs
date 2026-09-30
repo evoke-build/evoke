@@ -29,6 +29,9 @@ pub struct Split {
     pub order: Order,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub p: Option<Prob>,
+    /// Whether the plan cuts the request here: no step, and no part out of the plan, holds both sides.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub cut: bool,
 }
 
 /// A segment of the request: its text and where it sits, in characters; one that begins with a negation is left
@@ -326,6 +329,7 @@ pub fn splits(text: &str, commas: bool) -> Vec<Split> {
                 word,
                 order,
                 p: None,
+                cut: false,
             });
         }
     };

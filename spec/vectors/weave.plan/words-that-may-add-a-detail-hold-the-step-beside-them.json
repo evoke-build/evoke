@@ -340,7 +340,8 @@
                 }
               ],
               "prompt": {
-                "own": "errors service=\"checkout\" · read · weakest: route 0.95 · without \"the ones since noon\"",
+                "own": "errors service=\"checkout\" · read · weakest: route 0.95",
+                "reason": "\"the ones since noon\" may add a detail this call does not hold",
                 "template": "Show the error rate of checkout?"
               },
               "because": [
@@ -366,7 +367,12 @@
         "asides": [
           {
             "text": "the ones since noon",
-            "remark": false
+            "remark": false,
+            "does": {
+              "aside": 0.2,
+              "detail": 0.7,
+              "asks": 0.1
+            }
           }
         ],
         "splits": [
@@ -375,9 +381,13 @@
             "end": 31,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

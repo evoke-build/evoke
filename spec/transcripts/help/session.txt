@@ -9,7 +9,7 @@ use
     --tag <tag>                           only the reflexes carrying the tag
     --save <file>                         the plan as a file, for run
     --                                    the rest is input, even a command word
-  evoke why                               the last decision, explained
+  evoke why                               the last sentence, explained
   evoke run <call>                        by name, without the classifier
   evoke run <file>                        a saved plan, run as it stands
     --json                                one JSON line: the call and its result

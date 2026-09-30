@@ -13,7 +13,7 @@ use crate::adapter::{
     Choice, Fault, Gate, Key, Prob, Question, QuestionId, Raw, Request, State, Text,
 };
 use crate::bounds::{self, Found, Sought};
-use crate::call::{Call, Value, Written, quoted, render};
+use crate::call::{Call, Value, Written, render};
 use crate::diagnostic::{Diagnostic, Fix};
 use crate::document::Json;
 use crate::hold;
@@ -28,6 +28,7 @@ use crate::plan::{
 use crate::propose::{PickValue, Proposed, propose};
 use crate::settle::{self, One, Settled};
 use crate::text::{Clean, Input, NonEmpty, Span};
+use crate::waits;
 use crate::words::{self, Form, How, Listed, Spelled};
 
 /// The most values an ask lists from the session's results.
@@ -577,16 +578,19 @@ pub enum Cap {
     },
 }
 
-/// The confirm prompt: `evoke`'s own line, then the manifest's template filled in.
+/// The confirm prompt: `evoke`'s own line, why the call waits under it, then the manifest's template filled in.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Prompt {
     pub own: String,
+    /// Why the call waits for a yes, in one line; empty where the prompt is a plan's own.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub reason: String,
     pub template: Clean,
 }
 
 impl Prompt {
-    /// The prompt of a chosen call under its caps: the call, its effect, its weakest judgment, then each cap that
-    /// has words; the template filled from the call's values.
+    /// The prompt of a chosen call under its caps: the call, its effect and its weakest judgment; why it waits,
+    /// by each cap; the template filled from the call's values.
     #[must_use]
     pub fn of(chosen: &Chosen, active: &Active, because: &[Cap]) -> Self {
         let mut own = format!("{} · {}", render(&chosen.call), chosen.effect);
@@ -598,46 +602,6 @@ impl Prompt {
                 weakest.about(),
                 weakest.p.get()
             );
-        }
-        for cap in because {
-            match cap {
-                Cap::NoGate => own.push_str(" · no gate"),
-                Cap::Whole { p, .. } => {
-                    let _ = write!(own, " · holds all you said {:.2}", p.get());
-                    // The words it leaves out: those no value holds that say nothing of what to do, and the
-                    // values typed that no argument took.
-                    let mut out: Vec<&str> = chosen
-                        .left
-                        .iter()
-                        .filter(|run| run.does != Does::Action)
-                        .map(|run| run.words.text().as_str())
-                        .collect();
-                    for span in &chosen.unconsumed {
-                        if !out.iter().any(|words| words.contains(span.text().as_str())) {
-                            out.push(span.text().as_str());
-                        }
-                    }
-                    if !out.is_empty() {
-                        let named: Vec<String> = out.into_iter().map(quoted).collect();
-                        let _ = write!(own, ", leaves out {}", named.join(", "));
-                    }
-                }
-                Cap::Detail { words } => {
-                    let _ = write!(own, " · without {}", quoted(words));
-                }
-                Cap::More { words } => {
-                    let _ = write!(own, " · also {}", quoted(words.text().as_str()));
-                }
-                Cap::OneView { arg } | Cap::Respelt { arg } => {
-                    if let Some(words) = from(chosen, arg) {
-                        let _ = write!(own, " · {arg} from {}", quoted(words.as_str()));
-                    }
-                }
-                Cap::TextRead { arg } => {
-                    let _ = write!(own, " · {arg} without quotes");
-                }
-                Cap::Destructive | Cap::UnderFloor { .. } => {}
-            }
         }
         let template = active
             .confirm
@@ -655,20 +619,12 @@ impl Prompt {
             .collect::<String>();
         Self {
             own,
+            reason: waits::reason(chosen, because),
             // Every piece is clean text: the template's, a key, a word or a span; the template itself otherwise.
             template: Clean::new(&template).unwrap_or_else(|_| {
                 Clean::new(&active.confirm.to_string()).unwrap_or_else(|_| Clean::default())
             }),
         }
-    }
-}
-
-/// The words of the request a value was read from, where it is not the words as they stand.
-fn from<'a>(chosen: &'a Chosen, arg: &ArgName) -> Option<&'a Clean> {
-    match (chosen.basis.get(arg)?, chosen.call.args.get(arg)?) {
-        (Basis::View { words, .. } | Basis::Words { words, .. }, _) => Some(words.text()),
-        (Basis::Spelled { .. }, Value::Pick { span, .. }) => Some(span.text()),
-        _ => None,
     }
 }
 
@@ -2256,6 +2212,7 @@ pub fn held(plan: &Plan, decision: Decision, cap: Cap) -> Decision {
         return Decision::Confirm {
             prompt: Prompt {
                 own: render(&chosen.call),
+                reason: String::new(),
                 template: Clean::default(),
             },
             chosen,

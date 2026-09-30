@@ -23,7 +23,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `judgments`  | ●   | ●       | ●   | ●       | Every choice read: `{ question, top, p }`                       |
 | `contenders` | ●   | ●       | ●   | ●       | The ranking: `{ reflex, route }`                                |
 | `runner_up`  | ○   | ○       | ○   |         | The second reflex, when there is one                            |
-| `prompt`     |     | ●       |     |         | `{ own, template }`: `evoke`'s line and the reflex's question   |
+| `prompt`     |     | ●       |     |         | `{ own, reason, template }`: `evoke`'s line, why the call waits in one line, and the reflex's question |
 | `left`       | ○   | ○       | ○   |         | The words of the input that no value holds, each with what it does: `{ words, does, p }`, `does` one of `action`, `answers` with its `arg`, `nothing`, `more` |
 | `whole`      | ○   | ○       | ○   |         | How far the call holds all the input says, where the call was read back against it |
 | `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `whole`, `detail` |
@@ -52,7 +52,7 @@ with the reason, `conditional` with its `text`. A plan stopped before any step r
 once, its `status` `refused`, `skipped`, `declined` or `unanswered`. A step run from a plan file carries `pinned` too, `{ "file", "id" }`: the
 file as shown, `~/month.plan.json`, and the SHA-256 of what was read, `h1:…`. `evoke try --json` prints the plan
 whole instead, on one line: `input`, `steps` with each step's decision, `binds`, `stages`, `verdict`, `exclusive`,
-`excluded`, `splits`, and `trace`, every adapter call the plan took.
+`excluded`, `splits`, `count`, and `trace`, every adapter call the plan took.
 
 | Field    | Holds                                                                                                   |
 | :------- | :------------------------------------------------------------------------------------------------------ |
@@ -60,13 +60,18 @@ whole instead, on one line: `input`, `steps` with each step's decision, `binds`,
 | `why`    | `{ "type": "earlier_step" }`, `{ "type": "nothing_to_take", "from" }` and `{ "type": "too_large", "from" }` with the source step, `found_nothing`, `{ "type": "not_chosen", "from", "value" }` for a step another value picked past, `no_reflex`, `cancelled`, `{ "type": "read_as", "reflex" }`, or `{ "type": "said", "message" }`: a prompt's own line, a failure, a question no one answered |
 
 In the plan `evoke try --json` prints, a step's `refs` count the steps they may name from 0; `step`, `after`,
-`stages` and `binds` count from 1. A step carries `shared` as the line does, and `repair` where it was not one
-part decided on its own: `narrowed` or `spliced`, an item of its neighbour's task; `merged`, a part read with
-its neighbour; `split`, a part of a joint the classifier read as one thing. A binding's `via` is `fill`,
-`rewrite` or `takes`, a whole result by the name its source returns, with no `kind`; the verdict's `because`
-names `no_source` and `several_sources` where such a result stops the plan. A plan carries `folded`,
-`[{ text, into }]`, the parts of the sentence folded into a step, and `asides`, `[{ text, remark }]`, the parts
-that ask for nothing: a remark set aside, or words that may add a detail to a step. A plan a playbook wrote
+`stages` and `binds` count from 1. A step carries `shared` as the line does, `typed` where the plan wrote its
+words anew, the words as typed, and `repair` where it was not one part decided on its own: `narrowed` or
+`spliced`, an item of its neighbour's task; `merged`, a part read with its neighbour; `split`, a part of a joint
+the classifier read as one thing; `corrected`, a part that says what not to do read with its step. A binding's
+`via` is `fill`, `rewrite` or `takes`, a whole result by the name its source returns, with no `kind`; the
+verdict's `because` names `no_source` and `several_sources` where such a result stops the plan. Each of
+`splits` carries `cut` where the plan cuts the sentence there; `count`, where the sentence could be cut, holds
+`one`, how surely it asks one thing, and `as_one` where it stands as one step for it. A plan carries `folded`,
+`[{ text, into, gave, picked }]`, the parts of the sentence folded into a step — a call typed again, or a step a
+playbook wrote — with the arguments the part gave and the word of it that picked the step among several; and
+`asides`, `[{ text, remark, does }]`, the parts that ask for nothing: a remark set aside, or words that may add
+a detail to a step, `does` the share of each answer, `{ aside, detail, asks }`. A plan a playbook wrote
 carries `from` on each of its steps and `when` on a step that may not run; its verdict's `because` holds
 `reviewed` per playbook, with the step, the
 sentence's `text` and its `prompt`, and names what refused it: `nested`, `too_deep`, `too_long`, `conditional`,

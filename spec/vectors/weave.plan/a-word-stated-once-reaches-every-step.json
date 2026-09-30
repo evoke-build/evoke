@@ -1097,7 +1097,8 @@
                 "word": "eu-west",
                 "via": "rewrite"
               }
-            }
+            },
+            "typed": "check checkout's errors"
           },
           {
             "n": 2,
@@ -1183,7 +1184,8 @@
                 "word": "checkout",
                 "via": "fill"
               }
-            }
+            },
+            "typed": "deploys"
           },
           {
             "n": 3,
@@ -1525,7 +1527,8 @@
             },
             "after": [
               4
-            ]
+            ],
+            "typed": "roll it back"
           },
           {
             "n": 6,
@@ -1816,44 +1819,53 @@
             "end": 25,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 32,
             "end": 37,
             "word": "and",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 52,
             "end": 54,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 83,
             "end": 85,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 97,
             "end": 104,
             "word": "then",
             "order": "then",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 121,
             "end": 126,
             "word": "and",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

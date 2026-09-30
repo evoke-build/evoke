@@ -152,9 +152,10 @@ console<span class="o">.</span>log<span class="o">(</span>handled<span class="o"
             <div class="cmd"><code>evoke try "kill the wifi"</code><button type="button" data-copy aria-label="Copy the try command">Copy</button></div>
             <div class="panel term quiet" role="figure" aria-label="What evoke try prints">
               <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke try</div>
-<pre data-flow="first-ten"><span class="own">  <span class="name">wifi</span> <span class="hi">0.95</span> · none 0.03 · power 0.01 · lock 0.01
-  state  <span class="name">off</span> <span class="mid">0.86</span> · on 0.10 · unstated 0.04
-  <span class="name">confirm</span> · wifi state="off" · write · weakest: state <span class="mid">0.86</span></span></pre>
+<pre data-flow="first-ten"><span class="own">  <span class="name">which reflex</span>            wifi <span class="hi">0.95</span>   (none of them 0.03 · power 0.01)
+  <span class="name">state</span>                   off <span class="mid">0.86</span>   (on 0.10 · not said 0.04)
+  → <span class="name">waits for a yes</span>: wifi state="off" · write · weakest: state <span class="mid">0.86</span>
+    a write runs at 0.90 or more</span></pre>
             </div>
             <p class="caption">Turning Wi-Fi off changes something, so <code>wifi</code> is a <code>write</code> reflex. A
               <code>write</code> runs without a question only when evoke is at least 0.9 sure of every answer. That is its

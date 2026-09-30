@@ -2348,3 +2348,70 @@ route                          = { rollback = 0.95, errors = 0.02, none = 0.03 }
 "weave.left_rollback_0_0"      = { action = 0.95, courtesy = 0.05 }
 "weave.left_rollback_2_2"      = { action = 0.95, courtesy = 0.05 }
 "weave.left_rollback_5_5"      = { action = 0.95, courtesy = 0.05 }
+
+[answers."check the errors for checkout, the ones since noon"]
+"weave.split_0"    = { yes = 0.9 }
+"weave.count"      = { two = 0.55, one = 0.4, more = 0.05 }
+"weave.part_31_50" = { detail = 0.7, aside = 0.2, asks = 0.1 }
+
+[answers."the ones since noon"]
+route                          = { none = 0.9, errors = 0.1 }
+"errors.service"               = { unstated = 1.0 }
+"errors.region"                = { unstated = 1.0 }
+"deploys.service"              = { unstated = 1.0 }
+"deploys.region"               = { unstated = 1.0 }
+"logs.service"                 = { unstated = 1.0 }
+"logs.region"                  = { unstated = 1.0 }
+"rollback.service"             = { unstated = 1.0 }
+"rollback.release"             = { unstated = 1.0 }
+"rollback.region"              = { unstated = 1.0 }
+"post.channel"                 = { unstated = 1.0 }
+"incident.number"              = { unstated = 1.0 }
+"status.component"             = { unstated = 1.0 }
+"status.state"                 = { unstated = 1.0 }
+"outage.service"               = { unstated = 1.0 }
+"outage.region"                = { unstated = 1.0 }
+"weave.view_errors__service"   = { unstated = 1.0 }
+"weave.view_errors__region"    = { unstated = 1.0 }
+"weave.view_deploys__service"  = { unstated = 1.0 }
+"weave.view_deploys__region"   = { unstated = 1.0 }
+"weave.view_logs__service"     = { unstated = 1.0 }
+"weave.view_logs__region"      = { unstated = 1.0 }
+"weave.view_rollback__service" = { unstated = 1.0 }
+"weave.view_rollback__region"  = { unstated = 1.0 }
+"weave.view_post__channel"     = { unstated = 1.0 }
+"weave.view_status__component" = { unstated = 1.0 }
+"weave.view_status__state"     = { unstated = 1.0 }
+"weave.view_outage__service"   = { unstated = 1.0 }
+"weave.view_outage__region"    = { unstated = 1.0 }
+
+[answers."check the errors for the ones since noon"]
+route                          = { none = 0.8, errors = 0.2 }
+"errors.service"               = { unstated = 1.0 }
+"errors.region"                = { unstated = 1.0 }
+"weave.view_errors__service"   = { unstated = 1.0 }
+"weave.view_errors__region"    = { unstated = 1.0 }
+"deploys.service"              = { unstated = 1.0 }
+"deploys.region"               = { unstated = 1.0 }
+"logs.service"                 = { unstated = 1.0 }
+"logs.region"                  = { unstated = 1.0 }
+"rollback.service"             = { unstated = 1.0 }
+"rollback.release"             = { unstated = 1.0 }
+"rollback.region"              = { unstated = 1.0 }
+"post.channel"                 = { unstated = 1.0 }
+"incident.number"              = { unstated = 1.0 }
+"status.component"             = { unstated = 1.0 }
+"status.state"                 = { unstated = 1.0 }
+"outage.service"               = { unstated = 1.0 }
+"outage.region"                = { unstated = 1.0 }
+"weave.view_deploys__service"  = { unstated = 1.0 }
+"weave.view_deploys__region"   = { unstated = 1.0 }
+"weave.view_logs__service"     = { unstated = 1.0 }
+"weave.view_logs__region"      = { unstated = 1.0 }
+"weave.view_rollback__service" = { unstated = 1.0 }
+"weave.view_rollback__region"  = { unstated = 1.0 }
+"weave.view_post__channel"     = { unstated = 1.0 }
+"weave.view_status__component" = { unstated = 1.0 }
+"weave.view_status__state"     = { unstated = 1.0 }
+"weave.view_outage__service"   = { unstated = 1.0 }
+"weave.view_outage__region"    = { unstated = 1.0 }

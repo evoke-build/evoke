@@ -470,9 +470,13 @@
             "end": 27,
             "word": "and",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

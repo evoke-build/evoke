@@ -361,7 +361,10 @@ fn answers_reach_stdout_and_notes_stderr() {
         )
     };
     let (out, err) = run("evoke try \"kill the lights in the den\"");
-    assert!(out.starts_with("  lights 0.95 · none 0.03"), "{out}");
+    assert!(
+        out.starts_with("  \"kill the lights in the den\"\n\n  which reflex"),
+        "{out}"
+    );
     assert_eq!(err, "");
     let (out, err) = run("evoke \"kill the lights in the den\"");
     assert_eq!(out, "den lights off\n");

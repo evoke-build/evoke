@@ -132,6 +132,7 @@
             ],
             "prompt": {
               "own": "outage service=\"checkout\" region=\"eu-west\" · destructive · weakest: route 0.95",
+              "reason": "it cannot be undone, so it always waits for a yes",
               "template": "Run the outage plan for checkout?"
             },
             "because": [
@@ -626,6 +627,7 @@
             ],
             "prompt": {
               "own": "outage service=\"checkout\" · destructive · weakest: route 0.95",
+              "reason": "it cannot be undone, so it always waits for a yes",
               "template": "Run the outage plan for checkout?"
             },
             "because": [
@@ -1547,6 +1549,7 @@
               ],
               "prompt": {
                 "own": "outage service=\"checkout\" · destructive · weakest: route 0.95",
+                "reason": "it cannot be undone, so it always waits for a yes",
                 "template": "Run the outage plan for checkout?"
               },
               "because": [
@@ -2068,6 +2071,7 @@
               "text": "checkout is failing in eu-west",
               "prompt": {
                 "own": "outage service=\"checkout\" region=\"eu-west\" · destructive · weakest: route 0.95",
+                "reason": "it cannot be undone, so it always waits for a yes",
                 "template": "Run the outage plan for checkout?"
               }
             }

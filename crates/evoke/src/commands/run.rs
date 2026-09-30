@@ -19,7 +19,7 @@ use evoke_core::plan::Millis;
 use evoke_core::{Decision, Digest, Fix, Input, Json, Written, by_name, pinned, replan, stale};
 use indexmap::IndexMap;
 
-use super::rounds::{Engine, Rounds};
+use super::rounds::{Engine, Rounds, Told};
 use super::session::{self, Confirmed, Failed, Opening, Session, Woven};
 use super::{Decline, Exit, Reporter, human, needs_terminal};
 use crate::args::{Command, Target};
@@ -176,6 +176,11 @@ fn planned(command: &Command, file: &str, json: bool, environment: &Environment)
             id: Digest::of(text.as_bytes()),
         }),
         results: Vec::new(),
+        sentence: Told::default(),
     };
-    rounds.run_pinned(&pinned.input, &woven, &shown)
+    let gate = rounds.session.declared.gate;
+    rounds.sentence.planned(&woven, gate.as_ref());
+    let exit = rounds.run_pinned(&pinned.input, &woven, &shown);
+    rounds.told();
+    exit
 }

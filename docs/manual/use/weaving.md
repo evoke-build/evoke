@@ -155,6 +155,7 @@ $ evoke "checkout is failing in eu-west"
   6  post channel="#incident"  0.95 · outage 6
   7  status component="checkout"  0.95 · outage 7 · service as component
   outage service="checkout" region="eu-west" · destructive · weakest: route 0.95
+    it cannot be undone, so it always waits for a yes
   Run the outage plan for checkout?  [y]es [n]o [t]each > y
 ```
 
@@ -182,10 +183,12 @@ one input would be at its turn. Then the plan is shown, numbered, one line per s
 ```text
 $ evoke "kill the lights and start a 10 minute timer"
   1  lights state="off" · asks room
-  Which room?  [1] den  [2] office  [+] add one  > 1
+  Which room?  [1] den  [2] office  [+] add one  [0] none of these  > 1
   1  lights room="den" state="off" · write · weakest: state 0.74
+       a write runs at 0.90 or more
   2  timer duration="10 minute"  0.95
   1  lights room="den" state="off" · write · weakest: state 0.74
+       a write runs at 0.90 or more
   Set the den lights off?  [y]es [n]o [t]each > y
 den lights off
 10 minute timer started
@@ -213,8 +216,10 @@ A failure, a decline or a refusal ends the weave after its stage. The steps afte
 ```text
 $ evoke "start a 25 minute timer and kill the lights in the den"
   1  timer duration="25 minute" · write · weakest: duration 0.85
+       a write runs at 0.90 or more
   2  lights room="den" state="off"  0.92
   1  timer duration="25 minute" · write · weakest: duration 0.85
+       a write runs at 0.90 or more
   Start a 25 minute timer?  [y]es [n]o [t]each > n
   2  lights room="den" state="off"  0.92 · skipped
 [2]
@@ -261,8 +266,9 @@ line prints first, its `why` `{ "type": "cancelled" }`.
 
 ## `try` and `--json`
 
-`evoke try` shows the plan, then every step's judgments under its number, the sentence's own block first as
-step 0 when a playbook wrote the plan. `evoke try --json` prints the plan whole, on one line, with every adapter
+`evoke try` shows the plan, then the sentence as it was read: where it was cut, what was folded, set aside or
+left out, and every step under its number, a playbook's own block first when one wrote the plan
+([Outcomes](outcomes.md#try-decide-and-show-the-work)). `evoke try --json` prints the plan whole, on one line, with every adapter
 call it took. `evoke --json` prints one line per step as it runs: the line of one decision, with `step` and
 `steps` first, `bound` where a value came from another step, `from` where a playbook wrote it, and `status` at
 the end, with `why` when the step stopped; the sentence's own line prints first, as step 0, with no status
@@ -287,6 +293,7 @@ $ evoke try --save ~/month.plan.json "pull september's bank transactions, invoic
   4  payroll month="september"  0.95
   5  reconcile  0.95 · takes transactions from 1, invoices from 2, expenses from 3, payroll from 4
   6  ledger month="september" · write · weakest: route 0.89
+       a write runs at 0.90 or more
   7  send to="cfo@example.com"  0.95 · after 1, 2, 3, 4, 5, 6
 + ~/month.plan.json
 ```
@@ -309,6 +316,7 @@ $ evoke run ~/month.plan.json
 september: 214 transactions, 18 204.55 at the close
 …
   6  ledger month="september" · write · weakest: route 0.89
+       a write runs at 0.90 or more
   Post september to the ledger?  [y]es [n]o [t]each > y
 september posted to the ledger
 sent to cfo@example.com
@@ -330,11 +338,10 @@ In the SDK, `steps` returns the same object and `weave` takes it ([Decisions](..
 
 ## Afterwards
 
-Every step is logged under its number. `evoke why` shows each step of the last sentence with what became of it,
-the sentence's own block first, as step 0, when a playbook wrote the plan:
-`ran`, `failed`, `declined`, `refused`, `skipped` or `unanswered`, and why, `cancelled` among the reasons, and the
-words the sentence shared into it, `shared service = checkout`. `evoke teach <call>` with no
-utterance takes the step the lesson's reflex decided; when none or several did, it names the steps and asks you
-to say which ([Tuning](tuning.md)).
+Every step is logged under its number. `evoke why` shows the last sentence as it was read, each step with what
+became of it — `ran`, `failed`, `declined`, `refused`, `skipped` or `unanswered`, and why, `cancelled` among
+the reasons — a playbook's own block first when one wrote the plan, and under a value the step it was taken from
+or the part of the sentence that gave it. `evoke teach <call>` with no utterance takes the step the lesson's
+reflex decided; when none or several did, it names the steps and asks you to say which ([Tuning](tuning.md)).
 
 **Next:** [Installing reflexes](installing.md).

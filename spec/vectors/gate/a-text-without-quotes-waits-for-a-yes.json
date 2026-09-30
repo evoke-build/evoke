@@ -200,7 +200,8 @@
       }
     ],
     "prompt": {
-      "own": "timer duration=\"10 minutes\" label=\"tea\" · write · weakest: label 0.90 · label without quotes",
+      "own": "timer duration=\"10 minutes\" label=\"tea\" · write · weakest: label 0.90",
+      "reason": "label was typed without quotes, which always waits for a yes",
       "template": "Start a 10 minutes timer?"
     },
     "because": [

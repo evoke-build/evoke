@@ -441,9 +441,13 @@
             "end": 30,
             "word": "then",
             "order": "then",
-            "p": 0.95
+            "p": 0.95,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

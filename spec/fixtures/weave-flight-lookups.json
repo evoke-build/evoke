@@ -606,28 +606,35 @@
       "end": 25,
       "word": ",",
       "order": "and",
-      "p": 0.9
+      "p": 0.9,
+      "cut": true
     },
     {
       "start": 57,
       "end": 59,
       "word": ",",
       "order": "and",
-      "p": 0.9
+      "p": 0.9,
+      "cut": true
     },
     {
       "start": 88,
       "end": 90,
       "word": ",",
       "order": "and",
-      "p": 0.9
+      "p": 0.9,
+      "cut": true
     },
     {
       "start": 126,
       "end": 131,
       "word": "and",
       "order": "and",
-      "p": 0.9
+      "p": 0.9,
+      "cut": true
     }
-  ]
+  ],
+  "count": {
+    "one": 0.05
+  }
 }

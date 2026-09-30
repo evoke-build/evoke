@@ -125,6 +125,8 @@ pub struct Woven {
     pub decided: Vec<(Asked, Decided)>,
     /// Every adapter call the plan took: the weave's own questions, then each text decided, in order.
     pub trace: Vec<Trace>,
+    /// How many rounds the adapter was asked in: texts decided side by side are asked in the same rounds.
+    pub rounds: usize,
     /// The engine's answers to the split points, when it was asked.
     pub judged: Option<Raw>,
     /// The engine's answers to which earlier step each reference names, when it was asked.
@@ -155,6 +157,7 @@ impl Woven {
             weave: replanned.weave,
             decided,
             trace: Vec::new(),
+            rounds: 0,
             judged: None,
             referred: None,
             verified: None,
@@ -893,16 +896,19 @@ impl Session<'_> {
         };
         let mut decided = seeded;
         let mut trace = Vec::new();
+        let mut rounds = 0;
         loop {
             let gate = adapter.declared().gate.as_ref();
             let planning = weave::planning::plan(&self.plan, gate, input, tags, &answers)
                 .map_err(Exit::Adapter)?;
+            let before = trace.len();
             let need = match planning {
                 Planning::Done { weave } => {
                     return Ok(Woven {
                         weave,
                         decided,
                         trace,
+                        rounds,
                         judged: answers.judged,
                         referred: answers.referred,
                         verified: answers.verified,
@@ -936,13 +942,18 @@ impl Session<'_> {
                             recalled,
                         )
                     })?;
+                    // Each text's calls come one after another; the texts' calls, side by side.
+                    rounds += round.iter().map(|one| one.trace.len()).max().unwrap_or(0);
                     for (asked, one) in asked.into_iter().zip(round) {
                         trace.extend(one.trace.iter().cloned());
                         answers.decided.push((asked.clone(), one.decision.clone()));
                         decided.push((asked, one));
                     }
+                    continue;
                 }
             }
+            // One of the plan's own requests: a round where the cache did not answer it.
+            rounds += trace.len() - before;
         }
     }
 

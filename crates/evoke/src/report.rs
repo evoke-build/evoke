@@ -11,18 +11,17 @@ use std::fmt::Write as _;
 
 use evoke_core::adapter::QuestionId;
 use evoke_core::calibrate::{self, BarRow, BinRow, Calibration, LogBlock, Miss, QuestionRow};
-use evoke_core::call::Value;
 use evoke_core::contract::Change;
-use evoke_core::decide::{Basis, Missing, View, Why};
+use evoke_core::decide::{Missing, Why};
 use evoke_core::manifest::{Effect, Manifest, Recognizer, Run, Sentence, written as slotted};
 use evoke_core::name::{ArgName, FieldName, LocalName};
 use evoke_core::test::{Claim, Expected, Mismatch};
 use evoke_core::vocabulary::Vocabulary;
-use evoke_core::weave::{Because, Bound, From, Shared, Status, Step, When, Why as Stopped};
+use evoke_core::weave::{Because, Bound, From, Repair, Shared, Status, Step, When, Why as Stopped};
 use evoke_core::{
-    At, Call, Case, Chosen, Clean, Contained, ContractDiff, Decision, Diagnostic, Digest, Does,
+    At, Call, Case, Chosen, Clean, Contained, ContractDiff, Decision, Diagnostic, Digest,
     Effective, File, Finding, Fix, Gate, Input, Json, KeyPath, Level, Needs, Prompt, Proposed, Raw,
-    Regression, Span, Verdict, Version, Weave, render,
+    Regression, Verdict, Version, Weave, render,
 };
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
@@ -34,6 +33,8 @@ use crate::hosts::Failure;
 use crate::hosts::files::Landed;
 use crate::hosts::processes::Returned;
 use crate::hosts::terminal::{Role, Text};
+
+pub mod sentence;
 
 /// The owned files as a person reads them: the root, `~/…` under `$HOME`, and each local reflex's directory as
 /// `evoke.toml` writes it; the home itself, so a path a host names in full shows the same way.
@@ -241,6 +242,16 @@ pub struct Line {
     pub expansion: Option<Expanded>,
     /// The plan file the step came from, when it was run from one.
     pub pinned: Option<PinnedAt>,
+    /// What the reflex does, by the first line of its description: logged for `why`.
+    pub summary: Option<String>,
+    /// The step's words as they were typed, where the plan wrote them anew: logged for `why`.
+    pub typed: Option<String>,
+    /// How the step's words were settled, where a rule settled them: logged for `why`.
+    pub repair: Option<Repair>,
+    /// What became of one decision, logged for `why`; a step's is its line's own.
+    pub status: Option<Status>,
+    /// The prompt a playbook's plan is reviewed under, on its expansion's line: logged for `why`.
+    pub review: Option<Prompt>,
 }
 
 /// The expansion's own line: how many steps the plan holds, the playbook, and what each slot took.
@@ -292,6 +303,11 @@ impl Line {
             step: None,
             expansion: None,
             pinned: None,
+            summary: None,
+            typed: None,
+            repair: None,
+            status: None,
+            review: None,
         }
     }
 
@@ -313,6 +329,11 @@ impl Line {
             step: None,
             expansion: None,
             pinned: None,
+            summary: None,
+            typed: None,
+            repair: None,
+            status: None,
+            review: None,
         }
     }
 
@@ -392,22 +413,53 @@ impl Line {
             }
         }
         if whole {
-            line.insert(
-                "answers".to_owned(),
-                serde_json::to_value(&self.answers).expect("answers serialize"),
-            );
-            line.insert(
-                "proposed".to_owned(),
-                serde_json::to_value(&self.proposed).expect("candidates serialize"),
-            );
-            if !self.recalled.is_empty() {
-                line.insert(
-                    "recalled".to_owned(),
-                    serde_json::to_value(&self.recalled).expect("recalled values serialize"),
-                );
-            }
+            self.kept(&mut line);
         }
         Json::Object(line)
+    }
+
+    /// What the log alone keeps: the adapter's answers, the input's candidates, what an ask recalled, and what
+    /// `why` reads back of the reflex, the words, the repair, what became of one decision and a playbook's
+    /// review.
+    fn kept(&self, line: &mut serde_json::Map<String, Json>) {
+        line.insert(
+            "answers".to_owned(),
+            serde_json::to_value(&self.answers).expect("answers serialize"),
+        );
+        line.insert(
+            "proposed".to_owned(),
+            serde_json::to_value(&self.proposed).expect("candidates serialize"),
+        );
+        if !self.recalled.is_empty() {
+            line.insert(
+                "recalled".to_owned(),
+                serde_json::to_value(&self.recalled).expect("recalled values serialize"),
+            );
+        }
+        if let Some(summary) = &self.summary {
+            line.insert("summary".to_owned(), Json::String(summary.clone()));
+        }
+        if let Some(typed) = &self.typed {
+            line.insert("typed".to_owned(), Json::String(typed.clone()));
+        }
+        if let Some(repair) = self.repair {
+            line.insert(
+                "repair".to_owned(),
+                serde_json::to_value(repair).expect("a repair serializes"),
+            );
+        }
+        if let (Some(status), None) = (self.status, &self.step) {
+            line.insert(
+                "became".to_owned(),
+                serde_json::to_value(status).expect("a status serializes"),
+            );
+        }
+        if let Some(review) = &self.review {
+            line.insert(
+                "review".to_owned(),
+                serde_json::to_value(review).expect("a prompt serializes"),
+            );
+        }
     }
 
     /// A weave's fields after the trace: a step's bound values, the words shared into it and the playbooks it came
@@ -470,6 +522,11 @@ impl Line {
         let cancelled = field("cancelled", take("cancelled")).unwrap_or_default();
         let contained = field("contained", take("contained"))?;
         let pinned = field("pinned", take("pinned"))?;
+        let summary = field("summary", take("summary")).unwrap_or_default();
+        let typed = field("typed", take("typed")).unwrap_or_default();
+        let repair = field("repair", take("repair")).unwrap_or_default();
+        let status = field("became", take("became")).unwrap_or_default();
+        let review = field("review", take("review")).unwrap_or_default();
         let mut expansion = None;
         let step = match (take("step"), take("steps")) {
             (Json::Null, _) => None,
@@ -509,6 +566,11 @@ impl Line {
             step,
             expansion,
             pinned,
+            summary,
+            typed,
+            repair,
+            status,
+            review,
         })
     }
 
@@ -543,224 +605,6 @@ fn winner_of(decision: &Decision) -> Option<LocalName> {
 /// One field of a log line, typed.
 fn field<T: serde::de::DeserializeOwned>(what: &str, value: Json) -> Result<T, String> {
     serde_json::from_value(value).map_err(|error| format!("{what}: {error}"))
-}
-
-/// `try`: the ranking, every judgment about the winner's arguments, and the outcome with its weakest
-/// judgment.
-#[must_use]
-pub fn tried(decided: &Decided, route_floor: Option<evoke_core::Prob>) -> Text {
-    let winner = winner_of(&decided.decision);
-    // A winner that the gate still abstained on was under the route floor.
-    let under = match (&decided.decision, &winner, route_floor) {
-        (Decision::Abstain { .. }, Some(_), Some(floor)) => Some(floor),
-        _ => None,
-    };
-    let mut lines = block(
-        winner.as_ref(),
-        &decided.answers,
-        &decided.proposed,
-        &decided.decision,
-        under,
-        &IndexMap::new(),
-    );
-    lines.push(outcome(&decided.decision));
-    indented(lines)
-}
-
-/// `why`: the last input's lines — one decision's, or a weave's steps each under its number — as the input, the
-/// block `try` shows, what came of it, and the frames of an error the body threw, each under it.
-#[must_use]
-pub fn why(lines: &[Line]) -> Text {
-    let mut shown = Vec::new();
-    for line in lines {
-        let input = Text::from(plain(&quoted(line.input.as_str())));
-        shown.push(match (&line.step, &line.expansion) {
-            (Some(step), _) => numbered(step.n, step.of, input),
-            (None, Some(expansion)) => numbered(0, expansion.of, input),
-            (None, None) => input,
-        });
-        shown.extend(block(
-            line.reflex(),
-            &line.answers,
-            &line.proposed,
-            &line.decision,
-            None,
-            &line.recalled,
-        ));
-        shown.push(became(line));
-        for frame in &line.frames {
-            shown.push(Text::from(format!("  {}", plain(frame))));
-        }
-    }
-    indented(shown)
-}
-
-/// The adapter's calls, those of one adapter in a row told as one: its questions, and in how many rounds they
-/// were asked when in more than one.
-fn asked(trace: &[Trace]) -> Vec<String> {
-    let mut told: Vec<(&Trace, usize, usize)> = Vec::new();
-    for call in trace {
-        match told.last_mut() {
-            Some((first, questions, rounds)) if first.adapter == call.adapter => {
-                *questions += call.questions;
-                *rounds += 1;
-            }
-            _ => told.push((call, call.questions, 1)),
-        }
-    }
-    told.into_iter()
-        .map(|(call, questions, rounds)| match rounds {
-            1 => format!("{}, {questions} questions", call.adapter),
-            _ => format!("{}, {questions} questions in {rounds} rounds", call.adapter),
-        })
-        .collect()
-}
-
-/// What came of a decision, then where its answers came from: the plan file, the adapter calls it took, or
-/// `cached`.
-fn became(line: &Line) -> Text {
-    let mut what = match (&line.step, &line.expansion) {
-        (Some(step), _) => stepped(line, step),
-        (None, Some(expansion)) => expanded(line, expansion),
-        (None, None) => alone(line),
-    };
-    let mut calls: Vec<String> = line
-        .pinned
-        .iter()
-        .map(|pinned| format!("from {}", pinned.file))
-        .collect();
-    calls.extend(asked(&line.trace));
-    let calls = if calls.is_empty() {
-        "cached".to_owned()
-    } else {
-        calls.join(" · ")
-    };
-    what.push(" · ").push(&calls);
-    if let Some(contained) = &line.contained
-        && !contained.is_full()
-    {
-        what.push(" · ").push(&contained.to_string());
-    }
-    what
-}
-
-/// One input's outcome: `ran`, `failed`, `cancelled` or `confirm` with the call as judged, `ask` with what was
-/// asked, or `abstain`.
-fn alone(line: &Line) -> Text {
-    match (&line.decision, &line.result) {
-        (Decision::Run { chosen } | Decision::Confirm { chosen, .. }, Some(_)) => {
-            let mut what = Text::from("ran ");
-            what.append(judged_call(chosen));
-            what
-        }
-        (Decision::Run { chosen } | Decision::Confirm { chosen, .. }, None) => {
-            let word = if line.cancelled {
-                "cancelled "
-            } else if line.error.is_some() {
-                "failed "
-            } else {
-                "confirm "
-            };
-            let mut what = Text::from(word);
-            what.append(judged_call(chosen));
-            what
-        }
-        (Decision::Ask { missing, .. }, _) => {
-            let asked: Vec<&str> = missing.iter().map(|missing| missing.arg.as_str()).collect();
-            Text::from(format!("ask {}", asked.join(" ")))
-        }
-        (Decision::Abstain { .. }, _) => Text::from("abstain"),
-    }
-}
-
-/// A playbook's expansion: its decision's outcome and the call as judged, then the plan it became.
-fn expanded(line: &Line, expansion: &Expanded) -> Text {
-    let mut text = match &line.decision {
-        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
-            let word = if matches!(line.decision, Decision::Run { .. }) {
-                "run "
-            } else {
-                "confirm "
-            };
-            let mut text = Text::from(word);
-            text.append(judged_call(chosen));
-            text
-        }
-        Decision::Ask { missing, .. } => {
-            let asked: Vec<&str> = missing.iter().map(|missing| missing.arg.as_str()).collect();
-            Text::from(format!("ask {}", asked.join(" ")))
-        }
-        Decision::Abstain { .. } => Text::from("abstain"),
-    };
-    text.push(&format!(
-        " · the {} plan, {} steps",
-        expansion.playbook, expansion.of
-    ));
-    text
-}
-
-/// A step's outcome: its status, the call as judged — `ask <args>` for a step still asking, nothing for one that
-/// matched no reflex — and why it stopped, unless it was declined: the prompt's own line says no more than the
-/// call does.
-fn stepped(line: &Line, step: &StepLine) -> Text {
-    let mut text = Text::from(status_word(step.status));
-    match &line.decision {
-        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
-            text.push(" ").append(judged_call(chosen));
-        }
-        Decision::Ask { missing, .. } => {
-            let asked: Vec<&str> = missing.iter().map(|missing| missing.arg.as_str()).collect();
-            text.push(&format!(" ask {}", asked.join(" ")));
-        }
-        Decision::Abstain { .. } => {}
-    }
-    // What the step took, as the plan printed it: a field's name, or the name a whole result goes by.
-    let takes: Vec<String> = step
-        .bound
-        .iter()
-        .map(|b| format!("{} from {}", b.field, b.from))
-        .collect();
-    if !takes.is_empty() {
-        text.push(&format!(" · takes {}", takes.join(", ")));
-    }
-    if let Some(origin) = shared(&step.shared) {
-        text.push(" · ").push(&origin);
-    }
-    for from in &step.from {
-        text.push(&format!(" · {} {}", from.playbook, from.step));
-    }
-    if step.status != Status::Declined
-        && let Some(why) = &step.why
-    {
-        text.push(" · ").push(&stopped(why, step.when.as_ref()));
-    }
-    text
-}
-
-/// Where a step's shared words came from, as `why` and `try` say it: `shared service = checkout, region = eu-west`
-/// — the sentence stated them once for several steps.
-#[must_use]
-pub fn shared(shared: &IndexMap<ArgName, Shared>) -> Option<String> {
-    if shared.is_empty() {
-        return None;
-    }
-    let words: Vec<String> = shared
-        .iter()
-        .map(|(arg, shared)| format!("{arg} = {}", shared.word))
-        .collect();
-    Some(format!("shared {}", words.join(", ")))
-}
-
-/// A step's status, in the word its line carries.
-fn status_word(status: Status) -> &'static str {
-    match status {
-        Status::Ran => "ran",
-        Status::Failed => "failed",
-        Status::Declined => "declined",
-        Status::Refused => "refused",
-        Status::Skipped => "skipped",
-        Status::Unanswered => "unanswered",
-    }
 }
 
 /// Why a step stopped, in a person's words; a step not chosen names the field it waits on, when the step is
@@ -853,24 +697,39 @@ fn run_line(chosen: &Chosen) -> Text {
     text
 }
 
-/// The plan, one line per step, numbered as the run refers to them: a call with its confidence; the own line of
-/// a step that will confirm; `asks <arg>` for what a step still needs; `takes <field> from <n>` where a result
-/// threads in; `after <n>` where the words order it; `with <n>` where the step runs beside earlier ones; `no
-/// reflex` where nothing matched. Then what was folded into a step, what was set aside as a remark or kept out
-/// of the plan as words that may add a detail, and what was left out, when the request said what not to do.
+/// The plan: what stands out of it, then one line per step, numbered as the run refers to them: a call with its
+/// confidence; the own line of a step that will confirm, and why it waits under it; `asks <arg>` for what a
+/// step still needs; `takes <field> from <n>` where a result threads in; `after <n>` where the words order it;
+/// `with <n>` where the step runs beside earlier ones; `no reflex` where nothing matched.
 #[must_use]
 pub fn planned(weave: &Weave) -> Text {
-    let mut lines: Vec<Text> = weave
-        .steps
-        .iter()
-        .map(|step| numbered(step.n, weave.steps.len(), step_body(step, weave)))
-        .collect();
+    let mut lines = notes(weave);
+    lines.extend(
+        weave
+            .steps
+            .iter()
+            .map(|step| numbered(step.n, weave.steps.len(), step_body(step, weave))),
+    );
+    indented(lines)
+}
+
+/// What stands out of a plan of one step, before its line.
+#[must_use]
+pub fn noted(weave: &Weave) -> Text {
+    indented(notes(weave))
+}
+
+/// What stands out of the plan, a line each: what was folded into a step, what was set aside as a remark or
+/// kept out of the plan as words that may add a detail, and what was left out, when the request said what not
+/// to do.
+fn notes(weave: &Weave) -> Vec<Text> {
+    let mut lines = Vec::new();
     for folded in &weave.folded {
-        lines.push(Text::from(format!(
-            "folded {} into {}",
-            quoted(&folded.text),
-            folded.into
-        )));
+        lines.push(Text::from(if weave.steps.len() > 1 {
+            format!("folded {} into {}", quoted(&folded.text), folded.into)
+        } else {
+            format!("folded {}", quoted(&folded.text))
+        }));
     }
     for aside in &weave.asides {
         lines.push(Text::from(if aside.remark {
@@ -883,7 +742,7 @@ pub fn planned(weave: &Weave) -> Text {
         let parts: Vec<String> = weave.excluded.iter().map(|part| quoted(part)).collect();
         lines.push(Text::from(format!("left out {}", parts.join(", "))));
     }
-    indented(lines)
+    lines
 }
 
 /// One line of a weave at its turn, numbered as the plan numbers it, with what the plan could not show: a
@@ -891,7 +750,7 @@ pub fn planned(weave: &Weave) -> Text {
 #[must_use]
 pub fn step(n: usize, of: usize, body: Text) -> Text {
     let mut text = Text::from("  ");
-    text.append(numbered(n, of, body));
+    text.append(numbered(n, of, body).hang(2));
     text
 }
 
@@ -903,12 +762,10 @@ pub fn step_running(chosen: &Chosen, contained: &Contained) -> Text {
     text
 }
 
-/// A step's own line ahead of its confirm prompt.
+/// A step's own line ahead of its confirm prompt, and why it waits under it.
 #[must_use]
 pub fn step_confirming(chosen: &Chosen, prompt: &Prompt, contained: &Contained) -> Text {
-    let mut text = own(chosen, &prompt.own);
-    held(&mut text, contained);
-    text
+    waiting(chosen, prompt, Some(contained))
 }
 
 /// A step refused at its turn, its bound values in its words: `"<words>" · no reflex`.
@@ -952,6 +809,10 @@ pub fn step_body(step: &Step, weave: &Weave) -> Text {
         .map(|b| b.from)
         .chain(step.when.iter().map(|when| when.step))
         .collect();
+    let reason = match &step.decision {
+        Decision::Confirm { prompt, .. } => prompt.reason.as_str(),
+        _ => "",
+    };
     let mut text = match &step.decision {
         Decision::Run { chosen } => run_line(chosen),
         Decision::Confirm { chosen, prompt, .. } => own(chosen, &prompt.own),
@@ -1042,6 +903,7 @@ pub fn step_body(step: &Step, weave: &Weave) -> Text {
         }
     }
     branched(&mut text, step, weave);
+    because_under(&mut text, reason);
     text
 }
 
@@ -1083,11 +945,12 @@ pub fn plan_json(woven: &Woven) -> String {
     Json::Object(plan).to_string()
 }
 
-/// `<n>  <body>`, the number right-aligned to the count.
+/// `<n>  <body>`, the number right-aligned to the count; what stands under the body's first line stays under
+/// it.
 fn numbered(n: usize, of: usize, body: Text) -> Text {
     let width = of.to_string().len();
     let mut text = Text::from(format!("{n:>width$}  "));
-    text.append(body);
+    text.append(body.hang(width + 2));
     text
 }
 
@@ -1183,6 +1046,29 @@ pub fn verdict(because: &Because) -> String {
     }
 }
 
+/// Why a plan waits for one yes, a reason a line: what the verdict says, and for a playbook its own line with
+/// why its call waits under it; `head` before the first, where the plan came from a file.
+#[must_use]
+pub fn reasons(head: Option<&str>, because: &[Because]) -> Text {
+    let mut lines: Vec<Text> = Vec::new();
+    for because in because {
+        let mut line = Text::from(verdict(because));
+        if let Because::Reviewed { prompt, .. } = because {
+            because_under(&mut line, &prompt.reason);
+        }
+        lines.push(line);
+    }
+    if let Some(head) = head {
+        let mut first = Text::from(head);
+        if let Some(line) = lines.first().cloned() {
+            first.push(" · ").append(line);
+            lines.remove(0);
+        }
+        lines.insert(0, first);
+    }
+    indented(lines)
+}
+
 /// `show <name>` on a reflex that takes whole results: per name, which installed reflexes return it.
 #[must_use]
 pub fn taken(takes: &[(FieldName, Vec<LocalName>)]) -> Text {
@@ -1207,13 +1093,30 @@ pub fn taken(takes: &[(FieldName, Vec<LocalName>)]) -> Text {
     )
 }
 
-/// `evoke`'s own line before a confirm, the machine's status on its end when it does not hold the declaration.
+/// `evoke`'s own line before a confirm, the machine's status on its end when it does not hold the declaration,
+/// and why the call waits under it.
 #[must_use]
 pub fn confirming(chosen: &Chosen, prompt: &Prompt, contained: &Contained) -> Text {
     let mut text = Text::from("  ");
-    text.append(own(chosen, &prompt.own));
-    held(&mut text, contained);
+    text.append(waiting(chosen, prompt, Some(contained)).hang(2));
     text
+}
+
+/// The prompt's own line, the machine's status on its end, and under it the line that says why the call waits.
+fn waiting(chosen: &Chosen, prompt: &Prompt, contained: Option<&Contained>) -> Text {
+    let mut text = own(chosen, &prompt.own);
+    if let Some(contained) = contained {
+        held(&mut text, contained);
+    }
+    because_under(&mut text, &prompt.reason);
+    text
+}
+
+/// Why a call waits, on a line of its own under the call.
+fn because_under(text: &mut Text, reason: &str) {
+    if !reason.is_empty() {
+        text.push("\n  ").roled(Role::Weak, &plain(reason));
+    }
 }
 
 /// The call on one line, the reflex's name carrying the weight.
@@ -1226,8 +1129,7 @@ fn call(call: &Call) -> Text {
 }
 
 /// The prompt's own line, word for word as the core wrote it, with its roles found by its shape: the call, the
-/// effect, then the weakest judgment when it comes next; the caps after it as they are. A line shaped otherwise
-/// stays whole and plain.
+/// effect, then the weakest judgment when it comes next. A line shaped otherwise stays whole and plain.
 fn own(chosen: &Chosen, own: &str) -> Text {
     let head = format!("{} · {}", render(&chosen.call), chosen.effect);
     let Some(rest) = own.strip_prefix(head.as_str()) else {
@@ -1237,15 +1139,9 @@ fn own(chosen: &Chosen, own: &str) -> Text {
     text.push(" · ")
         .roled(Role::Effect(chosen.effect), &chosen.effect.to_string());
     match rest.strip_prefix(" · weakest: ") {
-        Some(judged) => {
-            let (weakest, caps) = judged
-                .split_once(" · ")
-                .map_or((judged, ""), |(weakest, caps)| (weakest, caps));
+        Some(weakest) => {
             text.push(" · ")
                 .roled(Role::Weak, &format!("weakest: {weakest}"));
-            if !caps.is_empty() {
-                text.push(" · ").push(caps);
-            }
         }
         None => {
             text.push(rest);
@@ -1266,9 +1162,12 @@ pub fn confirm_prompt(prompt: &Prompt, teachable: bool, retry: Option<&str>) -> 
     format!("  {}  {retry}{choices} > ", prompt.template)
 }
 
-/// The ask prompt: numbered choices, a vocabulary's `[+] add one`, or a pick typed freely — the values recalled
-/// from the process's results numbered before it, a number pick's named as hints; `retry` says why the last
-/// answer did not do.
+/// What a listed choice offers last: none of them, which declines the question.
+pub const NONE_OF_THESE: &str = "none of these";
+
+/// The ask prompt: numbered choices and `[0] none of these`, a vocabulary's `[+] add one`, or a pick typed
+/// freely — the values recalled from the process's results numbered before it, a number pick's named as hints;
+/// `retry` says why the last answer did not do.
 #[must_use]
 pub fn ask_prompt(missing: &Missing, retry: Option<&str>) -> String {
     use evoke_core::decide::Choices;
@@ -1281,12 +1180,13 @@ pub fn ask_prompt(missing: &Missing, retry: Option<&str>) -> String {
             for (i, key) in options.keys().enumerate() {
                 let _ = write!(line, "[{}] {key}  ", i + 1);
             }
+            let _ = write!(line, "[0] {NONE_OF_THESE}  ");
         }
         Choices::Vocab { words } => {
             for (i, word) in words.keys().enumerate() {
                 let _ = write!(line, "[{}] {word}  ", i + 1);
             }
-            line.push_str("[+] add one  ");
+            let _ = write!(line, "[+] add one  [0] {NONE_OF_THESE}  ");
         }
         // A number pick names the recalled values as hints: a number typed is its own answer.
         Choices::Pick {
@@ -1343,6 +1243,16 @@ pub fn because(missing: &Missing) -> Option<String> {
         },
         (_, None) => None,
     }
+}
+
+/// A question declined, at the end of input or by none of these: nothing runs, and the plan says which step's
+/// value it lacks.
+#[must_use]
+pub fn declined(arg: &ArgName, step: Option<usize>) -> Text {
+    Text::from(match step {
+        Some(step) => format!("  nothing runs: step {step} has no {arg}"),
+        None => format!("  nothing runs without {arg}"),
+    })
 }
 
 /// `teach` of a phrase the reflex's examples already hold with the same values: nothing to write.
@@ -1444,7 +1354,7 @@ const COMMANDS: [(&str, &[(&str, &str)]); 4] = [
             ("  --tag <tag>", "only the reflexes carrying the tag"),
             ("  --save <file>", "the plan as a file, for run"),
             ("  --", "the rest is input, even a command word"),
-            ("evoke why", "the last decision, explained"),
+            ("evoke why", "the last sentence, explained"),
             ("evoke run <call>", "by name, without the classifier"),
             ("evoke run <file>", "a saved plan, run as it stands"),
             ("  --json", "one JSON line: the call and its result"),
@@ -2693,230 +2603,23 @@ fn toml(value: &Json) -> String {
     }
 }
 
-/// The ranking, the winner's argument lines, the values an ask recalled, what the words left over do and how
-/// far the call holds all that was said, unindented; on each distribution the top answer carries the weight.
-/// An argument the request says nothing of is no line, unless the decision asks for it or holds a value for
-/// it.
-fn block(
-    winner: Option<&LocalName>,
-    answers: &Raw,
-    proposed: &[Proposed],
-    decision: &Decision,
-    under_floor: Option<evoke_core::Prob>,
-    recalled: &IndexMap<ArgName, Vec<String>>,
-) -> Vec<Text> {
-    let asked: Vec<&str> = match decision {
-        Decision::Ask { missing, .. } => missing.iter().map(|m| m.arg.as_str()).collect(),
-        _ => Vec::new(),
-    };
-    let held = |arg: &str| {
-        let args = match decision {
-            Decision::Run { chosen } | Decision::Confirm { chosen, .. } => &chosen.call.args,
-            Decision::Ask { asking, .. } => &asking.args,
-            Decision::Abstain { .. } => return false,
-        };
-        args.keys().any(|name| name.as_str() == arg)
-    };
-    let quiet = |arg: &str, question: &String| {
-        !asked.contains(&arg)
-            && !held(arg)
-            && sorted(answers, question)
-                .first()
-                .is_some_and(|(top, _)| top == "unstated")
-    };
-    let mut lines = vec![ranking(answers, under_floor)];
-    let arguments: Vec<(&str, &String)> = winner
-        .map(|winner| {
-            answers
-                .0
-                .keys()
-                .filter_map(|question| match QuestionId::parse(question) {
-                    Ok(QuestionId::Arg(reflex, _)) if reflex == *winner => {
-                        Some((question.rsplit('.').next().unwrap_or(question), question))
-                    }
-                    _ => None,
-                })
-                .filter(|(arg, question)| !quiet(arg, question))
-                .collect()
-        })
-        .unwrap_or_default();
-    let left = left(decision);
-    let whole = whole(decision);
-    let least = if left.is_empty() && whole.is_none() {
-        ""
-    } else {
-        "words"
-    };
-    let width = arguments
-        .iter()
-        .map(|(arg, _)| arg.len())
-        .chain(recalled.keys().map(|arg| arg.as_str().len()))
-        .fold(least.len(), usize::max)
-        + 2;
-    for (arg, question) in arguments {
-        let mut line = Text::from(format!("{arg:<width$}"));
-        line.append(distribution(&sorted(answers, question), |key| {
-            candidate(key, proposed)
-        }));
-        lines.push(line);
-        if let Some(detail) = stands_on(decision, arg) {
-            lines.push(Text::from(format!("{:<width$}{detail}", "")));
-        }
-    }
-    for (arg, values) in recalled {
-        lines.push(Text::from(format!(
-            "{:<width$}recalled {}",
-            arg.as_str(),
-            values.join(" · ")
-        )));
-    }
-    if !left.is_empty() {
-        lines.push(Text::from(format!(
-            "{:<width$}{}",
-            "words",
-            left.join(" · ")
-        )));
-    }
-    if let Some(whole) = whole {
-        lines.push(Text::from(format!("{:<width$}{whole}", "whole")));
-    }
-    lines
-}
-
 /// The route's answers, most probable first, and the floor when the winner was under it.
 fn ranking(answers: &Raw, under_floor: Option<evoke_core::Prob>) -> Text {
-    let mut line = distribution(&sorted(answers, "route"), str::to_owned);
+    let mut line = distribution(&sorted(answers, "route"), |key| match key {
+        "none" => "none of them".to_owned(),
+        _ => key.to_owned(),
+    });
     if let Some(floor) = under_floor {
-        line.push(&format!(" · route floor {:.2}", floor.get()));
+        line.push(&format!(
+            " · a reflex is picked at {:.2} or more",
+            floor.get()
+        ));
     }
     line
 }
 
 /// Under this, a probability prints as `0.00`.
 const SHOWN: f64 = 0.005;
-
-/// How far the call holds all that was said, where it was held against the request: `holds all you said
-/// 0.90`.
-fn whole(decision: &Decision) -> Option<String> {
-    let held = match decision {
-        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => chosen.whole?,
-        Decision::Ask { asking, .. } => asking.whole?,
-        Decision::Abstain { .. } => return None,
-    };
-    Some(format!("holds all you said {:.2}", held.get()))
-}
-
-/// The runs of the request's words that no value holds, each with what it does: `"kill the lights" say what to
-/// do 0.97`.
-fn left(decision: &Decision) -> Vec<String> {
-    let left = match decision {
-        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => &chosen.left,
-        Decision::Ask { asking, .. } => &asking.left,
-        Decision::Abstain { .. } => return Vec::new(),
-    };
-    left.iter()
-        .map(|run| {
-            let does = match &run.does {
-                Does::Action => "say what to do".to_owned(),
-                Does::Answers { arg } => format!("answer {arg}"),
-                Does::Nothing => "ask for nothing".to_owned(),
-                Does::More => "ask for another thing".to_owned(),
-            };
-            format!(
-                "{} {does} {:.2}",
-                plain(&quoted(run.words.text().as_str())),
-                run.p.get()
-            )
-        })
-        .collect()
-}
-
-/// What a value read from the request stands on, beside its own question: the second view of a listed word,
-/// the words of the request that hold it, the yes that took it. Nothing for a value its own question gave.
-fn stands_on(decision: &Decision, arg: &str) -> Option<String> {
-    let (args, basis) = match decision {
-        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
-            (&chosen.call.args, &chosen.basis)
-        }
-        Decision::Ask { asking, .. } => (&asking.args, &asking.basis),
-        Decision::Abstain { .. } => return None,
-    };
-    let (name, stands) = basis.iter().find(|(name, _)| name.as_str() == arg)?;
-    let value = args.get(name)?;
-    let said = |words: &Span| plain(&quoted(words.text().as_str()));
-    let shown = match stands {
-        Basis::Text { .. } => plain(&quoted(value.text().unwrap_or_default())),
-        _ => value.text().unwrap_or_default().to_owned(),
-    };
-    Some(match stands {
-        Basis::Ask { .. } => return None,
-        Basis::Views {
-            reader, yes: None, ..
-        } => format!("asked a second way: {shown} {:.2}", reader.get()),
-        Basis::Views {
-            reader,
-            yes: Some(yes),
-            ..
-        } => format!(
-            "asked a second way: {shown} {:.2} · is it {shown}? yes {:.2}",
-            reader.get(),
-            yes.get()
-        ),
-        Basis::View {
-            view: View::Ask,
-            other,
-            words,
-            ..
-        } => format!(
-            "asked a second way: {other} · in your words: {}",
-            said(words)
-        ),
-        Basis::View {
-            view: View::Reader,
-            p,
-            words,
-            ..
-        } => format!(
-            "asked a second way: {shown} {:.2} · in your words: {}",
-            p.get(),
-            said(words)
-        ),
-        Basis::Words { words, yes, .. } => format!(
-            "in your words: {} · is it {shown}? yes {:.2}",
-            said(words),
-            yes.get()
-        ),
-        Basis::Spelled { yes, .. } => match value {
-            Value::Pick { span, .. } => format!(
-                "in your words: {} · is it {shown}? yes {:.2}",
-                said(span),
-                yes.get()
-            ),
-            _ => return None,
-        },
-        Basis::Only { yes } => format!("the only one of its kind: yes {:.2}", yes.get()),
-        Basis::Shared { from, yes } if *value == Value::Flag => {
-            format!(
-                "said once, in {} · yes {:.2}",
-                plain(&quoted(from)),
-                yes.get()
-            )
-        }
-        Basis::Shared { from, yes } => format!(
-            "said once, in {} · is it {shown}? yes {:.2}",
-            plain(&quoted(from)),
-            yes.get()
-        ),
-        Basis::Text { p, others } if others.is_empty() => {
-            format!("read without quotes: {shown} {:.2}", p.get())
-        }
-        Basis::Text { p, others } => format!(
-            "read without quotes: {shown} {:.2} · other readings: {}",
-            p.get(),
-            others.iter().map(said).collect::<Vec<String>>().join(" · ")
-        ),
-    })
-}
 
 /// A question's answers as sorted, `key p` each: the top one weighted; the ones that would print as `0.00`
 /// folded into a count — but the sentinels `none` and `unstated`, which always show, since they are what the
@@ -2958,62 +2661,10 @@ fn sorted(answers: &Raw, question: &str) -> Vec<(String, f64)> {
     sorted
 }
 
-/// A candidate's key shown as its quoted span; every other key as itself.
-fn candidate(key: &str, proposed: &[Proposed]) -> String {
-    proposed
-        .iter()
-        .find(|proposed| format!("{}-{}", proposed.span.start(), proposed.span.end()) == key)
-        .map_or_else(
-            || key.to_owned(),
-            |proposed| quoted(proposed.span.text().as_str()),
-        )
-}
-
-/// The outcome line: `run`, `ask <missing>`, `confirm` with the prompt's own line, or `abstain`.
-fn outcome(decision: &Decision) -> Text {
-    match decision {
-        Decision::Abstain { .. } => Text::from("abstain"),
-        Decision::Run { chosen } => match &chosen.judged {
-            Some(judged) => {
-                let mut text = Text::from("run · ");
-                text.roled(Role::Weak, &weakest(judged.weakest()));
-                text
-            }
-            None => Text::from("run"),
-        },
-        Decision::Ask { asking, missing } => {
-            let missing: Vec<&str> = missing.iter().map(|missing| missing.arg.as_str()).collect();
-            let mut text = Text::from(format!("ask {} · ", missing.join(" ")));
-            text.roled(Role::Weak, &weakest(asking.judged.weakest()));
-            text
-        }
-        Decision::Confirm { chosen, prompt, .. } => {
-            let mut text = Text::from("confirm · ");
-            text.append(own(chosen, &prompt.own));
-            text
-        }
-    }
-}
-
-/// `<call> · weakest: <argument or question> <p>`, as `why` names a judged call.
-fn judged_call(chosen: &Chosen) -> Text {
-    let mut text = call(&chosen.call);
-    if let Some(judged) = &chosen.judged {
-        text.push(" · ")
-            .roled(Role::Weak, &weakest(judged.weakest()));
-    }
-    text
-}
-
-/// `weakest: <argument or question> <p>`, as the confirm prompt names it.
-fn weakest(judgment: &evoke_core::Judgment) -> String {
-    format!("weakest: {} {:.2}", judgment.about(), judgment.p.get())
-}
-
 fn indented(lines: Vec<Text>) -> Text {
     Text::lines(lines.into_iter().map(|line| {
         let mut indented = Text::from("  ");
-        indented.append(line);
+        indented.append(line.hang(2));
         indented
     }))
 }
@@ -3212,19 +2863,17 @@ mod tests {
         let again = Line::parse(&line.log()).unwrap();
         assert_eq!(again.log(), line.log());
         assert!(!line.json().contains("\"answers\""));
-        let explained = why(std::slice::from_ref(&line));
-        assert_eq!(
-            explained.to_string(),
-            "  \"kill the lights in the den\"\n  lights 0.91 · none 0.07 · timer 0.02\n  ran lights room=\"den\" state=\"off\" · weakest: room 0.85 · replay, 6 questions"
-        );
-        assert_eq!(
-            explained.roles(),
-            vec![
-                (Role::Top, "lights"),
-                (Role::Call, "lights"),
-                (Role::Weak, "weakest: room 0.85")
-            ]
-        );
+        // What the log alone keeps reads back, and never reaches the JSON line.
+        let mut kept = line;
+        kept.summary = Some("Turn the lights on, off or dim.".to_owned());
+        kept.typed = Some("kill the lights, in the den".to_owned());
+        kept.status = Some(Status::Ran);
+        let again = Line::parse(&kept.log()).unwrap();
+        assert_eq!(again.summary, kept.summary);
+        assert_eq!(again.typed, kept.typed);
+        assert_eq!(again.status, kept.status);
+        assert!(!kept.json().contains("summary"));
+        assert!(!kept.json().contains("became"));
     }
 
     #[test]
@@ -3237,22 +2886,18 @@ mod tests {
         let route = ranking(&answers, None);
         assert_eq!(
             route.to_string(),
-            "volume 0.99 · lock 0.01 · none 0.00 · 2 more under 0.01"
+            "volume 0.99 · lock 0.01 · none of them 0.00 · 2 more under 0.01"
         );
         assert_eq!(route.roles(), vec![(Role::Top, "volume")]);
-        let proposed: Vec<Proposed> = serde_json::from_value(serde_json::json!([
-            { "span": { "start": 0, "end": 10, "text": "40 percent" }, "value": { "type": "number", "value": 40 } }
-        ]))
-        .unwrap();
-        let level = distribution(&sorted(&answers, "volume.level"), |key| {
-            candidate(key, &proposed)
-        });
-        assert_eq!(level.to_string(), "\"40 percent\" 0.98 · unstated 0.02");
-        assert_eq!(level.roles(), vec![(Role::Top, "\"40 percent\"")]);
         // One answer, however small, is never folded.
         let one: Raw =
             serde_json::from_value(serde_json::json!({ "route": { "lights": 0.001 } })).unwrap();
         assert_eq!(ranking(&one, None).to_string(), "lights 0.00");
+        let under = ranking(&one, evoke_core::Prob::new(0.5));
+        assert_eq!(
+            under.to_string(),
+            "lights 0.00 · a reflex is picked at 0.50 or more"
+        );
     }
 
     /// The run decision of the log line above, as a `Chosen`.
@@ -3300,28 +2945,39 @@ mod tests {
     #[test]
     fn the_confirm_line_is_the_prompts_own_words_with_their_roles() {
         let chosen = chosen();
-        let own = |text: &str| Prompt {
+        let own = |text: &str, reason: &str| Prompt {
             own: text.to_owned(),
+            reason: reason.to_owned(),
             template: Clean::line("Set the den lights off?").unwrap(),
         };
         let judged = own(
-            "lights room=\"den\" state=\"off\" · write · weakest: room 0.85 · also \"now · later\"",
+            "lights room=\"den\" state=\"off\" · write · weakest: room 0.85",
+            "a write runs at 0.90 or more; \"now · later\" asks for another thing",
         );
         let line = confirming(&chosen, &judged, &Contained::Full);
-        assert_eq!(line.to_string(), format!("  {}", judged.own));
+        assert_eq!(
+            line.to_string(),
+            format!("  {}\n    {}", judged.own, judged.reason)
+        );
         assert_eq!(
             line.roles(),
             vec![
                 (Role::Call, "lights"),
                 (Role::Effect(Effect::Write), "write"),
                 (Role::Weak, "weakest: room 0.85"),
+                (Role::Weak, judged.reason.as_str()),
             ]
         );
-        let capped = own("lights room=\"den\" state=\"off\" · write · holds all you said 0.20");
-        let line = confirming(&chosen, &capped, &Contained::Full);
-        assert_eq!(line.to_string(), format!("  {}", capped.own));
+        // Under a step's number, why it waits stands under the call.
+        assert_eq!(
+            step(2, 12, step_confirming(&chosen, &judged, &Contained::Full)).to_string(),
+            format!("   2  {}\n        {}", judged.own, judged.reason)
+        );
+        let unjudged = own("lights room=\"den\" state=\"off\" · write", "");
+        let line = confirming(&chosen, &unjudged, &Contained::Full);
+        assert_eq!(line.to_string(), format!("  {}", unjudged.own));
         assert_eq!(line.roles().len(), 2);
-        let other = own("something else entirely");
+        let other = own("something else entirely", "");
         assert_eq!(
             confirming(&chosen, &other, &Contained::Full).to_string(),
             "  something else entirely"

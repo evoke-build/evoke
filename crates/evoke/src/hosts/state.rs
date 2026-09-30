@@ -172,18 +172,40 @@ impl State {
             .unwrap_or_default())
     }
 
-    /// The log's last input, as its lines: one decision's, or every line of the last weave — the trailing lines
-    /// of one plan, a step's rounds each under its number — in the order they were written; nothing decided yet
-    /// is empty. Read backwards, one weave's step numbers never rise, and a number repeated is a round of the
-    /// same step, with the step's own text: a rise, or the number repeated over other text, is the weave before.
-    /// A playbook's expansion is logged as step 0 before its steps: the walk ends at it.
-    pub fn tail(&self) -> Result<Vec<String>, Failure> {
+    /// The log's last input, as its lines, in the order they were written; nothing decided yet is empty. A
+    /// sentence is logged after its own lines, with how many they are: the last line, when it is one, names
+    /// them. A log that ends otherwise is read backwards: one decision's line, or every line of the last weave —
+    /// one weave's step numbers never rise, and a number repeated is a round of the same step, with the step's
+    /// own text: a rise, or the number repeated over other text, is the weave before. A playbook's expansion is
+    /// logged as step 0 before its steps: the walk ends at it.
+    pub fn tail(&self) -> Result<Tail, Failure> {
         let Some(text) = read(&self.state.join("log.jsonl"))? else {
-            return Ok(Vec::new());
+            return Ok(Tail::default());
         };
+        let written: Vec<&str> = text
+            .lines()
+            .filter(|line| !line.trim().is_empty())
+            .collect();
+        if let Some((last, own)) = written
+            .last()
+            .and_then(|last| sentence_of(last).map(|own| (*last, own)))
+        {
+            let from = written.len().saturating_sub(own + 1);
+            return Ok(Tail {
+                lines: written[from..written.len() - 1]
+                    .iter()
+                    .map(|line| (*line).to_owned())
+                    .collect(),
+                sentence: Some(last.to_owned()),
+            });
+        }
         let mut lines: Vec<String> = Vec::new();
         let mut last: Option<StepLine> = None;
-        for line in text.lines().rev().filter(|line| !line.trim().is_empty()) {
+        for line in written.into_iter().rev() {
+            // A sentence's own line further up ends the walk: what stands before it is another sentence's.
+            if sentence_of(line).is_some() {
+                break;
+            }
             match (step_of(line), &last) {
                 (None, None) => {
                     lines.push(line.to_owned());
@@ -213,7 +235,10 @@ impl State {
             }
         }
         lines.reverse();
-        Ok(lines)
+        Ok(Tail {
+            lines,
+            sentence: None,
+        })
     }
 
     /// `answers/<plan>/<sha256 of the utterance identity and the question ids asked>.json`: one entry per plan,
@@ -242,6 +267,20 @@ struct StepLine {
     n: usize,
     of: usize,
     input: String,
+}
+
+/// The log's last input: its decisions' lines, and the sentence's own line where the log kept one.
+#[derive(Debug, Default, PartialEq, Eq)]
+pub struct Tail {
+    pub lines: Vec<String>,
+    pub sentence: Option<String>,
+}
+
+/// How many lines before it are a sentence's own, when the line is a sentence's.
+fn sentence_of(line: &str) -> Option<usize> {
+    let fields: serde_json::Value = serde_json::from_str(line).ok()?;
+    fields.get("sentence")?.as_str()?;
+    usize::try_from(fields.get("lines")?.as_u64()?).ok()
 }
 
 fn step_of(line: &str) -> Option<StepLine> {
@@ -377,9 +416,10 @@ mod tests {
             ("XDG_STATE_HOME".to_owned(), dir.display().to_string()),
         ])))
         .unwrap();
-        assert!(state.tail().unwrap().is_empty());
+        let lines = |state: &State| state.tail().unwrap().lines;
+        assert!(lines(&state).is_empty());
         state.log(r#"{"input":"one"}"#).unwrap();
-        assert_eq!(state.tail().unwrap(), vec![r#"{"input":"one"}"#]);
+        assert_eq!(lines(&state), vec![r#"{"input":"one"}"#]);
         // Two weaves of two steps in a row: the tail is the second one's lines, in order.
         for line in [
             r#"{"step":1,"steps":2,"input":"a"}"#,
@@ -390,7 +430,7 @@ mod tests {
             state.log(line).unwrap();
         }
         assert_eq!(
-            state.tail().unwrap(),
+            lines(&state),
             vec![
                 r#"{"step":1,"steps":2,"input":"c"}"#,
                 r#"{"step":2,"steps":2,"input":"d"}"#
@@ -398,12 +438,9 @@ mod tests {
         );
         // A weave that logged one step of three, after another: its one line.
         state.log(r#"{"step":2,"steps":3,"input":"e"}"#).unwrap();
-        assert_eq!(
-            state.tail().unwrap(),
-            vec![r#"{"step":2,"steps":3,"input":"e"}"#]
-        );
+        assert_eq!(lines(&state), vec![r#"{"step":2,"steps":3,"input":"e"}"#]);
         state.log(r#"{"input":"two"}"#).unwrap();
-        assert_eq!(state.tail().unwrap(), vec![r#"{"input":"two"}"#]);
+        assert_eq!(lines(&state), vec![r#"{"input":"two"}"#]);
         // A step that ran in rounds logged its number more than once, over its own text: every line is the tail's.
         for line in [
             r#"{"step":1,"steps":2,"input":"f"}"#,
@@ -412,18 +449,12 @@ mod tests {
         ] {
             state.log(line).unwrap();
         }
-        assert_eq!(state.tail().unwrap().len(), 3);
+        assert_eq!(lines(&state).len(), 3);
         // The next weave's first step, alone: the number repeated over other text is another weave.
         state.log(r#"{"step":1,"steps":2,"input":"h"}"#).unwrap();
-        assert_eq!(
-            state.tail().unwrap(),
-            vec![r#"{"step":1,"steps":2,"input":"h"}"#]
-        );
+        assert_eq!(lines(&state), vec![r#"{"step":1,"steps":2,"input":"h"}"#]);
         state.log(r#"{"step":1,"steps":2,"input":"i"}"#).unwrap();
-        assert_eq!(
-            state.tail().unwrap(),
-            vec![r#"{"step":1,"steps":2,"input":"i"}"#]
-        );
+        assert_eq!(lines(&state), vec![r#"{"step":1,"steps":2,"input":"i"}"#]);
         // A playbook's expansion, step 0, opens its plan: the walk ends there, whatever stands before it.
         for line in [
             r#"{"step":2,"steps":2,"input":"j"}"#,
@@ -433,7 +464,21 @@ mod tests {
         ] {
             state.log(line).unwrap();
         }
-        assert_eq!(state.tail().unwrap().len(), 3);
+        assert_eq!(lines(&state).len(), 3);
+        // A sentence logged after its lines names them, and stands apart from them.
+        for line in [
+            r#"{"step":1,"steps":2,"input":"n"}"#,
+            r#"{"step":2,"steps":2,"input":"o"}"#,
+            r#"{"sentence":"n and o","lines":2,"asked":{"questions":0,"rounds":0}}"#,
+        ] {
+            state.log(line).unwrap();
+        }
+        let tail = state.tail().unwrap();
+        assert_eq!(tail.lines.len(), 2);
+        assert!(tail.sentence.is_some_and(|line| line.contains("n and o")));
+        // What stands before a sentence's line is another sentence's, whatever its numbers.
+        state.log(r#"{"step":1,"steps":2,"input":"p"}"#).unwrap();
+        assert_eq!(lines(&state), vec![r#"{"step":1,"steps":2,"input":"p"}"#]);
         let _ = fs::remove_dir_all(dir);
     }
 }

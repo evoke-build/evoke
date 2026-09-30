@@ -1193,23 +1193,29 @@
             "end": 48,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 73,
             "end": 75,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 97,
             "end": 104,
             "word": "then",
             "order": "then",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

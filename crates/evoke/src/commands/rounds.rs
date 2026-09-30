@@ -14,7 +14,7 @@ use evoke_core::needs::Entry;
 use evoke_core::text::NonEmpty;
 use evoke_core::vocabulary::Meaning;
 use evoke_core::weave::{
-    self, Asked, Because, Binding, Bound, From, Handled, Handling, Outcome, Progress,
+    self, Asked, Because, Binding, Bound, From, Handled, Handling, Outcome, Progress, Repair,
     Returned as Yielded, Shared, Status, Step, Todo, When, Why as Stopped,
 };
 use evoke_core::{
@@ -29,6 +29,7 @@ use crate::adapter::Adapter;
 use crate::hosts::processes::Returned;
 use crate::hosts::terminal::Text;
 use crate::hosts::{interrupt, terminal};
+use crate::report::sentence::{self, Sentence};
 use crate::report::{self, Expanded, Line, PinnedAt, StepLine};
 
 /// The adapter that answers: resolved up front, as deciding a sentence needs it, or at the first step a plan
@@ -63,6 +64,26 @@ pub struct Rounds<'a> {
     /// The process's results, newest first: what a whole sentence's ask offers back, a value the words lack
     /// recalled from a result that yielded it.
     pub results: Vec<Recent>,
+    /// The sentence at hand, as its plan read it whole, with what the adapter was asked for it so far and how
+    /// many lines the log holds of it: logged after them.
+    pub sentence: Told,
+}
+
+/// What the log keeps of the sentence at hand, as it gathers: the plan's reading of it once there is one, every
+/// call the adapter answered for it, and the lines logged.
+#[derive(Default)]
+pub struct Told {
+    read: Option<Sentence>,
+    asked: sentence::Asked,
+    lines: std::cell::Cell<usize>,
+}
+
+impl Told {
+    /// A plan of the sentence: its reading stands for the sentence, and its calls are added to those before it.
+    pub fn planned(&mut self, woven: &Woven, gate: Option<&Gate>) {
+        self.read = Some(Sentence::of(woven, gate));
+        self.asked.more(&woven.trace, woven.rounds);
+    }
 }
 
 impl Rounds<'_> {
@@ -71,11 +92,32 @@ impl Rounds<'_> {
         self.session.declared.gate.as_ref()
     }
 
-    /// A decision's line, naming the plan file when the plan runs from one.
+    /// A decision's line, naming the plan file when the plan runs from one, with what the reflex does.
     fn line(&self, decided: &Decided) -> Line {
-        let mut line = Line::of(decided);
+        let mut line = described(&self.session, decided);
         line.pinned.clone_from(&self.pinned);
         line
+    }
+
+    /// One more line of the log, counted as the sentence's own.
+    fn log(&self, line: &Line) -> Result<(), crate::hosts::Failure> {
+        self.session.state.log(&line.log())?;
+        self.sentence.lines.set(self.sentence.lines.get() + 1);
+        Ok(())
+    }
+
+    /// The sentence over: its own line logged after its steps', where a plan read it and the log holds a line
+    /// of it, or the plan held no step; then the next sentence starts from nothing.
+    pub fn told(&mut self) {
+        let Told { read, asked, lines } = std::mem::take(&mut self.sentence);
+        let Some(mut read) = read else {
+            return;
+        };
+        read.lines = lines.get();
+        read.asked = asked;
+        if read.lines > 0 || !read.because.is_empty() {
+            let _ = self.session.state.log(&read.log());
+        }
     }
 
     /// One decision through the foundation's loop — abstain, ask, confirm, run — as one input takes it, or as one
@@ -92,6 +134,8 @@ impl Rounds<'_> {
         let json = self.json;
         let mut line = self.line(decided);
         line.decision = decision.clone();
+        line.typed = handed.typed.map(str::to_owned);
+        line.repair = handed.repair;
         line.step = at.map(|(n, of)| StepLine {
             n,
             of,
@@ -170,7 +214,10 @@ impl Rounds<'_> {
                     line.recalled.extend(recalled_in(&missing));
                     let given = match self.answers(input, &asking.reflex, &missing) {
                         Ok(Answered::Given(given)) => given,
-                        Ok(Answered::Declined { ask }) => {
+                        Ok(Answered::Declined { ask, arg }) => {
+                            if !json {
+                                terminal::note(&report::declined(&arg, at.map(|(n, _)| n)));
+                            }
                             let exit = Exit::Declined(Decline::Refused);
                             let why = Stopped::Said { message: ask };
                             return Err(self.stopped(input, line, exit, Some(why)));
@@ -254,6 +301,8 @@ impl Rounds<'_> {
             }
         } else if cancelled {
             line.cancelled = true;
+        } else {
+            line.status = Some(status);
         }
         // A failure after the line was built — a file that would not take a word — is the line's own `error`,
         // so under `--json` one object stands for the input.
@@ -302,22 +351,19 @@ impl Rounds<'_> {
             }
             Outcome::Run | Outcome::Confirm => {}
         }
-        let reasons: Vec<String> = woven
-            .weave
-            .verdict
-            .because
-            .iter()
-            .map(report::verdict)
-            .collect();
-        let mut own = format!("the plan of {shown}");
+        let because = &woven.weave.verdict.because;
+        let reasons: Vec<String> = because.iter().map(report::verdict).collect();
+        let head = format!("the plan of {shown}");
+        let mut own = head.clone();
         if !reasons.is_empty() {
             own.push_str(" · ");
             own.push_str(&reasons.join("; "));
         }
+        let lines = report::reasons(Some(&head), because);
         if let Err(exit) = self.expansions(input, woven) {
             return exit;
         }
-        if let Err(exit) = self.proceed(input, woven, own, whole_plan(), None) {
+        if let Err(exit) = self.proceed(input, woven, (own, lines), whole_plan(), None) {
             return exit;
         }
         self.executed(input, woven)
@@ -331,15 +377,18 @@ impl Rounds<'_> {
         &mut self,
         input: &str,
         woven: &Woven,
-        own: String,
+        (own, line): (String, Text),
         template: Clean,
         teach: Option<Teach>,
     ) -> Result<(), Exit> {
         if !self.session.has_tty() {
             return Err(self.unanswered(input, woven, needs_terminal("a confirm")));
         }
-        let prompt = Prompt { own, template };
-        let line = Text::from(format!("  {}", prompt.own));
+        let prompt = Prompt {
+            own,
+            reason: String::new(),
+            template,
+        };
         match self.session.confirmed(&line, &prompt, teach.is_some()) {
             Ok(Some(Confirmed::Yes)) => Ok(()),
             Ok(Some(Confirmed::Teach)) => {
@@ -363,38 +412,12 @@ impl Rounds<'_> {
     /// its decision, the playbook and what each slot took, with no status — the steps' lines say what became of
     /// the plan. Printed under `--json` as any line.
     pub fn expansions(&self, input: &str, woven: &Woven) -> Result<(), Exit> {
-        let of = woven.weave.steps.len();
-        for because in &woven.weave.verdict.because {
-            let Because::Reviewed { playbook, text, .. } = because else {
-                continue;
-            };
-            let Some((_, decided)) = woven
-                .decided
-                .iter()
-                .find(|(asked, _)| asked.text == *text && asked.only.is_none())
-                .or_else(|| woven.decided.iter().find(|(asked, _)| asked.text == *text))
-            else {
-                continue;
-            };
-            let slots: IndexMap<ArgName, String> = match &decided.decision {
-                Decision::Run { chosen } | Decision::Confirm { chosen, .. } => chosen
-                    .call
-                    .args
-                    .iter()
-                    .filter_map(|(arg, value)| Some((arg.clone(), written(value)?)))
-                    .collect(),
-                Decision::Ask { .. } | Decision::Abstain { .. } => IndexMap::new(),
-            };
-            let mut line = self.line(decided);
-            line.expansion = Some(Expanded {
-                of,
-                playbook: playbook.clone(),
-                slots,
-            });
+        for mut line in expanded(&self.session, woven) {
+            line.pinned.clone_from(&self.pinned);
             if self.json {
                 terminal::result(&line.json());
             }
-            if let Err(failure) = self.session.state.log(&line.log()) {
+            if let Err(failure) = self.log(&line) {
                 return Err(self.session.reporter.exit(input, Exit::Failed(failure)));
             }
         }
@@ -515,7 +538,7 @@ impl Rounds<'_> {
             if self.json {
                 terminal::result(&line.json());
             }
-            if let Err(failure) = self.session.state.log(&line.log()) {
+            if let Err(failure) = self.log(&line) {
                 return self.session.reporter.exit(input, Exit::Failed(failure));
             }
         }
@@ -566,6 +589,9 @@ impl Rounds<'_> {
                         Ok(decided) => decided,
                         Err(exit) => return self.session.reporter.exit(input, exit),
                     };
+                    self.sentence
+                        .asked
+                        .more(&decided.trace, decided.trace.len());
                     progress
                         .decided
                         .push((asked.clone(), decided.decision.clone()));
@@ -602,6 +628,8 @@ impl Rounds<'_> {
                             shared: &step.shared,
                             from: &step.from,
                             when: step.when.as_ref(),
+                            typed: step.typed.as_deref(),
+                            repair: step.repair,
                         };
                         let rounded = self.round(
                             input,
@@ -702,22 +730,22 @@ impl Rounds<'_> {
                 let body = if let (Some(text), Some(why)) = (&refused, &outcome.why) {
                     report::step_refused(text, why)
                 } else {
+                    // The status stands on the step's line, before why its call would have waited.
                     let mut body = report::step_body(step, &woven.weave);
-                    body.push(" · skipped");
+                    let mut status = " · skipped".to_owned();
                     match &outcome.why {
-                        Some(Stopped::Cancelled) => {
-                            body.push(" · cancelled");
-                        }
+                        Some(Stopped::Cancelled) => status.push_str(" · cancelled"),
                         Some(why @ Stopped::NotChosen { from, .. }) => {
-                            body.push(" · ")
-                                .push(&report::stopped(why, step.when.as_ref()));
+                            status.push_str(" · ");
+                            status.push_str(&report::stopped(why, step.when.as_ref()));
                             // No step the source picks among was chosen: a value no step lists.
                             if none_chosen(&woven.weave, executed, *from) {
-                                body.push(", which no step lists");
+                                status.push_str(", which no step lists");
                             }
                         }
                         _ => {}
                     }
+                    body.end_first(&status);
                     body
                 };
                 terminal::note(&report::step(outcome.step, of, body));
@@ -834,7 +862,7 @@ impl Rounds<'_> {
         }
         if self.json {
             terminal::result(&line.json());
-            let _ = self.session.state.log(&line.log());
+            let _ = self.log(line);
             return Rounded {
                 exit: human,
                 status: Status::Unanswered,
@@ -857,7 +885,7 @@ impl Rounds<'_> {
         if self.json {
             terminal::result(&line.json());
         }
-        let exit = match self.session.state.log(&line.log()) {
+        let exit = match self.log(line) {
             Err(failure) if exit == Exit::Ran => Exit::Failed(failure),
             _ => exit,
         };
@@ -879,15 +907,16 @@ impl Rounds<'_> {
             let vocabulary = self.vocabulary(reflex, &missing.arg);
             let Some(value) = self.asked(input, missing, vocabulary.as_ref())? else {
                 let ask = missing.ask.to_string();
-                return Ok(Answered::Declined { ask });
+                let arg = missing.arg.clone();
+                return Ok(Answered::Declined { ask, arg });
             };
             given.insert(missing.arg.clone(), value);
         }
         Ok(Answered::Given(given))
     }
 
-    /// One missing argument asked until it has a value; none at the end of input. `+` at a vocabulary's prompt
-    /// adds a word first.
+    /// One missing argument asked until it has a value; none at the end of input, or at `0`, none of these,
+    /// where the choices are listed. `+` at a vocabulary's prompt adds a word first.
     fn asked(
         &mut self,
         input: &str,
@@ -904,6 +933,13 @@ impl Rounds<'_> {
             if typed.is_empty() {
                 retry = None;
                 continue;
+            }
+            let listed = matches!(
+                missing.choices,
+                Choices::Options { .. } | Choices::Vocab { .. }
+            );
+            if listed && (typed == "0" || typed == report::NONE_OF_THESE) {
+                return Ok(None);
             }
             match &missing.choices {
                 Choices::Options { options } => {
@@ -1122,6 +1158,60 @@ pub fn whole_plan() -> Clean {
     Clean::new("Run the plan as it stands?").expect("a clean line")
 }
 
+/// A decision's line with what its reflex does, by the first line of its description.
+pub fn described(session: &Session<'_>, decided: &Decided) -> Line {
+    let mut line = Line::of(decided);
+    line.summary = line
+        .reflex()
+        .and_then(|reflex| session.plan.route().options().get(reflex.as_str()))
+        .and_then(|text| text.what().as_str().lines().next().map(str::to_owned));
+    line
+}
+
+/// Each playbook's expansion as a line, step 0 of its plan: the part that picked it, its decision, the playbook,
+/// what each slot took, and the prompt its plan is reviewed under.
+pub fn expanded(session: &Session<'_>, woven: &Woven) -> Vec<Line> {
+    let of = woven.weave.steps.len();
+    let mut lines = Vec::new();
+    for because in &woven.weave.verdict.because {
+        let Because::Reviewed {
+            playbook,
+            text,
+            prompt,
+            ..
+        } = because
+        else {
+            continue;
+        };
+        let Some((_, decided)) = woven
+            .decided
+            .iter()
+            .find(|(asked, _)| asked.text == *text && asked.only.is_none())
+            .or_else(|| woven.decided.iter().find(|(asked, _)| asked.text == *text))
+        else {
+            continue;
+        };
+        let slots: IndexMap<ArgName, String> = match &decided.decision {
+            Decision::Run { chosen } | Decision::Confirm { chosen, .. } => chosen
+                .call
+                .args
+                .iter()
+                .filter_map(|(arg, value)| Some((arg.clone(), written(value)?)))
+                .collect(),
+            Decision::Ask { .. } | Decision::Abstain { .. } => IndexMap::new(),
+        };
+        let mut line = described(session, decided);
+        line.expansion = Some(Expanded {
+            of,
+            playbook: playbook.clone(),
+            slots,
+        });
+        line.review = Some(prompt.clone());
+        lines.push(line);
+    }
+    lines
+}
+
 /// What the plan handed a round beside its decision: the values bound into it, the whole results it takes, the
 /// words shared into its step, the playbooks its step came from, and what picks the step when it may not run.
 #[derive(Clone, Copy)]
@@ -1131,6 +1221,10 @@ pub struct Handed<'a> {
     pub shared: &'a IndexMap<ArgName, Shared>,
     pub from: &'a [From],
     pub when: Option<&'a When>,
+    /// The step's words as they were typed, where the plan wrote them anew.
+    pub typed: Option<&'a str>,
+    /// How the step's words were settled, where a rule settled them.
+    pub repair: Option<Repair>,
 }
 
 /// What became of one round of a step: its exit, already reported; its status and why it stopped; what its body
@@ -1142,10 +1236,11 @@ pub struct Rounded {
     pub result: Option<Returned>,
 }
 
-/// What a step's questions came to: every value, or the question declined at the end of input.
+/// What a step's questions came to: every value, or one question declined — at the end of input, or by none of
+/// these — and the argument it asked for.
 pub enum Answered {
     Given(IndexMap<ArgName, Value>),
-    Declined { ask: String },
+    Declined { ask: String, arg: ArgName },
 }
 
 /// The step's words with its bound values written in, as the run decided them again; a whole result carries no

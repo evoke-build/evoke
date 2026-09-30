@@ -18,7 +18,7 @@ of them. `signal` aborts the adapter call, and `decide` rejects with the signal'
 | `outcome`   | Carries                                                                                           |
 | :---------- | :------------------------------------------------------------------------------------------------ |
 | `"run"`     | `reflex`, `args`, `values`, `call`, `effect`, `confidence`, `weakest`, `judgments`, `contenders`, `runner_up?`, `whole?` |
-| `"confirm"` | All of the above, plus `prompt: { own, template }` and `because: Cap[]`: every reason it stopped, in order |
+| `"confirm"` | All of the above, plus `prompt: { own, reason, template }` and `because: Cap[]`: every reason it stopped, in order |
 | `"ask"`     | `reflex`, partial `args` and `values`, `unconsumed`, `missing: Missing[]`, and the judgments so far |
 | `"abstain"` | `contenders`, the ranking, and `judgments`                                                        |
 
@@ -53,8 +53,9 @@ An app that wants a reflex's wording with a body of its own calls `decide`, swit
 
 ## Confirm
 
-`prompt.own` is `evoke`'s line: the call, the effect, the weakest judgment, and each cap that names itself.
-`prompt.template` is the reflex's own question, filled in. `because` lists why it stopped: `destructive`,
+`prompt.own` is `evoke`'s line: the call, the effect and the weakest judgment. `prompt.reason` says in one
+line why the call waits, a phrase for each cap, as the CLI prints it under the call. `prompt.template` is the
+reflex's own question, filled in. `because` lists why it stopped: `destructive`,
 `no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `whole`, `detail`
 ([Outcomes](../use/outcomes.md#confirm)). A confirm decision runs only with `run(d, { confirmed: true })`.
 

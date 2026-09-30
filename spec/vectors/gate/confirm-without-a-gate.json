@@ -111,8 +111,9 @@
       }
     ],
     "prompt": {
-      "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.92 · no gate",
-      "template": "Set the den lights off?"
+      "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.92",
+      "template": "Set the den lights off?",
+      "reason": "the adapter ships no bars, so nothing runs on its own"
     },
     "because": [
       {

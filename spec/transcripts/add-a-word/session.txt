@@ -1,7 +1,7 @@
 # A word added at the prompt takes its path when a declaration reads or writes what the word names, and the body
 # runs held to it.
 $ evoke "list the photos"
-  Which folder?  [1] desktop  [+] add one  > +
+  Which folder?  [1] desktop  [+] add one  [0] none of these  > +
   Word?  > photos
   Meaning?  > My photos.
   Path?  > photos

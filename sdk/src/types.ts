@@ -935,10 +935,13 @@ export type Cap =
    *  hold. */
   | { type: "detail"; words: string }
 
-/** The confirm prompt: `evoke`'s own line, then the manifest's template filled in. */
+/** The confirm prompt: `evoke`'s own line, why the call waits, then the manifest's template filled in. */
 export interface Prompt {
-  /** The call, its effect, the weakest judgment and each cap that names itself, joined by ` · `. */
+  /** The call, its effect and the weakest judgment, joined by ` · `. */
   own: string
+  /** Why the call waits for a yes, in one line: a phrase for each entry of `because`, joined by `; `. Absent
+   *  where the prompt is a plan's own. */
+  reason?: string
   template: Clean
 }
 
@@ -1036,6 +1039,15 @@ export interface Split {
   word: string
   order: Order
   p?: Prob
+  /** Whether the plan cuts the request here; absent when it does not. */
+  cut?: boolean
+}
+
+/** How many things the request asks, where its words could be cut: the share of one thing, and whether the request
+ *  stands as one step for it. */
+export interface Count {
+  one: Prob
+  as_one?: boolean
 }
 
 /** The reference word in a step's text, in characters of that text. */
@@ -1062,7 +1074,7 @@ export interface Ref {
 /** How a step came to be that is not one part decided on its own: a segment that matched nothing settled narrowed to
  *  its neighbour's reflex, spliced into its words, or merged back; or a part the engine kept whole split, its parts each
  *  a reflex of their own. */
-export type Repair = "narrowed" | "spliced" | "merged" | "split"
+export type Repair = "narrowed" | "spliced" | "merged" | "split" | "corrected"
 
 /** A word of a vocabulary the request stated for several steps, as it reached one of them: a required argument filled
  *  as a person's answer would fill it, or an optional one written into the step's words and decided again narrowed. */
@@ -1091,6 +1103,8 @@ export interface Step {
   from?: From[]
   /** What picks this step, when it may not run; absent on a step that always runs. */
   when?: When
+  /** The step's words as they were typed, where the plan wrote them anew. */
+  typed?: string
 }
 
 /** Where a step came from when a playbook wrote it: the playbook, which of its steps (from 1), and what each slot
@@ -1101,10 +1115,15 @@ export interface From {
   slots: Record<ArgName, string>
 }
 
-/** A part of the request that repeated a step a playbook wrote: folded into it (from 1), run once. */
+/** A part of the request that is a step's call typed again, or a step a playbook wrote: folded into it (from 1),
+ *  run once. */
 export interface Folded {
   text: string
   into: number
+  /** The arguments whose values the part gave the step's call. */
+  gave?: ArgName[]
+  /** The word of the part that picked the step, where it could be one of several. */
+  picked?: string
 }
 
 /** A part of the request that matches no reflex and asks for nothing: a remark, set aside; or words that may add
@@ -1112,6 +1131,15 @@ export interface Folded {
 export interface Aside {
   text: string
   remark: boolean
+  /** What the part does, as it was answered; absent for a part of courtesy alone. */
+  does?: Parted
+}
+
+/** What a part of the request does, by the share of each answer. */
+export interface Parted {
+  aside: Prob
+  detail: Prob
+  asks: Prob
 }
 
 /** What picks a step that may not run: the step (from 1) whose result does, the field, and the value under which
@@ -1185,10 +1213,12 @@ export interface Verdict {
 export interface Weave {
   input: string
   splits?: Split[]
+  /** How many things the request asks, where it was asked. */
+  count?: Count
   steps: Step[]
   /** Fragments left out because they begin with a negation. */
   excluded?: string[]
-  /** Parts of the request that repeated a step a playbook wrote, each folded into that step. */
+  /** Parts of the request folded into a step: a call typed again, or a step a playbook wrote. */
   folded?: Folded[]
   /** Parts of the request that match no reflex and ask for nothing: set aside, never decided as steps. */
   asides?: Aside[]

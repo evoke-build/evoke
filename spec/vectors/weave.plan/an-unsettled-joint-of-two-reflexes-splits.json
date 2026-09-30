@@ -544,6 +544,7 @@
             ],
             "prompt": {
               "own": "send to=\"cfo@example.com\" · destructive · weakest: route 0.95",
+              "reason": "it cannot be undone, so it always waits for a yes",
               "template": "Email the closing report to cfo@example.com?"
             },
             "because": [
@@ -1342,6 +1343,7 @@
               ],
               "prompt": {
                 "own": "ledger month=\"september\" · write · weakest: route 0.89",
+                "reason": "a write runs at 0.90 or more",
                 "template": "Post september to the ledger?"
               },
               "because": [
@@ -1459,6 +1461,7 @@
               ],
               "prompt": {
                 "own": "send to=\"cfo@example.com\" · destructive · weakest: route 0.95",
+                "reason": "it cannot be undone, so it always waits for a yes",
                 "template": "Email the closing report to cfo@example.com?"
               },
               "because": [
@@ -1542,44 +1545,53 @@
             "end": 36,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 44,
             "end": 46,
             "word": ",",
             "order": "and",
-            "p": 0.2
+            "p": 0.2,
+            "cut": true
           },
           {
             "start": 59,
             "end": 64,
             "word": "and",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 71,
             "end": 73,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 87,
             "end": 89,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 127,
             "end": 134,
             "word": "then",
             "order": "then",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

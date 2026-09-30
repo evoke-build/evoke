@@ -14,7 +14,7 @@ pub mod running;
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
-use crate::adapter::Request;
+use crate::adapter::{Prob, Request};
 use crate::decide::{Decision, Prompt};
 use crate::document::Json;
 use crate::manifest::{Effect, Recognizer};
@@ -76,7 +76,8 @@ pub enum Planning {
 
 /// How a step came to be that is not one part decided on its own: a segment that matched nothing was settled
 /// narrowed to its neighbour's reflex, spliced into its words, or merged back; a part the engine kept whole at a
-/// comma or an `and` was split, its parts each a reflex of their own.
+/// comma or an `and` was split, its parts each a reflex of their own; a part that says what not to do and names
+/// a value was read with the step beside it.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Repair {
@@ -84,6 +85,7 @@ pub enum Repair {
     Spliced,
     Merged,
     Split,
+    Corrected,
 }
 
 /// A word of a vocabulary the request stated for several steps, as it reached one of them: a required argument
@@ -107,18 +109,45 @@ pub struct From {
 
 /// A part of the request that matches no reflex and asks for nothing: a remark, set aside; or words that may add
 /// a detail to the step beside them, which then waits for a yes.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Aside {
     pub text: String,
     pub remark: bool,
+    /// What the part does, as it was answered; none for a part of courtesy alone, a remark by its words.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub does: Option<Parted>,
 }
 
-/// A part of the request that repeated a step a playbook wrote: folded into it, run once.
+/// What a part of the request does, by the share of each answer: it gives a reason or a remark, it adds a detail
+/// to another part, or it asks for something.
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Parted {
+    pub aside: Prob,
+    pub detail: Prob,
+    pub asks: Prob,
+}
+
+/// A part of the request that is a step's call said again, or a step a playbook wrote: folded into it, run once.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Folded {
     pub text: String,
     /// The step it folded into, from 1.
     pub into: usize,
+    /// The arguments whose values the part gave the step's call.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub gave: Vec<ArgName>,
+    /// The word of the part that picked the step, where it could be one of several.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub picked: Option<String>,
+}
+
+/// How many things the request asks, where its words could be cut: the share of *one thing*, and whether the
+/// request stands as one step for it.
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Count {
+    pub one: Prob,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub as_one: bool,
 }
 
 /// What picks a step that may not run: the step whose result does, the field, and the value under which this
@@ -160,6 +189,9 @@ pub struct Step {
     /// What picks this step, when it may not run: an earlier step's field and the value it runs under.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub when: Option<When>,
+    /// The step's words as the person typed them, where the plan wrote them anew.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub typed: Option<String>,
 }
 
 /// How a bound value reaches its step: answering the step's own ask; the step decided again with the value in
@@ -305,6 +337,9 @@ pub struct Weave {
     pub asides: Vec<Aside>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub splits: Vec<Split>,
+    /// How many things the request asks, where it was asked.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub count: Option<Count>,
 }
 
 #[derive(Deserialize)]
@@ -312,6 +347,8 @@ struct RawWeave {
     input: String,
     #[serde(default)]
     splits: Vec<Split>,
+    #[serde(default)]
+    count: Option<Count>,
     steps: Vec<Step>,
     #[serde(default)]
     excluded: Vec<String>,
@@ -423,6 +460,7 @@ impl TryFrom<RawWeave> for Weave {
             folded: raw.folded,
             asides: raw.asides,
             splits: raw.splits,
+            count: raw.count,
         })
     }
 }

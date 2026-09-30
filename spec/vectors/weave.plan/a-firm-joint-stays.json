@@ -534,7 +534,8 @@
             "end": 41,
             "word": "then",
             "order": "then",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 76,
@@ -550,7 +551,10 @@
             "order": "and",
             "p": 0.2
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

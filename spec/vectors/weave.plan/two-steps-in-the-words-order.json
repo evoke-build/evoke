@@ -438,9 +438,13 @@
             "end": 31,
             "word": "and",
             "order": "and",
-            "p": 0.95
+            "p": 0.95,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

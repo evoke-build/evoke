@@ -456,7 +456,11 @@
             "order": "and",
             "p": 0.6
           }
-        ]
+        ],
+        "count": {
+          "one": 0.8,
+          "as_one": true
+        }
       }
     }
   }

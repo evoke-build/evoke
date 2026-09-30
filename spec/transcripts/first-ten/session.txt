@@ -40,15 +40,17 @@ $ evoke "set the volume to 40 percent"
 volume 40%
 $ evoke "kill the wifi"
   wifi state="off" · write · weakest: state 0.86
+    a write runs at 0.90 or more
   Turn Wi-Fi off?  [y]es [n]o [t]each > t
 + overlays/wifi.toml  [examples] "kill the wifi" = { state = "off" }
 wi-fi off
 $ evoke "restart the computer"
   power action="restart" · destructive · weakest: route 0.98
+    it cannot be undone, so it always waits for a yes
   Make the laptop restart now?  [y]es [n]o [t]each > n
 [2]
 $ evoke "what time is it"
-  none 0.85 · timer 0.10 · awake 0.03 · lock 0.02
+  none of them 0.85 · timer 0.10 · awake 0.03 · lock 0.02
   note, open and visit are inactive  →  evoke show
 [2]
 $ evoke vocab places add desktop "The desktop." --value "~/Desktop"
@@ -62,47 +64,72 @@ $ evoke teach "go dark" wifi state=off
 $ evoke teach "what time is it" not timer
 + overlays/timer.toml  [examples] "what time is it" = false
 $ evoke try "kill the wifi"
-  wifi 0.95 · none 0.03 · power 0.01 · lock 0.01
-  state  off 0.86 · on 0.10 · unstated 0.04
-         asked a second way: off 0.86 · is it off? yes 0.95
-  words  "kill the wifi" say what to do 0.90
-  confirm · wifi state="off" · write · weakest: state 0.86
+  "kill the wifi"
+
+  which reflex            wifi 0.95   (none of them 0.03 · power 0.01)
+                          Turn Wi-Fi on or off.
+  state                   off 0.86   (on 0.10 · not said 0.04)
+                          asked a second way: off 0.86; the less sure of the two counts
+                          is it off? yes 0.95
+  → waits for a yes: wifi state="off" · write · weakest: state 0.86
+    a write runs at 0.90 or more
+
+  replay answered 22 questions in 2 rounds
 $ evoke try "download https://evoke.build/llms.txt and note it"
   1  download url="https://evoke.build/llms.txt"  0.98
   2  note · takes path from 1
-  1  "download https://evoke.build/llms.txt"
-  download 0.98 · open 0.01 · none 0.01
-  url    "https://evoke.build/llms.txt" 0.99 · unstated 0.01
-  words  "download" say what to do 0.90
-  whole  holds all you said 0.90
-  run · weakest: route 0.98
-  2  "note it"
-  note 0.96 · none 0.03 · download 0.01
-  text   unstated 1.00
-  words  "note" say what to do 0.90
-  whole  holds all you said 0.90
-  ask text · weakest: route 0.96
+
+  "download https://evoke.build/llms.txt and note it"
+
+  one thing, or several   several 0.95: cut at "and" 0.90
+
+  1 · download https://evoke.build/llms.txt
+    which reflex            download 0.98   (open 0.01 · none of them 0.01)
+                            Download a file from a URL.
+    url                     "https://evoke.build/llms.txt" 0.99   (not said 0.01)
+    holds all you said      0.90
+    → runs: download url="https://evoke.build/llms.txt"  0.98
+      a write runs at 0.90 or more, and its least sure judgment is which reflex, 0.98; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  2 · note it
+    which reflex            note 0.96   (none of them 0.03 · download 0.01)
+                            Add a note to your notes file.
+    text                    taken from step 1, its path
+    holds all you said      0.90
+    → runs: note · takes path from 1
+
+  replay answered 51 questions in 4 rounds
 # A switch one part sets reaches a part that asks for the same again, by a yes.
 $ evoke try "take a screenshot of the window to the clipboard, then the same for the whole screen"
   1  screenshot area="window" clipboard  0.95
   2  screenshot area="screen" clipboard  0.95 · after 1
-  1  "take a screenshot of the window to the clipboard"
-  screenshot 0.96 · none 0.03 · open 0.01
-  area       window 0.95 · screen 0.03 · unstated 0.02
-             asked a second way: window 0.95
-  clipboard  yes 0.95 · no 0.03 · unstated 0.02
-  words      "take a screenshot" say what to do 0.95 · "clipboard" say what to do 0.95
-  whole      holds all you said 0.90
-  run · weakest: area 0.95
-  2  "the same for the whole screen"
-  screenshot 0.95 · none 0.04 · open 0.01
-  area       screen 0.96 · window 0.02 · unstated 0.02
-             asked a second way: screen 0.96
-  clipboard  unstated 0.90 · no 0.08 · yes 0.02
-             said once, in "take a screenshot of the window to the clipboard" · yes 0.95
-  words      "same" say what to do 0.95 · "whole" say what to do 0.95
-  whole      holds all you said 0.90
-  run · weakest: route 0.95
+
+  "take a screenshot of the window to the clipboard, then the same for the whole screen"
+
+  one thing, or several   several 0.95: cut at ", then" 0.95
+
+  1 · take a screenshot of the window to the clipboard
+    which reflex            screenshot 0.96   (none of them 0.03 · open 0.01)
+                            Take a screenshot of the screen, a window or a selection.
+    area                    window 0.95   (screen 0.03 · not said 0.02)
+                            asked a second way: window 0.95; the less sure of the two counts
+    clipboard               yes 0.95   (no 0.03 · not said 0.02)
+    holds all you said      0.90
+    → runs: screenshot area="window" clipboard  0.95
+      a write runs at 0.90 or more, and its least sure judgment is area, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  2 · the same for the whole screen
+    which reflex            screenshot 0.95   (none of them 0.04 · open 0.01)
+                            Take a screenshot of the screen, a window or a selection.
+    area                    screen 0.96   (window 0.02 · not said 0.02)
+                            asked a second way: screen 0.96; the less sure of the two counts
+    clipboard               yes 0.95
+                            said once, in "take a screenshot of the window to the clipboard": it is this part's too
+    holds all you said      0.90
+    → runs: screenshot area="screen" clipboard  0.95
+      a write runs at 0.90 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  replay answered 52 questions in 4 rounds
 # The collection added again is installed whole already; update is what moves it.
 $ evoke add evoke-build/reflexes
   every reflex of evoke-build/reflexes is already installed  →  evoke update

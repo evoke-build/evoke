@@ -9,11 +9,12 @@ $ evoke vocab rooms remove attic
   "attic" is not in vocabulary "rooms"  →  evoke vocab rooms
 [3]
 $ evoke "kill the lights"
-  Which room?  [1] den  [2] office  [+] add one  > +
+  Which room?  [1] den  [2] office  [+] add one  [0] none of these  > +
   Word?  > attic
   Meaning?  > The loft upstairs.
 + vocab/rooms.toml  attic = "The loft upstairs."
   lights room="attic" state="off" · write · weakest: state 0.74
+    a write runs at 0.90 or more
   Set the attic lights off?  [y]es [n]o [t]each > y
 attic lights off
 $ evoke vocab rooms

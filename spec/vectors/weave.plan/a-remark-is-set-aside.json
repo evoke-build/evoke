@@ -356,7 +356,12 @@
         "asides": [
           {
             "text": "thanks a lot for this",
-            "remark": true
+            "remark": true,
+            "does": {
+              "aside": 0.9,
+              "detail": 0.05,
+              "asks": 0.05
+            }
           }
         ],
         "splits": [
@@ -365,9 +370,13 @@
             "end": 31,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

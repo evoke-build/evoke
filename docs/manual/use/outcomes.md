@@ -18,12 +18,14 @@ den lights off
 
 ## Confirm
 
-The call is complete, but something holds it at a question. `evoke`'s own line says what: the call, the effect,
-the weakest judgment, and any further reason. Then comes the reflex's one-line prompt, and three answers.
+The call is complete, but something holds it at a question. `evoke`'s own line names the call, the effect and
+the weakest judgment; the line under it says why the call waits. Then comes the reflex's one-line prompt, and
+three answers.
 
 ```text
 $ evoke "dim the office"
   lights room="office" state="dim" · write · weakest: state 0.85
+    a write runs at 0.90 or more
   Set the office lights dim?  [y]es [n]o [t]each > y
 group-7 lights dim
 ```
@@ -34,24 +36,25 @@ group-7 lights dim
 | `n`, `no`   | Declines, exit 2                                                                               |
 | `t`, `teach`| Records what you said as an example of this call in your overlay, then runs                    |
 
-These are the reasons a decision stops at confirm, in the order the line names them:
+These are the reasons a decision stops at confirm, each with the line it prints; several print on one line,
+separated by `;`.
 
-- **destructive**: a destructive reflex always confirms, however sure.
-- **no gate**: the adapter shipped no thresholds, so nothing runs on its own.
-- **under the floor**: the weakest judgment is under the bar for this effect.
+- **destructive**: a destructive reflex always confirms, however sure. `it cannot be undone, so it always
+  waits for a yes`.
+- **no gate**: the adapter shipped no thresholds, so nothing runs on its own. `the adapter ships no bars, so
+  nothing runs on its own`.
+- **under the bar**: the weakest judgment is under the bar for this effect. `a write runs at 0.90 or more`.
 - **read from your words**: a value from a list was taken from a word of the input, where the answers about it
-  did not agree. The line names the argument and the word: `room from "snug"`.
-- **spelled another way**: a value was read from words that do not spell it as it is typed, like a day misspelt
-  or a code typed with a space. The line names the words: `sku from "hs 0409"`.
-- **a text without quotes**: a text was read from words you typed without quotes. The line names the
-  argument: `label without quotes`.
-- **more words**: the input holds words that ask for another thing, which the call does not hold. The line
-  shows them: `also "lock the door too"`.
-- **less than you typed**: the call, read back against the input, leaves out part of what you typed. The line
-  says how far the call holds it, and names the words it leaves out: `holds all you said 0.20, leaves out
-  "in the morning"`.
-- **a detail beside it**: a part of the sentence that is not in the plan may add a detail to this step. The
-  line shows the part: `without "the ones since noon"` ([Weaving](weaving.md)).
+  did not agree; or a value was read from words that do not spell it as it is typed, like a day misspelt or a
+  code typed with a space. `room was read from "snug"`, `sku was read from "hs 0409"`.
+- **a text without quotes**: a text was read from words you typed without quotes. `label was typed without
+  quotes, which always waits for a yes`.
+- **more words**: the input holds words that ask for another thing, which the call does not hold. `"lock the
+  door too" asks for another thing`.
+- **less than you typed**: the call, read back against the input, leaves out part of what you typed. `it holds
+  all you said at 0.20, and a call runs at 0.30 or more; it leaves out "in the morning"`.
+- **a detail beside it**: a part of the sentence that is not in the plan may add a detail to this step. `"the
+  ones since noon" may add a detail this call does not hold` ([Weaving](weaving.md)).
 
 `[t]each` records only what the input stated. An argument you filled in at a prompt is not recorded. The answer
 is read from the terminal, never from stdin. With no terminal, a confirm exits 3 with the command to run yourself.
@@ -65,8 +68,9 @@ your answer.
 
 ```text
 $ evoke "kill the lights"
-  Which room?  [1] den  [2] office  [+] add one  > 1
+  Which room?  [1] den  [2] office  [+] add one  [0] none of these  > 1
   lights room="den" state="off" · write · weakest: state 0.74
+    a write runs at 0.90 or more
   Set the den lights off?  [y]es [n]o [t]each > y
 den lights off
 $ evoke "set the volume to 150 percent"
@@ -74,7 +78,7 @@ $ evoke "set the volume to 150 percent"
   volume level="40"  0.96
 volume set to 40%
 $ evoke "kill the lights in the garage"
-  Which room?  "garage" is not on the list  [1] den  [2] office  [+] add one  > 2
+  Which room?  "garage" is not on the list  [1] den  [2] office  [+] add one  [0] none of these  > 2
   lights room="office" state="off"  0.95
 group-7 lights off
 ```
@@ -89,7 +93,8 @@ The prompt names the words of the input that answer the question, where `evoke` 
 - An answer that does not fit is asked again, with the reason on the line. An empty line asks again.
 - `+` at a vocabulary's prompt asks `Word?` and `Meaning?`, then `Path?` when a reflex's declaration takes the
   word's value as a path, writes the word to your vocabulary, and goes on.
-- The end of input, `Ctrl-D`, declines with exit 2.
+- `0`, none of these, declines a listed question, as the end of input, `Ctrl-D`, declines any: nothing runs,
+  the line says so, and the exit code is 2.
 
 ## Abstain
 
@@ -98,7 +103,7 @@ is 2.
 
 ```text
 $ evoke "make it cosy"
-  lights 0.45 · none 0.40 · timer 0.10 · volume 0.05 · route floor 0.50
+  lights 0.45 · none of them 0.40 · timer 0.10 · volume 0.05 · a reflex is picked at 0.50 or more
 [2]
 ```
 
@@ -107,7 +112,7 @@ An inactive reflex is never in the ranking. When one is left out, an abstain nam
 
 ```text
 $ evoke "what time is it"
-  none 0.85 · timer 0.10 · lights 0.03 · volume 0.02
+  none of them 0.85 · timer 0.10 · lights 0.03 · volume 0.02
   open is inactive  →  evoke show
 [2]
 ```
@@ -153,50 +158,75 @@ gate = { write = 0.95 }
 
 ## `try`: decide, and show the work
 
-`evoke try "<input>"` decides without running, and prints every judgment: the ranking, each argument's
-distribution, then the outcome and the weakest judgment. An argument the input says nothing
-of prints no line, unless it is asked. Answers that would print as `0.00` fold into a count, `8 more under 0.01`;
-`none` and `unstated` always show. On an argument's line, `none` means the input states a value that is not among
-the choices. Under a value's line, a second line says what else the value stands on: what a second question
-about it answered, the words of the input that hold it, and the yes that took it. The `words` line lists the
-words of the input that no value holds, with what each does: `say what to do`, `answer` an argument, `ask for
-nothing`, or `ask for another thing`. The `whole` line says how far the call holds all you typed, where the
-call was read back against the input. It shares the cache with a real decision. It is never logged.
+`evoke try "<input>"` decides without running, and prints the sentence as it was read. First the sentence,
+then, where it matters, how the sentence was read as a whole: whether it asks one thing or several and where it
+was cut, each part set aside or kept out of the plan, and what was left out because you said not to do it. Then
+each step, under its number when there are several, with a row a judgment:
+
+- `which reflex`: the answers about the reflex, the most probable first, then what the reflex does.
+- One row per argument the call holds, asks, or the input says something of: the answer, or the value where an
+  answer did not give it, and under it what the value stands on — what a second question about it answered,
+  the words of the input that hold it, the yes that took it, the step it was taken from, the part of the
+  sentence that gave it, or your own answer at the prompt.
+- `holds all you said`: how far the call holds all you typed, where the call was read back against the input;
+  under the bar, the words it leaves out.
+- What a rule did: `the same call`, a part that adds to this call; `read with`, how a part that matched nothing
+  alone was settled; `the playbook`, the playbook that wrote the step; `takes`, the results it takes whole;
+  `runs if`, what picks it.
+- `→`: what would become of the call — `runs`, `waits for a yes`, `asks`, `refused` — with the call as the
+  plan prints it, and under it why.
+
+A last line says how many questions the adapter answered and in how many rounds, or that the cache did. An
+answer's key prints in words: `not said` for a question the input says nothing to, `said, and not on the list`
+for a value that is not among the choices, `none of them` for no reflex. `try` shares the cache with a real
+decision. It is never logged.
 
 ```text
 $ evoke try "kill the lights"
-  lights 0.95 · none 0.03 · timer 0.01 · volume 0.01
-  room   unstated 0.87 · den 0.10 · office 0.03
-  state  off 0.74 · on 0.19 · dim 0.06 · unstated 0.01
-         asked a second way: off 0.74 · is it off? yes 0.95
-  words  "kill the lights" say what to do 0.90
-  ask room · weakest: state 0.74
+  "kill the lights"
+
+  which reflex            lights 0.95   (none of them 0.03 · timer 0.01)
+                          Turn the lights in one room on, off, or dim them.
+  room                    not said 0.87   (den 0.10 · office 0.03)
+  state                   off 0.74   (on 0.19 · dim 0.06)
+                          asked a second way: off 0.74; the less sure of the two counts
+                          is it off? yes 0.95
+  → asks: lights state="off" room=?
+    it needs room
+
+  replay answered 11 questions in 2 rounds
 ```
 
 `try --json` prints the decision as one JSON line: [The JSON line](../reference/json.md).
 
-## `why`: the last decision, explained
+## `why`: the last sentence, explained
 
-Every real decision is logged. `evoke why` renders the last one as `try` would have, from the log alone, then says
-what became of it. After a sentence of several steps, it shows each step under its number
+Every real decision is logged. `evoke why` prints the last sentence as `try` would have, from the log alone,
+and says what became of each step: `ran`, `ran at your yes`, `declined`, `asked`, `refused`, `failed`,
+`cancelled`, `skipped`. After a sentence of several steps, it shows each step under its number
 ([Weaving](weaving.md)).
 
 ```text
 $ evoke why
   "kill the lights in the den"
-  lights 0.95 · none 0.03 · timer 0.01 · volume 0.01
-  room   den 0.92 · unstated 0.05 · office 0.03
-         asked a second way: den 0.92
-  state  off 0.94 · on 0.03 · dim 0.02 · unstated 0.01
-         asked a second way: off 0.94 · is it off? yes 0.95
-  words  "kill the lights" say what to do 0.90
-  whole  holds all you said 0.90
-  ran lights room="den" state="off" · weakest: room 0.92 · replay, 13 questions in 3 rounds
+
+  which reflex            lights 0.95   (none of them 0.03 · timer 0.01)
+                          Turn the lights in one room on, off, or dim them.
+  room                    den 0.92   (not said 0.05 · office 0.03)
+                          asked a second way: den 0.92; the less sure of the two counts
+  state                   off 0.94   (on 0.03 · dim 0.02)
+                          asked a second way: off 0.94; the less sure of the two counts
+                          is it off? yes 0.95
+  holds all you said      0.90
+  → ran: lights room="den" state="off"  0.92
+    a write runs at 0.90 or more, and its least sure judgment is room, 0.92; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  replay answered 13 questions in 3 rounds
 ```
 
-The last line counts the questions the adapter answered, and the rounds they were asked in when the answers to
-the first opened more. When the answers came from the cache, it ends in `· cached` in place of the adapter and
-its count.
+The last line counts the questions the adapter answered, and the rounds they were asked in: the parts of a
+sentence are asked about side by side, and the answers to one round may open the next. When every answer came
+from the cache, it reads `answered from the cache`; a plan run from a file names the file.
 
 ## `run`: by name, no classifier
 
@@ -209,6 +239,7 @@ $ evoke run lights room=den state=off
 den lights off
 $ evoke run power action=restart
   power action="restart" · destructive
+    it cannot be undone, so it always waits for a yes
   Make the laptop restart now?  [y]es [n]o > y
 restart in 5 seconds
 $ evoke run lights state=off

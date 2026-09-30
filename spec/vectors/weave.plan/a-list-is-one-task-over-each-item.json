@@ -556,9 +556,13 @@
             "end": 31,
             "word": "and",
             "order": "and",
-            "p": 0.2
+            "p": 0.2,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

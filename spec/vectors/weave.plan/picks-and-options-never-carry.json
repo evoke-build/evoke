@@ -745,23 +745,29 @@
             "end": 22,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 66,
             "end": 68,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 103,
             "end": 108,
             "word": "and",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

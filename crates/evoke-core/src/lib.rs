@@ -34,6 +34,7 @@ mod settle;
 pub mod test;
 pub mod text;
 pub mod vocabulary;
+mod waits;
 pub mod weave;
 pub mod words;
 

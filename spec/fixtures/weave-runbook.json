@@ -152,6 +152,7 @@
         ],
         "prompt": {
           "own": "failover · destructive · weakest: route 0.95",
+          "reason": "it cannot be undone, so it always waits for a yes",
           "template": "Promote the replica now?"
         },
         "because": [
@@ -456,6 +457,7 @@
         ],
         "prompt": {
           "own": "failback · destructive · weakest: route 0.95",
+          "reason": "it cannot be undone, so it always waits for a yes",
           "template": "Fail back to the old primary?"
         },
         "because": [
@@ -510,6 +512,7 @@
         "text": "drain the primary",
         "prompt": {
           "own": "runbook · destructive · weakest: route 0.95",
+          "reason": "it cannot be undone, so it always waits for a yes",
           "template": "Run the failover runbook?"
         }
       }

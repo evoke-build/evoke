@@ -180,7 +180,8 @@
       }
     ],
     "prompt": {
-      "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.92 · holds all you said 0.20, leaves out \"lock the door too\"",
+      "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.92",
+      "reason": "it holds all you said at 0.20, and a call runs at 0.30 or more; it leaves out \"lock the door too\"",
       "template": "Set the den lights off?"
     },
     "because": [

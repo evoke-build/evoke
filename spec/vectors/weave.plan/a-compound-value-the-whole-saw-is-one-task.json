@@ -287,7 +287,11 @@
             "order": "and",
             "p": 0.1
           }
-        ]
+        ],
+        "count": {
+          "one": 0.9,
+          "as_one": true
+        }
       }
     }
   }

@@ -618,7 +618,11 @@
         "folded": [
           {
             "text": "mark the second one as resolved",
-            "into": 2
+            "into": 2,
+            "gave": [
+              "state"
+            ],
+            "picked": "second"
           }
         ],
         "splits": [
@@ -627,16 +631,21 @@
             "end": 37,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           },
           {
             "start": 72,
             "end": 78,
             "word": "and",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

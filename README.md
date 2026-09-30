@@ -89,6 +89,7 @@ nothing that cannot be undone ran without a yes:
 ```text
 $ evoke "restart the computer"
   power action="restart" · destructive · weakest: route 0.98
+    it cannot be undone, so it always waits for a yes
   Make the laptop restart now?  [y]es [n]o [t]each > n
 [2]
 $ evoke "set the volume to 150 percent"

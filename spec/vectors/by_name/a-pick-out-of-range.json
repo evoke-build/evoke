@@ -15,7 +15,7 @@
   "expect": {
     "err": {
       "reflex": "lights",
-      "message": "150 is outside 1\u2013100",
+      "message": "150 is outside 1–100",
       "fix": {
         "type": "show",
         "reflex": "lights"

@@ -161,6 +161,7 @@
     ],
     "prompt": {
       "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.85",
+      "reason": "a write runs at 0.90 or more",
       "template": "Set the den lights off?"
     },
     "because": [

@@ -435,13 +435,16 @@ Ceiling and lamp lights only."""</span>
         <div class="panel term">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="try"><span class="p">$</span> <span class="in">evoke try "kill the lights"</span>
-<span class="own">  <span class="name">lights</span> <span class="hi">0.95</span> · none 0.03 · timer 0.01 · volume 0.01
-  room   <span class="name">unstated</span> <span class="mid">0.87</span> · den 0.10 · office 0.03
-  state  <span class="name">off</span> <span class="mid">0.74</span> · on 0.19 · dim 0.06 · unstated 0.01
-  <span class="name">ask room</span> · weakest: state <span class="mid">0.74</span></span></pre>
+<span class="own">  "kill the lights"
+
+  <span class="name">which reflex</span>            lights <span class="hi">0.95</span>   (none of them 0.03 · timer 0.01)
+  <span class="name">room</span>                    not said 0.87   (den 0.10 · office 0.03)
+  <span class="name">state</span>                   off <span class="mid">0.74</span>   (on 0.19 · dim 0.06)
+  → <span class="name">asks</span>: lights state="off" room=?
+    it needs room</span></pre>
         </div>
-        <p class="caption">The route, each argument with <b>unstated</b> as a choice, then the
-          outcome and the weakest judgment. The room was not in the sentence, so the outcome is an ask.</p>
+        <p class="caption">Which reflex, then each argument with <b>not said</b> as an answer, then what would
+          happen and why. The room was not in the sentence, so the call asks for it.</p>
       </div>
     </section>
 

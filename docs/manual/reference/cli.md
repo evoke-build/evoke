@@ -15,7 +15,7 @@ use
     --tag <tag>                           only the reflexes carrying the tag
     --save <file>                         the plan as a file, for run
     --                                    the rest is input, even a command word
-  evoke why                               the last decision, explained
+  evoke why                               the last sentence, explained
   evoke run <call>                        by name, without the classifier
   evoke run <file>                        a saved plan, run as it stands
     --json                                one JSON line: the call and its result
@@ -75,9 +75,9 @@ manual  https://evoke.build/manual/
 | :--------------------- | :-------------------------------------------------------------------------------------------- | :--- |
 | `evoke "<input>"`      | Decides, gates, runs. Prints the call and confidence on stderr, and the result on stdout. Logged | 0 · 2 · 3 · 1 · 4 |
 | `evoke`                | On a terminal, the REPL: `> `, line editing, history. Piped, a filter: one input per line, and the first non-zero exit is kept | as each line |
-| `evoke try "<input>"`  | Decides only: the ranking, each argument's distribution, each `fits`, the outcome and the weakest judgment; a sentence of several steps shows the plan first, then each step's judgments under its number. Never logged | 0 · 3 · 4 |
+| `evoke try "<input>"`  | Decides only, and prints the sentence as it was read: how it was read as a whole, then each step with which reflex, each value with what it stands on, the call and what would become of it, and why; a sentence of several steps shows the plan first. Last, how much the adapter was asked. Never logged: [Outcomes](../use/outcomes.md#try-decide-and-show-the-work) | 0 · 3 · 4 |
 | `evoke try --save <file> "<input>"` | The plan's lines, then the plan written as a file for `run <file>`: the sentence, the classifier's answers and the pins it was decided under, in clear. A plan that asks is refused with the step's question, exit 3; one that refuses, exit 2; nothing written either way. Never logged: [Weaving](../use/weaving.md#saving-a-plan-and-running-it-for-someone-else) | 0 · 2 · 3 · 4 |
-| `evoke why`            | The last logged decision, shown as `try` would show it, and what became of it; of a weave, every step, `from <file>` where a plan ran from one, the sentence's own block first as step 0 where a playbook wrote the plan | 0 · 3 |
+| `evoke why`            | The last logged sentence, shown as `try` would show it, and what became of each step: `ran`, `ran at your yes`, `declined`, `asked`, `refused`, `failed`, `cancelled`, `skipped`, `unanswered`; `from <file>` where a plan ran from one; a playbook's own block first where one wrote the plan | 0 · 3 |
 | `evoke run <call>`     | Runs the call by name. No classifier. The effect policy is kept, so a destructive call confirms with `[y]es [n]o`. A reflex that takes an earlier step's result is refused: only a sentence of several steps hands one. So is a playbook: a sentence reaches it. `--json` prints the call and its result as one line. Not logged | 0 · 2 · 3 · 1 |
 | `evoke run <file>`     | Runs a plan `try --save` wrote, exactly: a file, since its first word is no reflex name. A pin that moved refuses it with the line that names it and the command that mends it; so does a file that does not read the same as its answers. The plan prints, one yes over it is asked whatever its verdict, then each step at its turn as a sentence's is. Every step's line names the file. Logged | 0 · 1 · 2 · 3 · 4 |
 

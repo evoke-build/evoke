@@ -28,7 +28,7 @@ $ evoke
   lights room="den" state="off"  0.92
 den lights off
 > what time is it
-  none 0.85 · timer 0.10 · lights 0.03 · volume 0.02
+  none of them 0.85 · timer 0.10 · lights 0.03 · volume 0.02
 >
 ```
 

@@ -2,14 +2,12 @@
 //! at the first it lacks. In: a `Plan`, the adapter's gate, the request, the tags a decision is narrowed by, the
 //! `Answers` so far. Out: the `Weave`, or what is needed next.
 
-use std::fmt::Write as _;
-
 use indexmap::IndexMap;
 
 use super::reading::{self, Left, Order, Ref, SURE, Segment, Split, Unclean};
 use super::{
-    Answers, Aside, Asked, Because, Binding, Folded, From, Need, Outcome, Planning, Repair, Shared,
-    Step, Verdict, Via, Weave, When, field_names,
+    Answers, Aside, Asked, Because, Binding, Count, Folded, From, Need, Outcome, Parted, Planning,
+    Repair, Shared, Step, Verdict, Via, Weave, When, field_names,
 };
 use crate::adapter::{Fault, Gate, Prob};
 use crate::call::Value;
@@ -18,6 +16,7 @@ use crate::manifest::{self, Effect, Kind, MOST_STEPS, Recognizer, Source, Yield}
 use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
 use crate::plan::{Active, Plan};
 use crate::text::Clean;
+use crate::waits;
 
 /// A split the engine judged below this is never tried.
 const LOW: f64 = 0.35;
@@ -88,14 +87,26 @@ struct Draft {
     refusals: Vec<(usize, Refused)>,
     /// The plan refused whole: past the cap, or a part left out beside a plan.
     refused: Vec<Because>,
-    /// A part of the request folded into a step, by that step's id, with the reflex the part read as.
-    folded: Vec<(String, usize, Option<LocalName>)>,
+    /// Every part of the request folded into a step.
+    folded: Vec<Fold>,
+    /// Where each part that left the plan stood in the request: folded, set aside, or out of it.
+    out: Vec<(usize, usize)>,
     /// Per segment, the words as the person typed them, once a rewrite changed them; none until then.
     typed: Vec<Option<String>>,
     /// Whether the request asks one thing and stands as one step: no list, item or repair cuts it again.
     one: bool,
     /// The parts that match no reflex and ask for nothing: out of the plan.
     asides: Vec<Aside>,
+}
+
+/// A part of the request folded into a step: its words, the step by its id, the reflex the part read as, the
+/// arguments it gave the step's call, and the word of it that picked the step among several.
+struct Fold {
+    text: String,
+    into: usize,
+    reflex: Option<LocalName>,
+    gave: Vec<ArgName>,
+    picked: Option<String>,
 }
 
 /// One playbook a segment came from: which expansion wrote it, its place in the playbook, and what picks it when
@@ -137,6 +148,10 @@ struct Extra {
     folded: Vec<Folded>,
     asides: Vec<Aside>,
     branches: Vec<Branching>,
+    /// Where every step and every part out of the plan stands in the request.
+    spans: Vec<(usize, usize)>,
+    /// Whether the request stands as one step because it asks one thing.
+    one: bool,
 }
 
 /// A step that may not run, once the segments stand: its number, what picks it, and the step whose result does —
@@ -181,6 +196,7 @@ impl Draft {
             refusals: Vec::new(),
             refused: Vec::new(),
             folded: Vec::new(),
+            out: Vec::new(),
             typed: vec![None; count],
             one: false,
             asides: Vec::new(),
@@ -200,13 +216,13 @@ impl Draft {
         self.next += count;
         // A part folded into the segment is folded into the step of it that reads as the part did, or its first.
         let was = self.ids[k];
-        for (_, into, reflex) in &mut self.folded {
-            if *into == was {
+        for fold in &mut self.folded {
+            if fold.into == was {
                 let at = decisions
                     .iter()
-                    .position(|decision| reflex_of(decision) == reflex.as_ref())
+                    .position(|decision| reflex_of(decision) == fold.reflex.as_ref())
                     .unwrap_or(0);
-                *into = ids.get(at).copied().unwrap_or(was);
+                fold.into = ids.get(at).copied().unwrap_or(was);
             }
         }
         if self.shared.len() == self.segs.len() {
@@ -221,9 +237,9 @@ impl Draft {
 
     /// Segments `a..=b` merged into one, the person's own; what was folded into one of them is folded into it.
     fn merge(&mut self, a: usize, b: usize, seg: Segment, decision: Decision) {
-        for (_, into, _) in &mut self.folded {
-            if self.ids[a..=b].contains(into) {
-                *into = self.next;
+        for fold in &mut self.folded {
+            if self.ids[a..=b].contains(&fold.into) {
+                fold.into = self.next;
             }
         }
         if self.shared.len() == self.segs.len() {
@@ -269,20 +285,33 @@ impl Draft {
         self.ids.iter().position(|i| *i == id).map_or(0, |i| i + 1)
     }
 
-    /// Segment `k`, a part of the person's own, folded into the step of this id: gone, its words kept as typed.
-    fn fold_into(&mut self, k: usize, into: usize) {
+    /// Segment `k`, a part of the person's own, folded into the step of this id: gone, its words kept as typed,
+    /// with the arguments it gave the step and the word of it that picked the step.
+    fn fold_into(&mut self, k: usize, into: usize, gave: Vec<ArgName>, picked: Option<String>) {
         let text = self.typed[k]
             .clone()
             .unwrap_or_else(|| self.segs[k].text.clone());
         let reflex = reflex_of(&self.decisions[k]).cloned();
         // What was folded into the part goes where the part goes.
         let was = self.ids[k];
-        for (_, target, _) in &mut self.folded {
-            if *target == was {
-                *target = into;
+        for fold in &mut self.folded {
+            if fold.into == was {
+                fold.into = into;
             }
         }
-        self.folded.push((text, into, reflex));
+        self.folded.push(Fold {
+            text,
+            into,
+            reflex,
+            gave,
+            picked,
+        });
+        self.leave(k);
+    }
+
+    /// Segment `k` out of the plan: gone, with where it stood kept.
+    fn leave(&mut self, k: usize) {
+        self.out.push((self.segs[k].start, self.segs[k].end));
         self.remove(k);
     }
 
@@ -388,6 +417,8 @@ impl<'a> Planner<'a> {
                 folded: Vec::new(),
                 asides: Vec::new(),
                 branches: Vec::new(),
+                spans: draft.apart.iter().map(|seg| (seg.start, seg.end)).collect(),
+                one: false,
             };
             return Ok(Ok(self.finish(
                 judged,
@@ -457,6 +488,7 @@ impl<'a> Planner<'a> {
                         .map(|origin| origin.from.clone())
                         .collect(),
                     when: None,
+                    typed: draft.typed[k].clone().filter(|typed| *typed != seg.text),
                 }
             })
             .collect()
@@ -478,7 +510,14 @@ impl<'a> Planner<'a> {
             folded: Vec::new(),
             asides: Vec::new(),
             splits,
+            count: self.count(false),
         }
+    }
+
+    /// How many things the request asks, where it was asked, and whether it stands as one step for it.
+    fn count(&self, as_one: bool) -> Option<Count> {
+        let one = self.answers.judged.as_ref().and_then(reading::one_thing)?;
+        Some(Count { one, as_one })
     }
 
     /// A playbook expanded in place. A segment decided as a playbook — a run, or a confirm — is replaced by its
@@ -509,7 +548,7 @@ impl<'a> Planner<'a> {
             if chain.is_empty()
                 && let Some(into) = draft.expanded(&reflex, args)
             {
-                draft.fold_into(k, into);
+                draft.fold_into(k, into, Vec::new(), None);
                 continue;
             }
             if let Some(refused) = refusal(chain, &reflex) {
@@ -639,23 +678,19 @@ impl<'a> Planner<'a> {
                     .filter(|&k| draft.origins[k].iter().any(|origin| origin.expansion == e))
                     .collect();
                 let first = *members.first()?;
-                let mut own = expansion.prompt.own.clone();
-                let worst = members
+                let reach = members
                     .iter()
                     .filter_map(|&k| self.active_of(&draft.decisions[k]))
                     .map(|(_, active)| active.effect)
-                    .max();
-                if let Some(worst) = worst
-                    && worst > expansion.effect
-                {
-                    let _ = write!(own, " · steps reach {worst}");
-                }
+                    .max()
+                    .filter(|worst| *worst > expansion.effect);
                 Some(Because::Reviewed {
                     step: first + 1,
                     playbook: expansion.playbook.clone(),
                     text: expansion.text.clone(),
                     prompt: Prompt {
-                        own,
+                        own: expansion.prompt.own.clone(),
+                        reason: waits::reviewed(&expansion.prompt.reason, reach),
                         template: expansion.prompt.template.clone(),
                     },
                 })
@@ -683,10 +718,19 @@ impl<'a> Planner<'a> {
         let folded = draft
             .folded
             .iter()
-            .map(|(text, id, _)| Folded {
-                text: text.clone(),
-                into: draft.position(*id),
+            .map(|fold| Folded {
+                text: fold.text.clone(),
+                into: draft.position(fold.into),
+                gave: fold.gave.clone(),
+                picked: fold.picked.clone(),
             })
+            .collect();
+        let spans = draft
+            .segs
+            .iter()
+            .chain(&draft.apart)
+            .map(|seg| (seg.start, seg.end))
+            .chain(draft.out.iter().copied())
             .collect();
         Extra {
             reviewed,
@@ -694,6 +738,8 @@ impl<'a> Planner<'a> {
             folded,
             asides: draft.asides.clone(),
             branches: branches_of(draft),
+            spans,
+            one: draft.one,
         }
     }
 
@@ -782,7 +828,7 @@ impl<'a> Planner<'a> {
             draft
                 .taken
                 .retain(|split| split.start < start || split.end > end);
-            draft.repaired.push((whole.text.clone(), Repair::Merged));
+            draft.repaired.push((whole.text.clone(), Repair::Corrected));
             draft.merge(k, k, whole, decision);
             draft.apart.remove(at);
             if let Some(gone) = draft.excluded.iter().position(|text| *text == part.text) {
@@ -1104,6 +1150,7 @@ impl<'a> Planner<'a> {
                     word: s.word.clone(),
                     order: s.order,
                     p: judged.iter().find(|a| a.start == start).and_then(|a| a.p),
+                    cut: false,
                 });
             }
             draft.taken.sort_by_key(|s| s.start);
@@ -1287,8 +1334,8 @@ impl<'a> Planner<'a> {
                 break;
             }
             let text = draft.segs[k].text.clone();
-            let remark = if crate::words::courtesy(&text) {
-                true
+            let (remark, does) = if crate::words::courtesy(&text) {
+                (true, None)
             } else {
                 let Ok((id, _)) = reading::part(&draft.segs[k]) else {
                     continue;
@@ -1301,7 +1348,15 @@ impl<'a> Planner<'a> {
                 if !answered || share(&id, "asks") >= 1.0 - ASIDE {
                     continue;
                 }
-                share(&id, "aside") >= ASIDE
+                let does = Prob::new(share(&id, "aside"))
+                    .zip(Prob::new(share(&id, "detail")))
+                    .zip(Prob::new(share(&id, "asks")))
+                    .map(|((aside, detail), asks)| Parted {
+                        aside,
+                        detail,
+                        asks,
+                    });
+                (share(&id, "aside") >= ASIDE, does)
             };
             if !remark {
                 // The step beside it, before it first, waits for a yes with the part's words.
@@ -1316,8 +1371,8 @@ impl<'a> Planner<'a> {
                     draft.decisions[j] = held(self.plan, draft.decisions[j].clone(), cap);
                 }
             }
-            draft.asides.insert(0, Aside { text, remark });
-            draft.remove(k);
+            draft.asides.insert(0, Aside { text, remark, does });
+            draft.leave(k);
         }
     }
 
@@ -1496,21 +1551,30 @@ impl<'a> Planner<'a> {
                 .collect();
             let first = match could.as_slice() {
                 [] => None,
-                [one] => Some(*one),
-                several => pointed(&draft.segs[j].text, several.len()).map(|k| several[k]),
+                [one] => Some((*one, None)),
+                several => pointed(&draft.segs[j].text, several.len())
+                    .map(|(k, word)| (several[k], Some(word))),
             };
-            let Some(i) = first else {
+            let Some((i, picked)) = first else {
                 j += 1;
                 continue;
             };
+            let held = args_of(&draft.decisions[i]).cloned().unwrap_or_default();
             let joined = joined(
                 self.plan,
                 draft.decisions[i].clone(),
                 &draft.decisions[j],
                 self.gate,
             );
+            let gave = args_of(&joined)
+                .into_iter()
+                .flatten()
+                .map(|(arg, _)| arg)
+                .filter(|arg| !held.contains_key(*arg))
+                .cloned()
+                .collect();
             draft.decisions[i] = joined;
-            draft.fold_into(j, draft.ids[i]);
+            draft.fold_into(j, draft.ids[i], gave, picked);
         }
     }
 
@@ -1562,7 +1626,7 @@ impl<'a> Planner<'a> {
             };
             let mut given: IndexMap<ArgName, Value> = IndexMap::new();
             let mut stands: IndexMap<ArgName, Basis> = IndexMap::new();
-            let mut gone: Vec<usize> = Vec::new();
+            let mut gone: Vec<(usize, Vec<ArgName>)> = Vec::new();
             for &k in beside.iter().filter(|k| written(k)) {
                 let theirs = args_of(&draft.decisions[k]).cloned().unwrap_or_default();
                 let differs = theirs.iter().any(|(arg, value)| {
@@ -1575,7 +1639,7 @@ impl<'a> Planner<'a> {
                 if differs {
                     continue;
                 }
-                let mut took = false;
+                let mut took: Vec<ArgName> = Vec::new();
                 for (arg, value) in &theirs {
                     if asks.contains(&arg) && !given.contains_key(arg) {
                         given.insert(arg.clone(), value.clone());
@@ -1584,7 +1648,7 @@ impl<'a> Planner<'a> {
                                 .and_then(|basis| basis.get(arg))
                                 .map(|basis| (arg.clone(), basis.clone())),
                         );
-                        took = true;
+                        took.push(arg.clone());
                     }
                 }
                 let brings = theirs
@@ -1593,16 +1657,16 @@ impl<'a> Planner<'a> {
                 let covered = asked_of(&draft.decisions[k])
                     .iter()
                     .all(|arg| asks.contains(arg) || asking.args.contains_key(*arg));
-                if took || !brings && covered {
-                    gone.push(k);
+                if !took.is_empty() || !brings && covered {
+                    gone.push((k, took));
                 }
             }
             if !given.is_empty() {
                 draft.decisions[p] = carry(self.plan, asking.clone(), given, stands, self.gate);
             }
             let into = draft.ids[p];
-            for k in gone.into_iter().rev() {
-                draft.fold_into(k, into);
+            for (k, gave) in gone.into_iter().rev() {
+                draft.fold_into(k, into, gave, None);
                 if k < p {
                     p -= 1;
                 }
@@ -2033,7 +2097,7 @@ impl<'a> Planner<'a> {
     /// steps that may not run, bound to the step whose result picks each.
     fn finish(
         &self,
-        splits: Vec<Split>,
+        mut splits: Vec<Split>,
         taken: &[Split],
         mut steps: Vec<Step>,
         excluded: Vec<String>,
@@ -2045,7 +2109,15 @@ impl<'a> Planner<'a> {
             folded,
             asides,
             branches,
+            spans,
+            one,
         } = extra;
+        // The request is cut where no step, and no part out of the plan, holds both sides.
+        for split in &mut splits {
+            split.cut = !spans
+                .iter()
+                .any(|(start, end)| *start <= split.start && split.end <= *end);
+        }
         let mut after: Vec<Vec<usize>> = vec![Vec::new(); steps.len()];
         // An explicit `then` orders everything before it before everything after it.
         for split in taken.iter().filter(|split| split.order == Order::Then) {
@@ -2114,6 +2186,7 @@ impl<'a> Planner<'a> {
             folded,
             asides,
             splits,
+            count: self.count(one),
         }
     }
 
@@ -2636,6 +2709,7 @@ fn listed(
             word: s.word.clone(),
             order: s.order,
             p: judged.iter().find(|a| a.start == start).and_then(|a| a.p),
+            cut: false,
         });
     }
     draft.taken.sort_by_key(|s| s.start);
@@ -2679,7 +2753,7 @@ fn fold(draft: &mut Draft) {
                 })
         });
         match target {
-            Some(j) => draft.fold_into(k, draft.ids[j]),
+            Some(j) => draft.fold_into(k, draft.ids[j], Vec::new(), None),
             None => k += 1,
         }
     }
@@ -2792,27 +2866,30 @@ const ORDINALS: [(&str, isize); 11] = [
     ("latter", -1),
 ];
 
-/// Which of several a part's own words pick, by the one place they name; none where they name none, two, or
-/// one past the last.
-fn pointed(words: &str, of: usize) -> Option<usize> {
-    let mut places: Vec<isize> = words
+/// Which of several a part's own words pick, by the one place they name, with the word that names it as
+/// typed; none where they name none, two, or one past the last.
+fn pointed(words: &str, of: usize) -> Option<(usize, String)> {
+    let mut places: Vec<(isize, &str)> = words
         .split(|c: char| !c.is_alphanumeric())
         .filter_map(|word| {
-            let word = word.to_lowercase();
+            let lower = word.to_lowercase();
             ORDINALS
                 .iter()
-                .find(|(named, _)| *named == word)
-                .map(|(_, place)| *place)
+                .find(|(named, _)| *named == lower)
+                .map(|(_, place)| (*place, word))
         })
         .collect();
-    places.sort_unstable();
-    places.dedup();
-    let [place] = places.as_slice() else {
+    places.sort_unstable_by_key(|(place, _)| *place);
+    places.dedup_by_key(|(place, _)| *place);
+    let [(place, word)] = places.as_slice() else {
         return None;
     };
     let of = isize::try_from(of).ok()?;
     let at = if *place < 0 { of + place } else { *place };
-    usize::try_from(at).ok().filter(|_| at < of)
+    usize::try_from(at)
+        .ok()
+        .filter(|_| at < of)
+        .map(|at| (at, (*word).to_owned()))
 }
 
 /// Why a step that routes to a playbook opens no plan, when it does not: the step may not run, and a branch is

@@ -175,18 +175,23 @@ reach another playbook. A check whose result picks is a reflex of its own that y
 $ evoke "drain the primary"
   1  drain  0.95 · runbook 1
   2  failover · destructive · weakest: route 0.95 · runbook 2
+       it cannot be undone, so it always waits for a yes
   3  verify  0.95 · runbook 3 · then 4 on "yes", 5 on "no"
   4  tell channel="#ops"  0.95 · runbook 4 · if 3 yields landing "yes"
   5  failback · destructive · weakest: route 0.95 · runbook 5 · if 3 yields landing "no"
+       it cannot be undone, so it always waits for a yes
   runbook · destructive · weakest: route 0.95
+    it cannot be undone, so it always waits for a yes
   Run the failover runbook?  [y]es [n]o [t]each > y
 primary drained
   2  failover · destructive · weakest: route 0.95
+       it cannot be undone, so it always waits for a yes
   Promote the replica now?  [y]es [n]o [t]each > y
 replica promoted
 writes landing on the new primary
 told #ops
   5  failback · destructive · weakest: route 0.95 · runbook 5 · if 3 yields landing "no" · skipped · not chosen: step 3 yielded landing "yes"
+       it cannot be undone, so it always waits for a yes
 ```
 
 ## What the person adds to the sentence

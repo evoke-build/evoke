@@ -63,7 +63,7 @@ const UTTERANCE: &str = "<utterance>";
 /// The last input decided, from the log: one decision's; of a weave, the step the lesson's reflex decided,
 /// when one did — else the steps, for the person to name one.
 fn last_input(session: &Session<'_>, lesson: &Taught) -> Result<String, Exit> {
-    let lines = session.state.tail().map_err(Exit::Failed)?;
+    let lines = session.state.tail().map_err(Exit::Failed)?.lines;
     let lines: Vec<Line> = lines
         .iter()
         .map(|line| Line::parse(line))

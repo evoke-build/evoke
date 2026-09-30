@@ -35,6 +35,14 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   not in us-east, in eu-west`. A sentence that asks one thing is read whole, what it rules out with what it
   asks. An option or a flag of a call reaches a part that asks for `the same`.
 - The CLI decides the parts of a sentence side by side, as the SDK does.
+- A call that waits for a yes says why on the line under it, in the plan as at the prompt; the JSON line
+  carries it as `prompt.reason`. The plan says what it folded, set aside or left out before its steps, for a
+  plan of one step too.
+- `try` and `why` print the sentence as it was read: how it was read as a whole, then each step with which
+  reflex, each value with what it stands on and where it came from, the call with what became of it and why,
+  and last how much the classifier was asked. An answer's key prints in words: `not said`, `none of them`.
+- A question over a list offers `[0] none of these`, which declines it; a declined question says what did not
+  run.
 
 ## [0.15.0] - 2026-09-29
 

@@ -413,7 +413,8 @@
                 "word": "eu-west",
                 "via": "rewrite"
               }
-            }
+            },
+            "typed": "check the errors for checkout"
           }
         ],
         "stages": [
@@ -437,9 +438,13 @@
             "end": 35,
             "word": "and",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

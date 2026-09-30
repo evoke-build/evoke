@@ -174,7 +174,8 @@
       }
     ],
     "prompt": {
-      "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.92 · room from \"den\"",
+      "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.92",
+      "reason": "room was read from \"den\"",
       "template": "Set the den lights off?"
     },
     "because": [

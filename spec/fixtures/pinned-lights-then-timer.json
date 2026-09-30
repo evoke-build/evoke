@@ -222,9 +222,13 @@
         "end": 33,
         "word": "then",
         "order": "then",
-        "p": 0.95
+        "p": 0.95,
+        "cut": true
       }
-    ]
+    ],
+    "count": {
+      "one": 0.05
+    }
   },
   "evoke": "0.2.0",
   "adapter": {
@@ -238,7 +242,7 @@
     "write": 0.9,
     "whole": 0.3
   },
-  "set": "h1:f55221ffad94d400ae16e2d66ff4826b8a4d497e0de88ea71de300e303b6e5dd",
+  "set": "h1:52497f8b3c69bd3bc51247587141da9361ca1fafff49a0397e35702d27922c2e",
   "reflexes": {
     "lights": {
       "item": "h1:4d31efc7f857e631811f9e7d1e49fc080c036108ce2e8be2be02d2642dcd88b4",

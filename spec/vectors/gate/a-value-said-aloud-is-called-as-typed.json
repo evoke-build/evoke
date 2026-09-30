@@ -165,6 +165,7 @@
     ],
     "prompt": {
       "own": "rollback release=\"5.0.2\" · destructive · weakest: release 0.96",
+      "reason": "it cannot be undone, so it always waits for a yes",
       "template": "Roll back 5.0.2?"
     },
     "because": [

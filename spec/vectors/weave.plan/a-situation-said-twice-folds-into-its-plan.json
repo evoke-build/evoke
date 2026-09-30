@@ -117,6 +117,7 @@
             ],
             "prompt": {
               "own": "outage service=\"payments\" · destructive · weakest: route 0.95",
+              "reason": "it cannot be undone, so it always waits for a yes",
               "template": "Run the outage plan for payments?"
             },
             "because": [
@@ -1958,6 +1959,7 @@
               "text": "payments keep timing out",
               "prompt": {
                 "own": "outage service=\"payments\" · destructive · weakest: route 0.95",
+                "reason": "it cannot be undone, so it always waits for a yes",
                 "template": "Run the outage plan for payments?"
               }
             }
@@ -1976,9 +1978,13 @@
             "end": 26,
             "word": ",",
             "order": "and",
-            "p": 0.9
+            "p": 0.9,
+            "cut": true
           }
-        ]
+        ],
+        "count": {
+          "one": 0.05
+        }
       }
     }
   }

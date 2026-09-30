@@ -106,6 +106,7 @@
             ],
             "prompt": {
               "own": "trip to=\"lisbon\" · destructive · weakest: to 0.95",
+              "reason": "it cannot be undone, so it always waits for a yes",
               "template": "Plan the trip to lisbon?"
             },
             "because": [
@@ -753,6 +754,7 @@
               "text": "plan the trip to lisbon",
               "prompt": {
                 "own": "trip to=\"lisbon\" · destructive · weakest: to 0.95",
+                "reason": "it cannot be undone, so it always waits for a yes",
                 "template": "Plan the trip to lisbon?"
               }
             }

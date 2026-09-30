@@ -123,16 +123,15 @@
       <div class="panel term">
         <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="try"><span class="p">$</span> <span class="in">evoke try "kill the lights"</span>
-<span class="own">  <span class="name">lights</span> <span class="hi">0.95</span> · none 0.03 · timer 0.01 · volume 0.01
-  room   <span class="name">unstated</span> <span class="mid">0.87</span> · den 0.10 · office 0.03
-  state  <span class="name">off</span> <span class="mid">0.74</span> · on 0.19 · dim 0.06 · unstated 0.01
-  <span class="name">ask room</span> · weakest: state <span class="mid">0.74</span></span>
+<span class="own">  <span class="name">which reflex</span>            lights <span class="hi">0.95</span>   (none of them 0.03 · timer 0.01)
+  <span class="name">room</span>                    not said 0.87   (den 0.10 · office 0.03)
+  <span class="name">state</span>                   off <span class="mid">0.74</span>   (on 0.19 · dim 0.06)
+  → <span class="name">asks</span>: lights state="off" room=?</span>
 <span class="p">$</span> <span class="in">evoke try "kill the lights in the den"</span>
-<span class="own">  <span class="name">lights</span> <span class="hi">0.95</span> · none 0.03 · timer 0.01 · volume 0.01
-  room   <span class="name">den</span> <span class="hi">0.92</span> · unstated 0.05 · office 0.03
-  state  <span class="name">off</span> <span class="hi">0.94</span> · on 0.03 · dim 0.02 · unstated 0.01
-  whole  holds all you said 0.90
-  <span class="name">run</span> · weakest: room <span class="hi">0.92</span></span></pre>
+<span class="own">  <span class="name">which reflex</span>            lights <span class="hi">0.95</span>   (none of them 0.03 · timer 0.01)
+  <span class="name">room</span>                    den <span class="hi">0.92</span>   (not said 0.05 · office 0.03)
+  <span class="name">state</span>                   off <span class="hi">0.94</span>   (on 0.03 · dim 0.02)
+  → <span class="name">runs</span>: lights room="den" state="off"  <span class="hi">0.92</span></span></pre>
       </div>
       <p class="caption">Three words moved the weakest answer from <b>0.74</b> to <b>0.92</b>. An ask became a run. You
         can read every judgment, and you can move the bar in a file you own.</p>
@@ -239,8 +238,9 @@ Ceiling and lamp lights only."""</span>
       <div class="panel term">
         <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="use"><span class="p">$</span> <span class="in">evoke "kill the lights"</span>
-<span class="own">  Which room?  [1] den  [2] office  [+] add one  &gt; <span class="in">1</span>
+<span class="own">  Which room?  [1] den  [2] office  [+] add one  [0] none of these  &gt; <span class="in">1</span>
   <span class="name">lights</span> room="den" state="off" · write · weakest: state <span class="mid">0.74</span>
+    a write runs at 0.90 or more
   Set the den lights off?  [y]es [n]o [t]each &gt; <span class="in">t</span></span>
 <span class="add">+ overlays/lights.toml  [examples] "kill the lights" = { state = "off" }</span>
 <span class="out">den lights off</span></pre>

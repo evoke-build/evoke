@@ -1,5 +1,5 @@
-//! `evoke why`: the last decision, explained from the log. In: the environment. Out: `Exit`; the log's last
-//! input — one decision, or a weave's steps — rendered as `try` would show it, with what came of it, on stdout.
+//! `evoke why`: the last sentence, explained from the log. In: the environment. Out: `Exit`; the log's last
+//! input — the sentence and its steps — read out as `try` would show it, with what became of it, on stdout.
 
 use evoke_core::{Diagnostic, Fix};
 
@@ -7,6 +7,7 @@ use super::Exit;
 use crate::args::Command;
 use crate::hosts::state::State;
 use crate::hosts::{Environment, terminal};
+use crate::report::sentence::{self, Sentence};
 use crate::report::{self, Line, Paths};
 
 pub fn run(environment: &Environment) -> Exit {
@@ -29,8 +30,8 @@ fn explained(environment: &Environment) -> Exit {
         Ok(state) => state,
         Err(failure) => return Exit::Failed(failure),
     };
-    let lines = match state.tail() {
-        Ok(lines) if lines.is_empty() => {
+    let tail = match state.tail() {
+        Ok(tail) if tail.lines.is_empty() && tail.sentence.is_none() => {
             return Exit::Human(Diagnostic {
                 reflex: None,
                 at: None,
@@ -38,13 +39,15 @@ fn explained(environment: &Environment) -> Exit {
                 fix: Fix::Rerun,
             });
         }
-        Ok(lines) => lines,
+        Ok(tail) => tail,
         Err(failure) => return Exit::Failed(failure),
     };
-    let parsed: Result<Vec<Line>, String> = lines.iter().map(|line| Line::parse(line)).collect();
+    let whole = tail.sentence.as_deref().and_then(Sentence::parse);
+    let parsed: Result<Vec<Line>, String> =
+        tail.lines.iter().map(|line| Line::parse(line)).collect();
     match parsed {
         Ok(lines) => {
-            terminal::answer(&report::why(&lines));
+            terminal::answer(&sentence::reading(whole.as_ref(), &lines, false));
             Exit::Ran
         }
         Err(why) => Exit::Human(Diagnostic {
