@@ -63,12 +63,8 @@ route                                  = { timer = 0.96, lights = 0.01, volume =
 "timer.label"                          = { none = 0.85, unstated = 0.15 }
 "weave.left_timer_0_2"                 = { action = 0.95, courtesy = 0.05 }
 "weave.left_timer_6_7"                 = { "arg:label" = 0.8, action = 0.2 }
-"weave.first_timer__label_3169934535"  = { s6 = 0.7, s7 = 0.2, unstated = 0.1 }
-"weave.run_timer__label_3169934535"    = { 7-7 = 0.6, 6-7 = 0.3, unstated = 0.1 }
 "weave.word_timer__label_6"            = { yes = 0.3 }
 "weave.word_timer__label_7"            = { yes = 0.9 }
-"weave.last_timer__label_6_3169934535" = { e7 = 0.8, e6 = 0.1, unstated = 0.1 }
-"weave.text_timer__label_1997792219"   = { r2 = 0.91, r1 = 0.05, other = 0.03, unstated = 0.01 }
 "lights.room"                          = { unstated = 1.0 }
 "lights.state"                         = { unstated = 1.0 }
 "lights.brightness"                    = { unstated = 1.0 }
@@ -80,7 +76,7 @@ route                                  = { timer = 0.96, lights = 0.01, volume =
 "weave.word_timer__label_1"            = { yes = 0.05 }
 "weave.word_timer__label_2"            = { yes = 0.05 }
 "weave.word_timer__label_3"            = { yes = 0.05 }
-"weave.first_timer__label_1171567175"  = { unstated = 1.0 }
-"weave.run_timer__label_1171567175"    = { unstated = 1.0 }
-"weave.text_timer__label_3521553818"   = { unstated = 1.0 }
-"weave.whole_3359817700"               = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.first_timer__label_1171567175"  = { s6 = 0.7, s7 = 0.2, unstated = 0.1 }
+"weave.run_timer__label_1171567175"    = { 7-7 = 0.6, 6-7 = 0.3, unstated = 0.1 }
+"weave.last_timer__label_6_1171567175" = { e7 = 0.8, e6 = 0.1, unstated = 0.1 }
+"weave.text_timer__label_1997792219"   = { r2 = 0.91, r1 = 0.05, other = 0.03, unstated = 0.01 }

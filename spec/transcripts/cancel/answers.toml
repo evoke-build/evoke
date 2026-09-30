@@ -37,8 +37,6 @@ route                                = { timer = 0.95, wait = 0.01, pause = 0.01
 "weave.only_timer__duration_8_17"    = { yes = 0.05 }
 "weave.left_timer_0_0"               = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_4_4"               = { action = 0.9, courtesy = 0.1 }
-"weave.first_timer__label_260156541" = { unstated = 1.0 }
-"weave.run_timer__label_260156541"   = { unstated = 1.0 }
 "weave.word_timer__label_0"          = { yes = 0.05 }
 "weave.word_timer__label_1"          = { yes = 0.05 }
 "weave.word_timer__label_4"          = { yes = 0.05 }

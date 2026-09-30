@@ -67,8 +67,6 @@ route                                = { timer = 0.95, lights = 0.01, volume = 0
 "weave.view_contact__name"           = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "weave.left_timer_0_0"               = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_4_4"               = { action = 0.9, courtesy = 0.1 }
-"weave.first_timer__label_260156541" = { unstated = 1.0 }
-"weave.run_timer__label_260156541"   = { unstated = 1.0 }
 "weave.word_timer__label_0"          = { yes = 0.05 }
 "weave.word_timer__label_1"          = { yes = 0.05 }
 "weave.word_timer__label_4"          = { yes = 0.05 }
@@ -94,8 +92,6 @@ route                                = { timer = 0.95, lights = 0.01, volume = 0
 "weave.view_contact__name"           = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "weave.left_timer_0_0"               = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_4_4"               = { action = 0.9, courtesy = 0.1 }
-"weave.first_timer__label_260156541" = { unstated = 1.0 }
-"weave.run_timer__label_260156541"   = { unstated = 1.0 }
 "weave.word_timer__label_0"          = { yes = 0.05 }
 "weave.word_timer__label_1"          = { yes = 0.05 }
 "weave.word_timer__label_4"          = { yes = 0.05 }
@@ -221,8 +217,6 @@ route                                = { timer = 0.94, lights = 0.01, volume = 0
 "weave.left_timer_0_0"               = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_4_4"               = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_6_6"               = { action = 0.9, courtesy = 0.1 }
-"weave.first_timer__label_260156541" = { unstated = 1.0 }
-"weave.run_timer__label_260156541"   = { unstated = 1.0 }
 "weave.word_timer__label_0"          = { yes = 0.05 }
 "weave.word_timer__label_1"          = { yes = 0.05 }
 "weave.word_timer__label_4"          = { yes = 0.05 }
@@ -343,36 +337,34 @@ route                      = { contact = 0.95, mail = 0.02, lights = 0.01, none 
 "weave.whole_3351565728"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."copy them on a note to dana@example.com"]
-route                                  = { mail = 0.92, contact = 0.03, none = 0.05 }
-"lights.room"                          = { unstated = 0.95, den = 0.03, office = 0.02 }
-"lights.state"                         = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
-"contact.name"                         = { unstated = 0.95, dana = 0.03, sam = 0.02 }
-"mail.to"                              = { 23-39 = 0.95, unstated = 0.05 }
-"mail.cc"                              = { unstated = 0.97, 23-39 = 0.03 }
-"lights.brightness"                    = { unstated = 1.0 }
-"timer.duration"                       = { unstated = 1.0 }
-"timer.label"                          = { unstated = 1.0 }
-"volume.level"                         = { unstated = 1.0 }
-"mail.subject"                         = { unstated = 1.0 }
-"weave.view_lights__room"              = { unstated = 0.95, den = 0.03, office = 0.02 }
-"weave.view_lights__state"             = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
-"weave.is_lights__state_0"             = { yes = 0.05 }
-"weave.view_contact__name"             = { unstated = 0.95, dana = 0.03, sam = 0.02 }
-"weave.only_mail__to_23_39"            = { yes = 0.05 }
-"weave.only_mail__cc_23_39"            = { yes = 0.05 }
-"weave.left_mail_0_1"                  = { action = 0.9, courtesy = 0.1 }
-"weave.left_mail_4_4"                  = { action = 0.9, courtesy = 0.1 }
-"weave.first_mail__subject_3185304599" = { unstated = 1.0 }
-"weave.run_mail__subject_3185304599"   = { unstated = 1.0 }
-"weave.word_mail__subject_0"           = { yes = 0.05 }
-"weave.word_mail__subject_1"           = { yes = 0.05 }
-"weave.word_mail__subject_2"           = { yes = 0.05 }
-"weave.word_mail__subject_3"           = { yes = 0.05 }
-"weave.word_mail__subject_4"           = { yes = 0.05 }
-"weave.word_mail__subject_5"           = { yes = 0.05 }
-"weave.first_mail__subject_94546292"   = { unstated = 1.0 }
-"weave.run_mail__subject_94546292"     = { unstated = 1.0 }
-"weave.whole_2055804351"               = { whole = 0.9, less = 0.05, other = 0.05 }
+route                                = { mail = 0.92, contact = 0.03, none = 0.05 }
+"lights.room"                        = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"                       = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"contact.name"                       = { unstated = 0.95, dana = 0.03, sam = 0.02 }
+"mail.to"                            = { 23-39 = 0.95, unstated = 0.05 }
+"mail.cc"                            = { unstated = 0.97, 23-39 = 0.03 }
+"lights.brightness"                  = { unstated = 1.0 }
+"timer.duration"                     = { unstated = 1.0 }
+"timer.label"                        = { unstated = 1.0 }
+"volume.level"                       = { unstated = 1.0 }
+"mail.subject"                       = { unstated = 1.0 }
+"weave.view_lights__room"            = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"           = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"weave.is_lights__state_0"           = { yes = 0.05 }
+"weave.view_contact__name"           = { unstated = 0.95, dana = 0.03, sam = 0.02 }
+"weave.only_mail__to_23_39"          = { yes = 0.05 }
+"weave.only_mail__cc_23_39"          = { yes = 0.05 }
+"weave.left_mail_0_1"                = { action = 0.9, courtesy = 0.1 }
+"weave.left_mail_4_4"                = { action = 0.9, courtesy = 0.1 }
+"weave.word_mail__subject_0"         = { yes = 0.05 }
+"weave.word_mail__subject_1"         = { yes = 0.05 }
+"weave.word_mail__subject_2"         = { yes = 0.05 }
+"weave.word_mail__subject_3"         = { yes = 0.05 }
+"weave.word_mail__subject_4"         = { yes = 0.05 }
+"weave.word_mail__subject_5"         = { yes = 0.05 }
+"weave.first_mail__subject_94546292" = { unstated = 1.0 }
+"weave.run_mail__subject_94546292"   = { unstated = 1.0 }
+"weave.whole_2055804351"             = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."copy sam@example.com on a note to dana@example.com"]
 route                      = { none = 0.9, mail = 0.1 }
@@ -409,8 +401,6 @@ route                                 = { timer = 0.95, lights = 0.01, volume = 
 "weave.view_contact__name"            = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "weave.left_timer_0_0"                = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_4_4"                = { action = 0.9, courtesy = 0.1 }
-"weave.first_timer__label_2675246088" = { unstated = 1.0 }
-"weave.run_timer__label_2675246088"   = { unstated = 1.0 }
 "weave.word_timer__label_0"           = { yes = 0.05 }
 "weave.word_timer__label_1"           = { yes = 0.05 }
 "weave.word_timer__label_4"           = { yes = 0.05 }
@@ -543,8 +533,6 @@ route                                  = { mail = 1.0 }
 "weave.only_mail__to_6_22"             = { yes = 0.05 }
 "weave.only_mail__cc_6_22"             = { yes = 0.05 }
 "weave.left_mail_0_0"                  = { action = 0.9, courtesy = 0.1 }
-"weave.first_mail__subject_1213965521" = { unstated = 1.0 }
-"weave.run_mail__subject_1213965521"   = { unstated = 1.0 }
 "weave.word_mail__subject_0"           = { yes = 0.05 }
 "weave.first_mail__subject_3293851753" = { unstated = 1.0 }
 "weave.run_mail__subject_3293851753"   = { unstated = 1.0 }

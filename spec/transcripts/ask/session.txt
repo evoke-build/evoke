@@ -22,14 +22,14 @@ $ evoke why
   ran lights room="office" state="off" · weakest: state 0.95 · replay, 13 questions in 3 rounds
 # A text typed without quotes is read from the words as typed, and waits for a yes.
 $ evoke "set a timer for 10 minutes called tea"
-  What is the timer for?  you wrote "called tea"  > y
-  timer duration="10 minutes" label="y"  0.96
+  timer duration="10 minutes" label="tea" · write · weakest: label 0.91 · label without quotes
+  Start a 10 minutes timer?  [y]es [n]o [t]each > y
 10 minute timer started
 $ evoke why
   "set a timer for 10 minutes called tea"
   timer 0.96 · none 0.02 · lights 0.01 · volume 0.01
   duration  "10 minutes" 0.97 · unstated 0.03
   label     none 0.85 · unstated 0.15
-  words     "set a timer" say what to do 0.95 · "called tea" answer label 0.80
-  whole     holds all you said 0.90
-  ran timer duration="10 minutes" label="y" · weakest: route 0.96 · replay, 22 questions in 4 rounds
+            read without quotes: "tea" 0.91 · other readings: "called tea"
+  words     "set a timer" say what to do 0.95
+  ran timer duration="10 minutes" label="tea" · weakest: label 0.91 · replay, 22 questions in 4 rounds

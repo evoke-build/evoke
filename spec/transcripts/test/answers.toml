@@ -69,8 +69,6 @@ route                                 = { timer = 0.96, lights = 0.01, none = 0.
 "weave.view_lights__state"            = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_16_26"    = { yes = 0.05 }
 "weave.left_timer_0_2"                = { action = 0.9, courtesy = 0.1 }
-"weave.first_timer__label_3169934535" = { unstated = 1.0 }
-"weave.run_timer__label_3169934535"   = { unstated = 1.0 }
 "weave.word_timer__label_0"           = { yes = 0.05 }
 "weave.word_timer__label_1"           = { yes = 0.05 }
 "weave.word_timer__label_2"           = { yes = 0.05 }
@@ -90,8 +88,6 @@ route                                 = { timer = 0.95, lights = 0.02, none = 0.
 "weave.view_lights__state"            = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_0_9"      = { yes = 0.05 }
 "weave.left_timer_2_2"                = { action = 0.9, courtesy = 0.1 }
-"weave.first_timer__label_3682311430" = { unstated = 1.0 }
-"weave.run_timer__label_3682311430"   = { unstated = 1.0 }
 "weave.word_timer__label_2"           = { yes = 0.05 }
 "weave.first_timer__label_3085778414" = { unstated = 1.0 }
 "weave.run_timer__label_3085778414"   = { unstated = 1.0 }
@@ -123,8 +119,6 @@ route                                 = { timer = 0.95, lights = 0.01, none = 0.
 "weave.view_lights__state"            = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_11_21"    = { yes = 0.05 }
 "weave.left_timer_0_1"                = { action = 0.9, courtesy = 0.1 }
-"weave.first_timer__label_1914900415" = { unstated = 1.0 }
-"weave.run_timer__label_1914900415"   = { unstated = 1.0 }
 "weave.word_timer__label_0"           = { yes = 0.05 }
 "weave.word_timer__label_1"           = { yes = 0.05 }
 "weave.first_timer__label_3723623174" = { unstated = 1.0 }
@@ -142,8 +136,6 @@ route                                 = { timer = 0.94, lights = 0.02, none = 0.
 "weave.view_lights__state"            = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_11_18"    = { yes = 0.05 }
 "weave.left_timer_0_0"                = { action = 0.9, courtesy = 0.1 }
-"weave.first_timer__label_1488041253" = { unstated = 1.0 }
-"weave.run_timer__label_1488041253"   = { unstated = 1.0 }
 "weave.word_timer__label_0"           = { yes = 0.05 }
 "weave.word_timer__label_1"           = { yes = 0.05 }
 "weave.word_timer__label_2"           = { yes = 0.05 }
