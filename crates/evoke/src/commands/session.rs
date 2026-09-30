@@ -36,7 +36,7 @@ use crate::hosts::state::State;
 use crate::hosts::store::Store;
 use crate::hosts::terminal::{self, Tty};
 use crate::hosts::{Deadline, Environment, Failure};
-use crate::hosts::{clock, contain, interrupt};
+use crate::hosts::{clock, contain, interrupt, threads};
 use crate::report::{self, Paths, Row};
 
 /// A body that gave no result: what failed and its fix, and the frames of an error a file body threw, none for
@@ -922,18 +922,21 @@ impl Session<'_> {
                     answers.verified.get_or_insert_default().0.extend(raw.0);
                 }
                 Need::Decide { asked } => {
-                    for asked in asked {
+                    // Side by side: each text is its own adapter call, and the results keep the order asked.
+                    let round = threads::try_each(&asked, |asked| {
                         // Memory reaches a whole sentence alone: a part of one, or a step's words rewritten,
                         // recalls nothing.
                         let recalled = if asked.whole { recent } else { &[] };
-                        let one = self.decided(
+                        self.decided(
                             adapter,
                             &asked.text,
                             &asked.tags,
                             asked.only.as_ref(),
                             true,
                             recalled,
-                        )?;
+                        )
+                    })?;
+                    for (asked, one) in asked.into_iter().zip(round) {
                         trace.extend(one.trace.iter().cloned());
                         answers.decided.push((asked.clone(), one.decision.clone()));
                         decided.push((asked, one));

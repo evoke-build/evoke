@@ -113,14 +113,17 @@ pub fn read(path: &Path) -> Result<Option<String>, Failure> {
 }
 
 /// A file written whole — beside its place, then moved in, so a crash mid-write leaves the old file whole — its
-/// directory made first. A symlink is followed: the file it names is what is replaced, and the link stays.
+/// directory made first. A symlink is followed: the file it names is what is replaced, and the link stays. Each
+/// write is staged under a name of its own, so two threads writing one file each move a whole file in.
 pub fn write(path: &Path, text: &str) -> Result<(), Failure> {
+    static WRITES: AtomicU32 = AtomicU32::new(0);
     let path = fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf());
     if let Some(dir) = path.parent() {
         fs::create_dir_all(dir)
             .map_err(|error| failed(&format!("creating {}", dir.display()), &error))?;
     }
-    let staged = path.with_extension(format!("{}.tmp", std::process::id()));
+    let nth = WRITES.fetch_add(1, Ordering::Relaxed);
+    let staged = path.with_extension(format!("{}.{nth}.tmp", std::process::id()));
     fs::write(&staged, text)
         .and_then(|()| fs::rename(&staged, &path))
         .map_err(|error| failed(&format!("writing {}", path.display()), &error))
@@ -440,6 +443,26 @@ mod tests {
                 .is_symlink()
         );
         assert_eq!(fs::read_to_string(&real).unwrap(), "after");
+    }
+
+    #[test]
+    fn one_file_written_by_several_threads_is_one_of_them_whole() {
+        let scratch = Fresh::new("threads");
+        let path = scratch.0.join("entry.json");
+        let texts: Vec<String> = (0..8).map(|n| n.to_string().repeat(4096)).collect();
+        std::thread::scope(|scope| {
+            for text in &texts {
+                let path = &path;
+                scope.spawn(move || {
+                    for _ in 0..50 {
+                        write(path, text).unwrap();
+                    }
+                });
+            }
+        });
+        assert!(texts.contains(&fs::read_to_string(&path).unwrap()));
+        // Nothing staged is left beside it.
+        assert_eq!(fs::read_dir(&scratch.0).unwrap().count(), 1);
     }
 
     #[test]

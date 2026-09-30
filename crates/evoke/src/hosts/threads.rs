@@ -1,6 +1,6 @@
-//! A few threads over a list, for the batches that call the adapter once per input — `test`, the thief test at
-//! `add` — where one call at a time takes a minute. In: the items and the work on one. Out: every result in the
-//! items' order, or the first error in that order, after which no more work starts.
+//! A few threads over a list, for what calls the adapter once per input — `test`, the thief test at `add`, the
+//! parts of a sentence — where one call at a time is a wait. In: the items and the work on one. Out: every
+//! result in the items' order, or the first error in that order, after which no more work starts.
 
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Mutex, PoisonError};

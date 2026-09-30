@@ -34,6 +34,7 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - A part that says what not to do and names the value meant is read with its step: `pull the payments logs,
   not in us-east, in eu-west`. A sentence that asks one thing is read whole, what it rules out with what it
   asks. An option or a flag of a call reaches a part that asks for `the same`.
+- The CLI decides the parts of a sentence side by side, as the SDK does.
 
 ## [0.15.0] - 2026-09-29
 
