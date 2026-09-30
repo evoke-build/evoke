@@ -69,6 +69,10 @@ pub struct Millis(pub u64);
 /// gives a body it loads.
 pub const DEADLINE: Millis = Millis(30_000);
 
+/// The reader's version, which the digest holds before the set: it moves when a question evoke asks is worded
+/// anew, or an answer is read otherwise, so what was answered under one reader is never replayed under another.
+pub const READER: u32 = 1;
+
 /// The sentinel every argument's choice carries, and its text.
 const UNSTATED: &str = "unstated";
 const UNSTATED_TEXT: &str = "The request does not say.";
@@ -111,7 +115,8 @@ struct RawPlan {
 }
 
 impl Plan {
-    /// SHA-256 of the compact JSON of `Installed`: keys the decision cache and the baselines.
+    /// SHA-256 of the reader's version and the compact JSON of `Installed`: keys the decision cache and the
+    /// baselines.
     #[must_use]
     pub fn digest(&self) -> Digest {
         self.digest
@@ -558,7 +563,7 @@ pub fn compile(
         })
         .collect();
     Ok(Plan {
-        digest: Digest::of(&json),
+        digest: Digest::of(&[format!("reader {READER}\n").as_bytes(), &json].concat()),
         active,
         inactive,
         tagged,
@@ -1066,6 +1071,21 @@ mod tests {
             serde_json::from_str(include_str!("../../../spec/fixtures/plan.json")).unwrap();
         change(&mut plan);
         serde_json::from_value(plan).map_err(|error| error.to_string())
+    }
+
+    #[test]
+    fn the_digest_holds_the_reader_before_the_set() {
+        let set: Installed = serde_json::from_str(
+            r#"{ "reflexes": {}, "vocab": {}, "adapter": "replay", "evoke": "1.0.0" }"#,
+        )
+        .unwrap();
+        let plan = compile(&set, &Values::new(), None, None).unwrap();
+        let json = serde_json::to_vec(&set).unwrap();
+        let under =
+            |reader: u32| Digest::of(&[format!("reader {reader}\n").as_bytes(), &json].concat());
+        assert_eq!(plan.digest(), under(READER));
+        assert_ne!(plan.digest(), under(READER + 1));
+        assert_ne!(plan.digest(), Digest::of(&json));
     }
 
     #[test]

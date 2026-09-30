@@ -656,7 +656,7 @@ export type Millis = number
 
 /** The compiled set: the active reflexes, the inactive ones with a fix per problem, every input-independent question, and the digest that keys what is derived from it. */
 export interface Plan {
-  /** SHA-256 of the compact JSON of `Installed`: keys the decision cache and the baselines. */
+  /** SHA-256 of the reader's version and the compact JSON of `Installed`: keys the decision cache and the baselines. */
   digest: Digest
   active: Record<LocalName, Active>
   /** Every problem of every inactive reflex, each with its fix. */
