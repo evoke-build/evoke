@@ -96,7 +96,7 @@ $ evoke why
     → ran: status component="checkout"  0.95
       a write runs at 0.90 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
 
-  replay answered 271 questions in 6 rounds
+  replay answered 318 questions in 6 rounds
 $ evoke try --json "check checkout's errors, deploys and logs in eu-west, find the deploy they point to, roll it back, then post to #incident and update the status page"
 {"input":"check checkout's errors, deploys and logs in eu-west, find the deploy they point to, roll it back, then post to #incident and update the status page","steps":[{"n":1,"text":"check checkout's errors eu-west","end":23,"decision":{"outcome":"run","reflex":"errors","args":{"service":{"type":"word","word":"checkout"},"region":{"type":"word","word":"eu-west"}},"call":"errors service=\"checkout\" region=\"eu-west\"","effect":"read","basis":{"service":{"by":"views","ask":0.95,"reader":0.95},"region":{"by":"views","ask":0.95,"reader":0.95}},"left":[{"words":{"start":0,"end":5,"text":"check"},"does":"action","p":0.95},{"words":{"start":17,"end":23,"text":"errors"},"does":"action","p":0.95}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"errors","p":0.95},"judgments":[{"question":"route","top":"errors","p":0.95},{"question":"errors.service","top":"checkout","p":0.95},{"question":"errors.region","top":"eu-west","p":0.95}],"contenders":[{"reflex":"errors","route":0.95}]},"reflex":"errors","effect":"read","shared":{"region":{"word":"eu-west","via":"rewrite"}},"typed":"check checkout's errors"},{"n":2,"text":"deploys eu-west","end":32,"decision":{"outcome":"run","reflex":"deploys","args":{"service":{"type":"word","word":"checkout"},"region":{"type":"word","word":"eu-west"}},"call":"deploys service=\"checkout\" region=\"eu-west\"","effect":"read","basis":{"region":{"by":"views","ask":0.95,"reader":0.95},"service":{"by":"views","ask":0.95,"reader":0.95}},"left":[{"words":{"start":0,"end":7,"text":"deploys"},"does":"action","p":0.95}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"deploys","p":0.95},"judgments":[{"question":"route","top":"deploys","p":0.95},{"question":"deploys.region","top":"eu-west","p":0.95},{"question":"deploys.service","top":"checkout","p":0.95}],"contenders":[{"reflex":"deploys","route":0.95}]},"reflex":"deploys","effect":"read","shared":{"region":{"word":"eu-west","via":"rewrite"},"service":{"word":"checkout","via":"fill"}},"typed":"deploys"},{"n":3,"text":"logs in eu-west","end":52,"decision":{"outcome":"run","reflex":"logs","args":{"service":{"type":"word","word":"checkout"},"region":{"type":"word","word":"eu-west"}},"call":"logs service=\"checkout\" region=\"eu-west\"","effect":"read","basis":{"region":{"by":"views","ask":0.95,"reader":0.95},"service":{"by":"views","ask":0.95,"reader":0.95}},"left":[{"words":{"start":0,"end":4,"text":"logs"},"does":"action","p":0.95}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"logs","p":0.95},"judgments":[{"question":"route","top":"logs","p":0.95},{"question":"logs.region","top":"eu-west","p":0.95},{"question":"logs.service","top":"checkout","p":0.95}],"runner_up":{"reflex":"errors","route":0.02},"contenders":[{"reflex":"logs","route":0.95},{"reflex":"errors","route":0.02},{"reflex":"deploys","route":0.0},{"reflex":"suspect","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"post","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0},{"reflex":"status","route":0.0},{"reflex":"outage","route":0.0}]},"reflex":"logs","effect":"read","shared":{"service":{"word":"checkout","via":"fill"}}},{"n":4,"text":"find the deploy they point to","end":83,"decision":{"outcome":"run","reflex":"suspect","args":{},"call":"suspect","effect":"read","left":[{"words":{"start":0,"end":26,"text":"find the deploy they point"},"does":"action","p":0.95}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"suspect","p":0.95},"judgments":[{"question":"route","top":"suspect","p":0.95}],"runner_up":{"reflex":"errors","route":0.02},"contenders":[{"reflex":"suspect","route":0.95},{"reflex":"errors","route":0.02},{"reflex":"deploys","route":0.0},{"reflex":"logs","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"post","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0},{"reflex":"status","route":0.0},{"reflex":"outage","route":0.0}]},"reflex":"suspect","effect":"read","refs":[{"span":{"start":5,"end":15,"text":"the deploy"},"from":[1],"how":"engine","weak":true,"noun":"deploy","p":0.9}],"after":[1,2,3]},{"n":5,"text":"roll it back checkout eu-west","end":97,"decision":{"outcome":"ask","reflex":"rollback","args":{"service":{"type":"word","word":"checkout"},"region":{"type":"word","word":"eu-west"}},"basis":{"service":{"by":"views","ask":0.95,"reader":0.95},"region":{"by":"views","ask":0.95,"reader":0.95}},"left":[{"words":{"start":0,"end":12,"text":"roll it back"},"does":"action","p":0.95}],"unconsumed":[],"confidence":0.95,"weakest":{"question":"route","top":"rollback","p":0.95},"judgments":[{"question":"route","top":"rollback","p":0.95},{"question":"rollback.service","top":"checkout","p":0.95},{"question":"rollback.region","top":"eu-west","p":0.95}],"contenders":[{"reflex":"rollback","route":0.95}],"missing":[{"arg":"release","ask":"From which release?","because":{"type":"unstated"},"choices":{"type":"pick","pick":"code"}}]},"reflex":"rollback","effect":"destructive","refs":[{"span":{"start":5,"end":7,"text":"it"},"from":[3],"how":"engine","p":0.9}],"shared":{"service":{"word":"checkout","via":"rewrite"},"region":{"word":"eu-west","via":"rewrite"}},"after":[4],"typed":"roll it back"},{"n":6,"text":"post to #incident","end":121,"decision":{"outcome":"run","reflex":"post","args":{"channel":{"type":"word","word":"#incident"}},"call":"post channel=\"#incident\"","effect":"write","basis":{"channel":{"by":"views","ask":0.95,"reader":0.95}},"left":[{"words":{"start":0,"end":4,"text":"post"},"does":"action","p":0.95}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"post","p":0.95},"judgments":[{"question":"route","top":"post","p":0.95},{"question":"post.channel","top":"#incident","p":0.95}],"runner_up":{"reflex":"errors","route":0.02},"contenders":[{"reflex":"post","route":0.95},{"reflex":"errors","route":0.02},{"reflex":"deploys","route":0.0},{"reflex":"logs","route":0.0},{"reflex":"suspect","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0},{"reflex":"status","route":0.0},{"reflex":"outage","route":0.0}]},"reflex":"post","effect":"write","after":[1,2,3,4,5]},{"n":7,"text":"update the status page","end":148,"decision":{"outcome":"run","reflex":"status","args":{"component":{"type":"word","word":"checkout"}},"call":"status component=\"checkout\"","effect":"write","basis":{"component":{"by":"views","ask":0.95,"reader":0.95}},"left":[{"words":{"start":0,"end":22,"text":"update the status page"},"does":"action","p":0.95}],"whole":0.9,"confidence":0.95,"weakest":{"question":"route","top":"status","p":0.95},"judgments":[{"question":"route","top":"status","p":0.95},{"question":"status.component","top":"checkout","p":0.95}],"runner_up":{"reflex":"errors","route":0.02},"contenders":[{"reflex":"status","route":0.95},{"reflex":"errors","route":0.02},{"reflex":"deploys","route":0.0},{"reflex":"logs","route":0.0},{"reflex":"suspect","route":0.0},{"reflex":"rollback","route":0.0},{"reflex":"post","route":0.0},{"reflex":"incidents","route":0.0},{"reflex":"incident","route":0.0},{"reflex":"postmortem","route":0.0},{"reflex":"outage","route":0.0}]},"reflex":"status","effect":"write","shared":{"component":{"word":"checkout","via":"fill"}},"after":[1,2,3,4,5]}],"binds":[{"from":1,"to":4,"arg":"errors","field":"errors","via":"takes"},{"from":2,"to":4,"arg":"deploys","field":"deploys","via":"takes"},{"from":3,"to":4,"arg":"logs","field":"logs","via":"takes"},{"from":4,"to":5,"arg":"release","field":"release","kind":"code","via":"fill"}],"stages":[[1],[2],[3],[4],[5],[6],[7]],"verdict":{"outcome":"run"},"exclusive":true,"splits":[{"start":23,"end":25,"word":",","order":"and","p":0.9,"cut":true},{"start":32,"end":37,"word":"and","order":"and","p":0.9,"cut":true},{"start":52,"end":54,"word":",","order":"and","p":0.9,"cut":true},{"start":83,"end":85,"word":",","order":"and","p":0.9,"cut":true},{"start":97,"end":104,"word":"then","order":"then","p":0.9,"cut":true},{"start":121,"end":126,"word":"and","order":"and","p":0.9,"cut":true}],"count":{"one":0.05},"trace":[]}
 $ evoke --json "check checkout's errors, deploys and logs in eu-west, find the deploy they point to, roll it back, then post to #incident and update the status page"
@@ -364,7 +364,7 @@ $ evoke why
   → ran: errors service="checkout" region="eu-west"  0.95
     a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
 
-  replay answered 84 questions in 5 rounds
+  replay answered 124 questions in 5 rounds
 # A request that asks one thing is one step, whatever its connectives.
 $ evoke "check the errors for checkout, and only in eu-west"
   errors service="checkout" region="eu-west"  0.95
@@ -384,7 +384,7 @@ $ evoke why
   → ran: errors service="checkout" region="eu-west"  0.95
     a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
 
-  replay answered 79 questions in 3 rounds
+  replay answered 79 questions in 2 rounds
 # A part that asks for nothing is set aside, and the plan says so.
 $ evoke "check the errors for checkout, thanks a lot for this"
   set aside "thanks a lot for this"
@@ -403,7 +403,7 @@ $ evoke why
   → ran: errors service="checkout"  0.95
     a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
 
-  replay answered 42 questions in 5 rounds
+  replay answered 77 questions in 5 rounds
 # A part that asks for nothing and may add a detail to the step beside it keeps that step for a yes.
 $ evoke "check the errors for checkout, the ones since noon"
   not in the plan "the ones since noon"
@@ -424,7 +424,7 @@ $ evoke why
   → declined: errors service="checkout" · read · weakest: route 0.95
     "the ones since noon" may add a detail this call does not hold
 
-  replay answered 42 questions in 5 rounds
+  replay answered 77 questions in 5 rounds
 # A value one part states is another's where a yes says so.
 $ evoke "check the errors for checkout in eu-west, then pull its logs there"
   1  errors service="checkout" region="eu-west"  0.95
@@ -458,7 +458,7 @@ $ evoke why
     → ran: logs service="checkout" region="eu-west"  0.95
       a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
 
-  replay answered 76 questions in 4 rounds
+  replay answered 116 questions in 4 rounds
 # A part that says what not to do and names the value meant is read with its step.
 $ evoke "pull the payments logs, not in us-east, in eu-west"
   logs service="payments" region="eu-west"  0.95
@@ -477,4 +477,4 @@ $ evoke why
   → ran: logs service="payments" region="eu-west"  0.95
     a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
 
-  replay answered 89 questions in 5 rounds
+  replay answered 89 questions in 4 rounds

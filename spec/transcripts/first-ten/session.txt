@@ -98,7 +98,7 @@ $ evoke try "download https://evoke.build/llms.txt and note it"
     holds all you said      0.90
     → runs: note · takes path from 1
 
-  replay answered 51 questions in 4 rounds
+  replay answered 72 questions in 4 rounds
 # A switch one part sets reaches a part that asks for the same again, by a yes.
 $ evoke try "take a screenshot of the window to the clipboard, then the same for the whole screen"
   1  screenshot area="window" clipboard  0.95
@@ -129,7 +129,7 @@ $ evoke try "take a screenshot of the window to the clipboard, then the same for
     → runs: screenshot area="screen" clipboard  0.95
       a write runs at 0.90 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
 
-  replay answered 52 questions in 4 rounds
+  replay answered 75 questions in 4 rounds
 # The collection added again is installed whole already; update is what moves it.
 $ evoke add evoke-build/reflexes
   every reflex of evoke-build/reflexes is already installed  →  evoke update

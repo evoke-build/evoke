@@ -73,6 +73,38 @@ route                          = { rollback = 0.95, errors = 0.02, none = 0.03 }
 "weave.left_rollback_0_4"      = { action = 0.95, courtesy = 0.05 }
 
 [answers."list the checkout deploys, then roll back the last one"]
+route                                = { none = 0.95, errors = 0.05 }
+"errors.service"                     = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
+"errors.region"                      = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
+"deploys.service"                    = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
+"deploys.region"                     = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
+"logs.service"                       = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
+"logs.region"                        = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
+"rollback.service"                   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
+"rollback.release"                   = { unstated = 1.0 }
+"rollback.region"                    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
+"post.channel"                       = { unstated = 0.95, "#incident" = 0.03, "#ops" = 0.02 }
+"incident.number"                    = { unstated = 0.95, 51-54 = 0.05 }
+"status.component"                   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
+"status.state"                       = { unstated = 0.95, investigating = 0.03, identified = 0.02 }
+"weave.view_errors__service"         = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
+"weave.is_errors__service_0"         = { yes = 0.05 }
+"weave.view_errors__region"          = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
+"weave.view_deploys__service"        = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
+"weave.is_deploys__service_0"        = { yes = 0.05 }
+"weave.view_deploys__region"         = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
+"weave.view_logs__service"           = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
+"weave.is_logs__service_0"           = { yes = 0.05 }
+"weave.view_logs__region"            = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
+"weave.view_rollback__service"       = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
+"weave.is_rollback__service_0"       = { yes = 0.05 }
+"weave.view_rollback__region"        = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
+"weave.view_post__channel"           = { unstated = 0.95, "#incident" = 0.03, "#ops" = 0.02 }
+"weave.only_incident__number_51_54"  = { yes = 0.05 }
+"weave.view_status__component"       = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
+"weave.is_status__component_0"       = { yes = 0.05 }
+"weave.view_status__state"           = { unstated = 0.95, investigating = 0.03, identified = 0.02 }
+"weave.is_status__state_3"           = { yes = 0.05 }
 "weave.split_0"                      = { yes = 0.9 }
 "weave.count"                        = { two = 0.6, more = 0.35, one = 0.05 }
 "weave.share_32_0_rollback__service" = { yes = 0.05 }

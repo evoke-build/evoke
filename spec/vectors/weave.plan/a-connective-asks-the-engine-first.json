@@ -37,7 +37,13 @@
             }
           },
           "proposed": []
-        }
+        },
+        "ahead": [
+          {
+            "text": "kill the lights in the den and start a 10 minute timer",
+            "whole": true
+          }
+        ]
       }
     }
   }

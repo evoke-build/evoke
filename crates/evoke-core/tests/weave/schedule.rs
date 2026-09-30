@@ -180,7 +180,10 @@ pub(super) fn planned_under(
                 return weave;
             }
             Planning::Need { need } => match need {
-                Need::Judge { request: judge } => {
+                Need::Judge {
+                    request: judge,
+                    ahead,
+                } => {
                     let mut raw = IndexMap::new();
                     for (n, id) in judge.questions.keys().enumerate() {
                         let mut answer = IndexMap::new();
@@ -192,6 +195,11 @@ pub(super) fn planned_under(
                         raw.insert(id.to_string(), answer);
                     }
                     answers.judged = Some(Raw(raw));
+                    // The whole request, decided beside the cut as a host does: joined of several parts, it
+                    // reads as none of the reflexes.
+                    for asked in ahead {
+                        answers.decided.push((asked, abstain()));
+                    }
                 }
                 Need::Refer { .. } => panic!("no part refers back"),
                 // No part points at another's value and every part reads as a reflex, or the words say

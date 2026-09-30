@@ -9,13 +9,36 @@ write = 0.9
 whole = 0.3
 
 [answers."pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"]
-"weave.split_0" = { yes = 0.9 }
-"weave.split_1" = { yes = 0.2 }
-"weave.split_2" = { yes = 0.9 }
-"weave.split_3" = { yes = 0.9 }
-"weave.split_4" = { yes = 0.9 }
-"weave.split_5" = { yes = 0.9 }
-"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
+route                          = { none = 0.95, bank = 0.05 }
+"bank.month"                   = { unstated = 0.95, august = 0.03, september = 0.02 }
+"invoices.month"               = { unstated = 0.95, august = 0.03, september = 0.02 }
+"cards.month"                  = { unstated = 0.95, august = 0.03, september = 0.02 }
+"payroll.month"                = { unstated = 0.95, august = 0.03, september = 0.02 }
+"ledger.month"                 = { unstated = 0.95, august = 0.03, september = 0.02 }
+"send.to"                      = { unstated = 0.95, 153-168 = 0.05 }
+"close.month"                  = { unstated = 0.95, august = 0.03, september = 0.02 }
+"close.to"                     = { unstated = 0.95, 153-168 = 0.05 }
+"weave.view_bank__month"       = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.is_bank__month_1"       = { yes = 0.05 }
+"weave.view_invoices__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.is_invoices__month_1"   = { yes = 0.05 }
+"weave.view_cards__month"      = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.is_cards__month_1"      = { yes = 0.05 }
+"weave.view_payroll__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.is_payroll__month_1"    = { yes = 0.05 }
+"weave.view_ledger__month"     = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.is_ledger__month_1"     = { yes = 0.05 }
+"weave.only_send__to_153_168"  = { yes = 0.05 }
+"weave.view_close__month"      = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.is_close__month_1"      = { yes = 0.05 }
+"weave.only_close__to_153_168" = { yes = 0.05 }
+"weave.split_0"                = { yes = 0.9 }
+"weave.split_1"                = { yes = 0.2 }
+"weave.split_2"                = { yes = 0.9 }
+"weave.split_3"                = { yes = 0.9 }
+"weave.split_4"                = { yes = 0.9 }
+"weave.split_5"                = { yes = 0.9 }
+"weave.count"                  = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."pull september's bank transactions"]
 route                        = { bank = 0.95, invoices = 0.02, none = 0.03 }

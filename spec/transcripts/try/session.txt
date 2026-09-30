@@ -83,5 +83,5 @@ $ evoke try "kill the lights in the den and feed the cat"
     which reflex            none of them 0.97   (lights 0.03)
     → refused: no reflex serves it
 
-  replay answered 24 questions in 5 rounds
+  replay answered 34 questions in 5 rounds
   open is inactive  →  evoke show

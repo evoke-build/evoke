@@ -547,45 +547,49 @@ pub fn replan(path: &str, pinned: &Pinned, plan: &Plan) -> Result<Replanned, Dia
             }
             Planning::Need { need } => need,
         };
-        match need {
-            Need::Judge { request } => {
+        // The texts a need decides. A text sent ahead of the cut is left for the plan to ask for: a file made
+        // before it went ahead lacks its answers, and a plan that never wanted it reads the same without it.
+        let asked = match need {
+            Need::Judge { request, .. } => {
                 answers.judged = Some(answered(pinned, &request).map_err(&refused)?);
+                Vec::new()
             }
             Need::Refer { request } => {
                 answers.referred = Some(answered(pinned, &request).map_err(&refused)?);
+                Vec::new()
             }
             Need::Verify { request } => {
                 let raw = answered(pinned, &request).map_err(&refused)?;
                 answers.verified.get_or_insert_default().0.extend(raw.0);
+                Vec::new()
             }
-            Need::Decide { asked } => {
-                for asked in asked {
-                    // A file holds no memory: no result of any session reaches a text decided again from it.
-                    let request = decide::request(
-                        plan,
-                        &asked.text,
-                        &asked.tags,
-                        asked.only.as_ref(),
-                        Scope::Full,
-                        &[],
-                    )?;
-                    let (request, raw, reading) = decide::reading(
-                        plan,
-                        pinned.gate.as_ref(),
-                        request,
-                        |round| answered(pinned, round).map_err(&refused),
-                        |fault| unread(&asked.text, &fault),
-                    )?;
-                    let decision = decide::gate(plan, reading, pinned.gate.as_ref());
-                    answers.decided.push((asked.clone(), decision.clone()));
-                    decided.push(Decided {
-                        asked,
-                        proposed: request.proposed,
-                        raw,
-                        decision,
-                    });
-                }
-            }
+            Need::Decide { asked } => asked,
+        };
+        for asked in asked {
+            // A file holds no memory: no result of any session reaches a text decided again from it.
+            let request = decide::request(
+                plan,
+                &asked.text,
+                &asked.tags,
+                asked.only.as_ref(),
+                Scope::Full,
+                &[],
+            )?;
+            let (request, raw, reading) = decide::reading(
+                plan,
+                pinned.gate.as_ref(),
+                request,
+                |round| answered(pinned, round).map_err(&refused),
+                |fault| unread(&asked.text, &fault),
+            )?;
+            let decision = decide::gate(plan, reading, pinned.gate.as_ref());
+            answers.decided.push((asked.clone(), decision.clone()));
+            decided.push(Decided {
+                asked,
+                proposed: request.proposed,
+                raw,
+                decision,
+            });
         }
     }
 }

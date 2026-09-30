@@ -34,7 +34,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - A part that says what not to do and names the value meant is read with its step: `pull the payments logs,
   not in us-east, in eu-west`. A sentence that asks one thing is read whole, what it rules out with what it
   asks. An option or a flag of a call reaches a part that asks for `the same`.
-- The CLI decides the parts of a sentence side by side, as the SDK does.
+- The CLI decides the parts of a sentence side by side, as the SDK does. A sentence that may be several things is
+  read as one at the same time as it is asked how many it is, so the answer costs no wait of its own.
 - A call that waits for a yes says why on the line under it, in the plan as at the prompt; the JSON line
   carries it as `prompt.reason`. The plan says what it folded, set aside or left out before its steps, for a
   plan of one step too.

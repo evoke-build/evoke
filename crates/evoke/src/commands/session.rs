@@ -8,6 +8,7 @@
 //! its fix; every other method leaves its `Exit` to the command to report, once.
 
 use std::path::{Path, PathBuf};
+use std::thread;
 
 use evoke_core::decide::Recent;
 use evoke_core::document::{Json, Text};
@@ -232,6 +233,42 @@ impl Woven {
             .find(|(a, _)| *a == asked)
             .map(|(_, decided)| decided)
     }
+}
+
+/// The texts sent ahead of the cut, each decided on its own thread from the cut's round on.
+#[derive(Default)]
+struct Ahead<'scope> {
+    started: Vec<(
+        Asked,
+        thread::ScopedJoinHandle<'scope, Result<Decided, Exit>>,
+    )>,
+}
+
+impl Ahead<'_> {
+    /// A text's decision, when it was started ahead: waited for, as it stands.
+    fn take(&mut self, asked: &Asked) -> Option<Result<Decided, Exit>> {
+        let at = self
+            .started
+            .iter()
+            .position(|(started, _)| started == asked)?;
+        let (_, handle) = self.started.remove(at);
+        Some(joined(handle))
+    }
+
+    /// Every text still running, waited for: the plan wanted none of them, and the plan file keeps them.
+    fn rest(self) -> Vec<(Asked, Result<Decided, Exit>)> {
+        self.started
+            .into_iter()
+            .map(|(asked, handle)| (asked, joined(handle)))
+            .collect()
+    }
+}
+
+/// A thread's result; a panic on it is one on this thread.
+fn joined<T>(handle: thread::ScopedJoinHandle<'_, T>) -> T {
+    handle
+        .join()
+        .unwrap_or_else(|panicked| std::panic::resume_unwind(panicked))
 }
 
 /// The owned files as parsed and compiled.
@@ -897,64 +934,120 @@ impl Session<'_> {
         let mut decided = seeded;
         let mut trace = Vec::new();
         let mut rounds = 0;
-        loop {
-            let gate = adapter.declared().gate.as_ref();
-            let planning = weave::planning::plan(&self.plan, gate, input, tags, &answers)
-                .map_err(Exit::Adapter)?;
-            let before = trace.len();
-            let need = match planning {
-                Planning::Done { weave } => {
-                    return Ok(Woven {
-                        weave,
-                        decided,
-                        trace,
-                        rounds,
-                        judged: answers.judged,
-                        referred: answers.referred,
-                        verified: answers.verified,
-                    });
-                }
-                Planning::Need { need } => need,
-            };
-            match need {
-                Need::Judge { request } => {
-                    answers.judged = Some(self.own(adapter, &request, &mut trace)?);
-                }
-                Need::Refer { request } => {
-                    answers.referred = Some(self.own(adapter, &request, &mut trace)?);
-                }
-                Need::Verify { request } => {
-                    let raw = self.own(adapter, &request, &mut trace)?;
-                    answers.verified.get_or_insert_default().0.extend(raw.0);
-                }
-                Need::Decide { asked } => {
-                    // Side by side: each text is its own adapter call, and the results keep the order asked.
-                    let round = threads::try_each(&asked, |asked| {
-                        // Memory reaches a whole sentence alone: a part of one, or a step's words rewritten,
-                        // recalls nothing.
-                        let recalled = if asked.whole { recent } else { &[] };
-                        self.decided(
-                            adapter,
-                            &asked.text,
-                            &asked.tags,
-                            asked.only.as_ref(),
-                            true,
-                            recalled,
-                        )
-                    })?;
-                    // Each text's calls come one after another; the texts' calls, side by side.
-                    rounds += round.iter().map(|one| one.trace.len()).max().unwrap_or(0);
-                    for (asked, one) in asked.into_iter().zip(round) {
-                        trace.extend(one.trace.iter().cloned());
-                        answers.decided.push((asked.clone(), one.decision.clone()));
-                        decided.push((asked, one));
+        // A text sent ahead of the cut is decided on its own thread from the cut's round on, and taken when the
+        // plan asks for it, or at the end, so that the plan file holds its answers whatever the plan made of it.
+        thread::scope(|scope| {
+            let mut ahead = Ahead::default();
+            loop {
+                let gate = adapter.declared().gate.as_ref();
+                let planning = weave::planning::plan(&self.plan, gate, input, tags, &answers)
+                    .map_err(Exit::Adapter)?;
+                let before = trace.len();
+                let need = match planning {
+                    Planning::Done { weave } => {
+                        for (asked, one) in ahead.rest() {
+                            let one = one?;
+                            trace.extend(one.trace.iter().cloned());
+                            decided.push((asked, one));
+                        }
+                        return Ok(Woven {
+                            weave,
+                            decided,
+                            trace,
+                            rounds,
+                            judged: answers.judged,
+                            referred: answers.referred,
+                            verified: answers.verified,
+                        });
                     }
-                    continue;
+                    Planning::Need { need } => need,
+                };
+                match need {
+                    Need::Judge {
+                        request,
+                        ahead: texts,
+                    } => {
+                        for asked in texts {
+                            let started = asked.clone();
+                            let handle = scope.spawn(move || self.part(adapter, &started, recent));
+                            ahead.started.push((asked, handle));
+                        }
+                        answers.judged = Some(self.own(adapter, &request, &mut trace)?);
+                    }
+                    Need::Refer { request } => {
+                        answers.referred = Some(self.own(adapter, &request, &mut trace)?);
+                    }
+                    Need::Verify { request } => {
+                        let raw = self.own(adapter, &request, &mut trace)?;
+                        answers.verified.get_or_insert_default().0.extend(raw.0);
+                    }
+                    Need::Decide { asked } => {
+                        let round = self.round(adapter, &asked, &mut ahead, recent)?;
+                        // Each text's calls come one after another; the texts' calls, side by side; a text
+                        // started ahead had its first round beside the cut's.
+                        rounds += round
+                            .iter()
+                            .map(|(one, early)| one.trace.len().saturating_sub(usize::from(*early)))
+                            .max()
+                            .unwrap_or(0);
+                        for (asked, (one, _)) in asked.into_iter().zip(round) {
+                            trace.extend(one.trace.iter().cloned());
+                            answers.decided.push((asked.clone(), one.decision.clone()));
+                            decided.push((asked, one));
+                        }
+                        continue;
+                    }
                 }
+                // One of the plan's own requests: a round where the cache did not answer it.
+                rounds += trace.len() - before;
             }
-            // One of the plan's own requests: a round where the cache did not answer it.
-            rounds += trace.len() - before;
+        })
+    }
+
+    /// One text of a plan decided as the plan asks. Memory reaches a whole sentence alone: a part of one, or a
+    /// step's words rewritten, recalls nothing.
+    fn part(
+        &self,
+        adapter: &dyn Adapter,
+        asked: &Asked,
+        recent: &[Recent],
+    ) -> Result<Decided, Exit> {
+        let recalled = if asked.whole { recent } else { &[] };
+        self.decided(
+            adapter,
+            &asked.text,
+            &asked.tags,
+            asked.only.as_ref(),
+            true,
+            recalled,
+        )
+    }
+
+    /// The texts of one round decided side by side, in the order asked; a text started ahead of the cut is
+    /// taken as it stands, and marked so.
+    fn round(
+        &self,
+        adapter: &dyn Adapter,
+        asked: &[Asked],
+        ahead: &mut Ahead<'_>,
+        recent: &[Recent],
+    ) -> Result<Vec<(Decided, bool)>, Exit> {
+        let mut taken: Vec<Option<(Decided, bool)>> = asked.iter().map(|_| None).collect();
+        let mut rest: Vec<(usize, Asked)> = Vec::new();
+        for (i, one) in asked.iter().enumerate() {
+            match ahead.take(one) {
+                Some(early) => taken[i] = Some((early?, true)),
+                None => rest.push((i, one.clone())),
+            }
         }
+        let decided = threads::try_each(&rest, |(_, asked)| self.part(adapter, asked, recent))?;
+        for ((i, _), one) in rest.into_iter().zip(decided) {
+            taken[i] = Some((one, false));
+        }
+        Ok(taken
+            .into_iter()
+            .map(|one| one.expect("every text asked is decided"))
+            .collect())
     }
 
     /// One of the weave's own requests answered — the split points, the references: the cache when it holds

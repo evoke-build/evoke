@@ -48,9 +48,19 @@ route                      = { none = 0.95, lights = 0.02, timer = 0.02, volume 
 "weave.view_lights__state" = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 
 [answers."kill the lights in the den and feed the cat"]
-"weave.split_0"    = { yes = 0.95 }
-"weave.count"      = { two = 0.6, more = 0.35, one = 0.05 }
-"weave.part_31_43" = { asks = 0.9, detail = 0.05, aside = 0.05 }
+"weave.split_0"            = { yes = 0.95 }
+"weave.count"              = { two = 0.6, more = 0.35, one = 0.05 }
+"weave.part_31_43"         = { asks = 0.9, detail = 0.05, aside = 0.05 }
+route                      = { none = 0.95, lights = 0.05 }
+"lights.room"              = { unstated = 1.0 }
+"lights.state"             = { unstated = 1.0 }
+"lights.brightness"        = { unstated = 1.0 }
+"timer.duration"           = { unstated = 1.0 }
+"timer.label"              = { unstated = 1.0 }
+"volume.level"             = { unstated = 1.0 }
+"weave.view_lights__room"  = { unstated = 1.0 }
+"weave.is_lights__room_0"  = { yes = 0.05 }
+"weave.view_lights__state" = { unstated = 1.0 }
 
 [answers."feed the cat"]
 route                      = { none = 0.97, lights = 0.03 }

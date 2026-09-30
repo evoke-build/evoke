@@ -118,8 +118,9 @@ test("the maker seals the plan as a file, and the checker runs it whole from the
   deepStrictEqual(pinned.gate, { route: 0.5, fits: 0.3, read: 0.8, write: 0.9, whole: 0.3 })
   deepStrictEqual(Object.keys(pinned.reflexes), ["bank", "invoices", "cards", "payroll", "reconcile", "ledger", "send", "close"])
   deepStrictEqual(Object.keys(pinned.vocab), ["months"])
-  // The weave's own questions under the sentence, then each text decided: nine entries, none the engine's numbers.
-  equal(pinned.answers.length, 9)
+  // The weave's own questions under the sentence, then each text decided, the whole sentence among them: ten
+  // entries, none the engine's numbers.
+  equal(pinned.answers.length, 10)
   equal(pinned.answers[0]?.text, sentence)
   // The file travels however files do: here as the text JSON.stringify writes.
   const file = JSON.stringify(pinned)

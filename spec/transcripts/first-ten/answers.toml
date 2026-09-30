@@ -131,8 +131,29 @@ route                         = { open = 0.95, download = 0.01, lock = 0.01, non
 "weave.whole_2744700695"      = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."download https://evoke.build/llms.txt and note it"]
-"weave.split_0" = { yes = 0.9 }
-"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
+"weave.split_0"                 = { yes = 0.9 }
+"weave.count"                   = { two = 0.6, more = 0.35, one = 0.05 }
+route                           = { none = 0.95, awake = 0.05 }
+"awake.duration"                = { unstated = 1.0 }
+"download.url"                  = { unstated = 1.0 }
+"download.to"                   = { unstated = 1.0 }
+"mail.to"                       = { unstated = 1.0 }
+"mail.subject"                  = { unstated = 1.0 }
+"note.text"                     = { unstated = 1.0 }
+"open.place"                    = { unstated = 1.0 }
+"power.action"                  = { unstated = 1.0 }
+"screenshot.area"               = { unstated = 1.0 }
+"screenshot.clipboard"          = { unstated = 1.0 }
+"timer.duration"                = { unstated = 1.0 }
+"timer.label"                   = { unstated = 1.0 }
+"volume.level"                  = { unstated = 1.0 }
+"wifi.state"                    = { unstated = 1.0 }
+"weave.only_download__url_9_37" = { yes = 0.05 }
+"weave.view_download__to"       = { unstated = 1.0 }
+"weave.view_open__place"        = { unstated = 1.0 }
+"weave.view_power__action"      = { unstated = 1.0 }
+"weave.view_screenshot__area"   = { unstated = 1.0 }
+"weave.view_wifi__state"        = { unstated = 1.0 }
 
 [answers."download https://evoke.build/llms.txt"]
 route                           = { download = 0.98, open = 0.01, none = 0.01 }
@@ -191,6 +212,29 @@ route                         = { note = 0.96, download = 0.01, none = 0.03 }
 "weave.split_0"                          = { yes = 0.95 }
 "weave.count"                            = { two = 0.9, more = 0.05, one = 0.05 }
 "weave.share_55_0_screenshot__clipboard" = { yes = 0.95 }
+route                                    = { none = 0.95, awake = 0.05 }
+"awake.duration"                         = { unstated = 1.0 }
+"download.url"                           = { unstated = 1.0 }
+"download.to"                            = { unstated = 1.0 }
+"mail.to"                                = { unstated = 1.0 }
+"mail.subject"                           = { unstated = 1.0 }
+"note.text"                              = { unstated = 1.0 }
+"open.place"                             = { unstated = 1.0 }
+"power.action"                           = { unstated = 1.0 }
+"screenshot.area"                        = { unstated = 1.0 }
+"screenshot.clipboard"                   = { unstated = 1.0 }
+"timer.duration"                         = { unstated = 1.0 }
+"timer.label"                            = { unstated = 1.0 }
+"volume.level"                           = { unstated = 1.0 }
+"wifi.state"                             = { unstated = 1.0 }
+"weave.view_download__to"                = { unstated = 1.0 }
+"weave.view_open__place"                 = { unstated = 1.0 }
+"weave.view_power__action"               = { unstated = 1.0 }
+"weave.view_screenshot__area"            = { unstated = 1.0 }
+"weave.is_screenshot__area_0"            = { yes = 0.05 }
+"weave.is_screenshot__area_1"            = { yes = 0.05 }
+"weave.view_wifi__state"                 = { unstated = 1.0 }
+"weave.is_wifi__state_1"                 = { yes = 0.05 }
 
 [answers."take a screenshot of the window to the clipboard"]
 route                         = { screenshot = 0.96, none = 0.03, open = 0.01 }

@@ -32,7 +32,7 @@ $ evoke why
     → skipped: timer duration="10 minute"  0.95
       cancelled
 
-  replay answered 19 questions in 4 rounds
+  replay answered 23 questions in 4 rounds
 $ evoke --json "pause a moment and start a 10 minute timer"
 waiting
 ^C

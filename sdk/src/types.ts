@@ -1009,7 +1009,9 @@ export interface Asked {
 
 /** What the plan needs a host to do next: judge the split points, name each reference's step, or decide texts. */
 export type Need =
-  | { type: "judge"; request: Request }
+  /** Ask whether each split point separates two things, and decide `ahead` side by side with it: the whole
+   *  request, the plan's one step where it asks one thing. */
+  | { type: "judge"; request: Request; ahead?: Asked[] }
   | { type: "refer"; request: Request }
   | { type: "decide"; asked: Asked[] }
   /** Ask the adapter what the plan asks of the request once its parts are decided: what a part that matches

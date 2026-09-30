@@ -365,6 +365,12 @@ function askedFor(step: W.Step, tags: string[], input: string): W.Asked {
   return step.text === input.trim() ? { text: step.text, tags, whole: true } : { text: step.text, tags }
 }
 
+/** One text read for the plan: its decision, and its answers as the plan file keeps them. */
+interface Read {
+  decision: W.Decision
+  entry: W.Answer
+}
+
 /** The answers a plan gathers: what it decided is always there to push to. */
 type Gathered = W.Answers & { decided: [W.Asked, W.Decision][] }
 
@@ -541,19 +547,40 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   }
 
   /** The plan over the answers gathered so far: the adapter asked and texts decided until it stands, every answer
-   *  kept as an entry of the plan file. */
+   *  kept as an entry of the plan file. A text the plan sends ahead of the cut is decided from the cut's round on
+   *  and taken when the plan asks for it, or at the end, so that the plan file holds its answers whatever the plan
+   *  made of it. */
   async function planned(input: string, options: DecideOptions, gathered: Gathering): Promise<W.Weave> {
     const invoked = `steps(${JSON.stringify(shown(input))})`
     const { answers, entries } = gathered
+    const ahead = new Map<string, Promise<Read>>()
+    // A text's decision, started ahead or now; its entry lands in the plan file in the order the plan took it.
+    const deciding = async (asked: W.Asked): Promise<[W.Asked, W.Decision]> => {
+      const started = ahead.get(key(asked))
+      ahead.delete(key(asked))
+      const read = await (started ?? decided(asked, options, gathered))
+      entries.push(read.entry)
+      return [asked, read.decision]
+    }
     for (;;) {
       const planning = call("weave.plan", { plan, ...gate, input, tags: options.tags ?? [], answers }, invoked)
-      if (planning.type === "done") return planning.weave
+      if (planning.type === "done") {
+        for (const read of await Promise.all(ahead.values())) entries.push(read.entry)
+        return planning.weave
+      }
       const { need } = planning
       if (need.type === "decide") {
         // Side by side: each text is its own adapter call.
-        const decisions = await Promise.all(need.asked.map(async (asked): Promise<[W.Asked, W.Decision]> => [asked, await decided(asked, options, gathered)]))
-        answers.decided.push(...decisions)
+        answers.decided.push(...(await Promise.all(need.asked.map(deciding))))
         continue
+      }
+      if (need.type === "judge") {
+        for (const asked of need.ahead ?? []) {
+          const started = decided(asked, options, gathered)
+          // Its failure reaches whoever takes it, or the end; unheard, it would be an unhandled rejection.
+          started.catch(() => undefined)
+          ahead.set(key(asked), started)
+        }
       }
       const { raw } = await answered(adapter, need.request, plan.deadline, options.signal, invoked)
       entries.push({ text: need.request.state.request, raw })
@@ -564,17 +591,17 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   }
 
   /** One text decided as the plan asks — over the tags, or one reflex alone — its trace kept by what was asked and
-   *  its raw answers as an entry; the process's results reach the whole request's text alone. */
-  async function decided(asked: W.Asked, options: DecideOptions, gathered: Gathering): Promise<W.Decision> {
+   *  its raw answers as an entry for the caller to keep; the process's results reach the whole request's text
+   *  alone. */
+  async function decided(asked: W.Asked, options: DecideOptions, gathered: Gathering): Promise<Read> {
     const { decision, raw } = await decidedText(asked.text, {
       ...(asked.only === undefined ? { tags: asked.tags ?? [] } : { only: asked.only }),
       ...(options.signal === undefined ? {} : { signal: options.signal }),
       ...(asked.whole === true && options.recent !== undefined ? { recent: options.recent } : {}),
     })
     gathered.traces.set(key(asked), decision.trace)
-    gathered.entries.push({ text: asked.text, raw })
     // The whole decision crosses: the core reads its own fields and ignores the SDK's.
-    return decision as unknown as W.Decision
+    return { decision: decision as unknown as W.Decision, entry: { text: asked.text, raw } }
   }
 
   /** A plan file run: read through the core, `plan = 1` required; its pins against this project, the first that
@@ -688,7 +715,9 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
       const { todo } = running
       if (todo.type === "decide") {
         try {
-          progress.decided.push([todo.asked, await decided(todo.asked, options, gathered)])
+          const read = await decided(todo.asked, options, gathered)
+          gathered.entries.push(read.entry)
+          progress.decided.push([todo.asked, read.decision])
         } catch (error) {
           // The signal aborted the decision's call: the round it was for never starts.
           if (!signal?.aborted || error !== signal.reason) throw error

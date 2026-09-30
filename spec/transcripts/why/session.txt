@@ -57,7 +57,7 @@ $ evoke why
   → declined: lights room="den" state="off" · write · weakest: room 0.92
     "lock the door too" asks for another thing
 
-  replay answered 31 questions in 7 rounds
+  replay answered 31 questions in 6 rounds
 # A typed value the question passed over, the only one of its kind in the input, is taken by a yes.
 $ evoke "dim the den lights to 40 percent"
   lights room="den" state="dim" brightness="40 percent"  0.93

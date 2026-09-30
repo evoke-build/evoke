@@ -76,12 +76,37 @@ route                      = { power = 0.98, timer = 0.01, none = 0.01 }
 "weave.left_power_2_2"     = { action = 0.9, courtesy = 0.1 }
 
 [answers."kill the lights and start a 25 minute timer"]
-"weave.split_0" = { yes = 0.95 }
-"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
+"weave.split_0"                    = { yes = 0.95 }
+"weave.count"                      = { two = 0.6, more = 0.35, one = 0.05 }
+route                              = { none = 0.95, lights = 0.05 }
+"lights.room"                      = { unstated = 1.0 }
+"lights.state"                     = { unstated = 1.0 }
+"lights.brightness"                = { unstated = 1.0 }
+"timer.duration"                   = { unstated = 1.0 }
+"timer.label"                      = { unstated = 1.0 }
+"volume.level"                     = { unstated = 1.0 }
+"power.action"                     = { unstated = 1.0 }
+"weave.view_lights__room"          = { unstated = 1.0 }
+"weave.view_lights__state"         = { unstated = 1.0 }
+"weave.only_timer__duration_28_37" = { yes = 0.05 }
+"weave.view_power__action"         = { unstated = 1.0 }
 
 [answers."start a 25 minute timer and kill the lights in the den"]
-"weave.split_0" = { yes = 0.95 }
-"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
+"weave.split_0"                   = { yes = 0.95 }
+"weave.count"                     = { two = 0.6, more = 0.35, one = 0.05 }
+route                             = { none = 0.95, lights = 0.05 }
+"lights.room"                     = { unstated = 1.0 }
+"lights.state"                    = { unstated = 1.0 }
+"lights.brightness"               = { unstated = 1.0 }
+"timer.duration"                  = { unstated = 1.0 }
+"timer.label"                     = { unstated = 1.0 }
+"volume.level"                    = { unstated = 1.0 }
+"power.action"                    = { unstated = 1.0 }
+"weave.view_lights__room"         = { unstated = 1.0 }
+"weave.is_lights__room_0"         = { yes = 0.05 }
+"weave.view_lights__state"        = { unstated = 1.0 }
+"weave.only_timer__duration_8_17" = { yes = 0.05 }
+"weave.view_power__action"        = { unstated = 1.0 }
 
 [answers."start a 25 minute timer"]
 route                                = { timer = 0.95, lights = 0.01, volume = 0.01, none = 0.03 }

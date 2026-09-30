@@ -9,11 +9,23 @@ write = 0.9
 whole = 0.3
 
 [answers."look up maria's hire and the platform team, create her accounts, order her a laptop, then book the onboarding"]
-"weave.split_0" = { yes = 0.9 }
-"weave.split_1" = { yes = 0.9 }
-"weave.split_2" = { yes = 0.9 }
-"weave.split_3" = { yes = 0.9 }
-"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
+route                      = { none = 0.95, hire = 0.05 }
+"hire.person"              = { unstated = 0.95, maria = 0.03, sam = 0.02 }
+"team.team"                = { unstated = 0.95, platform = 0.03, sales = 0.02 }
+"order.person"             = { unstated = 0.95, maria = 0.03, sam = 0.02 }
+"order.model"              = { unstated = 0.95, air = 0.03, pro = 0.02 }
+"weave.view_hire__person"  = { unstated = 0.95, maria = 0.03, sam = 0.02 }
+"weave.is_hire__person_0"  = { yes = 0.05 }
+"weave.view_team__team"    = { unstated = 0.95, platform = 0.03, sales = 0.02 }
+"weave.is_team__team_0"    = { yes = 0.05 }
+"weave.view_order__person" = { unstated = 0.95, maria = 0.03, sam = 0.02 }
+"weave.is_order__person_0" = { yes = 0.05 }
+"weave.view_order__model"  = { unstated = 0.95, air = 0.03, pro = 0.02 }
+"weave.split_0"            = { yes = 0.9 }
+"weave.split_1"            = { yes = 0.9 }
+"weave.split_2"            = { yes = 0.9 }
+"weave.split_3"            = { yes = 0.9 }
+"weave.count"              = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."look up maria's hire"]
 route                      = { hire = 0.95, team = 0.02, none = 0.03 }

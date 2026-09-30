@@ -761,9 +761,23 @@ impl<'a> Planner<'a> {
                 .collect()),
             Ok(Some((asked, judge))) => match &self.answers.judged {
                 Some(raw) => Ok(reading::judged(&all, &asked, &judge, raw.clone())?),
-                None => Err(Need::Judge { request: judge }),
+                None => Err(Need::Judge {
+                    request: judge,
+                    ahead: self.ahead(),
+                }),
             },
         })
+    }
+
+    /// The whole request, sent ahead of the cut: decided whatever the cut says, it is the one step where nothing
+    /// is cut, and so it waits on no round of its own; nothing, once it is decided.
+    fn ahead(&self) -> Vec<Asked> {
+        let whole = self.segment(self.request.trim());
+        if self.decided(&whole).is_none() {
+            vec![whole]
+        } else {
+            Vec::new()
+        }
     }
 
     /// The cut made again by the words: a list's items, a whole's parts, a fragment settled beside its

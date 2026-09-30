@@ -9,24 +9,67 @@ write = 0.9
 whole = 0.3
 
 [answers."check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect"]
-"weave.split_0" = { yes = 0.9 }
-"weave.split_1" = { yes = 0.9 }
-"weave.split_2" = { yes = 0.9 }
-"weave.ref_2_0" = { step0 = 0.6, step1 = 0.4 }
-"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
+"weave.split_0"               = { yes = 0.9 }
+"weave.split_1"               = { yes = 0.9 }
+"weave.split_2"               = { yes = 0.9 }
+"weave.ref_2_0"               = { step0 = 0.6, step1 = 0.4 }
+"weave.count"                 = { two = 0.6, more = 0.35, one = 0.05 }
+route                         = { none = 0.95, errors = 0.05 }
+"errors.service"              = { unstated = 1.0 }
+"deploys.service"             = { unstated = 1.0 }
+"logs.service"                = { unstated = 1.0 }
+"rollback.release"            = { unstated = 1.0 }
+"incident.number"             = { unstated = 1.0 }
+"weave.view_errors__service"  = { unstated = 1.0 }
+"weave.is_errors__service_0"  = { yes = 0.05 }
+"weave.view_deploys__service" = { unstated = 1.0 }
+"weave.is_deploys__service_0" = { yes = 0.05 }
+"weave.view_logs__service"    = { unstated = 1.0 }
+"weave.is_logs__service_0"    = { yes = 0.05 }
 
 [answers."check the errors for checkout, then find the suspect"]
-"weave.split_0" = { yes = 0.9 }
-"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
+"weave.split_0"               = { yes = 0.9 }
+"weave.count"                 = { two = 0.6, more = 0.35, one = 0.05 }
+route                         = { none = 0.95, errors = 0.05 }
+"errors.service"              = { unstated = 1.0 }
+"deploys.service"             = { unstated = 1.0 }
+"logs.service"                = { unstated = 1.0 }
+"rollback.release"            = { unstated = 1.0 }
+"incident.number"             = { unstated = 1.0 }
+"weave.view_errors__service"  = { unstated = 1.0 }
+"weave.is_errors__service_0"  = { yes = 0.05 }
+"weave.view_deploys__service" = { unstated = 1.0 }
+"weave.is_deploys__service_0" = { yes = 0.05 }
+"weave.view_logs__service"    = { unstated = 1.0 }
+"weave.is_logs__service_0"    = { yes = 0.05 }
 
 [answers."look up incident 311 and look up incident 312, then draft the postmortem"]
-"weave.split_0" = { yes = 0.9 }
-"weave.split_1" = { yes = 0.9 }
-"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
+"weave.split_0"               = { yes = 0.9 }
+"weave.split_1"               = { yes = 0.9 }
+"weave.count"                 = { two = 0.6, more = 0.35, one = 0.05 }
+route                         = { none = 0.95, errors = 0.05 }
+"errors.service"              = { unstated = 1.0 }
+"deploys.service"             = { unstated = 1.0 }
+"logs.service"                = { unstated = 1.0 }
+"rollback.release"            = { unstated = 1.0 }
+"incident.number"             = { unstated = 1.0 }
+"weave.view_errors__service"  = { unstated = 1.0 }
+"weave.view_deploys__service" = { unstated = 1.0 }
+"weave.view_logs__service"    = { unstated = 1.0 }
 
 [answers."look up incident 311, then draft the postmortem"]
-"weave.split_0" = { yes = 0.9 }
-"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
+"weave.split_0"                     = { yes = 0.9 }
+"weave.count"                       = { two = 0.6, more = 0.35, one = 0.05 }
+route                               = { none = 0.95, errors = 0.05 }
+"errors.service"                    = { unstated = 1.0 }
+"deploys.service"                   = { unstated = 1.0 }
+"logs.service"                      = { unstated = 1.0 }
+"rollback.release"                  = { unstated = 1.0 }
+"incident.number"                   = { unstated = 1.0 }
+"weave.view_errors__service"        = { unstated = 1.0 }
+"weave.view_deploys__service"       = { unstated = 1.0 }
+"weave.view_logs__service"          = { unstated = 1.0 }
+"weave.only_incident__number_17_20" = { yes = 0.05 }
 
 [answers."check the errors for checkout"]
 route                         = { errors = 0.95, deploys = 0.02, none = 0.03 }

@@ -9,16 +9,34 @@ write = 0.9
 whole = 0.3
 
 [answers."find sam's laptop, sessions and keys, lock the laptop, wipe it, revoke the sessions and rotate the keys, then alert #security"]
-"weave.split_0" = { yes = 0.9 }
-"weave.split_1" = { yes = 0.9 }
-"weave.split_2" = { yes = 0.9 }
-"weave.split_3" = { yes = 0.9 }
-"weave.split_4" = { yes = 0.9 }
-"weave.split_5" = { yes = 0.9 }
-"weave.split_6" = { yes = 0.9 }
-"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
-"weave.ref_3_0" = { step0 = 0.9, step1 = 0.05, step2 = 0.05 }
-"weave.ref_4_0" = { step0 = 0.9, step1 = 0.04, step2 = 0.03, step3 = 0.03 }
+route                         = { none = 0.95, device = 0.05 }
+"device.person"               = { unstated = 0.95, sam = 0.03, ana = 0.02 }
+"sessions.person"             = { unstated = 0.95, sam = 0.03, ana = 0.02 }
+"keys.person"                 = { unstated = 0.95, sam = 0.03, ana = 0.02 }
+"wipe.serial"                 = { unstated = 1.0 }
+"alert.channel"               = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
+"stolen.person"               = { unstated = 0.95, sam = 0.03, ana = 0.02 }
+"weave.view_device__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
+"weave.is_device__person_0"   = { yes = 0.05 }
+"weave.view_sessions__person" = { unstated = 0.95, sam = 0.03, ana = 0.02 }
+"weave.is_sessions__person_0" = { yes = 0.05 }
+"weave.view_keys__person"     = { unstated = 0.95, sam = 0.03, ana = 0.02 }
+"weave.is_keys__person_0"     = { yes = 0.05 }
+"weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
+"weave.is_alert__channel_0"   = { yes = 0.05 }
+"weave.is_alert__channel_1"   = { yes = 0.05 }
+"weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
+"weave.is_stolen__person_0"   = { yes = 0.05 }
+"weave.split_0"               = { yes = 0.9 }
+"weave.split_1"               = { yes = 0.9 }
+"weave.split_2"               = { yes = 0.9 }
+"weave.split_3"               = { yes = 0.9 }
+"weave.split_4"               = { yes = 0.9 }
+"weave.split_5"               = { yes = 0.9 }
+"weave.split_6"               = { yes = 0.9 }
+"weave.count"                 = { two = 0.6, more = 0.35, one = 0.05 }
+"weave.ref_3_0"               = { step0 = 0.9, step1 = 0.05, step2 = 0.05 }
+"weave.ref_4_0"               = { step0 = 0.9, step1 = 0.04, step2 = 0.03, step3 = 0.03 }
 
 [answers."find sam's laptop"]
 route                         = { device = 0.95, sessions = 0.02, none = 0.03 }

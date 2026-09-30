@@ -9,14 +9,30 @@ write = 0.9
 whole = 0.3
 
 [answers."find flights to lisbon, rooms there tonight and tomorrow's calendar, book that flight, book the hotel, move the meetings to tuesday, then tell #travel"]
-"weave.split_0" = { yes = 0.9 }
-"weave.split_1" = { yes = 0.9 }
-"weave.split_2" = { yes = 0.9 }
-"weave.split_3" = { yes = 0.9 }
-"weave.split_4" = { yes = 0.9 }
-"weave.split_5" = { yes = 0.9 }
-"weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
-"weave.ref_3_0" = { step0 = 0.9, step1 = 0.05, step2 = 0.05 }
+route                        = { none = 0.95, flights = 0.05 }
+"flights.to"                 = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
+"rooms.city"                 = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
+"calendar.day"               = { unstated = 0.95, 36-43 = 0.03, 48-56 = 0.02 }
+"book.flight"                = { unstated = 1.0 }
+"meeting.day"                = { unstated = 0.95, 36-43 = 0.03, 48-56 = 0.02 }
+"tell.channel"               = { unstated = 0.95, "#travel" = 0.03, "#team" = 0.02 }
+"cancelled.city"             = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
+"weave.view_flights__to"     = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
+"weave.is_flights__to_0"     = { yes = 0.05 }
+"weave.view_rooms__city"     = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
+"weave.is_rooms__city_0"     = { yes = 0.05 }
+"weave.view_tell__channel"   = { unstated = 0.95, "#travel" = 0.03, "#team" = 0.02 }
+"weave.is_tell__channel_0"   = { yes = 0.05 }
+"weave.view_cancelled__city" = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
+"weave.is_cancelled__city_0" = { yes = 0.05 }
+"weave.split_0"              = { yes = 0.9 }
+"weave.split_1"              = { yes = 0.9 }
+"weave.split_2"              = { yes = 0.9 }
+"weave.split_3"              = { yes = 0.9 }
+"weave.split_4"              = { yes = 0.9 }
+"weave.split_5"              = { yes = 0.9 }
+"weave.count"                = { two = 0.6, more = 0.35, one = 0.05 }
+"weave.ref_3_0"              = { step0 = 0.9, step1 = 0.05, step2 = 0.05 }
 
 [answers."find flights to lisbon"]
 route                        = { flights = 0.95, rooms = 0.02, none = 0.03 }
