@@ -44,8 +44,11 @@ evoke "mute the office lights"
 ```
 
 1. **Decide.** Every active reflex's manifest becomes questions. Which reflex does the input ask for? For each
-   argument, which value, or was it left unstated? One request carries all the questions. The adapter answers
-   each with a probability.
+   argument, which value, or was it left unstated, or stated in words that are not among the choices? One
+   request carries all the questions. The adapter answers each with a probability. Where an answer leaves a
+   doubt, the reading checks itself with another question: it asks about a value a second way, whether a word
+   of the input means the value it seems to, what the words no value holds do, and, before a call runs, whether
+   the call holds all the input says. What it reads, it reads from your words; nothing is invented.
 2. **Gate.** Confidence is the weakest of those answers. Each effect has a bar. Against that bar, the outcome is
    settled: **run**, **confirm**, **ask** for a missing argument, or **abstain**. A destructive reflex always
    confirms. Code stays in control: the classifier proposes, the gate disposes.

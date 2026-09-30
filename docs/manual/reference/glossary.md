@@ -6,6 +6,7 @@ adapter, and the words of a weave.
 | Term             | Meaning                                                                                                   |
 | :--------------- | :-------------------------------------------------------------------------------------------------------- |
 | **Abstain**      | The outcome when *none* wins the route, or the winner is under the route floor. Exit 2                    |
+| **Account**      | What each run of the input's words that no value holds does: says what to do, answers an argument's ask, asks for nothing, or asks for another thing. `why` names the words that answer an ask and those a call leaves out; the JSON line carries them as `left` |
 | **Adapter**      | The classifier behind a decision, as an object answering typed questions with probabilities. `jev` and `openjev` reach Jev, through TypeSafe AI's API or through OpenJEV; `replay` answers from a recording |
 | **Argument**     | A question about the input and a value for the body: `options`, `vocab`, `pick` or `flag`                 |
 | **Ask**          | The outcome when a required argument is missing: `evoke` asks the argument's own question                 |
@@ -38,12 +39,12 @@ adapter, and the words of a weave.
 | **Near neighbour** | What a person might type that sounds like a reflex's request and is not: named under `not_for`, and written as a `false` test |
 | **Overlay**      | `overlays/<name>.toml`: your wording for one reflex, merged over the shipped one                          |
 | **Pick**         | An argument read from an exact span of the input: `number`, `duration`, `email`, `url`, `quoted`, `date`, `time`, `amount`, `code` |
-| **Recalled**     | A value an earlier body of this session returned under the field a pick's `recent` names, listed at the ask and chosen by you |
-| **Pin**          | What a plan file is checked against before it runs: the `evoke` version, the adapter's id and gate, the set's digest, each reflex and vocabulary by hash, a remote reflex's `h1` |
+| **Pin**          | A question `evoke` asks the classifier on its own account beside a reflex's own, keyed `weave.<name>` in a recording: a second view of a listed word, a yes on a word of the input, what a run of words does, whether a call holds all the input says. Also what a plan file is checked against before it runs: the `evoke` version, the adapter's id and gate, the set's digest, each reflex and vocabulary by hash, a remote reflex's `h1` |
 | **Plan**         | The installed set compiled to questions. Its digest keys the cache, the baselines and every decision      |
 | **Plan file**    | A weave saved by `try --save`: the sentence, the classifier's answers and the pins it was decided under; `run <file>` runs it exactly, or names the pin that moved |
 | **Playbook**     | A reflex whose body is a plan: `steps`, one sentence per step with `{slots}`, reached by a short sentence and decided step by step over the installed set |
 | **Project**      | A directory of files you own: `evoke.toml`, `evoke.lock`, `overlays/`, `vocab/`                            |
+| **Recalled**     | A value an earlier body of this session returned under the field a pick's `recent` names, listed at the ask and chosen by you |
 | **Record**       | One line of `[examples]` or `[tests]`: `"utterance" = { assertions } | false`                              |
 | **Recording**    | An `answers.toml`: an adapter's declaration and its answers by utterance identity                         |
 | **Ref**          | Where a reflex comes from: `owner/repo[/dir][@tag]`, a git URL, or `./dir`                                |
@@ -62,6 +63,7 @@ adapter, and the words of a weave.
 | **Trust**        | A project's four owned paths bound to their content. Required outside home                                |
 | **Unstated**     | The answer that an argument was not given in the input                                                    |
 | **Utterance**    | A sentence a record is keyed by                                                                           |
+| **View**         | One of two questions about a listed word, the argument's own and a second one in other words; a value both give stands, and `why` says `asked a second way`. Where they differ, the input's own words decide, or the call waits for a yes |
 | **Vocabulary**   | `vocab/<name>.toml`: your closed list of words, shared by every argument that names it                    |
 | **Weave**        | A sentence read as several steps: each decided on its own, ordered by the words, a result threaded into a later step, the plan shown before anything runs |
 | **Wording**      | What a user may override: descriptions, questions, option meanings, records                               |

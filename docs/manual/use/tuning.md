@@ -176,7 +176,10 @@ gate = { route = 0.5, read = 0.85, write = 0.95, whole = 0.4 }
 ```
 
 The `openjev` adapter takes the same table under `[adapters.openjev]`. Both reach Jev, so the numbers mean the
-same. Each number means *the probability this is right*. `read` may not exceed `write`. Destructive reflexes always
-confirm. [Outcomes](outcomes.md#what-confidence-is) explains what the numbers gate.
+same. Each number means *the probability this is right*. `read` may not exceed `write`. `whole` is the third
+bar: a call that cleared its effect's bar is read back against your sentence, and runs when it holds all you
+typed at `whole` or over; raise it and more calls wait for a yes with the words they leave out named, lower it
+and fewer do. Destructive reflexes always confirm. [Outcomes](outcomes.md#what-confidence-is) explains what the
+numbers gate, and [Calibrating](calibrating.md) measures each bar on your own records.
 
 **Next:** [Calibrating](calibrating.md).

@@ -47,6 +47,17 @@ checkout: 2 deploys today, the last 4.12.0 at 13:58
 A day in a sentence, `tomorrow`, `next friday`, `the 14th`, is read as you said it and becomes a date when the
 program runs, against your machine's clock ([Arguments](../author/arguments.md#picks)).
 
+## Words the reading takes as they are
+
+A value is always one of your own words. A text an argument wants between quotes, like a timer's label, is read
+from the words you typed without them: in `set a timer for 10 minutes called tea` the label is `tea`, and the call
+waits for your yes, since the words could have been cut otherwise. A word that stands for a value from a list but
+is not on it — the `snug` for a room called `den`, `garage` for no room at all — is read where the list's meanings
+say what it is, and the call waits for a yes; where they do not, `evoke` asks, and names the word:
+`"garage" is not on the list`. An address, a URL, a code or a number said aloud, `dana dot weiss at example dot
+org`, is read as it would be typed, and waits for a yes too. `evoke why` shows each of these under the value it
+gave ([Outcomes](outcomes.md#why-the-last-sentence-explained)).
+
 **A filter.** Pipe lines into `evoke`, or into `evoke try`, and every line is one input, answered in order. A line that needs a
 prompt, a confirm or an ask, cannot be answered without a terminal. That line exits 3 and names the command to run
 yourself. The filter still answers every other line, and exits with the first non-zero code.

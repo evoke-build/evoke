@@ -168,10 +168,9 @@ minutes" }` is refused: `asserts duration = "12 minutes", which is not in the ut
 [Arguments](arguments.md) has the keys.
 
 17. **Each ask is one question, as a person would ask it**, since the classifier reads it word for word and the
-    person sees it at the prompt. Never ask whether a value was given: every question already offers *unstated*.
-    Over a vocabulary, name the kind of thing, «Which room of the house?», since a bare «Which room?» let a room
-    the list lacks be read as its nearest word; and keep the question short, since a longer one lost a word the
-    list holds.
+    person sees it at the prompt. Never ask whether a value was given: every question already offers *unstated*,
+    and *none of these* for a word the list lacks, which `evoke` then asks for by the person's own word. Keep
+    the question short, since a longer one lost a word the list holds.
 18. An option's key is a word a person knows at a glance, since the prompt and the call line print keys alone:
     `[1] restart  [2] shutdown`. Its meaning answers the ask in one short line, since every request
     carries every meaning. *(lint)* reports a meaning that repeats the ask.
@@ -182,11 +181,13 @@ minutes" }` is refused: `asserts duration = "12 minutes", which is not in the ut
     `amount` or `code`. A recognizer reads the forms its grammar knows and never invents one: a code as it is typed,
     `TP1043` or `tp1043`; a quoted value between double quotes. A form it does not read is asked for. A `range`
     bounds a number or a duration, so a value outside it asks with the reason.
-21. `quoted` is for text people quote. Typed without quotes, an optional quoted value is dropped and a required one
-    is asked. So text people type freely as part of the sentence is never a `quoted` argument: the body reads it
-    from `input`. For a typed sentence, `input` holds the person's own words; when a plan runs the step, it holds
-    the step's words. A message a playbook sends is therefore written into the step. *(lint)* reports a quoted
-    argument that no example shows in quotes.
+21. `quoted` is for text people quote. Typed without quotes, a quoted value is read from the person's own words
+    where they answer the ask, `set a timer for 10 minutes called tea`, and the call waits for a yes; where no
+    words answer it, an optional one is dropped and a required one is asked. So text people type freely as the
+    whole of the sentence is never a `quoted` argument: the body reads it from `input`. For a typed sentence,
+    `input` holds the person's own words; when a plan runs the step, it holds the step's words. A message a
+    playbook sends is therefore written into the step. *(lint)* reports a quoted argument that no example shows
+    in quotes.
 22. Where people point at a value an earlier command found, `recent` on the pick names the field a lookup yields,
     so the ask lists the values this session found and the person chooses.
 23. The confirm reads the call back, its action and each required value, `Roll back {release}?`, and nothing
