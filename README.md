@@ -63,7 +63,7 @@ drafted to dana@example.com
 One sentence asked for two reflexes, and the plan showed before anything ran. Step 2 takes the email step 1
 finds, because `contact` says its result holds an email and `mail`'s `to` takes one. The lookup ran, the draft was
 addressed, and nothing was sent. `contact` and `mail` are illustrations from the tests. The reflexes you can
-install are in [the collection](https://evoke.build/manual/collection.html): fourteen, for a Mac.
+install are in [the collection](https://evoke.build/manual/collection.html): fifteen, for a Mac.
 
 ```bash
 curl -fsSL https://evoke.build/install.sh | sh    # the CLI, on macOS and Linux

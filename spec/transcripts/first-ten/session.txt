@@ -23,6 +23,8 @@ $ evoke add evoke-build/reflexes
               needs writes ~/Desktop · runs screencapture
 + sleep       evoke-build/reflexes/sleep 0.1.0       write        runs sleep.mts
               needs runs pmset
++ sound       evoke-build/reflexes/sound 0.1.0       write        runs sound.mts
+              needs runs osascript
 + timer       evoke-build/reflexes/timer 0.1.0       write        runs timer.mts
               needs runs osascript
 + trash       evoke-build/reflexes/trash 0.1.0       destructive  runs osascript
@@ -74,7 +76,7 @@ $ evoke try "kill the wifi"
   → waits for a yes: wifi state="off" · write · weakest: state 0.86
     a write runs at 0.90 or more
 
-  replay answered 22 questions in 2 rounds
+  replay answered 25 questions in 2 rounds
 $ evoke try "download https://evoke.build/llms.txt and note it"
   1  download url="https://evoke.build/llms.txt"  0.98
   2  note · takes path from 1
@@ -98,7 +100,7 @@ $ evoke try "download https://evoke.build/llms.txt and note it"
     holds all you said      0.90
     → runs: note · takes path from 1
 
-  replay answered 72 questions in 4 rounds
+  replay answered 81 questions in 4 rounds
 # A switch one part sets reaches a part that asks for the same again, by a yes.
 $ evoke try "take a screenshot of the window to the clipboard, then the same for the whole screen"
   1  screenshot area="window" clipboard  0.95
@@ -129,7 +131,7 @@ $ evoke try "take a screenshot of the window to the clipboard, then the same for
     → runs: screenshot area="screen" clipboard  0.95
       a write runs at 0.90 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
 
-  replay answered 75 questions in 4 rounds
+  replay answered 84 questions in 4 rounds
 # The collection added again is installed whole already; update is what moves it.
 $ evoke add evoke-build/reflexes
   every reflex of evoke-build/reflexes is already installed  →  evoke update

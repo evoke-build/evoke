@@ -3,7 +3,7 @@
 The first-party reflexes for [evoke](https://evoke.build): what a Mac does at a word. The word
 is decided by [Jev](https://typesafe.ai), TypeSafe AI's classifier. Each reflex is one directory, with
 `reflex.toml` and the file it runs, where it runs one. There is nothing to build.
-Twelve of the fourteen run a file and need Node 24 or newer on your `PATH`; `open` and `trash` run a program
+Thirteen of the fifteen run a file and need Node 24 or newer on your `PATH`; `open` and `trash` run a program
 the Mac has.
 
 ```bash
@@ -21,6 +21,7 @@ evoke add evoke-build/reflexes
 | [power](power/reflex.toml)           | Restarts or shuts down                                             | destructive | `action`, `restart` or `shutdown`                                        |        |              |
 | [screenshot](screenshot/reflex.toml) | Captures the screen, a window or a selection                       | write       | `area`, `screen`, `window` or `selection`, optional; `clipboard`, a flag | `path` |              |
 | [sleep](sleep/reflex.toml)           | Puts the laptop to sleep                                           | write       |                                                                          |        |              |
+| [sound](sound/reflex.toml)           | Mutes, unmutes, or turns the volume up or down                     | write       | `state`, `off`, `on`, `up` or `down`; `by`, a number of points, optional |        |              |
 | [timer](timer/reflex.toml)           | Counts down, then rings                                            | write       | `duration`, a duration; `label`, text in quotes, optional                |        |              |
 | [trash](trash/reflex.toml)           | Empties the trash                                                  | destructive |                                                                          |        |              |
 | [visit](visit/reflex.toml)           | Opens one of your sites, in a private window on request            | read        | `site`, one of your `sites`; `incognito`, a flag                         |        | `sites`      |

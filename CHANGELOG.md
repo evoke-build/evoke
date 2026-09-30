@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- The collection gains `sound`: mute, unmute, or turn the volume up or down by an amount.
+
 ## [0.16.0] - 2026-09-30
 
 - `reflex.d.ts` says what `input` holds and what aborts `signal`; `evoke check` writes it again.

@@ -1,0 +1,55 @@
+reflex = 1
+
+description = """
+Turn the sound off, on, up or down.
+Off mutes the laptop and on unmutes it; up and down move the volume by ten points, or by the amount said."""
+
+not_for = [
+  "setting the volume to a level",
+  "one app's volume",
+  "changing the screen brightness",
+  "asking what the volume is",
+  "playing or pausing music",
+]
+tags = ["sound"]
+effect = "write"
+confirm = "Turn the sound {state}?"
+run = "sound.mts"
+platforms = ["macos"]
+
+[needs]
+runs = ["osascript"]
+
+[args.state]
+ask          = "Off, on, up or down?"
+options.off  = "Mute: silence everything the laptop plays."
+options.on   = "Unmute: the sound comes back at the level it had."
+options.up   = "Louder, by ten points or by the amount said."
+options.down = "Quieter, by ten points or by the amount said."
+
+[args.by]
+ask      = "By how many points?"
+pick     = "number"
+range    = [1, 100]
+optional = true
+
+[examples]
+"mute the sound"                  = { state = "off" }
+"silence the laptop"              = { state = "off" }
+"unmute my speakers"              = { state = "on" }
+"sound back on"                   = { state = "on" }
+"turn it up a bit"                = { state = "up" }
+"louder by 20"                    = { state = "up", by = "20" }
+"lower the volume a little"       = { state = "down" }
+"bring the sound down by fifteen" = { state = "down", by = "fifteen" }
+
+[tests]
+"kill the sound"               = { state = "off" }
+"quiet, I'm on a call"         = { state = "off" }
+"put the sound back on"        = { state = "on" }
+"crank it up by 30"            = { state = "up", by = "30" }
+"a touch quieter please"       = { state = "down", by = false }
+"do something about the sound" = { state = false }
+"set the volume to 40"         = false
+"turn the brightness up"       = false
+"pause the music"              = false

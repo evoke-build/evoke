@@ -23,7 +23,7 @@ $ evoke "lock the screen"
 
 ## 2. Install the collection
 
-`evoke-build/reflexes` is the first-party collection: fourteen reflexes for what a Mac does at a word. Installing
+`evoke-build/reflexes` is the first-party collection: fifteen reflexes for what a Mac does at a word. Installing
 a repository installs every reflex in it.
 
 ```text
@@ -46,6 +46,8 @@ $ evoke add evoke-build/reflexes
               needs writes ~/Desktop · runs screencapture
 + sleep       evoke-build/reflexes/sleep 0.1.0       write        runs sleep.mts
               needs runs pmset
++ sound       evoke-build/reflexes/sound 0.1.0       write        runs sound.mts
+              needs runs osascript
 + timer       evoke-build/reflexes/timer 0.1.0       write        runs timer.mts
               needs runs osascript
 + trash       evoke-build/reflexes/trash 0.1.0       destructive  runs osascript
@@ -164,7 +166,7 @@ $ evoke try "kill the wifi"
   → waits for a yes: wifi state="off" · write · weakest: state 0.86
     a write runs at 0.90 or more
 
-  replay answered 22 questions in 2 rounds
+  replay answered 25 questions in 2 rounds
 ```
 
 Which reflex, then each value with what it stands on, then what would happen and why. The weakest answer is the

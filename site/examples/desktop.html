@@ -16,7 +16,7 @@
         <p class="crumb"><a href="/examples.html">Examples</a> · 01 of 06</p>
         <h1>Run everyday Mac tasks from the terminal, <em>in plain words.</em></h1>
         <p class="lede"><strong>Type "set the volume to 40 percent" in your terminal, and evoke sets it.</strong> A reflex
-          is a small program you install and ask for in your words. Fourteen reflexes for everyday Mac tasks install with
+          is a small program you install and ask for in your words. Fifteen reflexes for everyday Mac tasks install with
           one line. This example runs today on a Mac, and every file is on GitHub.</p>
         <div class="cta"><a class="button primary" href="#set-up">Run this example</a></div>
       </div>
@@ -88,7 +88,7 @@
 
     <section id="reflexes">
       <div class="rule"><p class="label">The collection</p><span class="num">02</span></div>
-      <h2>What each of the fourteen reflexes does.</h2>
+      <h2>What each of the fifteen reflexes does.</h2>
       <p class="sub">Together they are evoke's collection, and one command installs them all. <strong>Each prints one
         short line about what it did.</strong></p>
       <div class="table tagged"><table>
@@ -103,6 +103,7 @@
           <tr><td><code>power</code></td><td>Restarts the laptop or shuts it down.</td><td>destructive</td></tr>
           <tr><td><code>screenshot</code></td><td>Captures the screen, a window or a selection.</td><td>write</td></tr>
           <tr><td><code>sleep</code></td><td>Puts the laptop to sleep.</td><td>write</td></tr>
+          <tr><td><code>sound</code></td><td>Mutes or unmutes, or turns the volume up or down.</td><td>write</td></tr>
           <tr><td><code>timer</code></td><td>Counts down, then rings.</td><td>write</td></tr>
           <tr><td><code>trash</code></td><td>Empties the trash.</td><td>destructive</td></tr>
           <tr><td><code>visit</code></td><td>Opens one of your sites, in a private window if you ask for one.</td><td>read</td></tr>
@@ -174,7 +175,8 @@
 <span class="t">[tests]</span>
 <span class="s">"put the volume at 100 percent"</span>         <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"100 percent"</span> <span class="o">}</span>
 <span class="s">"make the speakers twenty five percent"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"twenty five percent"</span> <span class="o">}</span>
-<span class="s">"lower the volume a little"</span>             <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="n">false</span> <span class="o">}</span>
+<span class="s">"lower the volume a little"</span>             <span class="o">=</span> <span class="n">false</span>
+<span class="s">"set the volume for me"</span>                 <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="n">false</span> <span class="o">}</span>
 <span class="s">"unmute my speakers"</span>                    <span class="o">=</span> <span class="n">false</span>
 <span class="s">"turn the brightness up to 70"</span>          <span class="o">=</span> <span class="n">false</span>
 <span class="s">"how loud is it right now"</span>              <span class="o">=</span> <span class="n">false</span></pre>
@@ -251,7 +253,7 @@
         <a href="/start.html?example=desktop#help">Each stop and its fix, on Get started →</a></p>
       <ul class="needs">
         <li class="ok"><b>macOS</b>The collection's programs are for a Mac. evoke itself also runs on Linux.</li>
-        <li class="ok"><b>Node 24 or newer</b>Twelve of the fourteen reflexes run a JavaScript file.</li>
+        <li class="ok"><b>Node 24 or newer</b>Thirteen of the fifteen reflexes run a JavaScript file.</li>
         <li class="ok"><b>git</b><code>evoke add</code> fetches the collection from GitHub, at its newest version.</li>
         <li class="ok"><b>A key from TypeSafe AI</b>For Jev, the classifier that reads your sentences. TypeSafe AI bills
           each request to your key.</li>
@@ -309,6 +311,7 @@
 <span class="add">+ power       evoke-build/reflexes/power 0.1.0       destructive  runs power.mts</span>
 <span class="add">+ screenshot  evoke-build/reflexes/screenshot 0.1.0  write        runs screenshot.mts</span>
 <span class="add">+ sleep       evoke-build/reflexes/sleep 0.1.0       write        runs sleep.mts</span>
+<span class="add">+ sound       evoke-build/reflexes/sound 0.1.0       write        runs sound.mts</span>
 <span class="add">+ timer       evoke-build/reflexes/timer 0.1.0       write        runs timer.mts</span>
 <span class="add">+ trash       evoke-build/reflexes/trash 0.1.0       destructive  runs osascript</span>
 <span class="add">+ visit       evoke-build/reflexes/visit 0.1.0       read         runs visit.mts</span>

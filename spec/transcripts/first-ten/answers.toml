@@ -32,6 +32,10 @@ route                            = { volume = 0.96, awake = 0.01, timer = 0.01, 
 "weave.view_open__place"         = { unstated = 1.0 }
 "weave.left_volume_0_2"          = { action = 0.9, courtesy = 0.1 }
 "weave.whole_1753400562"         = { whole = 0.9, less = 0.05, other = 0.05 }
+"sound.state"                    = { unstated = 1.0 }
+"sound.by"                       = { unstated = 1.0 }
+"weave.view_sound__state"        = { unstated = 1.0 }
+"weave.only_sound__by_18_28"     = { yes = 0.05 }
 
 [answers."kill the wifi"]
 route                         = { wifi = 0.95, power = 0.01, lock = 0.01, none = 0.03 }
@@ -56,6 +60,9 @@ route                         = { wifi = 0.95, power = 0.01, lock = 0.01, none =
 "weave.view_download__to"     = { unstated = 0.98, desktop = 0.02 }
 "weave.view_open__place"      = { unstated = 0.98, desktop = 0.02 }
 "weave.left_wifi_0_2"         = { action = 0.9, courtesy = 0.1 }
+"sound.state"                 = { unstated = 1.0 }
+"sound.by"                    = { unstated = 1.0 }
+"weave.view_sound__state"     = { unstated = 1.0 }
 
 [answers."restart the computer"]
 route                         = { power = 0.98, wifi = 0.01, none = 0.01 }
@@ -80,6 +87,9 @@ route                         = { power = 0.98, wifi = 0.01, none = 0.01 }
 "weave.view_download__to"     = { unstated = 1.0 }
 "weave.view_open__place"      = { unstated = 1.0 }
 "weave.left_power_2_2"        = { action = 0.9, courtesy = 0.1 }
+"sound.state"                 = { unstated = 1.0 }
+"sound.by"                    = { unstated = 1.0 }
+"weave.view_sound__state"     = { unstated = 1.0 }
 
 [answers."what time is it"]
 route                         = { none = 0.85, timer = 0.1, awake = 0.03, lock = 0.02 }
@@ -102,6 +112,9 @@ route                         = { none = 0.85, timer = 0.1, awake = 0.03, lock =
 "weave.view_wifi__state"      = { unstated = 0.95, on = 0.03, off = 0.02 }
 "weave.view_download__to"     = { unstated = 1.0 }
 "weave.view_open__place"      = { unstated = 1.0 }
+"sound.state"                 = { unstated = 1.0 }
+"sound.by"                    = { unstated = 1.0 }
+"weave.view_sound__state"     = { unstated = 1.0 }
 
 [answers."open my desktop folder"]
 route                         = { open = 0.95, download = 0.01, lock = 0.01, none = 0.03 }
@@ -129,6 +142,9 @@ route                         = { open = 0.95, download = 0.01, lock = 0.01, non
 "weave.left_open_0_0"         = { action = 0.9, courtesy = 0.1 }
 "weave.left_open_3_3"         = { action = 0.9, courtesy = 0.1 }
 "weave.whole_2744700695"      = { whole = 0.9, less = 0.05, other = 0.05 }
+"sound.state"                 = { unstated = 1.0 }
+"sound.by"                    = { unstated = 1.0 }
+"weave.view_sound__state"     = { unstated = 1.0 }
 
 [answers."download https://evoke.build/llms.txt and note it"]
 "weave.split_0"                 = { yes = 0.9 }
@@ -154,6 +170,9 @@ route                           = { none = 0.95, awake = 0.05 }
 "weave.view_power__action"      = { unstated = 1.0 }
 "weave.view_screenshot__area"   = { unstated = 1.0 }
 "weave.view_wifi__state"        = { unstated = 1.0 }
+"sound.state"                   = { unstated = 1.0 }
+"sound.by"                      = { unstated = 1.0 }
+"weave.view_sound__state"       = { unstated = 1.0 }
 
 [answers."download https://evoke.build/llms.txt"]
 route                           = { download = 0.98, open = 0.01, none = 0.01 }
@@ -179,6 +198,9 @@ route                           = { download = 0.98, open = 0.01, none = 0.01 }
 "weave.view_wifi__state"        = { unstated = 0.95, on = 0.03, off = 0.02 }
 "weave.left_download_0_0"       = { action = 0.9, courtesy = 0.1 }
 "weave.whole_1538194349"        = { whole = 0.9, less = 0.05, other = 0.05 }
+"sound.state"                   = { unstated = 1.0 }
+"sound.by"                      = { unstated = 1.0 }
+"weave.view_sound__state"       = { unstated = 1.0 }
 
 [answers."note it"]
 route                         = { note = 0.96, download = 0.01, none = 0.03 }
@@ -207,6 +229,9 @@ route                         = { note = 0.96, download = 0.01, none = 0.03 }
 "weave.word_note__text_0"     = { yes = 0.05 }
 "weave.word_note__text_1"     = { yes = 0.05 }
 "weave.whole_3988022626"      = { whole = 0.9, less = 0.05, other = 0.05 }
+"sound.state"                 = { unstated = 1.0 }
+"sound.by"                    = { unstated = 1.0 }
+"weave.view_sound__state"     = { unstated = 1.0 }
 
 [answers."take a screenshot of the window to the clipboard, then the same for the whole screen"]
 "weave.split_0"                          = { yes = 0.95 }
@@ -235,6 +260,9 @@ route                                    = { none = 0.95, awake = 0.05 }
 "weave.is_screenshot__area_1"            = { yes = 0.05 }
 "weave.view_wifi__state"                 = { unstated = 1.0 }
 "weave.is_wifi__state_1"                 = { yes = 0.05 }
+"sound.state"                            = { unstated = 1.0 }
+"sound.by"                               = { unstated = 1.0 }
+"weave.view_sound__state"                = { unstated = 1.0 }
 
 [answers."take a screenshot of the window to the clipboard"]
 route                         = { screenshot = 0.96, none = 0.03, open = 0.01 }
@@ -262,6 +290,9 @@ route                         = { screenshot = 0.96, none = 0.03, open = 0.01 }
 "weave.left_screenshot_0_2"   = { action = 0.95, courtesy = 0.05 }
 "weave.left_screenshot_8_8"   = { action = 0.95, courtesy = 0.05 }
 "weave.whole_906369505"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"sound.state"                 = { unstated = 1.0 }
+"sound.by"                    = { unstated = 1.0 }
+"weave.view_sound__state"     = { unstated = 1.0 }
 
 [answers."the same for the whole screen"]
 route                         = { screenshot = 0.95, none = 0.04, open = 0.01 }
@@ -288,3 +319,6 @@ route                         = { screenshot = 0.95, none = 0.04, open = 0.01 }
 "weave.left_screenshot_1_1"   = { action = 0.95, courtesy = 0.05 }
 "weave.left_screenshot_4_4"   = { action = 0.95, courtesy = 0.05 }
 "weave.whole_1418961006"      = { whole = 0.9, less = 0.05, other = 0.05 }
+"sound.state"                 = { unstated = 1.0 }
+"sound.by"                    = { unstated = 1.0 }
+"weave.view_sound__state"     = { unstated = 1.0 }

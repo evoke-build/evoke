@@ -1,9 +1,9 @@
-<!-- description: The first-party collection: fourteen reflexes for everyday Mac tasks, such as the volume, Wi-Fi, a timer or a screenshot, and what each one needs. -->
+<!-- description: The first-party collection: fifteen reflexes for everyday Mac tasks, such as the volume, Wi-Fi, a timer or a screenshot, and what each one needs. -->
 # The collection
 
-`evoke-build/reflexes` is the first-party collection: fourteen reflexes for what a Mac does at a word. Each
+`evoke-build/reflexes` is the first-party collection: fifteen reflexes for what a Mac does at a word. Each
 reflex is one directory, with `reflex.toml` and the file it runs, where it runs one. There is nothing to build.
-Twelve of the fourteen run a file and need Node 24 or newer on your `PATH`; `open` and `trash` run a program
+Thirteen of the fifteen run a file and need Node 24 or newer on your `PATH`; `open` and `trash` run a program
 the Mac has. Every one follows [the rules](author/rules.md), so each is a manifest to copy from.
 
 ```bash
@@ -21,6 +21,7 @@ evoke add evoke-build/reflexes
 | `power`      | Restarts or shuts down                                             | destructive | `action`, `restart` or `shutdown`                                        |        |              |
 | `screenshot` | Captures the screen, a window or a selection                       | write       | `area`, `screen`, `window` or `selection`, optional; `clipboard`, a flag | `path` |              |
 | `sleep`      | Puts the laptop to sleep                                           | write       |                                                                          |        |              |
+| `sound`      | Mutes, unmutes, or turns the volume up or down                     | write       | `state`, `off`, `on`, `up` or `down`; `by`, a number of points, optional |        |              |
 | `timer`      | Counts down, then rings                                            | write       | `duration`, a duration; `label`, text in quotes, optional                |        |              |
 | `trash`      | Empties the trash                                                  | destructive |                                                                          |        |              |
 | `visit`      | Opens one of your sites, in a private window on request            | read        | `site`, one of your `sites`; `incognito`, a flag                         |        | `sites`      |
@@ -48,7 +49,7 @@ No reflex in the collection returns a whole result under a name yet, and none ta
 
 ## What they say back
 
-One lowercase line that says what happened: `volume 40%` · `locked` · `sleeping` · `saved ~/Desktop/Screenshot 2026-09-20
+One lowercase line that says what happened: `volume 40%` · `muted` · `locked` · `sleeping` · `saved ~/Desktop/Screenshot 2026-09-20
 at 10.31.05.png` · `copied to the clipboard` · `eggs: 3 minutes, rings at 10:34 AM` · `awake for 2 hours` ·
 `noted "buy milk" in ~/notes.txt` · `new mail to ana@example.com about "friday"` · `opened https://github.com in a
 private window` · `saved report.pdf to ~/Downloads (1.2 MB)`.
