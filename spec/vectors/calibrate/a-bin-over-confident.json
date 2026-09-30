@@ -231,7 +231,7 @@
         "calls": 2,
         "right": 0,
         "interval": [
-          0.0,
+          0,
           0.6576197760453506
         ],
         "claimed": 0.675,
@@ -240,12 +240,12 @@
       },
       {
         "lo": 0.8,
-        "hi": 1.0,
+        "hi": 1,
         "calls": 1,
         "right": 1,
         "interval": [
           0.2065493117918027,
-          1.0
+          1
         ],
         "claimed": 0.9,
         "thin": true,
@@ -257,8 +257,8 @@
       "count": 0,
       "right": 0,
       "interval": [
-        0.0,
-        0.0
+        0,
+        0
       ]
     },
     "bars": {
@@ -266,18 +266,18 @@
         "bar": 0.8,
         "wrong": 0,
         "calls": 1,
-        "per_thousand": 0.0,
+        "per_thousand": 0,
         "at_most": 950.0000000000001,
         "near": [
           {
             "at": 0.7,
-            "run": 2,
-            "wrong": 1
+            "run": 1,
+            "wrong": 0
           },
           {
             "at": 0.75,
-            "run": 2,
-            "wrong": 1
+            "run": 1,
+            "wrong": 0
           },
           {
             "at": 0.8,
@@ -304,7 +304,7 @@
         "right": 3,
         "interval": [
           0.43850296436068037,
-          1.0
+          1
         ],
         "claimed": 0.9166666666666666
       },
@@ -313,7 +313,7 @@
         "judgments": 2,
         "right": 0,
         "interval": [
-          0.0,
+          0,
           0.6576197760453506
         ],
         "claimed": 0.675

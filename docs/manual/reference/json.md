@@ -134,8 +134,10 @@ among the choices.
 One object, the report of [Calibrating](../use/calibrating.md): `adapter`; `records`, `reflexes`, `inputs`,
 `repeats`; `outcomes` with `run`, `confirm`, `ask`, `abstain`; `bins`, each `{ lo, hi, calls, right, interval,
 claimed, thin, over_confident }`, a bin with no call left out; `unknown`; `abstained` as `{ count, right,
-interval }`; `bars` with `read` and `write` where the effect has a call, each `{ bar, wrong, calls,
-per_thousand, at_most, near }` and `near` a list of `{ at, run, wrong }`; `questions`, each `{ kind, judgments,
+interval }`; `bars` with `read` and `write` where the effect has a complete call, each `{ bar, wrong, calls,
+per_thousand, at_most, near }` and `near` a list of `{ at, run, wrong }`, and `whole` where a call over its bar
+was read back against the input, `{ bar, calls, run, wrong, per_thousand, at_most, held_right }`; `questions`,
+each `{ kind, judgments,
 right, interval, claimed }` with `kind` one of `route`, `options`, `vocab`, `pick`, `flag`; `brier` with
 `brier`, `reliability`, `resolution`, `uncertainty`, absent without a call; `misses`, each `{ case, outcome,
 reflex?, confidence?, mismatch, wrong }`; under `--repeat`, `variance` with `flips`, `verdict_flips`, `spread`

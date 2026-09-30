@@ -16,6 +16,7 @@ use super::{Exit, nothing_installed};
 use crate::adapter::Adapter;
 use crate::args::Command;
 use crate::hosts::{Environment, Failure, terminal, threads};
+use crate::report::sentence::Sentence;
 use crate::report::{self, Line};
 
 pub fn run(
@@ -120,11 +121,15 @@ fn calibrated(
     }
 }
 
-/// The log's lines as the block reads them, and how many did not read.
+/// The log's lines as the block reads them, and how many did not read; a sentence's own line, kept after its
+/// steps' for `why`, is no decision.
 fn logged(session: &Session<'_>) -> Result<(Vec<Logged>, usize), Exit> {
     let mut lines = Vec::new();
     let mut unread = 0;
     for text in session.state.lines().map_err(Exit::Failed)? {
+        if Sentence::parse(&text).is_some() {
+            continue;
+        }
         match Line::parse(&text) {
             Ok(line) => lines.push(Logged {
                 input: line.input,

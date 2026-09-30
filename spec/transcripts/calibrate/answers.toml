@@ -123,7 +123,7 @@ route                                 = { timer = 0.95, lights = 0.01, none = 0.
 "weave.word_timer__label_1"           = { yes = 0.05 }
 "weave.first_timer__label_3723623174" = { unstated = 1.0 }
 "weave.run_timer__label_3723623174"   = { unstated = 1.0 }
-"weave.whole_49030151"                = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.whole_49030151"                = { whole = 0.2, less = 0.7, other = 0.1 }
 
 [answers."ping me in 2 hours"]
 route                                 = { timer = 0.94, lights = 0.02, none = 0.04 }

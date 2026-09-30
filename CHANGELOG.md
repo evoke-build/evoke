@@ -43,6 +43,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   and last how much the classifier was asked. An answer's key prints in words: `not said`, `none of them`.
 - A question over a list offers `[0] none of these`, which declines it; a declined question says what did not
   run.
+- `calibrate` counts the wrong calls at or over the `whole` bar too, with what the bar holds for a yes; an ask
+  is no longer among the calls at a bar. The JSON carries it as `bars.whole`.
 
 ## [0.15.0] - 2026-09-29
 

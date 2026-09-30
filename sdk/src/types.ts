@@ -1599,6 +1599,19 @@ export interface Share {
 export interface Bars {
   read?: BarRow
   write?: BarRow
+  /** The bar a call is held against the input at, where the gate has one and a call was held. */
+  whole?: HoldRow
+}
+
+/** The calls at or over the bar of their effect, held against the input: how many the hold lets run, at or over its bar, how many of those are wrong, per thousand with the one-sided bound at 95 %, and the right calls it holds for a yes. */
+export interface HoldRow {
+  bar: Prob
+  calls: number
+  run: number
+  wrong: number
+  per_thousand: number
+  at_most: number
+  held_right: number
 }
 
 /** The calls of one effect at or over its bar: how many were wrong, per thousand, the one-sided bound at 95 % per thousand, and the neighbourhood at the bar and a step either side. */

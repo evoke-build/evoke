@@ -1,7 +1,8 @@
 //! The gate measured over the records, and the log read as weak labels. Every input's decisions are judged against
 //! every record of its utterance, as `test` judges them: the whole call right by bins of the confidence claimed,
-//! the wrong calls at or over each bar per thousand with a bound, each bar's neighbourhood, each judgment on its
-//! own by kind, Brier and its parts, the misses, and over repeats the spread, the flips and what moved. In: the
+//! the wrong calls at or over each bar per thousand with a bound, each bar's neighbourhood, what the call held
+//! against the request lets run and costs, each judgment on its own by kind, Brier and its parts, the misses,
+//! and over repeats the spread, the flips and what moved. In: the
 //! adapter's id and gate, the plan, cases with their repeated decisions; the log's lines. Out: `Calibration`,
 //! `LogBlock`. Every number carries its count and its interval; a bin under a hundred calls is `thin`; nothing
 //! depends on colour, and nothing here is I/O. The arithmetic is Wilson's interval, the one-sided Clopper-Pearson
@@ -82,13 +83,16 @@ pub struct Share {
     pub interval: (Prob, Prob),
 }
 
-/// Each effect's bar, for an effect with a judged call under a gate.
+/// Each effect's bar, for an effect with a judged call under a gate; and the bar a call is held against the
+/// request at, where the gate has one and a call was held.
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct Bars {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub read: Option<BarRow>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub write: Option<BarRow>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub whole: Option<HoldRow>,
 }
 
 /// The calls of one effect at or over its bar: how many were wrong, per thousand, and the one-sided bound at
@@ -101,6 +105,20 @@ pub struct BarRow {
     pub per_thousand: f64,
     pub at_most: f64,
     pub near: Vec<NearRow>,
+}
+
+/// The calls at or over the bar of their effect, held against the request: how many the hold lets run, at or
+/// over its bar, how many of those are wrong, per thousand, and the one-sided bound at 95 %; and what the hold
+/// costs, the right calls it holds for a yes.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct HoldRow {
+    pub bar: Prob,
+    pub calls: usize,
+    pub run: usize,
+    pub wrong: usize,
+    pub per_thousand: f64,
+    pub at_most: f64,
+    pub held_right: usize,
 }
 
 /// At a threshold: how many calls would run, and how many of those are wrong.
@@ -265,6 +283,12 @@ pub fn calibrate(
         .collect();
     let repeats = judged.iter().map(Vec::len).max().unwrap_or(0);
     let calls: Vec<&Judged<'_>> = first.iter().copied().filter(|j| j.is_call()).collect();
+    // A bar decides what runs: an ask never does.
+    let complete: Vec<&Judged<'_>> = calls
+        .iter()
+        .copied()
+        .filter(|j| j.outcome != Outcome::Ask)
+        .collect();
     let known: Vec<(f64, bool)> = calls.iter().filter_map(|j| j.known()).collect();
     let bars = gate.map_or_else(Vec::new, floors);
     let edges = bins(&known.iter().map(|(p, _)| *p).collect::<Vec<_>>(), &bars);
@@ -299,8 +323,9 @@ pub fn calibrate(
             abstains.iter().filter(|j| j.truth == Some(true)).count(),
         ),
         bars: Bars {
-            read: gate.and_then(|gate| bar_row(&calls, Effect::Read, gate.read())),
-            write: gate.and_then(|gate| bar_row(&calls, Effect::Write, gate.write())),
+            read: gate.and_then(|gate| bar_row(&complete, Effect::Read, gate.read())),
+            write: gate.and_then(|gate| bar_row(&complete, Effect::Write, gate.write())),
+            whole: gate.and_then(|gate| hold_row(&complete, gate)),
         },
         questions: question_rows(&first),
         brier: (!known.is_empty()).then(|| brier(&known, &edges)),
@@ -451,6 +476,8 @@ struct Judged<'a> {
     reflex: Option<&'a LocalName>,
     effect: Option<Effect>,
     confidence: Option<Prob>,
+    /// How far the call holds all the request says, where it was held against it.
+    whole: Option<Prob>,
     judgments: Vec<&'a Judgment>,
     truth: Option<bool>,
     miss: Option<(&'a Case, Mismatch)>,
@@ -481,6 +508,11 @@ impl<'a> Judged<'a> {
             Decision::Ask { asking, .. } => plan
                 .and_then(|plan| plan.active().get(&asking.reflex))
                 .map(|active| active.effect),
+            Decision::Abstain { .. } => None,
+        };
+        let whole = match decision {
+            Decision::Run { chosen } | Decision::Confirm { chosen, .. } => chosen.whole,
+            Decision::Ask { asking, .. } => asking.whole,
             Decision::Abstain { .. } => None,
         };
         let mut truths = Vec::new();
@@ -525,6 +557,7 @@ impl<'a> Judged<'a> {
             reflex,
             effect,
             confidence: confidence_of(decision),
+            whole,
             judgments,
             truth: combined(&truths),
             miss,
@@ -542,8 +575,12 @@ impl<'a> Judged<'a> {
         Some((self.confidence?.get(), self.truth?))
     }
 
-    /// Whether the call sits at or over the bar of its effect; none without a bar.
+    /// Whether the call sits at or over the bar of its effect; none without a bar, and none for an ask, which
+    /// no bar lets run.
     fn over_bar(&self, gate: Option<&Gate>) -> Option<bool> {
+        if self.outcome == Outcome::Ask {
+            return None;
+        }
         let bar = match self.effect? {
             Effect::Read => gate?.read(),
             Effect::Write => gate?.write(),
@@ -673,6 +710,45 @@ fn share(count: usize, right: usize) -> Share {
 }
 
 /// The calls of one effect at or over its bar, and the neighbourhood; none when the effect has no judged call.
+/// The calls at or over the bar of their effect, held against the request: what the hold lets run at or over
+/// its bar, how many of those are wrong, and the right calls it holds for a yes. None without a bar, or where
+/// no such call was held.
+fn hold_row(calls: &[&Judged<'_>], gate: &Gate) -> Option<HoldRow> {
+    let bar = gate.whole()?;
+    let held: Vec<(Prob, bool)> = calls
+        .iter()
+        .filter(|j| j.over_bar(Some(gate)) == Some(true))
+        .filter_map(|j| Some((j.whole?, j.truth?)))
+        .collect();
+    if held.is_empty() {
+        return None;
+    }
+    let run: Vec<bool> = held
+        .iter()
+        .filter(|(whole, _)| *whole >= bar)
+        .map(|(_, right)| *right)
+        .collect();
+    let wrong = run.iter().filter(|right| !**right).count();
+    #[expect(clippy::cast_precision_loss)]
+    let per_thousand = if run.is_empty() {
+        0.0
+    } else {
+        1000.0 * wrong as f64 / run.len() as f64
+    };
+    Some(HoldRow {
+        bar,
+        calls: held.len(),
+        run: run.len(),
+        wrong,
+        per_thousand,
+        at_most: 1000.0 * upper_bound(wrong, run.len()),
+        held_right: held
+            .iter()
+            .filter(|(whole, right)| *whole < bar && *right)
+            .count(),
+    })
+}
+
 fn bar_row(calls: &[&Judged<'_>], effect: Effect, bar: Prob) -> Option<BarRow> {
     let pairs: Vec<(f64, bool)> = calls
         .iter()

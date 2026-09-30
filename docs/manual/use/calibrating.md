@@ -8,12 +8,13 @@ It needs the classifier's key, or a recording to answer from ([below](#a-recordi
 
 ## What the number claims
 
-The number is the lowest of the probabilities the classifier gave the route and each of the winner's arguments
+The number is the lowest of the probabilities the classifier gave the route and each value the call holds
 ([Outcomes](outcomes.md#what-confidence-is)). So the one event it can be measured on is *the whole call is right*:
 the route, and every argument the record names. A record is an example or a test of a reflex
 ([Examples and tests](../author/records.md)). `calibrate` decides every record of every active reflex once
-more, never through the cache, against the whole installed set; a sentence that is several records is decided
-once. It judges each record as `evoke test` judges it. Then it counts whole calls by the confidence they claimed.
+more, never through the cache, against the whole installed set, the whole reading of each; a sentence that is
+several records is decided once. It judges each record as `evoke test` judges it. Then it counts whole calls by
+the confidence they claimed.
 
 ## The report
 
@@ -24,20 +25,21 @@ $ evoke calibrate
   replay · 12 records over 2 reflexes · 12 inputs, decided once
   7 run · 3 ask · 2 abstain
   whole call right, by confidence
-    0.60–0.80  1 call    right 0 ·   0% (0–79) · claimed 0.60 · thin
-    0.80–1.00  9 calls   right 9 · 100% (70–100) · claimed 0.89 · thin
+    0.80–0.90  1 call    right 0 ·   0% (0–79) · claimed 0.80 · over-confident · thin
+    0.90–1.00  9 calls   right 9 · 100% (70–100) · claimed 0.95 · thin
     abstained  2 inputs  right 2 · 100% (34–100)
-  wrong at or over write 0.80   0 of 9 · 0 per thousand, at most 283 · thin
-  near write 0.80   at 0.70 9 run, 0 wrong · at 0.75 9, 0 · at 0.80 9, 0 · at 0.85 8, 0 · at 0.90 7, 0
+  wrong at or over write 0.90   0 of 6 · 0 per thousand, at most 393 · thin
+  near write 0.90   at 0.80 6 run, 0 wrong · at 0.85 6, 0 · at 0.90 6, 0 · at 0.95 5, 0 · at 1.00 0, 0
+  wrong at or over whole 0.30   0 of 6 run · 0 per thousand, at most 393 · 1 of 7 held for a yes, 1 right · thin
   each judgment on its own
-    route   12 judgments  right 100% (76–100) · claimed 0.89
-    options  3 judgments  right  67% (21–94) · claimed 0.80
-    pick     9 judgments  right 100% (70–100) · claimed 0.91
-  Brier 0.048 · reliability 0.046 · resolution 0.090
+    route   12 judgments  right 100% (76–100) · claimed 0.95
+    options  3 judgments  right  67% (21–94) · claimed 0.90
+    pick     9 judgments  right 100% (70–100) · claimed 0.95
+  Brier 0.066 · reliability 0.066 · resolution 0.090
   misses
-    "make it darker in here"  ask lights 0.60 · state: expected "dim", read "off"
+    "make it darker in here"  ask lights 0.80 · state: expected "dim", read "off"
   the log · 3 decisions under replay · 1 ran · 1 confirmed and stopped · 1 abstained
-    stopped at confirm, by confidence   0.60–0.80 1
+    stopped at confirm, by confidence   0.80–0.90 1
     3 were records · right 2 · 67% (21–94)
   thin: under 100 calls in every bin, nothing proven at any bar
 ```
@@ -49,15 +51,19 @@ Line by line:
   left out.
 - **Whole call right, by confidence.** One line per bin: its range, the calls in it, how many were right, that
   share in percent with its 95 % interval, and the confidence the calls claimed on average, as a probability.
-  The bins' edges sit at the bars, 0.50, 0.60 and 0.80, so no bin straddles one; a range with a few hundred
+  The bins' edges sit at the bars, 0.50, 0.80 and 0.90, so no bin straddles one; a range with a few hundred
   calls splits into bins of about a hundred; a bin with no call is left out. `thin` marks a bin under a hundred
   calls: it is shown, and it proves nothing. `over-confident` marks a bin whose claim is above its interval. A
   record of `false`, which says *never this reflex*, routed to a reflex no record names is `unknown`, counted
   apart. The abstains have a line of their own: an abstain is right on a `false` record, wrong on any other.
-- **Wrong at or over a bar.** For each effect with a call, the calls at or over its bar, how many were wrong,
-  the rate per thousand, and the most it could be at 95 %. This is the number a script gates on. Under it, the
-  neighbourhood: at the bar and two steps of 0.05 either side, how many calls would run and how many of those
-  are wrong.
+- **Wrong at or over a bar.** For each effect with a call, the complete calls at or over its bar — an ask
+  never runs, so it is not among them — how many were wrong, the rate per thousand, and the most it could be at
+  95 %. This is the number a script gates on. Under it, the neighbourhood: at the bar and two steps of 0.05
+  either side, how many calls would run and how many of those are wrong.
+- **Wrong at or over `whole`.** The calls over the bar of their effect are read back against the input
+  ([Outcomes](outcomes.md#what-confidence-is)). This line counts those the third bar lets run, how many of them
+  were wrong, per thousand with its bound; then what the bar costs: how many it held for a yes, and how many of
+  those were right.
 - **Each judgment on its own**: the route, then the arguments by the source of their values, options, a
   vocabulary, a pick or a flag, each judged by its own probability where a record names it.
 - **Brier**, the mean squared distance between each claim and the truth, with its reliability, how far the
@@ -115,8 +121,8 @@ report runs offline, the same every time. That is how this manual's block above 
 ## `--json`
 
 `evoke calibrate --json` prints the report as one object: `adapter`, `records`, `reflexes`, `inputs`, `repeats`,
-`outcomes`, `bins`, `unknown`, `abstained`, `bars`, `questions`, `brier`, `misses`, `variance` under `--repeat`,
-and `log`: [The JSON line](../reference/json.md#evoke-calibrate---json).
+`outcomes`, `bins`, `unknown`, `abstained`, `bars` with `read`, `write` and `whole`, `questions`, `brier`,
+`misses`, `variance` under `--repeat`, and `log`: [The JSON line](../reference/json.md#evoke-calibrate---json).
 
 ## The exit
 

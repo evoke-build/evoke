@@ -1806,6 +1806,32 @@ fn bars(c: &Calibration) -> Vec<Text> {
             cells.join(" · ")
         )));
     }
+    // The calls over their effect's bar, held against the input: what the hold lets run, and what it holds.
+    if let Some(hold) = &c.bars.whole {
+        let mut line = Text::from(format!("wrong at or over whole {:.2}   ", hold.bar.get()));
+        if hold.wrong > 0 {
+            line.roled(Role::Failed, &hold.wrong.to_string());
+        } else {
+            line.push("0");
+        }
+        line.push(&format!(" of {} run", hold.run));
+        if hold.run > 0 {
+            line.push(&format!(
+                " · {:.0} per thousand, at most {:.0}",
+                hold.per_thousand, hold.at_most
+            ));
+        }
+        line.push(&format!(
+            " · {} of {} held for a yes, {} right",
+            hold.calls - hold.run,
+            hold.calls,
+            hold.held_right
+        ));
+        if hold.calls < calibrate::THIN {
+            line.push(" · ").roled(Role::Warning, "thin");
+        }
+        lines.push(line);
+    }
     lines
 }
 
