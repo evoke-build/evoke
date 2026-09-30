@@ -2289,11 +2289,9 @@ pub fn joined(plan: &Plan, first: Decision, second: &Decision, gate: Option<&Gat
     }
     one.left.extend(other.left);
     one.unconsumed.extend(other.unconsumed);
-    // Held against the request as the less whole of the two: each was held as it stood.
-    one.whole = match (one.whole, other.whole) {
-        (Some(a), Some(b)) => Some(if b < a { b } else { a }),
-        (held, None) | (None, held) => held,
-    };
+    // Held against the request as the first was: the second's words alone stand for no call of their own, and
+    // what they add to the first's call holds more of the request, never less.
+    one.whole = one.whole.or(other.whole);
     for cap in other.held {
         if !one.held.contains(&cap) {
             one.held.push(cap);
@@ -2604,6 +2602,26 @@ mod tests {
             serde_json::from_value::<Decision>(by_name).unwrap(),
             Decision::Run { chosen } if chosen.judged.is_none()
         ));
+    }
+
+    #[test]
+    fn a_call_read_from_two_parts_is_held_as_the_first_was() {
+        let run = expected(include_str!("../../../spec/vectors/gate/run.json"));
+        let held = |whole: Option<f64>| -> Decision {
+            let Decision::Run { mut chosen } = serde_json::from_value(run.clone()).unwrap() else {
+                panic!("the run vector runs");
+            };
+            chosen.whole = whole.and_then(Prob::new);
+            Decision::Run { chosen }
+        };
+        let whole_of = |decision: Decision| read_of(&decision).unwrap().0.whole.map(Prob::get);
+        let joined_whole = |first: Option<f64>, second: Option<f64>| {
+            whole_of(joined(&plan(), held(first), &held(second), None))
+        };
+        assert_eq!(joined_whole(Some(0.9), Some(0.4)), Some(0.9));
+        assert_eq!(joined_whole(Some(0.4), Some(0.9)), Some(0.4));
+        assert_eq!(joined_whole(None, Some(0.4)), Some(0.4));
+        assert_eq!(joined_whole(Some(0.9), None), Some(0.9));
     }
 
     #[test]
