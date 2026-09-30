@@ -1,0 +1,332 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-screenshot.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "take a screenshot of the window to the clipboard, then one of the whole screen",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "take a screenshot of the window to the clipboard"
+          },
+          {
+            "outcome": "run",
+            "reflex": "screenshot",
+            "args": {
+              "area": {
+                "type": "option",
+                "key": "window"
+              },
+              "clipboard": {
+                "type": "flag"
+              }
+            },
+            "call": "screenshot area=\"window\" clipboard",
+            "effect": "write",
+            "basis": {
+              "area": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 17,
+                  "text": "take a screenshot"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 39,
+                  "end": 48,
+                  "text": "clipboard"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "screenshot",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "screenshot",
+                "p": 0.95
+              },
+              {
+                "question": "screenshot.area",
+                "top": "window",
+                "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "screenshot",
+                "route": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "one of the whole screen"
+          },
+          {
+            "outcome": "run",
+            "reflex": "screenshot",
+            "args": {
+              "area": {
+                "type": "option",
+                "key": "screen"
+              }
+            },
+            "call": "screenshot area=\"screen\"",
+            "effect": "write",
+            "basis": {
+              "area": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "one of the whole"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "screenshot",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "screenshot",
+                "p": 0.95
+              },
+              {
+                "question": "screenshot.area",
+                "top": "screen",
+                "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "screenshot",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.95
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "take a screenshot of the window to the clipboard, then one of the whole screen",
+        "steps": [
+          {
+            "n": 1,
+            "text": "take a screenshot of the window to the clipboard",
+            "end": 48,
+            "decision": {
+              "outcome": "run",
+              "reflex": "screenshot",
+              "args": {
+                "area": {
+                  "type": "option",
+                  "key": "window"
+                },
+                "clipboard": {
+                  "type": "flag"
+                }
+              },
+              "call": "screenshot area=\"window\" clipboard",
+              "effect": "write",
+              "basis": {
+                "area": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 17,
+                    "text": "take a screenshot"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 39,
+                    "end": 48,
+                    "text": "clipboard"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "screenshot",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "screenshot",
+                  "p": 0.95
+                },
+                {
+                  "question": "screenshot.area",
+                  "top": "window",
+                  "p": 0.95
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "screenshot",
+                  "route": 0.95
+                }
+              ]
+            },
+            "reflex": "screenshot",
+            "effect": "write"
+          },
+          {
+            "n": 2,
+            "text": "one of the whole screen",
+            "end": 78,
+            "decision": {
+              "outcome": "run",
+              "reflex": "screenshot",
+              "args": {
+                "area": {
+                  "type": "option",
+                  "key": "screen"
+                }
+              },
+              "call": "screenshot area=\"screen\"",
+              "effect": "write",
+              "basis": {
+                "area": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "one of the whole"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "screenshot",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "screenshot",
+                  "p": 0.95
+                },
+                {
+                  "question": "screenshot.area",
+                  "top": "screen",
+                  "p": 0.95
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "screenshot",
+                  "route": 0.95
+                }
+              ]
+            },
+            "reflex": "screenshot",
+            "effect": "write",
+            "after": [
+              1
+            ]
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 48,
+            "end": 55,
+            "word": "then",
+            "order": "then",
+            "p": 0.95
+          }
+        ]
+      }
+    }
+  }
+}

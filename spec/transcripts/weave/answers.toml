@@ -4,8 +4,9 @@ id = "replay"
 [gate]
 route = 0.5
 fits  = 0.3
-read  = 0.6
-write = 0.8
+read  = 0.8
+write = 0.9
+whole = 0.3
 
 [answers."kill the lights in the den and start a 10 minute timer"]
 "weave.split_0" = { yes = 0.95 }
@@ -29,15 +30,10 @@ write = 0.8
 "weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."kill the lights in the den"]
-route                      = { lights = 0.91, timer = 0.02, volume = 0.01, none = 0.06 }
-"fits.lights"              = { yes = 0.7 }
-"fits.timer"               = { yes = 0.05 }
-"fits.volume"              = { yes = 0.05 }
-"fits.contact"             = { yes = 0.02 }
-"fits.mail"                = { yes = 0.02 }
-"lights.room"              = { den = 0.85, office = 0.05, unstated = 0.1 }
-"lights.state"             = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
-"contact.name"             = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+route                      = { lights = 0.95, timer = 0.01, volume = 0.01, none = 0.03 }
+"lights.room"              = { den = 0.92, office = 0.03, unstated = 0.05 }
+"lights.state"             = { off = 0.94, on = 0.03, dim = 0.02, unstated = 0.01 }
+"contact.name"             = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
@@ -45,34 +41,30 @@ route                      = { lights = 0.91, timer = 0.02, volume = 0.01, none 
 "mail.to"                  = { unstated = 1.0 }
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { den = 0.85, office = 0.05, unstated = 0.1 }
-"weave.is_lights__room_0"  = { yes = 0.9 }
-"weave.view_lights__state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
-"weave.view_contact__name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
-"weave.is_lights__state_1" = { yes = 0.9 }
+"weave.view_lights__room"  = { den = 0.92, office = 0.03, unstated = 0.05 }
+"weave.is_lights__room_0"  = { yes = 0.95 }
+"weave.view_lights__state" = { off = 0.94, on = 0.03, dim = 0.02, unstated = 0.01 }
+"weave.view_contact__name" = { unstated = 0.98, dana = 0.01, sam = 0.01 }
+"weave.is_lights__state_1" = { yes = 0.95 }
 "weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+"weave.whole_693291516"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."start a 10 minute timer"]
-route                                = { timer = 0.9, lights = 0.02, volume = 0.02, none = 0.06 }
-"fits.lights"                        = { yes = 0.05 }
-"fits.timer"                         = { yes = 0.8 }
-"fits.volume"                        = { yes = 0.05 }
-"fits.contact"                       = { yes = 0.02 }
-"fits.mail"                          = { yes = 0.02 }
-"lights.room"                        = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"                       = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"contact.name"                       = { unstated = 0.96, dana = 0.02, sam = 0.02 }
-"timer.duration"                     = { 8-17 = 0.9, unstated = 0.1 }
+route                                = { timer = 0.95, lights = 0.01, volume = 0.01, none = 0.03 }
+"lights.room"                        = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"                       = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"contact.name"                       = { unstated = 0.98, dana = 0.01, sam = 0.01 }
+"timer.duration"                     = { 8-17 = 0.95, unstated = 0.05 }
 "lights.brightness"                  = { unstated = 1.0 }
 "timer.label"                        = { unstated = 1.0 }
 "volume.level"                       = { unstated = 1.0 }
 "mail.to"                            = { unstated = 1.0 }
 "mail.cc"                            = { unstated = 1.0 }
 "mail.subject"                       = { unstated = 1.0 }
-"weave.view_lights__room"            = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"           = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"            = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"           = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_8_17"    = { yes = 0.05 }
-"weave.view_contact__name"           = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"weave.view_contact__name"           = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "weave.left_timer_0_0"               = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_4_4"               = { action = 0.9, courtesy = 0.1 }
 "weave.first_timer__label_260156541" = { unstated = 1.0 }
@@ -82,28 +74,24 @@ route                                = { timer = 0.9, lights = 0.02, volume = 0.
 "weave.word_timer__label_4"          = { yes = 0.05 }
 "weave.first_timer__label_246345331" = { unstated = 1.0 }
 "weave.run_timer__label_246345331"   = { unstated = 1.0 }
+"weave.whole_1123384719"             = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."start a 25 minute timer"]
-route                                = { timer = 0.9, lights = 0.02, volume = 0.02, none = 0.06 }
-"fits.lights"                        = { yes = 0.05 }
-"fits.timer"                         = { yes = 0.8 }
-"fits.volume"                        = { yes = 0.05 }
-"fits.contact"                       = { yes = 0.02 }
-"fits.mail"                          = { yes = 0.02 }
-"lights.room"                        = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"                       = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"contact.name"                       = { unstated = 0.96, dana = 0.02, sam = 0.02 }
-"timer.duration"                     = { 8-17 = 0.7, unstated = 0.3 }
+route                                = { timer = 0.95, lights = 0.01, volume = 0.01, none = 0.03 }
+"lights.room"                        = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"                       = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"contact.name"                       = { unstated = 0.98, dana = 0.01, sam = 0.01 }
+"timer.duration"                     = { 8-17 = 0.85, unstated = 0.15 }
 "lights.brightness"                  = { unstated = 1.0 }
 "timer.label"                        = { unstated = 1.0 }
 "volume.level"                       = { unstated = 1.0 }
 "mail.to"                            = { unstated = 1.0 }
 "mail.cc"                            = { unstated = 1.0 }
 "mail.subject"                       = { unstated = 1.0 }
-"weave.view_lights__room"            = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"           = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"            = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"           = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_8_17"    = { yes = 0.05 }
-"weave.view_contact__name"           = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"weave.view_contact__name"           = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "weave.left_timer_0_0"               = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_4_4"               = { action = 0.9, courtesy = 0.1 }
 "weave.first_timer__label_260156541" = { unstated = 1.0 }
@@ -115,15 +103,10 @@ route                                = { timer = 0.9, lights = 0.02, volume = 0.
 "weave.run_timer__label_246345331"   = { unstated = 1.0 }
 
 [answers."look up dana's address"]
-route                      = { contact = 0.9, mail = 0.03, lights = 0.01, none = 0.06 }
-"fits.lights"              = { yes = 0.02 }
-"fits.timer"               = { yes = 0.02 }
-"fits.volume"              = { yes = 0.02 }
-"fits.contact"             = { yes = 0.8 }
-"fits.mail"                = { yes = 0.1 }
-"lights.room"              = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"             = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"contact.name"             = { dana = 0.9, sam = 0.02, unstated = 0.08 }
+route                      = { contact = 0.95, mail = 0.02, lights = 0.01, none = 0.02 }
+"lights.room"              = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"             = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"contact.name"             = { dana = 0.95, sam = 0.01, unstated = 0.04 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
@@ -131,23 +114,19 @@ route                      = { contact = 0.9, mail = 0.03, lights = 0.01, none =
 "mail.to"                  = { unstated = 1.0 }
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"weave.view_contact__name" = { dana = 0.9, sam = 0.02, unstated = 0.08 }
-"weave.is_contact__name_0" = { yes = 0.9 }
+"weave.view_lights__room"  = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state" = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"weave.view_contact__name" = { dana = 0.95, sam = 0.01, unstated = 0.04 }
+"weave.is_contact__name_0" = { yes = 0.95 }
 "weave.left_contact_0_0"   = { action = 0.9, courtesy = 0.1 }
 "weave.left_contact_3_3"   = { action = 0.9, courtesy = 0.1 }
+"weave.whole_374548058"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."email them"]
-route                         = { mail = 0.88, contact = 0.04, none = 0.08 }
-"fits.lights"                 = { yes = 0.02 }
-"fits.timer"                  = { yes = 0.02 }
-"fits.volume"                 = { yes = 0.02 }
-"fits.contact"                = { yes = 0.1 }
-"fits.mail"                   = { yes = 0.8 }
-"lights.room"                 = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"                = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"contact.name"                = { unstated = 0.9, dana = 0.05, sam = 0.05 }
+route                         = { mail = 0.94, contact = 0.02, none = 0.04 }
+"lights.room"                 = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"                = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"contact.name"                = { unstated = 0.95, dana = 0.03, sam = 0.02 }
 "lights.brightness"           = { unstated = 1.0 }
 "timer.duration"              = { unstated = 1.0 }
 "timer.label"                 = { unstated = 1.0 }
@@ -155,25 +134,21 @@ route                         = { mail = 0.88, contact = 0.04, none = 0.08 }
 "mail.to"                     = { unstated = 1.0 }
 "mail.cc"                     = { unstated = 1.0 }
 "mail.subject"                = { unstated = 1.0 }
-"weave.view_lights__room"     = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"    = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"weave.view_contact__name"    = { unstated = 0.9, dana = 0.05, sam = 0.05 }
+"weave.view_lights__room"     = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"    = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"weave.view_contact__name"    = { unstated = 0.95, dana = 0.03, sam = 0.02 }
 "weave.left_mail_0_1"         = { action = 0.9, courtesy = 0.1 }
 "weave.first_mail__subject_0" = { unstated = 1.0 }
 "weave.run_mail__subject_0"   = { unstated = 1.0 }
 "weave.word_mail__subject_0"  = { yes = 0.05 }
 "weave.word_mail__subject_1"  = { yes = 0.05 }
+"weave.whole_14210033"        = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."feed the cat"]
-route                      = { none = 0.95, lights = 0.05 }
-"fits.lights"              = { yes = 0.05 }
-"fits.timer"               = { yes = 0.02 }
-"fits.volume"              = { yes = 0.02 }
-"fits.contact"             = { yes = 0.02 }
-"fits.mail"                = { yes = 0.02 }
-"lights.room"              = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"             = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"contact.name"             = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+route                      = { none = 0.97, lights = 0.03 }
+"lights.room"              = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"             = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"contact.name"             = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
@@ -181,28 +156,23 @@ route                      = { none = 0.95, lights = 0.05 }
 "mail.to"                  = { unstated = 1.0 }
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"weave.view_contact__name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"weave.view_lights__room"  = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state" = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"weave.view_contact__name" = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 
 [answers."kill the lights in the feed the cat"]
-route                      = { none = 0.9, lights = 0.1 }
-"fits.lights"              = { yes = 0.1 }
-"lights.room"              = { unstated = 0.9, den = 0.05, office = 0.05 }
+route                      = { none = 0.95, lights = 0.05 }
+"lights.room"              = { unstated = 0.95, den = 0.03, office = 0.02 }
 "lights.state"             = { off = 0.5, unstated = 0.4, on = 0.05, dim = 0.05 }
 "lights.brightness"        = { unstated = 1.0 }
-"fits.timer"               = { yes = 0.02 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
-"fits.volume"              = { yes = 0.02 }
 "volume.level"             = { unstated = 1.0 }
-"fits.contact"             = { yes = 0.02 }
 "contact.name"             = { unstated = 1.0 }
-"fits.mail"                = { yes = 0.02 }
 "mail.to"                  = { unstated = 1.0 }
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"weave.view_lights__room"  = { unstated = 0.95, den = 0.03, office = 0.02 }
 "weave.view_lights__state" = { off = 0.5, unstated = 0.4, on = 0.05, dim = 0.05 }
 "weave.view_contact__name" = { unstated = 1.0 }
 
@@ -215,15 +185,10 @@ route                      = { none = 0.9, lights = 0.1 }
 "weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."kill the lights"]
-route                      = { lights = 0.9, timer = 0.02, volume = 0.02, none = 0.06 }
-"fits.lights"              = { yes = 0.7 }
-"fits.timer"               = { yes = 0.05 }
-"fits.volume"              = { yes = 0.05 }
-"fits.contact"             = { yes = 0.02 }
-"fits.mail"                = { yes = 0.02 }
-"lights.room"              = { den = 0.2, office = 0.05, unstated = 0.75 }
-"lights.state"             = { off = 0.58, on = 0.3, dim = 0.1, unstated = 0.02 }
-"contact.name"             = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+route                      = { lights = 0.95, timer = 0.01, volume = 0.01, none = 0.03 }
+"lights.room"              = { den = 0.1, office = 0.03, unstated = 0.87 }
+"lights.state"             = { off = 0.74, on = 0.19, dim = 0.06, unstated = 0.01 }
+"contact.name"             = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
@@ -231,33 +196,28 @@ route                      = { lights = 0.9, timer = 0.02, volume = 0.02, none =
 "mail.to"                  = { unstated = 1.0 }
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { den = 0.2, office = 0.05, unstated = 0.75 }
-"weave.view_lights__state" = { off = 0.58, on = 0.3, dim = 0.1, unstated = 0.02 }
-"weave.view_contact__name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
-"weave.is_lights__state_1" = { yes = 0.9 }
+"weave.view_lights__room"  = { den = 0.1, office = 0.03, unstated = 0.87 }
+"weave.view_lights__state" = { off = 0.74, on = 0.19, dim = 0.06, unstated = 0.01 }
+"weave.view_contact__name" = { unstated = 0.98, dana = 0.01, sam = 0.01 }
+"weave.is_lights__state_1" = { yes = 0.95 }
 "weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."start a 10 minute timer for them"]
-route                                = { timer = 0.88, lights = 0.02, volume = 0.02, none = 0.08 }
-"fits.lights"                        = { yes = 0.05 }
-"fits.timer"                         = { yes = 0.8 }
-"fits.volume"                        = { yes = 0.05 }
-"fits.contact"                       = { yes = 0.02 }
-"fits.mail"                          = { yes = 0.02 }
-"lights.room"                        = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"                       = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"contact.name"                       = { unstated = 0.96, dana = 0.02, sam = 0.02 }
-"timer.duration"                     = { 8-17 = 0.9, unstated = 0.1 }
+route                                = { timer = 0.94, lights = 0.01, volume = 0.01, none = 0.04 }
+"lights.room"                        = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"                       = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"contact.name"                       = { unstated = 0.98, dana = 0.01, sam = 0.01 }
+"timer.duration"                     = { 8-17 = 0.95, unstated = 0.05 }
 "lights.brightness"                  = { unstated = 1.0 }
 "timer.label"                        = { unstated = 1.0 }
 "volume.level"                       = { unstated = 1.0 }
 "mail.to"                            = { unstated = 1.0 }
 "mail.cc"                            = { unstated = 1.0 }
 "mail.subject"                       = { unstated = 1.0 }
-"weave.view_lights__room"            = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"           = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"            = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"           = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_8_17"    = { yes = 0.05 }
-"weave.view_contact__name"           = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"weave.view_contact__name"           = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "weave.left_timer_0_0"               = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_4_4"               = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_6_6"               = { action = 0.9, courtesy = 0.1 }
@@ -270,17 +230,13 @@ route                                = { timer = 0.88, lights = 0.02, volume = 0
 "weave.word_timer__label_6"          = { yes = 0.05 }
 "weave.first_timer__label_246345331" = { unstated = 1.0 }
 "weave.run_timer__label_246345331"   = { unstated = 1.0 }
+"weave.whole_1123384719"             = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."the office"]
-route                      = { none = 0.9, lights = 0.1 }
-"fits.lights"              = { yes = 0.2 }
-"fits.timer"               = { yes = 0.02 }
-"fits.volume"              = { yes = 0.02 }
-"fits.contact"             = { yes = 0.02 }
-"fits.mail"                = { yes = 0.02 }
-"lights.room"              = { office = 0.8, den = 0.02, unstated = 0.18 }
-"lights.state"             = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"contact.name"             = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+route                      = { none = 0.95, lights = 0.05 }
+"lights.room"              = { office = 0.9, den = 0.01, unstated = 0.09 }
+"lights.state"             = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"contact.name"             = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
@@ -288,46 +244,37 @@ route                      = { none = 0.9, lights = 0.1 }
 "mail.to"                  = { unstated = 1.0 }
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { office = 0.8, den = 0.02, unstated = 0.18 }
-"weave.is_lights__room_1"  = { yes = 0.9 }
-"weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"weave.view_contact__name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"weave.view_lights__room"  = { office = 0.9, den = 0.01, unstated = 0.09 }
+"weave.is_lights__room_1"  = { yes = 0.95 }
+"weave.view_lights__state" = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"weave.view_contact__name" = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 
 [answers."kill the lights in the office"]
-route                      = { lights = 0.92, none = 0.08 }
-"fits.lights"              = { yes = 0.7 }
-"lights.room"              = { office = 0.9, den = 0.02, unstated = 0.08 }
-"lights.state"             = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
+route                      = { lights = 0.96, none = 0.04 }
+"lights.room"              = { office = 0.95, den = 0.01, unstated = 0.04 }
+"lights.state"             = { off = 0.94, on = 0.03, dim = 0.02, unstated = 0.01 }
 "lights.brightness"        = { unstated = 1.0 }
-"fits.timer"               = { yes = 0.02 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
-"fits.volume"              = { yes = 0.02 }
 "volume.level"             = { unstated = 1.0 }
-"fits.contact"             = { yes = 0.02 }
 "contact.name"             = { unstated = 1.0 }
-"fits.mail"                = { yes = 0.02 }
 "mail.to"                  = { unstated = 1.0 }
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { office = 0.9, den = 0.02, unstated = 0.08 }
-"weave.is_lights__room_1"  = { yes = 0.9 }
-"weave.view_lights__state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
+"weave.view_lights__room"  = { office = 0.95, den = 0.01, unstated = 0.04 }
+"weave.is_lights__room_1"  = { yes = 0.95 }
+"weave.view_lights__state" = { off = 0.94, on = 0.03, dim = 0.02, unstated = 0.01 }
 "weave.view_contact__name" = { unstated = 1.0 }
-"weave.is_lights__state_1" = { yes = 0.9 }
+"weave.is_lights__state_1" = { yes = 0.95 }
 "weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+"weave.whole_2323134337"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."kill the lights in the den and the office"]
 "weave.split_0"            = { yes = 0.2 }
-route                      = { lights = 0.9, timer = 0.01, volume = 0.01, none = 0.08 }
-"fits.lights"              = { yes = 0.7 }
-"fits.timer"               = { yes = 0.05 }
-"fits.volume"              = { yes = 0.05 }
-"fits.contact"             = { yes = 0.02 }
-"fits.mail"                = { yes = 0.02 }
+route                      = { lights = 0.95, timer = 0.01, volume = 0.01, none = 0.03 }
 "lights.room"              = { den = 0.5, office = 0.4, unstated = 0.1 }
-"lights.state"             = { off = 0.85, on = 0.05, dim = 0.05, unstated = 0.05 }
-"contact.name"             = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"lights.state"             = { off = 0.92, on = 0.03, dim = 0.03, unstated = 0.02 }
+"contact.name"             = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
@@ -336,11 +283,11 @@ route                      = { lights = 0.9, timer = 0.01, volume = 0.01, none =
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
 "weave.view_lights__room"  = { den = 0.5, office = 0.4, unstated = 0.1 }
-"weave.is_lights__room_0"  = { yes = 0.9 }
+"weave.is_lights__room_0"  = { yes = 0.95 }
 "weave.is_lights__room_1"  = { yes = 0.05 }
-"weave.view_lights__state" = { off = 0.85, on = 0.05, dim = 0.05, unstated = 0.05 }
-"weave.view_contact__name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
-"weave.is_lights__state_1" = { yes = 0.9 }
+"weave.view_lights__state" = { off = 0.92, on = 0.03, dim = 0.03, unstated = 0.02 }
+"weave.view_contact__name" = { unstated = 0.98, dana = 0.01, sam = 0.01 }
+"weave.is_lights__state_1" = { yes = 0.95 }
 "weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
 "weave.left_lights_8_8"    = { action = 0.9, courtesy = 0.1 }
 "weave.count"              = { two = 0.6, more = 0.35, one = 0.05 }
@@ -354,15 +301,10 @@ route                      = { lights = 0.9, timer = 0.01, volume = 0.01, none =
 "weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."turn up the volume"]
-route                      = { volume = 0.9, lights = 0.02, timer = 0.02, none = 0.06 }
-"fits.lights"              = { yes = 0.05 }
-"fits.timer"               = { yes = 0.05 }
-"fits.volume"              = { yes = 0.8 }
-"fits.contact"             = { yes = 0.02 }
-"fits.mail"                = { yes = 0.02 }
-"lights.room"              = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"             = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"contact.name"             = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+route                      = { volume = 0.95, lights = 0.01, timer = 0.01, none = 0.03 }
+"lights.room"              = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"             = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"contact.name"             = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
@@ -370,25 +312,21 @@ route                      = { volume = 0.9, lights = 0.02, timer = 0.02, none =
 "mail.to"                  = { unstated = 1.0 }
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"weave.view_contact__name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"weave.view_lights__room"  = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state" = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"weave.view_contact__name" = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "weave.left_volume_0_3"    = { action = 0.9, courtesy = 0.1 }
+"weave.whole_1658300081"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."look up sam's address and copy them on a note to dana@example.com"]
 "weave.split_0" = { yes = 0.9 }
 "weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."look up sam's address"]
-route                      = { contact = 0.9, mail = 0.03, lights = 0.01, none = 0.06 }
-"fits.lights"              = { yes = 0.02 }
-"fits.timer"               = { yes = 0.02 }
-"fits.volume"              = { yes = 0.02 }
-"fits.contact"             = { yes = 0.8 }
-"fits.mail"                = { yes = 0.1 }
-"lights.room"              = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"             = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"contact.name"             = { sam = 0.9, dana = 0.02, unstated = 0.08 }
+route                      = { contact = 0.95, mail = 0.02, lights = 0.01, none = 0.02 }
+"lights.room"              = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"             = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"contact.name"             = { sam = 0.95, dana = 0.01, unstated = 0.04 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
@@ -396,34 +334,30 @@ route                      = { contact = 0.9, mail = 0.03, lights = 0.01, none =
 "mail.to"                  = { unstated = 1.0 }
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"weave.view_contact__name" = { sam = 0.9, dana = 0.02, unstated = 0.08 }
-"weave.is_contact__name_1" = { yes = 0.9 }
+"weave.view_lights__room"  = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state" = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"weave.view_contact__name" = { sam = 0.95, dana = 0.01, unstated = 0.04 }
+"weave.is_contact__name_1" = { yes = 0.95 }
 "weave.left_contact_0_0"   = { action = 0.9, courtesy = 0.1 }
 "weave.left_contact_3_3"   = { action = 0.9, courtesy = 0.1 }
+"weave.whole_3351565728"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."copy them on a note to dana@example.com"]
-route                                  = { mail = 0.85, contact = 0.05, none = 0.1 }
-"fits.lights"                          = { yes = 0.02 }
-"fits.timer"                           = { yes = 0.02 }
-"fits.volume"                          = { yes = 0.02 }
-"fits.contact"                         = { yes = 0.1 }
-"fits.mail"                            = { yes = 0.8 }
-"lights.room"                          = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"                         = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"contact.name"                         = { unstated = 0.9, dana = 0.05, sam = 0.05 }
-"mail.to"                              = { 23-39 = 0.9, unstated = 0.1 }
-"mail.cc"                              = { unstated = 0.95, 23-39 = 0.05 }
+route                                  = { mail = 0.92, contact = 0.03, none = 0.05 }
+"lights.room"                          = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"                         = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"contact.name"                         = { unstated = 0.95, dana = 0.03, sam = 0.02 }
+"mail.to"                              = { 23-39 = 0.95, unstated = 0.05 }
+"mail.cc"                              = { unstated = 0.97, 23-39 = 0.03 }
 "lights.brightness"                    = { unstated = 1.0 }
 "timer.duration"                       = { unstated = 1.0 }
 "timer.label"                          = { unstated = 1.0 }
 "volume.level"                         = { unstated = 1.0 }
 "mail.subject"                         = { unstated = 1.0 }
-"weave.view_lights__room"              = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"             = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"              = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"             = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.is_lights__state_0"             = { yes = 0.05 }
-"weave.view_contact__name"             = { unstated = 0.9, dana = 0.05, sam = 0.05 }
+"weave.view_contact__name"             = { unstated = 0.95, dana = 0.03, sam = 0.02 }
 "weave.only_mail__to_23_39"            = { yes = 0.05 }
 "weave.only_mail__cc_23_39"            = { yes = 0.05 }
 "weave.left_mail_0_1"                  = { action = 0.9, courtesy = 0.1 }
@@ -438,22 +372,18 @@ route                                  = { mail = 0.85, contact = 0.05, none = 0
 "weave.word_mail__subject_5"           = { yes = 0.05 }
 "weave.first_mail__subject_94546292"   = { unstated = 1.0 }
 "weave.run_mail__subject_94546292"     = { unstated = 1.0 }
+"weave.whole_2055804351"               = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."copy sam@example.com on a note to dana@example.com"]
-route                      = { none = 0.8, mail = 0.2 }
-"fits.mail"                = { yes = 0.3 }
-"mail.to"                  = { 34-50 = 0.6, 5-20 = 0.3, unstated = 0.1 }
+route                      = { none = 0.9, mail = 0.1 }
+"mail.to"                  = { 34-50 = 0.8, 5-20 = 0.15, unstated = 0.05 }
 "mail.cc"                  = { 5-20 = 0.5, 34-50 = 0.1, unstated = 0.4 }
-"fits.lights"              = { yes = 0.02 }
 "lights.room"              = { unstated = 1.0 }
 "lights.state"             = { unstated = 1.0 }
 "lights.brightness"        = { unstated = 1.0 }
-"fits.timer"               = { yes = 0.02 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
-"fits.volume"              = { yes = 0.02 }
 "volume.level"             = { unstated = 1.0 }
-"fits.contact"             = { yes = 0.02 }
 "contact.name"             = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
 "weave.view_lights__room"  = { unstated = 1.0 }
@@ -462,26 +392,21 @@ route                      = { none = 0.8, mail = 0.2 }
 "weave.view_contact__name" = { unstated = 1.0 }
 
 [answers."start a 0 minute timer"]
-route                                 = { timer = 0.9, lights = 0.02, volume = 0.02, none = 0.06 }
-"fits.lights"                         = { yes = 0.05 }
-"fits.timer"                          = { yes = 0.8 }
-"fits.volume"                         = { yes = 0.05 }
-"fits.contact"                        = { yes = 0.02 }
-"fits.mail"                           = { yes = 0.02 }
-"lights.room"                         = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"                        = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"contact.name"                        = { unstated = 0.96, dana = 0.02, sam = 0.02 }
-"timer.duration"                      = { 8-16 = 0.9, unstated = 0.1 }
+route                                 = { timer = 0.95, lights = 0.01, volume = 0.01, none = 0.03 }
+"lights.room"                         = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"                        = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"contact.name"                        = { unstated = 0.98, dana = 0.01, sam = 0.01 }
+"timer.duration"                      = { 8-16 = 0.95, unstated = 0.05 }
 "lights.brightness"                   = { unstated = 1.0 }
 "timer.label"                         = { unstated = 1.0 }
 "volume.level"                        = { unstated = 1.0 }
 "mail.to"                             = { unstated = 1.0 }
 "mail.cc"                             = { unstated = 1.0 }
 "mail.subject"                        = { unstated = 1.0 }
-"weave.view_lights__room"             = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"            = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"             = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"            = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_8_16"     = { yes = 0.05 }
-"weave.view_contact__name"            = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"weave.view_contact__name"            = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "weave.left_timer_0_0"                = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_4_4"                = { action = 0.9, courtesy = 0.1 }
 "weave.first_timer__label_2675246088" = { unstated = 1.0 }
@@ -491,18 +416,14 @@ route                                 = { timer = 0.9, lights = 0.02, volume = 0
 "weave.word_timer__label_4"           = { yes = 0.05 }
 "weave.first_timer__label_3465158329" = { unstated = 1.0 }
 "weave.run_timer__label_3465158329"   = { unstated = 1.0 }
+"weave.whole_807345545"               = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."kill the lights in the den, then be quick"]
 "weave.split_0"            = { yes = 0.59 }
-route                      = { lights = 0.91, timer = 0.02, volume = 0.01, none = 0.06 }
-"fits.lights"              = { yes = 0.7 }
-"fits.timer"               = { yes = 0.05 }
-"fits.volume"              = { yes = 0.05 }
-"fits.contact"             = { yes = 0.02 }
-"fits.mail"                = { yes = 0.02 }
-"lights.room"              = { den = 0.85, office = 0.05, unstated = 0.1 }
-"lights.state"             = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
-"contact.name"             = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+route                      = { lights = 0.95, timer = 0.01, volume = 0.01, none = 0.03 }
+"lights.room"              = { den = 0.92, office = 0.03, unstated = 0.05 }
+"lights.state"             = { off = 0.94, on = 0.03, dim = 0.02, unstated = 0.01 }
+"contact.name"             = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
@@ -510,25 +431,21 @@ route                      = { lights = 0.91, timer = 0.02, volume = 0.01, none 
 "mail.to"                  = { unstated = 1.0 }
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { den = 0.85, office = 0.05, unstated = 0.1 }
-"weave.is_lights__room_0"  = { yes = 0.9 }
-"weave.view_lights__state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
-"weave.view_contact__name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
-"weave.is_lights__state_1" = { yes = 0.9 }
+"weave.view_lights__room"  = { den = 0.92, office = 0.03, unstated = 0.05 }
+"weave.is_lights__room_0"  = { yes = 0.95 }
+"weave.view_lights__state" = { off = 0.94, on = 0.03, dim = 0.02, unstated = 0.01 }
+"weave.view_contact__name" = { unstated = 0.98, dana = 0.01, sam = 0.01 }
+"weave.is_lights__state_1" = { yes = 0.95 }
 "weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
-"weave.left_lights_8_8"    = { action = 0.9, courtesy = 0.1 }
+"weave.left_lights_8_8"    = { courtesy = 0.9, action = 0.1 }
 "weave.count"              = { two = 0.6, more = 0.35, one = 0.05 }
+"weave.whole_693291516"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."be quick"]
-route                      = { none = 0.95, lights = 0.05 }
-"fits.lights"              = { yes = 0.05 }
-"fits.timer"               = { yes = 0.02 }
-"fits.volume"              = { yes = 0.02 }
-"fits.contact"             = { yes = 0.02 }
-"fits.mail"                = { yes = 0.02 }
-"lights.room"              = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"             = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"contact.name"             = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+route                      = { none = 0.97, lights = 0.03 }
+"lights.room"              = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"             = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"contact.name"             = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
@@ -536,29 +453,24 @@ route                      = { none = 0.95, lights = 0.05 }
 "mail.to"                  = { unstated = 1.0 }
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"weave.view_contact__name" = { unstated = 0.96, dana = 0.02, sam = 0.02 }
+"weave.view_lights__room"  = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state" = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"weave.view_contact__name" = { unstated = 0.98, dana = 0.01, sam = 0.01 }
 
 [answers."kill the lights in the be quick"]
-route                      = { none = 0.95, lights = 0.05 }
-"fits.lights"              = { yes = 0.05 }
-"lights.room"              = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"             = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+route                      = { none = 0.97, lights = 0.03 }
+"lights.room"              = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"             = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "lights.brightness"        = { unstated = 1.0 }
-"fits.timer"               = { yes = 0.02 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
-"fits.volume"              = { yes = 0.02 }
 "volume.level"             = { unstated = 1.0 }
-"fits.contact"             = { yes = 0.02 }
 "contact.name"             = { unstated = 1.0 }
-"fits.mail"                = { yes = 0.02 }
 "mail.to"                  = { unstated = 1.0 }
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"  = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state" = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.view_contact__name" = { unstated = 1.0 }
 
 [answers."kill the lights in the den, be quick, and start a 10 minute timer"]
@@ -568,11 +480,6 @@ route                      = { none = 0.95, lights = 0.05 }
 
 [answers."kill the lights in the den, be quick"]
 route                      = { lights = 1.0 }
-"fits.lights"              = { yes = 0.78 }
-"fits.timer"               = { yes = 0.02 }
-"fits.volume"              = { yes = 0.02 }
-"fits.contact"             = { yes = 0.05 }
-"fits.mail"                = { yes = 0.01 }
 "lights.room"              = { den = 1.0 }
 "lights.state"             = { off = 1.0 }
 "contact.name"             = { unstated = 1.0 }
@@ -584,26 +491,22 @@ route                      = { lights = 1.0 }
 "mail.cc"                  = { unstated = 1.0 }
 "mail.subject"             = { unstated = 1.0 }
 "weave.view_lights__room"  = { den = 1.0 }
-"weave.is_lights__room_0"  = { yes = 0.9 }
+"weave.is_lights__room_0"  = { yes = 0.95 }
 "weave.view_lights__state" = { off = 1.0 }
 "weave.view_contact__name" = { unstated = 1.0 }
-"weave.is_lights__state_1" = { yes = 0.9 }
+"weave.is_lights__state_1" = { yes = 0.95 }
 "weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
-"weave.left_lights_7_7"    = { action = 0.9, courtesy = 0.1 }
+"weave.left_lights_7_7"    = { courtesy = 0.9, action = 0.1 }
+"weave.whole_693291516"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."email dana@example.com and sam@example.com"]
 "weave.split_0"               = { yes = 0.31 }
 route                         = { mail = 1.0 }
-"fits.lights"                 = { yes = 0.01 }
-"fits.timer"                  = { yes = 0.02 }
-"fits.volume"                 = { yes = 0.01 }
-"fits.contact"                = { yes = 0.04 }
-"fits.mail"                   = { yes = 0.6 }
 "lights.room"                 = { unstated = 1.0 }
 "lights.state"                = { unstated = 1.0 }
-"contact.name"                = { unstated = 0.91, dana = 0.08, sam = 0.01 }
-"mail.to"                     = { unstated = 0.7, 6-22 = 0.29, 27-42 = 0.01 }
-"mail.cc"                     = { unstated = 0.86, 6-22 = 0.11, 27-42 = 0.03 }
+"contact.name"                = { unstated = 0.95, dana = 0.04, sam = 0.01 }
+"mail.to"                     = { unstated = 0.85, 6-22 = 0.14, 27-42 = 0.01 }
+"mail.cc"                     = { unstated = 0.93, 6-22 = 0.06, 27-42 = 0.01 }
 "lights.brightness"           = { unstated = 1.0 }
 "timer.duration"              = { unstated = 1.0 }
 "timer.label"                 = { unstated = 1.0 }
@@ -611,7 +514,7 @@ route                         = { mail = 1.0 }
 "mail.subject"                = { unstated = 1.0 }
 "weave.view_lights__room"     = { unstated = 1.0 }
 "weave.view_lights__state"    = { unstated = 1.0 }
-"weave.view_contact__name"    = { unstated = 0.91, dana = 0.08, sam = 0.01 }
+"weave.view_contact__name"    = { unstated = 0.95, dana = 0.04, sam = 0.01 }
 "weave.left_mail_0_3"         = { action = 0.9, courtesy = 0.1 }
 "weave.first_mail__subject_0" = { unstated = 1.0 }
 "weave.run_mail__subject_0"   = { unstated = 1.0 }
@@ -620,19 +523,15 @@ route                         = { mail = 1.0 }
 "weave.word_mail__subject_2"  = { yes = 0.05 }
 "weave.word_mail__subject_3"  = { yes = 0.05 }
 "weave.count"                 = { two = 0.6, more = 0.35, one = 0.05 }
+"weave.whole_14210033"        = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."email dana@example.com"]
 route                                  = { mail = 1.0 }
-"fits.lights"                          = { yes = 0.01 }
-"fits.timer"                           = { yes = 0.02 }
-"fits.volume"                          = { yes = 0.02 }
-"fits.contact"                         = { yes = 0.15 }
-"fits.mail"                            = { yes = 0.74 }
 "lights.room"                          = { unstated = 1.0 }
 "lights.state"                         = { unstated = 1.0 }
-"contact.name"                         = { dana = 0.93, unstated = 0.07 }
+"contact.name"                         = { dana = 0.96, unstated = 0.04 }
 "mail.to"                              = { 6-22 = 1.0 }
-"mail.cc"                              = { unstated = 0.8, 6-22 = 0.2 }
+"mail.cc"                              = { unstated = 0.9, 6-22 = 0.1 }
 "lights.brightness"                    = { unstated = 1.0 }
 "timer.duration"                       = { unstated = 1.0 }
 "timer.label"                          = { unstated = 1.0 }
@@ -640,7 +539,7 @@ route                                  = { mail = 1.0 }
 "mail.subject"                         = { unstated = 1.0 }
 "weave.view_lights__room"              = { unstated = 1.0 }
 "weave.view_lights__state"             = { unstated = 1.0 }
-"weave.view_contact__name"             = { dana = 0.93, unstated = 0.07 }
+"weave.view_contact__name"             = { dana = 0.96, unstated = 0.04 }
 "weave.only_mail__to_6_22"             = { yes = 0.05 }
 "weave.only_mail__cc_6_22"             = { yes = 0.05 }
 "weave.left_mail_0_0"                  = { action = 0.9, courtesy = 0.1 }
@@ -649,23 +548,19 @@ route                                  = { mail = 1.0 }
 "weave.word_mail__subject_0"           = { yes = 0.05 }
 "weave.first_mail__subject_3293851753" = { unstated = 1.0 }
 "weave.run_mail__subject_3293851753"   = { unstated = 1.0 }
+"weave.whole_2055804351"               = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."sam@example.com"]
-route                      = { mail = 0.71, none = 0.29 }
-"fits.mail"                = { yes = 0.43 }
-"mail.to"                  = { 0-15 = 0.89, unstated = 0.11 }
-"mail.cc"                  = { 0-15 = 0.61, unstated = 0.39 }
+route                      = { mail = 0.85, none = 0.15 }
+"mail.to"                  = { 0-15 = 0.94, unstated = 0.06 }
+"mail.cc"                  = { 0-15 = 0.8, unstated = 0.2 }
 "mail.subject"             = { unstated = 1.0 }
-"fits.lights"              = { yes = 0.02 }
 "lights.room"              = { unstated = 1.0 }
 "lights.state"             = { unstated = 1.0 }
 "lights.brightness"        = { unstated = 1.0 }
-"fits.timer"               = { yes = 0.02 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
-"fits.volume"              = { yes = 0.02 }
 "volume.level"             = { unstated = 1.0 }
-"fits.contact"             = { yes = 0.02 }
 "contact.name"             = { unstated = 1.0 }
 "weave.only_mail__to_0_15" = { yes = 0.05 }
 "weave.only_mail__cc_0_15" = { yes = 0.05 }

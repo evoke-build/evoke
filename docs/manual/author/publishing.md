@@ -87,7 +87,8 @@ changed. It reports a loosened effect, which they keep until they accept it. A t
 
 Each install lints the manifest, as `evoke check` does. It also routes every installed example over the new set.
 A `steals` line names an example your reflex would take from the reflex that owns it. An `also fits` line names
-an example your reflex also fits, well enough that the example would stop at confirm. For a playbook, `add` names
+an example your reflex also fits: two reflexes claim the sentence, and one worded like it may reach either. For a
+playbook, `add` names
 each step whose reflex lacks the playbook's tag. None of these lines stops the install.
 
 Before a tag, install your reflexes beside the ones they will live with, and read every such line:

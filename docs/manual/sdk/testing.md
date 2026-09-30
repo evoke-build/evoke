@@ -28,8 +28,9 @@ assert.equal(d.outcome, "run")
 
 ## The file
 
-You can write it by hand. Answers are keyed by **utterance identity**: lower-cased, whitespace collapsed,
-trailing punctuation dropped. Each question is keyed by its id: `route`, `fits.<reflex>`, `<reflex>.<argument>`.
+Answers are keyed by **utterance identity**: lower-cased, whitespace collapsed, trailing punctuation dropped.
+Each question is keyed by its id: `route`, `<reflex>.<argument>`, and `weave.<name>`, a question `evoke` asks
+on its own account. `fits.<reflex>` is asked when a reflex is added.
 
 ```toml
 id = "replay"
@@ -37,18 +38,28 @@ id = "replay"
 [gate]
 route = 0.5
 fits  = 0.3
-read  = 0.6
-write = 0.8
+read  = 0.8
+write = 0.9
+whole = 0.3
 
 [answers."kill the lights in the den"]
-route          = { lights = 0.91, timer = 0.02, volume = 0.01, none = 0.06 }
-"fits.lights"  = { yes = 0.7 }
-"fits.timer"   = { yes = 0.05 }
-"lights.room"  = { den = 0.85, office = 0.05, unstated = 0.1 }
-"lights.state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
+route                      = { lights = 0.95, timer = 0.01, volume = 0.01, none = 0.03 }
+"lights.room"              = { den = 0.92, office = 0.03, unstated = 0.05 }
+"lights.state"             = { off = 0.94, on = 0.03, dim = 0.02, unstated = 0.01 }
+"lights.brightness"        = { unstated = 1.0 }
+"timer.duration"           = { unstated = 1.0 }
+"timer.label"              = { unstated = 1.0 }
+"volume.level"             = { unstated = 1.0 }
+"weave.view_lights__room"  = { den = 0.92, office = 0.03, unstated = 0.05 }
+"weave.view_lights__state" = { off = 0.94, on = 0.03, dim = 0.02, unstated = 0.01 }
+"weave.is_lights__state_1" = { yes = 0.95 }
+"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+"weave.whole_693291516"    = { whole = 0.9, less = 0.05, other = 0.05 }
 ```
 
-A pick's candidates are keyed `<start>-<end>` by their character offsets in the input.
+A pick's candidates are keyed `<start>-<end>` by their character offsets in the input. A recording made with
+`record` holds every question. You can write one by hand too: a question the file lacks is named by the fault,
+`weave.whole_693291516 was not answered`, and its answer is one line more.
 
 ## The CLI on a recording
 

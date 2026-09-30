@@ -38,7 +38,7 @@ bridge = "10.0.0.2"                # plain
 token  = { env = "HUE_TOKEN" }     # from a variable; the only form a secret may take
 
 [adapters.jev]                     # per adapter, under its name; inert unless selected
-gate = { route = 0.5, fits = 0.3, read = 0.6, write = 0.8 }   # each a probability; read ≤ write
+gate = { route = 0.5, fits = 0.3, read = 0.8, write = 0.9, whole = 0.3 }   # each a probability; read ≤ write
 ```
 
 The built-in adapters are `jev`, `openjev` and `replay`; `[adapters.openjev]` takes the same `gate` table as
@@ -176,7 +176,7 @@ is the recommended name. Written whole as JSON, its second line says what it hol
   "weave": { "input": "…", "steps": [ { "n": 1, "text": "pull september's bank transactions", "decision": { "call": "bank month=\"september\"", … } }, … ], … },
   "evoke": "0.10.1",
   "adapter": { "name": "jev", "id": "jev-1.13.0" },
-  "gate": { "route": 0.5, "fits": 0.3, "read": 0.6, "write": 0.8 },
+  "gate": { "route": 0.5, "fits": 0.3, "read": 0.8, "write": 0.9, "whole": 0.3 },
   "set": "h1:…",
   "reflexes": { "bank": { "item": "h1:…", "path": "./bank" }, "ledger": { "item": "h1:…", "ref": "acme/books/ledger", "tag": "1.2.0", "h1": "h1:…" }, … },
   "vocab": { "months": "h1:…" },

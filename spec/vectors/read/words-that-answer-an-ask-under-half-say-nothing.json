@@ -41,12 +41,6 @@
           },
           "otherwise": "none"
         },
-        "fits.lights": {
-          "type": "yesno",
-          "ask": "Does `lights` do the specific thing the request asks for?",
-          "yes": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
-          "no": "Something else, such as: colour scenes and schedules; asking whether a light is on."
-        },
         "lights.room": {
           "type": "choice",
           "ask": "Which room?",
@@ -88,12 +82,6 @@
             "unstated": "The request does not say."
           },
           "otherwise": "unstated"
-        },
-        "fits.timer": {
-          "type": "yesno",
-          "ask": "Does `timer` do the specific thing the request asks for?",
-          "yes": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
-          "no": "Something else, such as: keeping the laptop awake; alarms at a time of day; asking the time."
         },
         "timer.duration": {
           "type": "choice",
@@ -252,12 +240,9 @@
     },
     "raw": {
       "route": {
-        "timer": 0.95,
+        "timer": 0.97,
         "lights": 0.01,
-        "none": 0.04
-      },
-      "fits.lights": {
-        "yes": 0.02
+        "none": 0.02
       },
       "lights.room": {
         "unstated": 1
@@ -268,15 +253,12 @@
       "lights.brightness": {
         "unstated": 1
       },
-      "fits.timer": {
-        "yes": 0.9
-      },
       "timer.duration": {
         "unstated": 1
       },
       "timer.label": {
-        "unstated": 0.9,
-        "none": 0.1
+        "unstated": 0.95,
+        "none": 0.05
       },
       "weave.view_lights__room": {
         "unstated": 1
@@ -285,8 +267,8 @@
         "unstated": 1
       },
       "weave.left_timer_0_2": {
-        "action": 0.9,
-        "courtesy": 0.1
+        "action": 0.95,
+        "courtesy": 0.05
       },
       "weave.left_timer_5_5": {
         "arg:label": 0.4,
@@ -325,30 +307,18 @@
       "ranking": [
         {
           "reflex": "timer",
-          "route": 0.95,
-          "fits": 0.9
+          "route": 0.97
         },
         {
           "reflex": "lights",
-          "route": 0.01,
-          "fits": 0.02
+          "route": 0.01
         }
       ],
       "judgments": [
         {
           "question": "route",
           "top": "timer",
-          "p": 0.95
-        },
-        {
-          "question": "timer.duration",
-          "top": "unstated",
-          "p": 1
-        },
-        {
-          "question": "timer.label",
-          "top": "unstated",
-          "p": 0.9
+          "p": 0.97
         }
       ],
       "winner": {
@@ -375,7 +345,7 @@
               "text": "start a timer"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "words": {
@@ -391,8 +361,7 @@
         "unconsumed": [],
         "runner_up": {
           "reflex": "lights",
-          "route": 0.01,
-          "fits": 0.02
+          "route": 0.01
         }
       }
     }

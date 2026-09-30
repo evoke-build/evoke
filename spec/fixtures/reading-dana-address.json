@@ -2,7 +2,7 @@
   "ranking": [
     {
       "reflex": "contact",
-      "route": 0.7,
+      "route": 0.85,
       "fits": 0.7
     },
     {
@@ -30,12 +30,12 @@
     {
       "question": "route",
       "top": "contact",
-      "p": 0.7
+      "p": 0.85
     },
     {
       "question": "contact.name",
       "top": "dana",
-      "p": 0.9
+      "p": 0.95
     }
   ],
   "winner": {

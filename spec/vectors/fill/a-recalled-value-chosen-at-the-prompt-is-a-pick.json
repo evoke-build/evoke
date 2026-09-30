@@ -14,53 +14,43 @@
             "text": "roll back the last deploy"
           },
           "does": "action",
-          "p": 0.9
+          "p": 0.95
         }
       ],
       "unconsumed": [],
-      "confidence": 0.95,
+      "confidence": 0.97,
       "weakest": {
         "question": "route",
         "top": "rollback",
-        "p": 0.95
+        "p": 0.97
       },
       "judgments": [
         {
           "question": "route",
           "top": "rollback",
-          "p": 0.95
-        },
-        {
-          "question": "rollback.release",
-          "top": "unstated",
-          "p": 1
+          "p": 0.97
         }
       ],
       "runner_up": {
         "reflex": "meeting",
-        "route": 0.03,
-        "fits": 0.02
+        "route": 0.02
       },
       "contenders": [
         {
           "reflex": "rollback",
-          "route": 0.95,
-          "fits": 0.8
+          "route": 0.97
         },
         {
           "reflex": "meeting",
-          "route": 0.03,
-          "fits": 0.02
+          "route": 0.02
         },
         {
           "reflex": "calendar",
-          "route": 0,
-          "fits": 0.02
+          "route": 0
         },
         {
           "reflex": "deploys",
-          "route": 0,
-          "fits": 0.02
+          "route": 0
         }
       ]
     },
@@ -81,8 +71,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     }
   },
   "expect": {
@@ -112,51 +103,46 @@
           "text": "roll back the last deploy"
         },
         "does": "action",
-        "p": 0.9
+        "p": 0.95
       }
     ],
-    "confidence": 0.95,
+    "confidence": 0.97,
     "weakest": {
       "question": "route",
       "top": "rollback",
-      "p": 0.95
+      "p": 0.97
     },
     "judgments": [
       {
         "question": "route",
         "top": "rollback",
-        "p": 0.95
+        "p": 0.97
       }
     ],
     "runner_up": {
       "reflex": "meeting",
-      "route": 0.03,
-      "fits": 0.02
+      "route": 0.02
     },
     "contenders": [
       {
         "reflex": "rollback",
-        "route": 0.95,
-        "fits": 0.8
+        "route": 0.97
       },
       {
         "reflex": "meeting",
-        "route": 0.03,
-        "fits": 0.02
+        "route": 0.02
       },
       {
         "reflex": "calendar",
-        "route": 0,
-        "fits": 0.02
+        "route": 0
       },
       {
         "reflex": "deploys",
-        "route": 0,
-        "fits": 0.02
+        "route": 0
       }
     ],
     "prompt": {
-      "own": "rollback release=\"4.12.0\" · destructive · weakest: route 0.95",
+      "own": "rollback release=\"4.12.0\" · destructive · weakest: route 0.97",
       "template": "Roll back 4.12.0?"
     },
     "because": [

@@ -419,7 +419,7 @@ Ceiling and lamp lights only."""</span>
           <thead><tr><th>Outcome</th><th>When</th><th>Exit</th></tr></thead>
           <tbody>
             <tr><td><strong>run</strong></td><td>Confidence cleared the bar for the winner's effect, every required argument was stated, nothing else needed attention.</td><td class="y">0</td></tr>
-            <tr><td><strong>confirm</strong></td><td>The call is complete, but something holds it at a question: destructive, no gate, under the bar, an unconsumed span, or a runner-up that fits.</td><td class="n">0 · 2</td></tr>
+            <tr><td><strong>confirm</strong></td><td>The call is complete, but something holds it at a question: destructive, no gate, under the bar, a value read from the input's words another way, words that ask for more, or a call that holds less than the input says.</td><td class="n">0 · 2</td></tr>
             <tr><td><strong>ask</strong></td><td>The winner is clear, but a required argument is missing or out of range. Its own question is asked, and the answer is gated again.</td><td class="n">0 · 2 · 3</td></tr>
             <tr><td><strong>abstain</strong></td><td><code>none</code> won, or the winner is under the route bar. The ranking prints and nothing runs.</td><td class="n">2</td></tr>
           </tbody>
@@ -434,14 +434,13 @@ Ceiling and lamp lights only."""</span>
           it, and to explain the last decision from its log alone. In evoke that is <code>try</code> and <code>why</code>.</p>
         <div class="panel term">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
-<pre><span class="p">$</span> <span class="in">evoke try "kill the lights"</span>
-<span class="own">  <span class="name">lights</span> <span class="hi">0.90</span> · none 0.06 · timer 0.02 · volume 0.02
-  room   <span class="name">unstated</span> <span class="mid">0.75</span> · den 0.20 · office 0.05
-  state  <span class="name">off</span> <span class="mid">0.58</span> · on 0.30 · dim 0.10 · unstated 0.02
-  fits   lights 0.70 · timer 0.05 · volume 0.05
-  <span class="name">ask room</span> · weakest: state <span class="mid">0.58</span></span></pre>
+<pre data-flow="try"><span class="p">$</span> <span class="in">evoke try "kill the lights"</span>
+<span class="own">  <span class="name">lights</span> <span class="hi">0.95</span> · none 0.03 · timer 0.01 · volume 0.01
+  room   <span class="name">unstated</span> <span class="mid">0.87</span> · den 0.10 · office 0.03
+  state  <span class="name">off</span> <span class="mid">0.74</span> · on 0.19 · dim 0.06 · unstated 0.01
+  <span class="name">ask room</span> · weakest: state <span class="mid">0.74</span></span></pre>
         </div>
-        <p class="caption">The route, each argument with <b>unstated</b> as a choice, the fit per reflex, then the
+        <p class="caption">The route, each argument with <b>unstated</b> as a choice, then the
           outcome and the weakest judgment. The room was not in the sentence, so the outcome is an ask.</p>
       </div>
     </section>
@@ -449,8 +448,10 @@ Ceiling and lamp lights only."""</span>
     <section id="gate">
       <div class="rule"><p class="label">The gate</p><span class="num">07</span></div>
       <h2>The weakest answer, against the bar of the effect.</h2>
-      <p class="sub">Confidence is the lowest top probability among the route and every argument question of the winner.
-        Unstated arguments and flags count too. Each effect has a bar, and the bars come from the adapter. The bars
+      <p class="sub">Confidence is the lowest probability among the route and every value the call holds, each value by
+        what gave it. A flag and an argument the input says nothing of add nothing to it. A call that clears the bar
+        of its effect is read back against the input, and runs when it holds all the input says at the bar
+        <code>whole</code>. Each effect has a bar, and the bars come from the adapter. The bars
         assume that the adapter's probabilities are calibrated: across many answers, those given 0.85 should be right
         about 85 times in 100.</p>
       <div class="clause">
@@ -459,9 +460,10 @@ Ceiling and lamp lights only."""</span>
           <thead><tr><th>Bar</th><th>Jev</th><th>Gates</th></tr></thead>
           <tbody>
             <tr><td><code>route</code></td><td>0.5</td><td>Under it, abstain.</td></tr>
-            <tr><td><code>read</code></td><td>0.6</td><td>A <code>read</code> reflex runs at or above it.</td></tr>
-            <tr><td><code>write</code></td><td>0.8</td><td>A <code>write</code> reflex runs at or above it.</td></tr>
-            <tr><td><code>fits</code></td><td>0.3</td><td>A runner-up at or above it holds the outcome at confirm: the input may have asked for two things.</td></tr>
+            <tr><td><code>read</code></td><td>0.8</td><td>A <code>read</code> reflex runs at or above it.</td></tr>
+            <tr><td><code>write</code></td><td>0.9</td><td>A <code>write</code> reflex runs at or above it.</td></tr>
+            <tr><td><code>whole</code></td><td>0.3</td><td>A call that would run does so when it holds all the input says at or above it.</td></tr>
+            <tr><td><code>fits</code></td><td>0.3</td><td>When a reflex is added, one that fits another's example at or above it is named.</td></tr>
             <tr><td>destructive</td><td>—</td><td>Always confirms.</td></tr>
           </tbody>
         </table></div>
@@ -473,7 +475,7 @@ Ceiling and lamp lights only."""</span>
           <li><strong><code>read</code> never exceeds <code>write</code>.</strong> A user <span class="kw">MAY</span> move a bar for their own machine, under the adapter's table in <code>evoke.toml</code>, within that rule.</li>
           <li><strong>The core never rescales.</strong> The adapter's numbers are its own calibration. An adapter that ships no bars never runs anything on its own: every decision confirms.</li>
           <li><strong>Effect only tightens.</strong> A user's overlay may tighten an effect, never loosen it. The lock holds the effect the user consented to. Upstream may tighten it at any time; it loosens only through <code>evoke update --accept</code>.</li>
-          <li><strong>A complete call still stops.</strong> A typed span no argument consumed, or a runner-up over its bar, holds the outcome at confirm, with the reason on the line.</li>
+          <li><strong>A complete call still stops.</strong> Words that ask for another thing, or a call that holds less than the input says, hold the outcome at confirm, with the reason on the line.</li>
         </ul>
       </div>
       <p class="after"><a class="more" href="/guides/approval-by-risk.html">The gate, explained for readers →</a></p>
@@ -557,7 +559,7 @@ Ceiling and lamp lights only."""</span>
 <span class="k">token</span>  <span class="o">=</span> <span class="o">{</span> <span class="k">env</span> <span class="o">=</span> <span class="s">"HUE_TOKEN"</span> <span class="o">}</span>   <span class="c"># a secret: the variable only</span>
 
 <span class="t">[adapters.jev]</span>                   <span class="c"># per adapter, under its name</span>
-<span class="k">gate</span> <span class="o">=</span> <span class="o">{</span> <span class="k">write</span> <span class="o">=</span> <span class="n">0.85</span> <span class="o">}</span></pre>
+<span class="k">gate</span> <span class="o">=</span> <span class="o">{</span> <span class="k">write</span> <span class="o">=</span> <span class="n">0.95</span> <span class="o">}</span></pre>
         </div>
         <div class="panel">
           <div class="head"><i></i>evoke.lock<span class="who">written by add, update, remove</span></div>
@@ -703,7 +705,7 @@ Ceiling and lamp lights only."""</span>
   <span class="c">// per-call ceilings; a plan over them is refused at load</span>
   limits<span class="o">?:</span> <span class="o">{</span> options<span class="o">?:</span> <span class="w">number</span><span class="o">;</span> tokens<span class="o">?:</span> <span class="w">number</span> <span class="o">}</span>
   <span class="c">// each number means P(correct)</span>
-  gate<span class="o">?:</span> <span class="o">{</span> route<span class="o">:</span> <span class="w">number</span><span class="o">;</span> fits<span class="o">?:</span> <span class="w">number</span><span class="o">;</span> read<span class="o">:</span> <span class="w">number</span><span class="o">;</span> write<span class="o">:</span> <span class="w">number</span> <span class="o">}</span>
+  gate<span class="o">?:</span> <span class="o">{</span> route<span class="o">:</span> <span class="w">number</span><span class="o">;</span> fits<span class="o">?:</span> <span class="w">number</span><span class="o">;</span> read<span class="o">:</span> <span class="w">number</span><span class="o">;</span> write<span class="o">:</span> <span class="w">number</span><span class="o">;</span> whole<span class="o">?:</span> <span class="w">number</span> <span class="o">}</span>
   <span class="c">// a recording's plan digest; another plan refuses it</span>
   plan<span class="o">?:</span> <span class="w">string</span>
   answer<span class="o">(</span>state<span class="o">:</span> <span class="o">{</span> request<span class="o">:</span> <span class="w">string</span> <span class="o">},</span> questions<span class="o">:</span> Record<span class="o">&lt;</span><span class="w">string</span><span class="o">,</span> Question<span class="o">&gt;,</span> signal<span class="o">:</span> AbortSignal<span class="o">):</span> Promise<span class="o">&lt;</span>Raw<span class="o">&gt;</span>
@@ -738,18 +740,25 @@ Ceiling and lamp lights only."""</span>
 <span class="t">[gate]</span>
 <span class="k">route</span> <span class="o">=</span> <span class="n">0.5</span>
 <span class="k">fits</span>  <span class="o">=</span> <span class="n">0.3</span>
-<span class="k">read</span>  <span class="o">=</span> <span class="n">0.6</span>
-<span class="k">write</span> <span class="o">=</span> <span class="n">0.8</span>
+<span class="k">read</span>  <span class="o">=</span> <span class="n">0.8</span>
+<span class="k">write</span> <span class="o">=</span> <span class="n">0.9</span>
+<span class="k">whole</span> <span class="o">=</span> <span class="n">0.3</span>
 
 <span class="t">[answers."kill the lights in the den"]</span>
-<span class="k">route</span>          <span class="o">=</span> <span class="o">{</span> <span class="k">lights</span> <span class="o">=</span> <span class="n">0.91</span><span class="o">,</span> <span class="k">timer</span> <span class="o">=</span> <span class="n">0.02</span><span class="o">,</span> <span class="k">volume</span> <span class="o">=</span> <span class="n">0.01</span><span class="o">,</span> <span class="k">none</span> <span class="o">=</span> <span class="n">0.06</span> <span class="o">}</span>
-<span class="s">"fits.lights"</span>  <span class="o">=</span> <span class="o">{</span> <span class="k">yes</span> <span class="o">=</span> <span class="n">0.7</span> <span class="o">}</span>
-<span class="s">"fits.timer"</span>   <span class="o">=</span> <span class="o">{</span> <span class="k">yes</span> <span class="o">=</span> <span class="n">0.05</span> <span class="o">}</span>
-<span class="s">"lights.room"</span>  <span class="o">=</span> <span class="o">{</span> <span class="k">den</span> <span class="o">=</span> <span class="n">0.85</span><span class="o">,</span> <span class="k">office</span> <span class="o">=</span> <span class="n">0.05</span><span class="o">,</span> <span class="k">unstated</span> <span class="o">=</span> <span class="n">0.1</span> <span class="o">}</span>
-<span class="s">"lights.state"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">off</span> <span class="o">=</span> <span class="n">0.88</span><span class="o">,</span> <span class="k">on</span> <span class="o">=</span> <span class="n">0.05</span><span class="o">,</span> <span class="k">dim</span> <span class="o">=</span> <span class="n">0.05</span><span class="o">,</span> <span class="k">unstated</span> <span class="o">=</span> <span class="n">0.02</span> <span class="o">}</span></pre>
+<span class="k">route</span>                      <span class="o">=</span> <span class="o">{</span> <span class="k">lights</span> <span class="o">=</span> <span class="n">0.95</span><span class="o">,</span> <span class="k">timer</span> <span class="o">=</span> <span class="n">0.01</span><span class="o">,</span> <span class="k">volume</span> <span class="o">=</span> <span class="n">0.01</span><span class="o">,</span> <span class="k">none</span> <span class="o">=</span> <span class="n">0.03</span> <span class="o">}</span>
+<span class="s">"lights.room"</span>              <span class="o">=</span> <span class="o">{</span> <span class="k">den</span> <span class="o">=</span> <span class="n">0.92</span><span class="o">,</span> <span class="k">office</span> <span class="o">=</span> <span class="n">0.03</span><span class="o">,</span> <span class="k">unstated</span> <span class="o">=</span> <span class="n">0.05</span> <span class="o">}</span>
+<span class="s">"lights.state"</span>             <span class="o">=</span> <span class="o">{</span> <span class="k">off</span> <span class="o">=</span> <span class="n">0.94</span><span class="o">,</span> <span class="k">on</span> <span class="o">=</span> <span class="n">0.03</span><span class="o">,</span> <span class="k">dim</span> <span class="o">=</span> <span class="n">0.02</span><span class="o">,</span> <span class="k">unstated</span> <span class="o">=</span> <span class="n">0.01</span> <span class="o">}</span>
+<span class="s">"lights.brightness"</span>        <span class="o">=</span> <span class="o">{</span> <span class="k">unstated</span> <span class="o">=</span> <span class="n">1.0</span> <span class="o">}</span>
+<span class="s">"weave.view_lights__room"</span>  <span class="o">=</span> <span class="o">{</span> <span class="k">den</span> <span class="o">=</span> <span class="n">0.92</span><span class="o">,</span> <span class="k">office</span> <span class="o">=</span> <span class="n">0.03</span><span class="o">,</span> <span class="k">unstated</span> <span class="o">=</span> <span class="n">0.05</span> <span class="o">}</span>
+<span class="s">"weave.view_lights__state"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">off</span> <span class="o">=</span> <span class="n">0.94</span><span class="o">,</span> <span class="k">on</span> <span class="o">=</span> <span class="n">0.03</span><span class="o">,</span> <span class="k">dim</span> <span class="o">=</span> <span class="n">0.02</span><span class="o">,</span> <span class="k">unstated</span> <span class="o">=</span> <span class="n">0.01</span> <span class="o">}</span>
+<span class="s">"weave.is_lights__state_1"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">yes</span> <span class="o">=</span> <span class="n">0.95</span> <span class="o">}</span>
+<span class="s">"weave.left_lights_0_2"</span>    <span class="o">=</span> <span class="o">{</span> <span class="k">action</span> <span class="o">=</span> <span class="n">0.9</span><span class="o">,</span> <span class="k">courtesy</span> <span class="o">=</span> <span class="n">0.1</span> <span class="o">}</span>
+<span class="s">"weave.whole_693291516"</span>    <span class="o">=</span> <span class="o">{</span> <span class="k">whole</span> <span class="o">=</span> <span class="n">0.9</span><span class="o">,</span> <span class="k">less</span> <span class="o">=</span> <span class="n">0.05</span><span class="o">,</span> <span class="k">other</span> <span class="o">=</span> <span class="n">0.05</span> <span class="o">}</span>
+…</pre>
         </div>
-        <p class="caption">A pick's candidates are keyed <b>&lt;start&gt;-&lt;end&gt;</b> by their character offsets in the
-          input. The recording carries the adapter's declaration, so the gate in tests is the gate in production.</p>
+        <p class="caption">A question id under <b>weave.</b> is one evoke asks on its own account. A pick's candidates
+          are keyed <b>&lt;start&gt;-&lt;end&gt;</b> by their character offsets in the input. The recording carries the
+          adapter's declaration, so the gate in tests is the gate in production.</p>
       </div>
     </section>
 
@@ -774,11 +783,14 @@ Ceiling and lamp lights only."""</span>
             <tr><td><code>confidence</code></td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td class="n">·</td><td>The weakest judgment's probability.</td></tr>
             <tr><td><code>weakest</code></td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td class="n">·</td><td><code>{ question, top, p }</code>.</td></tr>
             <tr><td><code>judgments</code></td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td>Every choice read: <code>{ question, top, p }</code>.</td></tr>
-            <tr><td><code>contenders</code></td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td>The ranking: <code>{ reflex, route, fits? }</code>.</td></tr>
-            <tr><td><code>runner_up</code></td><td class="n">○</td><td class="n">○</td><td class="n">○</td><td class="n">·</td><td>The second reflex by route, <code>{ reflex, route, fits? }</code>, when there is one.</td></tr>
-            <tr><td><code>unconsumed</code></td><td class="n">·</td><td class="n">·</td><td class="y">●</td><td class="n">·</td><td>Typed spans no argument consumed, each <code>{ start, end, text }</code>.</td></tr>
+            <tr><td><code>contenders</code></td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td>The ranking: <code>{ reflex, route }</code>.</td></tr>
+            <tr><td><code>runner_up</code></td><td class="n">○</td><td class="n">○</td><td class="n">○</td><td class="n">·</td><td>The second reflex by route, <code>{ reflex, route }</code>, when there is one.</td></tr>
+            <tr><td><code>basis</code></td><td class="n">○</td><td class="n">○</td><td class="n">○</td><td class="n">·</td><td>Per value read from the input, what it stands on, tagged by <code>by</code>.</td></tr>
+            <tr><td><code>left</code></td><td class="n">○</td><td class="n">○</td><td class="n">○</td><td class="n">·</td><td>The words of the input no value holds, each with what it does: <code>{ words, does, p }</code>.</td></tr>
+            <tr><td><code>whole</code></td><td class="n">○</td><td class="n">○</td><td class="n">○</td><td class="n">·</td><td>How far the call holds all the input says, where it was read back against it.</td></tr>
+            <tr><td><code>unconsumed</code></td><td class="n">○</td><td class="n">○</td><td class="y">●</td><td class="n">·</td><td>Typed spans no argument consumed, each <code>{ start, end, text }</code>.</td></tr>
             <tr><td><code>prompt</code></td><td class="n">·</td><td class="y">●</td><td class="n">·</td><td class="n">·</td><td><code>{ own, template }</code>: the tool's line and the reflex's question.</td></tr>
-            <tr><td><code>because</code></td><td class="n">·</td><td class="y">●</td><td class="n">·</td><td class="n">·</td><td>Why it stopped, in order: <code>destructive</code>, <code>no_gate</code>, <code>under_floor</code>, <code>unconsumed_span</code>, <code>two_things</code>.</td></tr>
+            <tr><td><code>because</code></td><td class="n">·</td><td class="y">●</td><td class="n">·</td><td class="n">·</td><td>Why it stopped, in order: <code>destructive</code>, <code>no_gate</code>, <code>under_floor</code>, <code>one_view</code>, <code>respelt</code>, <code>text_read</code>, <code>more</code>, <code>whole</code>, <code>detail</code>.</td></tr>
             <tr><td><code>missing</code></td><td class="n">·</td><td class="n">·</td><td class="y">●</td><td class="n">·</td><td>Per missing argument: <code>arg</code>, <code>ask</code>, <code>because</code>, <code>choices</code>.</td></tr>
             <tr><td><code>trace</code></td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td>One entry per adapter call: <code>{ adapter, questions, ms }</code>. Empty from the cache.</td></tr>
             <tr><td><code>result</code></td><td class="n">○</td><td class="n">·</td><td class="n">·</td><td class="n">·</td><td><code>{ text, data? }</code> when the body ran, else <code>error</code> with the failure's message.</td></tr>
@@ -835,10 +847,10 @@ Ceiling and lamp lights only."""</span>
         <div class="panel term">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="weave"><span class="p">$</span> <span class="in">evoke "look up dana's address and email them"</span>
-<span class="own">  1  <span class="name">contact</span> name="dana"  <span class="hi">0.90</span>
+<span class="own">  1  <span class="name">contact</span> name="dana"  <span class="hi">0.95</span>
   2  <span class="name">mail</span> · takes email from 1</span>
 <span class="out">dana &lt;dana@example.com&gt;</span>
-<span class="own">  2  <span class="name">mail</span> to="dana@example.com"  <span class="hi">0.88</span></span>
+<span class="own">  2  <span class="name">mail</span> to="dana@example.com"  <span class="hi">0.94</span></span>
 <span class="out">drafted to dana@example.com</span></pre>
         </div>
         <p class="caption"><code>contact</code> and this <code>mail</code> are stand-ins from evoke's tests. They print a

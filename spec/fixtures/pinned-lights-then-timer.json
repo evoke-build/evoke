@@ -27,14 +27,14 @@
           "basis": {
             "room": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             },
             "state": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9,
-              "yes": 0.9
+              "ask": 0.95,
+              "reader": 0.95,
+              "yes": 0.95
             }
           },
           "left": [
@@ -45,67 +45,57 @@
                 "text": "kill the lights"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "whole": 0.9,
+          "confidence": 0.95,
           "weakest": {
-            "question": "lights.room",
-            "top": "den",
-            "p": 0.9
+            "question": "route",
+            "top": "lights",
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "lights",
-              "p": 0.91
+              "p": 0.95
             },
             {
               "question": "lights.room",
               "top": "den",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "question": "lights.state",
               "top": "off",
-              "p": 0.9
-            },
-            {
-              "question": "lights.brightness",
-              "top": "unstated",
-              "p": 1
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "timer",
-            "route": 0.03,
-            "fits": 0.1
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "lights",
-              "route": 0.91,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "timer",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.02
             },
             {
               "reflex": "volume",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "contact",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "mail",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ]
         },
@@ -138,7 +128,7 @@
           "basis": {
             "duration": {
               "by": "ask",
-              "p": 0.9
+              "p": 0.95
             }
           },
           "left": [
@@ -149,7 +139,7 @@
                 "text": "start"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "words": {
@@ -158,62 +148,52 @@
                 "text": "timer after you leave"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "whole": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "timer",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "timer",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "question": "timer.duration",
               "top": "8-17",
-              "p": 0.9
-            },
-            {
-              "question": "timer.label",
-              "top": "unstated",
-              "p": 1
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "lights",
-            "route": 0.03,
-            "fits": 0.1
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "timer",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "lights",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.02
             },
             {
               "reflex": "volume",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "contact",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "mail",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ]
         },
@@ -254,8 +234,9 @@
   "gate": {
     "route": 0.5,
     "fits": 0.3,
-    "read": 0.6,
-    "write": 0.8
+    "read": 0.8,
+    "write": 0.9,
+    "whole": 0.3
   },
   "set": "h1:f55221ffad94d400ae16e2d66ff4826b8a4d497e0de88ea71de300e303b6e5dd",
   "reflexes": {
@@ -302,26 +283,20 @@
       "text": "kill the lights in the den",
       "raw": {
         "route": {
-          "lights": 0.91,
-          "timer": 0.03,
-          "none": 0.06
-        },
-        "fits.lights": {
-          "yes": 0.8
+          "lights": 0.95,
+          "timer": 0.02,
+          "none": 0.03
         },
         "lights.room": {
-          "den": 0.9,
-          "unstated": 0.1
+          "den": 0.95,
+          "unstated": 0.05
         },
         "lights.state": {
-          "off": 0.9,
-          "unstated": 0.1
+          "off": 0.95,
+          "unstated": 0.05
         },
         "lights.brightness": {
           "unstated": 1
-        },
-        "fits.timer": {
-          "yes": 0.1
         },
         "timer.duration": {
           "unstated": 1
@@ -329,22 +304,13 @@
         "timer.label": {
           "unstated": 1
         },
-        "fits.volume": {
-          "yes": 0.02
-        },
         "volume.level": {
           "unstated": 1
         },
-        "fits.contact": {
-          "yes": 0.02
-        },
         "contact.name": {
-          "unstated": 0.9,
-          "dana": 0.05,
-          "sam": 0.05
-        },
-        "fits.mail": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "dana": 0.03,
+          "sam": 0.02
         },
         "mail.to": {
           "unstated": 1
@@ -353,27 +319,32 @@
           "unstated": 1
         },
         "weave.view_lights__room": {
-          "den": 0.9,
-          "unstated": 0.1
+          "den": 0.95,
+          "unstated": 0.05
         },
         "weave.is_lights__room_0": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.view_lights__state": {
-          "off": 0.9,
-          "unstated": 0.1
+          "off": 0.95,
+          "unstated": 0.05
         },
         "weave.view_contact__name": {
-          "unstated": 0.9,
-          "dana": 0.05,
-          "sam": 0.05
+          "unstated": 0.95,
+          "dana": 0.03,
+          "sam": 0.02
         },
         "weave.is_lights__state_1": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.left_lights_0_2": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
+        },
+        "weave.whole_693291516": {
+          "whole": 0.9,
+          "less": 0.05,
+          "other": 0.05
         }
       }
     },
@@ -381,52 +352,37 @@
       "text": "start a 10 minute timer after you leave",
       "raw": {
         "route": {
-          "timer": 0.9,
-          "lights": 0.03,
-          "none": 0.07
-        },
-        "fits.lights": {
-          "yes": 0.1
+          "timer": 0.95,
+          "lights": 0.02,
+          "none": 0.03
         },
         "lights.room": {
-          "unstated": 0.9,
-          "den": 0.05,
-          "office": 0.05
+          "unstated": 0.95,
+          "den": 0.03,
+          "office": 0.02
         },
         "lights.state": {
-          "unstated": 0.9,
-          "on": 0.05,
-          "off": 0.05
+          "unstated": 0.95,
+          "on": 0.03,
+          "off": 0.02
         },
         "lights.brightness": {
           "unstated": 1
         },
-        "fits.timer": {
-          "yes": 0.8
-        },
         "timer.duration": {
-          "8-17": 0.9,
-          "unstated": 0.1
+          "8-17": 0.95,
+          "unstated": 0.05
         },
         "timer.label": {
           "unstated": 1
         },
-        "fits.volume": {
-          "yes": 0.02
-        },
         "volume.level": {
           "unstated": 1
         },
-        "fits.contact": {
-          "yes": 0.02
-        },
         "contact.name": {
-          "unstated": 0.9,
-          "dana": 0.05,
-          "sam": 0.05
-        },
-        "fits.mail": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "dana": 0.03,
+          "sam": 0.02
         },
         "mail.to": {
           "unstated": 1
@@ -435,30 +391,30 @@
           "unstated": 1
         },
         "weave.view_lights__room": {
-          "unstated": 0.9,
-          "den": 0.05,
-          "office": 0.05
+          "unstated": 0.95,
+          "den": 0.03,
+          "office": 0.02
         },
         "weave.view_lights__state": {
-          "unstated": 0.9,
-          "on": 0.05,
-          "off": 0.05
+          "unstated": 0.95,
+          "on": 0.03,
+          "off": 0.02
         },
         "weave.only_timer__duration_8_17": {
           "yes": 0.05
         },
         "weave.view_contact__name": {
-          "unstated": 0.9,
-          "dana": 0.05,
-          "sam": 0.05
+          "unstated": 0.95,
+          "dana": 0.03,
+          "sam": 0.02
         },
         "weave.left_timer_0_0": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         },
         "weave.left_timer_4_7": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         },
         "weave.first_timer__label_246345331": {
           "unstated": 1
@@ -483,6 +439,11 @@
         },
         "weave.word_timer__label_7": {
           "yes": 0.05
+        },
+        "weave.whole_1123384719": {
+          "whole": 0.9,
+          "less": 0.05,
+          "other": 0.05
         }
       }
     }

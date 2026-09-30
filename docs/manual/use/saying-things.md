@@ -25,10 +25,10 @@ ends the session.
 ```text
 $ evoke
 > kill the lights in the den
-  lights room="den" state="off"  0.85
+  lights room="den" state="off"  0.92
 den lights off
 > what time is it
-  none 0.70 · timer 0.20 · lights 0.05 · volume 0.05
+  none 0.85 · timer 0.10 · lights 0.03 · volume 0.02
 >
 ```
 
@@ -53,7 +53,7 @@ yourself. The filter still answers every other line, and exits with the first no
 
 ```text
 $ printf 'kill the lights in the den\nstart a timer\n' | evoke
-  lights room="den" state="off"  0.85
+  lights room="den" state="off"  0.92
 den lights off
   an ask needs a terminal  →  evoke "start a timer"
 [3]
@@ -69,7 +69,7 @@ rest from the exit code.
 
 ```text
 $ evoke "kill the lights in the den"
-  lights room="den" state="off"  0.85          ← stderr: the call, and the confidence it ran on
+  lights room="den" state="off"  0.92          ← stderr: the call, and the confidence it ran on
 den lights off                                 ← stdout: what the reflex returned
 ```
 

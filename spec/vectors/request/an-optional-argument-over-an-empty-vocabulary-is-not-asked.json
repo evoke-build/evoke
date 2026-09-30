@@ -33,12 +33,6 @@
           },
           "otherwise": "none"
         },
-        "fits.download": {
-          "type": "yesno",
-          "ask": "Does `download` do the specific thing the request asks for?",
-          "yes": "Download a file from a URL.\nInto your downloads folder or a place you name; nothing is opened or run.",
-          "no": "Something else, such as: opening a page in the browser; cloning a repository."
-        },
         "download.url": {
           "type": "choice",
           "ask": "Which URL?",

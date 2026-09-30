@@ -42,14 +42,6 @@
           "none": "None of these."
         }
       },
-      "fits.lights": {
-        "type": "noul",
-        "instructions": "Does `lights` do the specific thing the request asks for?",
-        "criteria": {
-          "true": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
-          "false": "Something else, such as: colour scenes and schedules; asking whether a light is on."
-        }
-      },
       "lights.room": {
         "type": "choice",
         "instructions": "Which room?",
@@ -79,14 +71,6 @@
           },
           "unstated": "The request does not say.",
           "none": "The request names one that is not in this list."
-        }
-      },
-      "fits.timer": {
-        "type": "noul",
-        "instructions": "Does `timer` do the specific thing the request asks for?",
-        "criteria": {
-          "true": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
-          "false": "Something else, such as: keeping the laptop awake; alarms at a time of day; asking the time."
         }
       },
       "lights.brightness": {

@@ -4,8 +4,9 @@ id = "replay"
 [gate]
 route = 0.5
 fits  = 0.3
-read  = 0.6
-write = 0.8
+read  = 0.8
+write = 0.9
+whole = 0.3
 
 [answers."pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"]
 "weave.split_0" = { yes = 0.9 }
@@ -17,185 +18,135 @@ write = 0.8
 "weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."pull september's bank transactions"]
-route                        = { bank = 0.9, invoices = 0.03, none = 0.07 }
-"fits.bank"                  = { yes = 0.8 }
-"bank.month"                 = { september = 0.9, unstated = 0.1 }
-"fits.invoices"              = { yes = 0.02 }
-"invoices.month"             = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.cards"                 = { yes = 0.02 }
-"cards.month"                = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.payroll"               = { yes = 0.02 }
-"payroll.month"              = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.reconcile"             = { yes = 0.02 }
-"fits.ledger"                = { yes = 0.02 }
-"ledger.month"               = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.send"                  = { yes = 0.02 }
+route                        = { bank = 0.95, invoices = 0.02, none = 0.03 }
+"bank.month"                 = { september = 0.95, unstated = 0.05 }
+"invoices.month"             = { unstated = 0.95, august = 0.03, september = 0.02 }
+"cards.month"                = { unstated = 0.95, august = 0.03, september = 0.02 }
+"payroll.month"              = { unstated = 0.95, august = 0.03, september = 0.02 }
+"ledger.month"               = { unstated = 0.95, august = 0.03, september = 0.02 }
 "send.to"                    = { unstated = 1.0 }
-"weave.view_bank__month"     = { september = 0.9, unstated = 0.1 }
-"weave.is_bank__month_1"     = { yes = 0.9 }
-"weave.view_invoices__month" = { unstated = 0.9, august = 0.05, september = 0.05 }
+"weave.view_bank__month"     = { september = 0.95, unstated = 0.05 }
+"weave.is_bank__month_1"     = { yes = 0.95 }
+"weave.view_invoices__month" = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_invoices__month_1" = { yes = 0.05 }
-"weave.view_cards__month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
+"weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_cards__month_1"    = { yes = 0.05 }
-"weave.view_payroll__month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
+"weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_payroll__month_1"  = { yes = 0.05 }
-"weave.view_ledger__month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_ledger__month_1"   = { yes = 0.05 }
 "weave.left_bank_0_0"        = { action = 0.9, courtesy = 0.1 }
 "weave.left_bank_2_3"        = { action = 0.9, courtesy = 0.1 }
+"weave.whole_2515170299"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."invoices, card expenses"]
-route                        = { invoices = 0.55, cards = 0.03, none = 0.42 }
-"fits.bank"                  = { yes = 0.02 }
-"bank.month"                 = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.invoices"              = { yes = 0.8 }
-"invoices.month"             = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.cards"                 = { yes = 0.1 }
-"cards.month"                = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.payroll"               = { yes = 0.02 }
-"payroll.month"              = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.reconcile"             = { yes = 0.02 }
-"fits.ledger"                = { yes = 0.02 }
-"ledger.month"               = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.send"                  = { yes = 0.02 }
+route                        = { invoices = 0.65, cards = 0.02, none = 0.33 }
+"bank.month"                 = { unstated = 0.95, august = 0.03, september = 0.02 }
+"invoices.month"             = { unstated = 0.95, august = 0.03, september = 0.02 }
+"cards.month"                = { unstated = 0.95, august = 0.03, september = 0.02 }
+"payroll.month"              = { unstated = 0.95, august = 0.03, september = 0.02 }
+"ledger.month"               = { unstated = 0.95, august = 0.03, september = 0.02 }
 "send.to"                    = { unstated = 1.0 }
-"weave.view_bank__month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_invoices__month" = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_cards__month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_payroll__month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_ledger__month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"weave.view_bank__month"     = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_invoices__month" = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.left_invoices_0_2"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."payroll"]
-route                        = { payroll = 0.9, bank = 0.03, none = 0.07 }
-"fits.bank"                  = { yes = 0.02 }
-"bank.month"                 = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.invoices"              = { yes = 0.02 }
-"invoices.month"             = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.cards"                 = { yes = 0.02 }
-"cards.month"                = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.payroll"               = { yes = 0.8 }
-"payroll.month"              = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.reconcile"             = { yes = 0.02 }
-"fits.ledger"                = { yes = 0.02 }
-"ledger.month"               = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.send"                  = { yes = 0.02 }
+route                        = { payroll = 0.95, bank = 0.02, none = 0.03 }
+"bank.month"                 = { unstated = 0.95, august = 0.03, september = 0.02 }
+"invoices.month"             = { unstated = 0.95, august = 0.03, september = 0.02 }
+"cards.month"                = { unstated = 0.95, august = 0.03, september = 0.02 }
+"payroll.month"              = { unstated = 0.95, august = 0.03, september = 0.02 }
+"ledger.month"               = { unstated = 0.95, august = 0.03, september = 0.02 }
 "send.to"                    = { unstated = 1.0 }
-"weave.view_bank__month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_invoices__month" = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_cards__month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_payroll__month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_ledger__month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"weave.view_bank__month"     = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_invoices__month" = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.left_payroll_0_0"     = { action = 0.9, courtesy = 0.1 }
+"weave.whole_1626937972"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."reconcile them"]
-route                        = { reconcile = 0.9, bank = 0.03, none = 0.07 }
-"fits.bank"                  = { yes = 0.02 }
-"bank.month"                 = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.invoices"              = { yes = 0.02 }
-"invoices.month"             = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.cards"                 = { yes = 0.02 }
-"cards.month"                = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.payroll"               = { yes = 0.02 }
-"payroll.month"              = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.reconcile"             = { yes = 0.8 }
-"fits.ledger"                = { yes = 0.02 }
-"ledger.month"               = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.send"                  = { yes = 0.02 }
+route                        = { reconcile = 0.95, bank = 0.02, none = 0.03 }
+"bank.month"                 = { unstated = 0.95, august = 0.03, september = 0.02 }
+"invoices.month"             = { unstated = 0.95, august = 0.03, september = 0.02 }
+"cards.month"                = { unstated = 0.95, august = 0.03, september = 0.02 }
+"payroll.month"              = { unstated = 0.95, august = 0.03, september = 0.02 }
+"ledger.month"               = { unstated = 0.95, august = 0.03, september = 0.02 }
 "send.to"                    = { unstated = 1.0 }
-"weave.view_bank__month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_invoices__month" = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_cards__month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_payroll__month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_ledger__month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"weave.view_bank__month"     = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_invoices__month" = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.left_reconcile_0_1"   = { action = 0.9, courtesy = 0.1 }
+"weave.whole_3804433753"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."post the closing entries to the ledger"]
-route                        = { ledger = 0.78, bank = 0.03, none = 0.19 }
-"fits.bank"                  = { yes = 0.02 }
-"bank.month"                 = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.invoices"              = { yes = 0.02 }
-"invoices.month"             = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.cards"                 = { yes = 0.02 }
-"cards.month"                = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.payroll"               = { yes = 0.02 }
-"payroll.month"              = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.reconcile"             = { yes = 0.02 }
-"fits.ledger"                = { yes = 0.8 }
-"ledger.month"               = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.send"                  = { yes = 0.02 }
+route                        = { ledger = 0.89, bank = 0.02, none = 0.09 }
+"bank.month"                 = { unstated = 0.95, august = 0.03, september = 0.02 }
+"invoices.month"             = { unstated = 0.95, august = 0.03, september = 0.02 }
+"cards.month"                = { unstated = 0.95, august = 0.03, september = 0.02 }
+"payroll.month"              = { unstated = 0.95, august = 0.03, september = 0.02 }
+"ledger.month"               = { unstated = 0.95, august = 0.03, september = 0.02 }
 "send.to"                    = { unstated = 1.0 }
-"weave.view_bank__month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_invoices__month" = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_cards__month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_payroll__month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_ledger__month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"weave.view_bank__month"     = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_invoices__month" = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.left_ledger_0_3"      = { action = 0.9, courtesy = 0.1 }
 "weave.left_ledger_6_6"      = { action = 0.9, courtesy = 0.1 }
 
 [answers."send the report to cfo@example.com"]
-route                        = { send = 0.9, bank = 0.03, none = 0.07 }
-"fits.bank"                  = { yes = 0.02 }
-"bank.month"                 = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.invoices"              = { yes = 0.02 }
-"invoices.month"             = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.cards"                 = { yes = 0.02 }
-"cards.month"                = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.payroll"               = { yes = 0.02 }
-"payroll.month"              = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.reconcile"             = { yes = 0.02 }
-"fits.ledger"                = { yes = 0.02 }
-"ledger.month"               = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.send"                  = { yes = 0.8 }
-"send.to"                    = { 19-34 = 0.9, unstated = 0.1 }
-"weave.view_bank__month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_invoices__month" = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_cards__month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_payroll__month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_ledger__month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+route                        = { send = 0.95, bank = 0.02, none = 0.03 }
+"bank.month"                 = { unstated = 0.95, august = 0.03, september = 0.02 }
+"invoices.month"             = { unstated = 0.95, august = 0.03, september = 0.02 }
+"cards.month"                = { unstated = 0.95, august = 0.03, september = 0.02 }
+"payroll.month"              = { unstated = 0.95, august = 0.03, september = 0.02 }
+"ledger.month"               = { unstated = 0.95, august = 0.03, september = 0.02 }
+"send.to"                    = { 19-34 = 0.95, unstated = 0.05 }
+"weave.view_bank__month"     = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_invoices__month" = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.only_send__to_19_34"  = { yes = 0.05 }
 "weave.left_send_0_2"        = { action = 0.9, courtesy = 0.1 }
+"weave.whole_3493782436"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."invoices"]
-route                        = { invoices = 0.9, bank = 0.03, none = 0.07 }
-"fits.bank"                  = { yes = 0.02 }
-"bank.month"                 = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.invoices"              = { yes = 0.8 }
-"invoices.month"             = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.cards"                 = { yes = 0.02 }
-"cards.month"                = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.payroll"               = { yes = 0.02 }
-"payroll.month"              = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.reconcile"             = { yes = 0.02 }
-"fits.ledger"                = { yes = 0.02 }
-"ledger.month"               = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.send"                  = { yes = 0.02 }
+route                        = { invoices = 0.95, bank = 0.02, none = 0.03 }
+"bank.month"                 = { unstated = 0.95, august = 0.03, september = 0.02 }
+"invoices.month"             = { unstated = 0.95, august = 0.03, september = 0.02 }
+"cards.month"                = { unstated = 0.95, august = 0.03, september = 0.02 }
+"payroll.month"              = { unstated = 0.95, august = 0.03, september = 0.02 }
+"ledger.month"               = { unstated = 0.95, august = 0.03, september = 0.02 }
 "send.to"                    = { unstated = 1.0 }
-"weave.view_bank__month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_invoices__month" = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_cards__month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_payroll__month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_ledger__month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"weave.view_bank__month"     = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_invoices__month" = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.left_invoices_0_0"    = { action = 0.9, courtesy = 0.1 }
+"weave.whole_1226681300"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."card expenses"]
-route                        = { cards = 0.9, bank = 0.03, none = 0.07 }
-"fits.bank"                  = { yes = 0.02 }
-"bank.month"                 = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.invoices"              = { yes = 0.02 }
-"invoices.month"             = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.cards"                 = { yes = 0.8 }
-"cards.month"                = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.payroll"               = { yes = 0.02 }
-"payroll.month"              = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.reconcile"             = { yes = 0.02 }
-"fits.ledger"                = { yes = 0.02 }
-"ledger.month"               = { unstated = 0.9, august = 0.05, september = 0.05 }
-"fits.send"                  = { yes = 0.02 }
+route                        = { cards = 0.95, bank = 0.02, none = 0.03 }
+"bank.month"                 = { unstated = 0.95, august = 0.03, september = 0.02 }
+"invoices.month"             = { unstated = 0.95, august = 0.03, september = 0.02 }
+"cards.month"                = { unstated = 0.95, august = 0.03, september = 0.02 }
+"payroll.month"              = { unstated = 0.95, august = 0.03, september = 0.02 }
+"ledger.month"               = { unstated = 0.95, august = 0.03, september = 0.02 }
 "send.to"                    = { unstated = 1.0 }
-"weave.view_bank__month"     = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_invoices__month" = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_cards__month"    = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_payroll__month"  = { unstated = 0.9, august = 0.05, september = 0.05 }
-"weave.view_ledger__month"   = { unstated = 0.9, august = 0.05, september = 0.05 }
+"weave.view_bank__month"     = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_invoices__month" = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.left_cards_0_1"       = { action = 0.9, courtesy = 0.1 }
+"weave.whole_1791599404"     = { whole = 0.9, less = 0.05, other = 0.05 }

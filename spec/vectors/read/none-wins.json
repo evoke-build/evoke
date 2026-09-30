@@ -8,26 +8,20 @@
     },
     "raw": {
       "route": {
-        "none": 0.7,
-        "timer": 0.2,
-        "lights": 0.1
-      },
-      "fits.lights": {
-        "yes": 0.05
+        "none": 0.85,
+        "timer": 0.1,
+        "lights": 0.05
       },
       "lights.room": {
-        "den": 0.1,
-        "office": 0.1,
-        "unstated": 0.8
+        "den": 0.05,
+        "office": 0.05,
+        "unstated": 0.9
       },
       "lights.state": {
-        "on": 0.1,
-        "off": 0.1,
-        "dim": 0.1,
-        "unstated": 0.7
-      },
-      "fits.timer": {
-        "yes": 0.3
+        "on": 0.05,
+        "off": 0.05,
+        "dim": 0.05,
+        "unstated": 0.85
       },
       "lights.brightness": {
         "unstated": 1
@@ -39,15 +33,15 @@
         "unstated": 1
       },
       "weave.view_lights__room": {
-        "den": 0.1,
-        "office": 0.1,
-        "unstated": 0.8
+        "den": 0.05,
+        "office": 0.05,
+        "unstated": 0.9
       },
       "weave.view_lights__state": {
-        "on": 0.1,
-        "off": 0.1,
-        "dim": 0.1,
-        "unstated": 0.7
+        "on": 0.05,
+        "off": 0.05,
+        "dim": 0.05,
+        "unstated": 0.85
       }
     }
   },
@@ -56,20 +50,18 @@
       "ranking": [
         {
           "reflex": "timer",
-          "route": 0.2,
-          "fits": 0.3
+          "route": 0.1
         },
         {
           "reflex": "lights",
-          "route": 0.1,
-          "fits": 0.05
+          "route": 0.05
         }
       ],
       "judgments": [
         {
           "question": "route",
           "top": "none",
-          "p": 0.7
+          "p": 0.85
         }
       ],
       "type": "done"

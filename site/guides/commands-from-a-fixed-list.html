@@ -44,7 +44,7 @@
         <div class="panel term" role="figure" aria-label="A sentence that fits no installed reflex">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke "what time is it"</span>
-<span class="own">  <span class="name">none</span> <span class="hi">0.70</span> · timer 0.20 · awake 0.05 · lock 0.05
+<span class="own">  <span class="name">none</span> <span class="hi">0.85</span> · timer 0.10 · awake 0.03 · lock 0.02
   note, open and visit are inactive  →  evoke show
 [2]</span></pre>
         </div>
@@ -72,7 +72,7 @@
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="ask"><span class="p">$</span> <span class="in">evoke "set the volume to 150 percent"</span>
 <span class="own">  How loud, in percent?  <span class="mid">150 percent is outside 0–100</span>  &gt; <span class="in">40</span>
-  <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span>
+  <span class="name">volume</span> level="40"  <span class="hi">0.96</span></span>
 <span class="out">volume set to 40%</span></pre>
         </div>
         <p class="caption">The volume reflex here comes from evoke's tests. These lines are what evoke printed in its
@@ -104,18 +104,18 @@
     <section id="bar">
       <div class="rule"><p class="label">The bar</p><span class="num">04</span></div>
       <h2>Reads and writes clear a bar. What cannot be undone always asks.</h2>
-      <p class="sub">A decision's confidence is its least sure answer. A read runs at 0.6 or more, and a write at 0.8 or
+      <p class="sub">A decision's confidence is its least sure answer. A read runs at 0.8 or more, and a write at 0.9 or
         more. A read or a write under its bar asks first. <strong>A destructive reflex always asks, however sure, and no
         flag skips that question.</strong></p>
       <div class="grid">
-        <div class="panel term" role="figure" aria-label="A destructive reflex asks at 0.97">
+        <div class="panel term" role="figure" aria-label="A destructive reflex asks at 0.98">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke "restart the computer"</span>
-<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: route <span class="hi">0.97</span>
+<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: route <span class="hi">0.98</span>
   Make the laptop restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
 [2]</span></pre>
         </div>
-        <p class="caption">Sure at 0.97, and it still asked. These lines are what evoke printed in its tests, replayed
+        <p class="caption">Sure at 0.98, and it still asked. These lines are what evoke printed in its tests, replayed
           here. The classifier's answers were written for those tests, so your own numbers will differ.
           <a href="/guides/approval-by-risk.html">Approval set by risk →</a></p>
       </div>
@@ -131,7 +131,7 @@
         <div class="panel term" role="figure" aria-label="A sentence refused before anything runs">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="weave"><span class="p">$</span> <span class="in">evoke "kill the lights in the den and feed the cat"</span>
-<span class="own">  1  <span class="name">lights</span> room="den" state="off"  <span class="hi">0.85</span>
+<span class="own">  1  <span class="name">lights</span> room="den" state="off"  <span class="hi">0.92</span>
   2  "feed the cat" · <span class="mid">no reflex</span>
 [2]</span></pre>
         </div>

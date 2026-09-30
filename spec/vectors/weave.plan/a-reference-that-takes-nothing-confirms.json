@@ -3,6 +3,13 @@
     "plan": {
       "$ref": "fixtures/plan-weave.json"
     },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
     "input": "look up dana's address and start a 10 minute timer for them",
     "tags": [],
     "answers": {
@@ -22,54 +29,76 @@
             },
             "call": "contact name=\"dana\"",
             "effect": "read",
-            "confidence": 0.9,
+            "basis": {
+              "name": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "look"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 15,
+                  "end": 22,
+                  "text": "address"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "contact",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "contact",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "contact.name",
                 "top": "dana",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "mail",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.03
             },
             "contenders": [
               {
                 "reflex": "contact",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "mail",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.03
               },
               {
                 "reflex": "lights",
-                "route": 0.01,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "timer",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "volume",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -97,54 +126,84 @@
             },
             "call": "timer duration=\"10 minute\"",
             "effect": "write",
-            "confidence": 0.88,
+            "basis": {
+              "duration": {
+                "by": "ask",
+                "p": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 5,
+                  "text": "start"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 18,
+                  "end": 23,
+                  "text": "timer"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 28,
+                  "end": 32,
+                  "text": "them"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.94,
             "weakest": {
               "question": "route",
               "top": "timer",
-              "p": 0.88
+              "p": 0.94
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "timer",
-                "p": 0.88
+                "p": 0.94
               },
               {
                 "question": "timer.duration",
                 "top": "8-17",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "lights",
-              "route": 0.02,
-              "fits": 0.05
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "timer",
-                "route": 0.88,
-                "fits": 0.8
+                "route": 0.94
               },
               {
                 "reflex": "lights",
-                "route": 0.02,
-                "fits": 0.05
+                "route": 0.02
               },
               {
                 "reflex": "volume",
-                "route": 0.02,
-                "fits": 0.05
+                "route": 0
               },
               {
                 "reflex": "contact",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "mail",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -153,14 +212,268 @@
       "judged": {
         "weave.split_0": {
           "yes": 0.9
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
         }
       }
     }
   },
   "expect": {
-    "err": {
-      "type": "unanswered",
-      "question": "weave.count"
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "look up dana's address and start a 10 minute timer for them",
+        "steps": [
+          {
+            "n": 1,
+            "text": "look up dana's address",
+            "end": 22,
+            "decision": {
+              "outcome": "run",
+              "reflex": "contact",
+              "args": {
+                "name": {
+                  "type": "word",
+                  "word": "dana"
+                }
+              },
+              "call": "contact name=\"dana\"",
+              "effect": "read",
+              "basis": {
+                "name": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "look"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 15,
+                    "end": 22,
+                    "text": "address"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "contact",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "contact",
+                  "p": 0.95
+                },
+                {
+                  "question": "contact.name",
+                  "top": "dana",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "mail",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "contact",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "lights",
+                  "route": 0
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "contact",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "start a 10 minute timer for them",
+            "end": 59,
+            "decision": {
+              "outcome": "run",
+              "reflex": "timer",
+              "args": {
+                "duration": {
+                  "type": "pick",
+                  "span": {
+                    "start": 8,
+                    "end": 17,
+                    "text": "10 minute"
+                  },
+                  "value": {
+                    "type": "duration",
+                    "value": 600
+                  }
+                }
+              },
+              "call": "timer duration=\"10 minute\"",
+              "effect": "write",
+              "basis": {
+                "duration": {
+                  "by": "ask",
+                  "p": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 5,
+                    "text": "start"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 18,
+                    "end": 23,
+                    "text": "timer"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 28,
+                    "end": 32,
+                    "text": "them"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.94,
+              "weakest": {
+                "question": "route",
+                "top": "timer",
+                "p": 0.94
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "timer",
+                  "p": 0.94
+                },
+                {
+                  "question": "timer.duration",
+                  "top": "8-17",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "lights",
+                "route": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "timer",
+                  "route": 0.94
+                },
+                {
+                  "reflex": "lights",
+                  "route": 0.02
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "timer",
+            "effect": "write",
+            "refs": [
+              {
+                "span": {
+                  "start": 28,
+                  "end": 32,
+                  "text": "them"
+                },
+                "from": [
+                  0
+                ],
+                "how": "pronoun",
+                "many": true
+              }
+            ],
+            "after": [
+              1
+            ]
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "confirm",
+          "because": [
+            {
+              "type": "takes_nothing",
+              "step": 2,
+              "sources": [
+                1
+              ]
+            }
+          ]
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 22,
+            "end": 27,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          }
+        ]
+      }
     }
   }
 }

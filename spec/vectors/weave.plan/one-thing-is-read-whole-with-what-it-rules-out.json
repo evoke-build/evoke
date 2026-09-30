@@ -1,0 +1,422 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "pull the payments logs, not the checkout ones, and only in eu-west",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "pull the payments logs"
+          },
+          {
+            "outcome": "run",
+            "reflex": "logs",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "payments"
+              }
+            },
+            "call": "logs service=\"payments\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "pull"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 18,
+                  "end": 22,
+                  "text": "logs"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "logs",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "logs",
+                "p": 0.95
+              },
+              {
+                "question": "logs.service",
+                "top": "payments",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "logs",
+                "route": 0.95
+              },
+              {
+                "reflex": "errors",
+                "route": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "pull the payments logs, not the checkout ones, and only in eu-west",
+            "whole": true
+          },
+          {
+            "outcome": "run",
+            "reflex": "logs",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "payments"
+              },
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "call": "logs service=\"payments\" region=\"eu-west\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              },
+              "region": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "pull"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 18,
+                  "end": 55,
+                  "text": "logs, not the checkout ones, and only"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "logs",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "logs",
+                "p": 0.95
+              },
+              {
+                "question": "logs.service",
+                "top": "payments",
+                "p": 0.95
+              },
+              {
+                "question": "logs.region",
+                "top": "eu-west",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "logs",
+                "route": 0.95
+              },
+              {
+                "reflex": "errors",
+                "route": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.2
+        },
+        "weave.count": {
+          "one": 0.9,
+          "two": 0.1
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "pull the payments logs, not the checkout ones, and only in eu-west",
+        "steps": [
+          {
+            "n": 1,
+            "text": "pull the payments logs, not the checkout ones, and only in eu-west",
+            "end": 66,
+            "decision": {
+              "outcome": "run",
+              "reflex": "logs",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "payments"
+                },
+                "region": {
+                  "type": "word",
+                  "word": "eu-west"
+                }
+              },
+              "call": "logs service=\"payments\" region=\"eu-west\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                },
+                "region": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "pull"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 18,
+                    "end": 55,
+                    "text": "logs, not the checkout ones, and only"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "logs",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "logs",
+                  "p": 0.95
+                },
+                {
+                  "question": "logs.service",
+                  "top": "payments",
+                  "p": 0.95
+                },
+                {
+                  "question": "logs.region",
+                  "top": "eu-west",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "logs",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.02
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "post",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                },
+                {
+                  "reflex": "status",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "logs",
+            "effect": "read"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": false,
+        "splits": [
+          {
+            "start": 22,
+            "end": 24,
+            "word": ",",
+            "order": "and",
+            "p": 1
+          },
+          {
+            "start": 45,
+            "end": 51,
+            "word": "and",
+            "order": "and",
+            "p": 0.2
+          }
+        ]
+      }
+    }
+  }
+}

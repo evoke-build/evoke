@@ -3,17 +3,16 @@
     "plan": {
       "$ref": "fixtures/plan-joins.json"
     },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
     "input": "look up incident 311 and look up incident 312, then draft the postmortem",
     "tags": [],
     "answers": {
-      "judged": {
-        "weave.split_0": {
-          "yes": 0.9
-        },
-        "weave.split_1": {
-          "yes": 0.9
-        }
-      },
       "decided": [
         [
           {
@@ -38,69 +37,78 @@
             },
             "call": "incident number=\"311\"",
             "effect": "read",
-            "confidence": 0.9,
+            "basis": {
+              "number": {
+                "by": "ask",
+                "p": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "look up incident"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "incident",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "incident",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "incident.number",
                 "top": "17-20",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.03
             },
             "contenders": [
               {
                 "reflex": "incident",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.03
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -128,69 +136,78 @@
             },
             "call": "incident number=\"312\"",
             "effect": "read",
-            "confidence": 0.9,
+            "basis": {
+              "number": {
+                "by": "ask",
+                "p": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "look up incident"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "incident",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "incident",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "incident.number",
                 "top": "17-20",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.03
             },
             "contenders": [
               {
                 "reflex": "incident",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.03
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -205,75 +222,420 @@
             "args": {},
             "call": "postmortem",
             "effect": "write",
-            "confidence": 0.9,
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "draft the postmortem"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "postmortem",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "postmortem",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.03
             },
             "contenders": [
               {
                 "reflex": "postmortem",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.03
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
         ]
-      ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        },
+        "weave.split_1": {
+          "yes": 0.9
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
+        }
+      }
     }
   },
   "expect": {
-    "err": {
-      "type": "unanswered",
-      "question": "weave.count"
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "look up incident 311 and look up incident 312, then draft the postmortem",
+        "steps": [
+          {
+            "n": 1,
+            "text": "look up incident 311",
+            "end": 20,
+            "decision": {
+              "outcome": "run",
+              "reflex": "incident",
+              "args": {
+                "number": {
+                  "type": "pick",
+                  "span": {
+                    "start": 17,
+                    "end": 20,
+                    "text": "311"
+                  },
+                  "value": {
+                    "type": "number",
+                    "value": 311
+                  }
+                }
+              },
+              "call": "incident number=\"311\"",
+              "effect": "read",
+              "basis": {
+                "number": {
+                  "by": "ask",
+                  "p": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "look up incident"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "incident",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "incident",
+                  "p": 0.95
+                },
+                {
+                  "question": "incident.number",
+                  "top": "17-20",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "incident",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "incident",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "look up incident 312",
+            "end": 45,
+            "decision": {
+              "outcome": "run",
+              "reflex": "incident",
+              "args": {
+                "number": {
+                  "type": "pick",
+                  "span": {
+                    "start": 17,
+                    "end": 20,
+                    "text": "312"
+                  },
+                  "value": {
+                    "type": "number",
+                    "value": 312
+                  }
+                }
+              },
+              "call": "incident number=\"312\"",
+              "effect": "read",
+              "basis": {
+                "number": {
+                  "by": "ask",
+                  "p": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "look up incident"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "incident",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "incident",
+                  "p": 0.95
+                },
+                {
+                  "question": "incident.number",
+                  "top": "17-20",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "incident",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "incident",
+            "effect": "read"
+          },
+          {
+            "n": 3,
+            "text": "draft the postmortem",
+            "end": 72,
+            "decision": {
+              "outcome": "run",
+              "reflex": "postmortem",
+              "args": {},
+              "call": "postmortem",
+              "effect": "write",
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 20,
+                    "text": "draft the postmortem"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "postmortem",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "postmortem",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "postmortem",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "postmortem",
+            "effect": "write",
+            "after": [
+              1,
+              2
+            ]
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ]
+        ],
+        "verdict": {
+          "outcome": "refuse",
+          "because": [
+            {
+              "type": "several_sources",
+              "step": 3,
+              "name": "incident",
+              "sources": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 20,
+            "end": 25,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 45,
+            "end": 52,
+            "word": "then",
+            "order": "then",
+            "p": 0.9
+          }
+        ]
+      }
     }
   }
 }

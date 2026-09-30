@@ -32,22 +32,22 @@
         },
         "call": "contact name=\"dana\"",
         "effect": "read",
-        "confidence": 0.9,
+        "confidence": 0.95,
         "weakest": {
           "question": "route",
           "top": "contact",
-          "p": 0.9
+          "p": 0.95
         },
         "judgments": [
           {
             "question": "route",
             "top": "contact",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "question": "contact.name",
             "top": "dana",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "runner_up": {
@@ -58,7 +58,7 @@
         "contenders": [
           {
             "reflex": "contact",
-            "route": 0.9,
+            "route": 0.95,
             "fits": 0.8
           },
           {
@@ -95,17 +95,17 @@
         "reflex": "mail",
         "args": {},
         "unconsumed": [],
-        "confidence": 0.88,
+        "confidence": 0.94,
         "weakest": {
           "question": "route",
           "top": "mail",
-          "p": 0.88
+          "p": 0.94
         },
         "judgments": [
           {
             "question": "route",
             "top": "mail",
-            "p": 0.88
+            "p": 0.94
           }
         ],
         "runner_up": {
@@ -116,7 +116,7 @@
         "contenders": [
           {
             "reflex": "mail",
-            "route": 0.88,
+            "route": 0.94,
             "fits": 0.8
           },
           {
@@ -197,22 +197,22 @@
         },
         "call": "timer duration=\"10 minute\"",
         "effect": "write",
-        "confidence": 0.9,
+        "confidence": 0.95,
         "weakest": {
           "question": "route",
           "top": "timer",
-          "p": 0.9
+          "p": 0.95
         },
         "judgments": [
           {
             "question": "route",
             "top": "timer",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "question": "timer.duration",
             "top": "8-17",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "runner_up": {
@@ -223,7 +223,7 @@
         "contenders": [
           {
             "reflex": "timer",
-            "route": 0.9,
+            "route": 0.95,
             "fits": 0.8
           },
           {

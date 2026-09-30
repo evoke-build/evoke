@@ -6,8 +6,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     },
     "weave": {
       "$ref": "fixtures/weave-runbook.json"
@@ -66,7 +67,7 @@
                   "text": "fail back"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "words": {
@@ -75,61 +76,54 @@
                   "text": "old primary"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "failback",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "failback",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "drain",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "failback",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "drain",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "failover",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "verify",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "tell",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "runbook",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "prompt": {
-              "own": "failback · destructive · weakest: route 0.90",
+              "own": "failback · destructive · weakest: route 0.95",
               "template": "Fail back to the old primary?"
             },
             "because": [

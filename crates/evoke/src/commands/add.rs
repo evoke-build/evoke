@@ -589,7 +589,9 @@ fn stolen(
                 &[],
             )
             .map_err(Exit::Human)?;
-            let (_, _, reading) = reading(plan, request, asked(plan, adapter), Exit::Adapter)?;
+            let floors = adapter.declared().gate.as_ref();
+            let (_, _, reading) =
+                reading(plan, floors, request, asked(plan, adapter), Exit::Adapter)?;
             busy.tick();
             Ok(reading)
         })?
@@ -634,8 +636,9 @@ fn reached(
         .collect();
     let decide = |text: &str| -> Result<Decision, Exit> {
         let request = request(plan, text, &[], None, Scope::Full, &[]).map_err(Exit::Human)?;
-        let (_, _, reading) = reading(plan, request, asked(plan, adapter), Exit::Adapter)?;
-        Ok(gate(plan, reading, adapter.declared().gate.as_ref()))
+        let floors = adapter.declared().gate.as_ref();
+        let (_, _, reading) = reading(plan, floors, request, asked(plan, adapter), Exit::Adapter)?;
+        Ok(gate(plan, reading, floors))
     };
     let own = {
         let busy = terminal::busy_over(format!("reading {name}"), records.len());

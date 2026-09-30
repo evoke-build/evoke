@@ -6,8 +6,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     },
     "weave": {
       "$ref": "fixtures/weave-flight-lookups.json"
@@ -70,7 +71,7 @@
                   "text": "show the seat map"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "words": {
@@ -79,67 +80,59 @@
                   "text": "flight"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "seats",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "seats",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "flights",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "seats",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "flights",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "book",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "weather",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "traffic",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "convert",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ticket",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "trip",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           },
@@ -188,7 +181,7 @@
                   "text": "check the weather"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "words": {
@@ -197,67 +190,59 @@
                   "text": "day"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "weather",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "weather",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "flights",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "weather",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "flights",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "book",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "seats",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "traffic",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "convert",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ticket",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "trip",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           },
@@ -301,7 +286,7 @@
                   "text": "check the traffic"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "words": {
@@ -310,67 +295,59 @@
                   "text": "departure"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "traffic",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "traffic",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "flights",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "traffic",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "flights",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "book",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "seats",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "weather",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "convert",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ticket",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "trip",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           },

@@ -20,9 +20,9 @@ use evoke_core::test::{Claim, Expected, Mismatch};
 use evoke_core::vocabulary::Vocabulary;
 use evoke_core::weave::{Because, Bound, From, Shared, Status, Step, When, Why as Stopped};
 use evoke_core::{
-    At, Call, Case, Chosen, Clean, Contained, Contender, ContractDiff, Decision, Diagnostic,
-    Digest, Does, Effective, File, Finding, Fix, Gate, Input, Json, KeyPath, Level, Needs, Prompt,
-    Proposed, Raw, Regression, Span, Verdict, Version, Weave, render,
+    At, Call, Case, Chosen, Clean, Contained, ContractDiff, Decision, Diagnostic, Digest, Does,
+    Effective, File, Finding, Fix, Gate, Input, Json, KeyPath, Level, Needs, Prompt, Proposed, Raw,
+    Regression, Span, Verdict, Version, Weave, render,
 };
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
@@ -525,18 +525,6 @@ impl Line {
     }
 }
 
-/// The ranking a decision rests on.
-fn contenders(decision: &Decision) -> &[Contender] {
-    match decision {
-        Decision::Abstain { contenders, .. } => contenders,
-        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => chosen
-            .judged
-            .as_ref()
-            .map_or(&[], |judged| judged.contenders()),
-        Decision::Ask { asking, .. } => asking.judged.contenders(),
-    }
-}
-
 /// The reflex that won the route: the decision's own, or — for an abstain — the one the route named when the
 /// gate still refused it, since `none` is no name.
 fn winner_of(decision: &Decision) -> Option<LocalName> {
@@ -557,7 +545,7 @@ fn field<T: serde::de::DeserializeOwned>(what: &str, value: Json) -> Result<T, S
     serde_json::from_value(value).map_err(|error| format!("{what}: {error}"))
 }
 
-/// `try`: the ranking, every judgment about the winner's arguments, `fits`, and the outcome with its weakest
+/// `try`: the ranking, every judgment about the winner's arguments, and the outcome with its weakest
 /// judgment.
 #[must_use]
 pub fn tried(decided: &Decided, route_floor: Option<evoke_core::Prob>) -> Text {
@@ -2705,9 +2693,10 @@ fn toml(value: &Json) -> String {
     }
 }
 
-/// The ranking, the winner's argument lines, the values an ask recalled and the fits line, unindented; on each
-/// distribution the top answer carries the weight. An argument the request says nothing of is no line, unless
-/// the decision asks for it or holds a value for it.
+/// The ranking, the winner's argument lines, the values an ask recalled, what the words left over do and how
+/// far the call holds all that was said, unindented; on each distribution the top answer carries the weight.
+/// An argument the request says nothing of is no line, unless the decision asks for it or holds a value for
+/// it.
 fn block(
     winner: Option<&LocalName>,
     answers: &Raw,
@@ -2716,7 +2705,6 @@ fn block(
     under_floor: Option<evoke_core::Prob>,
     recalled: &IndexMap<ArgName, Vec<String>>,
 ) -> Vec<Text> {
-    let contenders = contenders(decision);
     let asked: Vec<&str> = match decision {
         Decision::Ask { missing, .. } => missing.iter().map(|m| m.arg.as_str()).collect(),
         _ => Vec::new(),
@@ -2753,7 +2741,12 @@ fn block(
         })
         .unwrap_or_default();
     let left = left(decision);
-    let least = if left.is_empty() { "fits" } else { "words" };
+    let whole = whole(decision);
+    let least = if left.is_empty() && whole.is_none() {
+        ""
+    } else {
+        "words"
+    };
     let width = arguments
         .iter()
         .map(|(arg, _)| arg.len())
@@ -2784,22 +2777,8 @@ fn block(
             left.join(" · ")
         )));
     }
-    // Most fitting first; ties keep the ranking's order.
-    let mut fits: Vec<(&Contender, f64)> = contenders
-        .iter()
-        .filter_map(|contender| contender.fits.map(|fits| (contender, fits.get())))
-        .collect();
-    fits.sort_by(|a, b| b.1.total_cmp(&a.1));
-    if !fits.is_empty() {
-        let fits: Vec<String> = fits
-            .iter()
-            .map(|(contender, fits)| format!("{} {fits:.2}", contender.reflex))
-            .collect();
-        lines.push(Text::from(format!(
-            "{:<width$}{}",
-            "fits",
-            fits.join(" · ")
-        )));
+    if let Some(whole) = whole {
+        lines.push(Text::from(format!("{:<width$}{whole}", "whole")));
     }
     lines
 }
@@ -2816,9 +2795,17 @@ fn ranking(answers: &Raw, under_floor: Option<evoke_core::Prob>) -> Text {
 /// Under this, a probability prints as `0.00`.
 const SHOWN: f64 = 0.005;
 
-/// A question's answers as sorted, `key p` each: the top one weighted; the ones that would print as `0.00`
-/// folded into a count — but the sentinels `none` and `unstated`, which always show, since they are what the
-/// answer was weighed against. `shown` writes a key as the person reads it.
+/// How far the call holds all that was said, where it was held against the request: `holds all you said
+/// 0.90`.
+fn whole(decision: &Decision) -> Option<String> {
+    let held = match decision {
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => chosen.whole?,
+        Decision::Ask { asking, .. } => asking.whole?,
+        Decision::Abstain { .. } => return None,
+    };
+    Some(format!("holds all you said {:.2}", held.get()))
+}
+
 /// The runs of the request's words that no value holds, each with what it does: `"kill the lights" say what to
 /// do 0.97`.
 fn left(decision: &Decision) -> Vec<String> {
@@ -2908,6 +2895,13 @@ fn stands_on(decision: &Decision, arg: &str) -> Option<String> {
             _ => return None,
         },
         Basis::Only { yes } => format!("the only one of its kind: yes {:.2}", yes.get()),
+        Basis::Shared { from, yes } if *value == Value::Flag => {
+            format!(
+                "said once, in {} · yes {:.2}",
+                plain(&quoted(from)),
+                yes.get()
+            )
+        }
         Basis::Shared { from, yes } => format!(
             "said once, in {} · is it {shown}? yes {:.2}",
             plain(&quoted(from)),
@@ -2924,6 +2918,9 @@ fn stands_on(decision: &Decision, arg: &str) -> Option<String> {
     })
 }
 
+/// A question's answers as sorted, `key p` each: the top one weighted; the ones that would print as `0.00`
+/// folded into a count — but the sentinels `none` and `unstated`, which always show, since they are what the
+/// answer was weighed against. `shown` writes a key as the person reads it.
 fn distribution(sorted: &[(String, f64)], shown: impl Fn(&str) -> String) -> Text {
     let mut text = Text::new();
     let mut folded = 0;
@@ -3204,7 +3201,7 @@ mod tests {
 
     #[test]
     fn a_log_line_reads_back_to_what_was_written() {
-        let text = r#"{"input":"kill the lights in the den","outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","confidence":0.85,"weakest":{"question":"lights.room","top":"den","p":0.85},"judgments":[{"question":"route","top":"lights","p":0.91},{"question":"lights.room","top":"den","p":0.85},{"question":"lights.state","top":"off","p":0.88}],"runner_up":{"reflex":"timer","route":0.02,"fits":0.05},"contenders":[{"reflex":"lights","route":0.91,"fits":0.7},{"reflex":"timer","route":0.02,"fits":0.05}],"trace":[{"adapter":"replay","questions":6,"ms":0}],"result":{"text":"den lights off"},"answers":{"route":{"lights":0.91,"timer":0.02,"none":0.07}},"proposed":[]}"#;
+        let text = r#"{"input":"kill the lights in the den","outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","confidence":0.85,"weakest":{"question":"lights.room","top":"den","p":0.85},"judgments":[{"question":"route","top":"lights","p":0.91},{"question":"lights.room","top":"den","p":0.85},{"question":"lights.state","top":"off","p":0.88}],"runner_up":{"reflex":"timer","route":0.02},"contenders":[{"reflex":"lights","route":0.91},{"reflex":"timer","route":0.02}],"trace":[{"adapter":"replay","questions":6,"ms":0}],"result":{"text":"den lights off"},"answers":{"route":{"lights":0.91,"timer":0.02,"none":0.07}},"proposed":[]}"#;
         let line = Line::parse(text).unwrap();
         assert_eq!(line.input.as_str(), "kill the lights in the den");
         assert!(matches!(line.decision, Decision::Run { .. }));
@@ -3218,7 +3215,7 @@ mod tests {
         let explained = why(std::slice::from_ref(&line));
         assert_eq!(
             explained.to_string(),
-            "  \"kill the lights in the den\"\n  lights 0.91 · none 0.07 · timer 0.02\n  fits  lights 0.70 · timer 0.05\n  ran lights room=\"den\" state=\"off\" · weakest: room 0.85 · replay, 6 questions"
+            "  \"kill the lights in the den\"\n  lights 0.91 · none 0.07 · timer 0.02\n  ran lights room=\"den\" state=\"off\" · weakest: room 0.85 · replay, 6 questions"
         );
         assert_eq!(
             explained.roles(),
@@ -3260,7 +3257,7 @@ mod tests {
 
     /// The run decision of the log line above, as a `Chosen`.
     fn chosen() -> Chosen {
-        let text = r#"{"outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","confidence":0.85,"weakest":{"question":"lights.room","top":"den","p":0.85},"judgments":[{"question":"route","top":"lights","p":0.91},{"question":"lights.room","top":"den","p":0.85}],"contenders":[{"reflex":"lights","route":0.91,"fits":0.7}]}"#;
+        let text = r#"{"outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","confidence":0.85,"weakest":{"question":"lights.room","top":"den","p":0.85},"judgments":[{"question":"route","top":"lights","p":0.91},{"question":"lights.room","top":"den","p":0.85}],"contenders":[{"reflex":"lights","route":0.91}]}"#;
         match serde_json::from_str::<Decision>(text).unwrap() {
             Decision::Run { chosen } => chosen,
             _ => unreachable!("the line is a run"),
@@ -3308,7 +3305,7 @@ mod tests {
             template: Clean::line("Set the den lights off?").unwrap(),
         };
         let judged = own(
-            "lights room=\"den\" state=\"off\" · write · weakest: room 0.85 · unused \"now · later\"",
+            "lights room=\"den\" state=\"off\" · write · weakest: room 0.85 · also \"now · later\"",
         );
         let line = confirming(&chosen, &judged, &Contained::Full);
         assert_eq!(line.to_string(), format!("  {}", judged.own));
@@ -3320,7 +3317,7 @@ mod tests {
                 (Role::Weak, "weakest: room 0.85"),
             ]
         );
-        let capped = own("lights room=\"den\" state=\"off\" · write · also timer (fits 0.40)");
+        let capped = own("lights room=\"den\" state=\"off\" · write · holds all you said 0.20");
         let line = confirming(&chosen, &capped, &Contained::Full);
         assert_eq!(line.to_string(), format!("  {}", capped.own));
         assert_eq!(line.roles().len(), 2);

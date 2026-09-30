@@ -9,8 +9,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     }
   },
   "expect": {
@@ -24,22 +25,22 @@
     },
     "call": "contact name=\"dana\"",
     "effect": "read",
-    "confidence": 0.7,
+    "confidence": 0.85,
     "weakest": {
       "question": "route",
       "top": "contact",
-      "p": 0.7
+      "p": 0.85
     },
     "judgments": [
       {
         "question": "route",
         "top": "contact",
-        "p": 0.7
+        "p": 0.85
       },
       {
         "question": "contact.name",
         "top": "dana",
-        "p": 0.9
+        "p": 0.95
       }
     ],
     "runner_up": {
@@ -50,7 +51,7 @@
     "contenders": [
       {
         "reflex": "contact",
-        "route": 0.7,
+        "route": 0.85,
         "fits": 0.7
       },
       {

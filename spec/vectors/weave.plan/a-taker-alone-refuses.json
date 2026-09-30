@@ -18,17 +18,17 @@
             "args": {},
             "call": "suspect",
             "effect": "read",
-            "confidence": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "suspect",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "suspect",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
@@ -39,7 +39,7 @@
             "contenders": [
               {
                 "reflex": "suspect",
-                "route": 0.9,
+                "route": 0.95,
                 "fits": 0.8
               },
               {
@@ -99,17 +99,17 @@
               "args": {},
               "call": "suspect",
               "effect": "read",
-              "confidence": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "suspect",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "suspect",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
@@ -120,7 +120,7 @@
               "contenders": [
                 {
                   "reflex": "suspect",
-                  "route": 0.9,
+                  "route": 0.95,
                   "fits": 0.8
                 },
                 {

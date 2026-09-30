@@ -27,12 +27,6 @@
           },
           "otherwise": "none"
         },
-        "fits.screenshot": {
-          "type": "yesno",
-          "ask": "Does `screenshot` do the specific thing the request asks for?",
-          "yes": "Capture the screen, a window or a selection.\nSaved to the desktop as PNG, or copied to the clipboard.",
-          "no": "Something else, such as: recording the screen."
-        },
         "screenshot.area": {
           "type": "choice",
           "ask": "The whole screen, a window, or a selection?",
@@ -129,16 +123,13 @@
     },
     "raw": {
       "route": {
-        "screenshot": 0.95,
-        "none": 0.05
-      },
-      "fits.screenshot": {
-        "yes": 0.9
+        "screenshot": 0.97,
+        "none": 0.03
       },
       "screenshot.area": {
-        "screen": 0.05,
-        "window": 0.9,
-        "unstated": 0.05
+        "screen": 0.03,
+        "window": 0.95,
+        "unstated": 0.02
       },
       "screenshot.clipboard": {
         "yes": 0.45,
@@ -146,12 +137,12 @@
         "unstated": 0.275
       },
       "weave.view_screenshot__area": {
-        "screen": 0.05,
-        "window": 0.9,
-        "unstated": 0.05
+        "screen": 0.03,
+        "window": 0.95,
+        "unstated": 0.02
       },
       "weave.is_screenshot__area_1": {
-        "yes": 0.9
+        "yes": 0.95
       },
       "weave.left_screenshot_0_0": {
         "action": 0.9,
@@ -164,25 +155,19 @@
       "ranking": [
         {
           "reflex": "screenshot",
-          "route": 0.95,
-          "fits": 0.9
+          "route": 0.97
         }
       ],
       "judgments": [
         {
           "question": "route",
           "top": "screenshot",
-          "p": 0.95
+          "p": 0.97
         },
         {
           "question": "screenshot.area",
           "top": "window",
-          "p": 0.9
-        },
-        {
-          "question": "screenshot.clipboard",
-          "top": "no",
-          "p": 0.55
+          "p": 0.95
         }
       ],
       "winner": {
@@ -198,8 +183,8 @@
         "basis": {
           "area": {
             "by": "views",
-            "ask": 0.9,
-            "reader": 0.9
+            "ask": 0.95,
+            "reader": 0.95
           }
         },
         "left": [

@@ -13,7 +13,7 @@ $ evoke update
     args.state   renamed power; your 1 example follows
     needs        narrowed: hosts * dropped
 $ HUE_TOKEN=hue-example evoke "kill the lights in the den"
-  lights room="den" power="off"  0.93
+  lights room="den" power="off"  0.96
 den lights off
 $ evoke update
   up to date

@@ -6,8 +6,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     },
     "input": "grab the september bank transactions, the invoices and the card expenses, then the payroll run for september, and reconcile the month",
     "tags": [],
@@ -31,8 +32,8 @@
             "basis": {
               "month": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               }
             },
             "left": [
@@ -43,7 +44,7 @@
                   "text": "grab"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "words": {
@@ -52,67 +53,60 @@
                   "text": "bank transactions"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "bank",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "bank",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "bank.month",
                 "top": "september",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "invoices",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "bank",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "invoices",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "cards",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "payroll",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "reconcile",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ledger",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "send",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -133,68 +127,56 @@
                   "text": "invoices"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "unconsumed": [],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "invoices",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "invoices",
-                "p": 0.9
-              },
-              {
-                "question": "invoices.month",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "invoices",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "cards",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "payroll",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "reconcile",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ledger",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "send",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "missing": [
@@ -232,68 +214,56 @@
                   "text": "card expenses"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "unconsumed": [],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "cards",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "cards",
-                "p": 0.9
-              },
-              {
-                "question": "cards.month",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "cards",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "invoices",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "payroll",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "reconcile",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ledger",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "send",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "missing": [
@@ -333,8 +303,8 @@
             "basis": {
               "month": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               }
             },
             "left": [
@@ -345,67 +315,60 @@
                   "text": "payroll run"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "payroll",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "payroll",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "payroll.month",
                 "top": "september",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "payroll",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "invoices",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "cards",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "reconcile",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ledger",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "send",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -428,62 +391,55 @@
                   "text": "reconcile the month"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "reconcile",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "reconcile",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "reconcile",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "invoices",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "cards",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "payroll",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ledger",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "send",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -498,15 +454,14 @@
             "contenders": [
               {
                 "reflex": "bank",
-                "route": 0.1,
-                "fits": 0.02
+                "route": 0.05
               }
             ],
             "judgments": [
               {
                 "question": "route",
                 "top": "none",
-                "p": 0.9
+                "p": 0.95
               }
             ]
           }
@@ -528,33 +483,28 @@
                   "text": "grab the invoices bank transactions"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "unconsumed": [],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "bank",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "bank",
-                "p": 0.9
-              },
-              {
-                "question": "bank.month",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "contenders": [
               {
                 "reflex": "bank",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               }
             ],
             "missing": [
@@ -622,8 +572,8 @@
               "basis": {
                 "month": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -634,7 +584,7 @@
                     "text": "grab"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "words": {
@@ -643,67 +593,60 @@
                     "text": "bank transactions"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "bank",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "bank",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "bank.month",
                   "top": "september",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "invoices",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "bank",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "invoices",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "cards",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "payroll",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "reconcile",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "ledger",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "send",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -728,8 +671,8 @@
               "basis": {
                 "month": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -740,62 +683,60 @@
                     "text": "invoices"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "invoices",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "invoices",
-                  "p": 0.9
+                  "p": 0.95
+                },
+                {
+                  "question": "invoices.month",
+                  "top": "september",
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "invoices",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "bank",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "cards",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "payroll",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "reconcile",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "ledger",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "send",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -826,8 +767,8 @@
               "basis": {
                 "month": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -838,62 +779,60 @@
                     "text": "card expenses"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "cards",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "cards",
-                  "p": 0.9
+                  "p": 0.95
+                },
+                {
+                  "question": "cards.month",
+                  "top": "september",
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "cards",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "bank",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "invoices",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "payroll",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "reconcile",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "ledger",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "send",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -924,8 +863,8 @@
               "basis": {
                 "month": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -936,67 +875,60 @@
                     "text": "payroll run"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "payroll",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "payroll",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "payroll.month",
                   "top": "september",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "payroll",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "bank",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "invoices",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "cards",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "reconcile",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "ledger",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "send",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -1026,62 +958,55 @@
                     "text": "reconcile the month"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "reconcile",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "reconcile",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "reconcile",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "bank",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "invoices",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "cards",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "payroll",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "ledger",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "send",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },

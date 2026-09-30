@@ -8,20 +8,14 @@
     },
     "raw": {
       "route": {
-        "lights": 0.91,
-        "timer": 0.03,
-        "none": 0.06
-      },
-      "fits.lights": {
-        "yes": 0.7
+        "lights": 0.95,
+        "timer": 0.02,
+        "none": 0.03
       },
       "lights.room": {
-        "den": 0.85,
-        "office": 0.05,
-        "unstated": 0.1
-      },
-      "fits.timer": {
-        "yes": 0.1
+        "den": 0.92,
+        "office": 0.03,
+        "unstated": 0.05
       },
       "lights.brightness": {
         "unstated": 1
@@ -33,12 +27,12 @@
         "unstated": 1
       },
       "weave.view_lights__room": {
-        "den": 0.85,
-        "office": 0.05,
-        "unstated": 0.1
+        "den": 0.92,
+        "office": 0.03,
+        "unstated": 0.05
       },
       "weave.is_lights__room_0": {
-        "yes": 0.9
+        "yes": 0.95
       },
       "weave.view_lights__state": {
         "unstated": 1

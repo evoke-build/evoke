@@ -88,7 +88,7 @@ pub struct Regression {
 }
 
 /// A phrase an installed reflex claims that a newcomer wins at `add` — or, with `fits`, one the newcomer fits
-/// over the floor, so every such request would stop at confirm.
+/// over the floor, so two reflexes claim it.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Theft {
     pub phrase: Utterance,

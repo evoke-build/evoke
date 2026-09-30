@@ -3,6 +3,13 @@
     "plan": {
       "$ref": "fixtures/plan-weave.json"
     },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
     "input": "kill the lights in the den and start a 10 minute timer",
     "tags": [],
     "answers": {
@@ -10,14 +17,29 @@
       "judged": {
         "weave.split_0": {
           "yes": 0.95
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
         }
       }
     }
   },
   "expect": {
-    "err": {
-      "type": "unanswered",
-      "question": "weave.count"
+    "ok": {
+      "type": "need",
+      "need": {
+        "type": "decide",
+        "asked": [
+          {
+            "text": "kill the lights in the den"
+          },
+          {
+            "text": "start a 10 minute timer"
+          }
+        ]
+      }
     }
   }
 }

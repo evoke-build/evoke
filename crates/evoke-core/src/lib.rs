@@ -20,6 +20,7 @@ pub mod digest;
 pub mod document;
 pub mod dts;
 pub mod edit;
+mod hold;
 pub mod manifest;
 pub mod name;
 pub mod needs;
@@ -46,8 +47,8 @@ pub use contract::{
 };
 pub use decide::{
     Asking, Basis, Cap, Choices, Chosen, Contender, Decision, Judged, Judgment, Missing, Prompt,
-    Read, Reading, Scope, View, Why, Winner, by_name, fill, gate, given, held, joined, merged,
-    picked, read, reading, request, validated,
+    Read, Reading, Scope, View, Why, Winner, by_name, fill, gate, given, held, joined, picked,
+    read, reading, request, validated,
 };
 pub use diagnostic::{At, Diagnostic, File, Fix};
 pub use digest::{Digest, compose, digest};

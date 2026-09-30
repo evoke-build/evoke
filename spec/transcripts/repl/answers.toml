@@ -4,36 +4,32 @@ id = "replay"
 [gate]
 route = 0.5
 fits  = 0.3
-read  = 0.6
-write = 0.8
+read  = 0.8
+write = 0.9
+whole = 0.3
 
 [answers."kill the lights in the den"]
-route                      = { lights = 0.91, timer = 0.02, volume = 0.01, none = 0.06 }
-"fits.lights"              = { yes = 0.7 }
-"fits.timer"               = { yes = 0.05 }
-"fits.volume"              = { yes = 0.05 }
-"lights.room"              = { den = 0.85, office = 0.05, unstated = 0.1 }
-"lights.state"             = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
+route                      = { lights = 0.95, timer = 0.01, volume = 0.01, none = 0.03 }
+"lights.room"              = { den = 0.92, office = 0.03, unstated = 0.05 }
+"lights.state"             = { off = 0.94, on = 0.03, dim = 0.02, unstated = 0.01 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
 "volume.level"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { den = 0.85, office = 0.05, unstated = 0.1 }
-"weave.is_lights__room_0"  = { yes = 0.9 }
-"weave.view_lights__state" = { off = 0.88, on = 0.05, dim = 0.05, unstated = 0.02 }
-"weave.is_lights__state_1" = { yes = 0.9 }
+"weave.view_lights__room"  = { den = 0.92, office = 0.03, unstated = 0.05 }
+"weave.is_lights__room_0"  = { yes = 0.95 }
+"weave.view_lights__state" = { off = 0.94, on = 0.03, dim = 0.02, unstated = 0.01 }
+"weave.is_lights__state_1" = { yes = 0.95 }
 "weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+"weave.whole_693291516"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."what time is it"]
-route                      = { none = 0.7, timer = 0.2, lights = 0.05, volume = 0.05 }
-"fits.lights"              = { yes = 0.05 }
-"fits.timer"               = { yes = 0.3 }
-"fits.volume"              = { yes = 0.05 }
-"lights.room"              = { unstated = 0.8, den = 0.1, office = 0.1 }
-"lights.state"             = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
+route                      = { none = 0.85, timer = 0.1, lights = 0.03, volume = 0.02 }
+"lights.room"              = { unstated = 0.9, den = 0.05, office = 0.05 }
+"lights.state"             = { unstated = 0.92, on = 0.03, off = 0.03, dim = 0.02 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
 "volume.level"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.8, den = 0.1, office = 0.1 }
-"weave.view_lights__state" = { unstated = 0.85, on = 0.05, off = 0.05, dim = 0.05 }
+"weave.view_lights__room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
+"weave.view_lights__state" = { unstated = 0.92, on = 0.03, off = 0.03, dim = 0.02 }

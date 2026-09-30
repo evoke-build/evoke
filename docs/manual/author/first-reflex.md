@@ -103,12 +103,13 @@ $ cd ~/dev && evoke trust
 $ cd ~/dev && evoke add ./hello
 + hello  ./hello  read  runs hello.mts
 $ cd ~/dev && evoke try 'say hi to "Ada"'
-  hello 0.94 · none 0.06
-  who   "Ada" 0.97 · unstated 0.03
-  fits  hello 0.71
-  run · weakest: route 0.94
+  hello 0.97 · none 0.03
+  who    "Ada" 0.98 · unstated 0.02
+  words  "say" say what to do 0.90
+  whole  holds all you said 0.90
+  run · weakest: route 0.97
 $ cd ~/dev && evoke 'wave at "Grace"'
-  hello who="Grace"  0.92
+  hello who="Grace"  0.96
 Hello, Grace!
 ```
 

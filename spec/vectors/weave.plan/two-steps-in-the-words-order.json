@@ -3,6 +3,13 @@
     "plan": {
       "$ref": "fixtures/plan-weave.json"
     },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
     "input": "kill the lights in the den and start a 10 minute timer",
     "tags": [],
     "answers": {
@@ -26,59 +33,78 @@
             },
             "call": "lights room=\"den\" state=\"off\"",
             "effect": "write",
-            "confidence": 0.85,
+            "basis": {
+              "room": {
+                "by": "views",
+                "ask": 0.92,
+                "reader": 0.92
+              },
+              "state": {
+                "by": "views",
+                "ask": 0.94,
+                "reader": 0.94,
+                "yes": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 15,
+                  "text": "kill the lights"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.92,
             "weakest": {
               "question": "lights.room",
               "top": "den",
-              "p": 0.85
+              "p": 0.92
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "lights",
-                "p": 0.91
+                "p": 0.95
               },
               {
                 "question": "lights.room",
                 "top": "den",
-                "p": 0.85
+                "p": 0.92
               },
               {
                 "question": "lights.state",
                 "top": "off",
-                "p": 0.88
+                "p": 0.94
               }
             ],
             "runner_up": {
               "reflex": "timer",
-              "route": 0.02,
-              "fits": 0.05
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "lights",
-                "route": 0.91,
-                "fits": 0.7
+                "route": 0.95
               },
               {
                 "reflex": "timer",
-                "route": 0.02,
-                "fits": 0.05
+                "route": 0.02
               },
               {
                 "reflex": "volume",
-                "route": 0.01,
-                "fits": 0.05
+                "route": 0
               },
               {
                 "reflex": "contact",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "mail",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -106,54 +132,75 @@
             },
             "call": "timer duration=\"10 minute\"",
             "effect": "write",
-            "confidence": 0.9,
+            "basis": {
+              "duration": {
+                "by": "ask",
+                "p": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 5,
+                  "text": "start"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 18,
+                  "end": 23,
+                  "text": "timer"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "timer",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "timer",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "timer.duration",
                 "top": "8-17",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "lights",
-              "route": 0.02,
-              "fits": 0.05
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "timer",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "lights",
-                "route": 0.02,
-                "fits": 0.05
+                "route": 0.02
               },
               {
                 "reflex": "volume",
-                "route": 0.02,
-                "fits": 0.05
+                "route": 0
               },
               {
                 "reflex": "contact",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "mail",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -162,14 +209,239 @@
       "judged": {
         "weave.split_0": {
           "yes": 0.95
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
         }
       }
     }
   },
   "expect": {
-    "err": {
-      "type": "unanswered",
-      "question": "weave.count"
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "kill the lights in the den and start a 10 minute timer",
+        "steps": [
+          {
+            "n": 1,
+            "text": "kill the lights in the den",
+            "end": 26,
+            "decision": {
+              "outcome": "run",
+              "reflex": "lights",
+              "args": {
+                "room": {
+                  "type": "word",
+                  "word": "den"
+                },
+                "state": {
+                  "type": "option",
+                  "key": "off"
+                }
+              },
+              "call": "lights room=\"den\" state=\"off\"",
+              "effect": "write",
+              "basis": {
+                "room": {
+                  "by": "views",
+                  "ask": 0.92,
+                  "reader": 0.92
+                },
+                "state": {
+                  "by": "views",
+                  "ask": 0.94,
+                  "reader": 0.94,
+                  "yes": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 15,
+                    "text": "kill the lights"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.92,
+              "weakest": {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.92
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "lights",
+                  "p": 0.95
+                },
+                {
+                  "question": "lights.room",
+                  "top": "den",
+                  "p": 0.92
+                },
+                {
+                  "question": "lights.state",
+                  "top": "off",
+                  "p": 0.94
+                }
+              ],
+              "runner_up": {
+                "reflex": "timer",
+                "route": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "lights",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0.02
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "lights",
+            "effect": "write"
+          },
+          {
+            "n": 2,
+            "text": "start a 10 minute timer",
+            "end": 54,
+            "decision": {
+              "outcome": "run",
+              "reflex": "timer",
+              "args": {
+                "duration": {
+                  "type": "pick",
+                  "span": {
+                    "start": 8,
+                    "end": 17,
+                    "text": "10 minute"
+                  },
+                  "value": {
+                    "type": "duration",
+                    "value": 600
+                  }
+                }
+              },
+              "call": "timer duration=\"10 minute\"",
+              "effect": "write",
+              "basis": {
+                "duration": {
+                  "by": "ask",
+                  "p": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 5,
+                    "text": "start"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 18,
+                    "end": 23,
+                    "text": "timer"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "timer",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "timer",
+                  "p": 0.95
+                },
+                {
+                  "question": "timer.duration",
+                  "top": "8-17",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "lights",
+                "route": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "timer",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "lights",
+                  "route": 0.02
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "timer",
+            "effect": "write"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 26,
+            "end": 31,
+            "word": "and",
+            "order": "and",
+            "p": 0.95
+          }
+        ]
+      }
     }
   }
 }

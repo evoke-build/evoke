@@ -4,6 +4,6 @@ $ evoke "lock the screen"
 $ OPENJEV_API_KEY=sk-example evoke "lock the screen"
   no reflexes are installed  →  evoke add evoke-build/reflexes
 [3]
-$ printf '\n[adapters.openjev]\ngate = { read = 0.9 }\n' >> .config/evoke/evoke.toml && OPENJEV_API_KEY=sk-example evoke "lock the screen"
-  adapters.openjev.gate: read 0.9 is above write 0.8  →  evoke check
+$ printf '\n[adapters.openjev]\ngate = { read = 0.95 }\n' >> .config/evoke/evoke.toml && OPENJEV_API_KEY=sk-example evoke "lock the screen"
+  adapters.openjev.gate: read 0.95 is above write 0.9  →  evoke check
 [3]

@@ -51,12 +51,6 @@
       },
       "otherwise": "none"
     },
-    "fits.meeting": {
-      "type": "yesno",
-      "ask": "Does `meeting` do the specific thing the request asks for?",
-      "yes": "Move a meeting to a day and a time.\nThe meeting moves to the day and the time you name.",
-      "no": "Something else, such as: showing the calendar; rolling a release back."
-    },
     "meeting.day": {
       "type": "choice",
       "ask": "To which day?",
@@ -75,12 +69,6 @@
       },
       "otherwise": "unstated"
     },
-    "fits.rollback": {
-      "type": "yesno",
-      "ask": "Does `rollback` do the specific thing the request asks for?",
-      "yes": "Roll a service back from a release to the one before it.\nEverywhere at once.",
-      "no": "Something else, such as: listing deploys; moving a meeting."
-    },
     "rollback.release": {
       "type": "choice",
       "ask": "From which release?",
@@ -90,12 +78,6 @@
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
-    },
-    "fits.calendar": {
-      "type": "yesno",
-      "ask": "Does `calendar` do the specific thing the request asks for?",
-      "yes": "Show the meetings of a day.\nEach with its title and its time.",
-      "no": "Something else, such as: moving a meeting; rolling a release back."
     },
     "calendar.day": {
       "type": "choice",
@@ -107,12 +89,6 @@
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
-    },
-    "fits.deploys": {
-      "type": "yesno",
-      "ask": "Does `deploys` do the specific thing the request asks for?",
-      "yes": "List the recent deploys of a service.\nEach release, newest first.",
-      "no": "Something else, such as: rolling a release back; moving a meeting."
     },
     "deploys.service": {
       "type": "choice",

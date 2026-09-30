@@ -774,7 +774,11 @@ const PART_DETAIL: &str = "It adds a detail to another part of the request.";
 const PART_ASIDE: &str = "It gives a reason, a circumstance or a remark, and asks for nothing.";
 
 /// The no of a value one part states, asked of another.
-const ANOTHER: &str = "Another one, or none.";
+pub(crate) const ANOTHER: &str = "Another one, or none.";
+
+/// The yes and the no of a switch one part sets, asked of another.
+pub(crate) const THIS: &str = "The part asks for this too.";
+pub(crate) const NOT_THIS: &str = "The part does not ask for this.";
 
 /// What a part of the request does: `weave.part_<start>_<end>`, by where its words stand in the request.
 pub(crate) fn part(seg: &Segment) -> Result<(QuestionId, Question), Unclean> {
@@ -799,14 +803,13 @@ pub(crate) fn part(seg: &Segment) -> Result<(QuestionId, Question), Unclean> {
 }
 
 /// Whether a value one part states is another part's: `weave.share_<taker>_<giver>_<reflex>__<argument>`, the
-/// parts by where their words begin; the argument's own ask of the taker's words, a yes the value as shown.
+/// parts by where their words begin; the argument's own ask of the taker's words, a yes the value as shown,
+/// a no as the value's kind says it.
 pub(crate) fn shared(
-    taker: &Segment,
-    giver: &Segment,
-    reflex: &LocalName,
-    arg: &ArgName,
+    (taker, giver): (&Segment, &Segment),
+    (reflex, arg): (&LocalName, &ArgName),
     ask: &Clean,
-    shown: &str,
+    (shown, no): (&str, &str),
 ) -> Result<(QuestionId, Question), Unclean> {
     let ask = Clean::new(&format!("For the part «{}»: {ask}", taker.text)).map_err(|_| Unclean)?;
     Ok((
@@ -819,7 +822,7 @@ pub(crate) fn shared(
         Question::YesNo {
             ask,
             yes: Text::Plain(Clean::new(shown).map_err(|_| Unclean)?),
-            no: Text::Plain(plain(ANOTHER)),
+            no: Text::Plain(plain(no)),
         },
     ))
 }

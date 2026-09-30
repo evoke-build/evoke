@@ -119,6 +119,7 @@ fn decide(op: &str, input: &Json) -> Reply {
         )),
         "read" => result(read(
             &arg::<Plan>(input, "plan")?,
+            opt::<Gate>(input, "gate")?.as_ref(),
             &arg::<Request>(input, "request")?,
             arg::<Raw>(input, "raw")?,
         )),

@@ -362,7 +362,8 @@ pub struct Limits {
 }
 
 /// The floors an adapter ships, each meaning P(correct); `read` never above `write`, and no destructive number
-/// exists.
+/// exists. `whole` is the floor of a call held against the request: under it the call waits for a yes; an
+/// adapter that ships none holds no call against its request.
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(try_from = "RawGate")]
 pub struct Gate {
@@ -371,6 +372,8 @@ pub struct Gate {
     fits: Option<Prob>,
     read: Prob,
     write: Prob,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    whole: Option<Prob>,
 }
 
 #[derive(Deserialize)]
@@ -380,6 +383,8 @@ struct RawGate {
     fits: Option<Prob>,
     read: Prob,
     write: Prob,
+    #[serde(default)]
+    whole: Option<Prob>,
 }
 
 impl Gate {
@@ -392,8 +397,21 @@ impl Gate {
                 fits,
                 read,
                 write,
+                whole: None,
             })
         }
+    }
+
+    /// The same floors with the floor of a call held against the request.
+    #[must_use]
+    pub fn holding(self, whole: Option<Prob>) -> Self {
+        Self { whole, ..self }
+    }
+
+    /// The floor of a call held against the request, when the adapter ships one.
+    #[must_use]
+    pub fn whole(&self) -> Option<Prob> {
+        self.whole
     }
 
     #[must_use]
@@ -401,7 +419,8 @@ impl Gate {
         self.route
     }
 
-    /// The runner-up's floor; a plan without `fits` questions skips it.
+    /// The floor of a newcomer that fits a phrase another reflex claims; a plan without `fits` questions skips
+    /// it.
     #[must_use]
     pub fn fits(&self) -> Option<Prob> {
         self.fits
@@ -422,7 +441,7 @@ impl TryFrom<RawGate> for Gate {
     type Error = String;
 
     fn try_from(raw: RawGate) -> Result<Self, String> {
-        Self::new(raw.route, raw.fits, raw.read, raw.write)
+        Ok(Self::new(raw.route, raw.fits, raw.read, raw.write)?.holding(raw.whole))
     }
 }
 
@@ -538,7 +557,7 @@ mod tests {
 
     #[test]
     fn a_gate_keeps_read_at_or_below_write() {
-        assert!(Gate::new(p(0.5), Some(p(0.3)), p(0.6), p(0.8)).is_ok());
+        assert!(Gate::new(p(0.5), Some(p(0.3)), p(0.8), p(0.9)).is_ok());
         assert_eq!(
             Gate::new(p(0.5), None, p(0.9), p(0.8)).unwrap_err(),
             "read 0.9 is above write 0.8"

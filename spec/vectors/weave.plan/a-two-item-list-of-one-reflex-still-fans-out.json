@@ -6,8 +6,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     },
     "input": "check the errors for checkout and payments",
     "tags": [],
@@ -32,8 +33,8 @@
             "basis": {
               "service": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               }
             },
             "left": [
@@ -44,7 +45,7 @@
                   "text": "check the errors"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "words": {
@@ -53,87 +54,72 @@
                   "text": "payments"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "errors",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "errors",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "errors.service",
                 "top": "checkout",
-                "p": 0.9
-              },
-              {
-                "question": "errors.region",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "deploys",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "errors",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "deploys",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "post",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "status",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -156,8 +142,8 @@
             "basis": {
               "service": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               }
             },
             "left": [
@@ -168,87 +154,72 @@
                   "text": "check the errors"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "errors",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "errors",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "errors.service",
                 "top": "checkout",
-                "p": 0.9
-              },
-              {
-                "question": "errors.region",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "deploys",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "errors",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "deploys",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "post",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "status",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -272,38 +243,33 @@
             "basis": {
               "service": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               }
             },
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "errors",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "errors",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "errors.service",
                 "top": "payments",
-                "p": 0.9
-              },
-              {
-                "question": "errors.region",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "contenders": [
               {
                 "reflex": "errors",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               }
             ]
           }
@@ -345,8 +311,8 @@
               "basis": {
                 "service": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -357,87 +323,72 @@
                     "text": "check the errors"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "errors",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "errors",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "errors.service",
                   "top": "checkout",
-                  "p": 0.9
-                },
-                {
-                  "question": "errors.region",
-                  "top": "unstated",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "deploys",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "errors",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "deploys",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "logs",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "suspect",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "rollback",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "post",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incidents",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incident",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "postmortem",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "status",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -462,38 +413,33 @@
               "basis": {
                 "service": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "errors",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "errors",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "errors.service",
                   "top": "payments",
-                  "p": 0.9
-                },
-                {
-                  "question": "errors.region",
-                  "top": "unstated",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "contenders": [
                 {
                   "reflex": "errors",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 }
               ]
             },

@@ -529,7 +529,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
       const answer = await answered(adapter, round, plan.deadline, options.signal, invoked)
       Object.assign(raw, answer.raw)
       traces.push(answer.trace)
-      const read = call("read", { plan, request, raw }, invoked)
+      const read = call("read", { plan, ...gate, request, raw }, invoked)
       if (read.type === "done") {
         const { type: _, ...reading } = read
         const decision = call("gate", { plan, reading, ...gate })

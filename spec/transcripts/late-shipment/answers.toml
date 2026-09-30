@@ -4,8 +4,9 @@ id = "replay"
 [gate]
 route = 0.5
 fits  = 0.3
-read  = 0.6
-write = 0.8
+read  = 0.8
+write = 0.9
+whole = 0.3
 
 [answers."track the rotterdam shipment, check our stock and get supplier quotes, work out the shortfall, reserve each of them, buy the rest from nordic, then email ops@example.com"]
 "weave.split_0" = { yes = 0.9 }
@@ -17,760 +18,571 @@ write = 0.8
 "weave.count"   = { two = 0.6, more = 0.35, one = 0.05 }
 
 [answers."track the rotterdam shipment"]
-route                           = { shipment = 0.9, stock = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.8 }
-"shipment.shipment"             = { rotterdam = 0.9, unstated = 0.1 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { shipment = 0.95, stock = 0.02, none = 0.03 }
+"shipment.shipment"             = { rotterdam = 0.95, unstated = 0.05 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { rotterdam = 0.9, unstated = 0.1 }
-"weave.is_shipment__shipment_0" = { yes = 0.9 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_shipment__shipment" = { rotterdam = 0.95, unstated = 0.05 }
+"weave.is_shipment__shipment_0" = { yes = 0.95 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_stock__shipment_0"    = { yes = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_quotes__shipment_0"   = { yes = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_late__shipment_0"     = { yes = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_shipment_0_0"       = { action = 0.9, courtesy = 0.1 }
-"weave.left_shipment_3_3"       = { action = 0.9, courtesy = 0.1 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_shipment_0_0"       = { action = 0.95, courtesy = 0.05 }
+"weave.left_shipment_3_3"       = { action = 0.95, courtesy = 0.05 }
+"weave.whole_406504476"         = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."check our stock"]
-route                           = { stock = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.8 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { stock = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_stock_0_2"          = { action = 0.9, courtesy = 0.1 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_stock_0_2"          = { action = 0.95, courtesy = 0.05 }
+"weave.whole_147072043"         = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."get supplier quotes"]
-route                           = { quotes = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.8 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { quotes = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_quotes_0_2"         = { action = 0.9, courtesy = 0.1 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_quotes_0_2"         = { action = 0.95, courtesy = 0.05 }
+"weave.whole_933644328"         = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."work out the shortfall"]
-route                           = { shortfall = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.8 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { shortfall = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_shortfall_0_3"      = { action = 0.9, courtesy = 0.1 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_shortfall_0_3"      = { action = 0.95, courtesy = 0.05 }
+"weave.whole_1521858933"        = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."reserve each of them"]
-route                           = { reserve = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.8 }
+route                           = { reserve = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_reserve_0_3"        = { action = 0.9, courtesy = 0.1 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_reserve_0_3"        = { action = 0.95, courtesy = 0.05 }
+"weave.whole_1844595767"        = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."buy the rest from nordic"]
-route                           = { buy = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { buy = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.8 }
-"buy.supplier"                  = { nordic = 0.9, unstated = 0.1 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { nordic = 0.95, unstated = 0.05 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_buy__supplier"      = { nordic = 0.9, unstated = 0.1 }
-"weave.is_buy__supplier_0"      = { yes = 0.9 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_buy__supplier"      = { nordic = 0.95, unstated = 0.05 }
+"weave.is_buy__supplier_0"      = { yes = 0.95 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "weave.is_late__supplier_0"     = { yes = 0.05 }
-"weave.left_buy_0_2"            = { action = 0.9, courtesy = 0.1 }
+"weave.left_buy_0_2"            = { action = 0.95, courtesy = 0.05 }
 
 [answers."email ops@example.com"]
-route                           = { email = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { email = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.8 }
-"email.to"                      = { 6-21 = 0.9, unstated = 0.1 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"late.to"                       = { unstated = 0.9, 6-21 = 0.1 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"email.to"                      = { 6-21 = 0.95, unstated = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"late.to"                       = { unstated = 0.95, 6-21 = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "weave.only_email__to_6_21"     = { yes = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "weave.only_late__to_6_21"      = { yes = 0.05 }
-"weave.left_email_0_0"          = { action = 0.9, courtesy = 0.1 }
+"weave.left_email_0_0"          = { action = 0.95, courtesy = 0.05 }
 
 [answers."the rotterdam shipment is late"]
-route                           = { late = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.1 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { late = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.8 }
-"late.shipment"                 = { rotterdam = 0.9, unstated = 0.1 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { rotterdam = 0.95, unstated = 0.05 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_shipment__shipment_0" = { yes = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_stock__shipment_0"    = { yes = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_quotes__shipment_0"   = { yes = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { rotterdam = 0.9, unstated = 0.1 }
-"weave.is_late__shipment_0"     = { yes = 0.9 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_late_2_4"           = { action = 0.9, courtesy = 0.1 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { rotterdam = 0.95, unstated = 0.05 }
+"weave.is_late__shipment_0"     = { yes = 0.95 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_late_2_4"           = { action = 0.95, courtesy = 0.05 }
 "weave.ref_2_0"                 = { step0 = 0.9, step1 = 0.1 }
 
 [answers."check our stock for the rotterdam shipment"]
-route                           = { stock = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.8 }
-"stock.shipment"                = { rotterdam = 0.9, unstated = 0.1 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { stock = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { rotterdam = 0.95, unstated = 0.05 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_shipment__shipment_0" = { yes = 0.05 }
-"weave.view_stock__shipment"    = { rotterdam = 0.9, unstated = 0.1 }
-"weave.is_stock__shipment_0"    = { yes = 0.9 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_stock__shipment"    = { rotterdam = 0.95, unstated = 0.05 }
+"weave.is_stock__shipment_0"    = { yes = 0.95 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_quotes__shipment_0"   = { yes = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_late__shipment_0"     = { yes = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_stock_0_2"          = { action = 0.9, courtesy = 0.1 }
-"weave.left_stock_6_6"          = { action = 0.9, courtesy = 0.1 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_stock_0_2"          = { action = 0.95, courtesy = 0.05 }
+"weave.left_stock_6_6"          = { action = 0.95, courtesy = 0.05 }
+"weave.whole_2113015769"        = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."get supplier quotes for the rotterdam shipment"]
-route                           = { quotes = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.8 }
-"quotes.shipment"               = { rotterdam = 0.9, unstated = 0.1 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { quotes = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { rotterdam = 0.95, unstated = 0.05 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_shipment__shipment_0" = { yes = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_stock__shipment_0"    = { yes = 0.05 }
-"weave.view_quotes__shipment"   = { rotterdam = 0.9, unstated = 0.1 }
-"weave.is_quotes__shipment_0"   = { yes = 0.9 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_quotes__shipment"   = { rotterdam = 0.95, unstated = 0.05 }
+"weave.is_quotes__shipment_0"   = { yes = 0.95 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_late__shipment_0"     = { yes = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_quotes_0_2"         = { action = 0.9, courtesy = 0.1 }
-"weave.left_quotes_6_6"         = { action = 0.9, courtesy = 0.1 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_quotes_0_2"         = { action = 0.95, courtesy = 0.05 }
+"weave.left_quotes_6_6"         = { action = 0.95, courtesy = 0.05 }
+"weave.whole_1526060601"        = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."email the update to ops@example.com"]
-route                           = { email = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { email = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.8 }
-"email.to"                      = { 20-35 = 0.9, unstated = 0.1 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"late.to"                       = { unstated = 0.9, 20-35 = 0.1 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"email.to"                      = { 20-35 = 0.95, unstated = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"late.to"                       = { unstated = 0.95, 20-35 = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "weave.only_email__to_20_35"    = { yes = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "weave.only_late__to_20_35"     = { yes = 0.05 }
-"weave.left_email_0_2"          = { action = 0.9, courtesy = 0.1 }
+"weave.left_email_0_2"          = { action = 0.95, courtesy = 0.05 }
 
 [answers."reserve hs 0409"]
-route                           = { reserve = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.8 }
+route                           = { reserve = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.said_reserve__sku_8_15"  = { yes = 0.9 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_reserve_0_0"        = { action = 0.9, courtesy = 0.1 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.said_reserve__sku_8_15"  = { yes = 0.95 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_reserve_0_0"        = { action = 0.95, courtesy = 0.05 }
 
 [answers."email dana dot weiss at example dot org"]
-route                           = { email = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { email = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.8 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.said_email__to_6_39"     = { yes = 0.92 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.said_email__to_6_39"     = { yes = 0.96 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "weave.said_late__to_6_39"      = { yes = 0.05 }
-"weave.left_email_0_0"          = { action = 0.9, courtesy = 0.1 }
+"weave.left_email_0_0"          = { action = 0.95, courtesy = 0.05 }
 
 [answers."hamburg is running late"]
-route                           = { late = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.1 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { late = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.8 }
-"late.shipment"                 = { hamburg = 0.9, unstated = 0.1 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { hamburg = 0.95, unstated = 0.05 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_shipment__shipment_1" = { yes = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_stock__shipment_1"    = { yes = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_quotes__shipment_1"   = { yes = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { hamburg = 0.9, unstated = 0.1 }
-"weave.is_late__shipment_1"     = { yes = 0.9 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_late_2_3"           = { action = 0.9, courtesy = 0.1 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { hamburg = 0.95, unstated = 0.05 }
+"weave.is_late__shipment_1"     = { yes = 0.95 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_late_2_3"           = { action = 0.95, courtesy = 0.05 }
 
 [answers."the antwerp container is delayed"]
-route                           = { late = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.1 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { late = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.8 }
-"late.shipment"                 = { antwerp = 0.9, unstated = 0.1 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { antwerp = 0.95, unstated = 0.05 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_shipment__shipment_2" = { yes = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_stock__shipment_2"    = { yes = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_quotes__shipment_2"   = { yes = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { antwerp = 0.9, unstated = 0.1 }
-"weave.is_late__shipment_2"     = { yes = 0.9 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_late_2_4"           = { action = 0.9, courtesy = 0.1 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { antwerp = 0.95, unstated = 0.05 }
+"weave.is_late__shipment_2"     = { yes = 0.95 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_late_2_4"           = { action = 0.95, courtesy = 0.05 }
 
 [answers."our rotterdam pallets are held up"]
-route                           = { late = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.1 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { late = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.8 }
-"late.shipment"                 = { rotterdam = 0.9, unstated = 0.1 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { rotterdam = 0.95, unstated = 0.05 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_shipment__shipment_0" = { yes = 0.05 }
 "weave.is_shipment__shipment_1" = { yes = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_stock__shipment_0"    = { yes = 0.05 }
 "weave.is_stock__shipment_1"    = { yes = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_quotes__shipment_0"   = { yes = 0.05 }
 "weave.is_quotes__shipment_1"   = { yes = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { rotterdam = 0.9, unstated = 0.1 }
-"weave.is_late__shipment_0"     = { yes = 0.9 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { rotterdam = 0.95, unstated = 0.05 }
+"weave.is_late__shipment_0"     = { yes = 0.95 }
 "weave.is_late__shipment_1"     = { yes = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_late_2_4"           = { action = 0.9, courtesy = 0.1 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_late_2_4"           = { action = 0.95, courtesy = 0.05 }
 
 [answers."deal with the delayed hamburg pallets for ops@example.com"]
-route                           = { late = 0.61, email = 0.39, none = 0.0 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { late = 0.8, email = 0.2, none = 0.0 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.4 }
-"email.to"                      = { unstated = 0.9, 42-57 = 0.1 }
-"fits.late"                     = { yes = 0.8 }
-"late.shipment"                 = { hamburg = 0.9, unstated = 0.1 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"late.to"                       = { 42-57 = 0.9, unstated = 0.1 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"email.to"                      = { unstated = 0.95, 42-57 = 0.05 }
+"late.shipment"                 = { hamburg = 0.95, unstated = 0.05 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"late.to"                       = { 42-57 = 0.95, unstated = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_shipment__shipment_1" = { yes = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_stock__shipment_1"    = { yes = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_quotes__shipment_1"   = { yes = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "weave.only_email__to_42_57"    = { yes = 0.05 }
-"weave.view_late__shipment"     = { hamburg = 0.9, unstated = 0.1 }
-"weave.is_late__shipment_1"     = { yes = 0.9 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.view_late__shipment"     = { hamburg = 0.95, unstated = 0.05 }
+"weave.is_late__shipment_1"     = { yes = 0.95 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "weave.only_late__to_42_57"     = { yes = 0.05 }
-"weave.left_late_0_0"           = { action = 0.9, courtesy = 0.1 }
-"weave.left_late_3_3"           = { action = 0.9, courtesy = 0.1 }
-"weave.left_late_5_5"           = { action = 0.9, courtesy = 0.1 }
+"weave.left_late_0_0"           = { action = 0.95, courtesy = 0.05 }
+"weave.left_late_3_3"           = { action = 0.95, courtesy = 0.05 }
+"weave.left_late_5_5"           = { action = 0.95, courtesy = 0.05 }
 
 [answers."antwerp is delayed with baltic ready to cover"]
-route                           = { late = 0.86, buy = 0.03, none = 0.11 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { late = 0.93, buy = 0.02, none = 0.05 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.1 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.8 }
-"late.shipment"                 = { antwerp = 0.9, unstated = 0.1 }
-"late.supplier"                 = { baltic = 0.9, unstated = 0.1 }
+"late.shipment"                 = { antwerp = 0.95, unstated = 0.05 }
+"late.supplier"                 = { baltic = 0.95, unstated = 0.05 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_shipment__shipment_2" = { yes = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_stock__shipment_2"    = { yes = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_quotes__shipment_2"   = { yes = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "weave.is_buy__supplier_1"      = { yes = 0.05 }
-"weave.view_late__shipment"     = { antwerp = 0.9, unstated = 0.1 }
-"weave.is_late__shipment_2"     = { yes = 0.9 }
-"weave.view_late__supplier"     = { baltic = 0.9, unstated = 0.1 }
-"weave.is_late__supplier_1"     = { yes = 0.9 }
-"weave.left_late_2_2"           = { action = 0.9, courtesy = 0.1 }
-"weave.left_late_5_5"           = { action = 0.9, courtesy = 0.1 }
-"weave.left_late_7_7"           = { action = 0.9, courtesy = 0.1 }
+"weave.view_late__shipment"     = { antwerp = 0.95, unstated = 0.05 }
+"weave.is_late__shipment_2"     = { yes = 0.95 }
+"weave.view_late__supplier"     = { baltic = 0.95, unstated = 0.05 }
+"weave.is_late__supplier_1"     = { yes = 0.95 }
+"weave.left_late_2_2"           = { action = 0.95, courtesy = 0.05 }
+"weave.left_late_5_5"           = { action = 0.95, courtesy = 0.05 }
+"weave.left_late_7_7"           = { action = 0.95, courtesy = 0.05 }
 
 [answers."did the antwerp container clear customs"]
-route                           = { shipment = 0.9, stock = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.8 }
-"shipment.shipment"             = { antwerp = 0.9, unstated = 0.1 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { shipment = 0.95, stock = 0.02, none = 0.03 }
+"shipment.shipment"             = { antwerp = 0.95, unstated = 0.05 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { antwerp = 0.9, unstated = 0.1 }
-"weave.is_shipment__shipment_2" = { yes = 0.9 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_shipment__shipment" = { antwerp = 0.95, unstated = 0.05 }
+"weave.is_shipment__shipment_2" = { yes = 0.95 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_stock__shipment_2"    = { yes = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_quotes__shipment_2"   = { yes = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_late__shipment_2"     = { yes = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_shipment_3_5"       = { action = 0.9, courtesy = 0.1 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_shipment_3_5"       = { action = 0.95, courtesy = 0.05 }
+"weave.whole_2756682170"        = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."the rotterdam container landed on schedule"]
-route                           = { none = 0.9, shipment = 0.1 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { none = 0.95, shipment = 0.05 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_shipment__shipment_0" = { yes = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_stock__shipment_0"    = { yes = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_quotes__shipment_0"   = { yes = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_late__shipment_0"     = { yes = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 
 [answers."acme says their parcel has not arrived"]
-route                           = { none = 0.9, shipment = 0.1 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { none = 0.95, shipment = 0.05 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 
 [answers."track the hamburg shipment"]
-route                           = { shipment = 0.9, stock = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.8 }
-"shipment.shipment"             = { hamburg = 0.9, unstated = 0.1 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { shipment = 0.95, stock = 0.02, none = 0.03 }
+"shipment.shipment"             = { hamburg = 0.95, unstated = 0.05 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { hamburg = 0.9, unstated = 0.1 }
-"weave.is_shipment__shipment_1" = { yes = 0.9 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_shipment__shipment" = { hamburg = 0.95, unstated = 0.05 }
+"weave.is_shipment__shipment_1" = { yes = 0.95 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_stock__shipment_1"    = { yes = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_quotes__shipment_1"   = { yes = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_late__shipment_1"     = { yes = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_shipment_0_0"       = { action = 0.9, courtesy = 0.1 }
-"weave.left_shipment_3_3"       = { action = 0.9, courtesy = 0.1 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_shipment_0_0"       = { action = 0.95, courtesy = 0.05 }
+"weave.left_shipment_3_3"       = { action = 0.95, courtesy = 0.05 }
+"weave.whole_551895329"         = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."check our stock for the hamburg shipment"]
-route                           = { stock = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.8 }
-"stock.shipment"                = { hamburg = 0.9, unstated = 0.1 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { stock = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { hamburg = 0.95, unstated = 0.05 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_shipment__shipment_1" = { yes = 0.05 }
-"weave.view_stock__shipment"    = { hamburg = 0.9, unstated = 0.1 }
-"weave.is_stock__shipment_1"    = { yes = 0.9 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_stock__shipment"    = { hamburg = 0.95, unstated = 0.05 }
+"weave.is_stock__shipment_1"    = { yes = 0.95 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_quotes__shipment_1"   = { yes = 0.05 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_late__shipment_1"     = { yes = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_stock_0_2"          = { action = 0.9, courtesy = 0.1 }
-"weave.left_stock_6_6"          = { action = 0.9, courtesy = 0.1 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_stock_0_2"          = { action = 0.95, courtesy = 0.05 }
+"weave.left_stock_6_6"          = { action = 0.95, courtesy = 0.05 }
+"weave.whole_2829100614"        = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."get supplier quotes for the hamburg shipment"]
-route                           = { quotes = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.8 }
-"quotes.shipment"               = { hamburg = 0.9, unstated = 0.1 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { quotes = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { hamburg = 0.95, unstated = 0.05 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.02 }
-"buy.supplier"                  = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_shipment__shipment_1" = { yes = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_stock__shipment_1"    = { yes = 0.05 }
-"weave.view_quotes__shipment"   = { hamburg = 0.9, unstated = 0.1 }
-"weave.is_quotes__shipment_1"   = { yes = 0.9 }
-"weave.view_buy__supplier"      = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
+"weave.view_quotes__shipment"   = { hamburg = 0.95, unstated = 0.05 }
+"weave.is_quotes__shipment_1"   = { yes = 0.95 }
+"weave.view_buy__supplier"      = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "weave.is_late__shipment_1"     = { yes = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
-"weave.left_quotes_0_2"         = { action = 0.9, courtesy = 0.1 }
-"weave.left_quotes_6_6"         = { action = 0.9, courtesy = 0.1 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
+"weave.left_quotes_0_2"         = { action = 0.95, courtesy = 0.05 }
+"weave.left_quotes_6_6"         = { action = 0.95, courtesy = 0.05 }
+"weave.whole_1961821566"        = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."buy the rest from baltic"]
-route                           = { buy = 0.9, shipment = 0.03, none = 0.07 }
-"fits.shipment"                 = { yes = 0.02 }
-"shipment.shipment"             = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.stock"                    = { yes = 0.02 }
-"stock.shipment"                = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.quotes"                   = { yes = 0.02 }
-"quotes.shipment"               = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"fits.shortfall"                = { yes = 0.02 }
-"fits.reserve"                  = { yes = 0.02 }
+route                           = { buy = 0.95, shipment = 0.02, none = 0.03 }
+"shipment.shipment"             = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"stock.shipment"                = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"quotes.shipment"               = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
 "reserve.sku"                   = { unstated = 1.0 }
-"fits.buy"                      = { yes = 0.8 }
-"buy.supplier"                  = { baltic = 0.9, unstated = 0.1 }
-"fits.email"                    = { yes = 0.02 }
+"buy.supplier"                  = { baltic = 0.95, unstated = 0.05 }
 "email.to"                      = { unstated = 1.0 }
-"fits.late"                     = { yes = 0.02 }
-"late.shipment"                 = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"late.supplier"                 = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"late.shipment"                 = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"late.supplier"                 = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "late.to"                       = { unstated = 1.0 }
-"weave.view_shipment__shipment" = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_stock__shipment"    = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_quotes__shipment"   = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_buy__supplier"      = { baltic = 0.9, unstated = 0.1 }
-"weave.is_buy__supplier_1"      = { yes = 0.9 }
-"weave.view_late__shipment"     = { unstated = 0.9, rotterdam = 0.05, hamburg = 0.05 }
-"weave.view_late__supplier"     = { unstated = 0.9, nordic = 0.05, baltic = 0.05 }
+"weave.view_shipment__shipment" = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_stock__shipment"    = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_quotes__shipment"   = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_buy__supplier"      = { baltic = 0.95, unstated = 0.05 }
+"weave.is_buy__supplier_1"      = { yes = 0.95 }
+"weave.view_late__shipment"     = { unstated = 0.95, rotterdam = 0.03, hamburg = 0.02 }
+"weave.view_late__supplier"     = { unstated = 0.95, nordic = 0.03, baltic = 0.02 }
 "weave.is_late__supplier_1"     = { yes = 0.05 }
-"weave.left_buy_0_2"            = { action = 0.9, courtesy = 0.1 }
+"weave.left_buy_0_2"            = { action = 0.95, courtesy = 0.05 }

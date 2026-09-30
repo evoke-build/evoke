@@ -361,11 +361,11 @@ fn answers_reach_stdout_and_notes_stderr() {
         )
     };
     let (out, err) = run("evoke try \"kill the lights in the den\"");
-    assert!(out.starts_with("  lights 0.91 · none 0.06"), "{out}");
+    assert!(out.starts_with("  lights 0.95 · none 0.03"), "{out}");
     assert_eq!(err, "");
     let (out, err) = run("evoke \"kill the lights in the den\"");
     assert_eq!(out, "den lights off\n");
-    assert_eq!(err, "  lights room=\"den\" state=\"off\"  0.85\n");
+    assert_eq!(err, "  lights room=\"den\" state=\"off\"  0.92\n");
     let (out, err) = run("evoke vocab rooms");
     assert!(out.starts_with("  den = "), "{out}");
     assert_eq!(err, "");

@@ -1,28 +1,27 @@
 $ evoke "kill the lights in the den"
-  lights room="den" state="off"  0.85
+  lights room="den" state="off"  0.92
 den lights off
 $ evoke why
   "kill the lights in the den"
-  lights 0.91 · none 0.06 · timer 0.02 · volume 0.01
-  room   den 0.85 · unstated 0.10 · office 0.05
-         asked a second way: den 0.85
-  state  off 0.88 · on 0.05 · dim 0.05 · unstated 0.02
-         asked a second way: off 0.88 · is it off? yes 0.90
+  lights 0.95 · none 0.03 · timer 0.01 · volume 0.01
+  room   den 0.92 · unstated 0.05 · office 0.03
+         asked a second way: den 0.92
+  state  off 0.94 · on 0.03 · dim 0.02 · unstated 0.01
+         asked a second way: off 0.94 · is it off? yes 0.95
   words  "kill the lights" say what to do 0.90
-  fits   lights 0.70 · timer 0.05 · volume 0.05
-  ran lights room="den" state="off" · weakest: room 0.85 · replay, 15 questions in 2 rounds
+  whole  holds all you said 0.90
+  ran lights room="den" state="off" · weakest: room 0.92 · replay, 13 questions in 3 rounds
 # A value read from a word of the input waits for a yes, and the line names the word.
 $ evoke "kill the lights in the snug"
-  lights room="den" state="off" · write · weakest: room 0.82 · room from "snug"
+  lights room="den" state="off" · write · weakest: room 0.91 · room from "snug"
   Set the den lights off?  [y]es [n]o [t]each > y
 den lights off
 $ evoke why
   "kill the lights in the snug"
-  lights 0.92 · none 0.05 · timer 0.02 · volume 0.01
-  room   den 0.82 · unstated 0.10 · none 0.05 · office 0.03
+  lights 0.96 · none 0.02 · timer 0.01 · volume 0.01
+  room   den 0.91 · unstated 0.05 · office 0.02 · none 0.02
          asked a second way: unstated · in your words: "snug"
-  state  off 0.90 · on 0.04 · dim 0.04 · unstated 0.02
-         asked a second way: off 0.92 · is it off? yes 0.95
+  state  off 0.95 · on 0.02 · dim 0.02 · unstated 0.01
+         asked a second way: off 0.96 · is it off? yes 0.97
   words  "kill the lights" say what to do 0.90
-  fits   lights 0.80 · timer 0.05 · volume 0.05
-  ran lights room="den" state="off" · weakest: room 0.82 · replay, 15 questions in 2 rounds
+  ran lights room="den" state="off" · weakest: room 0.91 · replay, 12 questions in 2 rounds

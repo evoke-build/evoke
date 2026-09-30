@@ -115,7 +115,7 @@ test("the maker seals the plan as a file, and the checker runs it whole from the
   equal(pinned.input, sentence)
   equal(pinned.set, maker.plan)
   deepStrictEqual(pinned.adapter, { name: "replay", id: "replay" })
-  deepStrictEqual(pinned.gate, { route: 0.5, fits: 0.3, read: 0.6, write: 0.8 })
+  deepStrictEqual(pinned.gate, { route: 0.5, fits: 0.3, read: 0.8, write: 0.9, whole: 0.3 })
   deepStrictEqual(Object.keys(pinned.reflexes), ["bank", "invoices", "cards", "payroll", "reconcile", "ledger", "send", "close"])
   deepStrictEqual(Object.keys(pinned.vocab), ["months"])
   // The weave's own questions under the sentence, then each text decided: nine entries, none the engine's numbers.

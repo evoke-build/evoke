@@ -356,7 +356,7 @@ mod tests {
             serde_json::from_value(serde_json::Value::String(format!("h1:{}", "a".repeat(64))))
                 .unwrap();
         let full = request(&[]);
-        let narrowed = request(&["route", "fits.lights", "lights.room", "lights.state"]);
+        let narrowed = request(&["route", "lights.room", "lights.state"]);
         let mut spelled = request(&[]);
         spelled.state.request = evoke_core::Input::new("Kill the lights!").unwrap();
         assert_ne!(state.entry(&plan, &full), state.entry(&plan, &narrowed));

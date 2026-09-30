@@ -63,7 +63,7 @@
           </div>
           <div class="strip" style="--lines: 6" aria-live="off">
             <span class="line say show"><span class="p">$</span> <span class="in">evoke "restart the computer"</span></span>
-            <span class="line own show">  <b>power</b> action="restart" · destructive · weakest: route <i>0.97</i></span>
+            <span class="line own show">  <b>power</b> action="restart" · destructive · weakest: route <i>0.98</i></span>
             <span class="line own show">  Make the laptop restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span></span>
             <span class="line own show">[2]</span>
           </div>
@@ -71,11 +71,11 @@
         <div class="side">
           <ol class="notes column">
             <li><b>1</b><span><strong>Sure enough, so it ran.</strong> «40 percent» is a number read from your sentence and
-              checked against the range 0 to 100. The least sure answer was 0.93, and a change runs without a question at
-              0.8 or above.</span></li>
-            <li><b>2</b><span><strong>«kill» meant off, but only at 0.72.</strong> Under 0.8, so evoke asked first. Typing
+              checked against the range 0 to 100. The least sure answer was 0.96, and a change runs without a question at
+              0.9 or above.</span></li>
+            <li><b>2</b><span><strong>«kill» meant off, but only at 0.86.</strong> Under 0.9, so evoke asked first. Typing
               <code>t</code>, for teach, saved your phrase as an example in a file of yours, then ran.</span></li>
-            <li><b>3</b><span><strong>Sure at 0.97, and it still asked.</strong> Its author marked <code>power</code>
+            <li><b>3</b><span><strong>Sure at 0.98, and it still asked.</strong> Its author marked <code>power</code>
               destructive, so it asks every time. No number and no flag skips that question. <code>[2]</code> means you
               answered no.</span></li>
           </ol>
@@ -112,7 +112,7 @@
       </table></div>
       <ol class="notes">
         <li><b>1</b><span><strong>The effect sets the bar.</strong> A reflex that only reads runs without a question at
-          0.6 or above, one that writes at 0.8, and a destructive one always asks.</span></li>
+          0.8 or above, one that writes at 0.9, and a destructive one always asks.</span></li>
         <li><b>2</b><span><strong>Three start inactive.</strong> <code>open</code> needs your folders, <code>visit</code>
           your sites and <code>note</code> your notes file. Step 5 below gives them what they need.</span></li>
         <li><b>3</b><span><strong>Twelve run a JavaScript file</strong>, so they need Node 24 or newer. <code>open</code>
@@ -167,6 +167,8 @@
 <span class="s">"volume 60%"</span>                    <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"60%"</span> <span class="o">}</span>
 <span class="s">"bring the sound up to seventy"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"seventy"</span> <span class="o">}</span>
 <span class="s">"drop the volume to 20 percent"</span> <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"20 percent"</span> <span class="o">}</span>
+<span class="s">"set the volume to 40"</span>          <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"40"</span> <span class="o">}</span>
+<span class="s">"turn the sound down to 10"</span>     <span class="o">=</span> <span class="o">{</span> <span class="k">level</span> <span class="o">=</span> <span class="s">"10"</span> <span class="o">}</span>
 <span class="s">"mute the sound"</span>                <span class="o">=</span> <span class="n">false</span>
 
 <span class="t">[tests]</span>
@@ -231,7 +233,7 @@
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="ask"><span class="p">$</span> <span class="in">evoke "set the volume to 150 percent"</span>
 <span class="own">  How loud, in percent?  <span class="mid">150 percent is outside 0–100</span>  &gt; <span class="in">40</span>
-  <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span></pre>
+  <span class="name">volume</span> level="40"  <span class="hi">0.96</span></span></pre>
         </div>
         <p class="caption">evoke asked the input's own question, with the reason on the same line. Your answer was checked
           the same way, then <code>volume</code> ran with 40. evoke guarantees that every value is one the reflex allows.
@@ -341,14 +343,13 @@
           <div>
             <h3>Look at a decision before it runs</h3>
             <p><code>evoke try</code> decides and runs nothing. It shows the ranking of the reflexes, the answer for each
-              input, how well each one fits, and what would happen: here, 0.72 is under 0.8, so it would ask first.</p>
+              input, and what would happen: here, 0.86 is under 0.9, so it would ask first.</p>
             <div class="panel term">
               <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke try</div>
 <pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke try &quot;kill the wifi&quot;</span>
-<span class="own">  wifi 0.90 · none 0.06 · power 0.02 · lock 0.02</span>
-<span class="own">  state  off 0.72 · on 0.20 · unstated 0.08</span>
-<span class="own">  fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · sleep 0.02 · timer 0.02 · trash 0.02 · volume 0.02</span>
-<span class="own">  confirm · wifi state=&quot;off&quot; · write · weakest: state 0.72</span></pre>
+<span class="own">  wifi 0.95 · none 0.03 · power 0.01 · lock 0.01</span>
+<span class="own">  state  off 0.86 · on 0.10 · unstated 0.04</span>
+<span class="own">  confirm · wifi state=&quot;off&quot; · write · weakest: state 0.86</span></pre>
             </div>
           </div>
         </li>
@@ -360,7 +361,7 @@
             <div class="panel term">
               <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke &quot;set the volume to 40 percent&quot;</span>
-<span class="own">  volume level=&quot;40 percent&quot;  0.93</span>
+<span class="own">  volume level=&quot;40 percent&quot;  0.96</span>
 <span class="out">volume 40%</span></pre>
             </div>
           </div>

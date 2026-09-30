@@ -28,14 +28,6 @@
           "none": "None of these."
         }
       },
-      "fits.screenshot": {
-        "type": "noul",
-        "instructions": "Does `screenshot` do the specific thing the request asks for?",
-        "criteria": {
-          "true": "Capture the screen, a window or a selection.\nSaved to the desktop as PNG, or copied to the clipboard.",
-          "false": "Something else, such as: recording the screen."
-        }
-      },
       "screenshot.area": {
         "type": "choice",
         "instructions": "The whole screen, a window, or a selection?",

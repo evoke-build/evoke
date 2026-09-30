@@ -6,8 +6,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     },
     "input": "check the search errors in eu-west, list the search deploys, pull the search logs in eu-west and find the suspect",
     "tags": [],
@@ -35,13 +36,13 @@
             "basis": {
               "service": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               },
               "region": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               }
             },
             "left": [
@@ -52,7 +53,7 @@
                   "text": "check"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "words": {
@@ -61,87 +62,77 @@
                   "text": "errors"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "errors",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "errors",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "errors.service",
                 "top": "search",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "errors.region",
                 "top": "eu-west",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "deploys",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "errors",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "deploys",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "post",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "status",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -164,8 +155,8 @@
             "basis": {
               "service": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               }
             },
             "left": [
@@ -176,7 +167,7 @@
                   "text": "list"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "words": {
@@ -185,87 +176,72 @@
                   "text": "deploys"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "deploys",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "deploys",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "deploys.service",
                 "top": "search",
-                "p": 0.9
-              },
-              {
-                "question": "deploys.region",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "deploys",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "post",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "status",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -292,13 +268,13 @@
             "basis": {
               "service": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               },
               "region": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               }
             },
             "left": [
@@ -309,7 +285,7 @@
                   "text": "pull"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "words": {
@@ -318,87 +294,77 @@
                   "text": "logs"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "logs",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "logs",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "logs.service",
                 "top": "search",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "logs.region",
                 "top": "eu-west",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "logs",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "post",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "status",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -421,77 +387,67 @@
                   "text": "find the suspect"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "suspect",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "suspect",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "suspect",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "post",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "status",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -554,13 +510,13 @@
               "basis": {
                 "service": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 },
                 "region": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -571,7 +527,7 @@
                     "text": "check"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "words": {
@@ -580,87 +536,77 @@
                     "text": "errors"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "errors",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "errors",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "errors.service",
                   "top": "search",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "errors.region",
                   "top": "eu-west",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "deploys",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "errors",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "deploys",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "logs",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "suspect",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "rollback",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "post",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incidents",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incident",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "postmortem",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "status",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -685,8 +631,8 @@
               "basis": {
                 "service": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -697,7 +643,7 @@
                     "text": "list"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "words": {
@@ -706,87 +652,72 @@
                     "text": "deploys"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "deploys",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "deploys",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "deploys.service",
                   "top": "search",
-                  "p": 0.9
-                },
-                {
-                  "question": "deploys.region",
-                  "top": "unstated",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "deploys",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "errors",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "logs",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "suspect",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "rollback",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "post",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incidents",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incident",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "postmortem",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "status",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -830,13 +761,13 @@
               "basis": {
                 "service": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 },
                 "region": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -847,7 +778,7 @@
                     "text": "pull"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "words": {
@@ -856,87 +787,77 @@
                     "text": "logs"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "logs",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "logs",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "logs.service",
                   "top": "search",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "logs.region",
                   "top": "eu-west",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "logs",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "errors",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "deploys",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "suspect",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "rollback",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "post",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incidents",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incident",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "postmortem",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "status",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -977,77 +898,67 @@
                     "text": "find the suspect"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "suspect",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "suspect",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "suspect",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "errors",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "deploys",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "logs",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "rollback",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "post",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incidents",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incident",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "postmortem",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "status",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },

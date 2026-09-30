@@ -485,6 +485,7 @@ fn gate_moved(file: Option<&Gate>, here: Option<&Gate>) -> Option<String> {
                 ("fits", file.fits(), here.fits()),
                 ("read", Some(file.read()), Some(here.read())),
                 ("write", Some(file.write()), Some(here.write())),
+                ("whole", file.whole(), here.whole()),
             ];
             floors
                 .iter()
@@ -570,6 +571,7 @@ pub fn replan(path: &str, pinned: &Pinned, plan: &Plan) -> Result<Replanned, Dia
                     )?;
                     let (request, raw, reading) = decide::reading(
                         plan,
+                        pinned.gate.as_ref(),
                         request,
                         |round| answered(pinned, round).map_err(&refused),
                         |fault| unread(&asked.text, &fault),

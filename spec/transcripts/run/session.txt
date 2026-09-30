@@ -47,7 +47,7 @@ $ evoke run shout word=-n
   running shout: word is "-n", which starts with -; an argv cannot carry it  →  evoke run shout word=-n
 [1]
 $ evoke "whisper hello there"
-  whisper  0.95
+  whisper  0.97
 whisper hello there
 gently
 $ evoke run fail

@@ -25,7 +25,7 @@
       "basis": {
         "day": {
           "by": "ask",
-          "p": 0.9
+          "p": 0.95
         }
       },
       "left": [
@@ -36,7 +36,7 @@
             "text": "move the meeting"
           },
           "does": "action",
-          "p": 0.9
+          "p": 0.95
         },
         {
           "words": {
@@ -45,58 +45,48 @@
             "text": "three"
           },
           "does": "action",
-          "p": 0.9
+          "p": 0.95
         }
       ],
       "unconsumed": [],
-      "confidence": 0.9,
+      "confidence": 0.95,
       "weakest": {
         "question": "meeting.day",
         "top": "20-28",
-        "p": 0.9
+        "p": 0.95
       },
       "judgments": [
         {
           "question": "route",
           "top": "meeting",
-          "p": 0.95
+          "p": 0.97
         },
         {
           "question": "meeting.day",
           "top": "20-28",
-          "p": 0.9
-        },
-        {
-          "question": "meeting.time",
-          "top": "unstated",
-          "p": 1
+          "p": 0.95
         }
       ],
       "runner_up": {
         "reflex": "rollback",
-        "route": 0.03,
-        "fits": 0.02
+        "route": 0.02
       },
       "contenders": [
         {
           "reflex": "meeting",
-          "route": 0.95,
-          "fits": 0.8
+          "route": 0.97
         },
         {
           "reflex": "rollback",
-          "route": 0.03,
-          "fits": 0.02
+          "route": 0.02
         },
         {
           "reflex": "calendar",
-          "route": 0,
-          "fits": 0.02
+          "route": 0
         },
         {
           "reflex": "deploys",
-          "route": 0,
-          "fits": 0.02
+          "route": 0
         }
       ]
     },
@@ -117,8 +107,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     }
   },
   "expect": {
@@ -158,7 +149,7 @@
     "basis": {
       "day": {
         "by": "ask",
-        "p": 0.9
+        "p": 0.95
       }
     },
     "left": [
@@ -169,7 +160,7 @@
           "text": "move the meeting"
         },
         "does": "action",
-        "p": 0.9
+        "p": 0.95
       },
       {
         "words": {
@@ -178,52 +169,47 @@
           "text": "three"
         },
         "does": "action",
-        "p": 0.9
+        "p": 0.95
       }
     ],
-    "confidence": 0.9,
+    "confidence": 0.95,
     "weakest": {
       "question": "meeting.day",
       "top": "20-28",
-      "p": 0.9
+      "p": 0.95
     },
     "judgments": [
       {
         "question": "route",
         "top": "meeting",
-        "p": 0.95
+        "p": 0.97
       },
       {
         "question": "meeting.day",
         "top": "20-28",
-        "p": 0.9
+        "p": 0.95
       }
     ],
     "runner_up": {
       "reflex": "rollback",
-      "route": 0.03,
-      "fits": 0.02
+      "route": 0.02
     },
     "contenders": [
       {
         "reflex": "meeting",
-        "route": 0.95,
-        "fits": 0.8
+        "route": 0.97
       },
       {
         "reflex": "rollback",
-        "route": 0.03,
-        "fits": 0.02
+        "route": 0.02
       },
       {
         "reflex": "calendar",
-        "route": 0,
-        "fits": 0.02
+        "route": 0
       },
       {
         "reflex": "deploys",
-        "route": 0,
-        "fits": 0.02
+        "route": 0
       }
     ]
   }

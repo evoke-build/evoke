@@ -16,6 +16,8 @@ import { replay } from "../src/testing.ts"
 import type { Request } from "../src/types.ts"
 
 const request = JSON.parse(readFileSync(new URL("../../spec/fixtures/request-kill-the-lights.json", import.meta.url), "utf8")) as Request
+/** The same words checked for thefts: the route, and how each reflex fits. */
+const phrase = JSON.parse(readFileSync(new URL("../../spec/fixtures/request-a-phrase-checked-for-thefts.json", import.meta.url), "utf8")) as Request
 const answers = JSON.stringify({
   answers: {
     route: { type: "choice", probabilities: { lights: 0.9, timer: 0.02, volume: 0.02, none: 0.06 } },
@@ -24,13 +26,13 @@ const answers = JSON.stringify({
 })
 
 test("jev declares its id, limits and the gate with overrides, and needs its key", () => {
-  const adapter = over("jev", { key: "k", gate: { write: 0.85 } }, async () => ({ status: 200, body: answers }))
+  const adapter = over("jev", { key: "k", gate: { write: 0.95 } }, async () => ({ status: 200, body: answers }))
   equal(adapter.id, "jev-1.13.0")
   deepStrictEqual(adapter.limits, { options: 255 })
-  deepStrictEqual(adapter.gate, { route: 0.5, fits: 0.3, read: 0.6, write: 0.85 })
+  deepStrictEqual(adapter.gate, { route: 0.5, fits: 0.3, read: 0.8, write: 0.95, whole: 0.3 })
   throws(
-    () => over("jev", { key: "k", gate: { read: 0.9 } }, async () => ({ status: 200, body: answers })),
-    (error: DiagnosticError) => error.message === "adapters.jev.gate: read 0.9 is above write 0.8  →  jev({ gate })",
+    () => over("jev", { key: "k", gate: { read: 0.95 } }, async () => ({ status: 200, body: answers })),
+    (error: DiagnosticError) => error.message === "adapters.jev.gate: read 0.95 is above write 0.9  →  jev({ gate })",
   )
   const key = process.env.TYPESAFE_API_KEY
   delete process.env.TYPESAFE_API_KEY
@@ -56,16 +58,16 @@ test("openjev is a second door on the same wire: its own key, address, model and
   })
   equal(door.id, "jev-1.13.0")
   deepStrictEqual(door.limits, { options: 255 })
-  deepStrictEqual(door.gate, { route: 0.5, fits: 0.3, read: 0.6, write: 0.8 })
-  const { raw } = await answered(door, request, 30_000, undefined, "decide()")
+  deepStrictEqual(door.gate, { route: 0.5, fits: 0.3, read: 0.8, write: 0.9, whole: 0.3 })
+  const { raw } = await answered(door, phrase, 30_000, undefined, "decide()")
   deepStrictEqual(raw["fits.lights"], { yes: 0.7 })
   equal(seen[0]?.url, "https://api.openjev.sh/v1/systemone")
   equal(seen[0]?.bearer, "k")
   equal(seen[0]?.timeout, 3000)
   ok(seen[0]?.body.includes('"model":"jev-1.13.0"'))
   throws(
-    () => over("openjev", { key: "k", gate: { read: 0.9 } }, async () => ({ status: 200, body: answers })),
-    (error: DiagnosticError) => error.message === "adapters.openjev.gate: read 0.9 is above write 0.8  →  openjev({ gate })",
+    () => over("openjev", { key: "k", gate: { read: 0.95 } }, async () => ({ status: 200, body: answers })),
+    (error: DiagnosticError) => error.message === "adapters.openjev.gate: read 0.95 is above write 0.9  →  openjev({ gate })",
   )
   await rejects(
     answered(over("openjev", { key: "k" }, async () => ({ status: 401, body: "" })), request, 30_000, undefined, "decide()"),
@@ -115,11 +117,11 @@ test("the policy loop: once more after a connect error or a 5xx, never after a 4
     return next
   }
   const answer = { status: 200, body: answers }
-  const { raw, trace } = await answered(over("jev", { key: "k" }, sequence(new Unanswered("connect refused", false), answer)), request, 30_000, undefined, "decide()")
+  const { raw, trace } = await answered(over("jev", { key: "k" }, sequence(new Unanswered("connect refused", false), answer)), phrase, 30_000, undefined, "decide()")
   deepStrictEqual(calls, ["k:1500", "k:1500"])
   deepStrictEqual(raw["fits.lights"], { yes: 0.7 })
   equal(trace.adapter, "jev-1.13.0")
-  equal(trace.questions, Object.keys(request.questions).length)
+  equal(trace.questions, Object.keys(phrase.questions).length)
   calls.length = 0
   await answered(over("jev", { key: "k" }, sequence({ status: 503, body: "" }, answer)), request, 30_000, undefined, "decide()")
   equal(calls.length, 2)
@@ -150,7 +152,7 @@ test("a 429 that names a pause is waited out and sent again; one without is a fa
     return next
   }
   const answer = { status: 200, body: answers }
-  const { raw } = await answered(over("jev", { key: "k" }, limited({ status: 429, body: "", retryAfter: 30 }, answer)), request, 30_000, undefined, "decide()")
+  const { raw } = await answered(over("jev", { key: "k" }, limited({ status: 429, body: "", retryAfter: 30 }, answer)), phrase, 30_000, undefined, "decide()")
   deepStrictEqual(raw["fits.lights"], { yes: 0.7 })
   equal(calls.length, 2)
   ok((calls[1] ?? 0) - (calls[0] ?? 0) >= 25)
@@ -187,7 +189,7 @@ test("an adapter that ignores the deadline is a transport fault; the caller's ab
 test("replay answers from the spec's recording and faults on a miss", async () => {
   const adapter = replay(new URL("../../spec/transcripts/use/answers.toml", import.meta.url))
   equal(adapter.id, "replay")
-  deepStrictEqual(adapter.gate, { route: 0.5, fits: 0.3, read: 0.6, write: 0.8 })
+  deepStrictEqual(adapter.gate, { route: 0.5, fits: 0.3, read: 0.8, write: 0.9, whole: 0.3 })
   const raw = await adapter.answer(request.state, request.questions, AbortSignal.timeout(1000))
   deepStrictEqual(Object.keys(raw), Object.keys(request.questions))
   await rejects(

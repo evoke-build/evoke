@@ -46,7 +46,7 @@ row without one declares nothing.
    table, an utterance over 200 characters, or text that addresses a model instead of describing an action.
 3. **Tests for theft.** The examples already installed are routed over the new set, a few at a time, each
    newcomer's fit asked too. A phrase a newcomer wins prints as `<thief>: steals "<phrase>" from <owner>  →  evoke
-   teach "<phrase>" not <thief>`; one it fits over the floor, so that every such request would stop at confirm, as
+   teach "<phrase>" not <thief>`; one it fits over the floor, so that two reflexes claim the phrase, as
    `<thief>: also fits "<phrase>" of <owner> (0.82)`, with the same fix. The add still proceeds. The fix is one
    line in your overlay. When the classifier cannot answer, or has no key yet, the line says the test did not
    finish, and `evoke test` runs it again.

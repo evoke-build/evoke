@@ -7,35 +7,31 @@
       "ranking": [
         {
           "reflex": "calendar",
-          "route": 0.95,
-          "fits": 0.8
+          "route": 0.97
         },
         {
           "reflex": "meeting",
-          "route": 0.03,
-          "fits": 0.02
+          "route": 0.02
         },
         {
           "reflex": "rollback",
-          "route": 0,
-          "fits": 0.02
+          "route": 0
         },
         {
           "reflex": "deploys",
-          "route": 0,
-          "fits": 0.02
+          "route": 0
         }
       ],
       "judgments": [
         {
           "question": "route",
           "top": "calendar",
-          "p": 0.95
+          "p": 0.97
         },
         {
           "question": "calendar.day",
           "top": "tomorrow",
-          "p": 0.9
+          "p": 0.95
         }
       ],
       "winner": {
@@ -49,8 +45,8 @@
         "basis": {
           "day": {
             "by": "views",
-            "ask": 0.9,
-            "reader": 0.9
+            "ask": 0.95,
+            "reader": 0.95
           }
         },
         "missing": [],
@@ -62,7 +58,7 @@
               "text": "show my calendar"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "words": {
@@ -71,7 +67,7 @@
               "text": "monday"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "unconsumed": [
@@ -83,20 +79,20 @@
         ],
         "runner_up": {
           "reflex": "meeting",
-          "route": 0.03,
-          "fits": 0.02
+          "route": 0.02
         }
       }
     },
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     }
   },
   "expect": {
-    "outcome": "confirm",
+    "outcome": "run",
     "reflex": "calendar",
     "args": {
       "day": {
@@ -109,8 +105,8 @@
     "basis": {
       "day": {
         "by": "views",
-        "ask": 0.9,
-        "reader": 0.9
+        "ask": 0.95,
+        "reader": 0.95
       }
     },
     "left": [
@@ -121,7 +117,7 @@
           "text": "show my calendar"
         },
         "does": "action",
-        "p": 0.9
+        "p": 0.95
       },
       {
         "words": {
@@ -130,66 +126,54 @@
           "text": "monday"
         },
         "does": "action",
-        "p": 0.9
+        "p": 0.95
       }
     ],
-    "confidence": 0.9,
+    "unconsumed": [
+      {
+        "start": 34,
+        "end": 40,
+        "text": "monday"
+      }
+    ],
+    "confidence": 0.95,
     "weakest": {
       "question": "calendar.day",
       "top": "tomorrow",
-      "p": 0.9
+      "p": 0.95
     },
     "judgments": [
       {
         "question": "route",
         "top": "calendar",
-        "p": 0.95
+        "p": 0.97
       },
       {
         "question": "calendar.day",
         "top": "tomorrow",
-        "p": 0.9
+        "p": 0.95
       }
     ],
     "runner_up": {
       "reflex": "meeting",
-      "route": 0.03,
-      "fits": 0.02
+      "route": 0.02
     },
     "contenders": [
       {
         "reflex": "calendar",
-        "route": 0.95,
-        "fits": 0.8
+        "route": 0.97
       },
       {
         "reflex": "meeting",
-        "route": 0.03,
-        "fits": 0.02
+        "route": 0.02
       },
       {
         "reflex": "rollback",
-        "route": 0,
-        "fits": 0.02
+        "route": 0
       },
       {
         "reflex": "deploys",
-        "route": 0,
-        "fits": 0.02
-      }
-    ],
-    "prompt": {
-      "own": "calendar day=\"tomorrow\" · read · weakest: day 0.90 · unused \"monday\"",
-      "template": "Show the calendar for tomorrow?"
-    },
-    "because": [
-      {
-        "type": "unconsumed_span",
-        "span": {
-          "start": 34,
-          "end": 40,
-          "text": "monday"
-        }
+        "route": 0
       }
     ]
   }

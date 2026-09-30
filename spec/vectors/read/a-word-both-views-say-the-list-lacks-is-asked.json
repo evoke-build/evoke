@@ -41,12 +41,6 @@
           },
           "otherwise": "none"
         },
-        "fits.lights": {
-          "type": "yesno",
-          "ask": "Does `lights` do the specific thing the request asks for?",
-          "yes": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
-          "no": "Something else, such as: colour scenes and schedules; asking whether a light is on."
-        },
         "lights.room": {
           "type": "choice",
           "ask": "Which room?",
@@ -88,12 +82,6 @@
             "unstated": "The request does not say."
           },
           "otherwise": "unstated"
-        },
-        "fits.timer": {
-          "type": "yesno",
-          "ask": "Does `timer` do the specific thing the request asks for?",
-          "yes": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
-          "no": "Something else, such as: keeping the laptop awake; alarms at a time of day; asking the time."
         },
         "timer.duration": {
           "type": "choice",
@@ -200,29 +188,23 @@
     },
     "raw": {
       "route": {
-        "lights": 0.92,
-        "timer": 0.02,
-        "none": 0.06
-      },
-      "fits.lights": {
-        "yes": 0.7
+        "lights": 0.96,
+        "timer": 0.01,
+        "none": 0.03
       },
       "lights.room": {
-        "none": 0.8,
-        "den": 0.1,
-        "unstated": 0.1
+        "none": 0.9,
+        "den": 0.05,
+        "unstated": 0.05
       },
       "lights.state": {
-        "off": 0.9,
-        "on": 0.04,
-        "dim": 0.04,
-        "unstated": 0.02
+        "off": 0.95,
+        "on": 0.02,
+        "dim": 0.02,
+        "unstated": 0.01
       },
       "lights.brightness": {
         "unstated": 1
-      },
-      "fits.timer": {
-        "yes": 0.05
       },
       "timer.duration": {
         "unstated": 1
@@ -231,29 +213,29 @@
         "unstated": 1
       },
       "weave.view_lights__room": {
-        "none": 0.8,
-        "den": 0.1,
-        "unstated": 0.1
+        "none": 0.9,
+        "den": 0.05,
+        "unstated": 0.05
       },
       "weave.is_lights__room_0": {
         "yes": 0.05
       },
       "weave.view_lights__state": {
-        "off": 0.9,
-        "on": 0.04,
-        "dim": 0.04,
-        "unstated": 0.02
+        "off": 0.95,
+        "on": 0.02,
+        "dim": 0.02,
+        "unstated": 0.01
       },
       "weave.is_lights__state_1": {
-        "yes": 0.9
+        "yes": 0.95
       },
       "weave.left_lights_0_2": {
-        "action": 0.9,
-        "courtesy": 0.1
+        "action": 0.95,
+        "courtesy": 0.05
       },
       "weave.left_lights_5_5": {
-        "action": 0.9,
-        "courtesy": 0.1
+        "action": 0.95,
+        "courtesy": 0.05
       }
     }
   },
@@ -263,35 +245,23 @@
       "ranking": [
         {
           "reflex": "lights",
-          "route": 0.92,
-          "fits": 0.7
+          "route": 0.96
         },
         {
           "reflex": "timer",
-          "route": 0.02,
-          "fits": 0.05
+          "route": 0.01
         }
       ],
       "judgments": [
         {
           "question": "route",
           "top": "lights",
-          "p": 0.92
-        },
-        {
-          "question": "lights.room",
-          "top": "none",
-          "p": 0.8
+          "p": 0.96
         },
         {
           "question": "lights.state",
           "top": "off",
-          "p": 0.9
-        },
-        {
-          "question": "lights.brightness",
-          "top": "unstated",
-          "p": 1
+          "p": 0.95
         }
       ],
       "winner": {
@@ -305,9 +275,9 @@
         "basis": {
           "state": {
             "by": "views",
-            "ask": 0.9,
-            "reader": 0.9,
-            "yes": 0.9
+            "ask": 0.95,
+            "reader": 0.95,
+            "yes": 0.95
           }
         },
         "missing": [
@@ -334,7 +304,7 @@
               "text": "kill the lights"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "words": {
@@ -343,14 +313,13 @@
               "text": "den"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "unconsumed": [],
         "runner_up": {
           "reflex": "timer",
-          "route": 0.02,
-          "fits": 0.05
+          "route": 0.01
         }
       }
     }

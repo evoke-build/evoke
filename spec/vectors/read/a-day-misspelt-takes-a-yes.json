@@ -56,12 +56,6 @@
           },
           "otherwise": "none"
         },
-        "fits.meeting": {
-          "type": "yesno",
-          "ask": "Does `meeting` do the specific thing the request asks for?",
-          "yes": "Move a meeting to a day and a time.\nThe meeting moves to the day and the time you name.",
-          "no": "Something else, such as: showing the calendar; rolling a release back."
-        },
         "meeting.day": {
           "type": "choice",
           "ask": "To which day?",
@@ -81,12 +75,6 @@
           },
           "otherwise": "unstated"
         },
-        "fits.rollback": {
-          "type": "yesno",
-          "ask": "Does `rollback` do the specific thing the request asks for?",
-          "yes": "Roll a service back from a release to the one before it.\nEverywhere at once.",
-          "no": "Something else, such as: listing deploys; moving a meeting."
-        },
         "rollback.release": {
           "type": "choice",
           "ask": "From which release?",
@@ -95,12 +83,6 @@
             "unstated": "The request does not say."
           },
           "otherwise": "unstated"
-        },
-        "fits.calendar": {
-          "type": "yesno",
-          "ask": "Does `calendar` do the specific thing the request asks for?",
-          "yes": "Show the meetings of a day.\nEach with its title and its time.",
-          "no": "Something else, such as: moving a meeting; rolling a release back."
         },
         "calendar.day": {
           "type": "choice",
@@ -112,12 +94,6 @@
             "unstated": "The request does not say."
           },
           "otherwise": "unstated"
-        },
-        "fits.deploys": {
-          "type": "yesno",
-          "ask": "Does `deploys` do the specific thing the request asks for?",
-          "yes": "List the recent deploys of a service.\nEach release, newest first.",
-          "no": "Something else, such as: rolling a release back; moving a meeting."
         },
         "deploys.service": {
           "type": "choice",
@@ -212,41 +188,29 @@
     },
     "raw": {
       "route": {
-        "meeting": 0.93,
-        "calendar": 0.03,
-        "none": 0.04
-      },
-      "fits.meeting": {
-        "yes": 0.8
+        "meeting": 0.96,
+        "calendar": 0.02,
+        "none": 0.02
       },
       "meeting.day": {
-        "none": 0.3,
-        "unstated": 0.7
+        "none": 0.15,
+        "unstated": 0.85
       },
       "meeting.time": {
-        "33-36": 0.95,
-        "unstated": 0.05
-      },
-      "fits.rollback": {
-        "yes": 0.02
+        "33-36": 0.97,
+        "unstated": 0.03
       },
       "rollback.release": {
         "unstated": 1
       },
-      "fits.calendar": {
-        "yes": 0.02
-      },
       "calendar.day": {
         "unstated": 1
-      },
-      "fits.deploys": {
-        "yes": 0.02
       },
       "deploys.service": {
         "unstated": 1
       },
       "weave.said_meeting__day_20_29": {
-        "yes": 0.9
+        "yes": 0.95
       },
       "weave.only_meeting__time_33_36": {
         "yes": 0.05
@@ -258,8 +222,8 @@
         "unstated": 1
       },
       "weave.left_meeting_0_2": {
-        "action": 0.9,
-        "courtesy": 0.1
+        "action": 0.95,
+        "courtesy": 0.05
       }
     }
   },
@@ -269,40 +233,36 @@
       "ranking": [
         {
           "reflex": "meeting",
-          "route": 0.93,
-          "fits": 0.8
+          "route": 0.96
         },
         {
           "reflex": "calendar",
-          "route": 0.03,
-          "fits": 0.02
+          "route": 0.02
         },
         {
           "reflex": "rollback",
-          "route": 0,
-          "fits": 0.02
+          "route": 0
         },
         {
           "reflex": "deploys",
-          "route": 0,
-          "fits": 0.02
+          "route": 0
         }
       ],
       "judgments": [
         {
           "question": "route",
           "top": "meeting",
-          "p": 0.93
+          "p": 0.96
         },
         {
           "question": "weave.said_meeting__day_20_29",
           "top": "yes",
-          "p": 0.9
+          "p": 0.95
         },
         {
           "question": "meeting.time",
           "top": "33-36",
-          "p": 0.95
+          "p": 0.97
         }
       ],
       "winner": {
@@ -341,11 +301,11 @@
           "day": {
             "by": "spelled",
             "form": "misspelt",
-            "yes": 0.9
+            "yes": 0.95
           },
           "time": {
             "by": "ask",
-            "p": 0.95
+            "p": 0.97
           }
         },
         "missing": [],
@@ -357,14 +317,13 @@
               "text": "move the meeting"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "unconsumed": [],
         "runner_up": {
           "reflex": "calendar",
-          "route": 0.03,
-          "fits": 0.02
+          "route": 0.02
         }
       }
     }

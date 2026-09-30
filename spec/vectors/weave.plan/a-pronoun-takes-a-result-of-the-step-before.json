@@ -3,6 +3,13 @@
     "plan": {
       "$ref": "fixtures/plan-weave.json"
     },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
     "input": "look up dana's address and email them",
     "tags": [],
     "answers": {
@@ -22,54 +29,76 @@
             },
             "call": "contact name=\"dana\"",
             "effect": "read",
-            "confidence": 0.9,
+            "basis": {
+              "name": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "look"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 15,
+                  "end": 22,
+                  "text": "address"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "contact",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "contact",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "contact.name",
                 "top": "dana",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "mail",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.03
             },
             "contenders": [
               {
                 "reflex": "contact",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "mail",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.03
               },
               {
                 "reflex": "lights",
-                "route": 0.01,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "timer",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "volume",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -82,50 +111,56 @@
             "outcome": "ask",
             "reflex": "mail",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 10,
+                  "text": "email them"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
             "unconsumed": [],
-            "confidence": 0.88,
+            "whole": 0.9,
+            "confidence": 0.94,
             "weakest": {
               "question": "route",
               "top": "mail",
-              "p": 0.88
+              "p": 0.94
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "mail",
-                "p": 0.88
+                "p": 0.94
               }
             ],
             "runner_up": {
               "reflex": "contact",
-              "route": 0.04,
-              "fits": 0.1
+              "route": 0.04
             },
             "contenders": [
               {
                 "reflex": "mail",
-                "route": 0.88,
-                "fits": 0.8
+                "route": 0.94
               },
               {
                 "reflex": "contact",
-                "route": 0.04,
-                "fits": 0.1
+                "route": 0.04
               },
               {
                 "reflex": "lights",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "timer",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "volume",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "missing": [
@@ -147,14 +182,239 @@
       "judged": {
         "weave.split_0": {
           "yes": 0.9
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
         }
       }
     }
   },
   "expect": {
-    "err": {
-      "type": "unanswered",
-      "question": "weave.count"
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "look up dana's address and email them",
+        "steps": [
+          {
+            "n": 1,
+            "text": "look up dana's address",
+            "end": 22,
+            "decision": {
+              "outcome": "run",
+              "reflex": "contact",
+              "args": {
+                "name": {
+                  "type": "word",
+                  "word": "dana"
+                }
+              },
+              "call": "contact name=\"dana\"",
+              "effect": "read",
+              "basis": {
+                "name": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "look"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 15,
+                    "end": 22,
+                    "text": "address"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "contact",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "contact",
+                  "p": 0.95
+                },
+                {
+                  "question": "contact.name",
+                  "top": "dana",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "mail",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "contact",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "lights",
+                  "route": 0
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "contact",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "email them",
+            "end": 37,
+            "decision": {
+              "outcome": "ask",
+              "reflex": "mail",
+              "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 10,
+                    "text": "email them"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "unconsumed": [],
+              "whole": 0.9,
+              "confidence": 0.94,
+              "weakest": {
+                "question": "route",
+                "top": "mail",
+                "p": 0.94
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "mail",
+                  "p": 0.94
+                }
+              ],
+              "runner_up": {
+                "reflex": "contact",
+                "route": 0.04
+              },
+              "contenders": [
+                {
+                  "reflex": "mail",
+                  "route": 0.94
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0.04
+                },
+                {
+                  "reflex": "lights",
+                  "route": 0
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0
+                }
+              ],
+              "missing": [
+                {
+                  "arg": "to",
+                  "ask": "To which address?",
+                  "because": {
+                    "type": "unstated"
+                  },
+                  "choices": {
+                    "type": "pick",
+                    "pick": "email"
+                  }
+                }
+              ]
+            },
+            "reflex": "mail",
+            "effect": "write",
+            "refs": [
+              {
+                "span": {
+                  "start": 6,
+                  "end": 10,
+                  "text": "them"
+                },
+                "from": [
+                  0
+                ],
+                "how": "pronoun",
+                "many": true
+              }
+            ],
+            "after": [
+              1
+            ]
+          }
+        ],
+        "binds": [
+          {
+            "from": 1,
+            "to": 2,
+            "arg": "to",
+            "field": "email",
+            "kind": "email",
+            "via": "fill"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 22,
+            "end": 27,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          }
+        ]
+      }
     }
   }
 }

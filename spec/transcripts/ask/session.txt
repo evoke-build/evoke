@@ -1,35 +1,35 @@
 $ evoke "start a timer"
   How long?  > 10 minutes
-  timer duration="10 minutes"  0.92
+  timer duration="10 minutes"  0.96
 10 minute timer started
 $ evoke "set the volume to 150 percent"
   How loud, in percent?  150 percent is outside 0–100  > 40
-  volume level="40"  0.93
+  volume level="40"  0.96
 volume set to 40%
 # A room the list does not hold is asked, and the prompt says so.
 $ evoke "kill the lights in the garage"
   Which room?  "garage" is not on the list  [1] den  [2] office  [+] add one  > 2
-  lights room="office" state="off"  0.90
+  lights room="office" state="off"  0.95
 group-7 lights off
 $ evoke why
   "kill the lights in the garage"
-  lights 0.92 · none 0.05 · timer 0.02 · volume 0.01
-  room   none 0.85 · den 0.05 · office 0.05 · unstated 0.05
-  state  off 0.90 · on 0.04 · dim 0.04 · unstated 0.02
-         asked a second way: off 0.90 · is it off? yes 0.90
+  lights 0.96 · none 0.02 · timer 0.01 · volume 0.01
+  room   none 0.92 · den 0.03 · office 0.03 · unstated 0.02
+  state  off 0.95 · on 0.02 · dim 0.02 · unstated 0.01
+         asked a second way: off 0.95 · is it off? yes 0.95
   words  "kill the lights" say what to do 0.90 · "garage" answer room 0.85
-  fits   lights 0.80 · timer 0.05 · volume 0.05
-  ran lights room="office" state="off" · weakest: state 0.90 · replay, 15 questions in 2 rounds
+  whole  holds all you said 0.90
+  ran lights room="office" state="off" · weakest: state 0.95 · replay, 13 questions in 3 rounds
 # A text typed without quotes is read from the words as typed, and waits for a yes.
 $ evoke "set a timer for 10 minutes called tea"
   What is the timer for?  you wrote "called tea"  > y
-  timer duration="10 minutes" label="y"  0.93
+  timer duration="10 minutes" label="y"  0.96
 10 minute timer started
 $ evoke why
   "set a timer for 10 minutes called tea"
-  timer 0.93 · none 0.04 · lights 0.02 · volume 0.01
-  duration  "10 minutes" 0.95 · unstated 0.05
-  label     none 0.70 · unstated 0.30
+  timer 0.96 · none 0.02 · lights 0.01 · volume 0.01
+  duration  "10 minutes" 0.97 · unstated 0.03
+  label     none 0.85 · unstated 0.15
   words     "set a timer" say what to do 0.95 · "called tea" answer label 0.80
-  fits      timer 0.85 · lights 0.05 · volume 0.05
-  ran timer duration="10 minutes" label="y" · weakest: route 0.93 · replay, 24 questions in 3 rounds
+  whole     holds all you said 0.90
+  ran timer duration="10 minutes" label="y" · weakest: route 0.96 · replay, 22 questions in 4 rounds

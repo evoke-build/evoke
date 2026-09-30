@@ -4,76 +4,69 @@ id = "replay"
 [gate]
 route = 0.5
 fits  = 0.3
-read  = 0.6
-write = 0.8
+read  = 0.8
+write = 0.9
+whole = 0.3
 
 [answers."turn on the kitchen lights"]
-route                      = { lights = 0.9, timer = 0.02, none = 0.08 }
-"fits.lights"              = { yes = 0.75 }
-"fits.timer"               = { yes = 0.05 }
-"lights.room"              = { unstated = 0.8, den = 0.1, office = 0.1 }
-"lights.state"             = { on = 0.9, off = 0.03, dim = 0.02, unstated = 0.05 }
-"lights.brightness"        = { unstated = 1.0 }
-"timer.duration"           = { unstated = 1.0 }
-"timer.label"              = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.8, den = 0.1, office = 0.1 }
-"weave.view_lights__state" = { on = 0.9, off = 0.03, dim = 0.02, unstated = 0.05 }
-"weave.is_lights__state_0" = { yes = 0.9 }
-"weave.left_lights_0_0"    = { action = 0.9, courtesy = 0.1 }
-"weave.left_lights_3_4"    = { action = 0.9, courtesy = 0.1 }
-
-[answers."dim the office to 30 percent"]
-route                                 = { lights = 0.92, timer = 0.02, none = 0.06 }
-"fits.lights"                         = { yes = 0.75 }
-"fits.timer"                          = { yes = 0.05 }
-"lights.room"                         = { office = 0.9, den = 0.05, unstated = 0.05 }
-"lights.state"                        = { dim = 0.9, on = 0.03, off = 0.02, unstated = 0.05 }
-"lights.brightness"                   = { 18-28 = 0.9, unstated = 0.1 }
-"timer.duration"                      = { unstated = 1.0 }
-"timer.label"                         = { unstated = 1.0 }
-"weave.view_lights__room"             = { office = 0.9, den = 0.05, unstated = 0.05 }
-"weave.is_lights__room_1"             = { yes = 0.9 }
-"weave.view_lights__state"            = { dim = 0.9, on = 0.03, off = 0.02, unstated = 0.05 }
-"weave.is_lights__state_2"            = { yes = 0.9 }
-"weave.only_lights__brightness_18_28" = { yes = 0.05 }
-
-[answers."make it darker in here"]
-route                      = { lights = 0.85, timer = 0.05, none = 0.1 }
-"fits.lights"              = { yes = 0.7 }
-"fits.timer"               = { yes = 0.05 }
-"lights.room"              = { unstated = 0.85, den = 0.1, office = 0.05 }
-"lights.state"             = { off = 0.6, dim = 0.3, on = 0.05, unstated = 0.05 }
-"lights.brightness"        = { unstated = 1.0 }
-"timer.duration"           = { unstated = 1.0 }
-"timer.label"              = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.85, den = 0.1, office = 0.05 }
-"weave.view_lights__state" = { off = 0.6, dim = 0.3, on = 0.05, unstated = 0.05 }
-"weave.is_lights__state_1" = { yes = 0.9 }
-"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
-
-[answers."light a candle"]
-route                      = { none = 0.8, lights = 0.15, timer = 0.05 }
-"fits.lights"              = { yes = 0.2 }
-"fits.timer"               = { yes = 0.05 }
+route                      = { lights = 0.95, timer = 0.01, none = 0.04 }
 "lights.room"              = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"             = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"lights.state"             = { on = 0.95, off = 0.02, dim = 0.01, unstated = 0.02 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
 "weave.view_lights__room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__state" = { on = 0.95, off = 0.02, dim = 0.01, unstated = 0.02 }
+"weave.is_lights__state_0" = { yes = 0.95 }
+"weave.left_lights_0_0"    = { action = 0.9, courtesy = 0.1 }
+"weave.left_lights_3_4"    = { action = 0.9, courtesy = 0.1 }
+"weave.whole_3802888764"   = { whole = 0.9, less = 0.05, other = 0.05 }
+
+[answers."dim the office to 30 percent"]
+route                                 = { lights = 0.96, timer = 0.01, none = 0.03 }
+"lights.room"                         = { office = 0.95, den = 0.03, unstated = 0.02 }
+"lights.state"                        = { dim = 0.95, on = 0.02, off = 0.01, unstated = 0.02 }
+"lights.brightness"                   = { 18-28 = 0.95, unstated = 0.05 }
+"timer.duration"                      = { unstated = 1.0 }
+"timer.label"                         = { unstated = 1.0 }
+"weave.view_lights__room"             = { office = 0.95, den = 0.03, unstated = 0.02 }
+"weave.is_lights__room_1"             = { yes = 0.95 }
+"weave.view_lights__state"            = { dim = 0.95, on = 0.02, off = 0.01, unstated = 0.02 }
+"weave.is_lights__state_2"            = { yes = 0.95 }
+"weave.only_lights__brightness_18_28" = { yes = 0.05 }
+"weave.whole_1378565185"              = { whole = 0.9, less = 0.05, other = 0.05 }
+
+[answers."make it darker in here"]
+route                      = { lights = 0.92, timer = 0.03, none = 0.05 }
+"lights.room"              = { unstated = 0.92, den = 0.05, office = 0.03 }
+"lights.state"             = { off = 0.8, dim = 0.15, on = 0.03, unstated = 0.02 }
+"lights.brightness"        = { unstated = 1.0 }
+"timer.duration"           = { unstated = 1.0 }
+"timer.label"              = { unstated = 1.0 }
+"weave.view_lights__room"  = { unstated = 0.92, den = 0.05, office = 0.03 }
+"weave.view_lights__state" = { off = 0.8, dim = 0.15, on = 0.03, unstated = 0.02 }
+"weave.is_lights__state_1" = { yes = 0.95 }
+"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+
+[answers."light a candle"]
+route                      = { none = 0.9, lights = 0.08, timer = 0.02 }
+"lights.room"              = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"             = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"lights.brightness"        = { unstated = 1.0 }
+"timer.duration"           = { unstated = 1.0 }
+"timer.label"              = { unstated = 1.0 }
+"weave.view_lights__room"  = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state" = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 
 [answers."set a timer for 10 minutes"]
-route                                 = { timer = 0.93, lights = 0.02, none = 0.05 }
-"fits.lights"                         = { yes = 0.05 }
-"fits.timer"                          = { yes = 0.8 }
-"lights.room"                         = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"                        = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"timer.duration"                      = { 16-26 = 0.95, unstated = 0.05 }
+route                                 = { timer = 0.96, lights = 0.01, none = 0.03 }
+"lights.room"                         = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"                        = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"timer.duration"                      = { 16-26 = 0.97, unstated = 0.03 }
 "lights.brightness"                   = { unstated = 1.0 }
 "timer.label"                         = { unstated = 1.0 }
-"weave.view_lights__room"             = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"            = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"             = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"            = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_16_26"    = { yes = 0.05 }
 "weave.left_timer_0_2"                = { action = 0.9, courtesy = 0.1 }
 "weave.first_timer__label_3169934535" = { unstated = 1.0 }
@@ -84,18 +77,17 @@ route                                 = { timer = 0.93, lights = 0.02, none = 0.
 "weave.word_timer__label_3"           = { yes = 0.05 }
 "weave.first_timer__label_1171567175" = { unstated = 1.0 }
 "weave.run_timer__label_1171567175"   = { unstated = 1.0 }
+"weave.whole_3359817700"              = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."25 minute timer"]
-route                                 = { timer = 0.9, lights = 0.03, none = 0.07 }
-"fits.lights"                         = { yes = 0.05 }
-"fits.timer"                          = { yes = 0.8 }
-"lights.room"                         = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"                        = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"timer.duration"                      = { 0-9 = 0.9, unstated = 0.1 }
+route                                 = { timer = 0.95, lights = 0.02, none = 0.03 }
+"lights.room"                         = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"                        = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"timer.duration"                      = { 0-9 = 0.95, unstated = 0.05 }
 "lights.brightness"                   = { unstated = 1.0 }
 "timer.label"                         = { unstated = 1.0 }
-"weave.view_lights__room"             = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"            = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"             = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"            = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_0_9"      = { yes = 0.05 }
 "weave.left_timer_2_2"                = { action = 0.9, courtesy = 0.1 }
 "weave.first_timer__label_3682311430" = { unstated = 1.0 }
@@ -103,34 +95,32 @@ route                                 = { timer = 0.9, lights = 0.03, none = 0.0
 "weave.word_timer__label_2"           = { yes = 0.05 }
 "weave.first_timer__label_3085778414" = { unstated = 1.0 }
 "weave.run_timer__label_3085778414"   = { unstated = 1.0 }
+"weave.whole_1805033337"              = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."timer for 3 minutes called \"eggs\""]
-route                              = { timer = 0.94, lights = 0.02, none = 0.04 }
-"fits.lights"                      = { yes = 0.05 }
-"fits.timer"                       = { yes = 0.8 }
-"lights.room"                      = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"                     = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"timer.duration"                   = { 10-19 = 0.9, unstated = 0.1 }
-"timer.label"                      = { 28-32 = 0.9, unstated = 0.1 }
+route                              = { timer = 0.97, lights = 0.01, none = 0.02 }
+"lights.room"                      = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"                     = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"timer.duration"                   = { 10-19 = 0.95, unstated = 0.05 }
+"timer.label"                      = { 28-32 = 0.95, unstated = 0.05 }
 "lights.brightness"                = { unstated = 1.0 }
-"weave.view_lights__room"          = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"         = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"          = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"         = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_10_19" = { yes = 0.05 }
 "weave.only_timer__label_28_32"    = { yes = 0.05 }
 "weave.left_timer_0_0"             = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_4_4"             = { action = 0.9, courtesy = 0.1 }
+"weave.whole_2882998034"           = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."count down 90 seconds"]
-route                                 = { timer = 0.9, lights = 0.02, none = 0.08 }
-"fits.lights"                         = { yes = 0.05 }
-"fits.timer"                          = { yes = 0.8 }
-"lights.room"                         = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"                        = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"timer.duration"                      = { 11-21 = 0.9, unstated = 0.1 }
+route                                 = { timer = 0.95, lights = 0.01, none = 0.04 }
+"lights.room"                         = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"                        = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"timer.duration"                      = { 11-21 = 0.95, unstated = 0.05 }
 "lights.brightness"                   = { unstated = 1.0 }
 "timer.label"                         = { unstated = 1.0 }
-"weave.view_lights__room"             = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"            = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"             = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"            = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_11_21"    = { yes = 0.05 }
 "weave.left_timer_0_1"                = { action = 0.9, courtesy = 0.1 }
 "weave.first_timer__label_1914900415" = { unstated = 1.0 }
@@ -139,62 +129,57 @@ route                                 = { timer = 0.9, lights = 0.02, none = 0.0
 "weave.word_timer__label_1"           = { yes = 0.05 }
 "weave.first_timer__label_3723623174" = { unstated = 1.0 }
 "weave.run_timer__label_3723623174"   = { unstated = 1.0 }
+"weave.whole_49030151"                = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."ping me in 2 hours"]
-route                              = { none = 0.9, timer = 0.05, lights = 0.05 }
-"fits.lights"                      = { yes = 0.05 }
-"fits.timer"                       = { yes = 0.1 }
-"lights.room"                      = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"                     = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"timer.duration"                   = { 11-18 = 0.9, unstated = 0.1 }
+route                              = { none = 0.95, timer = 0.03, lights = 0.02 }
+"lights.room"                      = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"                     = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"timer.duration"                   = { 11-18 = 0.95, unstated = 0.05 }
 "lights.brightness"                = { unstated = 1.0 }
 "timer.label"                      = { unstated = 1.0 }
-"weave.view_lights__room"          = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"         = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"          = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"         = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_11_18" = { yes = 0.05 }
 
 [answers."start a \"laundry\" timer, 45 minutes"]
-route                              = { timer = 0.92, lights = 0.03, none = 0.05 }
-"fits.lights"                      = { yes = 0.05 }
-"fits.timer"                       = { yes = 0.8 }
-"lights.room"                      = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"                     = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
-"timer.duration"                   = { 25-35 = 0.9, unstated = 0.1 }
-"timer.label"                      = { 9-16 = 0.9, unstated = 0.1 }
+route                              = { timer = 0.96, lights = 0.02, none = 0.02 }
+"lights.room"                      = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"                     = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
+"timer.duration"                   = { 25-35 = 0.95, unstated = 0.05 }
+"timer.label"                      = { 9-16 = 0.95, unstated = 0.05 }
 "lights.brightness"                = { unstated = 1.0 }
-"weave.view_lights__room"          = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"         = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"          = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"         = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_25_35" = { yes = 0.05 }
 "weave.only_timer__label_9_16"     = { yes = 0.05 }
 "weave.left_timer_0_0"             = { action = 0.9, courtesy = 0.1 }
 "weave.left_timer_3_3"             = { action = 0.9, courtesy = 0.1 }
+"weave.whole_1454804456"           = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."start a timer"]
-route                        = { timer = 0.92, lights = 0.03, none = 0.05 }
-"fits.lights"                = { yes = 0.05 }
-"fits.timer"                 = { yes = 0.8 }
-"lights.room"                = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"               = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+route                        = { timer = 0.96, lights = 0.02, none = 0.02 }
+"lights.room"                = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"               = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "lights.brightness"          = { unstated = 1.0 }
 "timer.duration"             = { unstated = 1.0 }
 "timer.label"                = { unstated = 1.0 }
-"weave.view_lights__room"    = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state"   = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"    = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state"   = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.left_timer_0_2"       = { action = 0.9, courtesy = 0.1 }
 "weave.first_timer__label_0" = { unstated = 1.0 }
 "weave.run_timer__label_0"   = { unstated = 1.0 }
 "weave.word_timer__label_0"  = { yes = 0.05 }
 "weave.word_timer__label_1"  = { yes = 0.05 }
 "weave.word_timer__label_2"  = { yes = 0.05 }
+"weave.whole_3449089168"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."what time is it"]
-route                      = { none = 0.85, timer = 0.1, lights = 0.05 }
-"fits.lights"              = { yes = 0.05 }
-"fits.timer"               = { yes = 0.1 }
-"lights.room"              = { unstated = 0.9, den = 0.05, office = 0.05 }
-"lights.state"             = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+route                      = { none = 0.92, timer = 0.05, lights = 0.03 }
+"lights.room"              = { unstated = 0.95, den = 0.03, office = 0.02 }
+"lights.state"             = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
-"weave.view_lights__state" = { unstated = 0.9, on = 0.04, off = 0.03, dim = 0.03 }
+"weave.view_lights__room"  = { unstated = 0.95, den = 0.03, office = 0.02 }
+"weave.view_lights__state" = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }

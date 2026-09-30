@@ -107,22 +107,24 @@ impl fmt::Display for Door {
 /// The ceiling per `choice`, the same at both doors.
 const OPTIONS: u32 = 255;
 
-/// The gate's four numbers, each a probability.
+/// The gate's five numbers, each a probability.
 #[derive(Clone, Copy)]
 struct Floors {
     route: Prob,
     fits: Prob,
     read: Prob,
     write: Prob,
+    whole: Prob,
 }
 
-/// The floors both doors ship — `route`, `fits` for the runner-up, `read`, `write` — Jev's own calibration, which
-/// OpenJEV forwards to and never rescales.
+/// The floors both doors ship — `route`, `fits` for a newcomer at `add`, `read`, `write`, `whole` for a call
+/// held against its request — over Jev's own calibration, which OpenJEV forwards to and never rescales.
 const DEFAULTS: Floors = Floors {
     route: floor(0.5),
     fits: floor(0.3),
-    read: floor(0.6),
-    write: floor(0.8),
+    read: floor(0.8),
+    write: floor(0.9),
+    whole: floor(0.3),
 };
 
 /// A literal floor; the compiler evaluates it, so a literal outside `[0, 1]` fails the build.
@@ -173,6 +175,7 @@ pub fn settings(door: Door, table: Option<&Json>) -> Result<Settings, Vec<Diagno
         .map(problem)
         .collect();
     let gate = Gate::new(floors.route, Some(floors.fits), floors.read, floors.write)
+        .map(|gate| gate.holding(Some(floors.whole)))
         .map_err(|why| errors.push(problem(format!("adapters.{}.gate: {why}", constants.name))))
         .ok();
     match gate {
@@ -227,9 +230,10 @@ fn overrides(name: &str, table: &Json, floors: &mut Floors) -> Vec<String> {
                 "fits" => &mut floors.fits,
                 "read" => &mut floors.read,
                 "write" => &mut floors.write,
+                "whole" => &mut floors.whole,
                 _ => {
                     problems.push(format!(
-                        "adapters.{name}.gate.{key} is unknown; the keys are route, fits, read and write"
+                        "adapters.{name}.gate.{key} is unknown; the keys are route, fits, read, write and whole"
                     ));
                     continue;
                 }
@@ -375,13 +379,14 @@ mod tests {
         project.adapters[name].clone()
     }
 
-    fn gate_of(settings: &Settings) -> [f64; 4] {
+    fn gate_of(settings: &Settings) -> [f64; 5] {
         let gate = settings.declared.gate.unwrap();
         [
             gate.route().get(),
             gate.fits().unwrap().get(),
             gate.read().get(),
             gate.write().get(),
+            gate.whole().unwrap().get(),
         ]
     }
 
@@ -391,7 +396,7 @@ mod tests {
         assert_eq!(settings.declared.id.as_str(), "jev-1.13.0");
         assert_eq!(settings.declared.limits.unwrap().options, Some(255));
         assert_eq!(settings.declared.limits.unwrap().tokens, None);
-        assert_eq!(gate_of(&settings), [0.5, 0.3, 0.6, 0.8]);
+        assert_eq!(gate_of(&settings), [0.5, 0.3, 0.8, 0.9, 0.3]);
         assert_eq!(settings.credential.as_str(), "TYPESAFE_API_KEY");
         assert_eq!(settings.issuer, "typesafe.ai");
         assert_eq!(settings.url, "https://api.typesafe.ai/v1/systemone");
@@ -424,11 +429,11 @@ mod tests {
             Door::OpenJev,
             Some(&table(
                 "openjev",
-                "[adapters.openjev]\ngate = { write = 0.9 }\n",
+                "[adapters.openjev]\ngate = { write = 0.95 }\n",
             )),
         )
         .unwrap();
-        assert_eq!(gate_of(&tuned), [0.5, 0.3, 0.6, 0.9]);
+        assert_eq!(gate_of(&tuned), [0.5, 0.3, 0.8, 0.95, 0.3]);
         let problems: Vec<String> = settings(
             Door::OpenJev,
             Some(&table(
@@ -467,13 +472,13 @@ mod tests {
             Door::Jev,
             Some(&table(
                 "jev",
-                "[adapters.jev]\ngate = { write = 0.85, fits = 0.4 }\n",
+                "[adapters.jev]\ngate = { write = 0.95, fits = 0.4, whole = 0.5 }\n",
             )),
         )
         .unwrap();
-        assert_eq!(gate_of(&settings), [0.5, 0.4, 0.6, 0.85]);
+        assert_eq!(gate_of(&settings), [0.5, 0.4, 0.8, 0.95, 0.5]);
         let settings = settings_of("[adapters.jev]\n");
-        assert_eq!(gate_of(&settings.unwrap()), [0.5, 0.3, 0.6, 0.8]);
+        assert_eq!(gate_of(&settings.unwrap()), [0.5, 0.3, 0.8, 0.9, 0.3]);
     }
 
     fn settings_of(toml: &str) -> Result<Settings, Vec<Diagnostic>> {
@@ -499,14 +504,14 @@ mod tests {
             ["adapters.jev.gate.route must be a probability, 0 to 1"]
         );
         assert_eq!(
-            problems("[adapters.jev]\ngate = { read = 0.9 }\n"),
-            ["adapters.jev.gate: read 0.9 is above write 0.8"]
+            problems("[adapters.jev]\ngate = { read = 0.95 }\n"),
+            ["adapters.jev.gate: read 0.95 is above write 0.9"]
         );
         assert_eq!(
             problems("[adapters.jev]\ncolour = 1\ngate = { abstain = 0.5 }\n"),
             [
                 "adapters.jev.colour is unknown; the keys are gate",
-                "adapters.jev.gate.abstain is unknown; the keys are route, fits, read and write",
+                "adapters.jev.gate.abstain is unknown; the keys are route, fits, read, write and whole",
             ]
         );
         assert_eq!(
@@ -543,6 +548,17 @@ mod tests {
         );
         assert_eq!(route["criteria"]["none"], "None of these.");
         assert_eq!(route.get("otherwise"), None);
+        assert_eq!(
+            questions["lights.state"]["criteria"]["on"],
+            json!({ "what": "Switch on.", "examples": ["turn on the kitchen lights"] })
+        );
+        // A phrase checked for thefts asks how each reflex fits, a yes or no.
+        let phrase: Request = serde_json::from_str(include_str!(
+            "../../../spec/fixtures/request-a-phrase-checked-for-thefts.json"
+        ))
+        .unwrap();
+        let body = super::request(&phrase);
+        let questions = body["questions"].as_object().unwrap();
         let fits = &questions["fits.lights"];
         assert_eq!(fits["type"], "noul");
         assert_eq!(
@@ -552,10 +568,6 @@ mod tests {
         assert_eq!(
             fits["criteria"]["false"],
             "Something else, such as: colour scenes and schedules; asking whether a light is on."
-        );
-        assert_eq!(
-            questions["lights.state"]["criteria"]["on"],
-            json!({ "what": "Switch on.", "examples": ["turn on the kitchen lights"] })
         );
     }
 

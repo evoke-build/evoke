@@ -23,6 +23,17 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - An ask names the words of the input that answer it: `"garage" is not on the list`. A call confirms when the
   input holds words that ask for another thing. `try` and `why` list the words no value holds, and the JSON
   line carries them as `left`.
+- The bars moved: a read runs unasked from 0.80, a write from 0.90. A third bar, `whole`, holds a call that
+  leaves out part of what was typed: the prompt says `holds all you said`, `try` and `why` print the line, the
+  JSON line carries `whole`, and `[adapters.<name>] gate` takes the key.
+- Confidence is the lowest probability among the route and the values a call holds. A flag and an argument the
+  input says nothing of no longer lower it.
+- A call no longer confirms for a span no argument took, for a second reflex that fits, or for a part read
+  with its neighbour: `because` no longer holds `unconsumed_span`, `two_things` or `merged`. `fits` is asked
+  when a reflex is added, and `try` and `why` print no `fits` line.
+- A part that says what not to do and names the value meant is read with its step: `pull the payments logs,
+  not in us-east, in eu-west`. A sentence that asks one thing is read whole, what it rules out with what it
+  asks. An option or a flag of a call reaches a part that asks for `the same`.
 
 ## [0.15.0] - 2026-09-29
 

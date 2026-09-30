@@ -9,7 +9,6 @@ use indexmap::IndexMap;
 use crate::account::INTRODUCES;
 use crate::adapter::{Choice, Key, Prob, Question, QuestionId, Text};
 use crate::decide::Answers;
-use crate::digest::Digest;
 use crate::name::{ArgName, LocalName};
 use crate::pins;
 use crate::plan::{unstated, unstated_text};
@@ -110,7 +109,7 @@ impl<'a> Sought<'a> {
             held: if places.is_empty() {
                 0
             } else {
-                short(&places.join(","))
+                pins::short(&places.join(","))
             },
         }
     }
@@ -356,7 +355,7 @@ fn chosen(
         .iter()
         .map(|span| format!("{}-{}", span.start(), span.end()))
         .collect();
-    let id = pins::last_choice(sought.reflex, sought.arg, short(&places.join(",")));
+    let id = pins::last_choice(sought.reflex, sought.arg, pins::short(&places.join(",")));
     let mut options: IndexMap<Key, Text> = readings
         .iter()
         .enumerate()
@@ -417,19 +416,6 @@ fn closed(ask: &Clean, options: IndexMap<Key, Text>) -> Question {
         options,
         (unstated(), Text::Plain(unstated_text())),
     ))
-}
-
-/// A number that stands for a text in an id: the head of its digest.
-fn short(text: &str) -> u32 {
-    let digest = Digest::of(text.as_bytes()).to_string();
-    let hex: String = digest
-        .rsplit(':')
-        .next()
-        .unwrap_or_default()
-        .chars()
-        .take(8)
-        .collect();
-    u32::from_str_radix(&hex, 16).unwrap_or(0)
 }
 
 fn key(text: &str) -> Key {

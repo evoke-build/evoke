@@ -104,7 +104,7 @@
       <ol class="steps">
         <li><i>01</i><b>Which reflex?</b><span>One of the installed reflexes, or none of them.</span></li>
         <li><i>02</i><b>Which values?</b><span>An option the author listed, one of your own words, or a piece of the sentence, checked against its range.</span></li>
-        <li><i>03</i><b>How well does it fit?</b><span>A number per reflex. When a second reflex fits well too, the call waits for your yes.</span></li>
+        <li><i>03</i><b>Is that all you said?</b><span>The call is read back against your sentence. When it leaves part of it out, the call waits for your yes.</span></li>
       </ol>
       <p class="caption">Every answer is a choice among things that already exist. So evoke guarantees that every value is
         one the reflex allows. It cannot guarantee that it read you right. That is why a bar, set by what the program
@@ -118,24 +118,23 @@
       <h2>A number beside every answer, and a bar for each effect.</h2>
       <p class="sub">The classifier's provider trains its probabilities to be calibrated: across many answers, those
         given 0.85 should be right about 85 times in 100. evoke shows every one, and <code>evoke test</code> checks your
-        own sentences. The weakest answer is the decision's confidence. A reflex that reads runs at 0.6 or above, one
-        that writes at 0.8, and one that cannot be undone always asks.</p>
+        own sentences. The weakest answer is the decision's confidence. A reflex that reads runs at 0.8 or above, one
+        that writes at 0.9, and one that cannot be undone always asks.</p>
       <div class="panel term">
         <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="try"><span class="p">$</span> <span class="in">evoke try "kill the lights"</span>
-<span class="own">  <span class="name">lights</span> <span class="hi">0.90</span> · none 0.06 · timer 0.02 · volume 0.02
-  room   <span class="name">unstated</span> <span class="mid">0.75</span> · den 0.20 · office 0.05
-  state  <span class="name">off</span> <span class="mid">0.58</span> · on 0.30 · dim 0.10 · unstated 0.02
-  fits   lights 0.70 · timer 0.05 · volume 0.05
-  <span class="name">ask room</span> · weakest: state <span class="mid">0.58</span></span>
+<span class="own">  <span class="name">lights</span> <span class="hi">0.95</span> · none 0.03 · timer 0.01 · volume 0.01
+  room   <span class="name">unstated</span> <span class="mid">0.87</span> · den 0.10 · office 0.03
+  state  <span class="name">off</span> <span class="mid">0.74</span> · on 0.19 · dim 0.06 · unstated 0.01
+  <span class="name">ask room</span> · weakest: state <span class="mid">0.74</span></span>
 <span class="p">$</span> <span class="in">evoke try "kill the lights in the den"</span>
-<span class="own">  <span class="name">lights</span> <span class="hi">0.91</span> · none 0.06 · timer 0.02 · volume 0.01
-  room   <span class="name">den</span> <span class="hi">0.85</span> · unstated 0.10 · office 0.05
-  state  <span class="name">off</span> <span class="hi">0.88</span> · on 0.05 · dim 0.05 · unstated 0.02
-  fits   lights 0.70 · timer 0.05 · volume 0.05
-  <span class="name">run</span> · weakest: room <span class="hi">0.85</span></span></pre>
+<span class="own">  <span class="name">lights</span> <span class="hi">0.95</span> · none 0.03 · timer 0.01 · volume 0.01
+  room   <span class="name">den</span> <span class="hi">0.92</span> · unstated 0.05 · office 0.03
+  state  <span class="name">off</span> <span class="hi">0.94</span> · on 0.03 · dim 0.02 · unstated 0.01
+  whole  holds all you said 0.90
+  <span class="name">run</span> · weakest: room <span class="hi">0.92</span></span></pre>
       </div>
-      <p class="caption">Three words moved the weakest answer from <b>0.58</b> to <b>0.85</b>. An ask became a run. You
+      <p class="caption">Three words moved the weakest answer from <b>0.74</b> to <b>0.92</b>. An ask became a run. You
         can read every judgment, and you can move the bar in a file you own.</p>
       <p class="after"><a class="more" href="/how-it-works.html#decisions">When a decision runs, asks, confirms or stops →</a></p>
     </section>
@@ -148,18 +147,18 @@
       <div class="panel term">
         <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre><span class="p">$</span> <span class="in">evoke "restart the computer"</span>
-<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: route <span class="hi">0.97</span>
+<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: route <span class="hi">0.98</span>
   Make the laptop restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
 [2]</span>
 <span class="p">$</span> <span class="in">evoke "set the volume to 150 percent"</span>
 <span class="own">  How loud, in percent?  <span class="mid">150 percent is outside 0–100</span>  &gt; <span class="in">40</span>
-  <span class="name">volume</span> level="40"  <span class="hi">0.93</span></span>
+  <span class="name">volume</span> level="40"  <span class="hi">0.96</span></span>
 <span class="out">volume set to 40%</span>
 <span class="p">$</span> <span class="in">evoke "make it cosy"</span>
 <span class="own">  <span class="name">lights</span> <span class="mid">0.45</span> · none 0.40 · timer 0.10 · volume 0.05 · route floor 0.50
 [2]</span></pre>
       </div>
-      <p class="caption">At <b>0.97</b> it was sure, and it still asked, because a reflex that cannot be undone always
+      <p class="caption">At <b>0.98</b> it was sure, and it still asked, because a reflex that cannot be undone always
         asks. A volume of 150 percent never reached a program. evoke named the allowed range, 0 to 100, and asked for a
         value inside it. A sentence that fits no reflex ran nothing, and the ranking shows why.</p>
       <p class="after"><a class="more" href="/guides/approval-by-risk.html">Approval set by risk →</a></p>
@@ -241,7 +240,7 @@ Ceiling and lamp lights only."""</span>
         <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="use"><span class="p">$</span> <span class="in">evoke "kill the lights"</span>
 <span class="own">  Which room?  [1] den  [2] office  [+] add one  &gt; <span class="in">1</span>
-  <span class="name">lights</span> room="den" state="off" · write · weakest: state <span class="mid">0.58</span>
+  <span class="name">lights</span> room="den" state="off" · write · weakest: state <span class="mid">0.74</span>
   Set the den lights off?  [y]es [n]o [t]each &gt; <span class="in">t</span></span>
 <span class="add">+ overlays/lights.toml  [examples] "kill the lights" = { state = "off" }</span>
 <span class="out">den lights off</span></pre>
@@ -260,13 +259,13 @@ Ceiling and lamp lights only."""</span>
       <div class="panel term">
         <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="weave"><span class="p">$</span> <span class="in">evoke "look up dana's address and email them"</span>
-<span class="own">  1  <span class="name">contact</span> name="dana"  <span class="hi">0.90</span>
+<span class="own">  1  <span class="name">contact</span> name="dana"  <span class="hi">0.95</span>
   2  <span class="name">mail</span> · takes email from 1</span>
 <span class="out">dana &lt;dana@example.com&gt;</span>
-<span class="own">  2  <span class="name">mail</span> to="dana@example.com"  <span class="hi">0.88</span></span>
+<span class="own">  2  <span class="name">mail</span> to="dana@example.com"  <span class="hi">0.94</span></span>
 <span class="out">drafted to dana@example.com</span>
 <span class="p">$</span> <span class="in">evoke "kill the lights in the den and feed the cat"</span>
-<span class="own">  1  <span class="name">lights</span> room="den" state="off"  <span class="hi">0.85</span>
+<span class="own">  1  <span class="name">lights</span> room="den" state="off"  <span class="hi">0.92</span>
   2  "feed the cat" · <span class="mid">no reflex</span>
 [2]</span></pre>
       </div>

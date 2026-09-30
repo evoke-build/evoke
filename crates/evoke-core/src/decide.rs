@@ -16,6 +16,7 @@ use crate::bounds::{self, Found, Sought};
 use crate::call::{Call, Value, Written, quoted, render};
 use crate::diagnostic::{Diagnostic, Fix};
 use crate::document::Json;
+use crate::hold;
 use crate::manifest::{
     self, Argument, Effect, Kind, Pick, Piece, Range, Recognizer, Source, Yield,
 };
@@ -93,7 +94,11 @@ pub struct Winner {
     /// The runs of the request's words that no value holds, with what each does.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub left: Vec<Left>,
+    /// The typed spans no argument took.
     pub unconsumed: Vec<Span>,
+    /// How far the call, held against the request, holds all the request says; none where it was not held.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub whole: Option<Prob>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub runner_up: Option<Contender>,
 }
@@ -287,6 +292,12 @@ pub struct Chosen {
     /// The runs of the request's words that no value holds, with what each does.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub left: Vec<Left>,
+    /// The typed spans no argument took.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub unconsumed: Vec<Span>,
+    /// How far the call, held against the request, holds all the request says; none where it was not held.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub whole: Option<Prob>,
     #[serde(flatten)]
     pub judged: Option<Judged>,
 }
@@ -301,6 +312,10 @@ struct RawChosen {
     basis: IndexMap<ArgName, Basis>,
     #[serde(default)]
     left: Vec<Left>,
+    #[serde(default)]
+    unconsumed: Vec<Span>,
+    #[serde(default)]
+    whole: Option<Prob>,
     confidence: Option<Prob>,
     weakest: Option<Judgment>,
     judgments: Option<NonEmpty<Judgment>>,
@@ -334,6 +349,8 @@ impl TryFrom<RawChosen> for Chosen {
             effect: raw.effect,
             basis: raw.basis,
             left: raw.left,
+            unconsumed: raw.unconsumed,
+            whole: raw.whole,
             judged,
         })
     }
@@ -402,6 +419,36 @@ impl Judged {
         }
     }
 
+    /// The same, with a judgment for each value given that stands on something read: the value counts as
+    /// what gave it does.
+    fn with(
+        self,
+        reflex: &LocalName,
+        given: &IndexMap<ArgName, Value>,
+        stands: &IndexMap<ArgName, Basis>,
+    ) -> Self {
+        let mut judgments: Vec<Judgment> = self.judgments.iter().cloned().collect();
+        for (arg, basis) in stands {
+            let Some(top) = given.get(arg).and_then(answer_of) else {
+                continue;
+            };
+            judgments.push(Judgment {
+                question: QuestionId::Arg(reflex.clone(), arg.clone()),
+                top,
+                p: basis.sure(),
+            });
+        }
+        let judgments = NonEmpty::try_from(judgments).unwrap_or(self.judgments);
+        let weakest = weakest(&judgments).clone();
+        Self {
+            confidence: weakest.p,
+            weakest,
+            judgments,
+            runner_up: self.runner_up,
+            contenders: self.contenders,
+        }
+    }
+
     #[must_use]
     pub fn confidence(&self) -> Prob {
         self.confidence
@@ -432,6 +479,17 @@ impl Judged {
             .iter()
             .find(|judgment| judgment.question == QuestionId::Route)
             .map(|judgment| judgment.p)
+    }
+}
+
+/// The answer a value is, among its argument's: an option's key, a word, a candidate by its span, a switch's
+/// yes.
+fn answer_of(value: &Value) -> Option<Key> {
+    match value {
+        Value::Option { key } => Key::new(key.as_str()).ok(),
+        Value::Word { word, .. } => Key::new(word.as_str()).ok(),
+        Value::Pick { span, .. } => Some(candidate(span)),
+        Value::Flag => Key::new("yes").ok(),
     }
 }
 
@@ -474,6 +532,9 @@ pub struct Asking {
     /// Why the call waits for a yes once it is complete, whatever is answered: what a plan held it for.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub held: Vec<Cap>,
+    /// How far the call, held against the request, holds all the request says; none where it was not held.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub whole: Option<Prob>,
     #[serde(flatten)]
     pub judged: Judged,
 }
@@ -504,14 +565,11 @@ pub enum Cap {
     More {
         words: Span,
     },
-    UnconsumedSpan {
-        span: Span,
+    /// The call, held against the request, holds less than the request says.
+    Whole {
+        p: Prob,
+        floor: Prob,
     },
-    TwoThings {
-        contender: Contender,
-    },
-    /// A weave merged a part that matched nothing on its own back into these words: never run unasked.
-    Merged,
     /// A part of the request beside these words that asks for nothing and may add a detail the call does not
     /// hold.
     Detail {
@@ -544,17 +602,26 @@ impl Prompt {
         for cap in because {
             match cap {
                 Cap::NoGate => own.push_str(" · no gate"),
-                Cap::UnconsumedSpan { span } => {
-                    let _ = write!(own, " · unused {}", quoted(span.text().as_str()));
+                Cap::Whole { p, .. } => {
+                    let _ = write!(own, " · holds all you said {:.2}", p.get());
+                    // The words it leaves out: those no value holds that say nothing of what to do, and the
+                    // values typed that no argument took.
+                    let mut out: Vec<&str> = chosen
+                        .left
+                        .iter()
+                        .filter(|run| run.does != Does::Action)
+                        .map(|run| run.words.text().as_str())
+                        .collect();
+                    for span in &chosen.unconsumed {
+                        if !out.iter().any(|words| words.contains(span.text().as_str())) {
+                            out.push(span.text().as_str());
+                        }
+                    }
+                    if !out.is_empty() {
+                        let named: Vec<String> = out.into_iter().map(quoted).collect();
+                        let _ = write!(own, ", leaves out {}", named.join(", "));
+                    }
                 }
-                Cap::TwoThings { contender } => {
-                    let judged = match contender.fits {
-                        Some(fits) => format!("fits {:.2}", fits.get()),
-                        None => format!("route {:.2}", contender.route.get()),
-                    };
-                    let _ = write!(own, " · also {} ({judged})", contender.reflex);
-                }
-                Cap::Merged => own.push_str(" · merged"),
                 Cap::Detail { words } => {
                     let _ = write!(own, " · without {}", quoted(words));
                 }
@@ -660,7 +727,8 @@ pub fn request(
     let mut recalled = IndexMap::new();
     if scope == Scope::Full {
         for (id, slot) in plan.slots() {
-            if !id.reflex().is_some_and(|name| narrowed.contains(&name)) {
+            let argument = matches!(id, QuestionId::Arg(..));
+            if !argument || !id.reflex().is_some_and(|name| narrowed.contains(&name)) {
                 continue;
             }
             let question = asked(plan, id, slot, &proposed, recent, &mut recalled);
@@ -1093,13 +1161,15 @@ pub(crate) type Answers<'a> = IndexMap<&'a QuestionId, IndexMap<Key, Prob>>;
 
 /// The answers so far read against every question asked so far: each question answered, keys among those
 /// offered, probabilities in `[0, 1]`, a choice summing to 1 — then the ranking, the judgments and the winner's
-/// values; or the questions the answers open, which the reading waits for.
-pub fn read(plan: &Plan, request: &Request, raw: Raw) -> Result<Read, Fault> {
+/// values; or the questions the answers open, which the reading waits for. The gate is the adapter's: a call
+/// that would run by its floors is held against the request.
+pub fn read(plan: &Plan, gate: Option<&Gate>, request: &Request, raw: Raw) -> Result<Read, Fault> {
     let unanswered = Fault::Unanswered {
         question: QuestionId::Route,
     };
     let reader = Reader {
         plan,
+        gate,
         request,
         answers: validated(request, raw)?,
     };
@@ -1155,13 +1225,14 @@ pub fn read(plan: &Plan, request: &Request, raw: Raw) -> Result<Read, Fault> {
 /// answers open, until nothing is left to ask. Out: every question asked, every answer, and the reading.
 pub fn reading<E>(
     plan: &Plan,
+    gate: Option<&Gate>,
     mut request: Request,
     mut answer: impl FnMut(&Request) -> Result<Raw, E>,
     fault: impl Fn(Fault) -> E,
 ) -> Result<(Request, Raw, Reading), E> {
     let mut answers = answer(&request)?;
     loop {
-        match read(plan, &request, answers.clone()).map_err(&fault)? {
+        match read(plan, gate, &request, answers.clone()).map_err(&fault)? {
             Read::Done { reading } => return Ok((request, answers, reading)),
             Read::Open { request: round } => {
                 answers.0.extend(answer(&round)?.0);
@@ -1318,6 +1389,7 @@ const LEFT: f64 = 0.5;
 /// The validated answers over the request and the plan they were asked from.
 struct Reader<'a> {
     plan: &'a Plan,
+    gate: Option<&'a Gate>,
     request: &'a Request,
     answers: Answers<'a>,
 }
@@ -1374,28 +1446,79 @@ impl Reader<'_> {
             })
             .map(|proposed| proposed.span.clone())
             .collect();
+        // A value still waits where a question about an argument is open: the call is not yet what it will be.
+        let mut waits = !open.is_empty();
         // The words and the texts are read where the request asks everything, its arguments among it.
         if self.request.scope == Scope::Full {
             draft.left = self.account(&reflex, active, &draft.args, &draft.basis, open);
             let left = draft.left.clone();
             self.answered(&reflex, active, &draft.args, &left, &mut draft.missing);
+            let asked = open.len();
             let texts = self.texts(&reflex, active, &draft.args, &draft.missing, open);
+            waits |= open.len() > asked;
             for (arg, span, stands, chose) in texts {
                 draft.worded(&reflex, arg, span, stands, chose);
             }
         }
+        let args = ordered(active, std::mem::take(&mut draft.args));
+        // The call is held against the request once its values stand, beside the words' account where they do.
+        let whole = if waits {
+            None
+        } else {
+            self.held_against(&reflex, active, &args, &draft, open)
+        };
         Ok((
             draft.judgments,
             Winner {
                 reflex,
-                args: ordered(active, draft.args),
+                args,
                 basis: draft.basis,
                 missing: draft.missing,
                 left: draft.left,
                 unconsumed,
+                whole,
                 runner_up,
             },
         ))
+    }
+
+    /// The call held against the request: asked where the request asks everything and the call would run by
+    /// its number — its effect has a floor, its least sure judgment is at the floor or over, and no value it
+    /// holds waits for a yes by what it stands on. A call that still asks is held as it stands, since what a
+    /// person answers changes no value read. None where it is not held, or not answered yet.
+    fn held_against(
+        &self,
+        reflex: &LocalName,
+        active: &Active,
+        args: &IndexMap<ArgName, Value>,
+        draft: &Draft<'_>,
+        open: &mut IndexMap<QuestionId, Question>,
+    ) -> Option<Prob> {
+        let gate = self.gate.filter(|_| self.request.scope == Scope::Full)?;
+        gate.whole()?;
+        let floor = match active.effect {
+            Effect::Read => gate.read(),
+            Effect::Write => gate.write(),
+            Effect::Destructive => return None,
+        };
+        let waits = draft
+            .basis
+            .iter()
+            .any(|(arg, stands)| stands.cap(arg).is_some());
+        let least = draft
+            .judgments
+            .iter()
+            .map(|judged| judged.p)
+            .reduce(|least, p| if p < least { p } else { least })?;
+        if waits || least < floor {
+            return None;
+        }
+        let (id, question) = hold::question(self.plan, reflex, active, args)?;
+        let Some(answer) = self.answers.get(&id) else {
+            open.insert(id, question);
+            return None;
+        };
+        Some(answer.get(hold::HOLDS).copied().unwrap_or(Prob::ZERO))
     }
 
     /// The winner's arguments read in order: a judgment per argument, and what each settled.
@@ -1452,8 +1575,13 @@ impl Reader<'_> {
                 } => settle::typed(&one, pick, open)?,
                 Kind::Value { source, .. } => settle::listed(&one, source, open)?,
             };
+            // The number is over the route and each value held: a flag, an argument left unsaid and one
+            // that is asked add nothing to it.
             match settled {
                 Settled::Value(value, stands, spans) => {
+                    if value != Value::Flag {
+                        draft.judgments.push(judgment);
+                    }
                     draft.args.insert(arg.clone(), value);
                     if let Some(stands) = stands {
                         draft.basis.insert(arg.clone(), stands);
@@ -1463,7 +1591,6 @@ impl Reader<'_> {
                 Settled::Missing(unsettled) => draft.missing.push(unsettled),
                 Settled::Nothing | Settled::Open => {}
             }
-            draft.judgments.push(judgment);
         }
         Ok(draft)
     }
@@ -1836,6 +1963,7 @@ pub fn gate(plan: &Plan, reading: Reading, gate: Option<&Gate>) -> Decision {
             left: winner.left,
             unconsumed: winner.unconsumed,
             held: Vec::new(),
+            whole: winner.whole,
             judged,
         },
         missing,
@@ -1872,6 +2000,7 @@ pub fn carry(
         left,
         unconsumed,
         held,
+        whole,
         judged,
     } = asking;
     let Some(active) = plan.active().get(&reflex) else {
@@ -1880,8 +2009,11 @@ pub fn carry(
             judgments: judged.judgments.into_iter().collect(),
         };
     };
-    let judged = judged.without(&reflex, &given);
-    // A value a person gave stands on their answer, and on nothing that was read.
+    // A value a person gave stands on their answer, and on nothing that was read; one another part of the
+    // request gave counts by what it stands on there.
+    let judged = judged
+        .without(&reflex, &given)
+        .with(&reflex, &given, &stands);
     basis.retain(|arg, _| !given.contains_key(arg));
     basis.extend(stands);
     args.extend(given);
@@ -1896,6 +2028,7 @@ pub fn carry(
             left,
             unconsumed,
             held,
+            whole,
             judged,
         },
         missing,
@@ -1921,9 +2054,11 @@ fn decided(
         effect: active.effect,
         basis: asking.basis,
         left: asking.left,
+        unconsumed: asking.unconsumed,
+        whole: asking.whole,
         judged: Some(asking.judged),
     };
-    capped(active, chosen, asking.unconsumed, asking.held, gate)
+    capped(active, chosen, asking.held, gate)
 }
 
 /// The values a reflex can use, in its argument order, and what it still lacks: a value of the wrong kind or out
@@ -2030,13 +2165,7 @@ fn typed(
 }
 
 /// Run, or confirm for every named cap in the fixed order.
-fn capped(
-    active: &Active,
-    chosen: Chosen,
-    unconsumed: Vec<Span>,
-    held: Vec<Cap>,
-    gate: Option<&Gate>,
-) -> Decision {
+fn capped(active: &Active, chosen: Chosen, held: Vec<Cap>, gate: Option<&Gate>) -> Decision {
     let floors = gate.zip(chosen.judged.as_ref());
     let mut because = Vec::new();
     if chosen.effect == Effect::Destructive {
@@ -2075,18 +2204,10 @@ fn capped(
                 words: run.words.clone(),
             }),
     );
-    because.extend(
-        unconsumed
-            .into_iter()
-            .map(|span| Cap::UnconsumedSpan { span }),
-    );
-    if let Some((gate, judged)) = floors
-        && let (Some(floor), Some(runner_up)) = (gate.fits(), &judged.runner_up)
-        && runner_up.fits.is_some_and(|fits| fits >= floor)
+    if let Some((floor, p)) = gate.and_then(Gate::whole).zip(chosen.whole)
+        && p < floor
     {
-        because.push(Cap::TwoThings {
-            contender: runner_up.clone(),
-        });
+        because.push(Cap::Whole { p, floor });
     }
     for cap in held {
         if !because.contains(&cap) {
@@ -2102,13 +2223,6 @@ fn capped(
         },
         Err(_) => Decision::Run { chosen },
     }
-}
-
-/// A step a weave merged back from a part that matched nothing on its own never runs unasked: a run confirms
-/// with the cap, a confirm gains it, once; an ask stands, capped once it is answered; an abstain stands.
-#[must_use]
-pub fn merged(plan: &Plan, decision: Decision) -> Decision {
-    held(plan, decision, Cap::Merged)
 }
 
 /// A decision a plan holds for a yes: a run confirms with the cap, a confirm gains it, once; an ask keeps it
@@ -2218,6 +2332,11 @@ pub fn joined(plan: &Plan, first: Decision, second: &Decision, gate: Option<&Gat
     }
     one.left.extend(other.left);
     one.unconsumed.extend(other.unconsumed);
+    // Held against the request as the less whole of the two: each was held as it stood.
+    one.whole = match (one.whole, other.whole) {
+        (Some(a), Some(b)) => Some(if b < a { b } else { a }),
+        (held, None) | (None, held) => held,
+    };
     for cap in other.held {
         if !one.held.contains(&cap) {
             one.held.push(cap);
@@ -2266,18 +2385,13 @@ fn asking_of(chosen: &Chosen, because: &[Cap]) -> Option<Asking> {
         args: chosen.call.args.clone(),
         basis: chosen.basis.clone(),
         left: chosen.left.clone(),
-        unconsumed: because
-            .iter()
-            .filter_map(|cap| match cap {
-                Cap::UnconsumedSpan { span } => Some(span.clone()),
-                _ => None,
-            })
-            .collect(),
+        unconsumed: chosen.unconsumed.clone(),
         held: because
             .iter()
-            .filter(|cap| matches!(cap, Cap::Merged | Cap::Detail { .. }))
+            .filter(|cap| matches!(cap, Cap::Detail { .. }))
             .cloned()
             .collect(),
+        whole: chosen.whole,
         judged: chosen.judged.clone()?,
     })
 }
@@ -2390,6 +2504,8 @@ pub fn by_name(plan: &Plan, written: Written) -> Result<Decision, Diagnostic> {
         effect: active.effect,
         basis: IndexMap::new(),
         left: Vec::new(),
+        unconsumed: Vec::new(),
+        whole: None,
         judged: None,
     };
     if chosen.effect != Effect::Destructive {

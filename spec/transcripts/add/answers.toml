@@ -4,11 +4,12 @@ id = "replay"
 [gate]
 route = 0.5
 fits  = 0.3
-read  = 0.6
-write = 0.8
+read  = 0.8
+write = 0.9
+whole = 0.3
 
 [answers."turn on the kitchen lights"]
-route            = { none = 0.9, timer = 0.05, eggs = 0.05 }
+route            = { none = 0.95, timer = 0.03, eggs = 0.02 }
 "fits.timer"     = { yes = 0.05, no = 0.95 }
 "fits.eggs"      = { yes = 0.05, no = 0.95 }
 "timer.duration" = { unstated = 1.0 }
@@ -17,7 +18,7 @@ route            = { none = 0.9, timer = 0.05, eggs = 0.05 }
 "eggs.label"     = { unstated = 1.0 }
 
 [answers."dim the office to 30 percent"]
-route            = { none = 0.88, timer = 0.06, eggs = 0.06 }
+route            = { none = 0.94, timer = 0.03, eggs = 0.03 }
 "fits.timer"     = { yes = 0.05, no = 0.95 }
 "fits.eggs"      = { yes = 0.05, no = 0.95 }
 "timer.duration" = { unstated = 1.0 }
@@ -26,7 +27,7 @@ route            = { none = 0.88, timer = 0.06, eggs = 0.06 }
 "eggs.label"     = { unstated = 1.0 }
 
 [answers."set a timer for 10 minutes"]
-route                              = { timer = 0.6, eggs = 0.35, none = 0.05 }
+route                              = { timer = 0.8, eggs = 0.18, none = 0.02 }
 "fits.timer"                       = { yes = 0.85, no = 0.15 }
 "fits.eggs"                        = { yes = 0.7, no = 0.3 }
 "timer.duration"                   = { unstated = 1.0 }
@@ -47,7 +48,7 @@ route                              = { timer = 0.6, eggs = 0.35, none = 0.05 }
 "weave.word_timer__label_5"        = { yes = 0.05 }
 
 [answers."25 minute timer"]
-route                            = { timer = 0.55, eggs = 0.4, none = 0.05 }
+route                            = { timer = 0.65, eggs = 0.31, none = 0.04 }
 "fits.timer"                     = { yes = 0.85, no = 0.15 }
 "fits.eggs"                      = { yes = 0.2, no = 0.8 }
 "timer.duration"                 = { unstated = 1.0 }
@@ -80,7 +81,7 @@ route                              = { timer = 0.5, eggs = 0.45, none = 0.05 }
 "weave.left_timer_4_5"             = { action = 0.9, courtesy = 0.1 }
 
 [answers."count down 90 seconds"]
-route                              = { eggs = 0.55, timer = 0.4, none = 0.05 }
+route                              = { eggs = 0.65, timer = 0.31, none = 0.04 }
 "fits.timer"                       = { yes = 0.8, no = 0.2 }
 "fits.eggs"                        = { yes = 0.6, no = 0.4 }
 "timer.duration"                   = { unstated = 1.0 }

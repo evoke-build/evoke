@@ -13,9 +13,7 @@ use super::{
 };
 use crate::adapter::{Fault, Gate, Prob};
 use crate::call::Value;
-use crate::decide::{
-    Basis, Cap, Decision, Prompt, carry, given, held, joined, merged, words, yielded,
-};
+use crate::decide::{Basis, Cap, Decision, Prompt, carry, given, held, joined, words, yielded};
 use crate::manifest::{self, Effect, Kind, MOST_STEPS, Recognizer, Source, Yield};
 use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
 use crate::plan::{Active, Plan};
@@ -75,6 +73,8 @@ struct Draft {
     decisions: Vec<Decision>,
     taken: Vec<Split>,
     excluded: Vec<String>,
+    /// The request's own segments among those left out, with where they stand.
+    apart: Vec<Segment>,
     repaired: Vec<(String, Repair)>,
     shared: Vec<IndexMap<ArgName, Shared>>,
     /// Per segment, the expansions it came from, outermost first; none for the person's own.
@@ -115,7 +115,6 @@ struct Expansion {
     playbook: LocalName,
     args: IndexMap<ArgName, Value>,
     prompt: Prompt,
-    runner_up: Option<LocalName>,
     effect: Effect,
 }
 
@@ -167,6 +166,11 @@ impl Draft {
                 .iter()
                 .filter(|seg| seg.excluded())
                 .map(|seg| seg.text.clone())
+                .collect(),
+            apart: segments
+                .iter()
+                .filter(|seg| seg.excluded())
+                .cloned()
                 .collect(),
             repaired: Vec::new(),
             shared: Vec::new(),
@@ -230,6 +234,16 @@ impl Draft {
         self.origins.splice(a..=b, [Vec::new()]);
         self.ids.splice(a..=b, [self.next]);
         self.typed.splice(a..=b, [None]);
+        self.next += 1;
+    }
+
+    /// The one segment of a draft that held none, the person's own.
+    fn only(&mut self, seg: Segment, decision: Decision) {
+        self.segs.push(seg);
+        self.decisions.push(decision);
+        self.origins.push(Vec::new());
+        self.ids.push(self.next);
+        self.typed.push(None);
         self.next += 1;
     }
 
@@ -359,6 +373,14 @@ impl<'a> Planner<'a> {
             return Ok(Ok(self.refused_whole(judged, because)));
         }
         let mut draft = Draft::new(self.request.chars().collect(), &segments, taken);
+        // A request that asks one thing is read whole, what it rules out with what it asks.
+        let whole = self
+            .segments(&mut draft)
+            .and_then(|()| self.one(&mut draft));
+        if let Err(need) = whole {
+            return Ok(Err(need));
+        }
+        // A request that is only what not to do is nothing to do.
         if draft.segs.is_empty() {
             let extra = Extra {
                 reviewed: Vec::new(),
@@ -376,9 +398,8 @@ impl<'a> Planner<'a> {
             )));
         }
         let phases = self
-            .segments(&mut draft)
-            .and_then(|()| self.one(&mut draft))
-            .and_then(|()| self.recut(&mut draft, &judged))
+            .recut(&mut draft, &judged)
+            .and_then(|()| self.corrected(&mut draft))
             .and_then(|()| self.expand(&mut draft))
             .and_then(|()| self.share(&mut draft))
             .and_then(|()| self.verify(&mut draft))
@@ -502,7 +523,6 @@ impl<'a> Planner<'a> {
             };
             let expansion = draft.expansions.len();
             let prompt = prompt_of(decision, active);
-            let runner_up = runner_up_of(decision);
             let seg = draft.segs[k].clone();
             let chain = chain.clone();
             draft.expansions.push(Expansion {
@@ -510,7 +530,6 @@ impl<'a> Planner<'a> {
                 playbook: reflex.clone(),
                 args: args.clone(),
                 prompt,
-                runner_up,
                 effect: active.effect,
             });
             let (segs, origins): (Vec<Segment>, Vec<Vec<Origin>>) = filled
@@ -621,13 +640,6 @@ impl<'a> Planner<'a> {
                     .collect();
                 let first = *members.first()?;
                 let mut own = expansion.prompt.own.clone();
-                if let Some(runner_up) = &expansion.runner_up
-                    && let Some(n) = members
-                        .iter()
-                        .find(|&&k| reflex_of(&draft.decisions[k]) == Some(runner_up))
-                {
-                    let _ = write!(own, ", step {}", n + 1);
-                }
                 let worst = members
                     .iter()
                     .filter_map(|&k| self.active_of(&draft.decisions[k]))
@@ -719,24 +731,140 @@ impl<'a> Planner<'a> {
         self.repair(draft)
     }
 
-    /// Whether the request asks one thing where the split points cut it: nothing of it left out, and *one
+    /// A part left out that names a value the step beside it lacks — «…, not ireland, virginia» — says what
+    /// the step is about as much as what it is not: it is read with that step, the two decided as one request,
+    /// where the step is the person's own words as typed. A part that names no such value stays out, as what
+    /// not to do.
+    fn corrected(&self, draft: &mut Draft) -> Result<(), Need> {
+        let mut at = 0;
+        while at < draft.apart.len() {
+            let part = draft.apart[at].clone();
+            // The step its words follow, else the one they come before.
+            let beside = draft
+                .segs
+                .iter()
+                .rposition(|seg| seg.end <= part.start)
+                .or_else(|| draft.segs.iter().position(|seg| seg.start >= part.end));
+            let typed = |seg: &Segment| {
+                let own: String = draft.chars
+                    [seg.start.min(draft.chars.len())..seg.end.min(draft.chars.len())]
+                    .iter()
+                    .collect();
+                own.trim() == seg.text
+            };
+            let Some(k) = beside.filter(|&k| {
+                draft.origins[k].is_empty()
+                    && typed(&draft.segs[k])
+                    && self.names_a_value(&draft.decisions[k], &part.text)
+            }) else {
+                at += 1;
+                continue;
+            };
+            let (start, end) = (
+                draft.segs[k].start.min(part.start),
+                draft.segs[k].end.max(part.end),
+            );
+            let whole = Segment {
+                text: draft.chars[start..end.min(draft.chars.len())]
+                    .iter()
+                    .collect::<String>()
+                    .trim()
+                    .to_owned(),
+                start,
+                end,
+                left: None,
+            };
+            let decision = self.decide(self.segment(&whole.text))?;
+            if matches!(decision, Decision::Abstain { .. }) {
+                at += 1;
+                continue;
+            }
+            draft
+                .taken
+                .retain(|split| split.start < start || split.end > end);
+            draft.repaired.push((whole.text.clone(), Repair::Merged));
+            draft.merge(k, k, whole, decision);
+            draft.apart.remove(at);
+            if let Some(gone) = draft.excluded.iter().position(|text| *text == part.text) {
+                draft.excluded.remove(gone);
+            }
+        }
+        Ok(())
+    }
+
+    /// Whether a text names a value a decision's call may take and does not hold: a word of a list an argument
+    /// of its reflex asks, or a typed value of an argument's kind.
+    fn names_a_value(&self, decision: &Decision, text: &str) -> bool {
+        let Some((reflex, active)) = self.active_of(decision) else {
+            return false;
+        };
+        if !active.steps.is_empty() {
+            return false;
+        }
+        let Ok(request) = crate::decide::request(
+            self.plan,
+            text,
+            self.tags,
+            Some(reflex),
+            crate::adapter::Scope::Full,
+            &[],
+        ) else {
+            return false;
+        };
+        let held = args_of(decision);
+        active.args.iter().any(|(arg, argument)| {
+            if held.is_some_and(|held| held.contains_key(arg)) {
+                return false;
+            }
+            let id = crate::adapter::QuestionId::Arg(reflex.clone(), arg.clone());
+            match &argument.kind {
+                Kind::Flag => false,
+                Kind::Value {
+                    source: Source::Pick(_),
+                    ..
+                } => request
+                    .questions
+                    .get(&id)
+                    .is_some_and(|question| match question {
+                        crate::adapter::Question::Choice(choice) => {
+                            choice.options().keys().any(|key| {
+                                Some(key) != choice.otherwise() && *key != crate::plan::none()
+                            })
+                        }
+                        crate::adapter::Question::YesNo { .. } => false,
+                    }),
+                Kind::Value { .. } => request.listed.contains_key(&id),
+            }
+        })
+    }
+
+    /// Whether the request asks one thing where the split points cut it, or left a part of it out: *one
     /// thing* at its share.
     fn asks_one(&self, draft: &Draft) -> bool {
-        draft.segs.len() > 1
-            && draft.excluded.is_empty()
-            && self
-                .answers
-                .judged
-                .as_ref()
-                .and_then(reading::one_thing)
-                .is_some_and(|one| one.get() >= ONE)
+        (draft.segs.len() > 1 || !draft.apart.is_empty()) && self.says_one()
+    }
+
+    /// Whether the request asks one thing, by the answer to how many it asks.
+    fn says_one(&self) -> bool {
+        self.answers
+            .judged
+            .as_ref()
+            .and_then(reading::one_thing)
+            .is_some_and(|one| one.get() >= ONE)
     }
 
     /// One thing, one step. Where the request asks one thing and the split points cut it, the whole request
-    /// decided as one text is the plan's one step, and no cut is made; the cut stands where the whole matches
-    /// nothing, or where the whole or a part of it picks a playbook, whose plan is several things by its nature.
+    /// decided as one text is the plan's one step, and no cut is made, by a split point or by a rule after it;
+    /// the cut stands where the whole matches nothing, or where the whole or a part of it picks a playbook,
+    /// whose plan is several things by its nature.
     fn one(&self, draft: &mut Draft) -> Result<(), Need> {
         if !self.asks_one(draft) {
+            // One thing in one part already: no rule cuts it, where the part reads as a call.
+            if let [decision] = draft.decisions.as_slice() {
+                draft.one = self.says_one()
+                    && !matches!(decision, Decision::Abstain { .. })
+                    && !self.plays(decision);
+            }
             return Ok(());
         }
         let text = self.request.trim();
@@ -753,10 +881,15 @@ impl<'a> Planner<'a> {
             end: draft.chars.len(),
             left: None,
         };
-        let last = draft.segs.len() - 1;
         draft.shared.clear();
-        draft.merge(0, last, seg, whole);
+        match draft.segs.len().checked_sub(1) {
+            Some(last) => draft.merge(0, last, seg, whole),
+            None => draft.only(seg, whole),
+        }
         draft.taken.clear();
+        // Nothing of it is left out: what it rules out is read with what it asks.
+        draft.excluded.clear();
+        draft.apart.clear();
         draft.one = true;
         Ok(())
     }
@@ -835,10 +968,10 @@ impl<'a> Planner<'a> {
             // A second value the whole's decision already saw and no argument took — «10 minutes and 30
             // seconds» — is one task, not a list: the step confirms with its unused span at its turn, as the
             // foundation does.
-            if let Decision::Confirm { because, .. } = &draft.decisions[k]
-                && because.iter().any(|cap| {
-                    matches!(cap, Cap::UnconsumedSpan { span }
-                        if kept.iter().any(|part| span.start() >= part.start && span.end() <= part.end))
+            if let Some(chosen) = chosen_of(&draft.decisions[k])
+                && chosen.unconsumed.iter().any(|span| {
+                    kept.iter()
+                        .any(|part| span.start() >= part.start && span.end() <= part.end)
                 })
             {
                 k += 1;
@@ -1055,8 +1188,6 @@ impl<'a> Planner<'a> {
                 k += 1;
                 continue;
             }
-            // Merged back, the step confirms at its turn, as one with an unconsumed span does.
-            let decision = merged(self.plan, decision);
             draft.repaired.push((whole.text.clone(), Repair::Merged));
             draft.merge(a, b, whole, decision);
             if let Some(split) = split {
@@ -1087,12 +1218,10 @@ impl<'a> Planner<'a> {
             .iter()
             .filter_map(|offer| {
                 let asked = reading::shared(
-                    &draft.segs[offer.taker],
-                    &draft.segs[offer.giver],
-                    &offer.reflex,
-                    &offer.arg,
+                    (&draft.segs[offer.taker], &draft.segs[offer.giver]),
+                    (&offer.reflex, &offer.arg),
                     &offer.ask,
-                    &offer.shown,
+                    (&offer.shown, offer.no),
                 )
                 .ok()?;
                 Some((offer, asked.0, asked.1))
@@ -1206,18 +1335,28 @@ impl<'a> Planner<'a> {
                 continue;
             }
             let points = pointing(&draft.segs[taker].text);
+            let repeats = repeating(&draft.segs[taker].text);
             let held = args_of(&draft.decisions[taker]);
             for (arg, argument) in &active.args {
                 if held.is_some_and(|held| held.contains_key(arg)) {
                     continue;
                 }
-                let Kind::Value { source, .. } = &argument.kind else {
-                    continue;
-                };
-                let allowed = match source {
-                    Source::Vocab(vocab) => points || self.asked_by_several(vocab),
-                    Source::Pick(_) => points,
-                    Source::Options(_) => false,
+                let allowed = match &argument.kind {
+                    Kind::Value {
+                        source: Source::Vocab(vocab),
+                        ..
+                    } => points || self.asked_by_several(vocab),
+                    Kind::Value {
+                        source: Source::Pick(_),
+                        ..
+                    } => points,
+                    // An option and a switch are a call's own: a call of the same reflex gives them, where
+                    // the part says that call is done again.
+                    Kind::Value {
+                        source: Source::Options(_),
+                        ..
+                    }
+                    | Kind::Flag => repeats,
                 };
                 if !allowed {
                     continue;
@@ -1228,39 +1367,18 @@ impl<'a> Planner<'a> {
                         continue;
                     };
                     for (name, value) in args_of(&draft.decisions[giver]).into_iter().flatten() {
-                        let alike =
-                            given
-                                .args
-                                .get(name)
-                                .is_some_and(|other| match (&other.kind, source) {
-                                    (
-                                        Kind::Value {
-                                            source: Source::Vocab(of),
-                                            ..
-                                        },
-                                        Source::Vocab(vocab),
-                                    ) => of == vocab,
-                                    (
-                                        Kind::Value {
-                                            source: Source::Pick(of),
-                                            ..
-                                        },
-                                        Source::Pick(pick),
-                                    ) => of.recognizer() == pick.recognizer(),
-                                    _ => false,
-                                });
-                        let Some(text) = value.text().filter(|_| alike) else {
+                        let Some(said) =
+                            self.shown((reflex, arg, argument), (theirs, name, given), value)
+                        else {
                             continue;
                         };
-                        if shown.len() == MOST_GIVERS || shown.iter().any(|seen| seen == text) {
+                        if shown.len() == MOST_GIVERS || shown.contains(&said) {
                             continue;
                         }
-                        shown.push(text.to_owned());
-                        let said = match source {
-                            Source::Vocab(_) => words(self.plan, theirs, name)
-                                .get(text)
-                                .map_or_else(|| text.to_owned(), ToString::to_string),
-                            _ => format!("\u{ab}{text}\u{bb}"),
+                        shown.push(said.clone());
+                        let no = match argument.kind {
+                            Kind::Flag => reading::NOT_THIS,
+                            Kind::Value { .. } => reading::ANOTHER,
                         };
                         offers.push(Offer {
                             taker,
@@ -1269,6 +1387,7 @@ impl<'a> Planner<'a> {
                             arg: arg.clone(),
                             ask: argument.ask.clone(),
                             shown: said,
+                            no,
                             value: value.clone(),
                         });
                     }
@@ -1276,6 +1395,63 @@ impl<'a> Planner<'a> {
             }
         }
         offers
+    }
+
+    /// A value another part holds, as a part that lacks one of its kind is shown it: a word by its meaning, a
+    /// typed value between marks, an option by its meaning, a switch by its yes. None where the value is not
+    /// of the argument's kind: a word of another list, a typed value of another kind, an option or a switch
+    /// of another reflex or argument.
+    fn shown(
+        &self,
+        (reflex, arg, argument): (&LocalName, &ArgName, &manifest::Argument),
+        (theirs, name, holder): (&LocalName, &ArgName, &Active),
+        value: &Value,
+    ) -> Option<String> {
+        let other = holder.args.get(name)?;
+        let own = theirs == reflex && name == arg;
+        match (&argument.kind, &other.kind, value) {
+            (
+                Kind::Value {
+                    source: Source::Vocab(vocab),
+                    ..
+                },
+                Kind::Value {
+                    source: Source::Vocab(of),
+                    ..
+                },
+                _,
+            ) if of == vocab => {
+                let text = value.text()?;
+                Some(
+                    words(self.plan, theirs, name)
+                        .get(text)
+                        .map_or_else(|| text.to_owned(), ToString::to_string),
+                )
+            }
+            (
+                Kind::Value {
+                    source: Source::Pick(pick),
+                    ..
+                },
+                Kind::Value {
+                    source: Source::Pick(of),
+                    ..
+                },
+                _,
+            ) if of.recognizer() == pick.recognizer() => {
+                Some(format!("\u{ab}{}\u{bb}", value.text()?))
+            }
+            (
+                Kind::Value {
+                    source: Source::Options(options),
+                    ..
+                },
+                _,
+                Value::Option { key },
+            ) if own => options.get(key).map(ToString::to_string),
+            (Kind::Flag, _, Value::Flag) if own => Some(reading::THIS.to_owned()),
+            _ => None,
+        }
     }
 
     /// Whether more than one reflex of the set, playbooks aside, asks for a word of the vocabulary.
@@ -1549,11 +1725,7 @@ impl<'a> Planner<'a> {
                 continue;
             }
             let repair = repair_of(draft, k);
-            draft.decisions[k] = if repair == Some(Repair::Merged) {
-                merged(self.plan, again)
-            } else {
-                again
-            };
+            draft.decisions[k] = again;
             if draft.typed[k].is_none() {
                 draft.typed[k] = Some(draft.segs[k].text.clone());
             }
@@ -1616,11 +1788,7 @@ impl<'a> Planner<'a> {
                 continue;
             }
             let filled = carry(self.plan, asking.clone(), given, stands, self.gate);
-            draft.decisions[k] = if repair_of(draft, k) == Some(Repair::Merged) {
-                merged(self.plan, filled)
-            } else {
-                filled
-            };
+            draft.decisions[k] = filled;
             for (arg, word) in carried {
                 let via = Via::Fill;
                 draft.shared[k].insert(arg, Shared { word, via });
@@ -2408,19 +2576,27 @@ fn verdict_of(steps: &[Step], binds: &[Binding]) -> Verdict {
 }
 
 /// Whether the engine's reading of a whole left it unsettled: it abstained, asked, or sat under the floor — not
-/// one decided firmly, nor one whose confirm carries a span no argument took, which is one task as it stands.
+/// one decided firmly, nor one whose call leaves a typed span no argument took, which is one task as it stands.
 fn unsettled(decision: &Decision) -> bool {
     match decision {
         Decision::Abstain { .. } | Decision::Ask { .. } => true,
-        Decision::Confirm { because, .. } => {
+        Decision::Confirm {
+            chosen, because, ..
+        } => {
             because
                 .iter()
                 .any(|cap| matches!(cap, Cap::UnderFloor { .. }))
-                && !because
-                    .iter()
-                    .any(|cap| matches!(cap, Cap::UnconsumedSpan { .. }))
+                && chosen.unconsumed.is_empty()
         }
         Decision::Run { .. } => false,
+    }
+}
+
+/// The complete call a decision holds, when it holds one.
+fn chosen_of(decision: &Decision) -> Option<&crate::decide::Chosen> {
+    match decision {
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => Some(chosen),
+        Decision::Ask { .. } | Decision::Abstain { .. } => None,
     }
 }
 
@@ -2510,7 +2686,8 @@ fn fold(draft: &mut Draft) {
 }
 
 /// A value one part states, offered to another part that lacks one of its kind: the two parts by their places,
-/// the taker's reflex and argument with its ask, the value as the question shows it, and the value.
+/// the taker's reflex and argument with its ask, the value as the question shows it and what its no says, and
+/// the value.
 struct Offer {
     taker: usize,
     giver: usize,
@@ -2518,6 +2695,7 @@ struct Offer {
     arg: ArgName,
     ask: Clean,
     shown: String,
+    no: &'static str,
     value: Value,
 }
 
@@ -2536,18 +2714,31 @@ const POINTS: [&str; 16] = [
     "him", "her", "his", "both", "each",
 ];
 
+/// The words by which a part says an earlier call is done again, with what the part changes.
+const REPEATS: [&str; 3] = ["the same", "likewise", "as before"];
+
 /// Whether a part's words point at something said elsewhere.
 fn pointing(text: &str) -> bool {
+    says(text, &POINTS)
+}
+
+/// Whether a part's words say an earlier call is done again.
+fn repeating(text: &str) -> bool {
+    says(text, &REPEATS)
+}
+
+/// Whether a text holds one of the phrases, word for word.
+fn says(text: &str, phrases: &[&str]) -> bool {
     let words: Vec<String> = text
         .split(|c: char| !c.is_alphanumeric())
         .filter(|word| !word.is_empty())
         .map(str::to_lowercase)
         .collect();
-    POINTS.iter().any(|point| {
-        let point: Vec<&str> = point.split(' ').collect();
+    phrases.iter().any(|phrase| {
+        let phrase: Vec<&str> = phrase.split(' ').collect();
         words
-            .windows(point.len())
-            .any(|window| window.iter().map(String::as_str).eq(point.iter().copied()))
+            .windows(phrase.len())
+            .any(|window| window.iter().map(String::as_str).eq(phrase.iter().copied()))
     })
 }
 
@@ -2682,17 +2873,6 @@ fn prompt_of(decision: &Decision, active: &Active) -> Prompt {
             unreachable!("a playbook expands from a complete call")
         }
     }
-}
-
-/// The runner-up whose `fits` capped a decision, when one did.
-fn runner_up_of(decision: &Decision) -> Option<LocalName> {
-    let Decision::Confirm { because, .. } = decision else {
-        return None;
-    };
-    because.iter().find_map(|cap| match cap {
-        Cap::TwoThings { contender } => Some(contender.reflex.clone()),
-        _ => None,
-    })
 }
 
 /// The runs of the plan: consecutive segments joined by coordinating connectives, an ordering word ending each.

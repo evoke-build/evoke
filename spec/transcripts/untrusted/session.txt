@@ -4,7 +4,7 @@ $ cd app && evoke "kill the lights in the den"
 $ cd app && evoke trust
 + trusted ~/app
 $ cd app && evoke "kill the lights in the den"
-  lights room="den" state="off"  0.85
+  lights room="den" state="off"  0.92
 den lights off
 $ cd app && printf '"lights out" = { state = "off" }\n' >> overlays/lights.toml
 $ cd app && evoke "kill the lights in the den"
@@ -18,7 +18,7 @@ $ cd app && evoke "kill the lights in the den"
 $ cd app && evoke trust
 + trusted ~/app
 $ cd app && evoke "kill the lights in the den"
-  lights room="den" state="off"  0.85
+  lights room="den" state="off"  0.92
 den lights off
 # The home project needs no trust, and says so.
 $ evoke trust

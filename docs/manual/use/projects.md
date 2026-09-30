@@ -36,7 +36,7 @@ bridge = "10.0.0.2"                # a value, stored plain
 token  = { env = "HUE_TOKEN" }     # a secret: the variable, never the value
 
 [adapters.jev]                     # everything engine-specific, under the adapter's name
-gate = { write = 0.85 }
+gate = { write = 0.95 }
 ```
 
 - A **local name** matches `[a-z][a-z0-9_]*`. `none`, `unstated`, `fits` and `weave` are reserved. The local name is what

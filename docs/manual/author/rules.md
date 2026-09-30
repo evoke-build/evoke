@@ -6,10 +6,11 @@ page says how to write them so that what people type reaches the right reflex, i
 and never runs a step nobody asked for.
 
 Everything the classifier knows about your reflex is your manifest, read word for word with every sentence a person
-types. It chooses one reflex or none: the **route**. For each reflex it also answers **fits**: does this reflex do what
-the sentence asks? It reads each argument's value, or answers *unstated*. The **gate** then turns those answers and
-the effect into an outcome: a call runs unasked only when every answer clears the floor its effect sets, and
-otherwise `evoke` asks for the value, or for a yes. The person reads the call or the plan, and gives the yes.
+types. It chooses one reflex or none: the **route**. It reads each argument's value, or answers *unstated*. The
+**gate** then turns those answers and the effect into an outcome: a call runs unasked only when every value it
+holds clears the floor its effect sets and the call holds all that was typed, and otherwise `evoke` asks for the
+value, or for a yes. When a reflex is added, the classifier also answers **fits** for every example installed:
+does the new reflex do what that sentence asks? The person reads the call or the plan, and gives the yes.
 Neither the classifier nor the person knows what you meant and did not write. So the careful thinking is yours,
 done once, in the words of the file.
 
@@ -27,7 +28,7 @@ Everything you write has a reader:
 
 | What you write | Read by |
 | :-- | :-- |
-| The reflex's name, the last segment of its directory or repository | The classifier, as one of the route's choices and in its fits question. The person, first on every call line |
+| The reflex's name, the last segment of its directory or repository | The classifier, as one of the route's choices. The person, first on every call line |
 | `description`, `not_for`, `[examples]` | The classifier, with every sentence. The person, in `evoke show` and in the file |
 | An `ask` | The classifier, as the argument's question. The person, at the prompt |
 | An option's key | The classifier, as the choice's key. The person, at the prompt and on the call line. The body |
@@ -46,8 +47,8 @@ Everything you write has a reader:
 1. **One reflex is one action, with one effect and one confirm**, since the effect sets how sure `evoke` must be
    before every call of the reflex: a gentle action bundled with a harsh one confirms like the harsh one. The states
    of one action are the options of one argument, like `screenshot`'s `area`, so a sentence that names no state
-   still reaches the reflex. Split the states into one reflex each, and that sentence reaches one of them while
-   another fits it as well, so the call stops at confirm.
+   still reaches the reflex. Split the states into one reflex each, and that sentence reaches one of them by
+   a narrow margin, or none.
 2. When a plan runs a lookup and then the change it serves, make them two reflexes: `device` finds the laptop and
    `lock` locks it. A lookup runs without asking on weaker evidence than a change, and one lookup can feed several
    changes. Where people also type the change alone, give the change a word of the sentence to read, «Which
@@ -62,9 +63,9 @@ Everything you write has a reader:
    new time or a shift, «to 4pm» or «15 minutes later», make the form the confirm can show the one required
    argument, since no key makes one of two required; the other form then stops the call at confirm (rule 4).
 4. A value from an open set is a pick, a switch is a flag, and options are for a closed set that covers every value
-   people mean, since a value with no key is read as the nearest key or asked. When people type a kind of value
-   beside the action and no argument reads it, the call stops at confirm, a bare number excepted, which runs
-   unread: so give a value an argument when the body can use it, and always when the body acts on a quantity.
+   people mean, since a value with no key is asked. When people type a kind of value beside the action and no
+   argument reads it, the call holds less than they typed, and stops at confirm where that shows: so give a
+   value an argument when the body can use it, and always when the body acts on a quantity.
 
 ```toml
 # kept: three states of one action, one effect, one confirm
@@ -77,7 +78,7 @@ optional          = true
 ```
 
 A `screen`, a `window` and a `selection` reflex each read «fire off a quick screencap», cost three descriptions on
-every request, and the call stops at confirm: `screen · write · weakest: route 0.99 · also window (fits 0.41)`.
+every request, and share the route between them, so the call stops at confirm or nothing runs.
 
 ## 2. When to write a playbook
 
@@ -475,7 +476,7 @@ You need not remember these. The tool holds them itself.
   or shuts down. (Rule 1.)
 - **A playbook fits its own steps.** `add` prints `also fits` for the sentences of the reflexes a playbook's steps
   reach, since the plan does hold that action, and no `not_for` line takes that away. Such a sentence typed alone
-  still reaches its reflex, and stops at confirm. (Rules 7, 41.)
+  still reaches its reflex. (Rules 7, 41.)
 - **One verb, two things.** «restart the payments service» and «restart the laptop» share a verb across two
   collections; each names the other's object in `not_for`. (Rule 13.)
 - **One exact sentence a neighbour owns.** When one whole sentence keeps reaching a reflex past its `not_for`, it

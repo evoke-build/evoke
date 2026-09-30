@@ -4,20 +4,12 @@ id = "replay"
 [gate]
 route = 0.5
 fits  = 0.3
-read  = 0.6
-write = 0.8
+read  = 0.8
+write = 0.9
+whole = 0.3
 
 [answers."whisper hello there"]
-route                      = { whisper = 0.95, none = 0.05 }
-"fits.lights"              = { yes = 0.01 }
-"fits.timer"               = { yes = 0.01 }
-"fits.volume"              = { yes = 0.01 }
-"fits.power"               = { yes = 0.01 }
-"fits.shout"               = { yes = 0.02 }
-"fits.whisper"             = { yes = 0.9 }
-"fits.fail"                = { yes = 0.01 }
-"fits.big"                 = { yes = 0.01 }
-"fits.throws"              = { yes = 0.01 }
+route                      = { whisper = 0.97, none = 0.03 }
 "lights.room"              = { unstated = 1.0 }
 "lights.state"             = { unstated = 1.0 }
 "power.action"             = { unstated = 1.0 }
@@ -32,3 +24,4 @@ route                      = { whisper = 0.95, none = 0.05 }
 "weave.view_power__action" = { unstated = 1.0 }
 "weave.view_shout__tone"   = { unstated = 1.0 }
 "weave.left_whisper_0_0"   = { action = 0.9, courtesy = 0.1 }
+"weave.whole_3128513881"   = { whole = 0.9, less = 0.05, other = 0.05 }

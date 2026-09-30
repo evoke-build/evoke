@@ -36,12 +36,6 @@
       },
       "otherwise": "none"
     },
-    "fits.lights": {
-      "type": "yesno",
-      "ask": "Does `lights` do the specific thing the request asks for?",
-      "yes": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
-      "no": "Something else, such as: colour scenes and schedules; asking whether a light is on."
-    },
     "lights.room": {
       "type": "choice",
       "ask": "Which room?",
@@ -84,12 +78,6 @@
         "unstated": "The request does not say."
       },
       "otherwise": "unstated"
-    },
-    "fits.timer": {
-      "type": "yesno",
-      "ask": "Does `timer` do the specific thing the request asks for?",
-      "yes": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
-      "no": "Something else, such as: keeping the laptop awake; alarms at a time of day; asking the time."
     },
     "timer.duration": {
       "type": "choice",

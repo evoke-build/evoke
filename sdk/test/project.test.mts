@@ -44,11 +44,11 @@ test("the spec's home decides and runs as the CLI does", async () => {
   deepStrictEqual(d.values, { room: "den", state: "off" })
   deepStrictEqual(d.args, { room: { type: "word", word: "den" }, state: { type: "option", key: "off" } })
   equal(d.call, 'lights room="den" state="off"')
-  equal(d.confidence, 0.85)
+  equal(d.confidence, 0.92)
   equal(d.input, "kill the lights in the den")
   equal(d.plan, project.plan)
-  // the text's questions, then the one their answers opened: a round each
-  equal(d.trace.length, 2)
+  // the text's questions, what their answers opened, then the call held against the request: a round each
+  equal(d.trace.length, 3)
   equal(d.trace[0]?.adapter, "replay")
   deepStrictEqual(await project.run(d), { text: "den lights off", contained: status("file") })
 })
@@ -68,7 +68,7 @@ test("an ask is filled with what a person typed, then confirmed", async () => {
   equal(filled.outcome, "confirm")
   if (filled.outcome !== "confirm") return
   equal(filled.prompt.template, "Set the den lights off?")
-  equal(filled.prompt.own, 'lights room="den" state="off" · write · weakest: state 0.58')
+  equal(filled.prompt.own, 'lights room="den" state="off" · write · weakest: state 0.74')
   await rejects(project.run(filled as never), (error: TypeError) => error.message === "a confirm decision runs only with { confirmed: true }")
   deepStrictEqual(await project.run(filled, { confirmed: true }), { text: "den lights off", contained: status("file") })
 })

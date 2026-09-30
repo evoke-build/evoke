@@ -172,7 +172,7 @@ different engines:
 
 ```toml
 [adapters.jev]
-gate = { route = 0.5, read = 0.6, write = 0.85 }
+gate = { route = 0.5, read = 0.85, write = 0.95, whole = 0.4 }
 ```
 
 The `openjev` adapter takes the same table under `[adapters.openjev]`. Both reach Jev, so the numbers mean the

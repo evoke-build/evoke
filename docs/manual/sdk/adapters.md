@@ -11,13 +11,13 @@ service. They send the same questions and ship the same bars.
 import { jev } from "@evoke-build/evoke/jev"
 
 const project = await load({ reflexes, adapter: jev() })
-const project = await load({ reflexes, adapter: jev({ key, gate: { write: 0.85 } }) })
+const project = await load({ reflexes, adapter: jev({ key, gate: { write: 0.95 } }) })
 ```
 
 | Option | Meaning                                                                                       |
 | :----- | :-------------------------------------------------------------------------------------------- |
 | `key`  | The API key. Absent: `TYPESAFE_API_KEY` from the environment, read when `jev()` is called      |
-| `gate` | Floors over the defaults of `route` 0.5, `fits` 0.3, `read` 0.6 and `write` 0.8. The same as `[adapters.jev] gate` in `evoke.toml` |
+| `gate` | Floors over the defaults of `route` 0.5, `fits` 0.3, `read` 0.8, `write` 0.9 and `whole` 0.3. The same as `[adapters.jev] gate` in `evoke.toml` |
 
 When `load` resolves `jev` by name from `evoke.toml`, it is built under the file's `[adapters.jev]` table. An
 adapter passed in replaces both. The transport keeps one connection alive for the process, through the proxy
@@ -32,7 +32,7 @@ how long to wait: that wait is waited out, and the request sent again, within th
 import { openjev } from "@evoke-build/evoke/openjev"
 
 const project = await load({ reflexes, adapter: openjev() })
-const project = await load({ reflexes, adapter: openjev({ key, gate: { write: 0.85 } }) })
+const project = await load({ reflexes, adapter: openjev({ key, gate: { write: 0.95 } }) })
 ```
 
 | Option | Meaning                                                                                       |
@@ -54,7 +54,7 @@ names the model by version, `jev-1.13.0`, as `jev()` does, so its `id` is Jev's 
 interface Adapter {
   id: string                                           // opaque; changes whenever answers could; compared, never parsed
   limits?: { options?: number; tokens?: number }       // options: a plan over it is refused at load; tokens: declared, not enforced
-  gate?: { route: number; fits?: number; read: number; write: number }   // each number means P(correct)
+  gate?: { route: number; fits?: number; read: number; write: number; whole?: number }   // each number means P(correct)
   plan?: string                                        // a recording's plan digest; another plan refuses it
   answer(state: { request: string }, questions: Record<string, Question>, signal: AbortSignal): Promise<Raw>
 }
@@ -72,7 +72,8 @@ type Raw  = Record<string, Record<string, number>>    // per question, a number 
 - **`otherwise`** marks the sentinel, `none` or `unstated`, in the structure. So an engine may abstain its own
   way.
 - **`gate`** is the adapter's own calibration. The core never rescales. Without one, every decision confirms.
-  `gate.fits` is the runner-up's floor. A second reflex clearing it turns a run into a confirm.
+  `gate.whole` is the floor of a call read back against the input; without it no call is read back.
+  `gate.fits` is read when a reflex is added: a new reflex that fits another's example at or above it is named.
 - **`answer` is stateless** and may be called with any subset of a plan's questions. `signal` aborts it at the
   deadline. An adapter that ignores its signal is raced against it anyway.
 - **`id`** covers everything that could shift answers: model, version, prompt rendering, calibration. It is
@@ -83,7 +84,7 @@ type Raw  = Record<string, Record<string, number>>    // per question, a number 
 ```ts
 const mine: Adapter = {
   id: "my-classifier-2",
-  gate: { route: 0.5, read: 0.6, write: 0.8 },
+  gate: { route: 0.5, read: 0.8, write: 0.9, whole: 0.3 },
   async answer(state, questions, signal) {
     const raw: Raw = {}
     for (const [id, q] of Object.entries(questions)) raw[id] = await classify(state.request, q, signal)

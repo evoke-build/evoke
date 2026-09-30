@@ -13,12 +13,12 @@ use indexmap::IndexMap;
 
 use super::planning::reflex_of;
 use super::{
-    Asked, Binding, Bound, Executed, Handled, Handling, Progress, Repair, Returned, Running,
-    Status, Step, StepOutcome, Todo, Via, Weave, When, Why,
+    Asked, Binding, Bound, Executed, Handled, Handling, Progress, Returned, Running, Status, Step,
+    StepOutcome, Todo, Via, Weave, When, Why,
 };
 use crate::adapter::Gate;
 use crate::call::Value;
-use crate::decide::{Decision, fill, merged, scalar, yielded};
+use crate::decide::{Cap, Decision, fill, held, scalar, yielded};
 use crate::document::Json;
 use crate::manifest::{Recognizer, Yield};
 use crate::name::{ArgName, FieldName, LocalName};
@@ -269,7 +269,7 @@ impl Runner<'_> {
                     Some((b.arg.clone(), value))
                 })
                 .collect();
-            let decision = self.merged(step, fill(self.plan, asking.clone(), given, self.gate));
+            let decision = self.held(step, fill(self.plan, asking.clone(), given, self.gate));
             return Ok(handling(decision, step.text.clone()));
         }
         let Some(reflex) = &step.reflex else {
@@ -299,16 +299,21 @@ impl Runner<'_> {
                 reflex: read.clone(),
             }));
         }
-        Ok(handling(self.merged(step, decision.clone()), text))
+        Ok(handling(self.held(step, decision.clone()), text))
     }
 
-    /// A step merged back never runs unasked: its decision at its turn confirms, as the planner's did.
-    fn merged(&self, step: &Step, decision: Decision) -> Decision {
-        if step.repair == Some(Repair::Merged) {
-            merged(self.plan, decision)
-        } else {
-            decision
-        }
+    /// What the plan held a step for holds it at its turn: a decision made again there waits as the planner's
+    /// did, for the part beside the step that may add a detail.
+    fn held(&self, step: &Step, decision: Decision) -> Decision {
+        let planned: Vec<Cap> = match &step.decision {
+            Decision::Confirm { because, .. } => because.iter().cloned().collect(),
+            Decision::Ask { asking, .. } => asking.held.clone(),
+            Decision::Run { .. } | Decision::Abstain { .. } => Vec::new(),
+        };
+        planned
+            .into_iter()
+            .filter(|cap| matches!(cap, Cap::Detail { .. }))
+            .fold(decision, |decision, cap| held(self.plan, decision, cap))
     }
 }
 

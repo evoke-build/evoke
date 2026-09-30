@@ -1010,8 +1010,10 @@ impl Session<'_> {
             request(&self.plan, input, tags, only, Scope::Full, recent).map_err(Exit::Human)?;
         let mut trace = Vec::new();
         // The text's questions, then each round its answers open: every round through the cache, or never.
+        let floors = adapter.declared().gate.as_ref();
         let (request, answers, reading) = reading(
             &self.plan,
+            floors,
             request,
             |round| {
                 if cached {
@@ -1022,7 +1024,7 @@ impl Session<'_> {
             },
             Exit::Adapter,
         )?;
-        let decision = gate(&self.plan, reading, adapter.declared().gate.as_ref());
+        let decision = gate(&self.plan, reading, floors);
         Ok(Decided {
             input: request.state.request,
             proposed: request.proposed,

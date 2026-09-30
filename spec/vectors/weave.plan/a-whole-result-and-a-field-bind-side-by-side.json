@@ -3,23 +3,16 @@
     "plan": {
       "$ref": "fixtures/plan-joins.json"
     },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
     "input": "check the errors for checkout and list the deploys for checkout and pull the logs for checkout, then find the suspect, then roll it back",
     "tags": [],
     "answers": {
-      "judged": {
-        "weave.split_0": {
-          "yes": 0.9
-        },
-        "weave.split_1": {
-          "yes": 0.9
-        },
-        "weave.split_2": {
-          "yes": 0.9
-        },
-        "weave.split_3": {
-          "yes": 0.9
-        }
-      },
       "decided": [
         [
           {
@@ -36,69 +29,79 @@
             },
             "call": "errors service=\"checkout\"",
             "effect": "read",
-            "confidence": 0.9,
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "errors",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "errors",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "errors.service",
                 "top": "checkout",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "deploys",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.03
             },
             "contenders": [
               {
                 "reflex": "errors",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "deploys",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.03
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -118,69 +121,79 @@
             },
             "call": "deploys service=\"checkout\"",
             "effect": "read",
-            "confidence": 0.9,
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "list the deploys"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "deploys",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "deploys",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "deploys.service",
                 "top": "checkout",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.03
             },
             "contenders": [
               {
                 "reflex": "deploys",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.03
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -200,69 +213,79 @@
             },
             "call": "logs service=\"checkout\"",
             "effect": "read",
-            "confidence": 0.9,
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 13,
+                  "text": "pull the logs"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "logs",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "logs",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "logs.service",
                 "top": "checkout",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.03
             },
             "contenders": [
               {
                 "reflex": "logs",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.03
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -277,64 +300,67 @@
             "args": {},
             "call": "suspect",
             "effect": "read",
-            "confidence": 0.9,
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "find the suspect"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "suspect",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "suspect",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.03
             },
             "contenders": [
               {
                 "reflex": "suspect",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.03
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -347,65 +373,68 @@
             "outcome": "ask",
             "reflex": "rollback",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 12,
+                  "text": "roll it back"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
             "unconsumed": [],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "rollback",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "rollback",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.03
             },
             "contenders": [
               {
                 "reflex": "rollback",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.03
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "missing": [
@@ -417,13 +446,32 @@
                 },
                 "choices": {
                   "type": "pick",
-                  "pick": "quoted"
+                  "pick": "code"
                 }
               }
             ]
           }
         ]
       ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        },
+        "weave.split_1": {
+          "yes": 0.9
+        },
+        "weave.split_2": {
+          "yes": 0.9
+        },
+        "weave.split_3": {
+          "yes": 0.9
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
+        }
+      },
       "referred": {
         "weave.ref_4_0": {
           "step0": 0,
@@ -435,9 +483,568 @@
     }
   },
   "expect": {
-    "err": {
-      "type": "unanswered",
-      "question": "weave.count"
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "check the errors for checkout and list the deploys for checkout and pull the logs for checkout, then find the suspect, then roll it back",
+        "steps": [
+          {
+            "n": 1,
+            "text": "check the errors for checkout",
+            "end": 29,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "errors service=\"checkout\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "check the errors"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "errors",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "errors",
+                  "p": 0.95
+                },
+                {
+                  "question": "errors.service",
+                  "top": "checkout",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "deploys",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "list the deploys for checkout",
+            "end": 63,
+            "decision": {
+              "outcome": "run",
+              "reflex": "deploys",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "deploys service=\"checkout\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "list the deploys"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "deploys",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "deploys",
+                  "p": 0.95
+                },
+                {
+                  "question": "deploys.service",
+                  "top": "checkout",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "deploys",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "deploys",
+            "effect": "read"
+          },
+          {
+            "n": 3,
+            "text": "pull the logs for checkout",
+            "end": 94,
+            "decision": {
+              "outcome": "run",
+              "reflex": "logs",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "logs service=\"checkout\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 13,
+                    "text": "pull the logs"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "logs",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "logs",
+                  "p": 0.95
+                },
+                {
+                  "question": "logs.service",
+                  "top": "checkout",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "logs",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "logs",
+            "effect": "read"
+          },
+          {
+            "n": 4,
+            "text": "find the suspect",
+            "end": 117,
+            "decision": {
+              "outcome": "run",
+              "reflex": "suspect",
+              "args": {},
+              "call": "suspect",
+              "effect": "read",
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "find the suspect"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "suspect",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "suspect",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "suspect",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "suspect",
+            "effect": "read",
+            "after": [
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "n": 5,
+            "text": "roll it back",
+            "end": 136,
+            "decision": {
+              "outcome": "ask",
+              "reflex": "rollback",
+              "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 12,
+                    "text": "roll it back"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "unconsumed": [],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "rollback",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "rollback",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "rollback",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                }
+              ],
+              "missing": [
+                {
+                  "arg": "release",
+                  "ask": "From which release?",
+                  "because": {
+                    "type": "unstated"
+                  },
+                  "choices": {
+                    "type": "pick",
+                    "pick": "code"
+                  }
+                }
+              ]
+            },
+            "reflex": "rollback",
+            "effect": "write",
+            "refs": [
+              {
+                "span": {
+                  "start": 5,
+                  "end": 7,
+                  "text": "it"
+                },
+                "from": [
+                  3
+                ],
+                "how": "engine",
+                "p": 1
+              }
+            ],
+            "after": [
+              1,
+              2,
+              3,
+              4
+            ]
+          }
+        ],
+        "binds": [
+          {
+            "from": 1,
+            "to": 4,
+            "arg": "errors",
+            "field": "errors",
+            "via": "takes"
+          },
+          {
+            "from": 2,
+            "to": 4,
+            "arg": "deploys",
+            "field": "deploys",
+            "via": "takes"
+          },
+          {
+            "from": 3,
+            "to": 4,
+            "arg": "logs",
+            "field": "logs",
+            "via": "takes"
+          },
+          {
+            "from": 4,
+            "to": 5,
+            "arg": "release",
+            "field": "release",
+            "kind": "code",
+            "via": "fill"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ],
+          [
+            5
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 29,
+            "end": 34,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 63,
+            "end": 68,
+            "word": "and",
+            "order": "and",
+            "p": 0.9
+          },
+          {
+            "start": 94,
+            "end": 101,
+            "word": "then",
+            "order": "then",
+            "p": 0.9
+          },
+          {
+            "start": 117,
+            "end": 124,
+            "word": "then",
+            "order": "then",
+            "p": 0.9
+          }
+        ]
+      }
     }
   }
 }

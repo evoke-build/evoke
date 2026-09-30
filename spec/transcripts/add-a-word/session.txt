@@ -7,7 +7,7 @@ $ evoke "list the photos"
   Path?  > photos
   Path?  "photos" is not a path  > ~/Photos
 + vocab/places.toml  photos = { what = "My photos.", value = "~/Photos" }
-  list place="photos"  0.90
+  list place="photos"  0.95
 one.jpg
 $ evoke vocab places
   desktop = { what = "The desktop.", value = "~/Desktop" }

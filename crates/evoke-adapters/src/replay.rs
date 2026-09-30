@@ -95,6 +95,9 @@ pub fn render(recording: &Recording) -> String {
         }
         lines.push(("read".to_owned(), float(gate.read().get())));
         lines.push(("write".to_owned(), float(gate.write().get())));
+        if let Some(whole) = gate.whole() {
+            lines.push(("whole".to_owned(), float(whole.get())));
+        }
         table(&mut text, "[gate]", &lines);
     }
     for (identity, raw) in &recording.answers {
@@ -176,23 +179,19 @@ mod tests {
     /// `spec/transcripts/try/answers.toml` in the JSON form the host hands over.
     const TRY: &str = r#"{
       "id": "replay",
-      "gate": { "route": 0.5, "fits": 0.3, "read": 0.6, "write": 0.8 },
+      "gate": { "route": 0.5, "fits": 0.3, "read": 0.8, "write": 0.9, "whole": 0.3 },
       "answers": {
         "kill the lights": {
-          "route": { "lights": 0.9, "timer": 0.02, "volume": 0.02, "none": 0.06 },
+          "route": { "lights": 0.95, "timer": 0.01, "volume": 0.01, "none": 0.03 },
           "fits.lights": { "yes": 0.7 },
           "fits.timer": { "yes": 0.05 },
-          "fits.volume": { "yes": 0.05 },
-          "lights.room": { "den": 0.2, "office": 0.05, "unstated": 0.75 },
-          "lights.state": { "off": 0.58, "on": 0.3, "dim": 0.1, "unstated": 0.02 }
+          "lights.room": { "den": 0.1, "office": 0.03, "unstated": 0.87 },
+          "lights.state": { "off": 0.74, "on": 0.19, "dim": 0.06, "unstated": 0.01 }
         },
         "kill the lights in the den": {
-          "route": { "lights": 0.91, "timer": 0.02, "volume": 0.01, "none": 0.06 },
-          "fits.lights": { "yes": 0.7 },
-          "fits.timer": { "yes": 0.05 },
-          "fits.volume": { "yes": 0.05 },
-          "lights.room": { "den": 0.85, "office": 0.05, "unstated": 0.1 },
-          "lights.state": { "off": 0.88, "on": 0.05, "dim": 0.05, "unstated": 0.02 }
+          "route": { "lights": 0.95, "timer": 0.01, "volume": 0.01, "none": 0.03 },
+          "lights.room": { "den": 0.92, "office": 0.03, "unstated": 0.05 },
+          "lights.state": { "off": 0.94, "on": 0.03, "dim": 0.02, "unstated": 0.01 }
         }
       }
     }"#;
@@ -210,21 +209,23 @@ mod tests {
     fn answers_the_questions_asked_by_identity() {
         let recording: Recording = serde_json::from_str(TRY).unwrap();
         assert_eq!(recording.declared.id.as_str(), "replay");
-        assert_eq!(recording.declared.gate.unwrap().write().get(), 0.8);
+        let gate = recording.declared.gate.unwrap();
+        assert_eq!(gate.write().get(), 0.9);
+        assert_eq!(gate.whole().unwrap().get(), 0.3);
         assert_eq!(recording.plan, None);
         let raw = answer(&recording, &request("Kill the lights!")).unwrap();
         let ids: Vec<&str> = raw.0.keys().map(String::as_str).collect();
-        assert_eq!(
-            ids,
-            [
-                "route",
-                "fits.lights",
-                "lights.room",
-                "lights.state",
-                "fits.timer"
-            ]
-        );
-        assert_eq!(raw.0["lights.room"]["unstated"], 0.75);
+        assert_eq!(ids, ["route", "lights.room", "lights.state"]);
+        assert_eq!(raw.0["lights.room"]["unstated"], 0.87);
+        // The same words checked for thefts: the route, and how each reflex fits.
+        let mut phrase: Request = serde_json::from_str(include_str!(
+            "../../../spec/fixtures/request-a-phrase-checked-for-thefts.json"
+        ))
+        .unwrap();
+        phrase.state.request = evoke_core::Input::new("Kill the lights!").unwrap();
+        let raw = answer(&recording, &phrase).unwrap();
+        let ids: Vec<&str> = raw.0.keys().map(String::as_str).collect();
+        assert_eq!(ids, ["route", "fits.lights", "fits.timer"]);
     }
 
     #[test]

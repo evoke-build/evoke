@@ -120,27 +120,27 @@ One person at a time; prints the address."""</span>
       <ol class="steps">
         <li><i>01</i><b>Which reflex?</b><span>One choice over every installed reflex, or none of them. Built from
           each description, its near misses and its examples.</span></li>
-        <li><i>02</i><b>Does it fit?</b><span>A yes or no for each reflex. When a second reflex fits well too, the
-          sentence may ask for two things, so evoke asks you before anything runs.</span></li>
-        <li><i>03</i><b>Which value?</b><span>One choice per input: an option the author listed, a word from a list you
+        <li><i>02</i><b>Which value?</b><span>One choice per input: an option the author listed, a word from a list you
           keep, or a piece of your sentence taken word for word. Or «unstated».</span></li>
+        <li><i>03</i><b>Is that all you said?</b><span>The call is read back against your sentence. When it leaves
+          part of it out, evoke asks you before anything runs.</span></li>
       </ol>
       <div class="grid">
         <div class="panel term" role="figure" aria-label="evoke try shows every answer without running anything">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke try</div>
 <pre data-flow="try"><span class="p">$</span> <span class="in">evoke try "kill the lights in the den"</span>
-<span class="own">  <span class="name">lights</span> <span class="hi">0.91</span> · none 0.06 · timer 0.02 · volume 0.01
-  room   <span class="name">den</span> <span class="hi">0.85</span> · unstated 0.10 · office 0.05
-  state  <span class="name">off</span> <span class="hi">0.88</span> · on 0.05 · dim 0.05 · unstated 0.02
-  fits   lights 0.70 · timer 0.05 · volume 0.05
-  <span class="name">run</span> · weakest: room <span class="hi">0.85</span></span></pre>
+<span class="own">  <span class="name">lights</span> <span class="hi">0.95</span> · none 0.03 · timer 0.01 · volume 0.01
+  room   <span class="name">den</span> <span class="hi">0.92</span> · unstated 0.05 · office 0.03
+  state  <span class="name">off</span> <span class="hi">0.94</span> · on 0.03 · dim 0.02 · unstated 0.01
+  whole  holds all you said 0.90
+  <span class="name">run</span> · weakest: room <span class="hi">0.92</span></span></pre>
         </div>
         <div class="side">
           <div class="panel term" id="missing" role="figure" aria-label="A required input the sentence did not state is asked for">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>a missing value</div>
 <pre data-flow="use"><span class="p">$</span> <span class="in">evoke "kill the lights"</span>
 <span class="own">  Which room?  [1] den  [2] office  [+] add one  &gt; <span class="in">1</span>
-  <span class="name">lights</span> room="den" state="off" · write · weakest: state <span class="mid">0.58</span>
+  <span class="name">lights</span> room="den" state="off" · write · weakest: state <span class="mid">0.74</span>
   Set the den lights off?  [y]es [n]o [t]each &gt; <span class="in">t</span></span>
 <span class="add">+ overlays/lights.toml  [examples] "kill the lights" = { state = "off" }</span>
 <span class="out">den lights off</span></pre>
@@ -148,9 +148,9 @@ One person at a time; prints the address."""</span>
           <ol class="notes column">
             <li><b>1</b><span><strong>«den» matched a word of yours.</strong> Rooms are a word list you keep, called a
               vocabulary. The classifier reads each word's meaning, and the program gets its value.</span></li>
-            <li><b>2</b><span><strong>«kill» meant off at 0.88.</strong> Off is an option the author listed. Without «in the
+            <li><b>2</b><span><strong>«kill» meant off at 0.94.</strong> Off is an option the author listed. Without «in the
               den», the room was unstated, so evoke asked for it.</span></li>
-            <li><b>3</b><span><strong>Then evoke asked for a yes.</strong> Off got only 0.58 this time, under the bar for a
+            <li><b>3</b><span><strong>Then evoke asked for a yes.</strong> Off got only 0.74 this time, under the bar for a
               write. Typing <code>t</code> answered yes and saved the phrase in a file of yours.</span></li>
             <li><b>4</b><span><strong>Some things are never read from a sentence.</strong> A setting like a bridge
               address, or a secret, is set once with <code>evoke config</code>.</span></li>
@@ -178,8 +178,8 @@ One person at a time; prints the address."""</span>
               <g class="ticks">
                 <line class="tick" x1="120" y1="38" x2="120" y2="50"/><text class="dim" x="120" y="28" text-anchor="middle">0</text>
                 <line class="tick" x1="360" y1="38" x2="360" y2="50"/><text class="ink" x="360" y="28" text-anchor="middle">route 0.5</text>
-                <line class="tick" x1="408" y1="38" x2="408" y2="50"/><text class="ink" x="408" y="12" text-anchor="middle">read 0.6</text>
-                <line class="tick" x1="504" y1="38" x2="504" y2="50"/><text class="ink" x="504" y="28" text-anchor="middle">write 0.8</text>
+                <line class="tick" x1="504" y1="38" x2="504" y2="50"/><text class="ink" x="504" y="12" text-anchor="middle">read 0.8</text>
+                <line class="tick" x1="552" y1="38" x2="552" y2="50"/><text class="ink" x="552" y="28" text-anchor="middle">write 0.9</text>
                 <line class="tick" x1="600" y1="38" x2="600" y2="50"/><text class="dim" x="600" y="28" text-anchor="middle">1</text>
               </g>
               <g class="lane">
@@ -189,19 +189,19 @@ One person at a time; prints the address."""</span>
               </g>
               <g class="lane">
                 <text class="lane" x="16" y="136">read</text>
-                <line class="band" x1="120" y1="132" x2="600" y2="132"/><line class="band ok" x1="408" y1="132" x2="600" y2="132"/>
-                <circle class="dot ok" cx="552" cy="132" r="5"/><text class="ok" x="600" y="121" text-anchor="end">contact 0.90 · ran</text>
+                <line class="band" x1="120" y1="132" x2="600" y2="132"/><line class="band ok" x1="504" y1="132" x2="600" y2="132"/>
+                <circle class="dot ok" cx="576" cy="132" r="5"/><text class="ok" x="600" y="121" text-anchor="end">contact 0.95 · ran</text>
               </g>
               <g class="lane">
                 <text class="lane" x="16" y="176">write</text>
-                <line class="band" x1="120" y1="172" x2="600" y2="172"/><line class="band ok" x1="504" y1="172" x2="600" y2="172"/>
-                <circle class="dot mid" cx="456" cy="172" r="5"/><text class="mid" x="462" y="161" text-anchor="end">lights 0.70 · confirm</text>
-                <circle class="dot ok" cx="566" cy="172" r="5"/><text class="ok" x="600" y="161" text-anchor="end">volume 0.93 · ran</text>
+                <line class="band" x1="120" y1="172" x2="600" y2="172"/><line class="band ok" x1="552" y1="172" x2="600" y2="172"/>
+                <circle class="dot mid" cx="475" cy="172" r="5"/><text class="mid" x="466" y="161" text-anchor="end">lights 0.74 · confirm</text>
+                <circle class="dot ok" cx="581" cy="172" r="5"/><text class="ok" x="600" y="161" text-anchor="end">volume 0.96 · ran</text>
               </g>
               <g class="lane">
                 <text class="lane" x="16" y="216">destructive</text>
                 <line class="band" x1="120" y1="212" x2="600" y2="212"/><line class="band mid" x1="120" y1="212" x2="600" y2="212"/>
-                <circle class="dot mid" cx="586" cy="212" r="5"/><text class="mid" x="600" y="201" text-anchor="end">power 0.97 · confirm, always</text>
+                <circle class="dot mid" cx="590" cy="212" r="5"/><text class="mid" x="600" y="201" text-anchor="end">power 0.98 · confirm, always</text>
               </g>
             </svg>
             <svg class="narrow" viewBox="0 0 340 348" aria-hidden="true">
@@ -209,8 +209,8 @@ One person at a time; prints the address."""</span>
               <g class="ticks">
                 <line class="tick" x1="20" y1="38" x2="20" y2="50"/><text class="dim" x="20" y="30" text-anchor="middle">0</text>
                 <line class="tick" x1="170" y1="38" x2="170" y2="50"/><text class="ink" x="166" y="30" text-anchor="end">route 0.5</text>
-                <line class="tick" x1="200" y1="38" x2="200" y2="50"/><text class="ink" x="200" y="14" text-anchor="middle">read 0.6</text>
-                <line class="tick" x1="260" y1="38" x2="260" y2="50"/><text class="ink" x="260" y="30" text-anchor="middle">write 0.8</text>
+                <line class="tick" x1="260" y1="38" x2="260" y2="50"/><text class="ink" x="260" y="14" text-anchor="middle">read 0.8</text>
+                <line class="tick" x1="290" y1="38" x2="290" y2="50"/><text class="ink" x="300" y="30" text-anchor="end">write 0.9</text>
                 <line class="tick" x1="320" y1="38" x2="320" y2="50"/><text class="dim" x="320" y="30" text-anchor="middle">1</text>
               </g>
               <g class="lane">
@@ -220,33 +220,33 @@ One person at a time; prints the address."""</span>
               </g>
               <g class="lane">
                 <text class="lane" x="20" y="156">read</text>
-                <line class="band" x1="20" y1="170" x2="320" y2="170"/><line class="band ok" x1="200" y1="170" x2="320" y2="170"/>
-                <circle class="dot ok" cx="290" cy="170" r="5"/><text class="ok" x="320" y="194" text-anchor="end">contact 0.90 · ran</text>
+                <line class="band" x1="20" y1="170" x2="320" y2="170"/><line class="band ok" x1="260" y1="170" x2="320" y2="170"/>
+                <circle class="dot ok" cx="305" cy="170" r="5"/><text class="ok" x="320" y="194" text-anchor="end">contact 0.95 · ran</text>
               </g>
               <g class="lane">
-                <text class="lane" x="20" y="228">write</text><text class="mid" x="230" y="228" text-anchor="middle">lights 0.70 · confirm</text>
-                <line class="band" x1="20" y1="242" x2="320" y2="242"/><line class="band ok" x1="260" y1="242" x2="320" y2="242"/>
-                <circle class="dot mid" cx="230" cy="242" r="5"/><circle class="dot ok" cx="299" cy="242" r="5"/>
-                <text class="ok" x="320" y="266" text-anchor="end">volume 0.93 · ran</text>
+                <text class="lane" x="20" y="228">write</text><text class="mid" x="242" y="228" text-anchor="middle">lights 0.74 · confirm</text>
+                <line class="band" x1="20" y1="242" x2="320" y2="242"/><line class="band ok" x1="290" y1="242" x2="320" y2="242"/>
+                <circle class="dot mid" cx="242" cy="242" r="5"/><circle class="dot ok" cx="308" cy="242" r="5"/>
+                <text class="ok" x="320" y="266" text-anchor="end">volume 0.96 · ran</text>
               </g>
               <g class="lane">
                 <text class="lane" x="20" y="300">destructive</text>
                 <line class="band" x1="20" y1="314" x2="320" y2="314"/><line class="band mid" x1="20" y1="314" x2="320" y2="314"/>
-                <circle class="dot mid" cx="311" cy="314" r="5"/><text class="mid" x="320" y="338" text-anchor="end">power 0.97 · confirm, always</text>
+                <circle class="dot mid" cx="314" cy="314" r="5"/><text class="mid" x="320" y="338" text-anchor="end">power 0.98 · confirm, always</text>
               </g>
             </svg>
           </div>
           <figcaption><b>Each effect has its own bar.</b> A decision's confidence is its weakest answer: the lowest probability
             among the reflex chosen and each of its values. Under 0.5 for the best reflex, nothing runs. A read runs
-            without a question at 0.6 or more, a write at 0.8, and a destructive reflex always asks.</figcaption>
+            without a question at 0.8 or more, a write at 0.9, and a destructive reflex always asks.</figcaption>
         </figure>
         <ol class="steps column">
           <li><b><i class="ok"></i>Run</b><span>At or over the bar, with every required input stated. It runs on the
             classifier's reading, without a question. The call prints with its confidence, then the result.</span></li>
           <li><b><i class="mid"></i>Ask</b><span>A required input was not stated, or a value fell outside its range.
             evoke asks the input's own question, then checks the bar again with your answer.</span></li>
-          <li><b><i class="mid"></i>Confirm</b><span>evoke shows the call and waits for your yes: under the bar, when a
-            second reflex fits well too, or when something you typed went unused. A destructive reflex always waits.</span></li>
+          <li><b><i class="mid"></i>Confirm</b><span>evoke shows the call and waits for your yes: under the bar, or
+            when the call leaves out part of what you typed. A destructive reflex always waits.</span></li>
           <li><b><i class="no"></i>Stop</b><span>Nothing fits, and evoke abstains: the ranking prints and nothing runs. In a
             sentence of several steps, one part that fits nothing stops the whole sentence.</span></li>
         </ol>
@@ -256,7 +256,7 @@ One person at a time; prints the address."""</span>
         answers, those given 0.85 should be right about 85 times in 100. evoke shows every one, and
         <code>evoke test</code> checks your own sentences. You can read and change the bars in a file you own.</p>
       <p class="after"><a class="more" href="/manual/use/outcomes.html">Every outcome, in the manual →</a> <span class="also"><a
-        href="/examples/desktop.html">See a restart ask first, even at 0.97</a></span></p>
+        href="/examples/desktop.html">See a restart ask first, even at 0.98</a></span></p>
       <p class="after"><a class="more" href="/guides/approval-by-risk.html">Approval set by what a program changes →</a> <span class="also"><a
         href="/guides/commands-from-a-fixed-list.html">Natural-language commands from a fixed list →</a></span></p>
     </section>
@@ -312,10 +312,10 @@ One person at a time; prints the address."""</span>
           <div class="panel term" role="figure" aria-label="The plan, then the run">
             <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="weave"><span class="p">$</span> <span class="in">evoke "look up dana's address and email them"</span>
-<span class="own">  1  <span class="name">contact</span> name="dana"  <span class="hi">0.90</span>
+<span class="own">  1  <span class="name">contact</span> name="dana"  <span class="hi">0.95</span>
   2  <span class="name">mail</span> · takes email from 1</span>
 <span class="out">dana &lt;dana@example.com&gt;</span>
-<span class="own">  2  <span class="name">mail</span> to="dana@example.com"  <span class="hi">0.88</span></span>
+<span class="own">  2  <span class="name">mail</span> to="dana@example.com"  <span class="hi">0.94</span></span>
 <span class="out">drafted to dana@example.com</span></pre>
           </div>
           <ol class="notes column">
@@ -541,7 +541,7 @@ told #ops</span>
       <div class="qa">
         <h3>Can I change the bars?</h3>
         <div>
-          <p>Yes. The defaults are 0.5 to pick a reflex at all, 0.6 for a reflex that only reads, and 0.8 for one that
+          <p>Yes. The defaults are 0.5 to pick a reflex at all, 0.8 for a reflex that only reads, and 0.9 for one that
             writes. You can raise or lower them for your machine in <code>evoke.toml</code>. A read's bar can never be
             higher than a write's, and nothing lets a destructive reflex run without your yes.</p>
           <a class="go" href="/manual/use/outcomes.html">The bars, in the manual →</a>

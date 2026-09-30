@@ -33,22 +33,22 @@
         },
         "call": "timer duration=\"25 minute\"",
         "effect": "write",
-        "confidence": 0.7,
+        "confidence": 0.85,
         "weakest": {
           "question": "timer.duration",
           "top": "8-17",
-          "p": 0.7
+          "p": 0.85
         },
         "judgments": [
           {
             "question": "route",
             "top": "timer",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "question": "timer.duration",
             "top": "8-17",
-            "p": 0.7
+            "p": 0.85
           }
         ],
         "runner_up": {
@@ -59,7 +59,7 @@
         "contenders": [
           {
             "reflex": "timer",
-            "route": 0.9,
+            "route": 0.95,
             "fits": 0.8
           },
           {
@@ -93,9 +93,9 @@
             "judgment": {
               "question": "timer.duration",
               "top": "8-17",
-              "p": 0.7
+              "p": 0.85
             },
-            "floor": 0.8
+            "floor": 0.9
           }
         ]
       },
@@ -121,27 +121,27 @@
         },
         "call": "lights room=\"den\" state=\"off\"",
         "effect": "write",
-        "confidence": 0.85,
+        "confidence": 0.92,
         "weakest": {
           "question": "lights.room",
           "top": "den",
-          "p": 0.85
+          "p": 0.92
         },
         "judgments": [
           {
             "question": "route",
             "top": "lights",
-            "p": 0.91
+            "p": 0.95
           },
           {
             "question": "lights.room",
             "top": "den",
-            "p": 0.85
+            "p": 0.92
           },
           {
             "question": "lights.state",
             "top": "off",
-            "p": 0.88
+            "p": 0.94
           }
         ],
         "runner_up": {
@@ -152,7 +152,7 @@
         "contenders": [
           {
             "reflex": "lights",
-            "route": 0.91,
+            "route": 0.95,
             "fits": 0.7
           },
           {

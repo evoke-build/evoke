@@ -3,17 +3,16 @@
     "plan": {
       "$ref": "fixtures/plan-joins.json"
     },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
     "input": "list the open incidents, then look up each of them, then draft the postmortem",
     "tags": [],
     "answers": {
-      "judged": {
-        "weave.split_0": {
-          "yes": 0.9
-        },
-        "weave.split_1": {
-          "yes": 0.9
-        }
-      },
       "decided": [
         [
           {
@@ -25,64 +24,67 @@
             "args": {},
             "call": "incidents",
             "effect": "read",
-            "confidence": 0.9,
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 23,
+                  "text": "list the open incidents"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "incidents",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "incidents",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.03
             },
             "contenders": [
               {
                 "reflex": "incidents",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.03
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -95,65 +97,68 @@
             "outcome": "ask",
             "reflex": "incident",
             "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "look up each of them"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
             "unconsumed": [],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "incident",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "incident",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.03
             },
             "contenders": [
               {
                 "reflex": "incident",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.03
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "missing": [
@@ -181,75 +186,411 @@
             "args": {},
             "call": "postmortem",
             "effect": "write",
-            "confidence": 0.9,
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "draft the postmortem"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "postmortem",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "postmortem",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.03
             },
             "contenders": [
               {
                 "reflex": "postmortem",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.03
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
         ]
-      ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        },
+        "weave.split_1": {
+          "yes": 0.9
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
+        }
+      }
     }
   },
   "expect": {
-    "err": {
-      "type": "unanswered",
-      "question": "weave.count"
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "list the open incidents, then look up each of them, then draft the postmortem",
+        "steps": [
+          {
+            "n": 1,
+            "text": "list the open incidents",
+            "end": 23,
+            "decision": {
+              "outcome": "run",
+              "reflex": "incidents",
+              "args": {},
+              "call": "incidents",
+              "effect": "read",
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 23,
+                    "text": "list the open incidents"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "incidents",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "incidents",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "incidents",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "incidents",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "look up each of them",
+            "end": 50,
+            "decision": {
+              "outcome": "ask",
+              "reflex": "incident",
+              "args": {},
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 20,
+                    "text": "look up each of them"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "unconsumed": [],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "incident",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "incident",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "incident",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                }
+              ],
+              "missing": [
+                {
+                  "arg": "number",
+                  "ask": "Which incident number?",
+                  "because": {
+                    "type": "unstated"
+                  },
+                  "choices": {
+                    "type": "pick",
+                    "pick": "number"
+                  }
+                }
+              ]
+            },
+            "reflex": "incident",
+            "effect": "read",
+            "refs": [
+              {
+                "span": {
+                  "start": 8,
+                  "end": 20,
+                  "text": "each of them"
+                },
+                "from": [
+                  0
+                ],
+                "how": "pronoun",
+                "many": true
+              }
+            ],
+            "after": [
+              1
+            ]
+          },
+          {
+            "n": 3,
+            "text": "draft the postmortem",
+            "end": 77,
+            "decision": {
+              "outcome": "run",
+              "reflex": "postmortem",
+              "args": {},
+              "call": "postmortem",
+              "effect": "write",
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 20,
+                    "text": "draft the postmortem"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "postmortem",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "postmortem",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "postmortem",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "postmortem",
+            "effect": "write",
+            "after": [
+              1,
+              2
+            ]
+          }
+        ],
+        "binds": [
+          {
+            "from": 1,
+            "to": 2,
+            "arg": "number",
+            "field": "number",
+            "kind": "number",
+            "via": "fill",
+            "each": "incidents"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ]
+        ],
+        "verdict": {
+          "outcome": "refuse",
+          "because": [
+            {
+              "type": "several_sources",
+              "step": 3,
+              "name": "incident",
+              "sources": [
+                2
+              ]
+            }
+          ]
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 23,
+            "end": 30,
+            "word": "then",
+            "order": "then",
+            "p": 0.9
+          },
+          {
+            "start": 50,
+            "end": 57,
+            "word": "then",
+            "order": "then",
+            "p": 0.9
+          }
+        ]
+      }
     }
   }
 }

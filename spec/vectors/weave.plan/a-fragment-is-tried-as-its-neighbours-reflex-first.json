@@ -3,6 +3,13 @@
     "plan": {
       "$ref": "fixtures/plan-weave.json"
     },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
     "input": "kill the lights in the den and feed the cat",
     "tags": [],
     "answers": {
@@ -26,59 +33,78 @@
             },
             "call": "lights room=\"den\" state=\"off\"",
             "effect": "write",
-            "confidence": 0.85,
+            "basis": {
+              "room": {
+                "by": "views",
+                "ask": 0.92,
+                "reader": 0.92
+              },
+              "state": {
+                "by": "views",
+                "ask": 0.94,
+                "reader": 0.94,
+                "yes": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 15,
+                  "text": "kill the lights"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.92,
             "weakest": {
               "question": "lights.room",
               "top": "den",
-              "p": 0.85
+              "p": 0.92
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "lights",
-                "p": 0.91
+                "p": 0.95
               },
               {
                 "question": "lights.room",
                 "top": "den",
-                "p": 0.85
+                "p": 0.92
               },
               {
                 "question": "lights.state",
                 "top": "off",
-                "p": 0.88
+                "p": 0.94
               }
             ],
             "runner_up": {
               "reflex": "timer",
-              "route": 0.02,
-              "fits": 0.05
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "lights",
-                "route": 0.91,
-                "fits": 0.7
+                "route": 0.95
               },
               {
                 "reflex": "timer",
-                "route": 0.02,
-                "fits": 0.05
+                "route": 0.02
               },
               {
                 "reflex": "volume",
-                "route": 0.01,
-                "fits": 0.05
+                "route": 0
               },
               {
                 "reflex": "contact",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "mail",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -92,35 +118,30 @@
             "contenders": [
               {
                 "reflex": "lights",
-                "route": 0.05,
-                "fits": 0.05
+                "route": 0.03
               },
               {
                 "reflex": "timer",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "volume",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "contact",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "mail",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "judgments": [
               {
                 "question": "route",
                 "top": "none",
-                "p": 0.95
+                "p": 0.97
               }
             ]
           }
@@ -129,14 +150,27 @@
       "judged": {
         "weave.split_0": {
           "yes": 0.95
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
         }
       }
     }
   },
   "expect": {
-    "err": {
-      "type": "unanswered",
-      "question": "weave.count"
+    "ok": {
+      "type": "need",
+      "need": {
+        "type": "decide",
+        "asked": [
+          {
+            "text": "feed the cat",
+            "only": "lights"
+          }
+        ]
+      }
     }
   }
 }

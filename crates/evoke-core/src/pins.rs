@@ -8,9 +8,10 @@
 use indexmap::IndexMap;
 
 use crate::adapter::{Choice, Key, Question, QuestionId, Text};
+use crate::digest::Digest;
 use crate::name::{ArgName, LocalName, WeaveName};
 use crate::plan::{none, unstated};
-use crate::text::{Clean, Span};
+use crate::text::{Clean, Span, identity};
 use crate::words::{Form, Spelled};
 
 /// The most words of a list, and the most spelled forms, one argument is asked a yes or no about.
@@ -78,6 +79,25 @@ pub(crate) fn last(reflex: &LocalName, arg: &ArgName, from: usize, held: u32) ->
 /// stands for.
 pub(crate) fn last_choice(reflex: &LocalName, arg: &ArgName, readings: u32) -> QuestionId {
     own(&format!("text_{}_{readings}", pair(reflex, arg)))
+}
+
+/// `weave.whole_<call>`: a call held against the request, where `call` stands for the call on one line,
+/// however the request spells its values.
+pub(crate) fn whole(call: &str) -> QuestionId {
+    own(&format!("whole_{}", short(identity(call).as_str())))
+}
+
+/// A number that stands for a text in an id: the head of its digest.
+pub(crate) fn short(text: &str) -> u32 {
+    let digest = Digest::of(text.as_bytes()).to_string();
+    let hex: String = digest
+        .rsplit(':')
+        .next()
+        .unwrap_or_default()
+        .chars()
+        .take(8)
+        .collect();
+    u32::from_str_radix(&hex, 16).unwrap_or(0)
 }
 
 /// A reflex and its argument as one name. Two pairs of a set never share one: `compile` refuses the second.

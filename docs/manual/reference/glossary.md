@@ -13,17 +13,17 @@ adapter, and the words of a weave.
 | **Body**         | What `run` names: a `.mts`/`.mjs` file exporting a function, or a program with its arguments; a playbook has `steps` instead |
 | **Branch**       | Steps of a playbook that run only under a value an earlier step yields, `{ say = "…", when = { landing = "yes" } }`, listed right after that step; the plan prints every one, the result picks, the rest are skipped clean |
 | **Call**         | A reflex with its arguments filled, on one line: `lights room="den" state="off"`                          |
-| **Cap**          | A reason a complete call stops at confirm: destructive, no gate, under floor, an unconsumed span, two things |
+| **Cap**          | A reason a complete call stops at confirm: destructive, no gate, under the floor, a value read from your words another way, words that ask for more, a call that holds less than you typed |
 | **Change**       | A reflex whose `effect` is `write` or `destructive`: it changes something, where a lookup only reads     |
 | **Collection**   | A repository of reflex directories                                                                        |
-| **Confidence**   | The lowest top probability among the route and every argument question of the winner                     |
+| **Confidence**   | The lowest probability among the route and every value the call holds                                    |
 | **Confirm**      | The outcome when a call is complete but capped: `[y]es [n]o [t]each`                                      |
 | **Contract**     | What a user cannot override: `run` or `steps`, argument names and sources, option keys, ranges, config keys, what a reflex yields, returns and takes |
 | **Effect**       | What running a reflex does: `read`, `write` or `destructive`. Absent means destructive, so a manifest always writes it |
 | **Effective manifest** | The shipped manifest with your overlay merged in; what `show <name>` prints                         |
-| **Fits**         | The yes/no question per reflex: does it do what was asked? Its runner-up floor marks an input asking for two things |
+| **Fits**         | The yes/no question asked when a reflex is added: does it do what another reflex's example asks? At or above its floor, `add` names the example |
 | **Flag**         | A yes/no argument. The body receives `true` or nothing                                                    |
-| **Floor**        | The bar a decision must clear. A threshold the adapter ships, meaning *the probability this is right*: `route`, `fits`, `read`, `write` |
+| **Floor**        | The bar a decision must clear. A threshold the adapter ships, meaning *the probability this is right*: `route`, `read`, `write`, `whole`, and `fits` at `add` |
 | **Fold**         | A part of a sentence that repeats a step a playbook wrote: removed from the plan and named under it, `folded "…" into <n>` |
 | **Gate**         | The step that turns confidence and effect into an outcome                                                 |
 | **h1**           | The content hash of a reflex directory, `h1:<sha256>`, in the lock and the store                          |

@@ -6,8 +6,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     },
     "input": "update the status page for checkout, update the status page for payments, and mark the second one as resolved",
     "tags": [],
@@ -31,8 +32,8 @@
             "basis": {
               "component": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               }
             },
             "left": [
@@ -43,87 +44,72 @@
                   "text": "update the status page"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "status",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "status",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "status.component",
                 "top": "checkout",
-                "p": 0.9
-              },
-              {
-                "question": "status.state",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "status",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "post",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -146,8 +132,8 @@
             "basis": {
               "component": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               }
             },
             "left": [
@@ -158,87 +144,72 @@
                   "text": "update the status page"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "status",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "status",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "status.component",
                 "top": "payments",
-                "p": 0.9
-              },
-              {
-                "question": "status.state",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "status",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "post",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -259,8 +230,8 @@
             "basis": {
               "state": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               }
             },
             "left": [
@@ -271,88 +242,73 @@
                   "text": "mark the second one"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "unconsumed": [],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "status",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "status",
-                "p": 0.9
-              },
-              {
-                "question": "status.component",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "status.state",
                 "top": "resolved",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "status",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "post",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incidents",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "missing": [
@@ -422,8 +378,8 @@
               "basis": {
                 "component": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -434,87 +390,72 @@
                     "text": "update the status page"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "status",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "status",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "status.component",
                   "top": "checkout",
-                  "p": 0.9
-                },
-                {
-                  "question": "status.state",
-                  "top": "unstated",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "status",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "errors",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "deploys",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "logs",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "suspect",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "rollback",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "post",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incidents",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incident",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "postmortem",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -543,13 +484,13 @@
               "basis": {
                 "component": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 },
                 "state": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -560,7 +501,7 @@
                     "text": "update the status page"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "words": {
@@ -569,92 +510,77 @@
                     "text": "mark the second one"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "status",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "status",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "status.component",
                   "top": "payments",
-                  "p": 0.9
-                },
-                {
-                  "question": "status.state",
-                  "top": "unstated",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "status.state",
                   "top": "resolved",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "errors",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "status",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "errors",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "deploys",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "logs",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "suspect",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "rollback",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "post",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incidents",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incident",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "postmortem",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },

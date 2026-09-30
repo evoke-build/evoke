@@ -8,17 +8,13 @@
     },
     "raw": {
       "route": {
-        "screenshot": 0.95,
-        "none": 0.05
-      },
-      "fits.screenshot": {
-        "yes": 0.7,
-        "no": 0.7
+        "screenshot": 0.97,
+        "none": 0.03
       },
       "screenshot.area": {
-        "screen": 0.05,
-        "window": 0.9,
-        "unstated": 0.05
+        "screen": 0.03,
+        "window": 0.95,
+        "unstated": 0.02
       },
       "screenshot.clipboard": {
         "yes": 0.45,
@@ -26,20 +22,36 @@
         "unstated": 0.275
       },
       "weave.view_screenshot__area": {
-        "screen": 0.05,
-        "window": 0.9,
-        "unstated": 0.05
+        "screen": 0.03,
+        "window": 0.95,
+        "unstated": 0.02
       },
       "weave.is_screenshot__area_1": {
-        "yes": 0.9
+        "yes": 0.95
       }
     }
   },
   "expect": {
-    "err": {
-      "type": "malformed",
-      "question": "fits.screenshot",
-      "message": "yes and no sum to 1.4, not 1"
+    "ok": {
+      "type": "open",
+      "request": {
+        "state": {
+          "request": "screenshot this window"
+        },
+        "questions": {
+          "weave.left_screenshot_0_0": {
+            "type": "choice",
+            "ask": "In the request, what do the words «screenshot» do?",
+            "options": {
+              "action": "They say what to do, or to what.",
+              "arg:area": "They answer: The whole screen, a window, or a selection?",
+              "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
+              "more": "They ask for another thing as well."
+            }
+          }
+        },
+        "proposed": []
+      }
     }
   }
 }

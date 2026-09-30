@@ -39,22 +39,22 @@
         },
         "call": "errors service=\"checkout\"",
         "effect": "read",
-        "confidence": 0.9,
+        "confidence": 0.95,
         "weakest": {
           "question": "route",
           "top": "errors",
-          "p": 0.9
+          "p": 0.95
         },
         "judgments": [
           {
             "question": "route",
             "top": "errors",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "question": "errors.service",
             "top": "checkout",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "runner_up": {
@@ -65,7 +65,7 @@
         "contenders": [
           {
             "reflex": "errors",
-            "route": 0.9,
+            "route": 0.95,
             "fits": 0.8
           },
           {
@@ -123,22 +123,22 @@
         },
         "call": "deploys service=\"checkout\"",
         "effect": "read",
-        "confidence": 0.9,
+        "confidence": 0.95,
         "weakest": {
           "question": "route",
           "top": "deploys",
-          "p": 0.9
+          "p": 0.95
         },
         "judgments": [
           {
             "question": "route",
             "top": "deploys",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "question": "deploys.service",
             "top": "checkout",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "runner_up": {
@@ -149,7 +149,7 @@
         "contenders": [
           {
             "reflex": "deploys",
-            "route": 0.9,
+            "route": 0.95,
             "fits": 0.8
           },
           {
@@ -207,22 +207,22 @@
         },
         "call": "logs service=\"checkout\"",
         "effect": "read",
-        "confidence": 0.9,
+        "confidence": 0.95,
         "weakest": {
           "question": "route",
           "top": "logs",
-          "p": 0.9
+          "p": 0.95
         },
         "judgments": [
           {
             "question": "route",
             "top": "logs",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "question": "logs.service",
             "top": "checkout",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "runner_up": {
@@ -233,7 +233,7 @@
         "contenders": [
           {
             "reflex": "logs",
-            "route": 0.9,
+            "route": 0.95,
             "fits": 0.8
           },
           {
@@ -286,17 +286,17 @@
         "args": {},
         "call": "suspect",
         "effect": "read",
-        "confidence": 0.9,
+        "confidence": 0.95,
         "weakest": {
           "question": "route",
           "top": "suspect",
-          "p": 0.9
+          "p": 0.95
         },
         "judgments": [
           {
             "question": "route",
             "top": "suspect",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "runner_up": {
@@ -307,7 +307,7 @@
         "contenders": [
           {
             "reflex": "suspect",
-            "route": 0.9,
+            "route": 0.95,
             "fits": 0.8
           },
           {

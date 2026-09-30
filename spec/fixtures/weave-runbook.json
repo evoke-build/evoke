@@ -19,57 +19,51 @@
               "text": "drain connections off the primary"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           }
         ],
-        "confidence": 0.9,
+        "whole": 0.9,
+        "confidence": 0.95,
         "weakest": {
           "question": "route",
           "top": "drain",
-          "p": 0.9
+          "p": 0.95
         },
         "judgments": [
           {
             "question": "route",
             "top": "drain",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "runner_up": {
           "reflex": "runbook",
-          "route": 0.06,
-          "fits": 0.1
+          "route": 0.03
         },
         "contenders": [
           {
             "reflex": "drain",
-            "route": 0.9,
-            "fits": 0.8
+            "route": 0.95
           },
           {
             "reflex": "runbook",
-            "route": 0.06,
-            "fits": 0.1
+            "route": 0.03
           },
           {
             "reflex": "failover",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "verify",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "tell",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "failback",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           }
         ]
       },
@@ -101,7 +95,7 @@
               "text": "fail"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "words": {
@@ -110,61 +104,54 @@
               "text": "replica"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           }
         ],
-        "confidence": 0.9,
+        "confidence": 0.95,
         "weakest": {
           "question": "route",
           "top": "failover",
-          "p": 0.9
+          "p": 0.95
         },
         "judgments": [
           {
             "question": "route",
             "top": "failover",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "runner_up": {
           "reflex": "drain",
-          "route": 0.03,
-          "fits": 0.02
+          "route": 0.02
         },
         "contenders": [
           {
             "reflex": "failover",
-            "route": 0.9,
-            "fits": 0.8
+            "route": 0.95
           },
           {
             "reflex": "drain",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           {
             "reflex": "verify",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "tell",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "failback",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "runbook",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           }
         ],
         "prompt": {
-          "own": "failover · destructive · weakest: route 0.90",
+          "own": "failover · destructive · weakest: route 0.95",
           "template": "Promote the replica now?"
         },
         "because": [
@@ -201,7 +188,7 @@
               "text": "check whether writes land"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "words": {
@@ -210,57 +197,51 @@
               "text": "new primary"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           }
         ],
-        "confidence": 0.9,
+        "whole": 0.9,
+        "confidence": 0.95,
         "weakest": {
           "question": "route",
           "top": "verify",
-          "p": 0.9
+          "p": 0.95
         },
         "judgments": [
           {
             "question": "route",
             "top": "verify",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "runner_up": {
           "reflex": "drain",
-          "route": 0.03,
-          "fits": 0.02
+          "route": 0.02
         },
         "contenders": [
           {
             "reflex": "verify",
-            "route": 0.9,
-            "fits": 0.8
+            "route": 0.95
           },
           {
             "reflex": "drain",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           {
             "reflex": "failover",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "tell",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "failback",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "runbook",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           }
         ]
       },
@@ -308,8 +289,8 @@
         "basis": {
           "channel": {
             "by": "views",
-            "ask": 0.9,
-            "reader": 0.9
+            "ask": 0.95,
+            "reader": 0.95
           }
         },
         "left": [
@@ -320,7 +301,7 @@
               "text": "tell"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "words": {
@@ -329,62 +310,56 @@
               "text": "channel the failover is done"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           }
         ],
-        "confidence": 0.9,
+        "whole": 0.9,
+        "confidence": 0.95,
         "weakest": {
           "question": "route",
           "top": "tell",
-          "p": 0.9
+          "p": 0.95
         },
         "judgments": [
           {
             "question": "route",
             "top": "tell",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "question": "tell.channel",
             "top": "#ops",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "runner_up": {
           "reflex": "drain",
-          "route": 0.03,
-          "fits": 0.02
+          "route": 0.02
         },
         "contenders": [
           {
             "reflex": "tell",
-            "route": 0.9,
-            "fits": 0.8
+            "route": 0.95
           },
           {
             "reflex": "drain",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           {
             "reflex": "failover",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "verify",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "failback",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "runbook",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           }
         ]
       },
@@ -424,7 +399,7 @@
               "text": "fail back"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "words": {
@@ -433,61 +408,54 @@
               "text": "old primary"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           }
         ],
-        "confidence": 0.9,
+        "confidence": 0.95,
         "weakest": {
           "question": "route",
           "top": "failback",
-          "p": 0.9
+          "p": 0.95
         },
         "judgments": [
           {
             "question": "route",
             "top": "failback",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "runner_up": {
           "reflex": "drain",
-          "route": 0.03,
-          "fits": 0.02
+          "route": 0.02
         },
         "contenders": [
           {
             "reflex": "failback",
-            "route": 0.9,
-            "fits": 0.8
+            "route": 0.95
           },
           {
             "reflex": "drain",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           {
             "reflex": "failover",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "verify",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "tell",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           },
           {
             "reflex": "runbook",
-            "route": 0,
-            "fits": 0.02
+            "route": 0
           }
         ],
         "prompt": {
-          "own": "failback · destructive · weakest: route 0.90",
+          "own": "failback · destructive · weakest: route 0.95",
           "template": "Fail back to the old primary?"
         },
         "because": [
@@ -541,7 +509,7 @@
         "playbook": "runbook",
         "text": "drain the primary",
         "prompt": {
-          "own": "runbook · destructive · weakest: route 0.90 · also drain (fits 0.60), step 1",
+          "own": "runbook · destructive · weakest: route 0.95",
           "template": "Run the failover runbook?"
         }
       }

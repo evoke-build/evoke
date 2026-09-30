@@ -21,12 +21,13 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `confidence` | ●   | ●       | ●   |         | The weakest judgment's probability                              |
 | `weakest`    | ●   | ●       | ●   |         | `{ question, top, p }`                                          |
 | `judgments`  | ●   | ●       | ●   | ●       | Every choice read: `{ question, top, p }`                       |
-| `contenders` | ●   | ●       | ●   | ●       | The ranking: `{ reflex, route, fits? }`                         |
+| `contenders` | ●   | ●       | ●   | ●       | The ranking: `{ reflex, route }`                                |
 | `runner_up`  | ○   | ○       | ○   |         | The second reflex, when there is one                            |
 | `prompt`     |     | ●       |     |         | `{ own, template }`: `evoke`'s line and the reflex's question   |
 | `left`       | ○   | ○       | ○   |         | The words of the input that no value holds, each with what it does: `{ words, does, p }`, `does` one of `action`, `answers` with its `arg`, `nothing`, `more` |
-| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `detail`, `unconsumed_span`, `two_things`, `merged` |
-| `unconsumed` |     |         | ●   |         | Typed spans no argument took                                    |
+| `whole`      | ○   | ○       | ○   |         | How far the call holds all the input says, where the call was read back against it |
+| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `whole`, `detail` |
+| `unconsumed` | ○   | ○       | ●   |         | Typed spans no argument took                                    |
 | `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because` (`unstated`, `out_of_range`, `not_offered`, `unsettled` or `unread`), `words` when the input holds words that answer the ask, `choices`; a pick's `choices.recent` lists the values recalled from this session's results, when any |
 | `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call, a round of questions each: `{ adapter, questions, ms }`. Empty when the answers came from the cache |
 | `result`     | ○   |         |     |         | `{ text, data? }` when the body ran                             |
@@ -106,13 +107,13 @@ in character offsets of the input.
 A run, from `evoke try --json`:
 
 ```json
-{"input":"kill the lights in the den","outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","confidence":0.85,"weakest":{"question":"lights.room","top":"den","p":0.85},"judgments":[{"question":"route","top":"lights","p":0.91},{"question":"lights.room","top":"den","p":0.85},{"question":"lights.state","top":"off","p":0.88},{"question":"lights.brightness","top":"unstated","p":1.0}],"runner_up":{"reflex":"timer","route":0.02,"fits":0.05},"contenders":[{"reflex":"lights","route":0.91,"fits":0.7},{"reflex":"timer","route":0.02,"fits":0.05},{"reflex":"volume","route":0.01,"fits":0.05}],"trace":[]}
+{"input":"kill the lights in the den","outcome":"run","reflex":"lights","args":{"room":{"type":"word","word":"den"},"state":{"type":"option","key":"off"}},"call":"lights room=\"den\" state=\"off\"","effect":"write","basis":{"room":{"by":"views","ask":0.92,"reader":0.92},"state":{"by":"views","ask":0.94,"reader":0.94,"yes":0.95}},"left":[{"words":{"start":0,"end":15,"text":"kill the lights"},"does":"action","p":0.9}],"whole":0.9,"confidence":0.92,"weakest":{"question":"lights.room","top":"den","p":0.92},"judgments":[{"question":"route","top":"lights","p":0.95},{"question":"lights.room","top":"den","p":0.92},{"question":"lights.state","top":"off","p":0.94}],"runner_up":{"reflex":"timer","route":0.01},"contenders":[{"reflex":"lights","route":0.95},{"reflex":"timer","route":0.01},{"reflex":"volume","route":0.01}],"trace":[]}
 ```
 
 An ask, from a filter with no terminal. The line stands for the prompt that could not be shown, exit 3:
 
 ```json
-{"input":"kill the lights","outcome":"ask","reflex":"lights","args":{"state":{"type":"option","key":"off"}},"unconsumed":[],"confidence":0.58,"weakest":{"question":"lights.state","top":"off","p":0.58},"judgments":[{"question":"route","top":"lights","p":0.9},{"question":"lights.room","top":"unstated","p":0.75},{"question":"lights.state","top":"off","p":0.58},{"question":"lights.brightness","top":"unstated","p":1.0}],"runner_up":{"reflex":"timer","route":0.02,"fits":0.05},"contenders":[{"reflex":"lights","route":0.9,"fits":0.7},{"reflex":"timer","route":0.02,"fits":0.05},{"reflex":"volume","route":0.02,"fits":0.05}],"missing":[{"arg":"room","ask":"Which room?","because":{"type":"unstated"},"choices":{"type":"vocab","words":{"den":"The TV room downstairs; also 'the snug'.","office":"The upstairs study."}}}],"trace":[]}
+{"input":"kill the lights","outcome":"ask","reflex":"lights","args":{"state":{"type":"option","key":"off"}},"basis":{"state":{"by":"views","ask":0.74,"reader":0.74,"yes":0.95}},"left":[{"words":{"start":0,"end":15,"text":"kill the lights"},"does":"action","p":0.9}],"unconsumed":[],"confidence":0.74,"weakest":{"question":"lights.state","top":"off","p":0.74},"judgments":[{"question":"route","top":"lights","p":0.95},{"question":"lights.state","top":"off","p":0.74}],"runner_up":{"reflex":"timer","route":0.01},"contenders":[{"reflex":"lights","route":0.95},{"reflex":"timer","route":0.01},{"reflex":"volume","route":0.01},{"reflex":"power","route":0.0}],"missing":[{"arg":"room","ask":"Which room?","because":{"type":"unstated"},"choices":{"type":"vocab","words":{"den":"The TV room downstairs; also 'the snug'.","office":"The upstairs study."}}}],"trace":[]}
 ```
 
 ## Questions

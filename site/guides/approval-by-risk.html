@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Read, write, destructive: approval set by risk - Evoke</title>
-  <meta name="description" content="evoke sets the bar for running without a question by what a program changes. A read runs at 0.6, a write at 0.8, and a destructive one always asks first.">
+  <meta name="description" content="evoke sets the bar for running without a question by what a program changes. A read runs at 0.8, a write at 0.9, and a destructive one always asks first.">
   <!-- head -->
 </head>
 <body>
@@ -59,8 +59,8 @@
       <div class="table"><table>
         <thead><tr><th>Effect</th><th>Runs without a question at</th><th>Under the bar</th></tr></thead>
         <tbody>
-          <tr><td>read</td><td>0.6 or more</td><td>asks first</td></tr>
-          <tr><td>write</td><td>0.8 or more</td><td>asks first</td></tr>
+          <tr><td>read</td><td>0.8 or more</td><td>asks first</td></tr>
+          <tr><td>write</td><td>0.9 or more</td><td>asks first</td></tr>
           <tr><td>destructive</td><td>never</td><td>always asks</td></tr>
         </tbody>
       </table></div>
@@ -78,7 +78,7 @@
         <div class="panel">
           <div class="head"><i></i>evoke.toml<span class="who you">yours</span></div>
 <pre><span class="t">[adapters.jev]</span>
-<span class="k">gate</span> <span class="o">=</span> <span class="o">{</span> <span class="k">write</span> <span class="o">=</span> <span class="n">0.85</span> <span class="o">}</span></pre>
+<span class="k">gate</span> <span class="o">=</span> <span class="o">{</span> <span class="k">write</span> <span class="o">=</span> <span class="n">0.95</span> <span class="o">}</span></pre>
         </div>
       </div>
     </section>
@@ -92,29 +92,29 @@
         <div class="panel term" role="figure" aria-label="Four sentences over the Mac collection">
           <div class="head"><span class="dots"><i></i><i></i><i></i></span>evoke</div>
 <pre data-flow="first-ten"><span class="p">$</span> <span class="in">evoke "set the volume to 40 percent"</span>
-<span class="own">  <span class="name">volume</span> level="40 percent"  <span class="hi">0.93</span></span>
+<span class="own">  <span class="name">volume</span> level="40 percent"  <span class="hi">0.96</span></span>
 <span class="out">volume 40%</span>
 <span class="p">$</span> <span class="in">evoke "kill the wifi"</span>
-<span class="own">  <span class="name">wifi</span> state="off" · write · weakest: state <span class="mid">0.72</span>
+<span class="own">  <span class="name">wifi</span> state="off" · write · weakest: state <span class="mid">0.86</span>
   Turn Wi-Fi off?  [y]es [n]o [t]each &gt; <span class="in">t</span></span>
 <span class="add">+ overlays/wifi.toml  [examples] "kill the wifi" = { state = "off" }</span>
 <span class="out">wi-fi off</span>
 <span class="p">$</span> <span class="in">evoke "restart the computer"</span>
-<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: route <span class="hi">0.97</span>
+<span class="own">  <span class="name">power</span> action="restart" · destructive · weakest: route <span class="hi">0.98</span>
   Make the laptop restart now?  [y]es [n]o [t]each &gt; <span class="in">n</span>
 [2]</span>
 <span class="p">$</span> <span class="in">evoke "what time is it"</span>
-<span class="own">  <span class="name">none</span> <span class="hi">0.70</span> · timer 0.20 · awake 0.05 · lock 0.05
+<span class="own">  <span class="name">none</span> <span class="hi">0.85</span> · timer 0.10 · awake 0.03 · lock 0.02
   note, open and visit are inactive  →  evoke show
 [2]</span></pre>
         </div>
         <div class="side">
           <ol class="notes column">
-            <li><b>1</b><span><strong><code>volume</code> is a write.</strong> Its reading, 0.93, cleared the bar of 0.8,
+            <li><b>1</b><span><strong><code>volume</code> is a write.</strong> Its reading, 0.96, cleared the bar of 0.9,
               so it ran.</span></li>
-            <li><b>2</b><span><strong><code>wifi</code> is a write too.</strong> Its least sure answer, 0.72, was under
-              0.8, so it asked. <code>t</code> answered yes and kept the phrase as an example of yours.</span></li>
-            <li><b>3</b><span><strong><code>power</code> is destructive.</strong> The reading was 0.97, and it still
+            <li><b>2</b><span><strong><code>wifi</code> is a write too.</strong> Its least sure answer, 0.86, was under
+              0.9, so it asked. <code>t</code> answered yes and kept the phrase as an example of yours.</span></li>
+            <li><b>3</b><span><strong><code>power</code> is destructive.</strong> The reading was 0.98, and it still
               asked. <code>n</code> declined, with exit code 2.</span></li>
             <li><b>4</b><span><strong>Nothing fit.</strong> evoke ranked the reflexes, ran none, and exited with
               2.</span></li>

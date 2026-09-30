@@ -7,30 +7,28 @@
       "ranking": [
         {
           "reflex": "timer",
-          "route": 0.95,
-          "fits": 0.9
+          "route": 0.97
         },
         {
           "reflex": "lights",
-          "route": 0.01,
-          "fits": 0.02
+          "route": 0.01
         }
       ],
       "judgments": [
         {
           "question": "route",
           "top": "timer",
-          "p": 0.95
+          "p": 0.97
         },
         {
           "question": "timer.duration",
           "top": "16-26",
-          "p": 0.95
+          "p": 0.97
         },
         {
           "question": "weave.text_timer__label_1997792219",
           "top": "r2",
-          "p": 0.8
+          "p": 0.9
         }
       ],
       "winner": {
@@ -64,11 +62,11 @@
         "basis": {
           "duration": {
             "by": "ask",
-            "p": 0.95
+            "p": 0.97
           },
           "label": {
             "by": "text",
-            "p": 0.8,
+            "p": 0.9,
             "others": [
               {
                 "start": 27,
@@ -87,22 +85,22 @@
               "text": "set a timer"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "unconsumed": [],
         "runner_up": {
           "reflex": "lights",
-          "route": 0.01,
-          "fits": 0.02
+          "route": 0.01
         }
       }
     },
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     }
   },
   "expect": {
@@ -139,11 +137,11 @@
     "basis": {
       "duration": {
         "by": "ask",
-        "p": 0.95
+        "p": 0.97
       },
       "label": {
         "by": "text",
-        "p": 0.8,
+        "p": 0.9,
         "others": [
           {
             "start": 27,
@@ -161,51 +159,48 @@
           "text": "set a timer"
         },
         "does": "action",
-        "p": 0.9
+        "p": 0.95
       }
     ],
-    "confidence": 0.8,
+    "confidence": 0.9,
     "weakest": {
       "question": "weave.text_timer__label_1997792219",
       "top": "r2",
-      "p": 0.8
+      "p": 0.9
     },
     "judgments": [
       {
         "question": "route",
         "top": "timer",
-        "p": 0.95
+        "p": 0.97
       },
       {
         "question": "timer.duration",
         "top": "16-26",
-        "p": 0.95
+        "p": 0.97
       },
       {
         "question": "weave.text_timer__label_1997792219",
         "top": "r2",
-        "p": 0.8
+        "p": 0.9
       }
     ],
     "runner_up": {
       "reflex": "lights",
-      "route": 0.01,
-      "fits": 0.02
+      "route": 0.01
     },
     "contenders": [
       {
         "reflex": "timer",
-        "route": 0.95,
-        "fits": 0.9
+        "route": 0.97
       },
       {
         "reflex": "lights",
-        "route": 0.01,
-        "fits": 0.02
+        "route": 0.01
       }
     ],
     "prompt": {
-      "own": "timer duration=\"10 minutes\" label=\"tea\" · write · weakest: label 0.80 · label without quotes",
+      "own": "timer duration=\"10 minutes\" label=\"tea\" · write · weakest: label 0.90 · label without quotes",
       "template": "Start a 10 minutes timer?"
     },
     "because": [

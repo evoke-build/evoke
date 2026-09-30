@@ -4,21 +4,19 @@ id = "replay"
 [gate]
 route = 0.5
 fits  = 0.3
-read  = 0.6
-write = 0.8
+read  = 0.8
+write = 0.9
+whole = 0.3
 
 [answers."dim the office"]
-route                      = { lights = 0.92, timer = 0.01, volume = 0.02, none = 0.05 }
-"fits.lights"              = { yes = 0.7 }
-"fits.timer"               = { yes = 0.05 }
-"fits.volume"              = { yes = 0.05 }
-"lights.room"              = { office = 0.9, den = 0.02, unstated = 0.08 }
-"lights.state"             = { dim = 0.7, off = 0.2, on = 0.05, unstated = 0.05 }
+route                      = { lights = 0.96, timer = 0.01, volume = 0.01, none = 0.02 }
+"lights.room"              = { office = 0.95, den = 0.01, unstated = 0.04 }
+"lights.state"             = { dim = 0.85, off = 0.1, on = 0.03, unstated = 0.02 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
 "volume.level"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { office = 0.9, den = 0.02, unstated = 0.08 }
-"weave.is_lights__room_1"  = { yes = 0.9 }
-"weave.view_lights__state" = { dim = 0.7, off = 0.2, on = 0.05, unstated = 0.05 }
-"weave.is_lights__state_2" = { yes = 0.9 }
+"weave.view_lights__room"  = { office = 0.95, den = 0.01, unstated = 0.04 }
+"weave.is_lights__room_1"  = { yes = 0.95 }
+"weave.view_lights__state" = { dim = 0.85, off = 0.1, on = 0.03, unstated = 0.02 }
+"weave.is_lights__state_2" = { yes = 0.95 }

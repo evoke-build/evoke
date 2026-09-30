@@ -27,13 +27,13 @@
           "basis": {
             "service": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             },
             "region": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             }
           },
           "left": [
@@ -44,7 +44,7 @@
                 "text": "check"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "words": {
@@ -53,92 +53,81 @@
                 "text": "errors"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "whole": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "errors",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "errors",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "question": "errors.service",
               "top": "checkout",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "question": "errors.region",
               "top": "eu-west",
-              "p": 0.9
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "deploys",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "errors",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "deploys",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "logs",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "suspect",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "rollback",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "post",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incidents",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incident",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "postmortem",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "status",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "outage",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ]
         },
@@ -177,13 +166,13 @@
           "basis": {
             "service": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             },
             "region": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             }
           },
           "left": [
@@ -194,7 +183,7 @@
                 "text": "list"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "words": {
@@ -203,92 +192,81 @@
                 "text": "deploys"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "whole": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "deploys",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "deploys",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "question": "deploys.service",
               "top": "checkout",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "question": "deploys.region",
               "top": "eu-west",
-              "p": 0.9
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "errors",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "deploys",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "logs",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "suspect",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "rollback",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "post",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incidents",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incident",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "postmortem",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "status",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "outage",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ]
         },
@@ -327,13 +305,13 @@
           "basis": {
             "service": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             },
             "region": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             }
           },
           "left": [
@@ -344,7 +322,7 @@
                 "text": "search"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "words": {
@@ -353,92 +331,81 @@
                 "text": "logs"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "whole": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "logs",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "logs",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "question": "logs.service",
               "top": "checkout",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "question": "logs.region",
               "top": "eu-west",
-              "p": 0.9
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "errors",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "logs",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "deploys",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "suspect",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "rollback",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "post",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incidents",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incident",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "postmortem",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "status",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "outage",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ]
         },
@@ -473,82 +440,71 @@
                 "text": "find the release behind"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "whole": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "suspect",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "suspect",
-              "p": 0.9
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "errors",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "suspect",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "deploys",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "logs",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "rollback",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "post",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incidents",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incident",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "postmortem",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "status",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "outage",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ]
         },
@@ -615,13 +571,13 @@
           "basis": {
             "service": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             },
             "region": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             }
           },
           "left": [
@@ -632,7 +588,7 @@
                 "text": "roll"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "words": {
@@ -641,7 +597,7 @@
                 "text": "back"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "words": {
@@ -650,98 +606,81 @@
                 "text": "release"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
           "unconsumed": [],
-          "confidence": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "rollback",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "rollback",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "question": "rollback.service",
               "top": "checkout",
-              "p": 0.9
-            },
-            {
-              "question": "rollback.release",
-              "top": "unstated",
-              "p": 1
+              "p": 0.95
             },
             {
               "question": "rollback.region",
               "top": "eu-west",
-              "p": 0.9
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "errors",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "rollback",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "deploys",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "logs",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "suspect",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "post",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incidents",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incident",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "postmortem",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "status",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "outage",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ],
           "missing": [
@@ -807,8 +746,8 @@
           "basis": {
             "channel": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             }
           },
           "left": [
@@ -819,7 +758,7 @@
                 "text": "post"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "words": {
@@ -828,87 +767,76 @@
                 "text": "channel"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "whole": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "post",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "post",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "question": "post.channel",
               "top": "#incident",
-              "p": 0.9
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "errors",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "post",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "deploys",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "logs",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "suspect",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "rollback",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incidents",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incident",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "postmortem",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "status",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "outage",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ]
         },
@@ -940,8 +868,8 @@
           "basis": {
             "component": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             }
           },
           "left": [
@@ -952,92 +880,76 @@
                 "text": "update the status page"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "whole": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "status",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "status",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "question": "status.component",
               "top": "checkout",
-              "p": 0.9
-            },
-            {
-              "question": "status.state",
-              "top": "unstated",
-              "p": 0.9
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "errors",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "status",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "errors",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "deploys",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "logs",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "suspect",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "rollback",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "post",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incidents",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "incident",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "postmortem",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "outage",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ]
         },
@@ -1117,7 +1029,7 @@
           "playbook": "outage",
           "text": "checkout is failing in eu-west",
           "prompt": {
-            "own": "outage service=\"checkout\" region=\"eu-west\" · destructive · weakest: route 0.90 · also errors (fits 0.60), step 1",
+            "own": "outage service=\"checkout\" region=\"eu-west\" · destructive · weakest: route 0.95",
             "template": "Run the outage plan for checkout?"
           }
         }
@@ -1133,8 +1045,9 @@
   "gate": {
     "route": 0.5,
     "fits": 0.3,
-    "read": 0.6,
-    "write": 0.8
+    "read": 0.8,
+    "write": 0.9,
+    "whole": 0.3
   },
   "set": "h1:c0b70ed3cdec399934cfd66d9c8971ca978eb94026302001eaf09d538bb2c0ea",
   "reflexes": {
@@ -1193,211 +1106,178 @@
       "text": "checkout is failing in eu-west",
       "raw": {
         "route": {
-          "outage": 0.9,
-          "errors": 0.05,
-          "none": 0.05
-        },
-        "fits.errors": {
-          "yes": 0.6
+          "outage": 0.95,
+          "errors": 0.02,
+          "none": 0.03
         },
         "errors.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "errors.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.deploys": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "deploys.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "deploys.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.logs": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "logs.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "logs.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.suspect": {
-          "yes": 0.02
-        },
-        "fits.rollback": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "rollback.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "rollback.release": {
           "unstated": 1
         },
         "rollback.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.post": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "post.channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
-        },
-        "fits.incidents": {
-          "yes": 0.02
-        },
-        "fits.incident": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "incident.number": {
           "unstated": 1
         },
-        "fits.postmortem": {
-          "yes": 0.02
-        },
-        "fits.status": {
-          "yes": 0.02
-        },
         "status.component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "status.state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
-        },
-        "fits.outage": {
-          "yes": 0.8
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "outage.service": {
-          "checkout": 0.9,
-          "unstated": 0.1
+          "checkout": 0.95,
+          "unstated": 0.05
         },
         "outage.region": {
-          "eu-west": 0.9,
-          "unstated": 0.1
+          "eu-west": 0.95,
+          "unstated": 0.05
         },
         "weave.view_errors__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_errors__service_0": {
           "yes": 0.05
         },
         "weave.view_errors__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_errors__region_0": {
           "yes": 0.05
         },
         "weave.view_deploys__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_deploys__service_0": {
           "yes": 0.05
         },
         "weave.view_deploys__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_deploys__region_0": {
           "yes": 0.05
         },
         "weave.view_logs__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_logs__service_0": {
           "yes": 0.05
         },
         "weave.view_logs__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_logs__region_0": {
           "yes": 0.05
         },
         "weave.view_rollback__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_rollback__service_0": {
           "yes": 0.05
         },
         "weave.view_rollback__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_rollback__region_0": {
           "yes": 0.05
         },
         "weave.view_post__channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "weave.view_status__component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_status__component_0": {
           "yes": 0.05
         },
         "weave.view_status__state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "weave.view_outage__service": {
-          "checkout": 0.9,
-          "unstated": 0.1
+          "checkout": 0.95,
+          "unstated": 0.05
         },
         "weave.is_outage__service_0": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.view_outage__region": {
-          "eu-west": 0.9,
-          "unstated": 0.1
+          "eu-west": 0.95,
+          "unstated": 0.05
         },
         "weave.is_outage__region_0": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.left_outage_2_2": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         }
       }
     },
@@ -1405,215 +1285,187 @@
       "text": "check checkout's errors in eu-west",
       "raw": {
         "route": {
-          "errors": 0.9,
-          "deploys": 0.03,
-          "none": 0.07
-        },
-        "fits.errors": {
-          "yes": 0.8
+          "errors": 0.95,
+          "deploys": 0.02,
+          "none": 0.03
         },
         "errors.service": {
-          "checkout": 0.9,
-          "unstated": 0.1
+          "checkout": 0.95,
+          "unstated": 0.05
         },
         "errors.region": {
-          "eu-west": 0.9,
-          "unstated": 0.1
-        },
-        "fits.deploys": {
-          "yes": 0.02
+          "eu-west": 0.95,
+          "unstated": 0.05
         },
         "deploys.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "deploys.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.logs": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "logs.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "logs.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.suspect": {
-          "yes": 0.02
-        },
-        "fits.rollback": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "rollback.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "rollback.release": {
           "unstated": 1
         },
         "rollback.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.post": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "post.channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
-        },
-        "fits.incidents": {
-          "yes": 0.02
-        },
-        "fits.incident": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "incident.number": {
           "unstated": 1
         },
-        "fits.postmortem": {
-          "yes": 0.02
-        },
-        "fits.status": {
-          "yes": 0.02
-        },
         "status.component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "status.state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
-        },
-        "fits.outage": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "outage.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "outage.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_errors__service": {
-          "checkout": 0.9,
-          "unstated": 0.1
+          "checkout": 0.95,
+          "unstated": 0.05
         },
         "weave.is_errors__service_0": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.view_errors__region": {
-          "eu-west": 0.9,
-          "unstated": 0.1
+          "eu-west": 0.95,
+          "unstated": 0.05
         },
         "weave.is_errors__region_0": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.view_deploys__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_deploys__service_0": {
           "yes": 0.05
         },
         "weave.view_deploys__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_deploys__region_0": {
           "yes": 0.05
         },
         "weave.view_logs__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_logs__service_0": {
           "yes": 0.05
         },
         "weave.view_logs__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_logs__region_0": {
           "yes": 0.05
         },
         "weave.view_rollback__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_rollback__service_0": {
           "yes": 0.05
         },
         "weave.view_rollback__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_rollback__region_0": {
           "yes": 0.05
         },
         "weave.view_post__channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "weave.view_status__component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_status__component_0": {
           "yes": 0.05
         },
         "weave.view_status__state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "weave.view_outage__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_outage__service_0": {
           "yes": 0.05
         },
         "weave.view_outage__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_outage__region_0": {
           "yes": 0.05
         },
         "weave.left_errors_0_0": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         },
         "weave.left_errors_2_2": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
+        },
+        "weave.whole_1056623449": {
+          "whole": 0.9,
+          "less": 0.05,
+          "other": 0.05
         }
       }
     },
@@ -1621,215 +1473,187 @@
       "text": "list checkout's deploys in eu-west",
       "raw": {
         "route": {
-          "deploys": 0.9,
-          "errors": 0.03,
-          "none": 0.07
-        },
-        "fits.errors": {
-          "yes": 0.02
+          "deploys": 0.95,
+          "errors": 0.02,
+          "none": 0.03
         },
         "errors.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "errors.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.deploys": {
-          "yes": 0.8
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "deploys.service": {
-          "checkout": 0.9,
-          "unstated": 0.1
+          "checkout": 0.95,
+          "unstated": 0.05
         },
         "deploys.region": {
-          "eu-west": 0.9,
-          "unstated": 0.1
-        },
-        "fits.logs": {
-          "yes": 0.02
+          "eu-west": 0.95,
+          "unstated": 0.05
         },
         "logs.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "logs.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.suspect": {
-          "yes": 0.02
-        },
-        "fits.rollback": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "rollback.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "rollback.release": {
           "unstated": 1
         },
         "rollback.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.post": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "post.channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
-        },
-        "fits.incidents": {
-          "yes": 0.02
-        },
-        "fits.incident": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "incident.number": {
           "unstated": 1
         },
-        "fits.postmortem": {
-          "yes": 0.02
-        },
-        "fits.status": {
-          "yes": 0.02
-        },
         "status.component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "status.state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
-        },
-        "fits.outage": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "outage.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "outage.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_errors__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_errors__service_0": {
           "yes": 0.05
         },
         "weave.view_errors__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_errors__region_0": {
           "yes": 0.05
         },
         "weave.view_deploys__service": {
-          "checkout": 0.9,
-          "unstated": 0.1
+          "checkout": 0.95,
+          "unstated": 0.05
         },
         "weave.is_deploys__service_0": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.view_deploys__region": {
-          "eu-west": 0.9,
-          "unstated": 0.1
+          "eu-west": 0.95,
+          "unstated": 0.05
         },
         "weave.is_deploys__region_0": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.view_logs__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_logs__service_0": {
           "yes": 0.05
         },
         "weave.view_logs__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_logs__region_0": {
           "yes": 0.05
         },
         "weave.view_rollback__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_rollback__service_0": {
           "yes": 0.05
         },
         "weave.view_rollback__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_rollback__region_0": {
           "yes": 0.05
         },
         "weave.view_post__channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "weave.view_status__component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_status__component_0": {
           "yes": 0.05
         },
         "weave.view_status__state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "weave.view_outage__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_outage__service_0": {
           "yes": 0.05
         },
         "weave.view_outage__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_outage__region_0": {
           "yes": 0.05
         },
         "weave.left_deploys_0_0": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         },
         "weave.left_deploys_2_2": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
+        },
+        "weave.whole_439829260": {
+          "whole": 0.9,
+          "less": 0.05,
+          "other": 0.05
         }
       }
     },
@@ -1837,116 +1661,83 @@
       "text": "search checkout's logs in eu-west",
       "raw": {
         "route": {
-          "logs": 0.9,
-          "errors": 0.03,
-          "none": 0.07
-        },
-        "fits.errors": {
-          "yes": 0.02
+          "logs": 0.95,
+          "errors": 0.02,
+          "none": 0.03
         },
         "errors.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "errors.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.deploys": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "deploys.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "deploys.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.logs": {
-          "yes": 0.8
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "logs.service": {
-          "checkout": 0.9,
-          "unstated": 0.1
+          "checkout": 0.95,
+          "unstated": 0.05
         },
         "logs.region": {
-          "eu-west": 0.9,
-          "unstated": 0.1
-        },
-        "fits.suspect": {
-          "yes": 0.02
-        },
-        "fits.rollback": {
-          "yes": 0.02
+          "eu-west": 0.95,
+          "unstated": 0.05
         },
         "rollback.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "rollback.release": {
           "unstated": 1
         },
         "rollback.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.post": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "post.channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
-        },
-        "fits.incidents": {
-          "yes": 0.02
-        },
-        "fits.incident": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "incident.number": {
           "unstated": 1
         },
-        "fits.postmortem": {
-          "yes": 0.02
-        },
-        "fits.status": {
-          "yes": 0.02
-        },
         "status.component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "status.state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
-        },
-        "fits.outage": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "outage.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "outage.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_errors__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_errors__service_0": {
           "yes": 0.05
@@ -1955,17 +1746,17 @@
           "yes": 0.05
         },
         "weave.view_errors__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_errors__region_0": {
           "yes": 0.05
         },
         "weave.view_deploys__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_deploys__service_0": {
           "yes": 0.05
@@ -1974,34 +1765,34 @@
           "yes": 0.05
         },
         "weave.view_deploys__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_deploys__region_0": {
           "yes": 0.05
         },
         "weave.view_logs__service": {
-          "checkout": 0.9,
-          "unstated": 0.1
+          "checkout": 0.95,
+          "unstated": 0.05
         },
         "weave.is_logs__service_0": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.is_logs__service_2": {
           "yes": 0.05
         },
         "weave.view_logs__region": {
-          "eu-west": 0.9,
-          "unstated": 0.1
+          "eu-west": 0.95,
+          "unstated": 0.05
         },
         "weave.is_logs__region_0": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.view_rollback__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_rollback__service_0": {
           "yes": 0.05
@@ -2010,22 +1801,22 @@
           "yes": 0.05
         },
         "weave.view_rollback__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_rollback__region_0": {
           "yes": 0.05
         },
         "weave.view_post__channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "weave.view_status__component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_status__component_0": {
           "yes": 0.05
@@ -2034,14 +1825,14 @@
           "yes": 0.05
         },
         "weave.view_status__state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "weave.view_outage__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_outage__service_0": {
           "yes": 0.05
@@ -2050,20 +1841,25 @@
           "yes": 0.05
         },
         "weave.view_outage__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_outage__region_0": {
           "yes": 0.05
         },
         "weave.left_logs_0_0": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         },
         "weave.left_logs_2_2": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
+        },
+        "weave.whole_3888249332": {
+          "whole": 0.9,
+          "less": 0.05,
+          "other": 0.05
         }
       }
     },
@@ -2071,182 +1867,154 @@
       "text": "find the release behind it",
       "raw": {
         "route": {
-          "suspect": 0.9,
-          "errors": 0.03,
-          "none": 0.07
-        },
-        "fits.errors": {
-          "yes": 0.02
+          "suspect": 0.95,
+          "errors": 0.02,
+          "none": 0.03
         },
         "errors.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "errors.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.deploys": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "deploys.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "deploys.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.logs": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "logs.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "logs.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.suspect": {
-          "yes": 0.8
-        },
-        "fits.rollback": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "rollback.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "rollback.release": {
           "unstated": 1
         },
         "rollback.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.post": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "post.channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
-        },
-        "fits.incidents": {
-          "yes": 0.02
-        },
-        "fits.incident": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "incident.number": {
           "unstated": 1
         },
-        "fits.postmortem": {
-          "yes": 0.02
-        },
-        "fits.status": {
-          "yes": 0.02
-        },
         "status.component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "status.state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
-        },
-        "fits.outage": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "outage.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "outage.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_errors__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.view_errors__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_deploys__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.view_deploys__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_logs__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.view_logs__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_rollback__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.view_rollback__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_post__channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "weave.view_status__component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.view_status__state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "weave.view_outage__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.view_outage__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.left_suspect_0_3": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
+        },
+        "weave.whole_2552723114": {
+          "whole": 0.9,
+          "less": 0.05,
+          "other": 0.05
         }
       }
     },
@@ -2254,222 +2022,189 @@
       "text": "roll checkout back from that release in eu-west",
       "raw": {
         "route": {
-          "rollback": 0.9,
-          "errors": 0.03,
-          "none": 0.07
-        },
-        "fits.errors": {
-          "yes": 0.02
+          "rollback": 0.95,
+          "errors": 0.02,
+          "none": 0.03
         },
         "errors.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "errors.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.deploys": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "deploys.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "deploys.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.logs": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "logs.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "logs.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.suspect": {
-          "yes": 0.02
-        },
-        "fits.rollback": {
-          "yes": 0.8
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "rollback.service": {
-          "checkout": 0.9,
-          "unstated": 0.1
+          "checkout": 0.95,
+          "unstated": 0.05
         },
         "rollback.release": {
           "unstated": 1
         },
         "rollback.region": {
-          "eu-west": 0.9,
-          "unstated": 0.1
-        },
-        "fits.post": {
-          "yes": 0.02
+          "eu-west": 0.95,
+          "unstated": 0.05
         },
         "post.channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
-        },
-        "fits.incidents": {
-          "yes": 0.02
-        },
-        "fits.incident": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "incident.number": {
           "unstated": 1
         },
-        "fits.postmortem": {
-          "yes": 0.02
-        },
-        "fits.status": {
-          "yes": 0.02
-        },
         "status.component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "status.state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
-        },
-        "fits.outage": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "outage.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "outage.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_errors__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_errors__service_0": {
           "yes": 0.05
         },
         "weave.view_errors__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_errors__region_0": {
           "yes": 0.05
         },
         "weave.view_deploys__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_deploys__service_0": {
           "yes": 0.05
         },
         "weave.view_deploys__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_deploys__region_0": {
           "yes": 0.05
         },
         "weave.view_logs__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_logs__service_0": {
           "yes": 0.05
         },
         "weave.view_logs__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_logs__region_0": {
           "yes": 0.05
         },
         "weave.view_rollback__service": {
-          "checkout": 0.9,
-          "unstated": 0.1
+          "checkout": 0.95,
+          "unstated": 0.05
         },
         "weave.is_rollback__service_0": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.view_rollback__region": {
-          "eu-west": 0.9,
-          "unstated": 0.1
+          "eu-west": 0.95,
+          "unstated": 0.05
         },
         "weave.is_rollback__region_0": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.view_post__channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "weave.view_status__component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_status__component_0": {
           "yes": 0.05
         },
         "weave.view_status__state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "weave.is_status__state_3": {
           "yes": 0.05
         },
         "weave.view_outage__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_outage__service_0": {
           "yes": 0.05
         },
         "weave.view_outage__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_outage__region_0": {
           "yes": 0.05
         },
         "weave.left_rollback_0_0": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         },
         "weave.left_rollback_2_2": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         },
         "weave.left_rollback_5_5": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         }
       }
     },
@@ -2477,187 +2212,159 @@
       "text": "post to the incident channel",
       "raw": {
         "route": {
-          "post": 0.9,
-          "errors": 0.03,
-          "none": 0.07
-        },
-        "fits.errors": {
-          "yes": 0.02
+          "post": 0.95,
+          "errors": 0.02,
+          "none": 0.03
         },
         "errors.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "errors.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.deploys": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "deploys.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "deploys.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.logs": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "logs.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "logs.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.suspect": {
-          "yes": 0.02
-        },
-        "fits.rollback": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "rollback.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "rollback.release": {
           "unstated": 1
         },
         "rollback.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.post": {
-          "yes": 0.8
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "post.channel": {
-          "#incident": 0.9,
-          "unstated": 0.1
-        },
-        "fits.incidents": {
-          "yes": 0.02
-        },
-        "fits.incident": {
-          "yes": 0.02
+          "#incident": 0.95,
+          "unstated": 0.05
         },
         "incident.number": {
           "unstated": 1
         },
-        "fits.postmortem": {
-          "yes": 0.02
-        },
-        "fits.status": {
-          "yes": 0.02
-        },
         "status.component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "status.state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
-        },
-        "fits.outage": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "outage.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "outage.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_errors__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.view_errors__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_deploys__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.view_deploys__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_logs__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.view_logs__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_rollback__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.view_rollback__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_post__channel": {
-          "#incident": 0.9,
-          "unstated": 0.1
+          "#incident": 0.95,
+          "unstated": 0.05
         },
         "weave.is_post__channel_0": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.view_status__component": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.view_status__state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "weave.view_outage__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.view_outage__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.left_post_0_0": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         },
         "weave.left_post_4_4": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
+        },
+        "weave.whole_1461761989": {
+          "whole": 0.9,
+          "less": 0.05,
+          "other": 0.05
         }
       }
     },
@@ -2665,213 +2372,185 @@
       "text": "update the status page for checkout",
       "raw": {
         "route": {
-          "status": 0.9,
-          "errors": 0.03,
-          "none": 0.07
-        },
-        "fits.errors": {
-          "yes": 0.02
+          "status": 0.95,
+          "errors": 0.02,
+          "none": 0.03
         },
         "errors.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "errors.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.deploys": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "deploys.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "deploys.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.logs": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "logs.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "logs.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.suspect": {
-          "yes": 0.02
-        },
-        "fits.rollback": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "rollback.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "rollback.release": {
           "unstated": 1
         },
         "rollback.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
-        },
-        "fits.post": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "post.channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
-        },
-        "fits.incidents": {
-          "yes": 0.02
-        },
-        "fits.incident": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "incident.number": {
           "unstated": 1
         },
-        "fits.postmortem": {
-          "yes": 0.02
-        },
-        "fits.status": {
-          "yes": 0.8
-        },
         "status.component": {
-          "checkout": 0.9,
-          "unstated": 0.1
+          "checkout": 0.95,
+          "unstated": 0.05
         },
         "status.state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
-        },
-        "fits.outage": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "outage.service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "outage.region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_errors__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_errors__service_0": {
           "yes": 0.05
         },
         "weave.view_errors__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_errors__region_1": {
           "yes": 0.05
         },
         "weave.view_deploys__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_deploys__service_0": {
           "yes": 0.05
         },
         "weave.view_deploys__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_deploys__region_1": {
           "yes": 0.05
         },
         "weave.view_logs__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_logs__service_0": {
           "yes": 0.05
         },
         "weave.view_logs__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_logs__region_1": {
           "yes": 0.05
         },
         "weave.view_rollback__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_rollback__service_0": {
           "yes": 0.05
         },
         "weave.view_rollback__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_rollback__region_1": {
           "yes": 0.05
         },
         "weave.view_post__channel": {
-          "unstated": 0.9,
-          "#incident": 0.05,
-          "#ops": 0.05
+          "unstated": 0.95,
+          "#incident": 0.03,
+          "#ops": 0.02
         },
         "weave.view_status__component": {
-          "checkout": 0.9,
-          "unstated": 0.1
+          "checkout": 0.95,
+          "unstated": 0.05
         },
         "weave.is_status__component_0": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.view_status__state": {
-          "unstated": 0.9,
-          "investigating": 0.05,
-          "identified": 0.05
+          "unstated": 0.95,
+          "investigating": 0.03,
+          "identified": 0.02
         },
         "weave.view_outage__service": {
-          "unstated": 0.9,
-          "checkout": 0.05,
-          "payments": 0.05
+          "unstated": 0.95,
+          "checkout": 0.03,
+          "payments": 0.02
         },
         "weave.is_outage__service_0": {
           "yes": 0.05
         },
         "weave.view_outage__region": {
-          "unstated": 0.9,
-          "eu-west": 0.05,
-          "us-east": 0.05
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.is_outage__region_1": {
           "yes": 0.05
         },
         "weave.left_status_0_3": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
+        },
+        "weave.whole_2785253242": {
+          "whole": 0.9,
+          "less": 0.05,
+          "other": 0.05
         }
       }
     },

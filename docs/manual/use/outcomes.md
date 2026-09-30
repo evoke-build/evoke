@@ -12,7 +12,7 @@ attention. The call prints with its confidence, the program runs, and the result
 
 ```text
 $ evoke "kill the lights in the den"
-  lights room="den" state="off"  0.85
+  lights room="den" state="off"  0.92
 den lights off
 ```
 
@@ -23,7 +23,7 @@ the weakest judgment, and any further reason. Then comes the reflex's one-line p
 
 ```text
 $ evoke "dim the office"
-  lights room="office" state="dim" · write · weakest: state 0.70
+  lights room="office" state="dim" · write · weakest: state 0.85
   Set the office lights dim?  [y]es [n]o [t]each > y
 group-7 lights dim
 ```
@@ -47,11 +47,11 @@ These are the reasons a decision stops at confirm, in the order the line names t
   argument: `label without quotes`.
 - **more words**: the input holds words that ask for another thing, which the call does not hold. The line
   shows them: `also "lock the door too"`.
+- **less than you typed**: the call, read back against the input, leaves out part of what you typed. The line
+  says how far the call holds it, and names the words it leaves out: `holds all you said 0.20, leaves out
+  "in the morning"`.
 - **a detail beside it**: a part of the sentence that is not in the plan may add a detail to this step. The
   line shows the part: `without "the ones since noon"` ([Weaving](weaving.md)).
-- **an unconsumed span**: you typed something recognizable, like a duration or a URL, and no argument took it. A
-  bare number never stops a call.
-- **two things**: a runner-up reflex fits well enough that the input may have asked for two things.
 
 `[t]each` records only what the input stated. An argument you filled in at a prompt is not recorded. The answer
 is read from the terminal, never from stdin. With no terminal, a confirm exits 3 with the command to run yourself.
@@ -66,16 +66,16 @@ your answer.
 ```text
 $ evoke "kill the lights"
   Which room?  [1] den  [2] office  [+] add one  > 1
-  lights room="den" state="off" · write · weakest: state 0.58
+  lights room="den" state="off" · write · weakest: state 0.74
   Set the den lights off?  [y]es [n]o [t]each > y
 den lights off
 $ evoke "set the volume to 150 percent"
   How loud, in percent?  150 percent is outside 0–100  > 40
-  volume level="40"  0.93
+  volume level="40"  0.96
 volume set to 40%
 $ evoke "kill the lights in the garage"
   Which room?  "garage" is not on the list  [1] den  [2] office  [+] add one  > 2
-  lights room="office" state="off"  0.90
+  lights room="office" state="off"  0.95
 group-7 lights off
 ```
 
@@ -107,16 +107,23 @@ An inactive reflex is never in the ranking. When one is left out, an abstain nam
 
 ```text
 $ evoke "what time is it"
-  none 0.70 · timer 0.20 · lights 0.05 · volume 0.05
+  none 0.85 · timer 0.10 · lights 0.03 · volume 0.02
   open is inactive  →  evoke show
 [2]
 ```
 
 ## What confidence is
 
-For each decision, the adapter answers one question per reflex and one per argument. **Confidence is the lowest
-top probability among the route and every argument question of the winner.** Unstated arguments and flags count
-too, until you answer for them: an argument you typed at a prompt is settled, and its judgment leaves the gate.
+For each decision, the adapter answers a question about the route and questions about each argument.
+**Confidence is the lowest probability among the route and every value the call holds.** Each value counts by
+what gave it: where two questions about it agree, the less sure of the two counts. A flag, and an argument the
+input says nothing of, add nothing to it. An argument you typed at a prompt is settled, and its judgment leaves
+the gate.
+
+A call that clears the bar of its effect is then read back against the input, in the reflex's own words, and one
+more question is asked: does this reading hold everything the input says? The call runs when the answer clears
+a bar of its own, `whole`.
+
 The bars come from the adapter. Both built-in adapters reach Jev and ship the same numbers. They are calibrated,
 so each number means *the probability this is right*, as `evoke calibrate` measures it on your own records
 ([Calibrating](calibrating.md)):
@@ -124,10 +131,15 @@ so each number means *the probability this is right*, as `evoke calibrate` measu
 | Floor         | Default | Gates                                                       |
 | :------------ | :--- | :------------------------------------------------------------- |
 | `route`       | 0.5  | Under it, abstain                                              |
-| `read`        | 0.6  | A `read` reflex runs at or above it                            |
-| `write`       | 0.8  | A `write` reflex runs at or above it                           |
-| `fits`        | 0.3  | A *runner-up* at or above it holds the outcome at confirm      |
+| `read`        | 0.8  | A `read` reflex runs at or above it                            |
+| `write`       | 0.9  | A `write` reflex runs at or above it                           |
+| `whole`       | 0.3  | A call that would run does so when it holds all you typed at or above it |
+| `fits`        | 0.3  | At `add`, a new reflex that fits another's example at or above it is named |
 | destructive   | —    | Always confirms                                                |
+
+A write changes something, so it asks for more than a read. `whole` is a second look at a call that already
+cleared its bar, so it asks for less: it holds a call that leaves part of the input out, and lets through one
+the answer only hesitates on.
 
 You may raise or lower them for your own machine, under your adapter's table in `evoke.toml`, `[adapters.jev]` or
 `[adapters.openjev]`. `read` may never exceed
@@ -136,27 +148,29 @@ in a file you own, not a flag on a pipeline.
 
 ```toml
 [adapters.jev]
-gate = { write = 0.85 }
+gate = { write = 0.95 }
 ```
 
 ## `try`: decide, and show the work
 
 `evoke try "<input>"` decides without running, and prints every judgment: the ranking, each argument's
-distribution, each reflex's `fits`, then the outcome and the weakest judgment. An argument the input says nothing
+distribution, then the outcome and the weakest judgment. An argument the input says nothing
 of prints no line, unless it is asked. Answers that would print as `0.00` fold into a count, `8 more under 0.01`;
 `none` and `unstated` always show. On an argument's line, `none` means the input states a value that is not among
 the choices. Under a value's line, a second line says what else the value stands on: what a second question
 about it answered, the words of the input that hold it, and the yes that took it. The `words` line lists the
 words of the input that no value holds, with what each does: `say what to do`, `answer` an argument, `ask for
-nothing`, or `ask for another thing`. It shares the cache with a real decision. It is never logged.
+nothing`, or `ask for another thing`. The `whole` line says how far the call holds all you typed, where the
+call was read back against the input. It shares the cache with a real decision. It is never logged.
 
 ```text
 $ evoke try "kill the lights"
-  lights 0.90 · none 0.06 · timer 0.02 · volume 0.02
-  room   unstated 0.75 · den 0.20 · office 0.05
-  state  off 0.58 · on 0.30 · dim 0.10 · unstated 0.02
-  fits   lights 0.70 · timer 0.05 · volume 0.05
-  ask room · weakest: state 0.58
+  lights 0.95 · none 0.03 · timer 0.01 · volume 0.01
+  room   unstated 0.87 · den 0.10 · office 0.03
+  state  off 0.74 · on 0.19 · dim 0.06 · unstated 0.01
+         asked a second way: off 0.74 · is it off? yes 0.95
+  words  "kill the lights" say what to do 0.90
+  ask room · weakest: state 0.74
 ```
 
 `try --json` prints the decision as one JSON line: [The JSON line](../reference/json.md).
@@ -170,13 +184,14 @@ what became of it. After a sentence of several steps, it shows each step under i
 ```text
 $ evoke why
   "kill the lights in the den"
-  lights 0.91 · none 0.06 · timer 0.02 · volume 0.01
-  room   den 0.85 · unstated 0.10 · office 0.05
-         asked a second way: den 0.85
-  state  off 0.88 · on 0.05 · dim 0.05 · unstated 0.02
-         asked a second way: off 0.88 · is it off? yes 0.90
-  fits   lights 0.70 · timer 0.05 · volume 0.05
-  ran lights room="den" state="off" · weakest: room 0.85 · replay, 14 questions in 2 rounds
+  lights 0.95 · none 0.03 · timer 0.01 · volume 0.01
+  room   den 0.92 · unstated 0.05 · office 0.03
+         asked a second way: den 0.92
+  state  off 0.94 · on 0.03 · dim 0.02 · unstated 0.01
+         asked a second way: off 0.94 · is it off? yes 0.95
+  words  "kill the lights" say what to do 0.90
+  whole  holds all you said 0.90
+  ran lights room="den" state="off" · weakest: room 0.92 · replay, 13 questions in 3 rounds
 ```
 
 The last line counts the questions the adapter answered, and the rounds they were asked in when the answers to

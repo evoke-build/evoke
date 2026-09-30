@@ -6,8 +6,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     },
     "input": "The API pods keep restarting",
     "tags": [],
@@ -30,93 +31,71 @@
                   "text": "API pods keep restarting"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "unconsumed": [],
-            "confidence": 0.54,
+            "confidence": 0.62,
             "weakest": {
               "question": "route",
               "top": "outage",
-              "p": 0.54
+              "p": 0.62
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "outage",
-                "p": 0.54
-              },
-              {
-                "question": "outage.service",
-                "top": "unstated",
-                "p": 0.9
-              },
-              {
-                "question": "outage.region",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.62
               }
             ],
             "runner_up": {
               "reflex": "incidents",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "outage",
-                "route": 0.54,
-                "fits": 0.8
+                "route": 0.62
               },
               {
                 "reflex": "incidents",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.02
               },
               {
                 "reflex": "errors",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "logs",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "suspect",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "rollback",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "post",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "incident",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "postmortem",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "status",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "missing": [
@@ -163,93 +142,71 @@
                     "text": "API pods keep restarting"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "unconsumed": [],
-              "confidence": 0.54,
+              "confidence": 0.62,
               "weakest": {
                 "question": "route",
                 "top": "outage",
-                "p": 0.54
+                "p": 0.62
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "outage",
-                  "p": 0.54
-                },
-                {
-                  "question": "outage.service",
-                  "top": "unstated",
-                  "p": 0.9
-                },
-                {
-                  "question": "outage.region",
-                  "top": "unstated",
-                  "p": 0.9
+                  "p": 0.62
                 }
               ],
               "runner_up": {
                 "reflex": "incidents",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "outage",
-                  "route": 0.54,
-                  "fits": 0.8
+                  "route": 0.62
                 },
                 {
                   "reflex": "incidents",
-                  "route": 0.03,
-                  "fits": 0.1
+                  "route": 0.02
                 },
                 {
                   "reflex": "errors",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "deploys",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "logs",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "suspect",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "rollback",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "post",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "incident",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "postmortem",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "status",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ],
               "missing": [

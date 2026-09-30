@@ -22,12 +22,6 @@
       },
       "otherwise": "none"
     },
-    "fits.screenshot": {
-      "type": "yesno",
-      "ask": "Does `screenshot` do the specific thing the request asks for?",
-      "yes": "Capture the screen, a window or a selection.\nSaved to the desktop as PNG, or copied to the clipboard.",
-      "no": "Something else, such as: recording the screen."
-    },
     "screenshot.area": {
       "type": "choice",
       "ask": "The whole screen, a window, or a selection?",

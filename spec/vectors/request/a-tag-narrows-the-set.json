@@ -37,12 +37,6 @@
           },
           "otherwise": "none"
         },
-        "fits.timer": {
-          "type": "yesno",
-          "ask": "Does `timer` do the specific thing the request asks for?",
-          "yes": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
-          "no": "Something else, such as: keeping the laptop awake; alarms at a time of day; asking the time."
-        },
         "timer.duration": {
           "type": "choice",
           "ask": "How long?",

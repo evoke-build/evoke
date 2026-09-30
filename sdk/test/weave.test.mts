@@ -42,8 +42,8 @@ test("weave runs the steps in the words' order, each round its own decision and 
     ],
   )
   equal(woven.steps[0]?.rounds[0]?.decision.plan, project.plan)
-  // the text's questions, then the one their answers opened: a round each
-  equal(woven.steps[0]?.rounds[0]?.decision.trace.length, 2)
+  // the text's questions, what their answers opened, then the call held against the request: a round each
+  equal(woven.steps[0]?.rounds[0]?.decision.trace.length, 3)
 })
 
 test("a pronoun takes the address the step before yielded, into the ask it fills", async () => {
@@ -112,7 +112,7 @@ test("a decline at a step's confirm ends the weave after its stage", async () =>
   deepStrictEqual(
     woven.steps.map(step => [step.step, step.status, step.why]),
     [
-      [1, "declined", { type: "said", message: 'timer duration="25 minute" · write · weakest: duration 0.70' }],
+      [1, "declined", { type: "said", message: 'timer duration="25 minute" · write · weakest: duration 0.85' }],
       [2, "skipped", { type: "earlier_step" }],
     ],
   )

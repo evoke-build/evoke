@@ -11,7 +11,7 @@ TypeSafe AI's System One model, reached through either of two built-in adapters.
 
 ```text
 $ evoke "kill the lights in the den"
-  lights room="den" state="off"  0.85
+  lights room="den" state="off"  0.92
 den lights off
 ```
 

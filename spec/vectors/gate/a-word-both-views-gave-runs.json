@@ -7,35 +7,28 @@
       "ranking": [
         {
           "reflex": "lights",
-          "route": 0.92,
-          "fits": 0.7
+          "route": 0.96
         },
         {
           "reflex": "timer",
-          "route": 0.02,
-          "fits": 0.05
+          "route": 0.01
         }
       ],
       "judgments": [
         {
           "question": "route",
           "top": "lights",
-          "p": 0.92
+          "p": 0.96
         },
         {
           "question": "weave.view_lights__room",
           "top": "den",
-          "p": 0.85
+          "p": 0.92
         },
         {
           "question": "lights.state",
           "top": "off",
-          "p": 0.9
-        },
-        {
-          "question": "lights.brightness",
-          "top": "unstated",
-          "p": 1
+          "p": 0.95
         }
       ],
       "winner": {
@@ -53,14 +46,14 @@
         "basis": {
           "room": {
             "by": "views",
-            "ask": 0.9,
-            "reader": 0.85
+            "ask": 0.95,
+            "reader": 0.92
           },
           "state": {
             "by": "views",
-            "ask": 0.9,
-            "reader": 0.9,
-            "yes": 0.9
+            "ask": 0.95,
+            "reader": 0.95,
+            "yes": 0.95
           }
         },
         "missing": [],
@@ -72,22 +65,22 @@
               "text": "kill the lights"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "unconsumed": [],
         "runner_up": {
           "reflex": "timer",
-          "route": 0.02,
-          "fits": 0.05
+          "route": 0.01
         }
       }
     },
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     }
   },
   "expect": {
@@ -108,14 +101,14 @@
     "basis": {
       "room": {
         "by": "views",
-        "ask": 0.9,
-        "reader": 0.85
+        "ask": 0.95,
+        "reader": 0.92
       },
       "state": {
         "by": "views",
-        "ask": 0.9,
-        "reader": 0.9,
-        "yes": 0.9
+        "ask": 0.95,
+        "reader": 0.95,
+        "yes": 0.95
       }
     },
     "left": [
@@ -126,52 +119,44 @@
           "text": "kill the lights"
         },
         "does": "action",
-        "p": 0.9
+        "p": 0.95
       }
     ],
-    "confidence": 0.85,
+    "confidence": 0.92,
     "weakest": {
       "question": "weave.view_lights__room",
       "top": "den",
-      "p": 0.85
+      "p": 0.92
     },
     "judgments": [
       {
         "question": "route",
         "top": "lights",
-        "p": 0.92
+        "p": 0.96
       },
       {
         "question": "weave.view_lights__room",
         "top": "den",
-        "p": 0.85
+        "p": 0.92
       },
       {
         "question": "lights.state",
         "top": "off",
-        "p": 0.9
-      },
-      {
-        "question": "lights.brightness",
-        "top": "unstated",
-        "p": 1
+        "p": 0.95
       }
     ],
     "runner_up": {
       "reflex": "timer",
-      "route": 0.02,
-      "fits": 0.05
+      "route": 0.01
     },
     "contenders": [
       {
         "reflex": "lights",
-        "route": 0.92,
-        "fits": 0.7
+        "route": 0.96
       },
       {
         "reflex": "timer",
-        "route": 0.02,
-        "fits": 0.05
+        "route": 0.01
       }
     ]
   }

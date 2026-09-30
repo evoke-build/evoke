@@ -6,8 +6,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     },
     "input": "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com",
     "tags": [],
@@ -31,8 +32,8 @@
             "basis": {
               "month": {
                 "by": "views",
-                "ask": 0.9,
-                "reader": 0.9
+                "ask": 0.95,
+                "reader": 0.95
               }
             },
             "left": [
@@ -43,7 +44,7 @@
                   "text": "pull"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "words": {
@@ -52,67 +53,60 @@
                   "text": "bank transactions"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "bank",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "bank",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "bank.month",
                 "top": "september",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "invoices",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "bank",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "invoices",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "cards",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "payroll",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "reconcile",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ledger",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "send",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -133,68 +127,55 @@
                   "text": "invoices, card expenses"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "unconsumed": [],
-            "confidence": 0.55,
+            "confidence": 0.65,
             "weakest": {
               "question": "route",
               "top": "invoices",
-              "p": 0.55
+              "p": 0.65
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "invoices",
-                "p": 0.55
-              },
-              {
-                "question": "invoices.month",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.65
               }
             ],
             "runner_up": {
               "reflex": "cards",
-              "route": 0.03,
-              "fits": 0.1
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "invoices",
-                "route": 0.55,
-                "fits": 0.8
+                "route": 0.65
               },
               {
                 "reflex": "cards",
-                "route": 0.03,
-                "fits": 0.1
+                "route": 0.02
               },
               {
                 "reflex": "bank",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "payroll",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "reconcile",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ledger",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "send",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "missing": [
@@ -232,68 +213,56 @@
                   "text": "payroll"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "unconsumed": [],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "payroll",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "payroll",
-                "p": 0.9
-              },
-              {
-                "question": "payroll.month",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "payroll",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "invoices",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "cards",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "reconcile",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ledger",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "send",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "missing": [
@@ -333,62 +302,55 @@
                   "text": "reconcile them"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "reconcile",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "reconcile",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "reconcile",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "invoices",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "cards",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "payroll",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ledger",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "send",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }
@@ -409,7 +371,7 @@
                   "text": "post the closing entries"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "words": {
@@ -418,68 +380,55 @@
                   "text": "ledger"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "unconsumed": [],
-            "confidence": 0.78,
+            "confidence": 0.89,
             "weakest": {
               "question": "route",
               "top": "ledger",
-              "p": 0.78
+              "p": 0.89
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "ledger",
-                "p": 0.78
-              },
-              {
-                "question": "ledger.month",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.89
               }
             ],
             "runner_up": {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "ledger",
-                "route": 0.78,
-                "fits": 0.8
+                "route": 0.89
               },
               {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "invoices",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "cards",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "payroll",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "reconcile",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "send",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "missing": [
@@ -527,7 +476,7 @@
             "basis": {
               "to": {
                 "by": "ask",
-                "p": 0.9
+                "p": 0.95
               }
             },
             "left": [
@@ -538,71 +487,63 @@
                   "text": "send the report"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "send",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "send",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "send.to",
                 "top": "19-34",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "send",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "invoices",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "cards",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "payroll",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "reconcile",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ledger",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "prompt": {
-              "own": "send to=\"cfo@example.com\" · destructive · weakest: route 0.90",
+              "own": "send to=\"cfo@example.com\" · destructive · weakest: route 0.95",
               "template": "Email the closing report to cfo@example.com?"
             },
             "because": [
@@ -628,68 +569,56 @@
                   "text": "invoices"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "unconsumed": [],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "invoices",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "invoices",
-                "p": 0.9
-              },
-              {
-                "question": "invoices.month",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "invoices",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "cards",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "payroll",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "reconcile",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ledger",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "send",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "missing": [
@@ -727,68 +656,56 @@
                   "text": "card expenses"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "unconsumed": [],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "route",
               "top": "cards",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "cards",
-                "p": 0.9
-              },
-              {
-                "question": "cards.month",
-                "top": "unstated",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "cards",
-                "route": 0.9,
-                "fits": 0.8
+                "route": 0.95
               },
               {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "invoices",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "payroll",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "reconcile",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "ledger",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "send",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ],
             "missing": [
@@ -862,8 +779,8 @@
               "basis": {
                 "month": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -874,7 +791,7 @@
                     "text": "pull"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "words": {
@@ -883,67 +800,60 @@
                     "text": "bank transactions"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "bank",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "bank",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "bank.month",
                   "top": "september",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "invoices",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "bank",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "invoices",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "cards",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "payroll",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "reconcile",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "ledger",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "send",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -968,8 +878,8 @@
               "basis": {
                 "month": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -980,62 +890,60 @@
                     "text": "invoices"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "invoices",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "invoices",
-                  "p": 0.9
+                  "p": 0.95
+                },
+                {
+                  "question": "invoices.month",
+                  "top": "september",
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "invoices",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "bank",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "cards",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "payroll",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "reconcile",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "ledger",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "send",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -1067,8 +975,8 @@
               "basis": {
                 "month": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -1079,62 +987,60 @@
                     "text": "card expenses"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "cards",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "cards",
-                  "p": 0.9
+                  "p": 0.95
+                },
+                {
+                  "question": "cards.month",
+                  "top": "september",
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "cards",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "bank",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "invoices",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "payroll",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "reconcile",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "ledger",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "send",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -1166,8 +1072,8 @@
               "basis": {
                 "month": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -1178,62 +1084,60 @@
                     "text": "payroll"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "payroll",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "payroll",
-                  "p": 0.9
+                  "p": 0.95
+                },
+                {
+                  "question": "payroll.month",
+                  "top": "september",
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "payroll",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "bank",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "invoices",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "cards",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "reconcile",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "ledger",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "send",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -1264,62 +1168,55 @@
                     "text": "reconcile them"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "reconcile",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "reconcile",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "reconcile",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "bank",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "invoices",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "cards",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "payroll",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "ledger",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "send",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -1367,8 +1264,8 @@
               "basis": {
                 "month": {
                   "by": "views",
-                  "ask": 0.9,
-                  "reader": 0.9
+                  "ask": 0.95,
+                  "reader": 0.95
                 }
               },
               "left": [
@@ -1379,7 +1276,7 @@
                     "text": "post the closing entries"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "words": {
@@ -1388,66 +1285,63 @@
                     "text": "ledger"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.78,
+              "confidence": 0.89,
               "weakest": {
                 "question": "route",
                 "top": "ledger",
-                "p": 0.78
+                "p": 0.89
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "ledger",
-                  "p": 0.78
+                  "p": 0.89
+                },
+                {
+                  "question": "ledger.month",
+                  "top": "september",
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "ledger",
-                  "route": 0.78,
-                  "fits": 0.8
+                  "route": 0.89
                 },
                 {
                   "reflex": "bank",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "invoices",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "cards",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "payroll",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "reconcile",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "send",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ],
               "prompt": {
-                "own": "ledger month=\"september\" · write · weakest: route 0.78",
+                "own": "ledger month=\"september\" · write · weakest: route 0.89",
                 "template": "Post september to the ledger?"
               },
               "because": [
@@ -1456,9 +1350,9 @@
                   "judgment": {
                     "question": "route",
                     "top": "ledger",
-                    "p": 0.78
+                    "p": 0.89
                   },
-                  "floor": 0.8
+                  "floor": 0.9
                 }
               ]
             },
@@ -1497,7 +1391,7 @@
               "basis": {
                 "to": {
                   "by": "ask",
-                  "p": 0.9
+                  "p": 0.95
                 }
               },
               "left": [
@@ -1508,71 +1402,63 @@
                     "text": "send the report"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "route",
                 "top": "send",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "send",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "send.to",
                   "top": "19-34",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "bank",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "send",
-                  "route": 0.9,
-                  "fits": 0.8
+                  "route": 0.95
                 },
                 {
                   "reflex": "bank",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "invoices",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "cards",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "payroll",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "reconcile",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "ledger",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ],
               "prompt": {
-                "own": "send to=\"cfo@example.com\" · destructive · weakest: route 0.90",
+                "own": "send to=\"cfo@example.com\" · destructive · weakest: route 0.95",
                 "template": "Email the closing report to cfo@example.com?"
               },
               "because": [

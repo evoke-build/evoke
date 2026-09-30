@@ -450,6 +450,8 @@ mod tests {
             effect: Effect::Write,
             basis: IndexMap::new(),
             left: Vec::new(),
+            unconsumed: Vec::new(),
+            whole: None,
             judged,
         }
     }

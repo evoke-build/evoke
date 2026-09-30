@@ -3,14 +3,14 @@
     "door": "openjev",
     "table": {
       "gate": {
-        "read": 0.9
+        "read": 0.95
       }
     }
   },
   "expect": {
     "err": [
       {
-        "message": "adapters.openjev.gate: read 0.9 is above write 0.8",
+        "message": "adapters.openjev.gate: read 0.95 is above write 0.9",
         "fix": {
           "type": "check"
         }

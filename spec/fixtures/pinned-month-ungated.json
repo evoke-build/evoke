@@ -23,8 +23,8 @@
           "basis": {
             "month": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             }
           },
           "left": [
@@ -35,7 +35,7 @@
                 "text": "pull"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "words": {
@@ -44,67 +44,60 @@
                 "text": "bank transactions"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "whole": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "bank",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "bank",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "question": "bank.month",
               "top": "september",
-              "p": 0.9
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "invoices",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "bank",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "invoices",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "cards",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "payroll",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "reconcile",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "ledger",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "send",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ]
         },
@@ -129,8 +122,8 @@
           "basis": {
             "month": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             }
           },
           "left": [
@@ -141,62 +134,60 @@
                 "text": "invoices"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "whole": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "invoices",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "invoices",
-              "p": 0.9
+              "p": 0.95
+            },
+            {
+              "question": "invoices.month",
+              "top": "september",
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "bank",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "invoices",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "cards",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "payroll",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "reconcile",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "ledger",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "send",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ]
         },
@@ -228,8 +219,8 @@
           "basis": {
             "month": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             }
           },
           "left": [
@@ -240,62 +231,60 @@
                 "text": "card expenses"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "whole": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "cards",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "cards",
-              "p": 0.9
+              "p": 0.95
+            },
+            {
+              "question": "cards.month",
+              "top": "september",
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "bank",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "cards",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "invoices",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "payroll",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "reconcile",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "ledger",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "send",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ]
         },
@@ -327,8 +316,8 @@
           "basis": {
             "month": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             }
           },
           "left": [
@@ -339,62 +328,60 @@
                 "text": "payroll"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "whole": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "payroll",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "payroll",
-              "p": 0.9
+              "p": 0.95
+            },
+            {
+              "question": "payroll.month",
+              "top": "september",
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "bank",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "payroll",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "invoices",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "cards",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "reconcile",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "ledger",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "send",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ]
         },
@@ -425,62 +412,55 @@
                 "text": "reconcile them"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "whole": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "reconcile",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "reconcile",
-              "p": 0.9
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "bank",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "reconcile",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "invoices",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "cards",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "payroll",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "ledger",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "send",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ]
         },
@@ -528,8 +508,8 @@
           "basis": {
             "month": {
               "by": "views",
-              "ask": 0.9,
-              "reader": 0.9
+              "ask": 0.95,
+              "reader": 0.95
             }
           },
           "left": [
@@ -540,7 +520,7 @@
                 "text": "post the closing entries"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "words": {
@@ -549,66 +529,63 @@
                 "text": "ledger"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.78,
+          "confidence": 0.89,
           "weakest": {
             "question": "route",
             "top": "ledger",
-            "p": 0.78
+            "p": 0.89
           },
           "judgments": [
             {
               "question": "route",
               "top": "ledger",
-              "p": 0.78
+              "p": 0.89
+            },
+            {
+              "question": "ledger.month",
+              "top": "september",
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "bank",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "ledger",
-              "route": 0.78,
-              "fits": 0.8
+              "route": 0.89
             },
             {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "invoices",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "cards",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "payroll",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "reconcile",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "send",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ],
           "prompt": {
-            "own": "ledger month=\"september\" · write · weakest: route 0.78",
+            "own": "ledger month=\"september\" · write · weakest: route 0.89",
             "template": "Post september to the ledger?"
           },
           "because": [
@@ -617,9 +594,9 @@
               "judgment": {
                 "question": "route",
                 "top": "ledger",
-                "p": 0.78
+                "p": 0.89
               },
-              "floor": 0.8
+              "floor": 0.9
             }
           ]
         },
@@ -658,7 +635,7 @@
           "basis": {
             "to": {
               "by": "ask",
-              "p": 0.9
+              "p": 0.95
             }
           },
           "left": [
@@ -669,71 +646,63 @@
                 "text": "send the report"
               },
               "does": "action",
-              "p": 0.9
+              "p": 0.95
             }
           ],
-          "confidence": 0.9,
+          "confidence": 0.95,
           "weakest": {
             "question": "route",
             "top": "send",
-            "p": 0.9
+            "p": 0.95
           },
           "judgments": [
             {
               "question": "route",
               "top": "send",
-              "p": 0.9
+              "p": 0.95
             },
             {
               "question": "send.to",
               "top": "19-34",
-              "p": 0.9
+              "p": 0.95
             }
           ],
           "runner_up": {
             "reflex": "bank",
-            "route": 0.03,
-            "fits": 0.02
+            "route": 0.02
           },
           "contenders": [
             {
               "reflex": "send",
-              "route": 0.9,
-              "fits": 0.8
+              "route": 0.95
             },
             {
               "reflex": "bank",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             {
               "reflex": "invoices",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "cards",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "payroll",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "reconcile",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             },
             {
               "reflex": "ledger",
-              "route": 0,
-              "fits": 0.02
+              "route": 0
             }
           ],
           "prompt": {
-            "own": "send to=\"cfo@example.com\" · destructive · weakest: route 0.90",
+            "own": "send to=\"cfo@example.com\" · destructive · weakest: route 0.95",
             "template": "Email the closing report to cfo@example.com?"
           },
           "because": [
@@ -928,104 +897,88 @@
       "text": "pull september's bank transactions",
       "raw": {
         "route": {
-          "bank": 0.9,
-          "invoices": 0.03,
-          "none": 0.07
-        },
-        "fits.bank": {
-          "yes": 0.8
+          "bank": 0.95,
+          "invoices": 0.02,
+          "none": 0.03
         },
         "bank.month": {
-          "september": 0.9,
-          "unstated": 0.1
-        },
-        "fits.invoices": {
-          "yes": 0.02
+          "september": 0.95,
+          "unstated": 0.05
         },
         "invoices.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.cards": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "cards.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.payroll": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "payroll.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.reconcile": {
-          "yes": 0.02
-        },
-        "fits.ledger": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "ledger.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.send": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "send.to": {
           "unstated": 1
         },
         "weave.view_bank__month": {
-          "september": 0.9,
-          "unstated": 0.1
+          "september": 0.95,
+          "unstated": 0.05
         },
         "weave.is_bank__month_1": {
-          "yes": 0.9
+          "yes": 0.95
         },
         "weave.view_invoices__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.is_invoices__month_1": {
           "yes": 0.05
         },
         "weave.view_cards__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.is_cards__month_1": {
           "yes": 0.05
         },
         "weave.view_payroll__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.is_payroll__month_1": {
           "yes": 0.05
         },
         "weave.view_ledger__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.is_ledger__month_1": {
           "yes": 0.05
         },
         "weave.left_bank_0_0": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         },
         "weave.left_bank_2_3": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
+        },
+        "weave.whole_2515170299": {
+          "whole": 0.9,
+          "less": 0.05,
+          "other": 0.05
         }
       }
     },
@@ -1033,87 +986,66 @@
       "text": "invoices, card expenses",
       "raw": {
         "route": {
-          "invoices": 0.55,
-          "cards": 0.03,
-          "none": 0.42
-        },
-        "fits.bank": {
-          "yes": 0.02
+          "invoices": 0.65,
+          "cards": 0.02,
+          "none": 0.33
         },
         "bank.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.invoices": {
-          "yes": 0.8
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "invoices.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.cards": {
-          "yes": 0.1
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "cards.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.payroll": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "payroll.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.reconcile": {
-          "yes": 0.02
-        },
-        "fits.ledger": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "ledger.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.send": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "send.to": {
           "unstated": 1
         },
         "weave.view_bank__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_invoices__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_cards__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_payroll__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_ledger__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.left_invoices_0_2": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         }
       }
     },
@@ -1121,87 +1053,71 @@
       "text": "payroll",
       "raw": {
         "route": {
-          "payroll": 0.9,
-          "bank": 0.03,
-          "none": 0.07
-        },
-        "fits.bank": {
-          "yes": 0.02
+          "payroll": 0.95,
+          "bank": 0.02,
+          "none": 0.03
         },
         "bank.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.invoices": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "invoices.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.cards": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "cards.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.payroll": {
-          "yes": 0.8
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "payroll.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.reconcile": {
-          "yes": 0.02
-        },
-        "fits.ledger": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "ledger.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.send": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "send.to": {
           "unstated": 1
         },
         "weave.view_bank__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_invoices__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_cards__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_payroll__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_ledger__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.left_payroll_0_0": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
+        },
+        "weave.whole_1626937972": {
+          "whole": 0.9,
+          "less": 0.05,
+          "other": 0.05
         }
       }
     },
@@ -1209,87 +1125,71 @@
       "text": "reconcile them",
       "raw": {
         "route": {
-          "reconcile": 0.9,
-          "bank": 0.03,
-          "none": 0.07
-        },
-        "fits.bank": {
-          "yes": 0.02
+          "reconcile": 0.95,
+          "bank": 0.02,
+          "none": 0.03
         },
         "bank.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.invoices": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "invoices.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.cards": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "cards.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.payroll": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "payroll.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.reconcile": {
-          "yes": 0.8
-        },
-        "fits.ledger": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "ledger.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.send": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "send.to": {
           "unstated": 1
         },
         "weave.view_bank__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_invoices__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_cards__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_payroll__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_ledger__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.left_reconcile_0_1": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
+        },
+        "weave.whole_3804433753": {
+          "whole": 0.9,
+          "less": 0.05,
+          "other": 0.05
         }
       }
     },
@@ -1297,91 +1197,70 @@
       "text": "post the closing entries to the ledger",
       "raw": {
         "route": {
-          "ledger": 0.78,
-          "bank": 0.03,
-          "none": 0.19
-        },
-        "fits.bank": {
-          "yes": 0.02
+          "ledger": 0.89,
+          "bank": 0.02,
+          "none": 0.09
         },
         "bank.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.invoices": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "invoices.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.cards": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "cards.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.payroll": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "payroll.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.reconcile": {
-          "yes": 0.02
-        },
-        "fits.ledger": {
-          "yes": 0.8
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "ledger.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.send": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "send.to": {
           "unstated": 1
         },
         "weave.view_bank__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_invoices__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_cards__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_payroll__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_ledger__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.left_ledger_0_3": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         },
         "weave.left_ledger_6_6": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         }
       }
     },
@@ -1389,91 +1268,70 @@
       "text": "send the report to cfo@example.com",
       "raw": {
         "route": {
-          "send": 0.9,
-          "bank": 0.03,
-          "none": 0.07
-        },
-        "fits.bank": {
-          "yes": 0.02
+          "send": 0.95,
+          "bank": 0.02,
+          "none": 0.03
         },
         "bank.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.invoices": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "invoices.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.cards": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "cards.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.payroll": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "payroll.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.reconcile": {
-          "yes": 0.02
-        },
-        "fits.ledger": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "ledger.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.send": {
-          "yes": 0.8
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "send.to": {
-          "19-34": 0.9,
-          "unstated": 0.1
+          "19-34": 0.95,
+          "unstated": 0.05
         },
         "weave.view_bank__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_invoices__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_cards__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_payroll__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_ledger__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.only_send__to_19_34": {
           "yes": 0.05
         },
         "weave.left_send_0_2": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
         }
       }
     },
@@ -1481,87 +1339,71 @@
       "text": "invoices",
       "raw": {
         "route": {
-          "invoices": 0.9,
-          "bank": 0.03,
-          "none": 0.07
-        },
-        "fits.bank": {
-          "yes": 0.02
+          "invoices": 0.95,
+          "bank": 0.02,
+          "none": 0.03
         },
         "bank.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.invoices": {
-          "yes": 0.8
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "invoices.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.cards": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "cards.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.payroll": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "payroll.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.reconcile": {
-          "yes": 0.02
-        },
-        "fits.ledger": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "ledger.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.send": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "send.to": {
           "unstated": 1
         },
         "weave.view_bank__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_invoices__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_cards__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_payroll__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_ledger__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.left_invoices_0_0": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
+        },
+        "weave.whole_1226681300": {
+          "whole": 0.9,
+          "less": 0.05,
+          "other": 0.05
         }
       }
     },
@@ -1569,87 +1411,71 @@
       "text": "card expenses",
       "raw": {
         "route": {
-          "cards": 0.9,
-          "bank": 0.03,
-          "none": 0.07
-        },
-        "fits.bank": {
-          "yes": 0.02
+          "cards": 0.95,
+          "bank": 0.02,
+          "none": 0.03
         },
         "bank.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.invoices": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "invoices.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.cards": {
-          "yes": 0.8
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "cards.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.payroll": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "payroll.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.reconcile": {
-          "yes": 0.02
-        },
-        "fits.ledger": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "ledger.month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
-        },
-        "fits.send": {
-          "yes": 0.02
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "send.to": {
           "unstated": 1
         },
         "weave.view_bank__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_invoices__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_cards__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_payroll__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.view_ledger__month": {
-          "unstated": 0.9,
-          "august": 0.05,
-          "september": 0.05
+          "unstated": 0.95,
+          "august": 0.03,
+          "september": 0.02
         },
         "weave.left_cards_0_1": {
-          "action": 0.9,
-          "courtesy": 0.1
+          "action": 0.95,
+          "courtesy": 0.05
+        },
+        "weave.whole_1791599404": {
+          "whole": 0.9,
+          "less": 0.05,
+          "other": 0.05
         }
       }
     }

@@ -70,7 +70,7 @@ line ends with the command that gives it what it lacks. Nothing is guessed for y
 
 ```text
 $ evoke "set the volume to 40 percent"
-  volume level="40 percent"  0.93
+  volume level="40 percent"  0.96
 volume 40%
 ```
 
@@ -82,7 +82,7 @@ A less certain decision confirms first. `[t]each` records what you meant, then r
 
 ```text
 $ evoke "kill the wifi"
-  wifi state="off" · write · weakest: state 0.72
+  wifi state="off" · write · weakest: state 0.86
   Turn Wi-Fi off?  [y]es [n]o [t]each > t
 + overlays/wifi.toml  [examples] "kill the wifi" = { state = "off" }
 wi-fi off
@@ -95,7 +95,7 @@ A destructive one always confirms, however sure:
 
 ```text
 $ evoke "restart the computer"
-  power action="restart" · destructive · weakest: route 0.97
+  power action="restart" · destructive · weakest: route 0.98
   Make the laptop restart now?  [y]es [n]o [t]each > n
 [2]
 ```
@@ -105,7 +105,7 @@ you the ranking, and reminds you of what is not yet in play:
 
 ```text
 $ evoke "what time is it"
-  none 0.70 · timer 0.20 · awake 0.05 · lock 0.05
+  none 0.85 · timer 0.10 · awake 0.03 · lock 0.02
   note, open and visit are inactive  →  evoke show
 [2]
 ```
@@ -119,7 +119,7 @@ file you own, and every reflex that names it reads it.
 $ evoke vocab places add desktop "The desktop." --value "~/Desktop"
 + vocab/places.toml  desktop = { what = "The desktop.", value = "~/Desktop" }
 $ evoke "open my desktop folder"
-  open place="desktop"  0.91
+  open place="desktop"  0.95
 ```
 
 The meaning is what the classifier reads. The value is what the reflex receives: `open` opened that folder. A
@@ -152,10 +152,9 @@ installed, or one reflex as it is used, with `+` next to every line that is your
 
 ```text
 $ evoke try "kill the wifi"
-  wifi 0.90 · none 0.06 · power 0.02 · lock 0.02
-  state  off 0.72 · on 0.20 · unstated 0.08
-  fits   wifi 0.75 · lock 0.05 · power 0.05 · awake 0.02 · download 0.02 · mail 0.02 · note 0.02 · open 0.02 · screenshot 0.02 · sleep 0.02 · timer 0.02 · trash 0.02 · volume 0.02
-  confirm · wifi state="off" · write · weakest: state 0.72
+  wifi 0.95 · none 0.03 · power 0.01 · lock 0.01
+  state  off 0.86 · on 0.10 · unstated 0.04
+  confirm · wifi state="off" · write · weakest: state 0.86
 ```
 
 The ranking, then each argument, then how well every active reflex fits; the last line is what would happen. The

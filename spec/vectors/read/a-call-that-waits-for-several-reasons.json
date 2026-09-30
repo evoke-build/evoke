@@ -1,0 +1,343 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "request": {
+      "state": {
+        "request": "kill the lights in the den, lock the door too"
+      },
+      "questions": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "lights": {
+              "what": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
+              "not_for": [
+                "colour scenes and schedules",
+                "asking whether a light is on"
+              ],
+              "examples": [
+                "turn on the kitchen lights",
+                "dim the office to 30 percent"
+              ]
+            },
+            "timer": {
+              "what": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+              "not_for": [
+                "keeping the laptop awake",
+                "alarms at a time of day",
+                "asking the time"
+              ],
+              "examples": [
+                "set a timer for 10 minutes",
+                "25 minute timer",
+                "timer for 3 minutes called \"eggs\"",
+                "count down 90 seconds"
+              ]
+            },
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        },
+        "lights.room": {
+          "type": "choice",
+          "ask": "Which room?",
+          "options": {
+            "den": "The TV room downstairs; also 'the snug'.",
+            "office": "The upstairs study.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "lights.state": {
+          "type": "choice",
+          "ask": "What should the lights do?",
+          "options": {
+            "on": {
+              "what": "Switch on.",
+              "examples": [
+                "turn on the kitchen lights"
+              ]
+            },
+            "off": "Switch off.",
+            "dim": {
+              "what": "Lower the brightness without switching off.",
+              "examples": [
+                "dim the office to 30 percent"
+              ]
+            },
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "lights.brightness": {
+          "type": "choice",
+          "ask": "How bright, in percent?",
+          "options": {
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "timer.duration": {
+          "type": "choice",
+          "ask": "How long?",
+          "options": {
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "timer.label": {
+          "type": "choice",
+          "ask": "What is the timer for?",
+          "options": {
+            "none": "The request says it, in words that are not between quotes.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_lights__room": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "den": "The TV room downstairs; also 'the snug'.",
+            "office": "The upstairs study.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.is_lights__room_0": {
+          "type": "yesno",
+          "ask": "Which room?",
+          "yes": "The TV room downstairs; also 'the snug'.",
+          "no": "Another one, or none."
+        },
+        "weave.view_lights__state": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "on": {
+              "what": "Switch on.",
+              "examples": [
+                "turn on the kitchen lights"
+              ]
+            },
+            "off": "Switch off.",
+            "dim": {
+              "what": "Lower the brightness without switching off.",
+              "examples": [
+                "dim the office to 30 percent"
+              ]
+            },
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.is_lights__state_1": {
+          "type": "yesno",
+          "ask": "What should the lights do?",
+          "yes": "Switch off.",
+          "no": "Another one, or none."
+        },
+        "weave.left_lights_0_2": {
+          "type": "choice",
+          "ask": "In the request, what do the words «kill the lights» do?",
+          "options": {
+            "action": "They say what to do, or to what.",
+            "arg:room": "They answer: Which room?",
+            "arg:state": "They answer: What should the lights do?",
+            "arg:brightness": "They answer: How bright, in percent?",
+            "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
+            "more": "They ask for another thing as well."
+          }
+        },
+        "weave.left_lights_6_9": {
+          "type": "choice",
+          "ask": "In the request, what do the words «lock the door too» do?",
+          "options": {
+            "action": "They say what to do, or to what.",
+            "arg:room": "They answer: Which room?",
+            "arg:state": "They answer: What should the lights do?",
+            "arg:brightness": "They answer: How bright, in percent?",
+            "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
+            "more": "They ask for another thing as well."
+          }
+        }
+      },
+      "proposed": [],
+      "listed": {
+        "lights.room": [
+          {
+            "key": "den",
+            "span": {
+              "start": 23,
+              "end": 26,
+              "text": "den"
+            },
+            "how": "same"
+          }
+        ]
+      }
+    },
+    "raw": {
+      "route": {
+        "lights": 0.96,
+        "timer": 0.01,
+        "none": 0.03
+      },
+      "lights.room": {
+        "den": 0.92,
+        "office": 0.03,
+        "none": 0.01,
+        "unstated": 0.04
+      },
+      "lights.state": {
+        "off": 0.74,
+        "on": 0.1,
+        "dim": 0.1,
+        "unstated": 0.06
+      },
+      "lights.brightness": {
+        "unstated": 1
+      },
+      "timer.duration": {
+        "unstated": 1
+      },
+      "timer.label": {
+        "unstated": 1
+      },
+      "weave.view_lights__room": {
+        "den": 0.05,
+        "office": 0.03,
+        "none": 0.02,
+        "unstated": 0.9
+      },
+      "weave.is_lights__room_0": {
+        "yes": 0.95
+      },
+      "weave.view_lights__state": {
+        "off": 0.74,
+        "on": 0.1,
+        "dim": 0.1,
+        "unstated": 0.06
+      },
+      "weave.is_lights__state_1": {
+        "yes": 0.95
+      },
+      "weave.left_lights_0_2": {
+        "action": 0.95,
+        "courtesy": 0.05
+      },
+      "weave.left_lights_6_9": {
+        "more": 0.9,
+        "action": 0.08,
+        "courtesy": 0.02
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "ranking": [
+        {
+          "reflex": "lights",
+          "route": 0.96
+        },
+        {
+          "reflex": "timer",
+          "route": 0.01
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "lights",
+          "p": 0.96
+        },
+        {
+          "question": "lights.room",
+          "top": "den",
+          "p": 0.92
+        },
+        {
+          "question": "lights.state",
+          "top": "off",
+          "p": 0.74
+        }
+      ],
+      "winner": {
+        "reflex": "lights",
+        "args": {
+          "room": {
+            "type": "word",
+            "word": "den"
+          },
+          "state": {
+            "type": "option",
+            "key": "off"
+          }
+        },
+        "basis": {
+          "room": {
+            "by": "view",
+            "view": "ask",
+            "p": 0.92,
+            "other": "unstated",
+            "words": {
+              "start": 23,
+              "end": 26,
+              "text": "den"
+            },
+            "how": "same"
+          },
+          "state": {
+            "by": "views",
+            "ask": 0.74,
+            "reader": 0.74,
+            "yes": 0.95
+          }
+        },
+        "missing": [],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 15,
+              "text": "kill the lights"
+            },
+            "does": "action",
+            "p": 0.95
+          },
+          {
+            "words": {
+              "start": 28,
+              "end": 45,
+              "text": "lock the door too"
+            },
+            "does": "more",
+            "p": 0.9
+          }
+        ],
+        "unconsumed": [],
+        "runner_up": {
+          "reflex": "timer",
+          "route": 0.01
+        }
+      }
+    }
+  }
+}

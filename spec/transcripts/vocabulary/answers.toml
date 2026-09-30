@@ -4,21 +4,19 @@ id = "replay"
 [gate]
 route = 0.5
 fits  = 0.3
-read  = 0.6
-write = 0.8
+read  = 0.8
+write = 0.9
+whole = 0.3
 
 [answers."kill the lights"]
-route                      = { lights = 0.9, timer = 0.02, volume = 0.02, none = 0.06 }
-"fits.lights"              = { yes = 0.7 }
-"fits.timer"               = { yes = 0.05 }
-"fits.volume"              = { yes = 0.05 }
-"lights.room"              = { den = 0.2, office = 0.05, unstated = 0.75 }
-"lights.state"             = { off = 0.58, on = 0.3, dim = 0.1, unstated = 0.02 }
+route                      = { lights = 0.95, timer = 0.01, volume = 0.01, none = 0.03 }
+"lights.room"              = { den = 0.1, office = 0.03, unstated = 0.87 }
+"lights.state"             = { off = 0.74, on = 0.19, dim = 0.06, unstated = 0.01 }
 "lights.brightness"        = { unstated = 1.0 }
 "timer.duration"           = { unstated = 1.0 }
 "timer.label"              = { unstated = 1.0 }
 "volume.level"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { den = 0.2, office = 0.05, unstated = 0.75 }
-"weave.view_lights__state" = { off = 0.58, on = 0.3, dim = 0.1, unstated = 0.02 }
-"weave.is_lights__state_1" = { yes = 0.9 }
+"weave.view_lights__room"  = { den = 0.1, office = 0.03, unstated = 0.87 }
+"weave.view_lights__state" = { off = 0.74, on = 0.19, dim = 0.06, unstated = 0.01 }
+"weave.is_lights__state_1" = { yes = 0.95 }
 "weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }

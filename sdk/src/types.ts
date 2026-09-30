@@ -596,10 +596,12 @@ export interface Limits {
 /** The floors an adapter ships, each meaning P(correct); `read` never above `write`, and no destructive number exists. */
 export interface Gate {
   route: Prob
-  /** The runner-up's floor; a plan without `fits` questions skips it. */
+  /** The floor of a newcomer that fits another reflex's phrase, read at `add`. */
   fits?: Prob
   read: Prob
   write: Prob
+  /** The floor of a call held against its request; absent, no call is held. */
+  whole?: Prob
 }
 
 /** What an adapter declares about itself. */
@@ -828,6 +830,8 @@ export interface Winner {
   left?: Left[]
   /** Typed spans no argument consumed. */
   unconsumed: Span[]
+  /** How far the call, held against the request, holds all the request says; absent where it was not held. */
+  whole?: Prob
   runner_up?: Contender
 }
 
@@ -874,7 +878,15 @@ export type Decision =
 
 /** A complete call with its effect, what each value read from the request stands on and, unless called by name,
  *  what the classifier judged. */
-export type Chosen = Call & { effect: Effect; basis?: Record<ArgName, Basis>; left?: Left[] } & (Judged | Unjudged)
+export type Chosen = Call & {
+  effect: Effect
+  basis?: Record<ArgName, Basis>
+  left?: Left[]
+  /** Typed spans no argument consumed; absent when none. */
+  unconsumed?: Span[]
+  /** How far the call, held against the request, holds all the request says; absent where it was not held. */
+  whole?: Prob
+} & (Judged | Unjudged)
 
 /** Called by name, so nothing was judged: no field of `Judged` is present. */
 export type Unjudged = { [K in keyof Judged]?: never }
@@ -900,6 +912,8 @@ export interface Asking extends Judged {
   unconsumed: Span[]
   /** Why the call waits for a yes once it is complete, whatever is answered: what a plan held it for. */
   held?: Cap[]
+  /** How far the call, held against the request, holds all the request says; absent where it was not held. */
+  whole?: Prob
 }
 
 /** Why a decision stops at confirm; `because` lists them in this order. */
@@ -915,10 +929,8 @@ export type Cap =
   | { type: "text_read"; arg: ArgName }
   /** Words of the request that ask for another thing, which the call does not hold. */
   | { type: "more"; words: Span }
-  | { type: "unconsumed_span"; span: Span }
-  | { type: "two_things"; contender: Contender }
-  /** A weave merged a part that matched nothing on its own back into these words: never run unasked. */
-  | { type: "merged" }
+  /** The call, held against the request, holds less than the request says. */
+  | { type: "whole"; p: Prob; floor: Prob }
   /** A part of the request beside these words that asks for nothing and may add a detail the call does not
    *  hold. */
   | { type: "detail"; words: string }

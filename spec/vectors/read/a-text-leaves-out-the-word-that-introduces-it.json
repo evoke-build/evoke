@@ -41,12 +41,6 @@
           },
           "otherwise": "none"
         },
-        "fits.lights": {
-          "type": "yesno",
-          "ask": "Does `lights` do the specific thing the request asks for?",
-          "yes": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
-          "no": "Something else, such as: colour scenes and schedules; asking whether a light is on."
-        },
         "lights.room": {
           "type": "choice",
           "ask": "Which room?",
@@ -88,12 +82,6 @@
             "unstated": "The request does not say."
           },
           "otherwise": "unstated"
-        },
-        "fits.timer": {
-          "type": "yesno",
-          "ask": "Does `timer` do the specific thing the request asks for?",
-          "yes": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
-          "no": "Something else, such as: keeping the laptop awake; alarms at a time of day; asking the time."
         },
         "timer.duration": {
           "type": "choice",
@@ -255,12 +243,9 @@
     },
     "raw": {
       "route": {
-        "timer": 0.95,
+        "timer": 0.97,
         "lights": 0.01,
-        "none": 0.04
-      },
-      "fits.lights": {
-        "yes": 0.02
+        "none": 0.02
       },
       "lights.room": {
         "unstated": 1
@@ -271,16 +256,13 @@
       "lights.brightness": {
         "unstated": 1
       },
-      "fits.timer": {
-        "yes": 0.9
-      },
       "timer.duration": {
-        "0-9": 0.95,
-        "unstated": 0.05
+        "0-9": 0.97,
+        "unstated": 0.03
       },
       "timer.label": {
-        "none": 0.8,
-        "unstated": 0.2
+        "none": 0.9,
+        "unstated": 0.1
       },
       "weave.view_lights__room": {
         "unstated": 1
@@ -292,41 +274,41 @@
         "yes": 0.05
       },
       "weave.left_timer_2_2": {
-        "action": 0.9,
-        "courtesy": 0.1
+        "action": 0.95,
+        "courtesy": 0.05
       },
       "weave.left_timer_4_4": {
-        "action": 0.9,
-        "courtesy": 0.1
+        "action": 0.95,
+        "courtesy": 0.05
       },
       "weave.first_timer__label_3085778414": {
-        "s3": 0.7,
-        "s4": 0.2,
-        "unstated": 0.1
+        "s3": 0.85,
+        "s4": 0.1,
+        "unstated": 0.05
       },
       "weave.run_timer__label_3085778414": {
-        "3-4": 0.7,
-        "4-4": 0.2,
-        "unstated": 0.1
+        "3-4": 0.85,
+        "4-4": 0.1,
+        "unstated": 0.05
       },
       "weave.word_timer__label_2": {
         "yes": 0.05
       },
       "weave.word_timer__label_3": {
-        "yes": 0.6
+        "yes": 0.8
       },
       "weave.word_timer__label_4": {
-        "yes": 0.9
+        "yes": 0.95
       },
       "weave.last_timer__label_3_3085778414": {
-        "e4": 0.9,
-        "e3": 0.05,
-        "unstated": 0.05
+        "e4": 0.95,
+        "e3": 0.03,
+        "unstated": 0.02
       },
       "weave.text_timer__label_3314763400": {
-        "r1": 0.9,
-        "other": 0.05,
-        "unstated": 0.05
+        "r1": 0.95,
+        "other": 0.03,
+        "unstated": 0.02
       }
     }
   },
@@ -336,30 +318,28 @@
       "ranking": [
         {
           "reflex": "timer",
-          "route": 0.95,
-          "fits": 0.9
+          "route": 0.97
         },
         {
           "reflex": "lights",
-          "route": 0.01,
-          "fits": 0.02
+          "route": 0.01
         }
       ],
       "judgments": [
         {
           "question": "route",
           "top": "timer",
-          "p": 0.95
+          "p": 0.97
         },
         {
           "question": "timer.duration",
           "top": "0-9",
-          "p": 0.95
+          "p": 0.97
         },
         {
           "question": "weave.text_timer__label_3314763400",
           "top": "r1",
-          "p": 0.9
+          "p": 0.95
         }
       ],
       "winner": {
@@ -393,11 +373,11 @@
         "basis": {
           "duration": {
             "by": "ask",
-            "p": 0.95
+            "p": 0.97
           },
           "label": {
             "by": "text",
-            "p": 0.9
+            "p": 0.95
           }
         },
         "missing": [],
@@ -409,14 +389,13 @@
               "text": "timer"
             },
             "does": "action",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "unconsumed": [],
         "runner_up": {
           "reflex": "lights",
-          "route": 0.01,
-          "fits": 0.02
+          "route": 0.01
         }
       }
     }

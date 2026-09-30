@@ -95,8 +95,9 @@ A pick reads a piece of the input, word for word. Nine recognizers exist:
   "eggs"*, the duration is `3 minutes`, the quoted text is `eggs`, and `3` alone is never a number. A date, a
   time, an amount or a code hides its figures the same way: in *pay €1,200 on may fifth at 5pm* no bare number
   is a candidate.
-- A span that a recognizer reads and no argument takes is an **unconsumed span**: it stops the call at confirm, a
-  bare number excepted ([Outcomes](../use/outcomes.md)). A vocabulary word that the person typed is never one,
+- A span that a recognizer reads and no argument takes is left to the words around it: where they ask for
+  another thing, or the call holds less than was typed, the call stops at confirm
+  ([Outcomes](../use/outcomes.md#confirm)). A vocabulary word that the person typed is never such a span,
   even where a recognizer reads it too: `tomorrow` in a vocabulary of days is the word, not a date.
 - A date is resolved when the program runs, against your machine's clock in its own time zone, or against
   `EVOKE_TODAY` when it is set ([Environment](../reference/environment.md)). Before that, everywhere `evoke` shows
@@ -121,11 +122,11 @@ recognizer reads whole, and asks:
 
 ```text
 > list the checkout deploys
-  deploys service="checkout"  0.90
+  deploys service="checkout"  0.95
 checkout: 2 deploys today, the last 4.12.0 at 13:58
 > roll back the last deploy
   From which release?  [1] 4.12.0  [2] 4.11.3  > 1
-  rollback release="4.12.0" · destructive · weakest: route 0.90
+  rollback release="4.12.0" · destructive · weakest: route 0.95
   Roll back 4.12.0?  [y]es [n]o [t]each > y
 ```
 

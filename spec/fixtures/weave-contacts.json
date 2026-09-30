@@ -25,22 +25,22 @@
         },
         "call": "contact name=\"dana\"",
         "effect": "read",
-        "confidence": 0.9,
+        "confidence": 0.95,
         "weakest": {
           "question": "route",
           "top": "contact",
-          "p": 0.9
+          "p": 0.95
         },
         "judgments": [
           {
             "question": "route",
             "top": "contact",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "question": "contact.name",
             "top": "dana",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "runner_up": {
@@ -51,7 +51,7 @@
         "contenders": [
           {
             "reflex": "contact",
-            "route": 0.9,
+            "route": 0.95,
             "fits": 0.8
           },
           {
@@ -94,22 +94,22 @@
         },
         "call": "contact name=\"sam\"",
         "effect": "read",
-        "confidence": 0.9,
+        "confidence": 0.95,
         "weakest": {
           "question": "route",
           "top": "contact",
-          "p": 0.9
+          "p": 0.95
         },
         "judgments": [
           {
             "question": "route",
             "top": "contact",
-            "p": 0.9
+            "p": 0.95
           },
           {
             "question": "contact.name",
             "top": "sam",
-            "p": 0.9
+            "p": 0.95
           }
         ],
         "runner_up": {
@@ -120,7 +120,7 @@
         "contenders": [
           {
             "reflex": "contact",
-            "route": 0.9,
+            "route": 0.95,
             "fits": 0.8
           },
           {

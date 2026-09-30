@@ -16,13 +16,14 @@
         "route": 0.5,
         "fits": 0.3,
         "read": 0.5,
-        "write": 0.8
+        "write": 0.9,
+        "whole": 0.3
       }
     }
   },
   "expect": {
     "err": {
-      "message": "the plan was decided under another gate: read 0.6, here 0.5",
+      "message": "the plan was decided under another gate: read 0.8, here 0.5",
       "fix": {
         "type": "save",
         "file": "~/month.plan.json",

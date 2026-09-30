@@ -49,11 +49,11 @@
               "basis": {
                 "day": {
                   "by": "ask",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 "time": {
                   "by": "ask",
-                  "p": 0.9
+                  "p": 0.95
                 }
               },
               "left": [
@@ -64,57 +64,53 @@
                     "text": "move the meeting"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "meeting.day",
                 "top": "20-28",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "meeting",
-                  "p": 0.95
+                  "p": 0.97
                 },
                 {
                   "question": "meeting.day",
                   "top": "20-28",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "meeting.time",
                   "top": "32-35",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "rollback",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "meeting",
-                  "route": 0.95,
-                  "fits": 0.8
+                  "route": 0.97
                 },
                 {
                   "reflex": "rollback",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "calendar",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "deploys",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -140,8 +136,9 @@
       "gate": {
         "route": 0.5,
         "fits": 0.3,
-        "read": 0.6,
-        "write": 0.8
+        "read": 0.8,
+        "write": 0.9,
+        "whole": 0.3
       },
       "set": "h1:a11b840cac1a2bb9e7eb48d726548778c5241453753a89274b321095b8920e66",
       "reflexes": {
@@ -171,42 +168,30 @@
           "text": "move the meeting to tomorrow at 3pm",
           "raw": {
             "route": {
-              "meeting": 0.95,
-              "rollback": 0.03,
-              "none": 0.02
-            },
-            "fits.meeting": {
-              "yes": 0.8
+              "meeting": 0.97,
+              "rollback": 0.02,
+              "none": 0.01
             },
             "meeting.day": {
-              "20-28": 0.9,
-              "unstated": 0.1
+              "20-28": 0.95,
+              "unstated": 0.05
             },
             "meeting.time": {
-              "32-35": 0.9,
-              "unstated": 0.1
-            },
-            "fits.rollback": {
-              "yes": 0.02
+              "32-35": 0.95,
+              "unstated": 0.05
             },
             "rollback.release": {
               "unstated": 1
             },
-            "fits.calendar": {
-              "yes": 0.02
-            },
             "calendar.day": {
-              "unstated": 0.9,
-              "tomorrow": 0.05,
-              "monday": 0.05
-            },
-            "fits.deploys": {
-              "yes": 0.02
+              "unstated": 0.95,
+              "tomorrow": 0.03,
+              "monday": 0.02
             },
             "deploys.service": {
-              "unstated": 0.9,
-              "checkout": 0.05,
-              "payments": 0.05
+              "unstated": 0.95,
+              "checkout": 0.03,
+              "payments": 0.02
             },
             "weave.only_meeting__day_20_28": {
               "yes": 0.05
@@ -215,21 +200,26 @@
               "yes": 0.05
             },
             "weave.view_calendar__day": {
-              "unstated": 0.9,
-              "tomorrow": 0.05,
-              "monday": 0.05
+              "unstated": 0.95,
+              "tomorrow": 0.03,
+              "monday": 0.02
             },
             "weave.is_calendar__day_0": {
               "yes": 0.05
             },
             "weave.view_deploys__service": {
-              "unstated": 0.9,
-              "checkout": 0.05,
-              "payments": 0.05
+              "unstated": 0.95,
+              "checkout": 0.03,
+              "payments": 0.02
             },
             "weave.left_meeting_0_2": {
-              "action": 0.9,
-              "courtesy": 0.1
+              "action": 0.95,
+              "courtesy": 0.05
+            },
+            "weave.whole_2742233879": {
+              "whole": 0.9,
+              "less": 0.05,
+              "other": 0.05
             }
           }
         }
@@ -285,11 +275,11 @@
               "basis": {
                 "day": {
                   "by": "ask",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 "time": {
                   "by": "ask",
-                  "p": 0.9
+                  "p": 0.95
                 }
               },
               "left": [
@@ -300,57 +290,53 @@
                     "text": "move the meeting"
                   },
                   "does": "action",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
-              "confidence": 0.9,
+              "whole": 0.9,
+              "confidence": 0.95,
               "weakest": {
                 "question": "meeting.day",
                 "top": "20-28",
-                "p": 0.9
+                "p": 0.95
               },
               "judgments": [
                 {
                   "question": "route",
                   "top": "meeting",
-                  "p": 0.95
+                  "p": 0.97
                 },
                 {
                   "question": "meeting.day",
                   "top": "20-28",
-                  "p": 0.9
+                  "p": 0.95
                 },
                 {
                   "question": "meeting.time",
                   "top": "32-35",
-                  "p": 0.9
+                  "p": 0.95
                 }
               ],
               "runner_up": {
                 "reflex": "rollback",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               "contenders": [
                 {
                   "reflex": "meeting",
-                  "route": 0.95,
-                  "fits": 0.8
+                  "route": 0.97
                 },
                 {
                   "reflex": "rollback",
-                  "route": 0.03,
-                  "fits": 0.02
+                  "route": 0.02
                 },
                 {
                   "reflex": "calendar",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 },
                 {
                   "reflex": "deploys",
-                  "route": 0,
-                  "fits": 0.02
+                  "route": 0
                 }
               ]
             },
@@ -403,42 +389,30 @@
           ],
           "raw": {
             "route": {
-              "meeting": 0.95,
-              "rollback": 0.03,
-              "none": 0.02
-            },
-            "fits.meeting": {
-              "yes": 0.8
+              "meeting": 0.97,
+              "rollback": 0.02,
+              "none": 0.01
             },
             "meeting.day": {
-              "20-28": 0.9,
-              "unstated": 0.1
+              "20-28": 0.95,
+              "unstated": 0.05
             },
             "meeting.time": {
-              "32-35": 0.9,
-              "unstated": 0.1
-            },
-            "fits.rollback": {
-              "yes": 0.02
+              "32-35": 0.95,
+              "unstated": 0.05
             },
             "rollback.release": {
               "unstated": 1
             },
-            "fits.calendar": {
-              "yes": 0.02
-            },
             "calendar.day": {
-              "unstated": 0.9,
-              "tomorrow": 0.05,
-              "monday": 0.05
-            },
-            "fits.deploys": {
-              "yes": 0.02
+              "unstated": 0.95,
+              "tomorrow": 0.03,
+              "monday": 0.02
             },
             "deploys.service": {
-              "unstated": 0.9,
-              "checkout": 0.05,
-              "payments": 0.05
+              "unstated": 0.95,
+              "checkout": 0.03,
+              "payments": 0.02
             },
             "weave.only_meeting__day_20_28": {
               "yes": 0.05
@@ -447,21 +421,26 @@
               "yes": 0.05
             },
             "weave.view_calendar__day": {
-              "unstated": 0.9,
-              "tomorrow": 0.05,
-              "monday": 0.05
+              "unstated": 0.95,
+              "tomorrow": 0.03,
+              "monday": 0.02
             },
             "weave.is_calendar__day_0": {
               "yes": 0.05
             },
             "weave.view_deploys__service": {
-              "unstated": 0.9,
-              "checkout": 0.05,
-              "payments": 0.05
+              "unstated": 0.95,
+              "checkout": 0.03,
+              "payments": 0.02
             },
             "weave.left_meeting_0_2": {
-              "action": 0.9,
-              "courtesy": 0.1
+              "action": 0.95,
+              "courtesy": 0.05
+            },
+            "weave.whole_2742233879": {
+              "whole": 0.9,
+              "less": 0.05,
+              "other": 0.05
             }
           },
           "decision": {
@@ -501,11 +480,11 @@
             "basis": {
               "day": {
                 "by": "ask",
-                "p": 0.9
+                "p": 0.95
               },
               "time": {
                 "by": "ask",
-                "p": 0.9
+                "p": 0.95
               }
             },
             "left": [
@@ -516,57 +495,53 @@
                   "text": "move the meeting"
                 },
                 "does": "action",
-                "p": 0.9
+                "p": 0.95
               }
             ],
-            "confidence": 0.9,
+            "whole": 0.9,
+            "confidence": 0.95,
             "weakest": {
               "question": "meeting.day",
               "top": "20-28",
-              "p": 0.9
+              "p": 0.95
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "meeting",
-                "p": 0.95
+                "p": 0.97
               },
               {
                 "question": "meeting.day",
                 "top": "20-28",
-                "p": 0.9
+                "p": 0.95
               },
               {
                 "question": "meeting.time",
                 "top": "32-35",
-                "p": 0.9
+                "p": 0.95
               }
             ],
             "runner_up": {
               "reflex": "rollback",
-              "route": 0.03,
-              "fits": 0.02
+              "route": 0.02
             },
             "contenders": [
               {
                 "reflex": "meeting",
-                "route": 0.95,
-                "fits": 0.8
+                "route": 0.97
               },
               {
                 "reflex": "rollback",
-                "route": 0.03,
-                "fits": 0.02
+                "route": 0.02
               },
               {
                 "reflex": "calendar",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               },
               {
                 "reflex": "deploys",
-                "route": 0,
-                "fits": 0.02
+                "route": 0
               }
             ]
           }

@@ -68,14 +68,14 @@ optional = true
 
 ```text
 $ evoke "checkout is failing in eu-west"
-  1  errors service="checkout" region="eu-west"  0.90 · outage 1
-  2  deploys service="checkout" region="eu-west"  0.90 · outage 2
-  3  logs service="checkout" region="eu-west"  0.90 · outage 3
-  4  suspect  0.90 · takes errors from 1, deploys from 2, logs from 3 · outage 4
+  1  errors service="checkout" region="eu-west"  0.95 · outage 1
+  2  deploys service="checkout" region="eu-west"  0.95 · outage 2
+  3  logs service="checkout" region="eu-west"  0.95 · outage 3
+  4  suspect  0.95 · takes errors from 1, deploys from 2, logs from 3 · outage 4
   5  rollback service="checkout" region="eu-west" · takes release from 4 · outage 5
-  6  post channel="#incident"  0.90 · outage 6
-  7  status component="checkout"  0.90 · outage 7 · service as component
-  outage service="checkout" region="eu-west" · destructive · weakest: route 0.90 · also errors (fits 0.60), step 1
+  6  post channel="#incident"  0.95 · outage 6
+  7  status component="checkout"  0.95 · outage 7 · service as component
+  outage service="checkout" region="eu-west" · destructive · weakest: route 0.95
   Run the outage plan for checkout?  [y]es [n]o [t]each > y
 ```
 
@@ -106,7 +106,7 @@ lacks joins their vocabulary with `[+] add one`.
 $ evoke "we have an outage"
   1  outage · asks service
   Which service is down?  [1] checkout  [2] payments  [3] search  [+] add one  > 2
-  1  errors service="payments"  0.90 · outage 1
+  1  errors service="payments"  0.95 · outage 1
   …
 ```
 
@@ -173,20 +173,20 @@ reach another playbook. A check whose result picks is a reflex of its own that y
 
 ```text
 $ evoke "drain the primary"
-  1  drain  0.90 · runbook 1
-  2  failover · destructive · weakest: route 0.90 · runbook 2
-  3  verify  0.90 · runbook 3 · then 4 on "yes", 5 on "no"
-  4  tell channel="#ops"  0.90 · runbook 4 · if 3 yields landing "yes"
-  5  failback · destructive · weakest: route 0.90 · runbook 5 · if 3 yields landing "no"
-  runbook · destructive · weakest: route 0.90 · also drain (fits 0.60), step 1
+  1  drain  0.95 · runbook 1
+  2  failover · destructive · weakest: route 0.95 · runbook 2
+  3  verify  0.95 · runbook 3 · then 4 on "yes", 5 on "no"
+  4  tell channel="#ops"  0.95 · runbook 4 · if 3 yields landing "yes"
+  5  failback · destructive · weakest: route 0.95 · runbook 5 · if 3 yields landing "no"
+  runbook · destructive · weakest: route 0.95
   Run the failover runbook?  [y]es [n]o [t]each > y
 primary drained
-  2  failover · destructive · weakest: route 0.90
+  2  failover · destructive · weakest: route 0.95
   Promote the replica now?  [y]es [n]o [t]each > y
 replica promoted
 writes landing on the new primary
 told #ops
-  5  failback · destructive · weakest: route 0.90 · runbook 5 · if 3 yields landing "no" · skipped · not chosen: step 3 yielded landing "yes"
+  5  failback · destructive · weakest: route 0.95 · runbook 5 · if 3 yields landing "no" · skipped · not chosen: step 3 yielded landing "yes"
 ```
 
 ## What the person adds to the sentence
@@ -213,7 +213,7 @@ than the playbook claims. `step 3 reaches logs, which lacks the tag outage` says
 `--tag outage` would leave that step without its reflex. Every reflex the steps reach carries the playbook's
 tag: [rule 40](rules.md#8-how-to-design-a-collection). `add` also prints `also fits` for the examples of the
 reflexes the steps reach, since the plan does hold their action. Typed alone, such a sentence still reaches its
-own reflex, and stops at confirm: [Exceptions](rules.md#exceptions).
+own reflex: [Exceptions](rules.md#exceptions).
 
 `test` decides the playbook's records as any reflex's, then its steps, each filled from the first record whose
 reading fills every slot it holds; a step no record fills is `untested`. Both say when the step before a branch
@@ -222,7 +222,7 @@ prints the steps after `confirm`, numbered, a step that may not run ending in it
 
 ```text
 $ evoke test outage
-  outage  14 passed · 7 steps route
+  outage  16 passed · 7 steps route
 ```
 
 ## In the SDK

@@ -8,8 +8,8 @@ shown before anything runs.
 
 ```text
 $ evoke "kill the lights in the den and start a 10 minute timer"
-  1  lights room="den" state="off"  0.85
-  2  timer duration="10 minute"  0.90
+  1  lights room="den" state="off"  0.92
+  2  timer duration="10 minute"  0.95
 den lights off
 10 minute timer started
 ```
@@ -29,10 +29,13 @@ den lights off
   neighbour's task. A part read as an item must be the value it stands in for, "gadgets" for "widgets", never a
   longer phrase that holds one. When the classifier was sure the two parts were separate things and one still
   matches nothing, the whole request is refused rather than half done. When it was not sure, the part is read
-  with its neighbour as one request, and that step confirms before it runs: its line ends in `merged`.
+  with its neighbour as one request, and `evoke why` says what its words do.
 - A part that begins with `not`, `don't`, `never` or `without` is left out, however the apostrophe is typed. What
   you ask evoke not to do is no step. One step beside such a part is decided as one input. A sentence that is only
-  such parts is nothing to do, and one line says so.
+  such parts is nothing to do, and one line says so. A part that also names a value the step beside it lacks is
+  read with that step: in "pull the payments logs, not in us-east, in eu-west" the logs are pulled in eu-west.
+  And where the classifier says the sentence asks for one thing, nothing is left out: the sentence is read
+  whole, what it rules out with what it asks.
 - `then`, `after that` and `next` order the steps. `after you X, Y` and `Y after you X` read as `X, then Y`.
   `before you X, Y` and `Y before you X` read as `Y, then X`. When a write is among the steps, every step runs
   alone, in the order you wrote them. A plan of reads may run them side by side.
@@ -48,7 +51,9 @@ den lights off
 - A value one part states can be another part's where the classifier says so. It is asked only for a part whose
   words point at something, "it", "there", "the same", or for a word from a vocabulary that several reflexes
   ask for: in "check the errors for checkout in eu-west, then pull its logs there", the logs are pulled in
-  eu-west. `evoke why` says where the value came from.
+  eu-west. An option or a flag of a call reaches a part that asks for the same again, "the same", "likewise",
+  "as before": in "take a screenshot of the window to the clipboard, then the same for the whole screen", both
+  go to the clipboard. `evoke why` says where the value came from.
 - Two parts that read as the same call, no value of one differing from the other's, are one step: "check the
   errors for checkout, and the errors in eu-west" is one check, of checkout in eu-west. Where a part could repeat
   either of two calls, its own words pick one, "the second one", "the last", or it stays a step of its own. The
@@ -72,27 +77,26 @@ into the argument it lacks:
 
 ```text
 $ evoke "look up dana's address and email them"
-  1  contact name="dana"  0.90
+  1  contact name="dana"  0.95
   2  mail · takes email from 1
 dana <dana@example.com>
-  2  mail to="dana@example.com"  0.88
+  2  mail to="dana@example.com"  0.94
 drafted to dana@example.com
 ```
 
 `mail` needed an address the words did not give. `contact` yields one, and `them` names it. A required argument
 is filled with the value. An optional one is decided again with the value written into the words, so the
-classifier assigns it, under the same gate as any words: a quoted value no argument takes is an unconsumed span,
-and the step confirms. A date a step yields reaches the next as a day, `2026-05-06`, never as `tomorrow`: a
-relative day is nothing to take. Nothing is guessed: a reference that several fields could satisfy, or one record
-of a list, stops with a line naming them. Within one sentence a step refers to another; across sentences, in one
+classifier assigns it, under the same gate as any words. A date a step yields reaches the next as a day,
+`2026-05-06`, never as `tomorrow`: a relative day is nothing to take. Nothing is guessed: a reference that
+several fields could satisfy, or one record of a list, stops with a line naming them. Within one sentence a step refers to another; across sentences, in one
 session, a pick with `recent` recalls what earlier bodies returned, at its ask
 ([Arguments](../author/arguments.md#a-value-recalled)). A step that refers to another whose result it takes
 nothing from asks before anything runs:
 
 ```text
 $ evoke "look up dana's address and start a 10 minute timer for them"
-  1  contact name="dana"  0.90
-  2  timer duration="10 minute"  0.88 · after 1
+  1  contact name="dana"  0.95
+  2  timer duration="10 minute"  0.94 · after 1
   step 2 refers to step 1, but takes nothing from it
   Run the plan as it stands?  [y]es [n]o > y
 dana <dana@example.com>
@@ -108,10 +112,10 @@ steps it takes from:
 
 ```text
 $ evoke "check the errors for checkout, list the checkout deploys and pull the checkout logs, then find the suspect"
-  1  errors service="checkout"  0.90
-  2  deploys service="checkout"  0.90
-  3  logs service="checkout"  0.90
-  4  suspect  0.90 · takes errors from 1, deploys from 2, logs from 3
+  1  errors service="checkout"  0.95
+  2  deploys service="checkout"  0.95 · with 1
+  3  logs service="checkout"  0.95 · with 1, 2
+  4  suspect  0.95 · takes errors from 1, deploys from 2, logs from 3
 checkout: 8.4% errors since 14:02
 checkout: 1 deploy today, 4.12.0 at 13:58
 checkout: 412 timeouts calling payments
@@ -126,8 +130,8 @@ once per record:
 
 ```text
 $ evoke "check the errors for checkout, then find the suspect"
-  1  errors service="checkout"  0.90
-  2  suspect  0.90 · takes errors from 1
+  1  errors service="checkout"  0.95
+  2  suspect  0.95 · takes errors from 1
   step 2 takes deploys, which no step before it returns  →  evoke show deploys
   step 2 takes logs, which no step before it returns  →  evoke show logs
 [2]
@@ -143,14 +147,14 @@ is asked again at its turn.
 
 ```text
 $ evoke "checkout is failing in eu-west"
-  1  errors service="checkout" region="eu-west"  0.90 · outage 1
-  2  deploys service="checkout" region="eu-west"  0.90 · outage 2
-  3  logs service="checkout" region="eu-west"  0.90 · outage 3
-  4  suspect  0.90 · takes errors from 1, deploys from 2, logs from 3 · outage 4
+  1  errors service="checkout" region="eu-west"  0.95 · outage 1
+  2  deploys service="checkout" region="eu-west"  0.95 · outage 2
+  3  logs service="checkout" region="eu-west"  0.95 · outage 3
+  4  suspect  0.95 · takes errors from 1, deploys from 2, logs from 3 · outage 4
   5  rollback service="checkout" region="eu-west" · takes release from 4 · outage 5
-  6  post channel="#incident"  0.90 · outage 6
-  7  status component="checkout"  0.90 · outage 7 · service as component
-  outage service="checkout" region="eu-west" · destructive · weakest: route 0.90 · also errors (fits 0.60), step 1
+  6  post channel="#incident"  0.95 · outage 6
+  7  status component="checkout"  0.95 · outage 7 · service as component
+  outage service="checkout" region="eu-west" · destructive · weakest: route 0.95
   Run the outage plan for checkout?  [y]es [n]o [t]each > y
 ```
 
@@ -179,9 +183,9 @@ one input would be at its turn. Then the plan is shown, numbered, one line per s
 $ evoke "kill the lights and start a 10 minute timer"
   1  lights state="off" · asks room
   Which room?  [1] den  [2] office  [+] add one  > 1
-  1  lights room="den" state="off" · write · weakest: state 0.58
-  2  timer duration="10 minute"  0.90
-  1  lights room="den" state="off" · write · weakest: state 0.58
+  1  lights room="den" state="off" · write · weakest: state 0.74
+  2  timer duration="10 minute"  0.95
+  1  lights room="den" state="off" · write · weakest: state 0.74
   Set the den lights off?  [y]es [n]o [t]each > y
 den lights off
 10 minute timer started
@@ -208,11 +212,11 @@ A failure, a decline or a refusal ends the weave after its stage. The steps afte
 
 ```text
 $ evoke "start a 25 minute timer and kill the lights in the den"
-  1  timer duration="25 minute" · write · weakest: duration 0.70
-  2  lights room="den" state="off"  0.85
-  1  timer duration="25 minute" · write · weakest: duration 0.70
+  1  timer duration="25 minute" · write · weakest: duration 0.85
+  2  lights room="den" state="off"  0.92
+  1  timer duration="25 minute" · write · weakest: duration 0.85
   Start a 25 minute timer?  [y]es [n]o [t]each > n
-  2  lights room="den" state="off"  0.85 · skipped
+  2  lights room="den" state="off"  0.92 · skipped
 [2]
 ```
 
@@ -226,7 +230,7 @@ A part that matches nothing refuses the whole request before anything runs:
 
 ```text
 $ evoke "kill the lights in the den and feed the cat"
-  1  lights room="den" state="off"  0.85
+  1  lights room="den" state="off"  0.92
   2  "feed the cat" · no reflex
 [2]
 ```
@@ -244,12 +248,12 @@ the whole plan:
 
 ```text
 $ evoke "wait a while and start a 10 minute timer"
-  1  wait  0.90
-  2  timer duration="10 minute"  0.90
+  1  wait  0.95
+  2  timer duration="10 minute"  0.95
 waiting
 ^C
-  1  wait  0.90 · skipped · cancelled
-  2  timer duration="10 minute"  0.90 · skipped · cancelled
+  1  wait  0.95 · skipped · cancelled
+  2  timer duration="10 minute"  0.95 · skipped · cancelled
 ```
 
 Then `evoke` ends as an interrupted program does, and the shell reports exit 130. Under `--json` every step's
@@ -277,13 +281,13 @@ rather than `kill the lights`. The name `<name>.plan.json` is recommended, not r
 
 ```text
 $ evoke try --save ~/month.plan.json "pull september's bank transactions, invoices, card expenses and payroll, reconcile them, post the closing entries to the ledger, then send the report to cfo@example.com"
-  1  bank month="september"  0.90
-  2  invoices month="september"  0.90
-  3  cards month="september"  0.90
-  4  payroll month="september"  0.90
-  5  reconcile  0.90 · takes transactions from 1, invoices from 2, expenses from 3, payroll from 4
-  6  ledger month="september" · write · weakest: route 0.78
-  7  send to="cfo@example.com"  0.90 · after 1, 2, 3, 4, 5, 6
+  1  bank month="september"  0.95
+  2  invoices month="september"  0.95
+  3  cards month="september"  0.95
+  4  payroll month="september"  0.95
+  5  reconcile  0.95 · takes transactions from 1, invoices from 2, expenses from 3, payroll from 4
+  6  ledger month="september" · write · weakest: route 0.89
+  7  send to="cfo@example.com"  0.95 · after 1, 2, 3, 4, 5, 6
 + ~/month.plan.json
 ```
 
@@ -297,14 +301,14 @@ in your log names the file, and `evoke why` shows it as `from ~/month.plan.json`
 
 ```text
 $ evoke run ~/month.plan.json
-  1  bank month="september"  0.90
+  1  bank month="september"  0.95
   …
-  7  send to="cfo@example.com"  0.90 · after 1, 2, 3, 4, 5, 6
+  7  send to="cfo@example.com"  0.95 · after 1, 2, 3, 4, 5, 6
   the plan of ~/month.plan.json
   Run the plan as it stands?  [y]es [n]o > y
 september: 214 transactions, 18 204.55 at the close
 …
-  6  ledger month="september" · write · weakest: route 0.78
+  6  ledger month="september" · write · weakest: route 0.89
   Post september to the ledger?  [y]es [n]o [t]each > y
 september posted to the ledger
 sent to cfo@example.com

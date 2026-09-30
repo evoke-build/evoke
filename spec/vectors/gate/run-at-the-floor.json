@@ -7,7 +7,7 @@
       "ranking": [
         {
           "reflex": "lights",
-          "route": 0.91,
+          "route": 0.95,
           "fits": 0.7
         },
         {
@@ -20,17 +20,17 @@
         {
           "question": "route",
           "top": "lights",
-          "p": 0.91
+          "p": 0.95
         },
         {
           "question": "lights.room",
           "top": "den",
-          "p": 0.8
+          "p": 0.9
         },
         {
           "question": "lights.state",
           "top": "off",
-          "p": 0.88
+          "p": 0.94
         }
       ],
       "winner": {
@@ -57,8 +57,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     }
   },
   "expect": {
@@ -76,27 +77,27 @@
     },
     "call": "lights room=\"den\" state=\"off\"",
     "effect": "write",
-    "confidence": 0.8,
+    "confidence": 0.9,
     "weakest": {
       "question": "lights.room",
       "top": "den",
-      "p": 0.8
+      "p": 0.9
     },
     "judgments": [
       {
         "question": "route",
         "top": "lights",
-        "p": 0.91
+        "p": 0.95
       },
       {
         "question": "lights.room",
         "top": "den",
-        "p": 0.8
+        "p": 0.9
       },
       {
         "question": "lights.state",
         "top": "off",
-        "p": 0.88
+        "p": 0.94
       }
     ],
     "runner_up": {
@@ -107,7 +108,7 @@
     "contenders": [
       {
         "reflex": "lights",
-        "route": 0.91,
+        "route": 0.95,
         "fits": 0.7
       },
       {

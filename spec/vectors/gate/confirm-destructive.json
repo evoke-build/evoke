@@ -7,7 +7,7 @@
       "ranking": [
         {
           "reflex": "power",
-          "route": 0.95,
+          "route": 0.97,
           "fits": 0.8
         }
       ],
@@ -15,12 +15,12 @@
         {
           "question": "route",
           "top": "power",
-          "p": 0.95
+          "p": 0.97
         },
         {
           "question": "power.action",
           "top": "restart",
-          "p": 0.97
+          "p": 0.98
         }
       ],
       "winner": {
@@ -38,8 +38,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     }
   },
   "expect": {
@@ -53,33 +54,33 @@
     },
     "call": "power action=\"restart\"",
     "effect": "destructive",
-    "confidence": 0.95,
+    "confidence": 0.97,
     "weakest": {
       "question": "route",
       "top": "power",
-      "p": 0.95
+      "p": 0.97
     },
     "judgments": [
       {
         "question": "route",
         "top": "power",
-        "p": 0.95
+        "p": 0.97
       },
       {
         "question": "power.action",
         "top": "restart",
-        "p": 0.97
+        "p": 0.98
       }
     ],
     "contenders": [
       {
         "reflex": "power",
-        "route": 0.95,
+        "route": 0.97,
         "fits": 0.8
       }
     ],
     "prompt": {
-      "own": "power action=\"restart\" · destructive · weakest: route 0.95",
+      "own": "power action=\"restart\" · destructive · weakest: route 0.97",
       "template": "Really restart now?"
     },
     "because": [

@@ -6,8 +6,9 @@
     "gate": {
       "route": 0.5,
       "fits": 0.3,
-      "read": 0.6,
-      "write": 0.8
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
     },
     "weave": {
       "$ref": "fixtures/weave-address-mail.json"
@@ -55,17 +56,17 @@
             },
             "call": "mail to=\"dana@example.com\"",
             "effect": "write",
-            "confidence": 0.88,
+            "confidence": 0.94,
             "weakest": {
               "question": "route",
               "top": "mail",
-              "p": 0.88
+              "p": 0.94
             },
             "judgments": [
               {
                 "question": "route",
                 "top": "mail",
-                "p": 0.88
+                "p": 0.94
               }
             ],
             "runner_up": {
@@ -76,7 +77,7 @@
             "contenders": [
               {
                 "reflex": "mail",
-                "route": 0.88,
+                "route": 0.94,
                 "fits": 0.8
               },
               {

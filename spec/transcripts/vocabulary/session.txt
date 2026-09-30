@@ -13,7 +13,7 @@ $ evoke "kill the lights"
   Word?  > attic
   Meaning?  > The loft upstairs.
 + vocab/rooms.toml  attic = "The loft upstairs."
-  lights room="attic" state="off" · write · weakest: state 0.58
+  lights room="attic" state="off" · write · weakest: state 0.74
   Set the attic lights off?  [y]es [n]o [t]each > y
 attic lights off
 $ evoke vocab rooms

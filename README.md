@@ -53,10 +53,10 @@ One sentence, a few reflexes, on your machine. Here is what `evoke` printed in i
 
 ```text
 $ evoke "look up dana's address and email them"
-  1  contact name="dana"  0.90
+  1  contact name="dana"  0.95
   2  mail · takes email from 1
 dana <dana@example.com>
-  2  mail to="dana@example.com"  0.88
+  2  mail to="dana@example.com"  0.94
 drafted to dana@example.com
 ```
 
@@ -88,15 +88,15 @@ nothing that cannot be undone ran without a yes:
 
 ```text
 $ evoke "restart the computer"
-  power action="restart" · destructive · weakest: route 0.97
+  power action="restart" · destructive · weakest: route 0.98
   Make the laptop restart now?  [y]es [n]o [t]each > n
 [2]
 $ evoke "set the volume to 150 percent"
   How loud, in percent?  150 percent is outside 0–100  > 40
-  volume level="40"  0.93
+  volume level="40"  0.96
 volume set to 40%
 $ evoke "kill the lights in the den and feed the cat"
-  1  lights room="den" state="off"  0.85
+  1  lights room="den" state="off"  0.92
   2  "feed the cat" · no reflex
 [2]
 ```
@@ -118,7 +118,7 @@ transcripts the tests replay offline.
 2. **The plan comes first.** You see every step before any of them runs. A part that fits nothing refuses the
    whole sentence.
 3. **A number on every step.** Each decision says how sure `evoke` is: the weakest of its judgments. The bar
-   rises with what the step would change, 0.6 to look something up and 0.8 to change something. The classifier's
+   rises with what the step would change, 0.8 to look something up and 0.9 to change something. The classifier's
    provider trains those probabilities to be calibrated: across many answers, those given 0.85 should be right
    about 85 times in 100.
 4. **A person before the irreversible.** Anything that cannot be undone asks a person, however sure `evoke` is.
