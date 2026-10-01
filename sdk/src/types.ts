@@ -851,8 +851,9 @@ export type Does = { does: "action" } | { does: "answers"; arg: ArgName } | { do
 
 /** A run of the request's words that no value holds, with what it does and how sure that is. `cut` is set where
  *  the words answer an argument that holds a typed value and stand right after it: the value may be cut short of
- *  them; `again`, where they say the call is wanted once more, «too», «the same for». */
-export type Left = { words: Span; p: Prob; cut?: boolean; again?: boolean } & Does
+ *  them; `again`, where they say the call is wanted once more, «too», «the same for»; `read`, where a value of the
+ *  call was read from them, so the call does not leave them out. */
+export type Left = { words: Span; p: Prob; cut?: boolean; again?: boolean; read?: boolean } & Does
 
 /** The reflex that won the route, with what its arguments read, and what each value read stands on. */
 export interface Winner {

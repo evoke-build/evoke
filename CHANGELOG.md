@@ -26,6 +26,7 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   `the calendar for october 12th`, `the 20th` is October 20th.
 - A part that matches no reflex never stands in for a text in quotes of the step beside it. A step cut from a
   part read as one thing confirms where its call lacks a value the whole held; the prompt names the words.
+- `it leaves out` names only words no value was read from; the JSON line carries `read` on words one was.
 
 ## [0.17.0] - 2026-09-30
 

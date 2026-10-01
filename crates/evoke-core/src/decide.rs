@@ -1637,8 +1637,16 @@ impl Reader<'_> {
             for (arg, span, stands, chose) in texts {
                 draft.worded(&reflex, arg, span, stands, chose);
             }
-            // Once every value stands: the words that go on after one of them, and the quotes none holds.
+            // Once every value stands: the words that go on after one of them, the words one was read from, and
+            // the quotes none holds.
             self.cut(&draft.args, &mut draft.left);
+            self.read_from(
+                &reflex,
+                &draft.args,
+                &draft.basis,
+                &draft.missing,
+                &mut draft.left,
+            );
             if takes_quoted(active) {
                 let held: Vec<&Span> = draft
                     .args
@@ -1929,6 +1937,63 @@ impl Reader<'_> {
                 && matches!(args.get(arg), Some(Value::Pick { span, value, .. })
                     if value.is_typed() && account::follows(input, span, &run.words));
         }
+    }
+
+    /// The runs a value of the call was read from, as far as code can tell, marked: one that answers an argument
+    /// the call holds by no words of the request, and holds no word code found or proposed for another word of
+    /// the argument's list; one that asks for nothing, or for another thing, and holds the words an ask shows,
+    /// which are that argument's whatever the person then answers.
+    fn read_from(
+        &self,
+        reflex: &LocalName,
+        args: &IndexMap<ArgName, Value>,
+        basis: &IndexMap<ArgName, Basis>,
+        missing: &[Missing],
+        left: &mut [Left],
+    ) {
+        for run in left {
+            let within =
+                |span: &Span| span.start() < run.words.end() && run.words.start() < span.end();
+            run.read = match &run.does {
+                Does::Answers { arg } => args.get(arg).is_some_and(|value| {
+                    self.held(reflex, arg, value, basis.get(arg)).is_none()
+                        && !self.names_another(reflex, arg, value, &within)
+                }),
+                Does::Nothing | Does::More => missing
+                    .iter()
+                    .any(|asked| asked.words.as_ref().is_some_and(&within)),
+                Does::Action | Does::Result => false,
+            };
+        }
+    }
+
+    /// Whether words among those `within` takes name another word of an argument's list than the value the call
+    /// holds: a word code found, or proposed.
+    fn names_another(
+        &self,
+        reflex: &LocalName,
+        arg: &ArgName,
+        value: &Value,
+        within: &impl Fn(&Span) -> bool,
+    ) -> bool {
+        let id = QuestionId::Arg(reflex.clone(), arg.clone());
+        let other = |key: &Key| Some(key.as_str()) != value.text();
+        let found = self
+            .request
+            .listed
+            .get(&id)
+            .into_iter()
+            .flatten()
+            .any(|held| other(&held.key) && within(&held.span));
+        let proposed = match self.request.questions.get(&id) {
+            Some(Question::Choice(choice)) => {
+                proposals(self.plan, self.request, reflex, arg, choice)
+                    .iter()
+                    .any(|proposal| other(&proposal.key) && within(&proposal.span))
+            }
+            _ => false,
+        };
+        found || proposed
     }
 
     /// The account of the winner's text: the runs of its words that no value holds, each read from the answer

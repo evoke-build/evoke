@@ -24,7 +24,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `contenders` | ●   | ●       | ●   | ●       | The ranking: `{ reflex, route }`                                |
 | `runner_up`  | ○   | ○       | ○   |         | The second reflex, when there is one                            |
 | `prompt`     |     | ●       |     |         | `{ own, reason, template }`: `evoke`'s line, why the call waits in one line, and the reflex's question |
-| `left`       | ○   | ○       | ○   |         | The words of the input that no value holds, each with what it does: `{ words, does, p }`, `does` one of `action`, `answers` with its `arg`, `result`, `nothing`, `more`; `cut` is `true` where the words follow a value and may be part of it, `again` where they say the call is wanted once more |
+| `left`       | ○   | ○       | ○   |         | The words of the input that no value holds, each with what it does: `{ words, does, p }`, `does` one of `action`, `answers` with its `arg`, `result`, `nothing`, `more`; `cut` is `true` where the words follow a value and may be part of it, `again` where they say the call is wanted once more, `read` where a value of the call was read from them |
 | `whole`      | ○   | ○       | ○   |         | How far the call holds all the input says, where the call was read back against it |
 | `quotes`     | ○   | ○       | ○   |         | The texts in quotes that no value took, each with its marks, where the reflex takes a text in quotes |
 | `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `cut`, `quoted`, `text_left`, `whole`, `detail` |

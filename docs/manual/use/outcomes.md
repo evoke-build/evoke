@@ -60,8 +60,9 @@ separated by `;`.
 - **a text left over**: the reflex takes a text, the call holds none, and the input has words left that say what
   is wanted from the result. They may be that text. `"saying tea is ready" may be the label`.
 - **less than you typed**: the call, read back against the input, leaves out part of what you typed. `it holds
-  all you said at 0.20, and a call runs at 0.30 or more; it leaves out "in the morning"`. Words that say what you
-  want from the result are named apart: `"newest first" says what is wanted from the result`.
+  all you said at 0.20, and a call runs at 0.30 or more; it leaves out "in the morning"`. The words named are
+  ones no value holds: words a value was read from are not among them. Words that say what you want from the
+  result are named apart: `"newest first" says what is wanted from the result`.
 - **a detail beside it**: a part of the sentence that is not in the plan may add a detail to this step, or the
   step was cut from a longer part read with a value its call lacks. `"the ones since noon" may add a detail this
   call does not hold` ([Weaving](weaving.md)).

@@ -1,0 +1,181 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "lights",
+          "route": 0.96
+        },
+        {
+          "reflex": "timer",
+          "route": 0.01
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "lights",
+          "p": 0.96
+        },
+        {
+          "question": "lights.room",
+          "top": "den",
+          "p": 0.92
+        },
+        {
+          "question": "lights.state",
+          "top": "dim",
+          "p": 0.97
+        }
+      ],
+      "winner": {
+        "reflex": "lights",
+        "args": {
+          "room": {
+            "type": "word",
+            "word": "den"
+          },
+          "state": {
+            "type": "option",
+            "key": "dim"
+          }
+        },
+        "basis": {
+          "room": {
+            "by": "views",
+            "ask": 0.92,
+            "reader": 0.92
+          },
+          "state": {
+            "by": "views",
+            "ask": 0.97,
+            "reader": 0.97,
+            "yes": 0.95
+          }
+        },
+        "missing": [],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 14,
+              "text": "make it softer"
+            },
+            "does": "answers",
+            "arg": "state",
+            "p": 0.9,
+            "read": true
+          }
+        ],
+        "unconsumed": [],
+        "whole": 0.2,
+        "runner_up": {
+          "reflex": "timer",
+          "route": 0.01
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    }
+  },
+  "expect": {
+    "outcome": "confirm",
+    "reflex": "lights",
+    "args": {
+      "room": {
+        "type": "word",
+        "word": "den"
+      },
+      "state": {
+        "type": "option",
+        "key": "dim"
+      }
+    },
+    "call": "lights room=\"den\" state=\"dim\"",
+    "effect": "write",
+    "basis": {
+      "room": {
+        "by": "views",
+        "ask": 0.92,
+        "reader": 0.92
+      },
+      "state": {
+        "by": "views",
+        "ask": 0.97,
+        "reader": 0.97,
+        "yes": 0.95
+      }
+    },
+    "left": [
+      {
+        "words": {
+          "start": 0,
+          "end": 14,
+          "text": "make it softer"
+        },
+        "does": "answers",
+        "arg": "state",
+        "p": 0.9,
+        "read": true
+      }
+    ],
+    "whole": 0.2,
+    "confidence": 0.92,
+    "weakest": {
+      "question": "lights.room",
+      "top": "den",
+      "p": 0.92
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "lights",
+        "p": 0.96
+      },
+      {
+        "question": "lights.room",
+        "top": "den",
+        "p": 0.92
+      },
+      {
+        "question": "lights.state",
+        "top": "dim",
+        "p": 0.97
+      }
+    ],
+    "runner_up": {
+      "reflex": "timer",
+      "route": 0.01
+    },
+    "contenders": [
+      {
+        "reflex": "lights",
+        "route": 0.96
+      },
+      {
+        "reflex": "timer",
+        "route": 0.01
+      }
+    ],
+    "prompt": {
+      "own": "lights room=\"den\" state=\"dim\" · write · weakest: room 0.92",
+      "reason": "it holds all you said at 0.20, and a call runs at 0.30 or more",
+      "template": "Set the den lights dim?"
+    },
+    "because": [
+      {
+        "type": "whole",
+        "p": 0.2,
+        "floor": 0.3
+      }
+    ]
+  }
+}

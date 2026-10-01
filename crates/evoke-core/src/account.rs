@@ -116,6 +116,33 @@ pub struct Left {
     /// Whether its words say the call is wanted once more (`AGAIN`): found by code where the words are read.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub again: bool,
+    /// Whether a value of the call was read from its words, as far as code can tell: they answer an argument the
+    /// call holds by no words of the request and hold no other word of that argument's list, or they hold the
+    /// words an ask shows. Found by code where the words are read.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub read: bool,
+}
+
+impl Left {
+    /// Whether a call leaves the words out, by its values and what each value read stands on: they ask for
+    /// nothing or for another thing, or they answer an argument the call lacks or holds by other words. Never
+    /// words that say what to do or what is wanted from the result, words that go on after a value (`cut`), words
+    /// a value was read from (`read`), or words that answered an ask the person then settled.
+    #[must_use]
+    pub fn left_out<V, B>(
+        &self,
+        args: &IndexMap<ArgName, V>,
+        basis: &IndexMap<ArgName, B>,
+    ) -> bool {
+        !self.read
+            && match &self.does {
+                Does::Action | Does::Result => false,
+                Does::Answers { arg } => {
+                    !self.cut && (!args.contains_key(arg) || basis.contains_key(arg))
+                }
+                Does::Nothing | Does::More => true,
+            }
+    }
 }
 
 /// The runs of the input that none of the spans holds, six at most: cut where a held word stands and before a
@@ -231,6 +258,7 @@ pub(crate) fn read(run: &Run, question: &Question, answer: &IndexMap<Key, Prob>)
         p,
         cut: false,
         again: false,
+        read: false,
     })
 }
 

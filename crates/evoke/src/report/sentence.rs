@@ -800,13 +800,7 @@ fn holds(sentence: Option<&Sentence>, decision: &Decision) -> Option<Text> {
         // value are named by the line that says why the call waits.
         let mut out: Vec<&str> = left
             .iter()
-            .filter(|run| match &run.does {
-                Does::Action | Does::Result => false,
-                Does::Answers { arg } => {
-                    !run.cut && (!args.contains_key(arg) || basis.contains_key(arg))
-                }
-                Does::Nothing | Does::More => true,
-            })
+            .filter(|run| run.left_out(args, basis))
             .map(|run| run.words.text().as_str())
             .collect();
         for span in unconsumed {

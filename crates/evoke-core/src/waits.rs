@@ -145,20 +145,12 @@ fn cause(chosen: &Chosen, because: &[Cap], cap: &Cap) -> String {
     }
 }
 
-/// The words a call leaves out: those no value holds that say nothing of what to do — but words that answered
-/// an ask the person then settled, and words that may be part of a value or that are about the result, which
-/// have a phrase of their own — and the values typed that no argument took.
+/// The words a call leaves out (`Left::left_out`), and the values typed that no argument took.
 fn left_out(chosen: &Chosen) -> Vec<&str> {
     let mut out: Vec<&str> = chosen
         .left
         .iter()
-        .filter(|run| match &run.does {
-            Does::Action | Does::Result => false,
-            Does::Answers { arg } => {
-                !run.cut && (!chosen.call.args.contains_key(arg) || chosen.basis.contains_key(arg))
-            }
-            Does::Nothing | Does::More => true,
-        })
+        .filter(|run| run.left_out(&chosen.call.args, &chosen.basis))
         .map(|run| run.words.text().as_str())
         .collect();
     for span in &chosen.unconsumed {
