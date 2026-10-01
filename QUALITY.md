@@ -60,5 +60,5 @@ record of how they were built, and the SDK reaches npm with its provenance.
 ## Check it yourself
 
 The checks run on a laptop as they run in CI, and none needs a key to the classifier: `mise run lint`, then
-`mise run test`. `mise run fuzz` fuzzes each target for ten minutes. [Developing](README.md#developing) sets up the
-tools.
+`mise run test`. `mise run fuzz` fuzzes each target for ten minutes; `lint` builds every target.
+[Developing](README.md#developing) sets up the tools.

@@ -17,7 +17,7 @@ taplo                     = "0.10.0"
 
 [tasks.lint]
 depends = ["sdk", "reflexes"]
-description = "Lint everything: shell, TOML, the changelog's headings, the spec's shapes, the manual's links and the site build, Rust format and clippy with warnings denied, the wasm32 build of the boundary over the pure crates, the dependency audit, the SDK's and the collection's type checks"
+description = "Lint everything: shell, TOML, the changelog's headings, the spec's shapes, the manual's links and the site build, Rust format and clippy with warnings denied, the fuzz targets among them, the wasm32 build of the boundary over the pure crates, the dependency audit, the SDK's and the collection's type checks"
 env = { RUST_LOG = "warn" }
 run = [
   "shellcheck bin/* site/install.sh mise-tasks/formula mise-tasks/package mise-tasks/publish-reflexes mise-tasks/release",
@@ -31,6 +31,7 @@ run = [
   "cargo fmt --all --check",
   "cargo fmt --manifest-path fuzz/Cargo.toml --check",
   "cargo clippy --workspace --all-targets -- -D warnings",
+  "cargo clippy --manifest-path fuzz/Cargo.toml -- -D warnings",
   "cargo clippy -p evoke-wasm --target wasm32-unknown-unknown -- -D warnings",
   "cargo deny check",
   "npm --prefix sdk run check",

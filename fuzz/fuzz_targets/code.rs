@@ -38,7 +38,7 @@ fuzz_target!(|data: &[u8]| {
         let typed = candidate.span.text().as_str();
         let width = typed.chars().count();
         match picked(typed, Recognizer::Code) {
-            Some(Value::Pick { span, value }) => {
+            Some(Value::Pick { span, value, .. }) => {
                 assert_eq!(
                     (span.start(), span.end()),
                     (0, width),
