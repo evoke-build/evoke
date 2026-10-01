@@ -17,5 +17,5 @@ route                      = { lights = 0.96, none = 0.04 }
 "weave.is_lights__room_0"  = { yes = 0.95 }
 "weave.view_lights__power" = { off = 0.98, on = 0.01, dim = 0.01, unstated = 0.0 }
 "weave.is_lights__power_1" = { yes = 0.95 }
-"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
-"weave.whole_1643111050"   = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+"weave.against_1643111050" = { whole = 0.9, less = 0.05, other = 0.05 }

@@ -9,9 +9,12 @@ use super::{
     Answers, Aside, Asked, Because, Binding, Count, Folded, From, Need, Outcome, Parted, Planning,
     Repair, Shared, Step, Verdict, Via, Weave, When, field_names,
 };
+use crate::account::Left as Run;
 use crate::adapter::{Fault, Gate, Prob};
 use crate::call::Value;
-use crate::decide::{Basis, Cap, Decision, Prompt, carry, given, held, joined, words, yielded};
+use crate::decide::{
+    Basis, Cap, Decision, Prompt, alone, carry, given, held, joined, words, yielded,
+};
 use crate::manifest::{self, Effect, Kind, MOST_STEPS, Recognizer, Source, Yield};
 use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
 use crate::plan::{Active, Plan};
@@ -443,6 +446,7 @@ impl<'a> Planner<'a> {
             return Ok(Err(need));
         }
         fold(&mut draft);
+        self.again(&mut draft);
         let refs = match self.refer(&draft)? {
             Ok(refs) => refs,
             Err(need) => return Ok(Err(need)),
@@ -1387,6 +1391,23 @@ impl<'a> Planner<'a> {
             }
             draft.asides.insert(0, Aside { text, remark, does });
             draft.leave(k);
+        }
+    }
+
+    /// Once every part is decided and folded: a step of the person's own whose words say it is wanted once more
+    /// — «him too», «the same for Berlin» — waits as words that ask for another thing do, whatever the engine
+    /// answered of them, unless the plan holds another step of its reflex, which is the other time the words
+    /// ask for.
+    fn again(&self, draft: &mut Draft) {
+        for k in 0..draft.segs.len() {
+            let Some(reflex) = reflex_of(&draft.decisions[k]) else {
+                continue;
+            };
+            let twice = (0..draft.segs.len())
+                .any(|j| j != k && reflex_of(&draft.decisions[j]) == Some(reflex));
+            if !twice && draft.origins[k].is_empty() {
+                draft.decisions[k] = alone(self.plan, draft.decisions[k].clone());
+            }
         }
     }
 
@@ -3036,6 +3057,15 @@ fn occurrences(text: &str, word: &str) -> usize {
                 && !text.get(i + word.len()).is_some_and(|c| joins(*c))
         })
         .count()
+}
+
+/// The runs of words a decision's values leave over, with what each does.
+pub(crate) fn left_of(decision: &Decision) -> &[Run] {
+    match decision {
+        Decision::Abstain { .. } => &[],
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => &chosen.left,
+        Decision::Ask { asking, .. } => &asking.left,
+    }
 }
 
 /// The reflex a decision is about, if any.

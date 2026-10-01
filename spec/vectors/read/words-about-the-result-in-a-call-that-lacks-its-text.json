@@ -1,0 +1,445 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "request": {
+      "state": {
+        "request": "set a timer for 10 minutes saying tea is ready"
+      },
+      "questions": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "lights": {
+              "what": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
+              "not_for": [
+                "colour scenes and schedules",
+                "asking whether a light is on"
+              ],
+              "examples": [
+                "turn on the kitchen lights",
+                "dim the office to 30 percent"
+              ]
+            },
+            "timer": {
+              "what": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+              "not_for": [
+                "keeping the laptop awake",
+                "alarms at a time of day",
+                "asking the time"
+              ],
+              "examples": [
+                "set a timer for 10 minutes",
+                "25 minute timer",
+                "timer for 3 minutes called \"eggs\"",
+                "count down 90 seconds"
+              ]
+            },
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        },
+        "lights.room": {
+          "type": "choice",
+          "ask": "Which room?",
+          "options": {
+            "den": "The TV room downstairs; also 'the snug'.",
+            "office": "The upstairs study.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "lights.state": {
+          "type": "choice",
+          "ask": "What should the lights do?",
+          "options": {
+            "on": {
+              "what": "Switch on.",
+              "examples": [
+                "turn on the kitchen lights"
+              ]
+            },
+            "off": "Switch off.",
+            "dim": {
+              "what": "Lower the brightness without switching off.",
+              "examples": [
+                "dim the office to 30 percent"
+              ]
+            },
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "lights.brightness": {
+          "type": "choice",
+          "ask": "How bright, in percent?",
+          "options": {
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "timer.duration": {
+          "type": "choice",
+          "ask": "How long?",
+          "options": {
+            "16-26": "10 minutes",
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "timer.label": {
+          "type": "choice",
+          "ask": "What is the timer for?",
+          "options": {
+            "none": "The request says it, in words that are not between quotes.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_lights__room": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "den": "The TV room downstairs; also 'the snug'.",
+            "office": "The upstairs study.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_lights__state": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "on": {
+              "what": "Switch on.",
+              "examples": [
+                "turn on the kitchen lights"
+              ]
+            },
+            "off": "Switch off.",
+            "dim": {
+              "what": "Lower the brightness without switching off.",
+              "examples": [
+                "dim the office to 30 percent"
+              ]
+            },
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.only_timer__duration_16_26": {
+          "type": "yesno",
+          "ask": "How long?",
+          "yes": "«10 minutes»",
+          "no": "Other words, or none."
+        },
+        "weave.does_timer_0_2": {
+          "type": "choice",
+          "ask": "The request is read as: Count down a duration, then sound an alert. Seconds to hours; runs until it rings or you cancel it. In the request, what do the words «set a timer» do?",
+          "options": {
+            "action": "They say what to do, or to what.",
+            "arg:duration": "They answer: How long?",
+            "arg:label": "They answer: What is the timer for?",
+            "result": "They say what is wanted from the result, or how it should come.",
+            "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
+            "more": "They ask for another thing as well."
+          }
+        },
+        "weave.does_timer_6_9": {
+          "type": "choice",
+          "ask": "The request is read as: Count down a duration, then sound an alert. Seconds to hours; runs until it rings or you cancel it. In the request, what do the words «saying tea is ready» do?",
+          "options": {
+            "action": "They say what to do, or to what.",
+            "arg:duration": "They answer: How long?",
+            "arg:label": "They answer: What is the timer for?",
+            "result": "They say what is wanted from the result, or how it should come.",
+            "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
+            "more": "They ask for another thing as well."
+          }
+        },
+        "weave.first_timer__label_1171567175": {
+          "type": "choice",
+          "ask": "What is the timer for?",
+          "options": {
+            "s0": "set a timer for 10 minutes saying tea is ready",
+            "s1": "a timer for 10 minutes saying tea is ready",
+            "s2": "timer for 10 minutes saying tea is ready",
+            "s3": "for 10 minutes saying tea is ready",
+            "s6": "saying tea is ready",
+            "s7": "tea is ready",
+            "s8": "is ready",
+            "s9": "ready",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.run_timer__label_1171567175": {
+          "type": "choice",
+          "ask": "What is the timer for?",
+          "options": {
+            "1-1": "a",
+            "8-8": "is",
+            "0-0": "set",
+            "3-3": "for",
+            "7-7": "tea",
+            "0-1": "set a",
+            "2-2": "timer",
+            "9-9": "ready",
+            "6-6": "saying",
+            "7-8": "tea is",
+            "1-2": "a timer",
+            "8-9": "is ready",
+            "2-3": "timer for",
+            "6-7": "saying tea",
+            "0-2": "set a timer",
+            "1-3": "a timer for",
+            "7-9": "tea is ready",
+            "6-8": "saying tea is",
+            "0-3": "set a timer for",
+            "6-9": "saying tea is ready",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.word_timer__label_0": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «set», in «set a timer», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_1": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «a», in «set a timer for», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_2": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «timer», in «set a timer for 10», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_3": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «for», in «a timer for 10 minutes», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_6": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «saying», in «10 minutes saying tea is», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_7": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «tea», in «minutes saying tea is ready», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_8": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «is», in «saying tea is ready», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_9": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «ready», in «tea is ready», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.against_3359817700": {
+          "type": "choice",
+          "ask": "The request was read as: Count down a duration, then sound an alert. Seconds to hours; runs until it rings or you cancel it. How long? 10 minutes. What is the timer for? (not said) How does that reading stand to the request?",
+          "options": {
+            "whole": "The reading holds everything the request says.",
+            "less": "The request says something more, which the reading leaves out.",
+            "other": "The request asks for something else."
+          }
+        }
+      },
+      "proposed": [
+        {
+          "span": {
+            "start": 16,
+            "end": 26,
+            "text": "10 minutes"
+          },
+          "value": {
+            "type": "duration",
+            "value": 600
+          }
+        }
+      ]
+    },
+    "raw": {
+      "route": {
+        "timer": 0.97,
+        "lights": 0.01,
+        "none": 0.02
+      },
+      "lights.room": {
+        "unstated": 1
+      },
+      "lights.state": {
+        "unstated": 1
+      },
+      "lights.brightness": {
+        "unstated": 1
+      },
+      "timer.duration": {
+        "16-26": 0.97,
+        "unstated": 0.03
+      },
+      "timer.label": {
+        "unstated": 1
+      },
+      "weave.view_lights__room": {
+        "unstated": 1
+      },
+      "weave.view_lights__state": {
+        "unstated": 1
+      },
+      "weave.only_timer__duration_16_26": {
+        "yes": 0.05
+      },
+      "weave.does_timer_0_2": {
+        "action": 0.95,
+        "courtesy": 0.05
+      },
+      "weave.does_timer_6_9": {
+        "result": 0.85,
+        "action": 0.1,
+        "more": 0.05
+      },
+      "weave.first_timer__label_1171567175": {
+        "unstated": 1
+      },
+      "weave.run_timer__label_1171567175": {
+        "unstated": 1
+      },
+      "weave.word_timer__label_0": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_1": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_2": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_3": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_6": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_7": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_8": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_9": {
+        "yes": 0.05
+      },
+      "weave.against_3359817700": {
+        "whole": 0.9,
+        "less": 0.07,
+        "other": 0.03
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "ranking": [
+        {
+          "reflex": "timer",
+          "route": 0.97
+        },
+        {
+          "reflex": "lights",
+          "route": 0.01
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "timer",
+          "p": 0.97
+        },
+        {
+          "question": "timer.duration",
+          "top": "16-26",
+          "p": 0.97
+        }
+      ],
+      "winner": {
+        "reflex": "timer",
+        "args": {
+          "duration": {
+            "type": "pick",
+            "span": {
+              "start": 16,
+              "end": 26,
+              "text": "10 minutes"
+            },
+            "value": {
+              "type": "duration",
+              "value": 600
+            }
+          }
+        },
+        "basis": {
+          "duration": {
+            "by": "ask",
+            "p": 0.97
+          }
+        },
+        "missing": [],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 11,
+              "text": "set a timer"
+            },
+            "does": "action",
+            "p": 0.95
+          },
+          {
+            "words": {
+              "start": 27,
+              "end": 46,
+              "text": "saying tea is ready"
+            },
+            "does": "result",
+            "p": 0.85
+          }
+        ],
+        "unconsumed": [],
+        "whole": 0.9,
+        "runner_up": {
+          "reflex": "lights",
+          "route": 0.01
+        }
+      }
+    }
+  }
+}

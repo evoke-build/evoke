@@ -1,0 +1,405 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "kill the lights in the den, and in the office too",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "kill the lights in the den"
+          },
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "den"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"den\" state=\"off\"",
+            "effect": "write",
+            "basis": {
+              "room": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              },
+              "state": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95,
+                "yes": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 15,
+                  "text": "kill the lights"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "lights",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "den",
+                "p": 0.95
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "timer",
+              "route": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              },
+              {
+                "reflex": "timer",
+                "route": 0.02
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "in the office too"
+          },
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "office",
+                "value": "group-7"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"office\" state=\"off\"",
+            "effect": "write",
+            "basis": {
+              "room": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              },
+              "state": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95,
+                "yes": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 14,
+                  "end": 17,
+                  "text": "too"
+                },
+                "does": "action",
+                "p": 0.95,
+                "again": true
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "lights",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "office",
+                "p": 0.95
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "timer",
+              "route": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              },
+              {
+                "reflex": "timer",
+                "route": 0.02
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.95
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "kill the lights in the den, and in the office too",
+        "steps": [
+          {
+            "n": 1,
+            "text": "kill the lights in the den",
+            "end": 26,
+            "decision": {
+              "outcome": "run",
+              "reflex": "lights",
+              "args": {
+                "room": {
+                  "type": "word",
+                  "word": "den"
+                },
+                "state": {
+                  "type": "option",
+                  "key": "off"
+                }
+              },
+              "call": "lights room=\"den\" state=\"off\"",
+              "effect": "write",
+              "basis": {
+                "room": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                },
+                "state": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95,
+                  "yes": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 15,
+                    "text": "kill the lights"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "lights",
+                  "p": 0.95
+                },
+                {
+                  "question": "lights.room",
+                  "top": "den",
+                  "p": 0.95
+                },
+                {
+                  "question": "lights.state",
+                  "top": "off",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "timer",
+                "route": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "lights",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0.02
+                }
+              ]
+            },
+            "reflex": "lights",
+            "effect": "write"
+          },
+          {
+            "n": 2,
+            "text": "in the office too",
+            "end": 49,
+            "decision": {
+              "outcome": "run",
+              "reflex": "lights",
+              "args": {
+                "room": {
+                  "type": "word",
+                  "word": "office",
+                  "value": "group-7"
+                },
+                "state": {
+                  "type": "option",
+                  "key": "off"
+                }
+              },
+              "call": "lights room=\"office\" state=\"off\"",
+              "effect": "write",
+              "basis": {
+                "room": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                },
+                "state": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95,
+                  "yes": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 14,
+                    "end": 17,
+                    "text": "too"
+                  },
+                  "does": "action",
+                  "p": 0.95,
+                  "again": true
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "lights",
+                  "p": 0.95
+                },
+                {
+                  "question": "lights.room",
+                  "top": "office",
+                  "p": 0.95
+                },
+                {
+                  "question": "lights.state",
+                  "top": "off",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "timer",
+                "route": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "lights",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "timer",
+                  "route": 0.02
+                }
+              ]
+            },
+            "reflex": "lights",
+            "effect": "write"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 26,
+            "end": 32,
+            "word": "and",
+            "order": "and",
+            "p": 0.95,
+            "cut": true
+          }
+        ],
+        "count": {
+          "one": 0.05
+        }
+      }
+    }
+  }
+}

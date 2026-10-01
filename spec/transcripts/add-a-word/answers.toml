@@ -9,8 +9,8 @@ write = 0.9
 whole = 0.3
 
 [answers."list the photos"]
-route                    = { list = 0.95, none = 0.05 }
-"list.place"             = { unstated = 0.95, desktop = 0.05 }
-"weave.view_list__place" = { unstated = 0.95, desktop = 0.05 }
-"weave.left_list_0_2"    = { action = 0.9, courtesy = 0.1 }
-"weave.whole_2737846620" = { whole = 0.9, less = 0.05, other = 0.05 }
+route                      = { list = 0.95, none = 0.05 }
+"list.place"               = { unstated = 0.95, desktop = 0.05 }
+"weave.view_list__place"   = { unstated = 0.95, desktop = 0.05 }
+"weave.does_list_0_2"      = { action = 0.9, courtesy = 0.1 }
+"weave.against_2737846620" = { whole = 0.9, less = 0.05, other = 0.05 }

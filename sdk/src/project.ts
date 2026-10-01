@@ -440,7 +440,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
 
     async decide(input, options = {}) {
       nonEmpty(input, "decide")
-      return (await decidedText(input, options)).decision
+      return (await decidedText(input, options, true)).decision
     },
 
     fill(decision, given) {
@@ -524,8 +524,9 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   }
 
   /** One text asked, answered, read and gated, its raw answers kept beside the decision — for the plan file. The
-   *  text's questions are asked, then each round of questions its answers open, until nothing is left to ask. */
-  async function decidedText(input: string, options: DecideOptions): Promise<{ decision: Decision<AnyReflexes>; raw: W.Raw }> {
+   *  text's questions are asked, then each round of questions its answers open, until nothing is left to ask. A
+   *  text decided `alone`, with no plan around it, is held as a plan holds a step no other step repeats. */
+  async function decidedText(input: string, options: DecideOptions, alone = false): Promise<{ decision: Decision<AnyReflexes>; raw: W.Raw }> {
     const invoked = invocation(input)
     const recent = options.recent === undefined || options.recent.length === 0 ? {} : { recent: options.recent }
     const request = call("request", { plan, input, tags: options.tags ?? [], ...(options.only === undefined ? {} : { only: options.only }), scope: "full", ...recent }, invoked)
@@ -538,7 +539,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
       const read = call("read", { plan, ...gate, request, raw }, invoked)
       if (read.type === "done") {
         const { type: _, ...reading } = read
-        const decision = call("gate", { plan, reading, ...gate })
+        const decision = call("gate", { plan, reading, ...gate, ...(alone ? { alone } : {}) })
         return { decision: lined(decision, { input, plan: plan.digest, trace: traces }), raw }
       }
       round = read.request

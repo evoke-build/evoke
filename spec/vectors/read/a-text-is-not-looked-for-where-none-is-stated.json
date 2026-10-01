@@ -141,24 +141,26 @@
           "yes": "«10 minutes»",
           "no": "Other words, or none."
         },
-        "weave.left_timer_0_2": {
+        "weave.does_timer_0_2": {
           "type": "choice",
-          "ask": "In the request, what do the words «set a timer» do?",
+          "ask": "The request is read as: Count down a duration, then sound an alert. Seconds to hours; runs until it rings or you cancel it. In the request, what do the words «set a timer» do?",
           "options": {
             "action": "They say what to do, or to what.",
             "arg:duration": "They answer: How long?",
             "arg:label": "They answer: What is the timer for?",
+            "result": "They say what is wanted from the result, or how it should come.",
             "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
             "more": "They ask for another thing as well."
           }
         },
-        "weave.left_timer_6_7": {
+        "weave.does_timer_6_7": {
           "type": "choice",
-          "ask": "In the request, what do the words «called tea» do?",
+          "ask": "The request is read as: Count down a duration, then sound an alert. Seconds to hours; runs until it rings or you cancel it. In the request, what do the words «called tea» do?",
           "options": {
             "action": "They say what to do, or to what.",
             "arg:duration": "They answer: How long?",
             "arg:label": "They answer: What is the timer for?",
+            "result": "They say what is wanted from the result, or how it should come.",
             "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
             "more": "They ask for another thing as well."
           }
@@ -291,11 +293,11 @@
       "weave.only_timer__duration_16_26": {
         "yes": 0.05
       },
-      "weave.left_timer_0_2": {
+      "weave.does_timer_0_2": {
         "action": 0.95,
         "courtesy": 0.05
       },
-      "weave.left_timer_6_7": {
+      "weave.does_timer_6_7": {
         "action": 0.95,
         "courtesy": 0.05
       },

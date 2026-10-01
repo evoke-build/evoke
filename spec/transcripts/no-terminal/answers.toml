@@ -21,7 +21,7 @@ route                      = { lights = 0.95, timer = 0.01, volume = 0.01, none 
 "weave.view_lights__state" = { off = 0.74, on = 0.19, dim = 0.06, unstated = 0.01 }
 "weave.view_power__action" = { unstated = 0.97, sleep = 0.01, restart = 0.01, shutdown = 0.01 }
 "weave.is_lights__state_1" = { yes = 0.95 }
-"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+"weave.does_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."start a timer"]
 route                        = { timer = 0.96, lights = 0.01, volume = 0.01, none = 0.02 }
@@ -35,13 +35,13 @@ route                        = { timer = 0.96, lights = 0.01, volume = 0.01, non
 "weave.view_lights__room"    = { unstated = 0.9, den = 0.05, office = 0.05 }
 "weave.view_lights__state"   = { unstated = 0.92, on = 0.03, off = 0.03, dim = 0.02 }
 "weave.view_power__action"   = { unstated = 0.97, sleep = 0.01, restart = 0.01, shutdown = 0.01 }
-"weave.left_timer_0_2"       = { action = 0.9, courtesy = 0.1 }
+"weave.does_timer_0_2"       = { action = 0.9, courtesy = 0.1 }
 "weave.first_timer__label_0" = { unstated = 1.0 }
 "weave.run_timer__label_0"   = { unstated = 1.0 }
 "weave.word_timer__label_0"  = { yes = 0.05 }
 "weave.word_timer__label_1"  = { yes = 0.05 }
 "weave.word_timer__label_2"  = { yes = 0.05 }
-"weave.whole_3449089168"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.against_3449089168"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."kill the lights in the den"]
 route                      = { lights = 0.95, timer = 0.01, volume = 0.01, none = 0.03 }
@@ -57,8 +57,8 @@ route                      = { lights = 0.95, timer = 0.01, volume = 0.01, none 
 "weave.view_lights__state" = { off = 0.94, on = 0.03, dim = 0.02, unstated = 0.01 }
 "weave.view_power__action" = { unstated = 0.97, sleep = 0.01, restart = 0.01, shutdown = 0.01 }
 "weave.is_lights__state_1" = { yes = 0.95 }
-"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
-"weave.whole_693291516"    = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+"weave.against_693291516"  = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."restart the computer"]
 route                      = { power = 0.98, timer = 0.01, none = 0.01 }
@@ -73,7 +73,7 @@ route                      = { power = 0.98, timer = 0.01, none = 0.01 }
 "weave.view_lights__state" = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.view_power__action" = { restart = 0.98, sleep = 0.01, shutdown = 0.01, unstated = 0.0 }
 "weave.is_power__action_1" = { yes = 0.95 }
-"weave.left_power_2_2"     = { action = 0.9, courtesy = 0.1 }
+"weave.does_power_2_2"     = { action = 0.9, courtesy = 0.1 }
 
 [answers."kill the lights and start a 25 minute timer"]
 "weave.split_0"                    = { yes = 0.95 }
@@ -121,8 +121,8 @@ route                                = { timer = 0.95, lights = 0.01, volume = 0
 "weave.view_lights__state"           = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__duration_8_17"    = { yes = 0.05 }
 "weave.view_power__action"           = { unstated = 0.97, sleep = 0.01, restart = 0.01, shutdown = 0.01 }
-"weave.left_timer_0_0"               = { action = 0.9, courtesy = 0.1 }
-"weave.left_timer_4_4"               = { action = 0.9, courtesy = 0.1 }
+"weave.does_timer_0_0"               = { action = 0.9, courtesy = 0.1 }
+"weave.does_timer_4_4"               = { action = 0.9, courtesy = 0.1 }
 "weave.word_timer__label_0"          = { yes = 0.05 }
 "weave.word_timer__label_1"          = { yes = 0.05 }
 "weave.word_timer__label_4"          = { yes = 0.05 }

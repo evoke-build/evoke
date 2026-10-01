@@ -50,13 +50,17 @@ separated by `;`.
 - **a text without quotes**: a text was read from words you typed without quotes. `label was typed without
   quotes, which always waits for a yes`.
 - **more words**: the input holds words that ask for another thing, which the call does not hold. `"lock the
-  door too" asks for another thing`.
+  door too" asks for another thing`. Words that say the call is wanted once more, like `too` or `the same for`,
+  count as these when the plan holds the call once.
 - **part of a value**: words right after a value answer the same question, so the value may be cut short of
   them. `"30" may be part of the duration`.
 - **a text in quotes**: the input holds a text in quotes that no value took, and the reflex takes one. `'tea' is
   in quotes and the call does not hold it`.
+- **a text left over**: the reflex takes a text, the call holds none, and the input has words left that say what
+  is wanted from the result. They may be that text. `"saying tea is ready" may be the label`.
 - **less than you typed**: the call, read back against the input, leaves out part of what you typed. `it holds
-  all you said at 0.20, and a call runs at 0.30 or more; it leaves out "in the morning"`.
+  all you said at 0.20, and a call runs at 0.30 or more; it leaves out "in the morning"`. Words that say what you
+  want from the result are named apart: `"newest first" says what is wanted from the result`.
 - **a detail beside it**: a part of the sentence that is not in the plan may add a detail to this step. `"the
   ones since noon" may add a detail this call does not hold` ([Weaving](weaving.md)).
 
@@ -129,9 +133,11 @@ what gave it: where two questions about it agree, the less sure of the two count
 input says nothing of, add nothing to it. An argument you typed at a prompt is settled, and its judgment leaves
 the gate.
 
-A call that clears the bar of its effect is then read back against the input, in the reflex's own words, and one
-more question is asked: does this reading hold everything the input says? The call runs when the answer clears
-a bar of its own, `whole`.
+A call that clears the bar of its effect is then read back against the input, in the reflex's own words: its
+whole description, then each argument with its value. One more question is asked: does this reading hold
+everything the input says? The call runs when the answer clears a bar of its own, `whole`. The words no value
+took are read beside it, each with what the reflex does: they say what to do, answer an argument, say what is
+wanted from the result, ask for nothing, or ask for another thing.
 
 The bars come from the adapter. Both built-in adapters reach Jev and ship the same numbers. They are calibrated,
 so each number means *the probability this is right*, as `evoke calibrate` measures it on your own records
@@ -173,7 +179,7 @@ each step, under its number when there are several, with a row a judgment:
   the words of the input that hold it, the yes that took it, the step it was taken from, the part of the
   sentence that gave it, or your own answer at the prompt.
 - `holds all you said`: how far the call holds all you typed, where the call was read back against the input;
-  under the bar, the words it leaves out.
+  under the bar, the words it leaves out, and the words that say what is wanted from the result.
 - What a rule did: `the same call`, a part that adds to this call; `read with`, how a part that matched nothing
   alone was settled; `the playbook`, the playbook that wrote the step; `takes`, the results it takes whole;
   `runs if`, what picks it.

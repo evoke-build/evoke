@@ -1,0 +1,340 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "request": {
+      "state": {
+        "request": "list the checkout deploys with their times"
+      },
+      "questions": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "meeting": {
+              "what": "Move a meeting to a day and a time.\nThe meeting moves to the day and the time you name.",
+              "not_for": [
+                "showing the calendar",
+                "rolling a release back"
+              ],
+              "examples": [
+                "move the meeting to friday at 10am"
+              ]
+            },
+            "rollback": {
+              "what": "Roll a service back from a release to the one before it.\nEverywhere at once.",
+              "not_for": [
+                "listing deploys",
+                "moving a meeting"
+              ],
+              "examples": [
+                "roll checkout back from 4.12.0"
+              ]
+            },
+            "calendar": {
+              "what": "Show the meetings of a day.\nEach with its title and its time.",
+              "not_for": [
+                "moving a meeting",
+                "rolling a release back"
+              ],
+              "examples": [
+                "what is on my calendar tomorrow"
+              ]
+            },
+            "deploys": {
+              "what": "List the recent deploys of a service.\nEach release, newest first.",
+              "not_for": [
+                "rolling a release back",
+                "moving a meeting"
+              ],
+              "examples": [
+                "list the checkout deploys"
+              ]
+            },
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        },
+        "meeting.day": {
+          "type": "choice",
+          "ask": "To which day?",
+          "options": {
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "meeting.time": {
+          "type": "choice",
+          "ask": "At what time?",
+          "options": {
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "rollback.release": {
+          "type": "choice",
+          "ask": "From which release?",
+          "options": {
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "calendar.day": {
+          "type": "choice",
+          "ask": "Which day?",
+          "options": {
+            "tomorrow": "Tomorrow, the day after today.",
+            "monday": "Monday, the first day of the week.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "deploys.service": {
+          "type": "choice",
+          "ask": "Which service?",
+          "options": {
+            "checkout": "The checkout service.",
+            "payments": "The payments service.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_calendar__day": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "tomorrow": "Tomorrow, the day after today.",
+            "monday": "Monday, the first day of the week.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_deploys__service": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "checkout": "The checkout service.",
+            "payments": "The payments service.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.is_deploys__service_0": {
+          "type": "yesno",
+          "ask": "Which service?",
+          "yes": "The checkout service.",
+          "no": "Another one, or none."
+        },
+        "weave.does_deploys_0_0": {
+          "type": "choice",
+          "ask": "The request is read as: List the recent deploys of a service. Each release, newest first. In the request, what do the words «list» do?",
+          "options": {
+            "action": "They say what to do, or to what.",
+            "arg:service": "They answer: Which service?",
+            "result": "They say what is wanted from the result, or how it should come.",
+            "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
+            "more": "They ask for another thing as well."
+          }
+        },
+        "weave.does_deploys_3_3": {
+          "type": "choice",
+          "ask": "The request is read as: List the recent deploys of a service. Each release, newest first. In the request, what do the words «deploys» do?",
+          "options": {
+            "action": "They say what to do, or to what.",
+            "arg:service": "They answer: Which service?",
+            "result": "They say what is wanted from the result, or how it should come.",
+            "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
+            "more": "They ask for another thing as well."
+          }
+        },
+        "weave.does_deploys_6_6": {
+          "type": "choice",
+          "ask": "The request is read as: List the recent deploys of a service. Each release, newest first. In the request, what do the words «times» do?",
+          "options": {
+            "action": "They say what to do, or to what.",
+            "arg:service": "They answer: Which service?",
+            "result": "They say what is wanted from the result, or how it should come.",
+            "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
+            "more": "They ask for another thing as well."
+          }
+        },
+        "weave.against_3226380088": {
+          "type": "choice",
+          "ask": "The request was read as: List the recent deploys of a service. Each release, newest first. Which service? checkout. How does that reading stand to the request?",
+          "options": {
+            "whole": "The reading holds everything the request says.",
+            "less": "The request says something more, which the reading leaves out.",
+            "other": "The request asks for something else."
+          }
+        }
+      },
+      "proposed": [],
+      "listed": {
+        "deploys.service": [
+          {
+            "key": "checkout",
+            "span": {
+              "start": 9,
+              "end": 17,
+              "text": "checkout"
+            },
+            "how": "same"
+          }
+        ]
+      }
+    },
+    "raw": {
+      "route": {
+        "deploys": 0.96,
+        "rollback": 0.02,
+        "none": 0.02
+      },
+      "meeting.day": {
+        "unstated": 1
+      },
+      "meeting.time": {
+        "unstated": 1
+      },
+      "rollback.release": {
+        "unstated": 1
+      },
+      "calendar.day": {
+        "unstated": 1
+      },
+      "deploys.service": {
+        "checkout": 0.95,
+        "unstated": 0.05
+      },
+      "weave.view_calendar__day": {
+        "unstated": 1
+      },
+      "weave.view_deploys__service": {
+        "checkout": 0.95,
+        "unstated": 0.05
+      },
+      "weave.is_deploys__service_0": {
+        "yes": 0.95
+      },
+      "weave.does_deploys_0_0": {
+        "action": 0.95,
+        "courtesy": 0.05
+      },
+      "weave.does_deploys_3_3": {
+        "action": 0.95,
+        "courtesy": 0.05
+      },
+      "weave.does_deploys_6_6": {
+        "result": 0.85,
+        "action": 0.1,
+        "more": 0.05
+      },
+      "weave.against_3226380088": {
+        "whole": 0.2,
+        "less": 0.75,
+        "other": 0.05
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "ranking": [
+        {
+          "reflex": "deploys",
+          "route": 0.96
+        },
+        {
+          "reflex": "rollback",
+          "route": 0.02
+        },
+        {
+          "reflex": "meeting",
+          "route": 0
+        },
+        {
+          "reflex": "calendar",
+          "route": 0
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "deploys",
+          "p": 0.96
+        },
+        {
+          "question": "deploys.service",
+          "top": "checkout",
+          "p": 0.95
+        }
+      ],
+      "winner": {
+        "reflex": "deploys",
+        "args": {
+          "service": {
+            "type": "word",
+            "word": "checkout"
+          }
+        },
+        "basis": {
+          "service": {
+            "by": "views",
+            "ask": 0.95,
+            "reader": 0.95
+          }
+        },
+        "missing": [],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 4,
+              "text": "list"
+            },
+            "does": "action",
+            "p": 0.95
+          },
+          {
+            "words": {
+              "start": 18,
+              "end": 25,
+              "text": "deploys"
+            },
+            "does": "action",
+            "p": 0.95
+          },
+          {
+            "words": {
+              "start": 37,
+              "end": 42,
+              "text": "times"
+            },
+            "does": "result",
+            "p": 0.85
+          }
+        ],
+        "unconsumed": [],
+        "whole": 0.2,
+        "runner_up": {
+          "reflex": "rollback",
+          "route": 0.02
+        }
+      }
+    }
+  }
+}

@@ -62,9 +62,9 @@ route                        = { bank = 0.95, invoices = 0.02, none = 0.03 }
 "weave.is_ledger__month_1"   = { yes = 0.05 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_close__month_1"    = { yes = 0.05 }
-"weave.left_bank_0_0"        = { action = 0.95, courtesy = 0.05 }
-"weave.left_bank_2_3"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2515170299"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_bank_0_0"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_bank_2_3"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_2515170299"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."invoices, card expenses"]
 route                        = { invoices = 0.65, cards = 0.02, none = 0.33 }
@@ -82,7 +82,7 @@ route                        = { invoices = 0.65, cards = 0.02, none = 0.33 }
 "weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
-"weave.left_invoices_0_2"    = { action = 0.95, courtesy = 0.05 }
+"weave.does_invoices_0_2"    = { action = 0.95, courtesy = 0.05 }
 
 [answers."payroll"]
 route                        = { payroll = 0.95, bank = 0.02, none = 0.03 }
@@ -100,8 +100,8 @@ route                        = { payroll = 0.95, bank = 0.02, none = 0.03 }
 "weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
-"weave.left_payroll_0_0"     = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1626937972"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_payroll_0_0"     = { action = 0.95, courtesy = 0.05 }
+"weave.against_1626937972"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."reconcile them"]
 route                        = { reconcile = 0.95, bank = 0.02, none = 0.03 }
@@ -119,8 +119,8 @@ route                        = { reconcile = 0.95, bank = 0.02, none = 0.03 }
 "weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
-"weave.left_reconcile_0_1"   = { action = 0.95, courtesy = 0.05 }
-"weave.whole_3804433753"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_reconcile_0_1"   = { action = 0.95, courtesy = 0.05 }
+"weave.against_3804433753"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."post the closing entries to the ledger"]
 route                        = { ledger = 0.89, bank = 0.02, none = 0.09 }
@@ -138,8 +138,8 @@ route                        = { ledger = 0.89, bank = 0.02, none = 0.09 }
 "weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
-"weave.left_ledger_0_3"      = { action = 0.95, courtesy = 0.05 }
-"weave.left_ledger_6_6"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_ledger_0_3"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_ledger_6_6"      = { action = 0.95, courtesy = 0.05 }
 
 [answers."send the report to cfo@example.com"]
 route                        = { send = 0.95, bank = 0.02, none = 0.03 }
@@ -159,7 +159,7 @@ route                        = { send = 0.95, bank = 0.02, none = 0.03 }
 "weave.only_send__to_19_34"  = { yes = 0.05 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.only_close__to_19_34" = { yes = 0.05 }
-"weave.left_send_0_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_send_0_2"        = { action = 0.95, courtesy = 0.05 }
 
 [answers."invoices"]
 route                        = { invoices = 0.95, bank = 0.02, none = 0.03 }
@@ -177,8 +177,8 @@ route                        = { invoices = 0.95, bank = 0.02, none = 0.03 }
 "weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
-"weave.left_invoices_0_0"    = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1226681300"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_invoices_0_0"    = { action = 0.95, courtesy = 0.05 }
+"weave.against_1226681300"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."card expenses"]
 route                        = { cards = 0.95, bank = 0.02, none = 0.03 }
@@ -196,8 +196,8 @@ route                        = { cards = 0.95, bank = 0.02, none = 0.03 }
 "weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
-"weave.left_cards_0_1"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1791599404"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_cards_0_1"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_1791599404"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."close september"]
 route                        = { close = 0.95, ledger = 0.02, none = 0.03 }
@@ -221,7 +221,7 @@ route                        = { close = 0.95, ledger = 0.02, none = 0.03 }
 "weave.is_ledger__month_1"   = { yes = 0.05 }
 "weave.view_close__month"    = { september = 0.95, unstated = 0.05 }
 "weave.is_close__month_1"    = { yes = 0.95 }
-"weave.left_close_0_0"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_close_0_0"       = { action = 0.95, courtesy = 0.05 }
 
 [answers."list september's invoices"]
 route                        = { invoices = 0.95, bank = 0.02, none = 0.03 }
@@ -245,9 +245,9 @@ route                        = { invoices = 0.95, bank = 0.02, none = 0.03 }
 "weave.is_ledger__month_1"   = { yes = 0.05 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_close__month_1"    = { yes = 0.05 }
-"weave.left_invoices_0_0"    = { action = 0.95, courtesy = 0.05 }
-"weave.left_invoices_2_2"    = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1857473980"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_invoices_0_0"    = { action = 0.95, courtesy = 0.05 }
+"weave.does_invoices_2_2"    = { action = 0.95, courtesy = 0.05 }
+"weave.against_1857473980"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."list september's card expenses"]
 route                        = { cards = 0.95, bank = 0.02, none = 0.03 }
@@ -271,9 +271,9 @@ route                        = { cards = 0.95, bank = 0.02, none = 0.03 }
 "weave.is_ledger__month_1"   = { yes = 0.05 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_close__month_1"    = { yes = 0.05 }
-"weave.left_cards_0_0"       = { action = 0.95, courtesy = 0.05 }
-"weave.left_cards_2_3"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_4257350444"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_cards_0_0"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_cards_2_3"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_4257350444"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."show september's payroll run"]
 route                        = { payroll = 0.95, bank = 0.02, none = 0.03 }
@@ -297,9 +297,9 @@ route                        = { payroll = 0.95, bank = 0.02, none = 0.03 }
 "weave.is_ledger__month_1"   = { yes = 0.05 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_close__month_1"    = { yes = 0.05 }
-"weave.left_payroll_0_0"     = { action = 0.95, courtesy = 0.05 }
-"weave.left_payroll_2_3"     = { action = 0.95, courtesy = 0.05 }
-"weave.whole_3983322224"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_payroll_0_0"     = { action = 0.95, courtesy = 0.05 }
+"weave.does_payroll_2_3"     = { action = 0.95, courtesy = 0.05 }
+"weave.against_3983322224"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."post september's closing entries to the ledger"]
 route                        = { ledger = 0.95, bank = 0.02, none = 0.03 }
@@ -323,10 +323,10 @@ route                        = { ledger = 0.95, bank = 0.02, none = 0.03 }
 "weave.is_ledger__month_1"   = { yes = 0.95 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_close__month_1"    = { yes = 0.05 }
-"weave.left_ledger_0_0"      = { action = 0.95, courtesy = 0.05 }
-"weave.left_ledger_2_3"      = { action = 0.95, courtesy = 0.05 }
-"weave.left_ledger_6_6"      = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1129942295"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_ledger_0_0"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_ledger_2_3"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_ledger_6_6"      = { action = 0.95, courtesy = 0.05 }
+"weave.against_1129942295"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."close out august"]
 route                        = { close = 0.95, ledger = 0.02, none = 0.03 }
@@ -350,7 +350,7 @@ route                        = { close = 0.95, ledger = 0.02, none = 0.03 }
 "weave.is_ledger__month_0"   = { yes = 0.05 }
 "weave.view_close__month"    = { august = 0.95, unstated = 0.05 }
 "weave.is_close__month_0"    = { yes = 0.95 }
-"weave.left_close_0_0"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_close_0_0"       = { action = 0.95, courtesy = 0.05 }
 
 [answers."do the october close"]
 route                        = { close = 0.95, ledger = 0.02, none = 0.03 }
@@ -374,7 +374,7 @@ route                        = { close = 0.95, ledger = 0.02, none = 0.03 }
 "weave.is_ledger__month_2"   = { yes = 0.05 }
 "weave.view_close__month"    = { october = 0.95, unstated = 0.05 }
 "weave.is_close__month_2"    = { yes = 0.95 }
-"weave.left_close_3_3"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_close_3_3"       = { action = 0.95, courtesy = 0.05 }
 
 [answers."let's close the books for september"]
 route                        = { close = 0.95, ledger = 0.02, none = 0.03 }
@@ -398,7 +398,7 @@ route                        = { close = 0.95, ledger = 0.02, none = 0.03 }
 "weave.is_ledger__month_1"   = { yes = 0.05 }
 "weave.view_close__month"    = { september = 0.95, unstated = 0.05 }
 "weave.is_close__month_1"    = { yes = 0.95 }
-"weave.left_close_0_3"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_close_0_3"       = { action = 0.95, courtesy = 0.05 }
 
 [answers."do the month-end for october, report to anna@example.com"]
 route                        = { close = 0.95, send = 0.02, none = 0.03 }
@@ -424,8 +424,8 @@ route                        = { close = 0.95, send = 0.02, none = 0.03 }
 "weave.view_close__month"    = { october = 0.95, unstated = 0.05 }
 "weave.is_close__month_2"    = { yes = 0.95 }
 "weave.only_close__to_40_56" = { yes = 0.05 }
-"weave.left_close_2_2"       = { action = 0.95, courtesy = 0.05 }
-"weave.left_close_5_5"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_close_2_2"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_close_5_5"       = { action = 0.95, courtesy = 0.05 }
 
 [answers."wrap up august's books for cfo@example.com"]
 route                        = { close = 0.93, send = 0.02, none = 0.05 }
@@ -451,8 +451,8 @@ route                        = { close = 0.93, send = 0.02, none = 0.05 }
 "weave.view_close__month"    = { august = 0.95, unstated = 0.05 }
 "weave.is_close__month_0"    = { yes = 0.95 }
 "weave.only_close__to_27_42" = { yes = 0.05 }
-"weave.left_close_0_0"       = { action = 0.95, courtesy = 0.05 }
-"weave.left_close_3_3"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_close_0_0"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_close_3_3"       = { action = 0.95, courtesy = 0.05 }
 
 [answers."how much did we pay in salaries in october"]
 route                        = { payroll = 0.95, bank = 0.02, none = 0.03 }
@@ -476,9 +476,9 @@ route                        = { payroll = 0.95, bank = 0.02, none = 0.03 }
 "weave.is_ledger__month_2"   = { yes = 0.05 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_close__month_2"    = { yes = 0.05 }
-"weave.left_payroll_0_4"     = { action = 0.95, courtesy = 0.05 }
-"weave.left_payroll_6_6"     = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2715051741"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_payroll_0_4"     = { action = 0.95, courtesy = 0.05 }
+"weave.does_payroll_6_6"     = { action = 0.95, courtesy = 0.05 }
+"weave.against_2715051741"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."reopen the books for august"]
 route                        = { none = 0.95, bank = 0.05 }
@@ -542,9 +542,9 @@ route                        = { bank = 0.95, invoices = 0.02, none = 0.03 }
 "weave.is_ledger__month_0"   = { yes = 0.05 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_close__month_0"    = { yes = 0.05 }
-"weave.left_bank_0_0"        = { action = 0.95, courtesy = 0.05 }
-"weave.left_bank_2_3"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_3366836426"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_bank_0_0"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_bank_2_3"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_3366836426"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."list august's invoices"]
 route                        = { invoices = 0.95, bank = 0.02, none = 0.03 }
@@ -568,9 +568,9 @@ route                        = { invoices = 0.95, bank = 0.02, none = 0.03 }
 "weave.is_ledger__month_0"   = { yes = 0.05 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_close__month_0"    = { yes = 0.05 }
-"weave.left_invoices_0_0"    = { action = 0.95, courtesy = 0.05 }
-"weave.left_invoices_2_2"    = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1677139608"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_invoices_0_0"    = { action = 0.95, courtesy = 0.05 }
+"weave.does_invoices_2_2"    = { action = 0.95, courtesy = 0.05 }
+"weave.against_1677139608"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."list august's card expenses"]
 route                        = { cards = 0.95, bank = 0.02, none = 0.03 }
@@ -594,9 +594,9 @@ route                        = { cards = 0.95, bank = 0.02, none = 0.03 }
 "weave.is_ledger__month_0"   = { yes = 0.05 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_close__month_0"    = { yes = 0.05 }
-"weave.left_cards_0_0"       = { action = 0.95, courtesy = 0.05 }
-"weave.left_cards_2_3"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_519793193"      = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_cards_0_0"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_cards_2_3"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_519793193"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."show august's payroll run"]
 route                        = { payroll = 0.95, bank = 0.02, none = 0.03 }
@@ -620,9 +620,9 @@ route                        = { payroll = 0.95, bank = 0.02, none = 0.03 }
 "weave.is_ledger__month_0"   = { yes = 0.05 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_close__month_0"    = { yes = 0.05 }
-"weave.left_payroll_0_0"     = { action = 0.95, courtesy = 0.05 }
-"weave.left_payroll_2_3"     = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2963210425"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_payroll_0_0"     = { action = 0.95, courtesy = 0.05 }
+"weave.does_payroll_2_3"     = { action = 0.95, courtesy = 0.05 }
+"weave.against_2963210425"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."post august's closing entries to the ledger"]
 route                        = { ledger = 0.95, bank = 0.02, none = 0.03 }
@@ -646,10 +646,10 @@ route                        = { ledger = 0.95, bank = 0.02, none = 0.03 }
 "weave.is_ledger__month_0"   = { yes = 0.95 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_close__month_0"    = { yes = 0.05 }
-"weave.left_ledger_0_0"      = { action = 0.95, courtesy = 0.05 }
-"weave.left_ledger_2_3"      = { action = 0.95, courtesy = 0.05 }
-"weave.left_ledger_6_6"      = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1936855457"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_ledger_0_0"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_ledger_2_3"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_ledger_6_6"      = { action = 0.95, courtesy = 0.05 }
+"weave.against_1936855457"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."send the report to anna@example.com"]
 route                        = { send = 0.95, bank = 0.02, none = 0.03 }
@@ -669,4 +669,4 @@ route                        = { send = 0.95, bank = 0.02, none = 0.03 }
 "weave.only_send__to_19_35"  = { yes = 0.05 }
 "weave.view_close__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.only_close__to_19_35" = { yes = 0.05 }
-"weave.left_send_0_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_send_0_2"        = { action = 0.95, courtesy = 0.05 }

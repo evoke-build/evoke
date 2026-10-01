@@ -55,9 +55,9 @@ route                         = { device = 0.95, sessions = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
 "weave.is_stolen__person_0"   = { yes = 0.05 }
-"weave.left_device_0_0"       = { action = 0.95, courtesy = 0.05 }
-"weave.left_device_2_2"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_597660055"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_device_0_0"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_device_2_2"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_597660055"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."sessions"]
 route                         = { sessions = 0.95, device = 0.02, none = 0.03 }
@@ -72,8 +72,8 @@ route                         = { sessions = 0.95, device = 0.02, none = 0.03 }
 "weave.view_keys__person"     = { unstated = 0.95, sam = 0.03, ana = 0.02 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
-"weave.left_sessions_0_0"     = { action = 0.95, courtesy = 0.05 }
-"weave.whole_304459372"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_sessions_0_0"     = { action = 0.95, courtesy = 0.05 }
+"weave.against_304459372"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."keys"]
 route                         = { keys = 0.95, device = 0.02, none = 0.03 }
@@ -88,8 +88,8 @@ route                         = { keys = 0.95, device = 0.02, none = 0.03 }
 "weave.view_keys__person"     = { unstated = 0.95, sam = 0.03, ana = 0.02 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
-"weave.left_keys_0_0"         = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1218789127"      = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_keys_0_0"         = { action = 0.95, courtesy = 0.05 }
+"weave.against_1218789127"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."lock the laptop"]
 route                         = { lock = 0.95, device = 0.02, none = 0.03 }
@@ -104,8 +104,8 @@ route                         = { lock = 0.95, device = 0.02, none = 0.03 }
 "weave.view_keys__person"     = { unstated = 0.95, sam = 0.03, ana = 0.02 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
-"weave.left_lock_0_2"         = { action = 0.95, courtesy = 0.05 }
-"weave.whole_201524614"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_lock_0_2"         = { action = 0.95, courtesy = 0.05 }
+"weave.against_201524614"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."wipe it"]
 route                         = { wipe = 0.95, device = 0.02, none = 0.03 }
@@ -121,7 +121,7 @@ route                         = { wipe = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.is_alert__channel_1"   = { yes = 0.05 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
-"weave.left_wipe_0_0"         = { action = 0.95, courtesy = 0.05 }
+"weave.does_wipe_0_0"         = { action = 0.95, courtesy = 0.05 }
 
 [answers."revoke the sessions"]
 route                         = { revoke = 0.95, device = 0.02, none = 0.03 }
@@ -136,8 +136,8 @@ route                         = { revoke = 0.95, device = 0.02, none = 0.03 }
 "weave.view_keys__person"     = { unstated = 0.95, sam = 0.03, ana = 0.02 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
-"weave.left_revoke_0_2"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2004534506"      = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_revoke_0_2"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_2004534506"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."rotate the keys"]
 route                         = { rotate = 0.95, device = 0.02, none = 0.03 }
@@ -152,8 +152,8 @@ route                         = { rotate = 0.95, device = 0.02, none = 0.03 }
 "weave.view_keys__person"     = { unstated = 0.95, sam = 0.03, ana = 0.02 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
-"weave.left_rotate_0_2"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_698077012"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_rotate_0_2"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_698077012"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."alert #security"]
 route                         = { alert = 0.95, device = 0.02, none = 0.03 }
@@ -169,8 +169,8 @@ route                         = { alert = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { "#security" = 0.95, unstated = 0.05 }
 "weave.is_alert__channel_0"   = { yes = 0.95 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
-"weave.left_alert_0_0"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_3978738915"      = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_alert_0_0"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_3978738915"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."sam's laptop was stolen"]
 route                         = { stolen = 0.95, device = 0.02, none = 0.03 }
@@ -189,7 +189,7 @@ route                         = { stolen = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { sam = 0.95, unstated = 0.05 }
 "weave.is_stolen__person_0"   = { yes = 0.95 }
-"weave.left_stolen_1_3"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_stolen_1_3"       = { action = 0.95, courtesy = 0.05 }
 "weave.ref_3_0"               = { step0 = 0.9, step1 = 0.05, step2 = 0.05 }
 "weave.ref_4_0"               = { step0 = 0.9, step1 = 0.04, step2 = 0.03, step3 = 0.03 }
 "weave.ref_5_0"               = { step1 = 0.9, step0 = 0.04, step2 = 0.02, step3 = 0.02, step4 = 0.02 }
@@ -212,9 +212,9 @@ route                         = { sessions = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
 "weave.is_stolen__person_0"   = { yes = 0.05 }
-"weave.left_sessions_0_0"     = { action = 0.95, courtesy = 0.05 }
-"weave.left_sessions_2_2"     = { action = 0.95, courtesy = 0.05 }
-"weave.whole_362151067"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_sessions_0_0"     = { action = 0.95, courtesy = 0.05 }
+"weave.does_sessions_2_2"     = { action = 0.95, courtesy = 0.05 }
+"weave.against_362151067"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."list sam's keys"]
 route                         = { keys = 0.95, device = 0.02, none = 0.03 }
@@ -233,9 +233,9 @@ route                         = { keys = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
 "weave.is_stolen__person_0"   = { yes = 0.05 }
-"weave.left_keys_0_0"         = { action = 0.95, courtesy = 0.05 }
-"weave.left_keys_2_2"         = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2387003277"      = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_keys_0_0"         = { action = 0.95, courtesy = 0.05 }
+"weave.does_keys_2_2"         = { action = 0.95, courtesy = 0.05 }
+"weave.against_2387003277"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."alert the security channel"]
 route                         = { alert = 0.95, device = 0.02, none = 0.03 }
@@ -251,9 +251,9 @@ route                         = { alert = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { "#security" = 0.95, unstated = 0.05 }
 "weave.is_alert__channel_0"   = { yes = 0.95 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
-"weave.left_alert_0_0"        = { action = 0.95, courtesy = 0.05 }
-"weave.left_alert_3_3"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_3978738915"      = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_alert_0_0"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_alert_3_3"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_3978738915"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."ana's laptop was taken from the train"]
 route                         = { stolen = 0.95, device = 0.02, none = 0.03 }
@@ -272,8 +272,8 @@ route                         = { stolen = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { ana = 0.95, unstated = 0.05 }
 "weave.is_stolen__person_1"   = { yes = 0.95 }
-"weave.left_stolen_1_3"       = { action = 0.95, courtesy = 0.05 }
-"weave.left_stolen_6_6"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_stolen_1_3"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_stolen_6_6"       = { action = 0.95, courtesy = 0.05 }
 
 [answers."jo lost their laptop"]
 route                         = { stolen = 0.95, device = 0.02, none = 0.03 }
@@ -292,7 +292,7 @@ route                         = { stolen = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { jo = 0.95, unstated = 0.05 }
 "weave.is_stolen__person_2"   = { yes = 0.95 }
-"weave.left_stolen_1_3"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_stolen_1_3"       = { action = 0.95, courtesy = 0.05 }
 
 [answers."someone stole sam's macbook"]
 route                         = { stolen = 0.95, device = 0.02, none = 0.03 }
@@ -311,8 +311,8 @@ route                         = { stolen = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { sam = 0.95, unstated = 0.05 }
 "weave.is_stolen__person_0"   = { yes = 0.95 }
-"weave.left_stolen_0_1"       = { action = 0.95, courtesy = 0.05 }
-"weave.left_stolen_3_3"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_stolen_0_1"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_stolen_3_3"       = { action = 0.95, courtesy = 0.05 }
 
 [answers."run the stolen laptop plan for jo"]
 route                         = { stolen = 0.95, device = 0.02, none = 0.03 }
@@ -331,7 +331,7 @@ route                         = { stolen = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { jo = 0.95, unstated = 0.05 }
 "weave.is_stolen__person_2"   = { yes = 0.95 }
-"weave.left_stolen_0_4"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_stolen_0_4"       = { action = 0.95, courtesy = 0.05 }
 
 [answers."respond to jo's lost laptop"]
 route                         = { stolen = 0.95, device = 0.02, none = 0.03 }
@@ -350,8 +350,8 @@ route                         = { stolen = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { jo = 0.95, unstated = 0.05 }
 "weave.is_stolen__person_2"   = { yes = 0.95 }
-"weave.left_stolen_0_0"       = { action = 0.95, courtesy = 0.05 }
-"weave.left_stolen_3_4"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_stolen_0_0"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_stolen_3_4"       = { action = 0.95, courtesy = 0.05 }
 
 [answers."ana left her work computer in a taxi"]
 route                         = { stolen = 0.93, device = 0.02, none = 0.05 }
@@ -370,8 +370,8 @@ route                         = { stolen = 0.93, device = 0.02, none = 0.05 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { ana = 0.95, unstated = 0.05 }
 "weave.is_stolen__person_1"   = { yes = 0.95 }
-"weave.left_stolen_1_4"       = { action = 0.95, courtesy = 0.05 }
-"weave.left_stolen_7_7"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_stolen_1_4"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_stolen_7_7"       = { action = 0.95, courtesy = 0.05 }
 
 [answers."what is jo still logged into"]
 route                         = { sessions = 0.95, device = 0.02, none = 0.03 }
@@ -390,9 +390,9 @@ route                         = { sessions = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
 "weave.is_stolen__person_2"   = { yes = 0.05 }
-"weave.left_sessions_0_0"     = { action = 0.95, courtesy = 0.05 }
-"weave.left_sessions_3_4"     = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2176167115"      = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_sessions_0_0"     = { action = 0.95, courtesy = 0.05 }
+"weave.does_sessions_3_4"     = { action = 0.95, courtesy = 0.05 }
+"weave.against_2176167115"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."sam's laptop turned up again"]
 route                         = { none = 0.95, device = 0.05 }
@@ -465,9 +465,9 @@ route                         = { device = 0.95, sessions = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
 "weave.is_stolen__person_1"   = { yes = 0.05 }
-"weave.left_device_0_0"       = { action = 0.95, courtesy = 0.05 }
-"weave.left_device_2_2"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1409403848"      = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_device_0_0"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_device_2_2"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_1409403848"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."list ana's sessions"]
 route                         = { sessions = 0.95, device = 0.02, none = 0.03 }
@@ -486,9 +486,9 @@ route                         = { sessions = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
 "weave.is_stolen__person_1"   = { yes = 0.05 }
-"weave.left_sessions_0_0"     = { action = 0.95, courtesy = 0.05 }
-"weave.left_sessions_2_2"     = { action = 0.95, courtesy = 0.05 }
-"weave.whole_549206735"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_sessions_0_0"     = { action = 0.95, courtesy = 0.05 }
+"weave.does_sessions_2_2"     = { action = 0.95, courtesy = 0.05 }
+"weave.against_549206735"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."list ana's keys"]
 route                         = { keys = 0.95, device = 0.02, none = 0.03 }
@@ -507,6 +507,6 @@ route                         = { keys = 0.95, device = 0.02, none = 0.03 }
 "weave.view_alert__channel"   = { unstated = 0.95, "#security" = 0.03, "#it" = 0.02 }
 "weave.view_stolen__person"   = { unstated = 0.95, sam = 0.03, ana = 0.02 }
 "weave.is_stolen__person_1"   = { yes = 0.05 }
-"weave.left_keys_0_0"         = { action = 0.95, courtesy = 0.05 }
-"weave.left_keys_2_2"         = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1676515274"      = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_keys_0_0"         = { action = 0.95, courtesy = 0.05 }
+"weave.does_keys_2_2"         = { action = 0.95, courtesy = 0.05 }
+"weave.against_1676515274"    = { whole = 0.9, less = 0.05, other = 0.05 }

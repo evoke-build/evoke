@@ -1050,7 +1050,7 @@
     "write": 0.9,
     "whole": 0.3
   },
-  "set": "h1:4dc4c153eb543a42be4428dfb82295dab6d3e8724c12eca129c70573360dced9",
+  "set": "h1:dd2e7265d20539595414a5711cb9ae5fc3678cf6cb9865b9e8002204c323087d",
   "reflexes": {
     "errors": {
       "item": "h1:1f9acbfabf353d8c96490f7e353815438f74a439fc043941cc2ebade08dfd2fe",
@@ -1276,7 +1276,7 @@
         "weave.is_outage__region_0": {
           "yes": 0.95
         },
-        "weave.left_outage_2_2": {
+        "weave.does_outage_2_2": {
           "action": 0.95,
           "courtesy": 0.05
         }
@@ -1455,15 +1455,15 @@
         "weave.is_outage__region_0": {
           "yes": 0.05
         },
-        "weave.left_errors_0_0": {
+        "weave.does_errors_0_0": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.left_errors_2_2": {
+        "weave.does_errors_2_2": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.whole_1056623449": {
+        "weave.against_1056623449": {
           "whole": 0.9,
           "less": 0.05,
           "other": 0.05
@@ -1643,15 +1643,15 @@
         "weave.is_outage__region_0": {
           "yes": 0.05
         },
-        "weave.left_deploys_0_0": {
+        "weave.does_deploys_0_0": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.left_deploys_2_2": {
+        "weave.does_deploys_2_2": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.whole_439829260": {
+        "weave.against_439829260": {
           "whole": 0.9,
           "less": 0.05,
           "other": 0.05
@@ -1849,15 +1849,15 @@
         "weave.is_outage__region_0": {
           "yes": 0.05
         },
-        "weave.left_logs_0_0": {
+        "weave.does_logs_0_0": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.left_logs_2_2": {
+        "weave.does_logs_2_2": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.whole_3888249332": {
+        "weave.against_3888249332": {
           "whole": 0.9,
           "less": 0.05,
           "other": 0.05
@@ -2008,11 +2008,11 @@
           "eu-west": 0.03,
           "us-east": 0.02
         },
-        "weave.left_suspect_0_3": {
+        "weave.does_suspect_0_3": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.whole_2552723114": {
+        "weave.against_2552723114": {
           "whole": 0.9,
           "less": 0.05,
           "other": 0.05
@@ -2195,15 +2195,15 @@
         "weave.is_outage__region_0": {
           "yes": 0.05
         },
-        "weave.left_rollback_0_0": {
+        "weave.does_rollback_0_0": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.left_rollback_2_2": {
+        "weave.does_rollback_2_2": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.left_rollback_5_5": {
+        "weave.does_rollback_5_5": {
           "action": 0.95,
           "courtesy": 0.05
         }
@@ -2354,15 +2354,15 @@
           "eu-west": 0.03,
           "us-east": 0.02
         },
-        "weave.left_post_0_0": {
+        "weave.does_post_0_0": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.left_post_4_4": {
+        "weave.does_post_4_4": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.whole_1461761989": {
+        "weave.against_1461761989": {
           "whole": 0.9,
           "less": 0.05,
           "other": 0.05
@@ -2544,11 +2544,11 @@
         "weave.is_outage__region_1": {
           "yes": 0.05
         },
-        "weave.left_status_0_3": {
+        "weave.does_status_0_3": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.whole_2785253242": {
+        "weave.against_2785253242": {
           "whole": 0.9,
           "less": 0.05,
           "other": 0.05

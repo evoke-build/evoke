@@ -242,7 +242,7 @@
     "write": 0.9,
     "whole": 0.3
   },
-  "set": "h1:52497f8b3c69bd3bc51247587141da9361ca1fafff49a0397e35702d27922c2e",
+  "set": "h1:6239e92a508e37f9718a0e103e3bdd1bd9671779da752ade531d07fc09e58184",
   "reflexes": {
     "lights": {
       "item": "h1:4d31efc7f857e631811f9e7d1e49fc080c036108ce2e8be2be02d2642dcd88b4",
@@ -341,11 +341,11 @@
         "weave.is_lights__state_1": {
           "yes": 0.95
         },
-        "weave.left_lights_0_2": {
+        "weave.does_lights_0_2": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.whole_693291516": {
+        "weave.against_693291516": {
           "whole": 0.9,
           "less": 0.05,
           "other": 0.05
@@ -412,11 +412,11 @@
           "dana": 0.03,
           "sam": 0.02
         },
-        "weave.left_timer_0_0": {
+        "weave.does_timer_0_0": {
           "action": 0.95,
           "courtesy": 0.05
         },
-        "weave.left_timer_4_7": {
+        "weave.does_timer_4_7": {
           "action": 0.95,
           "courtesy": 0.05
         },
@@ -444,7 +444,7 @@
         "weave.word_timer__label_7": {
           "yes": 0.05
         },
-        "weave.whole_1123384719": {
+        "weave.against_1123384719": {
           "whole": 0.9,
           "less": 0.05,
           "other": 0.05

@@ -6,7 +6,7 @@ use evoke_adapters::replay;
 use evoke_adapters::systemone::{self, Door};
 use evoke_core::calendar::Date;
 use evoke_core::contain::Platform;
-use evoke_core::decide::Recent;
+use evoke_core::decide::{Recent, alone};
 use evoke_core::document::Text;
 use evoke_core::manifest::{ConfigSpec, Effect, Recognizer};
 use evoke_core::name::AdapterId;
@@ -123,11 +123,20 @@ fn decide(op: &str, input: &Json) -> Reply {
             &arg::<Request>(input, "request")?,
             arg::<Raw>(input, "raw")?,
         )),
-        "gate" => ok(gate(
-            &arg::<Plan>(input, "plan")?,
-            arg(input, "reading")?,
-            opt::<Gate>(input, "gate")?.as_ref(),
-        )),
+        "gate" => {
+            let plan = arg::<Plan>(input, "plan")?;
+            let decision = gate(
+                &plan,
+                arg(input, "reading")?,
+                opt::<Gate>(input, "gate")?.as_ref(),
+            );
+            // A decision no plan stands around is held as a plan holds a step no other step repeats.
+            ok(if opt::<bool>(input, "alone")?.unwrap_or(false) {
+                alone(&plan, decision)
+            } else {
+                decision
+            })
+        }
         "fill" => ok(fill(
             &arg::<Plan>(input, "plan")?,
             arg(input, "asking")?,

@@ -30,4 +30,4 @@ route                      = { lights = 0.45, none = 0.4, timer = 0.1, volume = 
 "weave.view_lights__room"  = { unstated = 0.9, den = 0.05, office = 0.05 }
 "weave.view_lights__state" = { dim = 0.8, on = 0.1, off = 0.05, unstated = 0.05 }
 "weave.is_lights__state_2" = { yes = 0.95 }
-"weave.left_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+"weave.does_lights_0_2"    = { action = 0.9, courtesy = 0.1 }

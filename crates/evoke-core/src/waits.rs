@@ -5,7 +5,7 @@ use crate::account::Does;
 use crate::call::quoted;
 use crate::decide::{Basis, Cap, Chosen};
 use crate::manifest::Effect;
-use crate::text::Clean;
+use crate::text::{Clean, Span};
 
 /// A call that cannot be undone.
 const UNDONE: &str = "it cannot be undone, so it always waits for a yes";
@@ -26,10 +26,16 @@ const MORE: &str = "{words} asks for another thing";
 const CUT: &str = "{words} may be part of the {arg}";
 /// A text in quotes that no value of the call holds: the text with its marks.
 const QUOTED: &str = "{words} is in quotes and the call does not hold it";
+/// Words read as about the result, in a call that takes a text and holds none: the words, and the argument.
+const TEXT_LEFT: &str = "{words} may be the {arg}";
 /// A call that holds less than the request says: how far it holds all of it, and the bar.
 const LESS: &str = "it holds all you said at {p}, and a call runs at {floor} or more";
 /// The words such a call leaves out, after the phrase above.
 const LEAVES_OUT: &str = "; it leaves out {words}";
+/// The words of such a call that say what is wanted from the result, after the phrases above: one run, and
+/// several.
+const ABOUT_RESULT: &str = "; {words} says what is wanted from the result";
+const ABOUT_RESULTS: &str = "; {words} say what is wanted from the result";
 /// A part out of the plan that may add a detail to the call.
 const DETAIL: &str = "{words} may add a detail this call does not hold";
 /// A call held for a cause that has no words of its own.
@@ -58,11 +64,14 @@ fn share(p: f64) -> String {
 
 /// The line under a call that waits: each cause in the order the decision lists them.
 pub(crate) fn reason(chosen: &Chosen, because: &[Cap]) -> String {
-    let causes: Vec<String> = because.iter().map(|cap| cause(chosen, cap)).collect();
+    let causes: Vec<String> = because
+        .iter()
+        .map(|cap| cause(chosen, because, cap))
+        .collect();
     causes.join(THEN)
 }
 
-fn cause(chosen: &Chosen, cap: &Cap) -> String {
+fn cause(chosen: &Chosen, because: &[Cap], cap: &Cap) -> String {
     match cap {
         Cap::Destructive => UNDONE.to_owned(),
         Cap::NoGate => NO_BARS.to_owned(),
@@ -92,6 +101,13 @@ fn cause(chosen: &Chosen, cap: &Cap) -> String {
             ],
         ),
         Cap::Quoted { words } => said(QUOTED, &[("words", words.text().as_str())]),
+        Cap::TextLeft { arg, words } => said(
+            TEXT_LEFT,
+            &[
+                ("words", &quoted(words.text().as_str())),
+                ("arg", arg.as_str()),
+            ],
+        ),
         Cap::Whole { p, floor } => {
             let mut line = said(
                 LESS,
@@ -102,6 +118,27 @@ fn cause(chosen: &Chosen, cap: &Cap) -> String {
                 let named: Vec<String> = out.into_iter().map(quoted).collect();
                 line.push_str(&said(LEAVES_OUT, &[("words", &named.join(AND))]));
             }
+            // Words that may be a text the call lacks have their own phrase, and are not said to be about the
+            // result beside it.
+            let text_left = |words: &Span| {
+                because
+                    .iter()
+                    .any(|cap| matches!(cap, Cap::TextLeft { words: left, .. } if left == words))
+            };
+            let about: Vec<String> = chosen
+                .left
+                .iter()
+                .filter(|run| run.does == Does::Result && !text_left(&run.words))
+                .map(|run| quoted(run.words.text().as_str()))
+                .collect();
+            if !about.is_empty() {
+                let phrase = if about.len() == 1 {
+                    ABOUT_RESULT
+                } else {
+                    ABOUT_RESULTS
+                };
+                line.push_str(&said(phrase, &[("words", &about.join(AND))]));
+            }
             line
         }
         Cap::Detail { words } => said(DETAIL, &[("words", &quoted(words))]),
@@ -109,14 +146,14 @@ fn cause(chosen: &Chosen, cap: &Cap) -> String {
 }
 
 /// The words a call leaves out: those no value holds that say nothing of what to do — but words that answered
-/// an ask the person then settled, and words that may be part of a value, which have a phrase of their own — and
-/// the values typed that no argument took.
+/// an ask the person then settled, and words that may be part of a value or that are about the result, which
+/// have a phrase of their own — and the values typed that no argument took.
 fn left_out(chosen: &Chosen) -> Vec<&str> {
     let mut out: Vec<&str> = chosen
         .left
         .iter()
         .filter(|run| match &run.does {
-            Does::Action => false,
+            Does::Action | Does::Result => false,
             Does::Answers { arg } => {
                 !run.cut && (!chosen.call.args.contains_key(arg) || chosen.basis.contains_key(arg))
             }

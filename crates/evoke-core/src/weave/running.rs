@@ -11,7 +11,7 @@
 
 use indexmap::IndexMap;
 
-use super::planning::reflex_of;
+use super::planning::{left_of, reflex_of};
 use super::{
     Asked, Binding, Bound, Executed, Handled, Handling, Progress, Returned, Running, Status, Step,
     StepOutcome, Todo, Via, Weave, When, Why,
@@ -303,16 +303,22 @@ impl Runner<'_> {
     }
 
     /// What the plan held a step for holds it at its turn: a decision made again there waits as the planner's
-    /// did, for the part beside the step that may add a detail.
+    /// did, for the part beside the step that may add a detail, and for the step's words that say it is wanted
+    /// once more.
     fn held(&self, step: &Step, decision: Decision) -> Decision {
         let planned: Vec<Cap> = match &step.decision {
             Decision::Confirm { because, .. } => because.iter().cloned().collect(),
             Decision::Ask { asking, .. } => asking.held.clone(),
             Decision::Run { .. } | Decision::Abstain { .. } => Vec::new(),
         };
+        let again = |cap: &Cap| {
+            matches!(cap, Cap::More { words } if left_of(&step.decision)
+                .iter()
+                .any(|run| run.again && run.words == *words))
+        };
         planned
             .into_iter()
-            .filter(|cap| matches!(cap, Cap::Detail { .. }))
+            .filter(|cap| matches!(cap, Cap::Detail { .. }) || again(cap))
             .fold(decision, |decision, cap| held(self.plan, decision, cap))
     }
 }

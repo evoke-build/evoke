@@ -63,7 +63,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:4ad2611e0ff183d6dd33ca615eaa75b0a87f8d253da74b637457f479bb3c47b3",
+      "digest": "h1:abcb2f109bd109335b0e3ddbec7e8fe921cc50f20522c3df1918d94a26378355",
       "active": {
         "timer": {
           "effect": "write",

@@ -1,0 +1,201 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "lights",
+          "route": 0.96
+        },
+        {
+          "reflex": "timer",
+          "route": 0.01
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "lights",
+          "p": 0.96
+        },
+        {
+          "question": "lights.room",
+          "top": "den",
+          "p": 0.92
+        },
+        {
+          "question": "lights.state",
+          "top": "off",
+          "p": 0.95
+        }
+      ],
+      "winner": {
+        "reflex": "lights",
+        "args": {
+          "room": {
+            "type": "word",
+            "word": "den"
+          },
+          "state": {
+            "type": "option",
+            "key": "off"
+          }
+        },
+        "basis": {
+          "room": {
+            "by": "views",
+            "ask": 0.92,
+            "reader": 0.92
+          },
+          "state": {
+            "by": "views",
+            "ask": 0.95,
+            "reader": 0.95,
+            "yes": 0.95
+          }
+        },
+        "missing": [],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 15,
+              "text": "kill the lights"
+            },
+            "does": "action",
+            "p": 0.95
+          },
+          {
+            "words": {
+              "start": 27,
+              "end": 30,
+              "text": "too"
+            },
+            "does": "action",
+            "p": 0.95,
+            "again": true
+          }
+        ],
+        "unconsumed": [],
+        "whole": 0.9,
+        "runner_up": {
+          "reflex": "timer",
+          "route": 0.01
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "alone": true
+  },
+  "expect": {
+    "outcome": "confirm",
+    "reflex": "lights",
+    "args": {
+      "room": {
+        "type": "word",
+        "word": "den"
+      },
+      "state": {
+        "type": "option",
+        "key": "off"
+      }
+    },
+    "call": "lights room=\"den\" state=\"off\"",
+    "effect": "write",
+    "basis": {
+      "room": {
+        "by": "views",
+        "ask": 0.92,
+        "reader": 0.92
+      },
+      "state": {
+        "by": "views",
+        "ask": 0.95,
+        "reader": 0.95,
+        "yes": 0.95
+      }
+    },
+    "left": [
+      {
+        "words": {
+          "start": 0,
+          "end": 15,
+          "text": "kill the lights"
+        },
+        "does": "action",
+        "p": 0.95
+      },
+      {
+        "words": {
+          "start": 27,
+          "end": 30,
+          "text": "too"
+        },
+        "does": "action",
+        "p": 0.95,
+        "again": true
+      }
+    ],
+    "whole": 0.9,
+    "confidence": 0.92,
+    "weakest": {
+      "question": "lights.room",
+      "top": "den",
+      "p": 0.92
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "lights",
+        "p": 0.96
+      },
+      {
+        "question": "lights.room",
+        "top": "den",
+        "p": 0.92
+      },
+      {
+        "question": "lights.state",
+        "top": "off",
+        "p": 0.95
+      }
+    ],
+    "runner_up": {
+      "reflex": "timer",
+      "route": 0.01
+    },
+    "contenders": [
+      {
+        "reflex": "lights",
+        "route": 0.96
+      },
+      {
+        "reflex": "timer",
+        "route": 0.01
+      }
+    ],
+    "prompt": {
+      "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.92",
+      "reason": "\"too\" asks for another thing",
+      "template": "Set the den lights off?"
+    },
+    "because": [
+      {
+        "type": "more",
+        "words": {
+          "start": 27,
+          "end": 30,
+          "text": "too"
+        }
+      }
+    ]
+  }
+}

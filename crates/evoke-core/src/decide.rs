@@ -589,6 +589,12 @@ pub enum Cap {
     Quoted {
         words: Span,
     },
+    /// Words read as saying what is wanted from the result, in a call whose reflex takes a text in quotes and
+    /// holds none for the argument: they may be that text.
+    TextLeft {
+        arg: ArgName,
+        words: Span,
+    },
     /// The call, held against the request, holds less than the request says.
     Whole {
         p: Prob,
@@ -1372,7 +1378,19 @@ fn takes_quoted(active: &Active) -> bool {
     })
 }
 
-/// At this share a run of words answers an argument's ask, or asks for another thing.
+/// The first argument of a reflex that takes a text in quotes and holds none in the call.
+fn text_lacked<'a>(active: &'a Active, args: &IndexMap<ArgName, Value>) -> Option<&'a ArgName> {
+    active.args.iter().find_map(|(arg, argument)| {
+        let quoted = matches!(
+            &argument.kind,
+            Kind::Value { source: Source::Pick(pick), .. } if pick.recognizer() == Recognizer::Quoted
+        );
+        (quoted && !args.contains_key(arg)).then_some(arg)
+    })
+}
+
+/// At this share a run of words answers an argument's ask, asks for another thing, or says what is wanted from
+/// the result.
 const LEFT: f64 = 0.5;
 
 /// The validated answers over the request and the plan they were asked from.
@@ -1756,12 +1774,27 @@ impl Reader<'_> {
             .iter()
             .filter_map(|(arg, value)| self.held(reflex, arg, value, basis.get(arg)))
             .collect();
+        let what = self
+            .plan
+            .route()
+            .options()
+            .get(reflex.as_str())
+            .map_or_else(
+                || reflex.to_string(),
+                |text| text.what().as_str().to_owned(),
+            );
+        let input = &self.request.state.request;
         let mut left = Vec::new();
-        for run in account::runs(&self.request.state.request, &held) {
-            let id = pins::left(reflex, run.from, run.to);
-            let question = account::question(&run, &active.args);
+        for run in account::runs(input, &held) {
+            let id = pins::does(reflex, run.from, run.to);
+            let question = account::question(&run, &active.args, &what);
             match self.answers.get(&id) {
-                Some(answer) => left.extend(account::read(&run, &question, answer)),
+                Some(answer) => {
+                    left.extend(account::read(&run, &question, answer).map(|read| Left {
+                        again: account::again(input, &held, &run),
+                        ..read
+                    }));
+                }
                 None => {
                     open.insert(id, question);
                 }
@@ -2240,6 +2273,18 @@ fn capped(active: &Active, chosen: Chosen, held: Vec<Cap>, gate: Option<&Gate>) 
     because.extend(chosen.quotes.iter().map(|words| Cap::Quoted {
         words: words.clone(),
     }));
+    if let Some(arg) = text_lacked(active, &chosen.call.args) {
+        because.extend(
+            chosen
+                .left
+                .iter()
+                .filter(|run| run.does == Does::Result && run.p.get() >= LEFT)
+                .map(|run| Cap::TextLeft {
+                    arg: arg.clone(),
+                    words: run.words.clone(),
+                }),
+        );
+    }
     if let Some((floor, p)) = gate.and_then(Gate::whole).zip(chosen.whole)
         && p < floor
     {
@@ -2306,6 +2351,26 @@ pub fn held(plan: &Plan, decision: Decision, cap: Cap) -> Decision {
         prompt,
         because,
     }
+}
+
+/// A decision whose reflex no other step of a plan has, or that stands alone with no plan around it: the words
+/// that say the call is wanted once more, «him too», «the same for Berlin», hold it as words that ask for another
+/// thing do, whatever the engine answered of them.
+#[must_use]
+pub fn alone(plan: &Plan, decision: Decision) -> Decision {
+    let left = match &decision {
+        Decision::Abstain { .. } => return decision,
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => &chosen.left,
+        Decision::Ask { asking, .. } => &asking.left,
+    };
+    let said: Vec<Span> = left
+        .iter()
+        .filter(|run| run.again)
+        .map(|run| run.words.clone())
+        .collect();
+    said.into_iter().fold(decision, |decision, words| {
+        held(plan, decision, Cap::More { words })
+    })
 }
 
 /// A reading given a value another part of the request states, with what the value stands on: the call

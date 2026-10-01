@@ -102,9 +102,9 @@ route                          = { errors = 0.95, deploys = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.is_outage__service_0"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_errors_0_0"        = { action = 0.95, courtesy = 0.05 }
-"weave.left_errors_2_2"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2100990710"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_errors_0_0"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_errors_2_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_2100990710"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."deploys"]
 route                          = { deploys = 0.95, errors = 0.02, none = 0.03 }
@@ -136,8 +136,8 @@ route                          = { deploys = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_status__state"     = { unstated = 0.95, investigating = 0.03, identified = 0.02 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_deploys_0_0"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_4021624876"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_deploys_0_0"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_4021624876"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."logs in eu-west"]
 route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
@@ -174,8 +174,8 @@ route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_0"    = { yes = 0.05 }
-"weave.left_logs_0_0"          = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2877856193"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_logs_0_0"          = { action = 0.95, courtesy = 0.05 }
+"weave.against_2877856193"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."find the deploy they point to"]
 route                          = { suspect = 0.95, errors = 0.02, none = 0.03 }
@@ -207,8 +207,8 @@ route                          = { suspect = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_status__state"     = { unstated = 0.95, investigating = 0.03, identified = 0.02 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_suspect_0_4"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2552723114"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_suspect_0_4"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_2552723114"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."roll it back"]
 route                          = { rollback = 0.95, errors = 0.02, none = 0.03 }
@@ -241,7 +241,7 @@ route                          = { rollback = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_status__state_3"     = { yes = 0.05 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_rollback_0_2"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_rollback_0_2"      = { action = 0.95, courtesy = 0.05 }
 
 [answers."post to #incident"]
 route                          = { post = 0.95, errors = 0.02, none = 0.03 }
@@ -274,8 +274,8 @@ route                          = { post = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_status__state"     = { unstated = 0.95, investigating = 0.03, identified = 0.02 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_post_0_0"          = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1461761989"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_post_0_0"          = { action = 0.95, courtesy = 0.05 }
+"weave.against_1461761989"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."update the status page"]
 route                          = { status = 0.95, errors = 0.02, none = 0.03 }
@@ -312,8 +312,8 @@ route                          = { status = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_1"    = { yes = 0.05 }
-"weave.left_status_0_3"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_121378356"        = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_status_0_3"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_121378356"      = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."check checkout's errors eu-west"]
 route                          = { errors = 0.95, none = 0.05 }
@@ -323,9 +323,9 @@ route                          = { errors = 0.95, none = 0.05 }
 "weave.is_errors__service_0"   = { yes = 0.95 }
 "weave.view_errors__region"    = { eu-west = 0.95, unstated = 0.05 }
 "weave.is_errors__region_0"    = { yes = 0.95 }
-"weave.left_errors_0_0"        = { action = 0.95, courtesy = 0.05 }
-"weave.left_errors_2_2"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1056623449"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_errors_0_0"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_errors_2_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_1056623449"     = { whole = 0.9, less = 0.05, other = 0.05 }
 "deploys.service"              = { unstated = 1.0 }
 "deploys.region"               = { unstated = 1.0 }
 "logs.service"                 = { unstated = 1.0 }
@@ -367,8 +367,8 @@ route                          = { deploys = 0.95, none = 0.05 }
 "weave.view_deploys__service"  = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_deploys__region"   = { eu-west = 0.95, unstated = 0.05 }
 "weave.is_deploys__region_0"   = { yes = 0.95 }
-"weave.left_deploys_0_0"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_38111573"         = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_deploys_0_0"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_38111573"       = { whole = 0.9, less = 0.05, other = 0.05 }
 "errors.service"               = { unstated = 1.0 }
 "errors.region"                = { unstated = 1.0 }
 "logs.service"                 = { unstated = 1.0 }
@@ -407,7 +407,7 @@ route                          = { rollback = 0.95, none = 0.05 }
 "weave.is_rollback__service_0" = { yes = 0.95 }
 "weave.view_rollback__region"  = { eu-west = 0.95, unstated = 0.05 }
 "weave.is_rollback__region_0"  = { yes = 0.95 }
-"weave.left_rollback_0_2"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_rollback_0_2"      = { action = 0.95, courtesy = 0.05 }
 "errors.service"               = { unstated = 1.0 }
 "errors.region"                = { unstated = 1.0 }
 "deploys.service"              = { unstated = 1.0 }
@@ -483,7 +483,7 @@ route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_outage__service_0"   = { yes = 0.95 }
 "weave.view_outage__region"    = { eu-west = 0.95, unstated = 0.05 }
 "weave.is_outage__region_0"    = { yes = 0.95 }
-"weave.left_outage_2_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_outage_2_2"        = { action = 0.95, courtesy = 0.05 }
 "weave.ref_3_0"                = { step2 = 0.8, step0 = 0.1, step1 = 0.1 }
 "weave.ref_3_1"                = { step2 = 0.7, step0 = 0.15, step1 = 0.15 }
 "weave.ref_4_0"                = { step3 = 0.9, step0 = 0.04, step1 = 0.03, step2 = 0.03 }
@@ -529,9 +529,9 @@ route                          = { errors = 0.95, deploys = 0.02, none = 0.03 }
 "weave.is_outage__service_0"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_0"    = { yes = 0.05 }
-"weave.left_errors_0_0"        = { action = 0.95, courtesy = 0.05 }
-"weave.left_errors_2_2"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1056623449"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_errors_0_0"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_errors_2_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_1056623449"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."list checkout's deploys in eu-west"]
 route                          = { deploys = 0.95, errors = 0.02, none = 0.03 }
@@ -574,9 +574,9 @@ route                          = { deploys = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_outage__service_0"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_0"    = { yes = 0.05 }
-"weave.left_deploys_0_0"       = { action = 0.95, courtesy = 0.05 }
-"weave.left_deploys_2_2"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_439829260"        = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_deploys_0_0"       = { action = 0.95, courtesy = 0.05 }
+"weave.does_deploys_2_2"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_439829260"      = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."search checkout's logs in eu-west"]
 route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
@@ -625,9 +625,9 @@ route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_outage__service_2"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_0"    = { yes = 0.05 }
-"weave.left_logs_0_0"          = { action = 0.95, courtesy = 0.05 }
-"weave.left_logs_2_2"          = { action = 0.95, courtesy = 0.05 }
-"weave.whole_3888249332"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_logs_0_0"          = { action = 0.95, courtesy = 0.05 }
+"weave.does_logs_2_2"          = { action = 0.95, courtesy = 0.05 }
+"weave.against_3888249332"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."find the release behind it"]
 route                          = { suspect = 0.95, errors = 0.02, none = 0.03 }
@@ -659,8 +659,8 @@ route                          = { suspect = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_status__state"     = { unstated = 0.95, investigating = 0.03, identified = 0.02 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_suspect_0_3"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2552723114"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_suspect_0_3"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_2552723114"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."roll checkout back from that release in eu-west"]
 route                          = { rollback = 0.95, errors = 0.02, none = 0.03 }
@@ -704,9 +704,9 @@ route                          = { rollback = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_outage__service_0"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_0"    = { yes = 0.05 }
-"weave.left_rollback_0_0"      = { action = 0.95, courtesy = 0.05 }
-"weave.left_rollback_2_2"      = { action = 0.95, courtesy = 0.05 }
-"weave.left_rollback_5_5"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_rollback_0_0"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_rollback_2_2"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_rollback_5_5"      = { action = 0.95, courtesy = 0.05 }
 
 [answers."post to the incident channel"]
 route                          = { post = 0.95, errors = 0.02, none = 0.03 }
@@ -739,9 +739,9 @@ route                          = { post = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_status__state"     = { unstated = 0.95, investigating = 0.03, identified = 0.02 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_post_0_0"          = { action = 0.95, courtesy = 0.05 }
-"weave.left_post_4_4"          = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1461761989"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_post_0_0"          = { action = 0.95, courtesy = 0.05 }
+"weave.does_post_4_4"          = { action = 0.95, courtesy = 0.05 }
+"weave.against_1461761989"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."update the status page for checkout"]
 route                          = { status = 0.95, errors = 0.02, none = 0.03 }
@@ -784,8 +784,8 @@ route                          = { status = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_outage__service_0"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_1"    = { yes = 0.05 }
-"weave.left_status_0_3"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2785253242"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_status_0_3"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_2785253242"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."checkout is failing in eu-west, show me the error rate"]
 route                          = { none = 0.95, errors = 0.05 }
@@ -864,8 +864,8 @@ route                          = { errors = 0.95, deploys = 0.02, none = 0.03 }
 "weave.view_status__state"     = { unstated = 0.95, investigating = 0.03, identified = 0.02 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_errors_0_4"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_3192640871"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_errors_0_4"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_3192640871"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."show me the error rate eu-west"]
 route                          = { errors = 0.95, none = 0.05 }
@@ -874,8 +874,8 @@ route                          = { errors = 0.95, none = 0.05 }
 "weave.view_errors__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_errors__region"    = { eu-west = 0.95, unstated = 0.05 }
 "weave.is_errors__region_0"    = { yes = 0.95 }
-"weave.left_errors_0_4"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_92195609"         = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_errors_0_4"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_92195609"       = { whole = 0.9, less = 0.05, other = 0.05 }
 "deploys.service"              = { unstated = 1.0 }
 "deploys.region"               = { unstated = 1.0 }
 "logs.service"                 = { unstated = 1.0 }
@@ -983,7 +983,7 @@ route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { payments = 0.95, unstated = 0.05 }
 "weave.is_outage__service_1"   = { yes = 0.95 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_outage_1_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_outage_1_2"        = { action = 0.95, courtesy = 0.05 }
 
 [answers."customers can't pay"]
 route                          = { outage = 0.92, errors = 0.02, none = 0.06 }
@@ -1015,7 +1015,7 @@ route                          = { outage = 0.92, errors = 0.02, none = 0.06 }
 "weave.view_status__state"     = { unstated = 0.95, investigating = 0.03, identified = 0.02 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_outage_0_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_outage_0_2"        = { action = 0.95, courtesy = 0.05 }
 
 [answers."check payments's errors"]
 route                          = { errors = 0.95, deploys = 0.02, none = 0.03 }
@@ -1048,8 +1048,8 @@ route                          = { errors = 0.95, deploys = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_errors__service_1"   = { yes = 0.95 }
-"weave.left_errors_0_2"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1594943914"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_errors_0_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_1594943914"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."list payments's deploys"]
 route                          = { deploys = 0.95, errors = 0.02, none = 0.03 }
@@ -1082,8 +1082,8 @@ route                          = { deploys = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_deploys__service_1"  = { yes = 0.95 }
-"weave.left_deploys_0_2"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_901190098"        = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_deploys_0_2"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_901190098"      = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."search payments's logs"]
 route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
@@ -1122,8 +1122,8 @@ route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_outage__service_2"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_logs__service_1"     = { yes = 0.95 }
-"weave.left_logs_0_2"          = { action = 0.95, courtesy = 0.05 }
-"weave.whole_605228218"        = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_logs_0_2"          = { action = 0.95, courtesy = 0.05 }
+"weave.against_605228218"      = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."roll payments back from that release"]
 route                          = { rollback = 0.95, errors = 0.02, none = 0.03 }
@@ -1162,9 +1162,9 @@ route                          = { rollback = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.is_outage__service_1"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_rollback_0_0"      = { action = 0.95, courtesy = 0.05 }
-"weave.left_rollback_2_2"      = { action = 0.95, courtesy = 0.05 }
-"weave.left_rollback_5_5"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_rollback_0_0"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_rollback_2_2"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_rollback_5_5"      = { action = 0.95, courtesy = 0.05 }
 
 [answers."update the status page for payments"]
 route                          = { status = 0.95, errors = 0.02, none = 0.03 }
@@ -1207,8 +1207,8 @@ route                          = { status = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_outage__service_1"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_1"    = { yes = 0.05 }
-"weave.left_status_0_3"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_619748450"        = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_status_0_3"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_619748450"      = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."we have an outage"]
 route                          = { outage = 0.94, incidents = 0.02, none = 0.04 }
@@ -1241,7 +1241,7 @@ route                          = { outage = 0.94, incidents = 0.02, none = 0.04 
 "weave.view_status__state"     = { unstated = 0.95, investigating = 0.03, identified = 0.02 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_outage_3_3"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_outage_3_3"        = { action = 0.95, courtesy = 0.05 }
 "weave.ref_3_0"                = { step2 = 0.8, step0 = 0.1, step1 = 0.1 }
 "weave.ref_3_1"                = { step2 = 0.7, step0 = 0.15, step1 = 0.15 }
 "weave.ref_4_0"                = { step3 = 0.9, step0 = 0.04, step1 = 0.03, step2 = 0.03 }
@@ -1371,8 +1371,8 @@ route                          = { errors = 0.95, deploys = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.is_outage__service_0"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_errors_0_2"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2100990710"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_errors_0_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_2100990710"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."the errors in eu-west"]
 route                          = { errors = 0.95, deploys = 0.02, none = 0.03 }
@@ -1409,8 +1409,8 @@ route                          = { errors = 0.95, deploys = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_0"    = { yes = 0.05 }
-"weave.left_errors_1_1"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_92195609"         = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_errors_1_1"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_92195609"       = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."check the errors for checkout eu-west"]
 route                          = { errors = 0.95, none = 0.05 }
@@ -1420,8 +1420,8 @@ route                          = { errors = 0.95, none = 0.05 }
 "weave.is_errors__service_0"   = { yes = 0.95 }
 "weave.view_errors__region"    = { eu-west = 0.95, unstated = 0.05 }
 "weave.is_errors__region_0"    = { yes = 0.95 }
-"weave.left_errors_0_2"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1056623449"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_errors_0_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_1056623449"     = { whole = 0.9, less = 0.05, other = 0.05 }
 "deploys.service"              = { unstated = 1.0 }
 "deploys.region"               = { unstated = 1.0 }
 "logs.service"                 = { unstated = 1.0 }
@@ -1499,9 +1499,9 @@ route                          = { errors = 0.95, deploys = 0.02, none = 0.03 }
 "weave.is_outage__region_0"    = { yes = 0.05 }
 "weave.split_0"                = { yes = 0.6 }
 "weave.count"                  = { one = 0.8, two = 0.2 }
-"weave.left_errors_0_2"        = { action = 0.95, courtesy = 0.05 }
-"weave.left_errors_6_6"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1056623449"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_errors_0_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_errors_6_6"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_1056623449"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."only in eu-west"]
 route                          = { none = 0.95, errors = 0.05 }
@@ -1829,8 +1829,8 @@ route                          = { errors = 0.95, deploys = 0.02, none = 0.03 }
 "weave.is_outage__service_0"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_0"    = { yes = 0.05 }
-"weave.left_errors_0_2"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1056623449"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_errors_0_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_1056623449"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."pull its logs there"]
 route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
@@ -1862,8 +1862,8 @@ route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_status__state"     = { unstated = 0.95, investigating = 0.03, identified = 0.02 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_logs_0_2"          = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2566098706"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_logs_0_2"          = { action = 0.95, courtesy = 0.05 }
+"weave.against_2566098706"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."pull the payments logs, not in us-east, in eu-west"]
 route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
@@ -1913,10 +1913,10 @@ route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_outage__region_1"    = { yes = 0.05 }
 "weave.split_0"                = { yes = 0.2 }
 "weave.count"                  = { two = 0.6, more = 0.35, one = 0.05 }
-"weave.left_logs_0_0"          = { action = 0.95, courtesy = 0.05 }
-"weave.left_logs_3_3"          = { action = 0.95, courtesy = 0.05 }
-"weave.left_logs_6_6"          = { "arg:region" = 0.9, action = 0.05, courtesy = 0.05 }
-"weave.whole_2360891681"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_logs_0_0"          = { action = 0.95, courtesy = 0.05 }
+"weave.does_logs_3_3"          = { action = 0.95, courtesy = 0.05 }
+"weave.does_logs_6_6"          = { "arg:region" = 0.9, action = 0.05, courtesy = 0.05 }
+"weave.against_2360891681"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."pull the payments logs"]
 route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
@@ -1954,9 +1954,9 @@ route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.is_outage__service_1"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_logs_0_0"          = { action = 0.95, courtesy = 0.05 }
-"weave.left_logs_3_3"          = { action = 0.95, courtesy = 0.05 }
-"weave.whole_605228218"        = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_logs_0_0"          = { action = 0.95, courtesy = 0.05 }
+"weave.does_logs_3_3"          = { action = 0.95, courtesy = 0.05 }
+"weave.against_605228218"      = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."payments is down in us-east"]
 route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
@@ -1999,7 +1999,7 @@ route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_outage__service_1"   = { yes = 0.95 }
 "weave.view_outage__region"    = { us-east = 0.95, unstated = 0.05 }
 "weave.is_outage__region_1"    = { yes = 0.95 }
-"weave.left_outage_2_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_outage_2_2"        = { action = 0.95, courtesy = 0.05 }
 
 [answers."search is broken"]
 route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
@@ -2037,7 +2037,7 @@ route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { search = 0.95, unstated = 0.05 }
 "weave.is_outage__service_2"   = { yes = 0.95 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_outage_2_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_outage_2_2"        = { action = 0.95, courtesy = 0.05 }
 
 [answers."we have an outage on checkout"]
 route                          = { outage = 0.95, incidents = 0.02, none = 0.03 }
@@ -2076,7 +2076,7 @@ route                          = { outage = 0.95, incidents = 0.02, none = 0.03 
 "weave.view_outage__service"   = { checkout = 0.95, unstated = 0.05 }
 "weave.is_outage__service_0"   = { yes = 0.95 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_outage_3_3"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_outage_3_3"        = { action = 0.95, courtesy = 0.05 }
 
 [answers."checkout is on fire in eu-west"]
 route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
@@ -2119,7 +2119,7 @@ route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_outage__service_0"   = { yes = 0.95 }
 "weave.view_outage__region"    = { eu-west = 0.95, unstated = 0.05 }
 "weave.is_outage__region_0"    = { yes = 0.95 }
-"weave.left_outage_3_3"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_outage_3_3"        = { action = 0.95, courtesy = 0.05 }
 
 [answers."payments stopped working"]
 route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
@@ -2157,7 +2157,7 @@ route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { payments = 0.95, unstated = 0.05 }
 "weave.is_outage__service_1"   = { yes = 0.95 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_outage_1_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_outage_1_2"        = { action = 0.95, courtesy = 0.05 }
 
 [answers."checkout is down"]
 route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
@@ -2195,7 +2195,7 @@ route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { checkout = 0.95, unstated = 0.05 }
 "weave.is_outage__service_0"   = { yes = 0.95 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_outage_2_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_outage_2_2"        = { action = 0.95, courtesy = 0.05 }
 
 [answers."handle the search outage"]
 route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
@@ -2234,8 +2234,8 @@ route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { search = 0.95, unstated = 0.05 }
 "weave.is_outage__service_2"   = { yes = 0.95 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_outage_0_0"        = { action = 0.95, courtesy = 0.05 }
-"weave.left_outage_3_3"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_outage_0_0"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_outage_3_3"        = { action = 0.95, courtesy = 0.05 }
 
 [answers."we lost search in us-east"]
 route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
@@ -2278,7 +2278,7 @@ route                          = { outage = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_outage__service_2"   = { yes = 0.95 }
 "weave.view_outage__region"    = { us-east = 0.95, unstated = 0.05 }
 "weave.is_outage__region_1"    = { yes = 0.95 }
-"weave.left_outage_1_1"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_outage_1_1"        = { action = 0.95, courtesy = 0.05 }
 
 [answers."how bad are the errors on payments right now"]
 route                          = { errors = 0.95, deploys = 0.02, none = 0.03 }
@@ -2316,9 +2316,9 @@ route                          = { errors = 0.95, deploys = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.is_outage__service_1"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_errors_0_4"        = { action = 0.95, courtesy = 0.05 }
-"weave.left_errors_7_7"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1594943914"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_errors_0_4"        = { action = 0.95, courtesy = 0.05 }
+"weave.does_errors_7_7"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_1594943914"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."downgrade search from 6.0.1"]
 route                                = { rollback = 0.95, errors = 0.02, none = 0.03 }
@@ -2357,7 +2357,7 @@ route                                = { rollback = 0.95, errors = 0.02, none = 
 "weave.view_outage__service"         = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.is_outage__service_2"         = { yes = 0.05 }
 "weave.view_outage__region"          = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_rollback_0_0"            = { action = 0.95, courtesy = 0.05 }
+"weave.does_rollback_0_0"            = { action = 0.95, courtesy = 0.05 }
 
 [answers."ping #ops that checkout recovered"]
 route                          = { post = 0.95, errors = 0.02, none = 0.03 }
@@ -2396,9 +2396,9 @@ route                          = { post = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.is_outage__service_0"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_post_0_0"          = { action = 0.95, courtesy = 0.05 }
-"weave.left_post_3_4"          = { action = 0.95, courtesy = 0.05 }
-"weave.whole_4202434580"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_post_0_0"          = { action = 0.95, courtesy = 0.05 }
+"weave.does_post_3_4"          = { action = 0.95, courtesy = 0.05 }
+"weave.against_4202434580"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."flip the status page to resolved for search"]
 route                          = { status = 0.95, errors = 0.02, none = 0.03 }
@@ -2442,8 +2442,8 @@ route                          = { status = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_outage__service_2"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_1"    = { yes = 0.05 }
-"weave.left_status_0_3"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_3303734967"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_status_0_3"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_3303734967"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."prepare a retro on the checkout outage"]
 route                          = { postmortem = 0.95, errors = 0.02, none = 0.03 }
@@ -2482,9 +2482,9 @@ route                          = { postmortem = 0.95, errors = 0.02, none = 0.03
 "weave.view_outage__service"   = { unstated = 0.95, checkout = 0.03, payments = 0.02 }
 "weave.is_outage__service_0"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
-"weave.left_postmortem_0_2"    = { action = 0.95, courtesy = 0.05 }
-"weave.left_postmortem_5_6"    = { action = 0.95, courtesy = 0.05 }
-"weave.whole_1520729581"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_postmortem_0_2"    = { action = 0.95, courtesy = 0.05 }
+"weave.does_postmortem_5_6"    = { action = 0.95, courtesy = 0.05 }
+"weave.against_1520729581"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."is the search service doing fine"]
 route                          = { none = 0.95, errors = 0.05 }
@@ -2596,8 +2596,8 @@ route                          = { errors = 0.95, deploys = 0.02, none = 0.03 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_1"    = { yes = 0.05 }
 "weave.is_errors__service_1"   = { yes = 0.95 }
-"weave.left_errors_0_2"        = { action = 0.95, courtesy = 0.05 }
-"weave.whole_3436830913"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_errors_0_2"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_3436830913"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."list payments's deploys in us-east"]
 route                          = { deploys = 0.95, errors = 0.02, none = 0.03 }
@@ -2635,8 +2635,8 @@ route                          = { deploys = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_1"    = { yes = 0.05 }
 "weave.is_deploys__service_1"  = { yes = 0.95 }
-"weave.left_deploys_0_2"       = { action = 0.95, courtesy = 0.05 }
-"weave.whole_2945459131"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_deploys_0_2"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_2945459131"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."search payments's logs in us-east"]
 route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
@@ -2680,8 +2680,8 @@ route                          = { logs = 0.95, errors = 0.02, none = 0.03 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_1"    = { yes = 0.05 }
 "weave.is_logs__service_1"     = { yes = 0.95 }
-"weave.left_logs_0_2"          = { action = 0.95, courtesy = 0.05 }
-"weave.whole_3107244626"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_logs_0_2"          = { action = 0.95, courtesy = 0.05 }
+"weave.against_3107244626"     = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."roll payments back from that release in us-east"]
 route                          = { rollback = 0.95, errors = 0.02, none = 0.03 }
@@ -2725,6 +2725,6 @@ route                          = { rollback = 0.95, errors = 0.02, none = 0.03 }
 "weave.is_outage__service_1"   = { yes = 0.05 }
 "weave.view_outage__region"    = { unstated = 0.95, eu-west = 0.03, us-east = 0.02 }
 "weave.is_outage__region_1"    = { yes = 0.05 }
-"weave.left_rollback_0_0"      = { action = 0.95, courtesy = 0.05 }
-"weave.left_rollback_2_2"      = { action = 0.95, courtesy = 0.05 }
-"weave.left_rollback_5_5"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_rollback_0_0"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_rollback_2_2"      = { action = 0.95, courtesy = 0.05 }
+"weave.does_rollback_5_5"      = { action = 0.95, courtesy = 0.05 }

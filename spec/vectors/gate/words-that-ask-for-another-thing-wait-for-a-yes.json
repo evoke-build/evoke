@@ -74,7 +74,8 @@
               "text": "lock the door too"
             },
             "does": "more",
-            "p": 0.9
+            "p": 0.9,
+            "again": true
           }
         ],
         "unconsumed": [],
@@ -137,7 +138,8 @@
           "text": "lock the door too"
         },
         "does": "more",
-        "p": 0.9
+        "p": 0.9,
+        "again": true
       }
     ],
     "confidence": 0.92,

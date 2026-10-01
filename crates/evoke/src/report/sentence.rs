@@ -7,7 +7,7 @@ use std::fmt::Write as _;
 
 use evoke_core::adapter::QuestionId;
 use evoke_core::call::Value;
-use evoke_core::decide::{Basis, Choices, Judgment, Missing, View};
+use evoke_core::decide::{Basis, Cap, Choices, Judgment, Missing, View};
 use evoke_core::manifest::{Effect, Recognizer};
 use evoke_core::name::{AdapterId, ArgName};
 use evoke_core::propose::PickValue;
@@ -50,6 +50,11 @@ const NOT_SAID: &str = "not said";
 const NOT_LISTED: &str = "said, and not on the list";
 const NOT_QUOTED: &str = "said, without quotes";
 const NOT_READ: &str = "said, in a form evoke does not read";
+
+/// Under a call held against the request, the words that say what is wanted from the result: one run, and
+/// several.
+const ABOUT_RESULT: &str = "says what is wanted from the result";
+const ABOUT_RESULTS: &str = "say what is wanted from the result";
 
 /// What a part out of the plan does, by each answer.
 const A_REMARK: &str = "a reason or a remark";
@@ -773,7 +778,7 @@ fn holds(sentence: Option<&Sentence>, decision: &Decision) -> Option<Text> {
         let mut out: Vec<&str> = left
             .iter()
             .filter(|run| match &run.does {
-                Does::Action => false,
+                Does::Action | Does::Result => false,
                 Does::Answers { arg } => {
                     !run.cut && (!args.contains_key(arg) || basis.contains_key(arg))
                 }
@@ -789,6 +794,25 @@ fn holds(sentence: Option<&Sentence>, decision: &Decision) -> Option<Text> {
         if !out.is_empty() {
             let named: Vec<String> = out.into_iter().map(said).collect();
             let _ = write!(body, ", leaves out {}", named.join(", "));
+        }
+        // Words about the result are named apart, never as left out; those that may be a text the call lacks
+        // are named by the line that says why the call waits.
+        let text_left = |words: &Span| {
+            matches!(decision, Decision::Confirm { because, .. }
+                if because.iter().any(|cap| matches!(cap, Cap::TextLeft { words: left, .. } if left == words)))
+        };
+        let about: Vec<String> = left
+            .iter()
+            .filter(|run| run.does == Does::Result && !text_left(&run.words))
+            .map(|run| said(run.words.text().as_str()))
+            .collect();
+        if !about.is_empty() {
+            let says = if about.len() == 1 {
+                ABOUT_RESULT
+            } else {
+                ABOUT_RESULTS
+            };
+            let _ = write!(body, "; {} {says}", about.join(", "));
         }
     }
     Some(row(HOLDS, Text::from(body)))

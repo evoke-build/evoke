@@ -112,3 +112,26 @@ $ evoke why
     'tea' is in quotes and the call does not hold it
 
   replay answered 20 questions in 3 rounds
+# Words that say the call is wanted once more hold it, where the plan holds the call once.
+$ evoke "kill the lights in the den too"
+  lights room="den" state="off" · write · weakest: room 0.92
+    "too" asks for another thing
+  Set the den lights off?  [y]es [n]o [t]each > n
+[2]
+# Words read as about the result may be the text a call takes and does not hold.
+$ evoke "set a timer for 10 minutes saying tea is ready"
+  timer duration="10 minutes" · write · weakest: route 0.96
+    "saying tea is ready" may be the label
+  Start a 10 minutes timer?  [y]es [n]o [t]each > n
+[2]
+$ evoke why
+  "set a timer for 10 minutes saying tea is ready"
+
+  which reflex            timer 0.96   (none of them 0.02 · lights 0.01)
+                          Count down a duration, then sound an alert.
+  duration                "10 minutes" 0.97   (not said 0.03)
+  holds all you said      0.90
+  → declined: timer duration="10 minutes" · write · weakest: route 0.96
+    "saying tea is ready" may be the label
+
+  replay answered 23 questions in 3 rounds

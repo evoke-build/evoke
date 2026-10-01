@@ -12,12 +12,12 @@ whole = 0.3
 route                         = { hello = 0.97, none = 0.03 }
 "hello.who"                   = { 11-14 = 0.98, unstated = 0.02 }
 "weave.only_hello__who_11_14" = { yes = 0.05 }
-"weave.left_hello_0_0"        = { action = 0.9, courtesy = 0.1 }
-"weave.whole_2035412049"      = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_hello_0_0"        = { action = 0.9, courtesy = 0.1 }
+"weave.against_2035412049"    = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."wave at \"grace\""]
 route                        = { hello = 0.96, none = 0.04 }
 "hello.who"                  = { 9-14 = 0.97, unstated = 0.03 }
 "weave.only_hello__who_9_14" = { yes = 0.05 }
-"weave.left_hello_0_0"       = { action = 0.9, courtesy = 0.1 }
-"weave.whole_2199872396"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_hello_0_0"       = { action = 0.9, courtesy = 0.1 }
+"weave.against_2199872396"   = { whole = 0.9, less = 0.05, other = 0.05 }

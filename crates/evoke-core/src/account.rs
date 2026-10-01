@@ -7,6 +7,7 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
 use crate::adapter::{Choice, Key, Prob, Question, Text};
+use crate::hold;
 use crate::manifest::{Argument, Kind};
 use crate::name::ArgName;
 use crate::text::{Clean, Input, Span};
@@ -47,11 +48,23 @@ const CLOSING: [char; 6] = [',', '.', ';', ':', '!', '?'];
 /// The most runs a text is asked about.
 const MOST: usize = 6;
 
+/// What opens the question of a run: how the request is read, by the reflex's description whole.
+const READ_AS: &str = "The request is read as:";
+/// The marks that end a sentence, and the one a description read before the ask ends on when it has none.
+const ENDS: [char; 3] = ['.', '!', '?'];
+const STOP: char = '.';
+
 /// What the question asks of a run, and what each answer says.
 const ACTION: &str = "They say what to do, or to what.";
 const ANSWER: &str = "They answer:";
+const RESULT: &str = "They say what is wanted from the result, or how it should come.";
 const COURTESY: &str = "They are politeness, a reason or an aside, and ask for nothing.";
 const MORE: &str = "They ask for another thing as well.";
+
+/// The words by which a run says the call is wanted once more, for another value or as well: «him too», «the
+/// same for Berlin». Each is found as whole words, in the run or across it and the words beside it that carry
+/// nothing, which a run's ends leave out: «the same for Berlin» is the run «same».
+pub(crate) const AGAIN: [&str; 5] = ["same for", "as well", "aswell", "too", "also"];
 
 /// The marks that open and close a text in quotes, each with its pair: double, single and typographic. A mark
 /// opens only at a word's start and closes only at a word's end, so an apostrophe inside a word, «Sam's», is none.
@@ -81,6 +94,8 @@ pub enum Does {
     Action,
     /// It answers an argument's ask.
     Answers { arg: ArgName },
+    /// It says what is wanted from the result, or how it should come, and asks for nothing.
+    Result,
     /// It is politeness, a reason or an aside, and asks for nothing.
     Nothing,
     /// It asks for another thing as well.
@@ -98,6 +113,9 @@ pub struct Left {
     /// so that the value may be cut short of them: found by code where the words are read.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub cut: bool,
+    /// Whether its words say the call is wanted once more (`AGAIN`): found by code where the words are read.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub again: bool,
 }
 
 /// The runs of the input that none of the spans holds, six at most: cut where a held word stands and before a
@@ -151,9 +169,10 @@ fn run(input: &Input, tokens: &[Token], from: usize, to: usize) -> Option<Run> {
     })
 }
 
-/// The question of a run: what its words do, among saying what to do, answering one of the reflex's asks,
-/// asking for nothing, and asking for another thing.
-pub(crate) fn question(run: &Run, args: &IndexMap<ArgName, Argument>) -> Question {
+/// The question of a run: read with what the reflex does, `what` its description, what the run's words do,
+/// among saying what to do, answering one of the reflex's asks, saying what is wanted from the result, asking
+/// for nothing, and asking for another thing.
+pub(crate) fn question(run: &Run, args: &IndexMap<ArgName, Argument>, what: &str) -> Question {
     let mut options: IndexMap<Key, Text> = IndexMap::new();
     options.insert(key("action"), plain(ACTION));
     for (name, argument) in args {
@@ -164,15 +183,27 @@ pub(crate) fn question(run: &Run, args: &IndexMap<ArgName, Argument>) -> Questio
             );
         }
     }
+    options.insert(key("result"), plain(RESULT));
     options.insert(key("courtesy"), plain(COURTESY));
     options.insert(key("more"), plain(MORE));
     let ask = format!(
-        "In the request, what do the words \u{ab}{}\u{bb} do?",
+        "{READ_AS} {} In the request, what do the words \u{ab}{}\u{bb} do?",
+        described(what),
         run.words.text()
     );
     Question::Choice(
         Choice::new(clean(&ask), options, None).expect("a choice without a sentinel is one"),
     )
+}
+
+/// A description as the ask reads it before the words: one line, ending on a stop where it ends on no mark of
+/// its own.
+fn described(what: &str) -> String {
+    let mut line = hold::one_line(what);
+    if !line.ends_with(ENDS) {
+        line.push(STOP);
+    }
+    line
 }
 
 /// What an answer says a run does: the first of its most probable options.
@@ -187,6 +218,7 @@ pub(crate) fn read(run: &Run, question: &Question, answer: &IndexMap<Key, Prob>)
         .reduce(|best, next| if next.1 > best.1 { next } else { best })?;
     let does = match top.as_str() {
         "action" => Does::Action,
+        "result" => Does::Result,
         "courtesy" => Does::Nothing,
         "more" => Does::More,
         other => Does::Answers {
@@ -198,6 +230,36 @@ pub(crate) fn read(run: &Run, question: &Question, answer: &IndexMap<Key, Prob>)
         does,
         p,
         cut: false,
+        again: false,
+    })
+}
+
+/// Whether a run says the call is wanted once more: a phrase of `AGAIN` among its words, or across them and the
+/// words beside it that carry nothing and no value holds, which its ends leave out. `held` are the spans the
+/// run was cut by, as `runs` took them.
+pub(crate) fn again(input: &Input, held: &[&Span], run: &Run) -> bool {
+    let tokens = words::tokens(input.as_str());
+    let beside = |token: &Token| {
+        words::function(&token.plain)
+            && !held
+                .iter()
+                .any(|span| token.start < span.end() && token.end > span.start())
+    };
+    let mut from = run.from;
+    while from > 0 && beside(&tokens[from - 1]) {
+        from -= 1;
+    }
+    let mut to = run.to;
+    while to + 1 < tokens.len() && beside(&tokens[to + 1]) {
+        to += 1;
+    }
+    let words: Vec<&str> = tokens[from..=to]
+        .iter()
+        .map(|token| token.plain.as_str())
+        .collect();
+    AGAIN.iter().any(|phrase| {
+        let phrase: Vec<&str> = phrase.split(' ').collect();
+        words.windows(phrase.len()).any(|window| window == phrase)
     })
 }
 
@@ -287,6 +349,73 @@ mod tests {
     fn words_that_carry_nothing_make_no_run() {
         assert_eq!(left("and then the den", &[(13, 16)]), Vec::<String>::new());
         assert_eq!(left("please, to me", &[]), Vec::<String>::new());
+    }
+
+    #[test]
+    fn a_description_is_read_as_a_sentence() {
+        assert_eq!(
+            described("Lock the screen.\nEverything keeps running."),
+            "Lock the screen. Everything keeps running."
+        );
+        assert_eq!(described("Lock the screen"), "Lock the screen.");
+        assert_eq!(described("What is left?"), "What is left?");
+    }
+
+    /// Each run of the words once `held` spans are taken out, and whether it says the call is wanted once more.
+    fn again_of(input: &str, held: &[(usize, usize)]) -> Vec<(String, bool)> {
+        let input = Input::new(input).unwrap();
+        let spans: Vec<Span> = held
+            .iter()
+            .map(|(start, end)| Span::of(&input, *start, *end).unwrap())
+            .collect();
+        let held: Vec<&Span> = spans.iter().collect();
+        runs(&input, &held)
+            .into_iter()
+            .map(|run| (run.words.text().to_string(), again(&input, &held, &run)))
+            .collect()
+    }
+
+    fn pairs(expected: &[(&str, bool)]) -> Vec<(String, bool)> {
+        expected
+            .iter()
+            .map(|(words, again)| ((*words).to_owned(), *again))
+            .collect()
+    }
+
+    #[test]
+    fn words_that_say_the_call_is_wanted_once_more() {
+        assert_eq!(
+            again_of("lock the door too", &[]),
+            pairs(&[("lock the door too", true)])
+        );
+        assert_eq!(again_of("him too", &[]), pairs(&[("him too", true)]));
+        // «second» marks no second request by itself.
+        assert_eq!(
+            again_of("lock the second one", &[]),
+            pairs(&[("lock the second one", false)])
+        );
+        // «madrid» and «berlin» held: the run is «same», and «the» and «for» beside it make «the same for».
+        assert_eq!(
+            again_of(
+                "flights for madrid, and the same for berlin",
+                &[(12, 18), (37, 43)]
+            ),
+            pairs(&[("flights", false), ("same", true)])
+        );
+        // «sam's» held: «as» cuts the run, and makes «as well» with «well».
+        assert_eq!(
+            again_of("sam's laptop as well", &[(0, 5)]),
+            pairs(&[("laptop", false), ("well", true)])
+        );
+        // «den» held: nothing says it again.
+        assert_eq!(
+            again_of("kill the lights in the den", &[(23, 26)]),
+            pairs(&[("kill the lights", false)])
+        );
+        assert_eq!(
+            again_of("set a timer the length of the last one", &[]),
+            pairs(&[("set a timer the length of the last one", false)])
+        );
     }
 
     #[test]

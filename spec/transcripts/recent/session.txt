@@ -33,3 +33,21 @@ $ evoke "list the checkout deploys, then roll back the last one"
   From which release?  >
   nothing runs: step 2 has no release
 [2]
+# Words that say how the result should come are named apart from what the call leaves out.
+$ evoke "list the checkout deploys from monday with the newest first"
+  deploys service="checkout" · read · weakest: route 0.95
+    it holds all you said at 0.20, and a call runs at 0.30 or more; it leaves out "monday"; "newest first" says what is wanted from the result
+  List the deploys of checkout?  [y]es [n]o [t]each > y
+checkout: 2 deploys today, the last 4.12.0 at 13:58
+$ evoke why
+  "list the checkout deploys from monday with the newest first"
+
+  which reflex            deploys 0.95   (none of them 0.03 · errors 0.02)
+                          List the recent deploys of a service.
+  service                 checkout 0.95   (not said 0.05)
+                          asked a second way: checkout 0.95; the less sure of the two counts
+  holds all you said      0.20, leaves out "monday"; "newest first" says what is wanted from the result
+  → ran at your yes: deploys service="checkout" · read · weakest: route 0.95
+    it holds all you said at 0.20, and a call runs at 0.30 or more; it leaves out "monday"; "newest first" says what is wanted from the result
+
+  replay answered 35 questions in 2 rounds

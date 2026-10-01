@@ -25,21 +25,19 @@ const YES: &str = "Yes.";
 /// The answer that says the reading holds all the request says.
 pub(crate) const HOLDS: &str = "whole";
 
-/// The call as a sentence: what the reflex does, by the first line of its description, then each argument's ask
-/// with the value the reading holds, or that none is said; a flag only where the request states it.
+/// The call as a sentence: what the reflex does, by its description whole, then each argument's ask with the
+/// value the reading holds, or that none is said; a flag only where the request states it.
 fn read_back(
     plan: &Plan,
     reflex: &LocalName,
     active: &Active,
     args: &IndexMap<ArgName, Value>,
 ) -> String {
-    let summary = plan.route().options().get(reflex.as_str()).map_or_else(
-        || reflex.to_string(),
-        |text| {
-            let what = text.what().as_str();
-            what.lines().next().unwrap_or(what).to_owned()
-        },
-    );
+    let summary = plan
+        .route()
+        .options()
+        .get(reflex.as_str())
+        .map_or_else(|| reflex.to_string(), |text| one_line(text.what().as_str()));
     let mut parts = vec![summary];
     for (arg, argument) in &active.args {
         let value = args.get(arg);
@@ -51,6 +49,15 @@ fn read_back(
         }
     }
     parts.join(" ")
+}
+
+/// A description as one line: each line trimmed, a blank one dropped, the rest joined by a space.
+pub(crate) fn one_line(what: &str) -> String {
+    what.lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 /// The question that holds a call against its request: the call read back, under an id that stands for the
@@ -73,5 +80,23 @@ pub(crate) fn question(
         .map(|(answer, text)| Some((Key::new(answer).ok()?, Text::Plain(Clean::new(text).ok()?))))
         .collect::<Option<_>>()?;
     let choice = Choice::new(ask, options, None).ok()?;
-    Some((pins::whole(&call), Question::Choice(choice)))
+    Some((pins::against(&call), Question::Choice(choice)))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_description_reads_as_one_line() {
+        assert_eq!(one_line("Lock the screen."), "Lock the screen.");
+        assert_eq!(
+            one_line("Lock the screen.\nEverything keeps running."),
+            "Lock the screen. Everything keeps running."
+        );
+        assert_eq!(
+            one_line("Lock the screen. \n\n  Everything keeps running.\n"),
+            "Lock the screen. Everything keeps running."
+        );
+    }
 }

@@ -116,7 +116,8 @@
                   "text": "same"
                 },
                 "does": "action",
-                "p": 0.95
+                "p": 0.95,
+                "again": true
               },
               {
                 "words": {
@@ -291,7 +292,8 @@
                     "text": "same"
                   },
                   "does": "action",
-                  "p": 0.95
+                  "p": 0.95,
+                  "again": true
                 },
                 {
                   "words": {

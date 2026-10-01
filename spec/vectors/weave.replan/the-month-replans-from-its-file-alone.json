@@ -921,15 +921,15 @@
             "weave.is_ledger__month_1": {
               "yes": 0.05
             },
-            "weave.left_bank_0_0": {
+            "weave.does_bank_0_0": {
               "action": 0.95,
               "courtesy": 0.05
             },
-            "weave.left_bank_2_3": {
+            "weave.does_bank_2_3": {
               "action": 0.95,
               "courtesy": 0.05
             },
-            "weave.whole_2515170299": {
+            "weave.against_2515170299": {
               "whole": 0.9,
               "less": 0.05,
               "other": 0.05
@@ -1091,7 +1091,7 @@
               "august": 0.03,
               "september": 0.02
             },
-            "weave.left_invoices_0_2": {
+            "weave.does_invoices_0_2": {
               "action": 0.95,
               "courtesy": 0.05
             }
@@ -1241,11 +1241,11 @@
               "august": 0.03,
               "september": 0.02
             },
-            "weave.left_payroll_0_0": {
+            "weave.does_payroll_0_0": {
               "action": 0.95,
               "courtesy": 0.05
             },
-            "weave.whole_1626937972": {
+            "weave.against_1626937972": {
               "whole": 0.9,
               "less": 0.05,
               "other": 0.05
@@ -1397,11 +1397,11 @@
               "august": 0.03,
               "september": 0.02
             },
-            "weave.left_reconcile_0_1": {
+            "weave.does_reconcile_0_1": {
               "action": 0.95,
               "courtesy": 0.05
             },
-            "weave.whole_3804433753": {
+            "weave.against_3804433753": {
               "whole": 0.9,
               "less": 0.05,
               "other": 0.05
@@ -1537,11 +1537,11 @@
               "august": 0.03,
               "september": 0.02
             },
-            "weave.left_ledger_0_3": {
+            "weave.does_ledger_0_3": {
               "action": 0.95,
               "courtesy": 0.05
             },
-            "weave.left_ledger_6_6": {
+            "weave.does_ledger_6_6": {
               "action": 0.95,
               "courtesy": 0.05
             }
@@ -1717,7 +1717,7 @@
             "weave.only_send__to_19_34": {
               "yes": 0.05
             },
-            "weave.left_send_0_2": {
+            "weave.does_send_0_2": {
               "action": 0.95,
               "courtesy": 0.05
             }
@@ -1885,11 +1885,11 @@
               "august": 0.03,
               "september": 0.02
             },
-            "weave.left_invoices_0_0": {
+            "weave.does_invoices_0_0": {
               "action": 0.95,
               "courtesy": 0.05
             },
-            "weave.whole_1226681300": {
+            "weave.against_1226681300": {
               "whole": 0.9,
               "less": 0.05,
               "other": 0.05
@@ -2041,11 +2041,11 @@
               "august": 0.03,
               "september": 0.02
             },
-            "weave.left_cards_0_1": {
+            "weave.does_cards_0_1": {
               "action": 0.95,
               "courtesy": 0.05
             },
-            "weave.whole_1791599404": {
+            "weave.against_1791599404": {
               "whole": 0.9,
               "less": 0.05,
               "other": 0.05

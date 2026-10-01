@@ -153,26 +153,28 @@
           "yes": "«150 percent»",
           "no": "Other words, or none."
         },
-        "weave.left_lights_3_3": {
+        "weave.does_lights_3_3": {
           "type": "choice",
-          "ask": "In the request, what do the words «lights» do?",
+          "ask": "The request is read as: Turn the lights in one room on, off, or dim them. Ceiling and lamp lights only. In the request, what do the words «lights» do?",
           "options": {
             "action": "They say what to do, or to what.",
             "arg:room": "They answer: Which room?",
             "arg:state": "They answer: What should the lights do?",
             "arg:brightness": "They answer: How bright, in percent?",
+            "result": "They say what is wanted from the result, or how it should come.",
             "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
             "more": "They ask for another thing as well."
           }
         },
-        "weave.left_lights_5_6": {
+        "weave.does_lights_5_6": {
           "type": "choice",
-          "ask": "In the request, what do the words «150 percent» do?",
+          "ask": "The request is read as: Turn the lights in one room on, off, or dim them. Ceiling and lamp lights only. In the request, what do the words «150 percent» do?",
           "options": {
             "action": "They say what to do, or to what.",
             "arg:room": "They answer: Which room?",
             "arg:state": "They answer: What should the lights do?",
             "arg:brightness": "They answer: How bright, in percent?",
+            "result": "They say what is wanted from the result, or how it should come.",
             "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
             "more": "They ask for another thing as well."
           }
@@ -266,11 +268,11 @@
       "weave.only_lights__brightness_22_33": {
         "yes": 0.1
       },
-      "weave.left_lights_3_3": {
+      "weave.does_lights_3_3": {
         "action": 0.95,
         "courtesy": 0.05
       },
-      "weave.left_lights_5_6": {
+      "weave.does_lights_5_6": {
         "action": 0.95,
         "courtesy": 0.05
       }

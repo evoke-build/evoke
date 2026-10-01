@@ -813,14 +813,14 @@ export type Basis =
   /** A value another part of the request states, which a yes says is this part's too: that part's words. */
   | { by: "shared"; from: string; yes: Prob }
 
-/** What a run of words does in the request: it says what to do, answers an argument's ask, asks for nothing, or
- *  asks for another thing. */
-export type Does = { does: "action" } | { does: "answers"; arg: ArgName } | { does: "nothing" } | { does: "more" }
+/** What a run of words does in the request: it says what to do, answers an argument's ask, says what is wanted
+ *  from the result, asks for nothing, or asks for another thing. */
+export type Does = { does: "action" } | { does: "answers"; arg: ArgName } | { does: "result" } | { does: "nothing" } | { does: "more" }
 
 /** A run of the request's words that no value holds, with what it does and how sure that is. `cut` is set where
  *  the words answer an argument that holds a typed value and stand right after it: the value may be cut short of
- *  them. */
-export type Left = { words: Span; p: Prob; cut?: boolean } & Does
+ *  them; `again`, where they say the call is wanted once more, «too», «the same for». */
+export type Left = { words: Span; p: Prob; cut?: boolean; again?: boolean } & Does
 
 /** The reflex that won the route, with what its arguments read, and what each value read stands on. */
 export interface Winner {
@@ -941,6 +941,8 @@ export type Cap =
   | { type: "cut"; arg: ArgName; words: Span }
   /** Words the request puts in quotes that no value of the call holds, with their marks. */
   | { type: "quoted"; words: Span }
+  /** Words read as about the result, in a call that takes a text in quotes and holds none: they may be the text. */
+  | { type: "text_left"; arg: ArgName; words: Span }
   /** The call, held against the request, holds less than the request says. */
   | { type: "whole"; p: Prob; floor: Prob }
   /** A part of the request beside these words that asks for nothing and may add a detail the call does not

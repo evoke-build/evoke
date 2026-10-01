@@ -6,8 +6,11 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
-- A call confirms where the input may hold more than the call read: words right after a value, or a text in
-  quotes that no value took. The prompt names the words; the JSON line carries `cut` and `quotes`.
+- More requests run without a question. Words that say what you want from the result, like `newest first`,
+  no longer hold a call; `why` names them.
+- A call confirms where the input may hold more than the call read: words right after a value, a text in
+  quotes that no value took, a text the reflex takes that may be among the words left, or words that say the
+  call is wanted once more. The prompt names the words; the JSON line carries `cut`, `again` and `quotes`.
 
 ## [0.17.0] - 2026-09-30
 

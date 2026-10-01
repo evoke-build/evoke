@@ -140,24 +140,26 @@
           },
           "otherwise": "unstated"
         },
-        "weave.left_meeting_0_2": {
+        "weave.does_meeting_0_2": {
           "type": "choice",
-          "ask": "In the request, what do the words «move the meeting» do?",
+          "ask": "The request is read as: Move a meeting to a day and a time. The meeting moves to the day and the time you name. In the request, what do the words «move the meeting» do?",
           "options": {
             "action": "They say what to do, or to what.",
             "arg:day": "They answer: To which day?",
             "arg:time": "They answer: At what time?",
+            "result": "They say what is wanted from the result, or how it should come.",
             "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
             "more": "They ask for another thing as well."
           }
         },
-        "weave.left_meeting_6_6": {
+        "weave.does_meeting_6_6": {
           "type": "choice",
-          "ask": "In the request, what do the words «three» do?",
+          "ask": "The request is read as: Move a meeting to a day and a time. The meeting moves to the day and the time you name. In the request, what do the words «three» do?",
           "options": {
             "action": "They say what to do, or to what.",
             "arg:day": "They answer: To which day?",
             "arg:time": "They answer: At what time?",
+            "result": "They say what is wanted from the result, or how it should come.",
             "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
             "more": "They ask for another thing as well."
           }
@@ -246,11 +248,11 @@
         "checkout": 0.03,
         "payments": 0.02
       },
-      "weave.left_meeting_0_2": {
+      "weave.does_meeting_0_2": {
         "action": 0.95,
         "courtesy": 0.05
       },
-      "weave.left_meeting_6_6": {
+      "weave.does_meeting_6_6": {
         "action": 0.95,
         "courtesy": 0.05
       }

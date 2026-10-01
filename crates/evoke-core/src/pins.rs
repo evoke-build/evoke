@@ -48,10 +48,10 @@ pub(crate) fn only(reflex: &LocalName, arg: &ArgName, span: &Span) -> QuestionId
     own(&format!("only_{}_{}", pair(reflex, arg), ends(span)))
 }
 
-/// `weave.left_<reflex>_<from>_<to>`: what a run of the request's words does, by the places of its first and
+/// `weave.does_<reflex>_<from>_<to>`: what a run of the request's words does, by the places of its first and
 /// last word among the request's.
-pub(crate) fn left(reflex: &LocalName, from: usize, to: usize) -> QuestionId {
-    own(&format!("left_{reflex}_{from}_{to}"))
+pub(crate) fn does(reflex: &LocalName, from: usize, to: usize) -> QuestionId {
+    own(&format!("does_{reflex}_{from}_{to}"))
 }
 
 /// `weave.first_<reflex>__<argument>_<held>`: where a text typed without quotes begins, among the words no
@@ -81,10 +81,10 @@ pub(crate) fn last_choice(reflex: &LocalName, arg: &ArgName, readings: u32) -> Q
     own(&format!("text_{}_{readings}", pair(reflex, arg)))
 }
 
-/// `weave.whole_<call>`: a call held against the request, where `call` stands for the call on one line,
+/// `weave.against_<call>`: a call held against the request, where `call` stands for the call on one line,
 /// however the request spells its values.
-pub(crate) fn whole(call: &str) -> QuestionId {
-    own(&format!("whole_{}", short(identity(call).as_str())))
+pub(crate) fn against(call: &str) -> QuestionId {
+    own(&format!("against_{}", short(identity(call).as_str())))
 }
 
 /// A number that stands for a text in an id: the head of its digest.

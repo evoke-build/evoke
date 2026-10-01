@@ -83,7 +83,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:2f8678e825de947603f04a7deb934184e984520aef71863941f853fffce436ad",
+      "digest": "h1:59d01957d8394fb548a8fd02ff46cffde8d526db438800e667f4eba368a42c66",
       "active": {
         "note": {
           "effect": "write",

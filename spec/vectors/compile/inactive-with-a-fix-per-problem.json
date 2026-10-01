@@ -34,7 +34,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:367fa958872941ac371eec73a4b1271a9e10bf47ad6aece31e8c95577062e9ac",
+      "digest": "h1:ab6f30786fedf40ba813f33076d6c7ef77d67c5af0e2822a24c0022934070735",
       "active": {
         "timer": {
           "effect": "write",

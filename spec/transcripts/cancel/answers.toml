@@ -25,29 +25,29 @@ route                              = { none = 0.95, wait = 0.05 }
 "weave.only_timer__duration_27_36" = { yes = 0.05 }
 
 [answers."wait a while"]
-route                    = { wait = 0.95, pause = 0.02, timer = 0.01, none = 0.02 }
-"timer.duration"         = { unstated = 1.0 }
-"timer.label"            = { unstated = 1.0 }
-"weave.left_wait_0_2"    = { action = 0.9, courtesy = 0.1 }
-"weave.whole_1903086267" = { whole = 0.9, less = 0.05, other = 0.05 }
+route                      = { wait = 0.95, pause = 0.02, timer = 0.01, none = 0.02 }
+"timer.duration"           = { unstated = 1.0 }
+"timer.label"              = { unstated = 1.0 }
+"weave.does_wait_0_2"      = { action = 0.9, courtesy = 0.1 }
+"weave.against_1903086267" = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."pause a moment"]
-route                    = { pause = 0.95, wait = 0.02, timer = 0.01, none = 0.02 }
-"timer.duration"         = { unstated = 1.0 }
-"timer.label"            = { unstated = 1.0 }
-"weave.left_pause_0_2"   = { action = 0.9, courtesy = 0.1 }
-"weave.whole_1645265087" = { whole = 0.9, less = 0.05, other = 0.05 }
+route                      = { pause = 0.95, wait = 0.02, timer = 0.01, none = 0.02 }
+"timer.duration"           = { unstated = 1.0 }
+"timer.label"              = { unstated = 1.0 }
+"weave.does_pause_0_2"     = { action = 0.9, courtesy = 0.1 }
+"weave.against_1645265087" = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."start a 10 minute timer"]
 route                                = { timer = 0.95, wait = 0.01, pause = 0.01, none = 0.03 }
 "timer.duration"                     = { 8-17 = 0.95, unstated = 0.05 }
 "timer.label"                        = { unstated = 1.0 }
 "weave.only_timer__duration_8_17"    = { yes = 0.05 }
-"weave.left_timer_0_0"               = { action = 0.9, courtesy = 0.1 }
-"weave.left_timer_4_4"               = { action = 0.9, courtesy = 0.1 }
+"weave.does_timer_0_0"               = { action = 0.9, courtesy = 0.1 }
+"weave.does_timer_4_4"               = { action = 0.9, courtesy = 0.1 }
 "weave.word_timer__label_0"          = { yes = 0.05 }
 "weave.word_timer__label_1"          = { yes = 0.05 }
 "weave.word_timer__label_4"          = { yes = 0.05 }
 "weave.first_timer__label_246345331" = { unstated = 1.0 }
 "weave.run_timer__label_246345331"   = { unstated = 1.0 }
-"weave.whole_1123384719"             = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.against_1123384719"           = { whole = 0.9, less = 0.05, other = 0.05 }

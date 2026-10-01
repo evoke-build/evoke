@@ -140,7 +140,7 @@
         "write": 0.9,
         "whole": 0.3
       },
-      "set": "h1:34f6e07028e436c946340b93c16ccf030cd84f125ecfec463a17b0c0fbebd891",
+      "set": "h1:2d107e86be3cc4af46321aa80be338eca4727ed4b75e9188a9482eecd4dd2c4b",
       "reflexes": {
         "meeting": {
           "item": "h1:cfd7ca142f6fb5b7df7a5dc033c909b7fa6ce986b6511b96c1a4a4595e063785",
@@ -212,11 +212,11 @@
               "checkout": 0.03,
               "payments": 0.02
             },
-            "weave.left_meeting_0_2": {
+            "weave.does_meeting_0_2": {
               "action": 0.95,
               "courtesy": 0.05
             },
-            "weave.whole_2742233879": {
+            "weave.against_2742233879": {
               "whole": 0.9,
               "less": 0.05,
               "other": 0.05
@@ -433,11 +433,11 @@
               "checkout": 0.03,
               "payments": 0.02
             },
-            "weave.left_meeting_0_2": {
+            "weave.does_meeting_0_2": {
               "action": 0.95,
               "courtesy": 0.05
             },
-            "weave.whole_2742233879": {
+            "weave.against_2742233879": {
               "whole": 0.9,
               "less": 0.05,
               "other": 0.05

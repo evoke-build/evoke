@@ -53,9 +53,9 @@ route                        = { bank = 0.95, invoices = 0.02, none = 0.03 }
 "weave.is_payroll__month_1"  = { yes = 0.05 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.is_ledger__month_1"   = { yes = 0.05 }
-"weave.left_bank_0_0"        = { action = 0.9, courtesy = 0.1 }
-"weave.left_bank_2_3"        = { action = 0.9, courtesy = 0.1 }
-"weave.whole_2515170299"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_bank_0_0"        = { action = 0.9, courtesy = 0.1 }
+"weave.does_bank_2_3"        = { action = 0.9, courtesy = 0.1 }
+"weave.against_2515170299"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."invoices, card expenses"]
 route                        = { invoices = 0.65, cards = 0.02, none = 0.33 }
@@ -70,7 +70,7 @@ route                        = { invoices = 0.65, cards = 0.02, none = 0.33 }
 "weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
-"weave.left_invoices_0_2"    = { action = 0.9, courtesy = 0.1 }
+"weave.does_invoices_0_2"    = { action = 0.9, courtesy = 0.1 }
 
 [answers."payroll"]
 route                        = { payroll = 0.95, bank = 0.02, none = 0.03 }
@@ -85,8 +85,8 @@ route                        = { payroll = 0.95, bank = 0.02, none = 0.03 }
 "weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
-"weave.left_payroll_0_0"     = { action = 0.9, courtesy = 0.1 }
-"weave.whole_1626937972"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_payroll_0_0"     = { action = 0.9, courtesy = 0.1 }
+"weave.against_1626937972"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."reconcile them"]
 route                        = { reconcile = 0.95, bank = 0.02, none = 0.03 }
@@ -101,8 +101,8 @@ route                        = { reconcile = 0.95, bank = 0.02, none = 0.03 }
 "weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
-"weave.left_reconcile_0_1"   = { action = 0.9, courtesy = 0.1 }
-"weave.whole_3804433753"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_reconcile_0_1"   = { action = 0.9, courtesy = 0.1 }
+"weave.against_3804433753"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."post the closing entries to the ledger"]
 route                        = { ledger = 0.89, bank = 0.02, none = 0.09 }
@@ -117,8 +117,8 @@ route                        = { ledger = 0.89, bank = 0.02, none = 0.09 }
 "weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
-"weave.left_ledger_0_3"      = { action = 0.9, courtesy = 0.1 }
-"weave.left_ledger_6_6"      = { action = 0.9, courtesy = 0.1 }
+"weave.does_ledger_0_3"      = { action = 0.9, courtesy = 0.1 }
+"weave.does_ledger_6_6"      = { action = 0.9, courtesy = 0.1 }
 
 [answers."send the report to cfo@example.com"]
 route                        = { send = 0.95, bank = 0.02, none = 0.03 }
@@ -134,8 +134,8 @@ route                        = { send = 0.95, bank = 0.02, none = 0.03 }
 "weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.only_send__to_19_34"  = { yes = 0.05 }
-"weave.left_send_0_2"        = { action = 0.9, courtesy = 0.1 }
-"weave.whole_3493782436"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_send_0_2"        = { action = 0.9, courtesy = 0.1 }
+"weave.against_3493782436"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."invoices"]
 route                        = { invoices = 0.95, bank = 0.02, none = 0.03 }
@@ -150,8 +150,8 @@ route                        = { invoices = 0.95, bank = 0.02, none = 0.03 }
 "weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
-"weave.left_invoices_0_0"    = { action = 0.9, courtesy = 0.1 }
-"weave.whole_1226681300"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_invoices_0_0"    = { action = 0.9, courtesy = 0.1 }
+"weave.against_1226681300"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."card expenses"]
 route                        = { cards = 0.95, bank = 0.02, none = 0.03 }
@@ -166,5 +166,5 @@ route                        = { cards = 0.95, bank = 0.02, none = 0.03 }
 "weave.view_cards__month"    = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_payroll__month"  = { unstated = 0.95, august = 0.03, september = 0.02 }
 "weave.view_ledger__month"   = { unstated = 0.95, august = 0.03, september = 0.02 }
-"weave.left_cards_0_1"       = { action = 0.9, courtesy = 0.1 }
-"weave.whole_1791599404"     = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_cards_0_1"       = { action = 0.9, courtesy = 0.1 }
+"weave.against_1791599404"   = { whole = 0.9, less = 0.05, other = 0.05 }

@@ -34,7 +34,7 @@ export interface Ops {
     output: T.Result<T.Request, T.Diagnostic>
   }
   read: { input: { plan: T.Plan; gate?: T.Gate; request: T.Request; raw: T.Raw }; output: T.Result<T.Read, T.Fault> }
-  gate: { input: { plan: T.Plan; reading: T.Reading; gate?: T.Gate }; output: T.Decision }
+  gate: { input: { plan: T.Plan; reading: T.Reading; gate?: T.Gate; alone?: boolean }; output: T.Decision }
   fill: { input: { plan: T.Plan; asking: T.Asking; given: Record<T.ArgName, T.Value>; gate?: T.Gate }; output: T.Decision }
   by_name: { input: { plan: T.Plan; written: T.Written }; output: T.Result<T.Decision, T.Diagnostic> }
   picked: { input: { text: string; recognizer: T.Recognizer }; output: T.Value | null }

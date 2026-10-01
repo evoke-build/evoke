@@ -39,14 +39,15 @@
           "request": "screenshot this window"
         },
         "questions": {
-          "weave.left_screenshot_0_0": {
+          "weave.does_screenshot_0_0": {
             "type": "choice",
-            "ask": "In the request, what do the words «screenshot» do?",
+            "ask": "The request is read as: Capture the screen, a window or a selection. Saved to the desktop as PNG, or copied to the clipboard. In the request, what do the words «screenshot» do?",
             "options": {
               "action": "They say what to do, or to what.",
               "arg:area": "They answer: The whole screen, a window, or a selection?",
               "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
-              "more": "They ask for another thing as well."
+              "more": "They ask for another thing as well.",
+              "result": "They say what is wanted from the result, or how it should come."
             }
           }
         },

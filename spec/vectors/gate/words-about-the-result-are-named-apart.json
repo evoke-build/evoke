@@ -1,0 +1,199 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "deploys",
+          "route": 0.96
+        },
+        {
+          "reflex": "rollback",
+          "route": 0.02
+        },
+        {
+          "reflex": "meeting",
+          "route": 0
+        },
+        {
+          "reflex": "calendar",
+          "route": 0
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "deploys",
+          "p": 0.96
+        },
+        {
+          "question": "deploys.service",
+          "top": "checkout",
+          "p": 0.95
+        }
+      ],
+      "winner": {
+        "reflex": "deploys",
+        "args": {
+          "service": {
+            "type": "word",
+            "word": "checkout"
+          }
+        },
+        "basis": {
+          "service": {
+            "by": "views",
+            "ask": 0.95,
+            "reader": 0.95
+          }
+        },
+        "missing": [],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 4,
+              "text": "list"
+            },
+            "does": "action",
+            "p": 0.95
+          },
+          {
+            "words": {
+              "start": 18,
+              "end": 25,
+              "text": "deploys"
+            },
+            "does": "action",
+            "p": 0.95
+          },
+          {
+            "words": {
+              "start": 37,
+              "end": 42,
+              "text": "times"
+            },
+            "does": "result",
+            "p": 0.85
+          }
+        ],
+        "unconsumed": [],
+        "whole": 0.2,
+        "runner_up": {
+          "reflex": "rollback",
+          "route": 0.02
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    }
+  },
+  "expect": {
+    "outcome": "confirm",
+    "reflex": "deploys",
+    "args": {
+      "service": {
+        "type": "word",
+        "word": "checkout"
+      }
+    },
+    "call": "deploys service=\"checkout\"",
+    "effect": "read",
+    "basis": {
+      "service": {
+        "by": "views",
+        "ask": 0.95,
+        "reader": 0.95
+      }
+    },
+    "left": [
+      {
+        "words": {
+          "start": 0,
+          "end": 4,
+          "text": "list"
+        },
+        "does": "action",
+        "p": 0.95
+      },
+      {
+        "words": {
+          "start": 18,
+          "end": 25,
+          "text": "deploys"
+        },
+        "does": "action",
+        "p": 0.95
+      },
+      {
+        "words": {
+          "start": 37,
+          "end": 42,
+          "text": "times"
+        },
+        "does": "result",
+        "p": 0.85
+      }
+    ],
+    "whole": 0.2,
+    "confidence": 0.95,
+    "weakest": {
+      "question": "deploys.service",
+      "top": "checkout",
+      "p": 0.95
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "deploys",
+        "p": 0.96
+      },
+      {
+        "question": "deploys.service",
+        "top": "checkout",
+        "p": 0.95
+      }
+    ],
+    "runner_up": {
+      "reflex": "rollback",
+      "route": 0.02
+    },
+    "contenders": [
+      {
+        "reflex": "deploys",
+        "route": 0.96
+      },
+      {
+        "reflex": "rollback",
+        "route": 0.02
+      },
+      {
+        "reflex": "meeting",
+        "route": 0
+      },
+      {
+        "reflex": "calendar",
+        "route": 0
+      }
+    ],
+    "prompt": {
+      "own": "deploys service=\"checkout\" · read · weakest: service 0.95",
+      "reason": "it holds all you said at 0.20, and a call runs at 0.30 or more; \"times\" says what is wanted from the result",
+      "template": "List the deploys of checkout?"
+    },
+    "because": [
+      {
+        "type": "whole",
+        "p": 0.2,
+        "floor": 0.3
+      }
+    ]
+  }
+}

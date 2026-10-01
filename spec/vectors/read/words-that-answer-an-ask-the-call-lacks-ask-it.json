@@ -134,24 +134,26 @@
           },
           "otherwise": "unstated"
         },
-        "weave.left_timer_0_2": {
+        "weave.does_timer_0_2": {
           "type": "choice",
-          "ask": "In the request, what do the words «start a timer» do?",
+          "ask": "The request is read as: Count down a duration, then sound an alert. Seconds to hours; runs until it rings or you cancel it. In the request, what do the words «start a timer» do?",
           "options": {
             "action": "They say what to do, or to what.",
             "arg:duration": "They answer: How long?",
             "arg:label": "They answer: What is the timer for?",
+            "result": "They say what is wanted from the result, or how it should come.",
             "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
             "more": "They ask for another thing as well."
           }
         },
-        "weave.left_timer_5_5": {
+        "weave.does_timer_5_5": {
           "type": "choice",
-          "ask": "In the request, what do the words «eggs» do?",
+          "ask": "The request is read as: Count down a duration, then sound an alert. Seconds to hours; runs until it rings or you cancel it. In the request, what do the words «eggs» do?",
           "options": {
             "action": "They say what to do, or to what.",
             "arg:duration": "They answer: How long?",
             "arg:label": "They answer: What is the timer for?",
+            "result": "They say what is wanted from the result, or how it should come.",
             "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
             "more": "They ask for another thing as well."
           }
@@ -266,11 +268,11 @@
       "weave.view_lights__state": {
         "unstated": 1
       },
-      "weave.left_timer_0_2": {
+      "weave.does_timer_0_2": {
         "action": 0.95,
         "courtesy": 0.05
       },
-      "weave.left_timer_5_5": {
+      "weave.does_timer_5_5": {
         "arg:label": 0.9,
         "action": 0.05,
         "courtesy": 0.05

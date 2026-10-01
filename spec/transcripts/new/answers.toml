@@ -21,8 +21,8 @@ route                           = { hello = 0.97, none = 0.03 }
 "weave.view_lights__state"      = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__label_11_14" = { yes = 0.05 }
 "weave.only_hello__who_11_14"   = { yes = 0.05 }
-"weave.left_hello_0_0"          = { action = 0.9, courtesy = 0.1 }
-"weave.whole_2035412049"        = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_hello_0_0"          = { action = 0.9, courtesy = 0.1 }
+"weave.against_2035412049"      = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."wave at \"grace\""]
 route                          = { hello = 0.96, none = 0.04 }
@@ -37,5 +37,5 @@ route                          = { hello = 0.96, none = 0.04 }
 "weave.view_lights__state"     = { unstated = 0.95, on = 0.02, off = 0.02, dim = 0.01 }
 "weave.only_timer__label_9_14" = { yes = 0.05 }
 "weave.only_hello__who_9_14"   = { yes = 0.05 }
-"weave.left_hello_0_0"         = { action = 0.9, courtesy = 0.1 }
-"weave.whole_2199872396"       = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_hello_0_0"         = { action = 0.9, courtesy = 0.1 }
+"weave.against_2199872396"     = { whole = 0.9, less = 0.05, other = 0.05 }
