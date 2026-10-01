@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-10-01
+
 - More requests run without a question. Words that say what you want from the result, like `newest first`,
   no longer hold a call; `why` names them.
 - A call confirms where the input may hold more than the call read: words right after a value, a text in
