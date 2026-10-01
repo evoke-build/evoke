@@ -1,0 +1,31 @@
+{
+  "reflexes": {
+    "download": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "$ref": "fixtures/download.json"
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    }
+  },
+  "vocab": {
+    "places": {
+      "downloads": {
+        "what": "The Downloads folder."
+      },
+      "desktop": {
+        "what": "The desktop."
+      },
+      "documents": {
+        "what": "The Documents folder."
+      }
+    }
+  },
+  "adapter": "jev-1.13.0",
+  "evoke": "0.1.0"
+}

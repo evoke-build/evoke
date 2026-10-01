@@ -1,0 +1,99 @@
+{
+  "state": {
+    "request": "download https://example.com/menu.pdf into Downloads"
+  },
+  "questions": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "download": {
+          "what": "Download a file from a URL.\nInto your downloads folder or a place you name; nothing is opened or run.",
+          "not_for": [
+            "opening a page in the browser",
+            "cloning a repository"
+          ],
+          "examples": [
+            "download https://example.com/report.pdf",
+            "fetch https://example.com/photos.zip to the desktop",
+            "save https://example.com/notes.txt"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "download.url": {
+      "type": "choice",
+      "ask": "Which URL?",
+      "options": {
+        "9-37": "https://example.com/menu.pdf",
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "download.to": {
+      "type": "choice",
+      "ask": "Into which folder?",
+      "options": {
+        "downloads": "The Downloads folder.",
+        "desktop": "The desktop.",
+        "documents": "The Documents folder.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.only_download__url_9_37": {
+      "type": "yesno",
+      "ask": "Which URL?",
+      "yes": "«https://example.com/menu.pdf»",
+      "no": "Other words, or none."
+    },
+    "weave.view_download__to": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "downloads": "The Downloads folder.",
+        "desktop": "The desktop.",
+        "documents": "The Documents folder.",
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.is_download__to_0": {
+      "type": "yesno",
+      "ask": "Into which folder?",
+      "yes": "The Downloads folder.",
+      "no": "Another one, or none."
+    }
+  },
+  "proposed": [
+    {
+      "span": {
+        "start": 9,
+        "end": 37,
+        "text": "https://example.com/menu.pdf"
+      },
+      "value": {
+        "type": "url",
+        "value": "https://example.com/menu.pdf"
+      }
+    }
+  ],
+  "listed": {
+    "download.to": [
+      {
+        "key": "downloads",
+        "span": {
+          "start": 43,
+          "end": 52,
+          "text": "Downloads"
+        },
+        "how": "same"
+      }
+    ]
+  }
+}

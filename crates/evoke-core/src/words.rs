@@ -377,11 +377,12 @@ fn stem(word: &str) -> String {
     {
         return format!("{head}y");
     }
+    // A possessive's ending comes off first, and what is left may be a plural: «payments's».
     if let Some(head) = word
         .strip_suffix("'s")
         .or_else(|| word.strip_suffix("\u{2019}s"))
     {
-        return head.to_owned();
+        return stem(head);
     }
     if let Some(head) = word.strip_suffix('s')
         && !word.ends_with("ss")
@@ -427,6 +428,15 @@ pub(crate) fn courtesy(text: &str) -> bool {
         && words
             .iter()
             .all(|word| word.is_empty() || COURTESY.contains(&word.as_str()))
+}
+
+/// Whether the words of a finding say what to do, and so support no value: the reflex's own name in any number or
+/// tense, unless they are the listed word itself as its list writes it and not the name as it is written, which
+/// names the thing: «Downloads», the folder, beside `download`.
+#[must_use]
+pub(crate) fn says_what_to_do(held: &Listed, reflex: &str) -> bool {
+    let said = held.span.text().as_str();
+    names(said, reflex) && (held.how != How::Same || said.to_lowercase() == reflex.to_lowercase())
 }
 
 /// Whether a word of the request is a reflex's own name, whatever its number or tense: «downloaded» is

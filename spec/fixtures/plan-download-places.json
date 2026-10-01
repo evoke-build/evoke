@@ -1,5 +1,5 @@
 {
-  "digest": "h1:f138dd1fd19c17a7a66f6599dc2542234939c4604efbe63ccf295f25945786ea",
+  "digest": "h1:c45516fd4509fdf19cb02d44dbea9673f6de5a2db9e48f0e4e3e1ffb10e7315f",
   "active": {
     "download": {
       "effect": "write",
@@ -65,6 +65,18 @@
         "https://example.com/photos.zip",
         "https://example.com/notes.txt"
       ]
+    },
+    "download.to": {
+      "type": "choice",
+      "ask": "Into which folder?",
+      "options": {
+        "downloads": "The Downloads folder.",
+        "desktop": "The desktop.",
+        "documents": "The Documents folder.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
     }
   },
   "values": {},

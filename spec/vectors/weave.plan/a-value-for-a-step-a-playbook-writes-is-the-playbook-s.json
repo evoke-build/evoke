@@ -239,16 +239,24 @@
               "service": {
                 "by": "views",
                 "ask": 0.95,
-                "reader": 0.95,
-                "yes": 0.95
+                "reader": 0.95
               }
             },
             "left": [
               {
                 "words": {
                   "start": 0,
+                  "end": 5,
+                  "text": "check"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 17,
                   "end": 23,
-                  "text": "check payments's errors"
+                  "text": "errors"
                 },
                 "does": "action",
                 "p": 0.95
@@ -344,16 +352,24 @@
               "service": {
                 "by": "views",
                 "ask": 0.95,
-                "reader": 0.95,
-                "yes": 0.95
+                "reader": 0.95
               }
             },
             "left": [
               {
                 "words": {
                   "start": 0,
+                  "end": 4,
+                  "text": "list"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 16,
                   "end": 23,
-                  "text": "list payments's deploys"
+                  "text": "deploys"
                 },
                 "does": "action",
                 "p": 0.95
@@ -449,16 +465,24 @@
               "service": {
                 "by": "views",
                 "ask": 0.95,
-                "reader": 0.95,
-                "yes": 0.95
+                "reader": 0.95
               }
             },
             "left": [
               {
                 "words": {
                   "start": 0,
+                  "end": 6,
+                  "text": "search"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 18,
                   "end": 22,
-                  "text": "search payments's logs"
+                  "text": "logs"
                 },
                 "does": "action",
                 "p": 0.95
@@ -1028,16 +1052,24 @@
                 "service": {
                   "by": "views",
                   "ask": 0.95,
-                  "reader": 0.95,
-                  "yes": 0.95
+                  "reader": 0.95
                 }
               },
               "left": [
                 {
                   "words": {
                     "start": 0,
+                    "end": 5,
+                    "text": "check"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 17,
                     "end": 23,
-                    "text": "check payments's errors"
+                    "text": "errors"
                   },
                   "does": "action",
                   "p": 0.95
@@ -1144,16 +1176,24 @@
                 "service": {
                   "by": "views",
                   "ask": 0.95,
-                  "reader": 0.95,
-                  "yes": 0.95
+                  "reader": 0.95
                 }
               },
               "left": [
                 {
                   "words": {
                     "start": 0,
+                    "end": 4,
+                    "text": "list"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 16,
                     "end": 23,
-                    "text": "list payments's deploys"
+                    "text": "deploys"
                   },
                   "does": "action",
                   "p": 0.95
@@ -1260,16 +1300,24 @@
                 "service": {
                   "by": "views",
                   "ask": 0.95,
-                  "reader": 0.95,
-                  "yes": 0.95
+                  "reader": 0.95
                 }
               },
               "left": [
                 {
                   "words": {
                     "start": 0,
+                    "end": 6,
+                    "text": "search"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 18,
                     "end": 22,
-                    "text": "search payments's logs"
+                    "text": "logs"
                   },
                   "does": "action",
                   "p": 0.95

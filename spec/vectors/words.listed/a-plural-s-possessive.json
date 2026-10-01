@@ -1,0 +1,20 @@
+{
+  "input": {
+    "input": "how are payments's errors today",
+    "list": {
+      "payments": "The payments service.",
+      "checkout": "The checkout service."
+    }
+  },
+  "expect": [
+    {
+      "key": "payments",
+      "span": {
+        "start": 8,
+        "end": 18,
+        "text": "payments's"
+      },
+      "how": "stem"
+    }
+  ]
+}

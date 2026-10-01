@@ -1049,7 +1049,7 @@ fn found(plan: &Plan, narrowed: &[&LocalName], input: &Input, proposed: &[Propos
                     .collect();
                 let held: Vec<Listed> = words::listed(input, &list)
                     .into_iter()
-                    .filter(|held| !words::names(held.span.text().as_str(), reflex.as_str()))
+                    .filter(|held| !words::says_what_to_do(held, reflex.as_str()))
                     .collect();
                 if !held.is_empty() {
                     listed.insert(id.clone(), held);
