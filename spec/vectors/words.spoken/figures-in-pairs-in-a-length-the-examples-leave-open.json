@@ -1,6 +1,6 @@
 {
   "input": {
-    "input": "put D K eighty eight thirteen aside",
+    "input": "put B N forty one seventeen aside",
     "kind": "code",
     "examples": [
       "HS-0409",
@@ -13,11 +13,11 @@
       {
         "words": {
           "start": 4,
-          "end": 29,
-          "text": "D K eighty eight thirteen"
+          "end": 27,
+          "text": "B N forty one seventeen"
         },
         "readings": [
-          "DK-8813"
+          "BN-4117"
         ]
       }
     ]

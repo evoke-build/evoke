@@ -21,6 +21,7 @@ use crate::manifest::{
     self, Argument, Effect, Kind, Pick, Piece, Range, Recognizer, Source, Yield,
 };
 use crate::name::{self, ArgName, FieldName, LocalName, OptionKey, Tag, VocabName, Word};
+use crate::otherwise::{self, Anchored, Proposal};
 use crate::pins;
 use crate::plan::{
     Active, Plan, Slot, none as none_key, not_among, unstated as unstated_key, unstated_text,
@@ -124,20 +125,26 @@ pub enum Basis {
     /// The argument's own question gave it.
     Ask { p: Prob },
     /// Both views of a listed word gave it. `yes` is the word's own yes, asked where no word of the request
-    /// holds it.
+    /// holds it; `anchored`, the share the choice anchored on the words gave it and those words, where it
+    /// confirmed a word code found by its spelling or its meaning, or proposed.
     Views {
         ask: Prob,
         reader: Prob,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         yes: Option<Prob>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        anchored: Option<Anchored>,
     },
-    /// One view gave it, and words of the request hold it; `other` is what the other view answered.
+    /// One view gave it, and words of the request hold it; `other` is what the other view answered; `anchored`,
+    /// the share the choice anchored on those words gave it, where it confirmed them.
     View {
         view: View,
         p: Prob,
         other: Key,
         words: Span,
         how: How,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        anchored: Option<Prob>,
     },
     /// No view gave it: words of the request hold it, and a yes says it is meant.
     Words { words: Span, how: How, yes: Prob },
@@ -232,6 +239,9 @@ pub struct Missing {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub words: Option<Span>,
     pub choices: Choices,
+    /// The listed word most likely meant, made ready for a yes beside the choices, which keep their order.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub likely: Option<Key>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -798,6 +808,26 @@ fn ahead(
                     for held in found.iter().take(pins::MOST) {
                         own.extend(word_question(reflex, arg, argument, choice, &held.key));
                     }
+                    // Which word of a vocabulary the words name, asked of each span code found a word in by
+                    // its spelling or its meaning, or proposed one by as a slip or a prefix.
+                    if matches!(
+                        argument.kind,
+                        Kind::Value {
+                            source: Source::Vocab(_),
+                            ..
+                        }
+                    ) {
+                        let proposed = proposals(plan, request, reflex, arg, choice);
+                        for span in anchored_spans(found, &proposed)
+                            .into_iter()
+                            .take(pins::MOST)
+                        {
+                            own.insert(
+                                pins::words(reflex, arg, span),
+                                pins::words_question(choice, span),
+                            );
+                        }
+                    }
                 }
                 (
                     Kind::Value {
@@ -825,6 +855,72 @@ fn ahead(
         }
     }
     own
+}
+
+/// The spans a listed argument's anchored choice is asked of, each once, in the order code holds them: the words
+/// code found a listed word in by its spelling or its meaning, then those it proposed one by as a slip or a
+/// prefix.
+fn anchored_spans<'r>(found: &'r [Listed], proposed: &'r [Proposal]) -> Vec<&'r Span> {
+    let found = found
+        .iter()
+        .filter(|held| matches!(held.how, How::Spelling | How::Meaning))
+        .map(|held| &held.span);
+    let proposed = proposed
+        .iter()
+        .filter(|proposal| proposal.by.anchors())
+        .map(|proposal| &proposal.span);
+    let mut spans: Vec<&Span> = Vec::new();
+    for span in found.chain(proposed) {
+        if !spans.contains(&span) {
+            spans.push(span);
+        }
+    }
+    spans
+}
+
+/// The words of a vocabulary the request's words propose for an argument where code found none; none for the
+/// author's options. A pure function of the words, the argument's list, what code found and the words the set's
+/// reflexes say of themselves, so read wherever it is needed and never carried.
+pub(crate) fn proposals(
+    plan: &Plan,
+    request: &Request,
+    reflex: &LocalName,
+    arg: &ArgName,
+    choice: &Choice,
+) -> Vec<Proposal> {
+    let vocabulary = plan
+        .active()
+        .get(reflex)
+        .and_then(|active| active.args.get(arg))
+        .is_some_and(|argument| {
+            matches!(
+                argument.kind,
+                Kind::Value {
+                    source: Source::Vocab(_),
+                    ..
+                }
+            )
+        });
+    if !vocabulary {
+        return Vec::new();
+    }
+    let list: IndexMap<Key, Clean> = choice
+        .options()
+        .iter()
+        .filter(|(key, _)| !sentinel(key))
+        .map(|(key, text)| (key.clone(), text.what().clone()))
+        .collect();
+    let found = request
+        .listed
+        .get(&QuestionId::Arg(reflex.clone(), arg.clone()))
+        .map_or(&[][..], Vec::as_slice);
+    // The words the set's reflexes say of themselves say what to do: «check» and «down» abbreviate no listed word.
+    let own: Vec<String> = plan
+        .active()
+        .keys()
+        .flat_map(|name| own_words(plan, name))
+        .collect();
+    otherwise::proposed(&request.state.request, &list, found, reflex.as_str(), &own)
 }
 
 /// The yes or no on one listed word of an argument, by the word's place in the argument's list.
@@ -1814,6 +1910,7 @@ impl Reader<'_> {
                     because: Why::Unread,
                     words: Some(run.words.clone()),
                     choices: choices(self.plan, reflex, arg, source, None),
+                    likely: None,
                 });
             }
         }
@@ -1888,6 +1985,14 @@ impl Reader<'_> {
         match (value, stands) {
             (Value::Pick { span, .. }, _) => Some(span),
             (_, Some(Basis::View { words, .. } | Basis::Words { words, .. })) => Some(words),
+            // The words the anchored choice confirmed, a slip or a prefix among them.
+            (
+                _,
+                Some(Basis::Views {
+                    anchored: Some(anchored),
+                    ..
+                }),
+            ) => Some(&anchored.words),
             (Value::Option { key }, _) => self.word_held(reflex, arg, key.as_str()),
             (Value::Word { word, .. }, _) => self.word_held(reflex, arg, word.as_str()),
             (Value::Flag, _) => None,
@@ -1976,6 +2081,7 @@ pub(crate) fn unstated(
         because: Why::Unstated,
         words: None,
         choices: choices(plan, reflex, arg, source, recent),
+        likely: None,
     }
 }
 
@@ -2237,6 +2343,7 @@ fn settled(
                 because,
                 words: None,
                 choices: choices(plan, reflex, arg, source, None),
+                likely: None,
             }),
             // A flag given anything but itself is absent.
             (Err(_), Kind::Flag, _) => {}

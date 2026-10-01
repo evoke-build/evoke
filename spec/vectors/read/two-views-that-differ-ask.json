@@ -290,13 +290,19 @@
             "because": {
               "type": "unsettled"
             },
+            "words": {
+              "start": 23,
+              "end": 26,
+              "text": "den"
+            },
             "choices": {
               "type": "vocab",
               "words": {
                 "den": "The TV room downstairs; also 'the snug'.",
                 "office": "The upstairs study."
               }
-            }
+            },
+            "likely": "den"
           }
         ],
         "left": [

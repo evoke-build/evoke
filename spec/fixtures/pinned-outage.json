@@ -1050,7 +1050,7 @@
     "write": 0.9,
     "whole": 0.3
   },
-  "set": "h1:8bc7085b8e07a68a7f5a2ca03187fef2a7c57310bf034e200b0bdaa831ad7eea",
+  "set": "h1:f3445ab3c9b543075670527ccf1dc95d3b866651e1774e7272cd77950082c495",
   "reflexes": {
     "errors": {
       "item": "h1:1f9acbfabf353d8c96490f7e353815438f74a439fc043941cc2ebade08dfd2fe",
@@ -2463,6 +2463,11 @@
         "weave.is_errors__region_1": {
           "yes": 0.05
         },
+        "weave.words_errors__region_11_17": {
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
+        },
         "weave.view_deploys__service": {
           "unstated": 0.95,
           "checkout": 0.03,
@@ -2478,6 +2483,11 @@
         },
         "weave.is_deploys__region_1": {
           "yes": 0.05
+        },
+        "weave.words_deploys__region_11_17": {
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_logs__service": {
           "unstated": 0.95,
@@ -2495,6 +2505,11 @@
         "weave.is_logs__region_1": {
           "yes": 0.05
         },
+        "weave.words_logs__region_11_17": {
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
+        },
         "weave.view_rollback__service": {
           "unstated": 0.95,
           "checkout": 0.03,
@@ -2510,6 +2525,11 @@
         },
         "weave.is_rollback__region_1": {
           "yes": 0.05
+        },
+        "weave.words_rollback__region_11_17": {
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.view_post__channel": {
           "unstated": 0.95,
@@ -2543,6 +2563,11 @@
         },
         "weave.is_outage__region_1": {
           "yes": 0.05
+        },
+        "weave.words_outage__region_11_17": {
+          "unstated": 0.95,
+          "eu-west": 0.03,
+          "us-east": 0.02
         },
         "weave.does_status_0_3": {
           "action": 0.95,

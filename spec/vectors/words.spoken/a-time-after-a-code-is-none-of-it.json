@@ -1,6 +1,6 @@
 {
   "input": {
-    "input": "change L X eighteen thirty at nine forty five",
+    "input": "change Q R nineteen forty at nine forty five",
     "kind": "code",
     "examples": [
       "LX1830",
@@ -12,13 +12,13 @@
       {
         "span": {
           "start": 7,
-          "end": 26,
-          "text": "L X eighteen thirty"
+          "end": 25,
+          "text": "Q R nineteen forty"
         },
-        "typed": "LX1830",
+        "typed": "QR1940",
         "value": {
           "type": "code",
-          "value": "LX1830"
+          "value": "QR1940"
         },
         "form": "aloud",
         "shape": "open"

@@ -13,13 +13,14 @@ use crate::decide::{
     Answers, Basis, Choices, Judgment, Missing, View, Why, candidate, choices, judge, only_offered,
     out_of_range, probability, proposes, required, taken_as, top, unstated, word_question, worded,
 };
-use crate::manifest::{Argument, Pick, Source};
+use crate::manifest::{Argument, Kind, Pick, Source};
 use crate::name::{ArgName, LocalName, Word};
+use crate::otherwise::{self, ANCHORED, Anchored, LIKELY, Proposal};
 use crate::pins;
 use crate::plan::{Plan, none};
 use crate::propose::Proposed;
 use crate::text::Span;
-use crate::words::{self, Listed, Spelled};
+use crate::words::{self, How, Listed, Spelled};
 use crate::{Fault, adapter};
 
 /// At this share a yes takes what code proposed: a listed word the request's words hold, a value it spells
@@ -70,28 +71,124 @@ impl<'a> One<'a, '_> {
 
     /// The argument asked of the person, for the reason given.
     fn asked(&self, source: &Source, because: Why) -> Settled<'a> {
-        Settled::Missing(Missing {
-            arg: self.arg.clone(),
-            ask: self.argument.ask.clone(),
-            because,
-            words: None,
-            choices: choices(self.plan, self.reflex, self.arg, source, self.recalled()),
-        })
+        Settled::Missing(self.ready(
+            source,
+            Missing {
+                arg: self.arg.clone(),
+                ask: self.argument.ask.clone(),
+                because,
+                words: None,
+                choices: choices(self.plan, self.reflex, self.arg, source, self.recalled()),
+                likely: None,
+            },
+        ))
     }
 
     /// The argument as the request leaves it unsaid: asked when the reflex cannot run without it.
     fn unsaid(&self) -> Settled<'a> {
         match required(self.argument) {
-            Some(source) => Settled::Missing(unstated(
-                self.plan,
-                self.reflex,
-                self.arg,
-                self.argument,
+            Some(source) => Settled::Missing(self.ready(
                 source,
-                self.recalled(),
+                unstated(
+                    self.plan,
+                    self.reflex,
+                    self.arg,
+                    self.argument,
+                    source,
+                    self.recalled(),
+                ),
             )),
             None => Settled::Nothing,
         }
+    }
+
+    /// At the ask of a vocabulary's argument, the listed word most likely meant, made ready for a yes while the
+    /// choices keep their order: of the words code found (a word of a meaning set aside, since one stands in
+    /// every sentence that says it) or proposed, the one the better view gives most, unless the better view's
+    /// top word, at `LIKELY` or more, is given more than it (code reads one word, the views the sentence); else
+    /// that top word. Where code holds the word and the ask shows no words, it shows code's.
+    fn ready(&self, source: &Source, mut missing: Missing) -> Missing {
+        if !matches!(source, Source::Vocab(_)) {
+            return missing;
+        }
+        let view = self.answers.get(&pins::view(self.reflex, self.arg));
+        let better = |key: &Key| {
+            let reader = view.map_or(Prob::ZERO, |answer| probability(answer, key));
+            let ask = probability(self.answer, key);
+            if reader > ask { reader } else { ask }
+        };
+        let mut top: Option<(&Key, Prob)> = None;
+        for key in self.choice.options().keys() {
+            if *key == none() || Some(key) == self.choice.otherwise() {
+                continue;
+            }
+            let p = better(key);
+            if top.is_none_or(|(_, best)| p > best) {
+                top = Some((key, p));
+            }
+        }
+        let top = top.filter(|(_, p)| p.get() >= LIKELY);
+        let proposed = self.proposals();
+        let found = self
+            .request
+            .listed
+            .get(&self.id())
+            .into_iter()
+            .flatten()
+            .filter(|held| held.how != How::Meaning)
+            .map(|held| (&held.key, &held.span));
+        let proposed = proposed
+            .iter()
+            .map(|proposal| (&proposal.key, &proposal.span));
+        let mut code: Option<(&Key, &Span, Prob)> = None;
+        for (key, span) in found.chain(proposed) {
+            let p = better(key);
+            if code.is_none_or(|(_, _, best)| p > best) {
+                code = Some((key, span, p));
+            }
+        }
+        match (code, top) {
+            (Some((key, span, p)), top) if top.is_none_or(|(_, best)| p >= best) => {
+                missing.likely = Some(key.clone());
+                missing.words.get_or_insert_with(|| span.clone());
+            }
+            (_, Some((key, _))) => missing.likely = Some(key.clone()),
+            (_, None) => {}
+        }
+        missing
+    }
+
+    /// The listed words the request's words propose for this argument.
+    fn proposals(&self) -> Vec<Proposal> {
+        crate::decide::proposals(self.plan, self.request, self.reflex, self.arg, self.choice)
+    }
+
+    /// The share the choice anchored on the words at the span gave a listed word; none where it was not asked.
+    fn anchored(&self, span: &Span, key: &Key) -> Option<Prob> {
+        let answer = self
+            .answers
+            .get(&pins::words(self.reflex, self.arg, span))?;
+        Some(probability(answer, key))
+    }
+
+    /// Whether the argument takes a word of a vocabulary: names of people and things, never the author's options.
+    fn vocabulary(&self) -> bool {
+        matches!(
+            &self.argument.kind,
+            Kind::Value {
+                source: Source::Vocab(_),
+                ..
+            }
+        )
+    }
+
+    /// Whether words that hold or propose a listed word are a given name that is not the word, nor a word of what
+    /// it means.
+    fn another(&self, words: &Span, key: &Key) -> bool {
+        self.choice
+            .options()
+            .get(key)
+            .is_some_and(|text| otherwise::another(words.text().as_str(), key, text.what()))
     }
 
     /// The values the request kept for a pick's ask from the session's results, when it kept any.
@@ -180,6 +277,7 @@ impl<'a> One<'a, '_> {
                     recent: self.recalled(),
                     readings: Vec::new(),
                 },
+                likely: None,
             });
         }
         Settled::Value(value, Some(stands), consumed)
@@ -247,8 +345,63 @@ pub(crate) fn listed<'a>(
     }
 }
 
-/// Both views gave one word: it stands where a word of the request holds it, or where its own yes keeps it
-/// and `none` holds little beside; it is as sure as the less sure of the two views.
+/// What is made of a listed word the views gave, by how code holds it.
+enum Named {
+    /// Held by a finding as itself, a form or its stem; or an option's word a finding holds.
+    Release,
+    /// Confirmed by the choice anchored on the words code holds it by; how they hold it, a slip or a prefix as a
+    /// spelling.
+    Anchored { anchored: Anchored, how: How },
+    /// Never read: the argument is asked.
+    Asked,
+    /// Held by no finding and no proposal: the views alone read it, and its own yes decides.
+    Alone,
+}
+
+/// How code holds a listed word, and so what may read it: its form, as it stands; a spelling or a word of its
+/// meaning, a slip or a prefix code proposed, only where the anchored choice gives it `ANCHORED` or more; a longer
+/// word, a diminutive or a short word's edit never; words that are another person's given name never. The rule
+/// reads a vocabulary's words, names of people and things; an option's word stands as a finding holds it.
+fn named(one: &One<'_, '_>, found: &[Listed], key: &Key) -> Named {
+    let held = found.iter().find(|held| held.key == *key);
+    if !one.vocabulary() {
+        return if held.is_some() {
+            Named::Release
+        } else {
+            Named::Alone
+        };
+    }
+    let confirmed = |words: &Span, how: How| match one.anchored(words, key) {
+        Some(p) if p.get() >= ANCHORED => Named::Anchored {
+            anchored: Anchored {
+                p,
+                words: words.clone(),
+            },
+            how,
+        },
+        _ => Named::Asked,
+    };
+    if let Some(held) = held {
+        return match held.how {
+            How::Same | How::Form | How::Stem => Named::Release,
+            _ if one.another(&held.span, key) => Named::Asked,
+            how => confirmed(&held.span, how),
+        };
+    }
+    let proposals = one.proposals();
+    let Some(proposal) = proposals.iter().find(|proposal| proposal.key == *key) else {
+        return Named::Alone;
+    };
+    if !one.another(&proposal.span, key) && proposal.by.anchors() {
+        confirmed(&proposal.span, How::Spelling)
+    } else {
+        Named::Asked
+    }
+}
+
+/// Both views gave one word: how code holds it decides first (`named`); it stands where a word of the request
+/// holds it, or where its own yes keeps it and `none` holds little beside; it is as sure as the less sure of the
+/// two views.
 fn agreed<'a>(
     one: &One<'a, '_>,
     source: &Source,
@@ -257,13 +410,20 @@ fn agreed<'a>(
     reader: Seen,
     open: &mut Open,
 ) -> Result<(Judgment, Settled<'a>), Fault> {
-    let yes = if found.iter().any(|held| held.key == ask.key) {
-        None
-    } else {
-        let Some((_, yes)) = one.is(&ask.key, open) else {
-            return Ok((ask.judgment, Settled::Open));
-        };
-        Some(yes)
+    let mut anchored = None;
+    let yes = match named(one, found, &ask.key) {
+        Named::Asked => return Ok((ask.judgment, one.asked(source, Why::Unsettled))),
+        Named::Anchored { anchored: by, .. } => {
+            anchored = Some(by);
+            None
+        }
+        Named::Release => None,
+        Named::Alone => {
+            let Some((_, yes)) = one.is(&ask.key, open) else {
+                return Ok((ask.judgment, Settled::Open));
+            };
+            Some(yes)
+        }
     };
     let beside = probability(one.answer, &none());
     if yes.is_some_and(|yes| yes.get() < UNHELD || beside.get() >= BESIDE) {
@@ -273,6 +433,7 @@ fn agreed<'a>(
         ask: ask.p,
         reader: reader.p,
         yes,
+        anchored,
     };
     let settled = one.word(source, &ask.key, stands)?;
     let weaker = if reader.p < ask.p { reader } else { ask };
@@ -280,7 +441,8 @@ fn agreed<'a>(
 }
 
 /// One view gave a word and the other none: it is taken where the request's words hold it, by the reader's
-/// view only where they hold it firmly or the view is sure; else the argument is asked.
+/// view only where they hold it firmly or the view is sure; else the argument is asked. How code holds it decides
+/// first (`named`): a slip or a prefix the anchored choice confirmed holds it too.
 fn alone<'a>(
     one: &One<'a, '_>,
     source: &Source,
@@ -289,11 +451,20 @@ fn alone<'a>(
     gave: Seen,
     other: &Seen,
 ) -> Result<(Judgment, Settled<'a>), Fault> {
-    let held = found
-        .iter()
-        .find(|held| held.key == gave.key)
-        .filter(|held| view == View::Ask || held.how.firm() || gave.p.get() >= READER_ALONE);
-    let Some(held) = held else {
+    let (words, how, anchored) = match named(one, found, &gave.key) {
+        Named::Anchored { anchored, how } => (Some(anchored.words), how, Some(anchored.p)),
+        Named::Release | Named::Alone => {
+            let held = found.iter().find(|held| held.key == gave.key);
+            (
+                held.map(|held| held.span.clone()),
+                held.map_or(How::Meaning, |held| held.how),
+                None,
+            )
+        }
+        Named::Asked => (None, How::Meaning, None),
+    };
+    let held = words.filter(|_| view == View::Ask || how.firm() || gave.p.get() >= READER_ALONE);
+    let Some(words) = held else {
         let asked = match view {
             View::Ask => gave.judgment,
             View::Reader => other.judgment.clone(),
@@ -304,14 +475,16 @@ fn alone<'a>(
         view,
         p: gave.p,
         other: other.key.clone(),
-        words: held.span.clone(),
-        how: held.how,
+        words,
+        how,
+        anchored,
     };
     let settled = one.word(source, &gave.key, stands)?;
     Ok((gave.judgment, settled))
 }
 
-/// Neither view gave a word: the one word the request holds firmly is taken where a yes says it is meant.
+/// Neither view gave a word: the one word the request holds firmly is taken where a yes says it is meant; a
+/// spelling only where the anchored choice confirms it too, and never another person's name.
 fn unviewed<'a>(
     one: &One<'a, '_>,
     source: &Source,
@@ -326,7 +499,7 @@ fn unviewed<'a>(
     let Some((question, yes)) = one.is(&held.key, open) else {
         return Ok((ask.judgment, Settled::Open));
     };
-    if yes.get() < PROPOSED {
+    if yes.get() < PROPOSED || matches!(named(one, found, &held.key), Named::Asked) {
         return Ok((ask.judgment, one.unsaid()));
     }
     let stands = Basis::Words {
@@ -518,6 +691,7 @@ fn heard<'a>(one: &One<'a, '_>, pick: &Pick) -> Option<Settled<'a>> {
             recent: one.recalled(),
             readings: asked.readings.clone(),
         },
+        likely: None,
     }))
 }
 

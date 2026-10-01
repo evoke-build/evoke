@@ -127,3 +127,8 @@ $ evoke "sam's laptop was stolen"
 [2]
 $ evoke test stolen
   stolen  11 passed · 8 steps route
+# A name that may be another person's is never read as a colleague's: the one it lies near is made ready, and a yes takes it.
+$ evoke "where is Samuel's laptop"
+  Which colleague's laptop?  you wrote "Samuel's": sam?  [y]es, or  [1] sam  [2] ana  [3] jo  [+] add one  [0] none of these  > y
+  device person="sam"  0.95
+sam: serial C02XK1ABJG5M, last seen 07:41

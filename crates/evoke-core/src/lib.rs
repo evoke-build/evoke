@@ -24,6 +24,7 @@ mod hold;
 pub mod manifest;
 pub mod name;
 pub mod needs;
+pub mod otherwise;
 pub mod overlay;
 pub mod pins;
 pub mod plan;

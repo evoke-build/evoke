@@ -99,8 +99,12 @@ The prompt names the words of the input that answer the question, where `evoke` 
   argument takes the whole line when nothing is quoted; a code takes a quoted one.
 - A pick whose manifest names a `recent` field lists what the bodies of this session returned under it, `From
   which release?  [1] 4.12.0  [2] 4.11.3  > `, and a number picks one ([Arguments](../author/arguments.md#a-value-recalled)).
+- Where one listed word is the likely answer, the prompt puts it ready before the choices: `Which colleague's
+  laptop?  you wrote "Samuel's": sam?  [y]es, or  [1] sam  [2] ana  [3] jo  [+] add one  [0] none of these  > `.
+  `y` takes it. The choices keep their order, and a number or a word still picks any of them
+  ([Saying things](saying-things.md#a-name-typed-another-way)).
 - Where your words say a pick's value aloud and can be read in more than one way, the prompt quotes them and
-  offers what they read as: `Which product code?  you wrote "v x twenty two ten"  [1] VX-2210  [0] none of
+  offers what they read as: `Which product code?  you wrote "k d thirty one fifteen"  [1] KD-3115  [0] none of
   these  > `. A number picks one, and you can still type the value yourself. For a number argument the readings
   are named without a number, `you wrote "three eleven"  311  > `, since a number you type is the answer itself
   ([Saying things](saying-things.md#a-value-typed-the-way-you-say-it)).

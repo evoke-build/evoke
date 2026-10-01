@@ -258,7 +258,8 @@
                 "den": "The TV room downstairs; also 'the snug'.",
                 "office": "The upstairs study."
               }
-            }
+            },
+            "likely": "den"
           }
         ],
         "left": [

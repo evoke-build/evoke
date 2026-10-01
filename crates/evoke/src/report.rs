@@ -1165,15 +1165,35 @@ pub fn confirm_prompt(prompt: &Prompt, teachable: bool, retry: Option<&str>) -> 
 /// What a listed choice offers last: none of them, which declines the question.
 pub const NONE_OF_THESE: &str = "none of these";
 
+/// What takes the word a listed ask makes ready.
+pub const YES: [&str; 2] = ["y", "yes"];
+
 /// The ask prompt: numbered choices and `[0] none of these`, a vocabulary's `[+] add one`, or a pick typed
 /// freely — what the words read as numbered before it, with `[0] none of these`, or else the values recalled
 /// from the process's results; a number pick's are named as hints; `retry` says why the last answer did not do.
+/// A listed word made ready stands before the choices, `sam?  [y]es, or`, joined to the words it was read from.
 #[must_use]
 pub fn ask_prompt(missing: &Missing, retry: Option<&str>) -> String {
     use evoke_core::decide::Choices;
     let mut line = format!("  {}  ", missing.ask);
-    if let Some(retry) = retry {
-        let _ = write!(line, "{retry}  ");
+    let ready = missing
+        .likely
+        .as_ref()
+        .filter(|_| matches!(missing.choices, Choices::Vocab { .. }));
+    match (retry, ready) {
+        (Some(retry), Some(word)) if retry.starts_with(WROTE) => {
+            let _ = write!(line, "{retry}: {word}?  [y]es, or  ");
+        }
+        (Some(retry), Some(word)) => {
+            let _ = write!(line, "{retry}  {word}?  [y]es, or  ");
+        }
+        (Some(retry), None) => {
+            let _ = write!(line, "{retry}  ");
+        }
+        (None, Some(word)) => {
+            let _ = write!(line, "{word}?  [y]es, or  ");
+        }
+        (None, None) => {}
     }
     match &missing.choices {
         Choices::Options { options } => {
@@ -1213,6 +1233,9 @@ pub fn ask_prompt(missing: &Missing, retry: Option<&str>) -> String {
     line
 }
 
+/// How an ask's reason opens when it quotes the words that answer it.
+const WROTE: &str = "you wrote ";
+
 /// The values a pick's prompt names: what the words read as, where they read as any; else the values recalled.
 #[must_use]
 pub fn offered<'a>(recent: Option<&'a [String]>, readings: &'a [Clean]) -> Vec<&'a str> {
@@ -1250,14 +1273,14 @@ pub fn because(missing: &Missing) -> Option<String> {
         )),
         (Why::NotOffered, Some(words)) if listed => Some(format!("{words} is not on the list")),
         (Why::NotOffered, None) if listed => Some("what you named is not on the list".to_owned()),
-        (_, Some(words)) if listed => Some(format!("you wrote {words}")),
+        (_, Some(words)) if listed => Some(format!("{WROTE}{words}")),
         (_, Some(words)) => match &missing.choices {
             Choices::Pick {
                 pick: Recognizer::Quoted,
                 ..
-            } => Some(format!("you wrote {words}")),
+            } => Some(format!("{WROTE}{words}")),
             Choices::Pick { readings, .. } if !readings.is_empty() => {
-                Some(format!("you wrote {words}"))
+                Some(format!("{WROTE}{words}"))
             }
             Choices::Pick { pick, .. } => Some(format!("{words} is not {}", pick.wants())),
             _ => None,

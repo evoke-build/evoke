@@ -60,21 +60,21 @@ say what it is, and the call waits for a yes; where they do not, `evoke` asks, a
 ## A value typed the way you say it
 
 You can type a value the way you would say it aloud. `evoke` reads an address, a URL, a code, a number, a day
-or a length of time this way: `dana dot weiss at example dot org`, `h s oh four oh nine`, `seven oh`, `an hour
-and thirty minutes`. The call shows the value as it would be typed.
+or a length of time this way: `dana dot weiss at example dot org`, `k d oh three one five`, `seven oh`, `an hour
+and twenty minutes`. The call shows the value as it would be typed.
 
 A code takes the shape of the reflex's own examples. Where every example reads like `HS-0409`, your letters
 become capitals and the dash is added. The call then waits for your yes, with your words on the line:
 
 ```text
-$ evoke "earmark h s oh four oh nine"
-  reserve sku="HS-0409" · write · weakest: route 0.95
-    sku was read from "h s oh four oh nine"
-  Reserve every unit of HS-0409?  [y]es [n]o [t]each > n
+$ evoke "earmark k d oh three one five"
+  reserve sku="KD-0315" · write · weakest: route 0.95
+    sku was read from "k d oh three one five"
+  Reserve every unit of KD-0315?  [y]es [n]o [t]each > n
 ```
 
 Some words can be read in more than one way. `ops twenty at example dot com` may be `ops20@example.com` or
-`20@example.com`, and `twenty two ten` may be the start of a longer code. `evoke` does not choose for you.
+`20@example.com`, and `thirty one fifteen` may be the start of a longer code. `evoke` does not choose for you.
 It asks, and offers what your words read as ([Outcomes](outcomes.md#ask)):
 
 ```text
@@ -83,6 +83,25 @@ $ evoke "email the update to ops twenty at example dot com"
   email to="ops20@example.com" · destructive · weakest: route 0.95
     it cannot be undone, so it always waits for a yes
   Email the shipment update to ops20@example.com?  [y]es [n]o [t]each > n
+```
+
+## A name typed another way
+
+A word of your vocabulary may be typed in a form that is not on the list. `evoke` reads it only where your
+words leave no doubt about which listed word they name.
+
+- A word cut short or typed with a slip is read where your own words name the listed word: `sept` for
+  `september`, `eu-wwest` for `eu-west`. `evoke why` shows the check under the value, as `asked of "sept"
+  alone`.
+- A longer name, a pet name or a name one letter away may be another person: `Samuel`, `Sammy` or `Sal` beside
+  a colleague listed as `sam`. `evoke` never reads such a name as the listed word. It asks, and puts the nearest
+  word ready. A `y` takes it:
+
+```text
+$ evoke "where is Samuel's laptop"
+  Which colleague's laptop?  you wrote "Samuel's": sam?  [y]es, or  [1] sam  [2] ana  [3] jo  [+] add one  [0] none of these  > y
+  device person="sam"  0.95
+sam: serial C02XK1ABJG5M, last seen 07:41
 ```
 
 **A filter.** Pipe lines into `evoke`, or into `evoke try`, and every line is one input, answered in order. A line that needs a

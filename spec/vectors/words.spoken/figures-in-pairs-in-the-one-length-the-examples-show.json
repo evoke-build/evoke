@@ -1,6 +1,6 @@
 {
   "input": {
-    "input": "put D K eighty eight thirteen aside",
+    "input": "put B N forty one seventeen aside",
     "kind": "code",
     "examples": [
       "HS-0409",
@@ -12,13 +12,13 @@
       {
         "span": {
           "start": 4,
-          "end": 29,
-          "text": "D K eighty eight thirteen"
+          "end": 27,
+          "text": "B N forty one seventeen"
         },
-        "typed": "DK-8813",
+        "typed": "BN-4117",
         "value": {
           "type": "code",
-          "value": "DK-8813"
+          "value": "BN-4117"
         },
         "form": "aloud",
         "shape": "completed"

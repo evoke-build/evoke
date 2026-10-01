@@ -1,6 +1,6 @@
 {
   "input": {
-    "input": "put K L dash oh six five oh aside",
+    "input": "put R T dash oh two seven oh aside",
     "kind": "code",
     "examples": [
       "HS-0409",
@@ -12,13 +12,13 @@
       {
         "span": {
           "start": 4,
-          "end": 27,
-          "text": "K L dash oh six five oh"
+          "end": 28,
+          "text": "R T dash oh two seven oh"
         },
-        "typed": "KL-0650",
+        "typed": "RT-0270",
         "value": {
           "type": "code",
-          "value": "KL-0650"
+          "value": "RT-0270"
         },
         "form": "aloud",
         "shape": "whole"

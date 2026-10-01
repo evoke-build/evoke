@@ -12,9 +12,12 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   quotes that no value took, a text the reflex takes that may be among the words left, or words that say the
   call is wanted once more. The prompt names the words; the JSON line carries `cut`, `again` and `quotes`.
 - A value said aloud is read in more forms: a day, a length of time, and a code in the shape of the reflex's
-  examples, `h s oh four oh nine` as `HS-0409`. Where the words read more than one way, the ask offers what
+  examples, `k d oh three one five` as `KD-0315`. Where the words read more than one way, the ask offers what
   they read as; the JSON line carries them as `choices.readings`.
 - A length written across its units, `1 hour 30 minutes`, reads at a prompt and in a call by name.
+- A word from a vocabulary typed another way is read where your own words name it: `sept` for `september`. A
+  name that may be another person's, `Samuel` beside `sam`, is asked, with the nearest word ready for a `y`;
+  the JSON line carries it as `likely`.
 
 ## [0.17.0] - 2026-09-30
 

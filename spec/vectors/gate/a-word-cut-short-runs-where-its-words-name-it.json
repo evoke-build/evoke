@@ -1,0 +1,191 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-month.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "invoices",
+          "route": 0.96
+        },
+        {
+          "reflex": "bank",
+          "route": 0.02
+        },
+        {
+          "reflex": "cards",
+          "route": 0
+        },
+        {
+          "reflex": "payroll",
+          "route": 0
+        },
+        {
+          "reflex": "reconcile",
+          "route": 0
+        },
+        {
+          "reflex": "ledger",
+          "route": 0
+        },
+        {
+          "reflex": "send",
+          "route": 0
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "invoices",
+          "p": 0.96
+        },
+        {
+          "question": "invoices.month",
+          "top": "august",
+          "p": 0.97
+        }
+      ],
+      "winner": {
+        "reflex": "invoices",
+        "args": {
+          "month": {
+            "type": "word",
+            "word": "august"
+          }
+        },
+        "basis": {
+          "month": {
+            "by": "views",
+            "ask": 0.97,
+            "reader": 0.97,
+            "anchored": {
+              "p": 0.97,
+              "words": {
+                "start": 16,
+                "end": 19,
+                "text": "aug"
+              }
+            }
+          }
+        },
+        "missing": [],
+        "left": [
+          {
+            "words": {
+              "start": 4,
+              "end": 12,
+              "text": "invoices"
+            },
+            "does": "action",
+            "p": 0.95
+          }
+        ],
+        "unconsumed": [],
+        "whole": 0.9,
+        "runner_up": {
+          "reflex": "bank",
+          "route": 0.02
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    }
+  },
+  "expect": {
+    "outcome": "run",
+    "reflex": "invoices",
+    "args": {
+      "month": {
+        "type": "word",
+        "word": "august"
+      }
+    },
+    "call": "invoices month=\"august\"",
+    "effect": "read",
+    "basis": {
+      "month": {
+        "by": "views",
+        "ask": 0.97,
+        "reader": 0.97,
+        "anchored": {
+          "p": 0.97,
+          "words": {
+            "start": 16,
+            "end": 19,
+            "text": "aug"
+          }
+        }
+      }
+    },
+    "left": [
+      {
+        "words": {
+          "start": 4,
+          "end": 12,
+          "text": "invoices"
+        },
+        "does": "action",
+        "p": 0.95
+      }
+    ],
+    "whole": 0.9,
+    "confidence": 0.96,
+    "weakest": {
+      "question": "route",
+      "top": "invoices",
+      "p": 0.96
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "invoices",
+        "p": 0.96
+      },
+      {
+        "question": "invoices.month",
+        "top": "august",
+        "p": 0.97
+      }
+    ],
+    "runner_up": {
+      "reflex": "bank",
+      "route": 0.02
+    },
+    "contenders": [
+      {
+        "reflex": "invoices",
+        "route": 0.96
+      },
+      {
+        "reflex": "bank",
+        "route": 0.02
+      },
+      {
+        "reflex": "cards",
+        "route": 0
+      },
+      {
+        "reflex": "payroll",
+        "route": 0
+      },
+      {
+        "reflex": "reconcile",
+        "route": 0
+      },
+      {
+        "reflex": "ledger",
+        "route": 0
+      },
+      {
+        "reflex": "send",
+        "route": 0
+      }
+    ]
+  }
+}

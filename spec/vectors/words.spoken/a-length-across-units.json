@@ -1,6 +1,6 @@
 {
   "input": {
-    "input": "stay awake for an hour and thirty minutes",
+    "input": "stay awake for an hour and twenty minutes",
     "kind": "duration",
     "examples": [
       "2 hours",
@@ -13,12 +13,12 @@
         "span": {
           "start": 15,
           "end": 41,
-          "text": "an hour and thirty minutes"
+          "text": "an hour and twenty minutes"
         },
-        "typed": "1 hour 30 minutes",
+        "typed": "1 hour 20 minutes",
         "value": {
           "type": "duration",
-          "value": 5400
+          "value": 4800
         },
         "form": "aloud",
         "shape": "whole"
@@ -33,7 +33,7 @@
       {
         "start": 27,
         "end": 41,
-        "text": "thirty minutes"
+        "text": "twenty minutes"
       }
     ]
   }

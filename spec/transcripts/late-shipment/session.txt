@@ -593,16 +593,16 @@ $ evoke why
 
   replay answered 19 questions in 2 rounds
 # A code said aloud takes the shape the reflex's examples share, and waits for a yes with the words as typed.
-$ evoke "earmark h s oh four oh nine"
-  reserve sku="HS-0409" · write · weakest: route 0.95
-    sku was read from "h s oh four oh nine"
-  Reserve every unit of HS-0409?  [y]es [n]o [t]each > n
+$ evoke "earmark k d oh three one five"
+  reserve sku="KD-0315" · write · weakest: route 0.95
+    sku was read from "k d oh three one five"
+  Reserve every unit of KD-0315?  [y]es [n]o [t]each > n
 [2]
 # Figures said in pairs may be part of a longer code: what they read as is offered, and its number takes it.
-$ evoke "earmark v x twenty two ten"
-  Which product code?  you wrote "v x twenty two ten"  [1] VX-2210  [0] none of these  > 1
-  reserve sku="VX-2210"  0.95
-VX-2210 reserved
+$ evoke "earmark k d thirty one fifteen"
+  Which product code?  you wrote "k d thirty one fifteen"  [1] KD-3115  [0] none of these  > 1
+  reserve sku="KD-3115"  0.95
+KD-3115 reserved
 # An address that reads two ways is asked with both.
 $ evoke "email the update to ops twenty at example dot com"
   To which email address?  you wrote "ops twenty at example dot com"  [1] ops20@example.com  [2] 20@example.com  [0] none of these  > 1

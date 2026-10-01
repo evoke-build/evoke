@@ -1,6 +1,6 @@
 {
   "input": {
-    "input": "lock C O two X K one A B J G five M",
+    "input": "lock F O one Q M four Z T nine K two D",
     "kind": "code",
     "examples": [
       "C02XK1ABJG5M",
@@ -13,12 +13,12 @@
       {
         "words": {
           "start": 5,
-          "end": 35,
-          "text": "C O two X K one A B J G five M"
+          "end": 38,
+          "text": "F O one Q M four Z T nine K two D"
         },
         "readings": [
-          "CO2XK1ABJG5M",
-          "C02XK1ABJG5M"
+          "FO1QM4ZT9K2D",
+          "F01QM4ZT9K2D"
         ]
       }
     ]

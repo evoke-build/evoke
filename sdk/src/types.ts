@@ -828,10 +828,11 @@ export type Basis =
   /** The argument's own question gave it. */
   | { by: "ask"; p: Prob }
   /** Both views of a listed word gave it. `yes` is the word's own yes, asked where no word of the request holds
-   *  it. */
-  | { by: "views"; ask: Prob; reader: Prob; yes?: Prob }
-  /** One view gave it, and words of the request hold it; `other` is what the other view answered. */
-  | { by: "view"; view: View; p: Prob; other: Key; words: Span; how: How }
+   *  it; `anchored`, what those words name when asked of them alone, where that confirmed the word. */
+  | { by: "views"; ask: Prob; reader: Prob; yes?: Prob; anchored?: { p: Prob; words: Span } }
+  /** One view gave it, and words of the request hold it; `other` is what the other view answered; `anchored`,
+   *  how far the words name it when asked of them alone, where that confirmed it. */
+  | { by: "view"; view: View; p: Prob; other: Key; words: Span; how: How; anchored?: Prob }
   /** No view gave it: words of the request hold it, and a yes says it is meant. */
   | { by: "words"; words: Span; how: How; yes: Prob }
   /** The request spells it out in a form code reads, and a yes says it is meant; `shape` where the value was
@@ -886,6 +887,8 @@ export interface Missing {
   /** The words of the request that answer the ask, where the reading found them. */
   words?: Span
   choices: Choices
+  /** The listed word most likely meant, to offer for a yes beside the choices, which keep their order. */
+  likely?: Key
 }
 
 /** Why a value is missing: the input never stated it, a pick fell outside its range, the input states one that

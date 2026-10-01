@@ -277,6 +277,11 @@ fn said(words: &str) -> String {
 }
 
 /// How words hold a listed word, where they do not spell it as listed.
+/// What the words that hold a listed value name, asked of them alone.
+fn anchored_on(words: &str, shown: &str, p: f64) -> String {
+    format!("asked of {words} alone: {shown} {}", share(p))
+}
+
 fn how(how: How) -> &'static str {
     match how {
         How::Same => "",
@@ -672,7 +677,12 @@ fn stands(
     let words = |words: &Span| said(words.text().as_str());
     match basis {
         Basis::Ask { .. } => Vec::new(),
-        Basis::Views { reader, yes, .. } => {
+        Basis::Views {
+            reader,
+            yes,
+            anchored,
+            ..
+        } => {
             let mut lines = vec![format!(
                 "asked a second way: {shown} {}; the less sure of the two counts",
                 share(reader.get())
@@ -680,31 +690,39 @@ fn stands(
             if let Some(yes) = yes {
                 lines.push(format!("is it {shown}? yes {}", share(yes.get())));
             }
+            if let Some(anchored) = anchored {
+                lines.push(anchored_on(
+                    &words(&anchored.words),
+                    shown,
+                    anchored.p.get(),
+                ));
+            }
             lines
         }
         Basis::View {
-            view: View::Ask,
+            view,
+            p,
             other,
             words: held,
             how: by,
-            ..
-        } => vec![
-            format!(
-                "asked a second way: {}",
-                answer_of(other.as_str(), takes, proposed)
-            ),
-            format!("in your words: {}{}", words(held), how(*by)),
-        ],
-        Basis::View {
-            view: View::Reader,
-            p,
-            words: held,
-            how: by,
-            ..
-        } => vec![
-            format!("asked a second way: {shown} {}", share(p.get())),
-            format!("in your words: {}{}", words(held), how(*by)),
-        ],
+            anchored,
+        } => {
+            let second = match view {
+                View::Ask => format!(
+                    "asked a second way: {}",
+                    answer_of(other.as_str(), takes, proposed)
+                ),
+                View::Reader => format!("asked a second way: {shown} {}", share(p.get())),
+            };
+            let mut lines = vec![
+                second,
+                format!("in your words: {}{}", words(held), how(*by)),
+            ];
+            if let Some(anchored) = anchored {
+                lines.push(anchored_on(&words(held), shown, anchored.get()));
+            }
+            lines
+        }
         Basis::Words {
             words: held,
             how: by,

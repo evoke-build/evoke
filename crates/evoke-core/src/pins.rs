@@ -23,6 +23,12 @@ const VIEW: &str = "Which of these does the request name?";
 const VIEW_NONE: &str = "One that is not in this list.";
 const VIEW_UNSTATED: &str = "None: the request names none.";
 
+/// The choice anchored on words of the request, which listed word they name: the words between guillemets stand
+/// for `{words}`.
+const WORDS: &str = "Which of these do the words {words} name?";
+/// Its sentinel for words that name no listed word; the one for a word the list lacks is the second view's.
+const WORDS_UNSTATED: &str = "None: the words name none.";
+
 /// The no of a yes or no on a listed word.
 const ANOTHER: &str = "Another one, or none.";
 /// The no of a yes or no on words of the request.
@@ -47,6 +53,11 @@ pub(crate) fn meant(reflex: &LocalName, arg: &ArgName, span: &Span) -> QuestionI
 /// `weave.only_<reflex>__<argument>_<start>_<end>`: a yes or no on the one candidate of the argument's kind.
 pub(crate) fn only(reflex: &LocalName, arg: &ArgName, span: &Span) -> QuestionId {
     own(&format!("only_{}_{}", pair(reflex, arg), ends(span)))
+}
+
+/// `weave.words_<reflex>__<argument>_<start>_<end>`: which listed word of the argument the words at the span name.
+pub(crate) fn words(reflex: &LocalName, arg: &ArgName, span: &Span) -> QuestionId {
+    own(&format!("words_{}_{}", pair(reflex, arg), ends(span)))
 }
 
 /// `weave.does_<reflex>_<from>_<to>`: what a run of the request's words does, by the places of its first and
@@ -118,6 +129,7 @@ pub fn argument(question: &QuestionId) -> Option<ArgName> {
         ("is_", 1),
         ("meant_", 2),
         ("only_", 2),
+        ("words_", 2),
         ("first_", 1),
         ("run_", 1),
         ("word_", 1),
@@ -156,6 +168,24 @@ pub(crate) fn view_question(asked: &Choice) -> Question {
         clean(VIEW),
         options,
         (unstated(), Text::Plain(clean(VIEW_UNSTATED))),
+    ))
+}
+
+/// The choice anchored on the words at the span: the argument's own options as the second view offers them, asked
+/// of the words themselves, a word the list lacks, and none.
+pub(crate) fn words_question(asked: &Choice, span: &Span) -> Question {
+    let mut options: IndexMap<Key, Text> = asked
+        .options()
+        .iter()
+        .filter(|(key, _)| **key != none() && Some(*key) != asked.otherwise())
+        .map(|(key, text)| (key.clone(), text.clone()))
+        .collect();
+    options.insert(none(), Text::Plain(clean(VIEW_NONE)));
+    let ask = WORDS.replace("{words}", &format!("\u{ab}{}\u{bb}", span.text()));
+    Question::Choice(Choice::closed(
+        Clean::new(&ask).unwrap_or_else(|_| clean(VIEW)),
+        options,
+        (unstated(), Text::Plain(clean(WORDS_UNSTATED))),
     ))
 }
 

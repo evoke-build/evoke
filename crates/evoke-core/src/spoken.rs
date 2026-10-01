@@ -113,7 +113,7 @@ const PATH_SIGNS: [(&str, &str); 5] = [
 /// The word that says a link's path goes on.
 const SLASH: &str = "slash";
 
-/// The words that may open a version and are no part of it: «v four point twelve», «version two point one».
+/// The words that may open a version and are no part of it: «v three point nine», «version two point one».
 const VERSION_WORDS: [&str; 2] = ["v", "version"];
 
 /// The word that joins an address's local part to its domain.
@@ -132,7 +132,7 @@ const SCHEME_LETTERS: usize = 5;
 const LETTER_WORDS: [&str; 2] = ["a", "i"];
 
 /// The pronouns of two or three letters `words.rs`'s function words leave out, which are no code's letters either:
-/// «cost us two weeks».
+/// «owes us two pallets».
 const PRONOUNS: [&str; 4] = ["us", "he", "him", "she"];
 
 /// The letter a lone «o» is, which reads as nought as well where the shape wants a figure.
@@ -198,7 +198,7 @@ const WHICH: [(&str, Which); 3] = [
 /// The words before a day that make it a recurrence, which is no day.
 const EVERY: [&str; 2] = ["every", "each"];
 
-/// The words that make tomorrow the day after it: «the day after tmrw».
+/// The words that make tomorrow the day after it: «day after tmrw».
 const DAY_AFTER: [&str; 3] = ["the", "day", "after"];
 
 /// The word an ordinal day follows: «the fourht».
@@ -547,7 +547,7 @@ struct Marks(u16);
 impl Marks {
     /// Figures said in pairs: «three eleven», «twenty two fourteen».
     const PAIRS: Self = Self(1);
-    /// A number with a point: «thirty five point five».
+    /// A number with a point: «twelve point five».
     const DECIMAL: Self = Self(1 << 1);
     /// A version said without «point»: «four twelve oh».
     const NO_POINT: Self = Self(1 << 2);
@@ -789,7 +789,7 @@ fn runs_of(words: &[Word], keep: impl Fn(&Word) -> bool) -> Vec<(usize, usize)> 
 }
 
 /// The runs of number words, «double» and «triple» among them; «and» joins two of them only after «hundred» or
-/// «thousand», «three hundred and eleven», so «four oh two and four oh seven» is two runs.
+/// «thousand», «two hundred and six», so «five oh two and five oh nine» is two runs.
 fn number_runs(words: &[Word]) -> Vec<(usize, usize)> {
     let counted = |at: usize| {
         words
@@ -848,7 +848,7 @@ fn versions(words: &[Word]) -> Vec<bool> {
 
 /// The numbers said aloud: a run of number words read by the number grammar, else figure by figure; a decimal,
 /// the run then «point» or «dot» and figures said. One number word alone is the recognizer's, which reads it or
-/// hides it as part of a form it refuses, «from five to ten»; «oh» alone is no number, «oh no»; no part of a
+/// hides it as part of a form it refuses, «from six to nine»; «oh» alone is no number, «oh no»; no part of a
 /// version said aloud is one.
 fn numbers(words: &[Word]) -> Vec<Reading> {
     let mut out = Vec::new();
@@ -2438,27 +2438,27 @@ mod tests {
     #[test]
     fn a_code_takes_the_shape_every_example_shares() {
         assert_eq!(
-            read("put H S oh four oh nine aside", &Pick::Code, &SKUS),
-            ["H S oh four oh nine = HS-0409 (Some(Completed))"]
+            read("put K D oh three one five aside", &Pick::Code, &SKUS),
+            ["K D oh three one five = KD-0315 (Some(Completed))"]
         );
         assert_eq!(
-            read("put h s oh four oh nine aside", &Pick::Code, &SKUS),
-            ["h s oh four oh nine = HS-0409 (Some(Completed))"]
+            read("put k d oh three one five aside", &Pick::Code, &SKUS),
+            ["k d oh three one five = KD-0315 (Some(Completed))"]
         );
         // The words spell it whole: every character as they say it.
         assert_eq!(
-            read("put K L dash oh six five oh aside", &Pick::Code, &SKUS),
-            ["K L dash oh six five oh = KL-0650 (Some(Whole))"]
+            read("put R T dash oh two seven oh aside", &Pick::Code, &SKUS),
+            ["R T dash oh two seven oh = RT-0270 (Some(Whole))"]
         );
         // Pairs where the examples show four figures and six: asked, the reading offered.
         assert_eq!(
-            read("put D K eighty eight thirteen aside", &Pick::Code, &SKUS),
-            ["D K eighty eight thirteen ? DK-8813"]
+            read("put B N forty one seventeen aside", &Pick::Code, &SKUS),
+            ["B N forty one seventeen ? BN-4117"]
         );
         // The examples disagree on the case: shown for a yes.
         assert_eq!(
-            read("is L X eighteen thirty on time", &Pick::Code, &FLIGHTS),
-            ["L X eighteen thirty = LX1830 (Some(Open))"]
+            read("is Q R nineteen forty on time", &Pick::Code, &FLIGHTS),
+            ["Q R nineteen forty = QR1940 (Some(Open))"]
         );
     }
 
@@ -2483,19 +2483,19 @@ mod tests {
         );
         assert_eq!(
             read(
-                "change L X eighteen thirty at nine forty five",
+                "change Q R nineteen forty at nine forty five",
                 &Pick::Code,
                 &FLIGHTS
             ),
-            ["L X eighteen thirty = LX1830 (Some(Open))"]
+            ["Q R nineteen forty = QR1940 (Some(Open))"]
         );
     }
 
     #[test]
     fn a_serial_typed_apart_is_read_whole() {
         assert_eq!(
-            read("lock C 0 2 X K 1 A B J G 5 M", &Pick::Code, &SERIALS),
-            ["C 0 2 X K 1 A B J G 5 M = C02XK1ABJG5M (Some(Open))"]
+            read("lock F 7 1 Q M 4 Z T 9 K 2 D", &Pick::Code, &SERIALS),
+            ["F 7 1 Q M 4 Z T 9 K 2 D = F71QM4ZT9K2D (Some(Open))"]
         );
         assert_eq!(
             read(
@@ -2507,8 +2507,12 @@ mod tests {
         );
         // A lone O where letters and figures both stand: both offered.
         assert_eq!(
-            read("lock C O two X K one A B J G five M", &Pick::Code, &SERIALS),
-            ["C O two X K one A B J G five M ? CO2XK1ABJG5M | C02XK1ABJG5M"]
+            read(
+                "lock F O one Q M four Z T nine K two D",
+                &Pick::Code,
+                &SERIALS
+            ),
+            ["F O one Q M four Z T nine K two D ? FO1QM4ZT9K2D | F01QM4ZT9K2D"]
         );
     }
 
@@ -2631,11 +2635,11 @@ mod tests {
         let lengths = ["2 hours", "30 minutes"];
         assert_eq!(
             read(
-                "stay awake for an hour and thirty minutes",
+                "stay awake for an hour and twenty minutes",
                 &Pick::Duration(None),
                 &lengths
             ),
-            ["an hour and thirty minutes = 1 hour 30 minutes (Some(Whole))"]
+            ["an hour and twenty minutes = 1 hour 20 minutes (Some(Whole))"]
         );
         assert_eq!(
             read("stay awake for one hr 30", &Pick::Duration(None), &lengths),

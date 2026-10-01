@@ -87,12 +87,12 @@ A pick reads a piece of the input, word for word. Nine recognizers exist:
   copied, and the call confirms.
 - A value spelled out is read as it is typed, where the classifier says it is meant: an address, a URL, a code,
   a number, a day or a length of time said aloud, `dana dot weiss at example dot org`, `five dot oh dot two`,
-  `an hour and thirty minutes`; a weekday misspelt, `wendesday`; a code typed with a space, `hs 0409`. The call
+  `an hour and twenty minutes`; a weekday misspelt, `wendesday`; a code typed with a space, `hs 0409`. The call
   shows the typed value. After a misspelt day or a spaced code it confirms, with your words on the line
   ([Outcomes](../use/outcomes.md)).
 - A pick's examples set its shape. The values your examples state for a `code` or a `number` argument tell
-  `evoke` how a value said aloud is written: where every example reads like `HS-0409`, `h s oh four oh nine`
-  becomes `HS-0409`, and the call confirms. Where the examples differ in case, the call confirms too. Where they
+  `evoke` how a value said aloud is written: where every example reads like `HS-0409`, `k d oh three one five`
+  becomes `KD-0315`, and the call confirms. Where the examples differ in case, the call confirms too. Where they
   leave the length open, or the words read two ways, `evoke` asks and offers what the words read as. A code
   argument with no example value is read only as it is typed. So give each pick argument examples that show
   its real forms ([Saying things](../use/saying-things.md#a-value-typed-the-way-you-say-it)).

@@ -260,7 +260,7 @@ pub fn listed(input: &Input, list: &IndexMap<Key, Clean>) -> Vec<Listed> {
 }
 
 /// A word as a list names it: a channel's `#` is no part of the name.
-fn named(word: &str) -> String {
+pub(crate) fn named(word: &str) -> String {
     word.strip_prefix('#').unwrap_or(word).to_owned()
 }
 
@@ -346,7 +346,7 @@ fn meant(at: usize, meanings: &[Vec<String>], words: &[String]) -> Option<(usize
 
 /// How far a spelling may stray from a listed word and still be proposed: none under four letters, one up to
 /// seven, two beyond; and never past half the way to the word's nearest neighbour on its list.
-fn radius(word: &str, list: &[String]) -> usize {
+pub(crate) fn radius(word: &str, list: &[String]) -> usize {
     let by_length = by_length(word);
     let nearest = list
         .iter()

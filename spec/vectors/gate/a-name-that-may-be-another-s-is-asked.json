@@ -1,0 +1,167 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave-lists.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "contact",
+          "route": 0.96
+        },
+        {
+          "reflex": "mail",
+          "route": 0.02
+        },
+        {
+          "reflex": "lights",
+          "route": 0
+        },
+        {
+          "reflex": "timer",
+          "route": 0
+        },
+        {
+          "reflex": "volume",
+          "route": 0
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "contact",
+          "p": 0.96
+        }
+      ],
+      "winner": {
+        "reflex": "contact",
+        "args": {},
+        "missing": [
+          {
+            "arg": "name",
+            "ask": "Whose address?",
+            "because": {
+              "type": "unsettled"
+            },
+            "words": {
+              "start": 7,
+              "end": 15,
+              "text": "Samuel's"
+            },
+            "choices": {
+              "type": "vocab",
+              "words": {
+                "dana": "Dana Ortiz, operations.",
+                "sam": "Sam Lee, sales."
+              }
+            },
+            "likely": "sam"
+          }
+        ],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 22,
+              "text": "get me Samuel's number"
+            },
+            "does": "action",
+            "p": 0.95
+          }
+        ],
+        "unconsumed": [],
+        "whole": 0.9,
+        "runner_up": {
+          "reflex": "mail",
+          "route": 0.02
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    }
+  },
+  "expect": {
+    "outcome": "ask",
+    "reflex": "contact",
+    "args": {},
+    "left": [
+      {
+        "words": {
+          "start": 0,
+          "end": 22,
+          "text": "get me Samuel's number"
+        },
+        "does": "action",
+        "p": 0.95
+      }
+    ],
+    "unconsumed": [],
+    "whole": 0.9,
+    "confidence": 0.96,
+    "weakest": {
+      "question": "route",
+      "top": "contact",
+      "p": 0.96
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "contact",
+        "p": 0.96
+      }
+    ],
+    "runner_up": {
+      "reflex": "mail",
+      "route": 0.02
+    },
+    "contenders": [
+      {
+        "reflex": "contact",
+        "route": 0.96
+      },
+      {
+        "reflex": "mail",
+        "route": 0.02
+      },
+      {
+        "reflex": "lights",
+        "route": 0
+      },
+      {
+        "reflex": "timer",
+        "route": 0
+      },
+      {
+        "reflex": "volume",
+        "route": 0
+      }
+    ],
+    "missing": [
+      {
+        "arg": "name",
+        "ask": "Whose address?",
+        "because": {
+          "type": "unsettled"
+        },
+        "words": {
+          "start": 7,
+          "end": 15,
+          "text": "Samuel's"
+        },
+        "choices": {
+          "type": "vocab",
+          "words": {
+            "dana": "Dana Ortiz, operations.",
+            "sam": "Sam Lee, sales."
+          }
+        },
+        "likely": "sam"
+      }
+    ]
+  }
+}

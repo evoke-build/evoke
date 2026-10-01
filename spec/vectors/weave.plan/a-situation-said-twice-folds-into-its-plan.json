@@ -217,6 +217,11 @@
                 "because": {
                   "type": "unstated"
                 },
+                "words": {
+                  "start": 16,
+                  "end": 19,
+                  "text": "pay"
+                },
                 "choices": {
                   "type": "vocab",
                   "words": {
@@ -224,7 +229,8 @@
                     "payments": "The payments service: card charges and refunds.",
                     "search": "The search service: product search and suggestions."
                   }
-                }
+                },
+                "likely": "payments"
               }
             ]
           }

@@ -1,0 +1,387 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave-lists.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "request": {
+      "state": {
+        "request": "get me Samuel's number"
+      },
+      "questions": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "lights": {
+              "what": "Turn the lights in one room on, off, or dim them.\nCeiling and lamp lights only.",
+              "not_for": [
+                "colour scenes and schedules",
+                "asking whether a light is on"
+              ],
+              "examples": [
+                "turn on the kitchen lights",
+                "dim the office to 30 percent"
+              ]
+            },
+            "timer": {
+              "what": "Count down a duration, then sound an alert.\nSeconds to hours; runs until it rings or you cancel it.",
+              "not_for": [
+                "keeping the laptop awake",
+                "alarms at a time of day",
+                "asking the time"
+              ],
+              "examples": [
+                "set a timer for 10 minutes",
+                "25 minute timer",
+                "timer for 3 minutes called \"eggs\"",
+                "count down 90 seconds"
+              ]
+            },
+            "volume": {
+              "what": "Set the output volume.\nA percentage of the maximum; 0 is silent.",
+              "not_for": [
+                "muting and unmuting",
+                "screen brightness",
+                "one app's volume"
+              ],
+              "examples": [
+                "set the volume to 40 percent",
+                "volume 15",
+                "turn the sound up to 80"
+              ]
+            },
+            "contact": {
+              "what": "Look up a person's email address in the team directory.\nOne person at a time; prints the address.",
+              "not_for": [
+                "writing to anyone",
+                "phone numbers",
+                "adding a person to the directory"
+              ],
+              "examples": [
+                "look up dana's address",
+                "what is sam's email",
+                "find the address for dana"
+              ]
+            },
+            "mail": {
+              "what": "Start an email in your mail app.\nTo one address, with an optional subject; nothing goes out until you press send.",
+              "not_for": [
+                "reading or searching mail",
+                "chat and text messages",
+                "looking up an address"
+              ],
+              "examples": [
+                "email ana@example.com",
+                "write to sam@example.com about \"friday\"",
+                "send a note to team@example.com"
+              ]
+            },
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        },
+        "lights.room": {
+          "type": "choice",
+          "ask": "Which room?",
+          "options": {
+            "den": "The TV room downstairs; also 'the snug'.",
+            "office": "The upstairs study.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "lights.state": {
+          "type": "choice",
+          "ask": "What should the lights do?",
+          "options": {
+            "on": {
+              "what": "Switch on.",
+              "examples": [
+                "turn on the kitchen lights"
+              ]
+            },
+            "off": "Switch off.",
+            "dim": {
+              "what": "Lower the brightness without switching off.",
+              "examples": [
+                "dim the office to 30 percent"
+              ]
+            },
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "lights.brightness": {
+          "type": "choice",
+          "ask": "How bright, in percent?",
+          "options": {
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "timer.duration": {
+          "type": "choice",
+          "ask": "How long?",
+          "options": {
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "timer.label": {
+          "type": "choice",
+          "ask": "What is the timer for?",
+          "options": {
+            "none": "The request says it, in words that are not between quotes.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "volume.level": {
+          "type": "choice",
+          "ask": "How loud, in percent?",
+          "options": {
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "contact.name": {
+          "type": "choice",
+          "ask": "Whose address?",
+          "options": {
+            "dana": "Dana Ortiz, operations.",
+            "sam": "Sam Lee, sales.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "mail.to": {
+          "type": "choice",
+          "ask": "To which address?",
+          "options": {
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "mail.subject": {
+          "type": "choice",
+          "ask": "What is the subject?",
+          "options": {
+            "none": "The request says it, in words that are not between quotes.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_lights__room": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "den": "The TV room downstairs; also 'the snug'.",
+            "office": "The upstairs study.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_lights__state": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "on": {
+              "what": "Switch on.",
+              "examples": [
+                "turn on the kitchen lights"
+              ]
+            },
+            "off": "Switch off.",
+            "dim": {
+              "what": "Lower the brightness without switching off.",
+              "examples": [
+                "dim the office to 30 percent"
+              ]
+            },
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_contact__name": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "dana": "Dana Ortiz, operations.",
+            "sam": "Sam Lee, sales.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.does_contact_0_3": {
+          "type": "choice",
+          "ask": "The request is read as: Look up a person's email address in the team directory. One person at a time; prints the address. In the request, what do the words «get me Samuel's number» do?",
+          "options": {
+            "action": "They say what to do, or to what.",
+            "arg:name": "They answer: Whose address?",
+            "result": "They say what is wanted from the result, or how it should come.",
+            "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
+            "more": "They ask for another thing as well."
+          }
+        },
+        "weave.against_155090271": {
+          "type": "choice",
+          "ask": "The request was read as: Look up a person's email address in the team directory. One person at a time; prints the address. Whose address? (not said) How does that reading stand to the request?",
+          "options": {
+            "whole": "The reading holds everything the request says.",
+            "less": "The request says something more, which the reading leaves out.",
+            "other": "The request asks for something else."
+          }
+        }
+      },
+      "proposed": []
+    },
+    "raw": {
+      "route": {
+        "contact": 0.96,
+        "mail": 0.02,
+        "none": 0.02
+      },
+      "lights.room": {
+        "unstated": 1
+      },
+      "lights.state": {
+        "unstated": 1
+      },
+      "lights.brightness": {
+        "unstated": 1
+      },
+      "timer.duration": {
+        "unstated": 1
+      },
+      "timer.label": {
+        "unstated": 1
+      },
+      "volume.level": {
+        "unstated": 1
+      },
+      "contact.name": {
+        "sam": 0.9,
+        "unstated": 0.1
+      },
+      "mail.to": {
+        "unstated": 1
+      },
+      "mail.subject": {
+        "unstated": 1
+      },
+      "weave.view_lights__room": {
+        "unstated": 1
+      },
+      "weave.view_lights__state": {
+        "unstated": 1
+      },
+      "weave.view_contact__name": {
+        "sam": 0.9,
+        "unstated": 0.1
+      },
+      "weave.does_contact_0_3": {
+        "action": 0.95,
+        "courtesy": 0.05
+      },
+      "weave.against_155090271": {
+        "whole": 0.9,
+        "less": 0.07,
+        "other": 0.03
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "ranking": [
+        {
+          "reflex": "contact",
+          "route": 0.96
+        },
+        {
+          "reflex": "mail",
+          "route": 0.02
+        },
+        {
+          "reflex": "lights",
+          "route": 0
+        },
+        {
+          "reflex": "timer",
+          "route": 0
+        },
+        {
+          "reflex": "volume",
+          "route": 0
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "contact",
+          "p": 0.96
+        }
+      ],
+      "winner": {
+        "reflex": "contact",
+        "args": {},
+        "missing": [
+          {
+            "arg": "name",
+            "ask": "Whose address?",
+            "because": {
+              "type": "unsettled"
+            },
+            "words": {
+              "start": 7,
+              "end": 15,
+              "text": "Samuel's"
+            },
+            "choices": {
+              "type": "vocab",
+              "words": {
+                "dana": "Dana Ortiz, operations.",
+                "sam": "Sam Lee, sales."
+              }
+            },
+            "likely": "sam"
+          }
+        ],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 22,
+              "text": "get me Samuel's number"
+            },
+            "does": "action",
+            "p": 0.95
+          }
+        ],
+        "unconsumed": [],
+        "whole": 0.9,
+        "runner_up": {
+          "reflex": "mail",
+          "route": 0.02
+        }
+      }
+    }
+  }
+}

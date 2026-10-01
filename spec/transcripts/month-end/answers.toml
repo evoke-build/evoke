@@ -328,6 +328,31 @@ route                        = { ledger = 0.95, bank = 0.02, none = 0.03 }
 "weave.does_ledger_6_6"      = { action = 0.95, courtesy = 0.05 }
 "weave.against_1129942295"   = { whole = 0.9, less = 0.05, other = 0.05 }
 
+[answers."anything billed in sept"]
+route                               = { invoices = 0.95, bank = 0.02, none = 0.03 }
+"bank.month"                        = { unstated = 0.95, august = 0.03, september = 0.02 }
+"invoices.month"                    = { september = 0.95, unstated = 0.05 }
+"cards.month"                       = { unstated = 0.95, august = 0.03, september = 0.02 }
+"payroll.month"                     = { unstated = 0.95, august = 0.03, september = 0.02 }
+"ledger.month"                      = { unstated = 0.95, august = 0.03, september = 0.02 }
+"send.to"                           = { unstated = 1.0 }
+"close.month"                       = { unstated = 0.95, august = 0.03, september = 0.02 }
+"close.to"                          = { unstated = 1.0 }
+"weave.view_bank__month"            = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.words_bank__month_19_23"     = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_invoices__month"        = { september = 0.95, unstated = 0.05 }
+"weave.words_invoices__month_19_23" = { september = 0.95, unstated = 0.05 }
+"weave.view_cards__month"           = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.words_cards__month_19_23"    = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_payroll__month"         = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.words_payroll__month_19_23"  = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_ledger__month"          = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.words_ledger__month_19_23"   = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.view_close__month"           = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.words_close__month_19_23"    = { unstated = 0.95, august = 0.03, september = 0.02 }
+"weave.does_invoices_0_1"           = { action = 0.95, courtesy = 0.05 }
+"weave.against_1857473980"          = { whole = 0.9, less = 0.05, other = 0.05 }
+
 [answers."close out august"]
 route                        = { close = 0.95, ledger = 0.02, none = 0.03 }
 "bank.month"                 = { unstated = 0.95, august = 0.03, september = 0.02 }

@@ -1,6 +1,6 @@
 {
   "input": {
-    "input": "put h s oh four oh nine aside",
+    "input": "put k d oh three one five aside",
     "kind": "code",
     "examples": [
       "HS-0409",
@@ -12,13 +12,13 @@
       {
         "span": {
           "start": 4,
-          "end": 23,
-          "text": "h s oh four oh nine"
+          "end": 25,
+          "text": "k d oh three one five"
         },
-        "typed": "HS-0409",
+        "typed": "KD-0315",
         "value": {
           "type": "code",
-          "value": "HS-0409"
+          "value": "KD-0315"
         },
         "form": "aloud",
         "shape": "completed"

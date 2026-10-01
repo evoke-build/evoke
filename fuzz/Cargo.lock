@@ -93,6 +93,7 @@ name = "evoke-fuzz"
 version = "0.0.0"
 dependencies = [
  "evoke-core",
+ "indexmap",
  "libfuzzer-sys",
  "serde_json",
 ]

@@ -125,3 +125,20 @@ $ evoke "close september"
 [2]
 $ evoke test close
   close  9 passed · 7 steps route
+# A month cut short is read where its own words name it, and why shows what they were asked.
+$ evoke "anything billed in sept"
+  invoices month="september"  0.95
+september: 38 invoices, 35 paid
+$ evoke why
+  "anything billed in sept"
+
+  which reflex            invoices 0.95   (none of them 0.03 · bank 0.02)
+                          List a month's invoices.
+  month                   september 0.95   (not said 0.05)
+                          asked a second way: september 0.95; the less sure of the two counts
+                          asked of "sept" alone: september 0.95
+  holds all you said      0.90
+  → ran: invoices month="september"  0.95
+    a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  replay answered 23 questions in 2 rounds

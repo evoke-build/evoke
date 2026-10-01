@@ -24,18 +24,19 @@ route                      = { lights = 0.95, timer = 0.01, volume = 0.01, none 
 "weave.against_693291516"  = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."kill the lights in the snug"]
-route                      = { lights = 0.96, timer = 0.01, volume = 0.01, none = 0.02 }
-"lights.room"              = { den = 0.91, office = 0.02, none = 0.02, unstated = 0.05 }
-"lights.state"             = { off = 0.95, on = 0.02, dim = 0.02, unstated = 0.01 }
-"lights.brightness"        = { unstated = 1.0 }
-"timer.duration"           = { unstated = 1.0 }
-"timer.label"              = { unstated = 1.0 }
-"volume.level"             = { unstated = 1.0 }
-"weave.view_lights__room"  = { unstated = 0.85, den = 0.13, none = 0.02 }
-"weave.view_lights__state" = { off = 0.96, on = 0.02, dim = 0.01, unstated = 0.01 }
-"weave.is_lights__room_0"  = { yes = 0.95 }
-"weave.is_lights__state_1" = { yes = 0.97 }
-"weave.does_lights_0_2"    = { action = 0.9, courtesy = 0.1 }
+route                            = { lights = 0.96, timer = 0.01, volume = 0.01, none = 0.02 }
+"lights.room"                    = { den = 0.91, office = 0.02, none = 0.02, unstated = 0.05 }
+"lights.state"                   = { off = 0.95, on = 0.02, dim = 0.02, unstated = 0.01 }
+"lights.brightness"              = { unstated = 1.0 }
+"timer.duration"                 = { unstated = 1.0 }
+"timer.label"                    = { unstated = 1.0 }
+"volume.level"                   = { unstated = 1.0 }
+"weave.view_lights__room"        = { unstated = 0.85, den = 0.13, none = 0.02 }
+"weave.view_lights__state"       = { off = 0.96, on = 0.02, dim = 0.01, unstated = 0.01 }
+"weave.is_lights__room_0"        = { yes = 0.95 }
+"weave.is_lights__state_1"       = { yes = 0.97 }
+"weave.does_lights_0_2"          = { action = 0.9, courtesy = 0.1 }
+"weave.words_lights__room_23_27" = { den = 0.91, office = 0.02, none = 0.02, unstated = 0.05 }
 
 [answers."kill the lights in the den, lock the door too"]
 route                      = { lights = 0.93, none = 0.04, timer = 0.02, volume = 0.01 }

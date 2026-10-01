@@ -3244,6 +3244,11 @@
             "weave.is_errors__region_1": {
               "yes": 0.05
             },
+            "weave.words_errors__region_11_17": {
+              "unstated": 0.95,
+              "eu-west": 0.03,
+              "us-east": 0.02
+            },
             "weave.view_deploys__service": {
               "unstated": 0.95,
               "checkout": 0.03,
@@ -3259,6 +3264,11 @@
             },
             "weave.is_deploys__region_1": {
               "yes": 0.05
+            },
+            "weave.words_deploys__region_11_17": {
+              "unstated": 0.95,
+              "eu-west": 0.03,
+              "us-east": 0.02
             },
             "weave.view_logs__service": {
               "unstated": 0.95,
@@ -3276,6 +3286,11 @@
             "weave.is_logs__region_1": {
               "yes": 0.05
             },
+            "weave.words_logs__region_11_17": {
+              "unstated": 0.95,
+              "eu-west": 0.03,
+              "us-east": 0.02
+            },
             "weave.view_rollback__service": {
               "unstated": 0.95,
               "checkout": 0.03,
@@ -3291,6 +3306,11 @@
             },
             "weave.is_rollback__region_1": {
               "yes": 0.05
+            },
+            "weave.words_rollback__region_11_17": {
+              "unstated": 0.95,
+              "eu-west": 0.03,
+              "us-east": 0.02
             },
             "weave.view_post__channel": {
               "unstated": 0.95,
@@ -3324,6 +3344,11 @@
             },
             "weave.is_outage__region_1": {
               "yes": 0.05
+            },
+            "weave.words_outage__region_11_17": {
+              "unstated": 0.95,
+              "eu-west": 0.03,
+              "us-east": 0.02
             },
             "weave.does_status_0_3": {
               "action": 0.95,

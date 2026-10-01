@@ -621,6 +621,11 @@
                 "because": {
                   "type": "unstated"
                 },
+                "words": {
+                  "start": 21,
+                  "end": 29,
+                  "text": "checkout"
+                },
                 "choices": {
                   "type": "vocab",
                   "words": {
@@ -628,7 +633,8 @@
                     "payments": "The payments service: card charges and refunds.",
                     "search": "The search service: product search and suggestions."
                   }
-                }
+                },
+                "likely": "checkout"
               }
             ]
           }
@@ -777,6 +783,11 @@
                   "because": {
                     "type": "unstated"
                   },
+                  "words": {
+                    "start": 21,
+                    "end": 29,
+                    "text": "checkout"
+                  },
                   "choices": {
                     "type": "vocab",
                     "words": {
@@ -784,7 +795,8 @@
                       "payments": "The payments service: card charges and refunds.",
                       "search": "The search service: product search and suggestions."
                     }
-                  }
+                  },
+                  "likely": "checkout"
                 }
               ]
             },

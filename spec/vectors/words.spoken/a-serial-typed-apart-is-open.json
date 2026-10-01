@@ -1,6 +1,6 @@
 {
   "input": {
-    "input": "lock C 0 2 X K 1 A B J G 5 M",
+    "input": "lock F 7 1 Q M 4 Z T 9 K 2 D",
     "kind": "code",
     "examples": [
       "C02XK1ABJG5M",
@@ -13,12 +13,12 @@
         "span": {
           "start": 5,
           "end": 28,
-          "text": "C 0 2 X K 1 A B J G 5 M"
+          "text": "F 7 1 Q M 4 Z T 9 K 2 D"
         },
-        "typed": "C02XK1ABJG5M",
+        "typed": "F71QM4ZT9K2D",
         "value": {
           "type": "code",
-          "value": "C02XK1ABJG5M"
+          "value": "F71QM4ZT9K2D"
         },
         "form": "aloud",
         "shape": "open"

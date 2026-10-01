@@ -54,19 +54,21 @@ route                      = { failback = 0.95, drain = 0.02, none = 0.03 }
 "weave.does_failback_4_5"  = { action = 0.95, courtesy = 0.05 }
 
 [answers."run the failover runbook"]
-route                      = { runbook = 0.95, failover = 0.02, none = 0.03 }
-"tell.channel"             = { unstated = 0.95, "#ops" = 0.03, "#db" = 0.02 }
-"weave.view_tell__channel" = { unstated = 0.95, "#ops" = 0.03, "#db" = 0.02 }
-"weave.is_tell__channel_0" = { yes = 0.05 }
-"weave.does_runbook_0_3"   = { action = 0.95, courtesy = 0.05 }
+route                            = { runbook = 0.95, failover = 0.02, none = 0.03 }
+"tell.channel"                   = { unstated = 0.95, "#ops" = 0.03, "#db" = 0.02 }
+"weave.view_tell__channel"       = { unstated = 0.95, "#ops" = 0.03, "#db" = 0.02 }
+"weave.is_tell__channel_0"       = { yes = 0.05 }
+"weave.words_tell__channel_8_16" = { unstated = 0.95, "#ops" = 0.03, "#db" = 0.02 }
+"weave.does_runbook_0_3"         = { action = 0.95, courtesy = 0.05 }
 
 [answers."switch the database to the replica"]
-route                      = { runbook = 0.95, failover = 0.02, none = 0.03 }
-"tell.channel"             = { unstated = 0.95, "#ops" = 0.03, "#db" = 0.02 }
-"weave.view_tell__channel" = { unstated = 0.95, "#ops" = 0.03, "#db" = 0.02 }
-"weave.is_tell__channel_1" = { yes = 0.05 }
-"weave.does_runbook_0_2"   = { action = 0.95, courtesy = 0.05 }
-"weave.does_runbook_5_5"   = { action = 0.95, courtesy = 0.05 }
+route                             = { runbook = 0.95, failover = 0.02, none = 0.03 }
+"tell.channel"                    = { unstated = 0.95, "#ops" = 0.03, "#db" = 0.02 }
+"weave.view_tell__channel"        = { unstated = 0.95, "#ops" = 0.03, "#db" = 0.02 }
+"weave.is_tell__channel_1"        = { yes = 0.05 }
+"weave.words_tell__channel_11_19" = { unstated = 0.95, "#ops" = 0.03, "#db" = 0.02 }
+"weave.does_runbook_0_2"          = { action = 0.95, courtesy = 0.05 }
+"weave.does_runbook_5_5"          = { action = 0.95, courtesy = 0.05 }
 
 [answers."the primary is dying, fail over"]
 route                      = { runbook = 0.95, failover = 0.02, none = 0.03 }

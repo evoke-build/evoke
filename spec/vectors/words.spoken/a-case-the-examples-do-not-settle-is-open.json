@@ -1,6 +1,6 @@
 {
   "input": {
-    "input": "is L X eighteen thirty on time",
+    "input": "is Q R nineteen forty on time",
     "kind": "code",
     "examples": [
       "LX1830",
@@ -12,13 +12,13 @@
       {
         "span": {
           "start": 3,
-          "end": 22,
-          "text": "L X eighteen thirty"
+          "end": 21,
+          "text": "Q R nineteen forty"
         },
-        "typed": "LX1830",
+        "typed": "QR1940",
         "value": {
           "type": "code",
-          "value": "LX1830"
+          "value": "QR1940"
         },
         "form": "aloud",
         "shape": "open"

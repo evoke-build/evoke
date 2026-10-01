@@ -30,13 +30,14 @@ $ evoke why
   room                    den 0.91   (not said 0.05 · office 0.02)
                           asked a second way: not said
                           in your words: "snug" (by what it means)
+                          asked of "snug" alone: den 0.91
   state                   off 0.95   (on 0.02 · dim 0.02)
                           asked a second way: off 0.96; the less sure of the two counts
                           is it off? yes 0.97
   → ran at your yes: lights room="den" state="off" · write · weakest: room 0.91
     room was read from "snug"
 
-  replay answered 12 questions in 2 rounds
+  replay answered 13 questions in 2 rounds
 # Words that ask for another thing, in a sentence read as one request, hold the call for a yes.
 $ evoke "kill the lights in the den, lock the door too"
   lights room="den" state="off" · write · weakest: room 0.92

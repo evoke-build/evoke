@@ -70,7 +70,8 @@ pick out of range. What it may be is the options, the vocabulary's words, or whi
 `choices.recent` listing the values recalled from the results the application handed `decide`, `handle` or
 `weave` as `recent: [{ reflex, data }]`, newest first, when the pick's manifest names the field. Where the
 input's words say a pick's value aloud and read in more than one way, `words` holds them and `choices.readings`
-lists what they read as: offer those in place of the recalled values. `fill` takes what a person answered, by
+lists what they read as: offer those in place of the recalled values. For a word from a vocabulary, `likely`
+names the listed word to offer for a yes before the choices, which keep their order. `fill` takes what a person answered, by
 argument name: an option's key, a word, or the text a pick reads, a recalled value or a reading among them. It
 types the answer and gates again, synchronously:
 

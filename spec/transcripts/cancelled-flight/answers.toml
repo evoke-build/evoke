@@ -395,22 +395,23 @@ route                        = { none = 0.95, flights = 0.05 }
 "weave.is_cancelled__city_0" = { yes = 0.05 }
 
 [answers."plan a spring trip to berlin"]
-route                        = { none = 0.95, flights = 0.05 }
-"flights.to"                 = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
-"rooms.city"                 = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
-"calendar.day"               = { unstated = 1.0 }
-"book.flight"                = { unstated = 1.0 }
-"meeting.day"                = { unstated = 1.0 }
-"tell.channel"               = { unstated = 0.95, "#travel" = 0.03, "#team" = 0.02 }
-"cancelled.city"             = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
-"weave.view_flights__to"     = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
-"weave.is_flights__to_2"     = { yes = 0.05 }
-"weave.view_rooms__city"     = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
-"weave.is_rooms__city_2"     = { yes = 0.05 }
-"weave.view_tell__channel"   = { unstated = 0.95, "#travel" = 0.03, "#team" = 0.02 }
-"weave.is_tell__channel_0"   = { yes = 0.05 }
-"weave.view_cancelled__city" = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
-"weave.is_cancelled__city_2" = { yes = 0.05 }
+route                             = { none = 0.95, flights = 0.05 }
+"flights.to"                      = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
+"rooms.city"                      = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
+"calendar.day"                    = { unstated = 1.0 }
+"book.flight"                     = { unstated = 1.0 }
+"meeting.day"                     = { unstated = 1.0 }
+"tell.channel"                    = { unstated = 0.95, "#travel" = 0.03, "#team" = 0.02 }
+"cancelled.city"                  = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
+"weave.view_flights__to"          = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
+"weave.is_flights__to_2"          = { yes = 0.05 }
+"weave.view_rooms__city"          = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
+"weave.is_rooms__city_2"          = { yes = 0.05 }
+"weave.view_tell__channel"        = { unstated = 0.95, "#travel" = 0.03, "#team" = 0.02 }
+"weave.is_tell__channel_0"        = { yes = 0.05 }
+"weave.words_tell__channel_14_18" = { unstated = 0.95, "#travel" = 0.03, "#team" = 0.02 }
+"weave.view_cancelled__city"      = { unstated = 0.95, lisbon = 0.03, madrid = 0.02 }
+"weave.is_cancelled__city_2"      = { yes = 0.05 }
 
 [answers."cancel my seat on the madrid flight"]
 route                        = { none = 0.95, flights = 0.05 }
