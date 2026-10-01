@@ -31,7 +31,8 @@ den lights off
   checks. So is a part that is only a determiner and one word, "the office" in "kill the lights in the den and
   the office", whatever it would mean on its own: it stays a step of its own only when it fits no item of its
   neighbour's task. A part read as an item must be the value it stands in for, "gadgets" for "widgets", never a
-  longer phrase that holds one. When the classifier was sure the two parts were separate things and one still
+  longer phrase that holds one, and it never stands in for a text in quotes: in `start a 10 minute timer called
+  "pasta", and ring me after`, no second timer is made. When the classifier was sure the two parts were separate things and one still
   matches nothing, the whole request is refused rather than half done. When it was not sure, the part is read
   with its neighbour as one request, and `evoke why` says what its words do.
 - A part that begins with `not`, `don't`, `never` or `without` is left out, however the apostrophe is typed. What
@@ -77,7 +78,8 @@ den lights off
   request.
 - Two items the classifier read as one thing, "invoices, card expenses", are two steps when each is a reflex of
   its own: the joint is split, and a word the sentence says once reaches both. A joint it read firmly as one
-  task stays one.
+  task stays one. A step made this way confirms where the whole was read as its reflex with a value the step's
+  own call lacks, and names the value's words: `"friday" may add a detail this call does not hold`.
 - A sentence reads most surely when it asks for a few steps. The plan is settled before anything runs, so the
   longer a sentence grows, the more often one of its steps stops to ask.
 
@@ -99,7 +101,10 @@ drafted to dana@example.com
 `mail` needed an address the words did not give. `contact` yields one, and `them` names it. A required argument
 is filled with the value. An optional one is decided again with the value written into the words, so the
 classifier assigns it, under the same gate as any words. A date a step yields reaches the next as a day,
-`2026-05-06`, never as `tomorrow`: a relative day is nothing to take. Nothing is guessed: a reference that
+`2026-05-06`, never as `tomorrow`: a relative day is nothing to take. A day of the month in a step that takes
+from a step naming a month and a day is read beside that day, not beside today: in `show my calendar for october
+12th, then move those meetings to the 20th`, the meetings move to October 20th, and `the 3rd` would be
+November's. Nothing is guessed: a reference that
 several fields could satisfy, or one record of a list, stops with a line naming them. Within one sentence a step refers to another; across sentences, in one
 session, a pick with `recent` recalls what earlier bodies returned, at its ask
 ([Arguments](../author/arguments.md#a-value-recalled)). A step that refers to another whose result it takes

@@ -1,0 +1,505 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-cancelled-flight.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "what's on friday's calendar, then move those meetings to the 20th",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "what's on friday's calendar"
+          },
+          {
+            "outcome": "run",
+            "reflex": "calendar",
+            "args": {
+              "day": {
+                "type": "pick",
+                "span": {
+                  "start": 10,
+                  "end": 16,
+                  "text": "friday"
+                },
+                "value": {
+                  "type": "date",
+                  "value": {
+                    "type": "weekday",
+                    "weekday": "friday"
+                  }
+                }
+              }
+            },
+            "call": "calendar day=\"friday\"",
+            "effect": "read",
+            "basis": {
+              "day": {
+                "by": "ask",
+                "p": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 6,
+                  "text": "what's"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 19,
+                  "end": 27,
+                  "text": "calendar"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "calendar",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "calendar",
+                "p": 0.95
+              },
+              {
+                "question": "calendar.day",
+                "top": "10-16",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "flights",
+              "route": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "calendar",
+                "route": 0.95
+              },
+              {
+                "reflex": "flights",
+                "route": 0.02
+              },
+              {
+                "reflex": "rooms",
+                "route": 0
+              },
+              {
+                "reflex": "book",
+                "route": 0
+              },
+              {
+                "reflex": "hotel",
+                "route": 0
+              },
+              {
+                "reflex": "meeting",
+                "route": 0
+              },
+              {
+                "reflex": "tell",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "move those meetings to the 20th"
+          },
+          {
+            "outcome": "run",
+            "reflex": "meeting",
+            "args": {
+              "day": {
+                "type": "pick",
+                "span": {
+                  "start": 23,
+                  "end": 31,
+                  "text": "the 20th"
+                },
+                "value": {
+                  "type": "date",
+                  "value": {
+                    "type": "day",
+                    "day": 20
+                  }
+                }
+              }
+            },
+            "call": "meeting day=\"the 20th\"",
+            "effect": "write",
+            "basis": {
+              "day": {
+                "by": "ask",
+                "p": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 19,
+                  "text": "move those meetings"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "meeting",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "meeting",
+                "p": 0.95
+              },
+              {
+                "question": "meeting.day",
+                "top": "23-31",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "flights",
+              "route": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "meeting",
+                "route": 0.95
+              },
+              {
+                "reflex": "flights",
+                "route": 0.02
+              },
+              {
+                "reflex": "rooms",
+                "route": 0
+              },
+              {
+                "reflex": "calendar",
+                "route": 0
+              },
+              {
+                "reflex": "book",
+                "route": 0
+              },
+              {
+                "reflex": "hotel",
+                "route": 0
+              },
+              {
+                "reflex": "tell",
+                "route": 0
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.95
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "what's on friday's calendar, then move those meetings to the 20th",
+        "steps": [
+          {
+            "n": 1,
+            "text": "what's on friday's calendar",
+            "end": 27,
+            "decision": {
+              "outcome": "run",
+              "reflex": "calendar",
+              "args": {
+                "day": {
+                  "type": "pick",
+                  "span": {
+                    "start": 10,
+                    "end": 16,
+                    "text": "friday"
+                  },
+                  "value": {
+                    "type": "date",
+                    "value": {
+                      "type": "weekday",
+                      "weekday": "friday"
+                    }
+                  }
+                }
+              },
+              "call": "calendar day=\"friday\"",
+              "effect": "read",
+              "basis": {
+                "day": {
+                  "by": "ask",
+                  "p": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 6,
+                    "text": "what's"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 19,
+                    "end": 27,
+                    "text": "calendar"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "calendar",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "calendar",
+                  "p": 0.95
+                },
+                {
+                  "question": "calendar.day",
+                  "top": "10-16",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "flights",
+                "route": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "calendar",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "flights",
+                  "route": 0.02
+                },
+                {
+                  "reflex": "rooms",
+                  "route": 0
+                },
+                {
+                  "reflex": "book",
+                  "route": 0
+                },
+                {
+                  "reflex": "hotel",
+                  "route": 0
+                },
+                {
+                  "reflex": "meeting",
+                  "route": 0
+                },
+                {
+                  "reflex": "tell",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "calendar",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "move those meetings to the 20th",
+            "end": 65,
+            "decision": {
+              "outcome": "run",
+              "reflex": "meeting",
+              "args": {
+                "day": {
+                  "type": "pick",
+                  "span": {
+                    "start": 23,
+                    "end": 31,
+                    "text": "the 20th"
+                  },
+                  "value": {
+                    "type": "date",
+                    "value": {
+                      "type": "day",
+                      "day": 20
+                    }
+                  }
+                }
+              },
+              "call": "meeting day=\"the 20th\"",
+              "effect": "write",
+              "basis": {
+                "day": {
+                  "by": "ask",
+                  "p": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 19,
+                    "text": "move those meetings"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "meeting",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "meeting",
+                  "p": 0.95
+                },
+                {
+                  "question": "meeting.day",
+                  "top": "23-31",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "flights",
+                "route": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "meeting",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "flights",
+                  "route": 0.02
+                },
+                {
+                  "reflex": "rooms",
+                  "route": 0
+                },
+                {
+                  "reflex": "calendar",
+                  "route": 0
+                },
+                {
+                  "reflex": "book",
+                  "route": 0
+                },
+                {
+                  "reflex": "hotel",
+                  "route": 0
+                },
+                {
+                  "reflex": "tell",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "meeting",
+            "effect": "write",
+            "refs": [
+              {
+                "span": {
+                  "start": 5,
+                  "end": 10,
+                  "text": "those"
+                },
+                "from": [
+                  0
+                ],
+                "how": "pronoun",
+                "many": true
+              }
+            ],
+            "after": [
+              1
+            ]
+          }
+        ],
+        "binds": [
+          {
+            "from": 1,
+            "to": 2,
+            "arg": "calendar",
+            "field": "calendar",
+            "via": "takes"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 27,
+            "end": 34,
+            "word": "then",
+            "order": "then",
+            "p": 0.95,
+            "cut": true
+          }
+        ],
+        "count": {
+          "one": 0.05
+        }
+      }
+    }
+  }
+}

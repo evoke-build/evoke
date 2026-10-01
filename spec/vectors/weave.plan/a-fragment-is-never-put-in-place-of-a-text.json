@@ -1,0 +1,450 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-weave.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "start a 10 minute timer called \"pasta\", and ring me after",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "start a 10 minute timer called \"pasta\""
+          },
+          {
+            "outcome": "run",
+            "reflex": "timer",
+            "args": {
+              "duration": {
+                "type": "pick",
+                "span": {
+                  "start": 8,
+                  "end": 17,
+                  "text": "10 minute"
+                },
+                "value": {
+                  "type": "duration",
+                  "value": 600
+                }
+              },
+              "label": {
+                "type": "pick",
+                "span": {
+                  "start": 32,
+                  "end": 37,
+                  "text": "pasta"
+                },
+                "value": {
+                  "type": "quoted",
+                  "value": "pasta"
+                }
+              }
+            },
+            "call": "timer duration=\"10 minute\" label=\"pasta\"",
+            "effect": "write",
+            "basis": {
+              "duration": {
+                "by": "ask",
+                "p": 0.95
+              },
+              "label": {
+                "by": "ask",
+                "p": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 5,
+                  "text": "start"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 18,
+                  "end": 23,
+                  "text": "timer"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 24,
+                  "end": 30,
+                  "text": "called"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "timer",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "timer",
+                "p": 0.95
+              },
+              {
+                "question": "timer.duration",
+                "top": "8-17",
+                "p": 0.95
+              },
+              {
+                "question": "timer.label",
+                "top": "32-37",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "lights",
+              "route": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.95
+              },
+              {
+                "reflex": "lights",
+                "route": 0.02
+              },
+              {
+                "reflex": "volume",
+                "route": 0
+              },
+              {
+                "reflex": "contact",
+                "route": 0
+              },
+              {
+                "reflex": "mail",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "ring me after"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.05
+              },
+              {
+                "reflex": "lights",
+                "route": 0
+              },
+              {
+                "reflex": "volume",
+                "route": 0
+              },
+              {
+                "reflex": "contact",
+                "route": 0
+              },
+              {
+                "reflex": "mail",
+                "route": 0
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "ring me after",
+            "only": "timer"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.05
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "start a ring me after timer called \"pasta\"",
+            "only": "timer"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "timer",
+                "route": 0.05
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.95
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.95
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
+        }
+      },
+      "verified": {
+        "weave.part_44_57": {
+          "asks": 0.9,
+          "detail": 0.05,
+          "aside": 0.05
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "start a 10 minute timer called \"pasta\", and ring me after",
+        "steps": [
+          {
+            "n": 1,
+            "text": "start a 10 minute timer called \"pasta\"",
+            "end": 38,
+            "decision": {
+              "outcome": "run",
+              "reflex": "timer",
+              "args": {
+                "duration": {
+                  "type": "pick",
+                  "span": {
+                    "start": 8,
+                    "end": 17,
+                    "text": "10 minute"
+                  },
+                  "value": {
+                    "type": "duration",
+                    "value": 600
+                  }
+                },
+                "label": {
+                  "type": "pick",
+                  "span": {
+                    "start": 32,
+                    "end": 37,
+                    "text": "pasta"
+                  },
+                  "value": {
+                    "type": "quoted",
+                    "value": "pasta"
+                  }
+                }
+              },
+              "call": "timer duration=\"10 minute\" label=\"pasta\"",
+              "effect": "write",
+              "basis": {
+                "duration": {
+                  "by": "ask",
+                  "p": 0.95
+                },
+                "label": {
+                  "by": "ask",
+                  "p": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 5,
+                    "text": "start"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 18,
+                    "end": 23,
+                    "text": "timer"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 24,
+                    "end": 30,
+                    "text": "called"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "timer",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "timer",
+                  "p": 0.95
+                },
+                {
+                  "question": "timer.duration",
+                  "top": "8-17",
+                  "p": 0.95
+                },
+                {
+                  "question": "timer.label",
+                  "top": "32-37",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "lights",
+                "route": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "timer",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "lights",
+                  "route": 0.02
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "timer",
+            "effect": "write"
+          },
+          {
+            "n": 2,
+            "text": "ring me after",
+            "end": 57,
+            "decision": {
+              "outcome": "abstain",
+              "contenders": [
+                {
+                  "reflex": "timer",
+                  "route": 0.05
+                },
+                {
+                  "reflex": "lights",
+                  "route": 0
+                },
+                {
+                  "reflex": "volume",
+                  "route": 0
+                },
+                {
+                  "reflex": "contact",
+                  "route": 0
+                },
+                {
+                  "reflex": "mail",
+                  "route": 0
+                }
+              ],
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "none",
+                  "p": 0.95
+                }
+              ]
+            }
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "refuse",
+          "because": [
+            {
+              "type": "no_reflex",
+              "step": 2
+            }
+          ]
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 38,
+            "end": 44,
+            "word": "and",
+            "order": "and",
+            "p": 0.95,
+            "cut": true
+          }
+        ],
+        "count": {
+          "one": 0.05
+        }
+      }
+    }
+  }
+}

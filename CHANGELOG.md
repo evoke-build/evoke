@@ -22,6 +22,10 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   `before I forget`, and a courtesy that opens with `if`, `if you would`, are set aside and no longer read as a
   step or a condition; `why` says which. After `not X,` what follows is kept. The JSON line carries `by` on a
   part set aside. The parts such a sign makes are read while the cut is asked, so the cut adds no wait.
+- A day of the month in a step that takes from a step naming a month and a day is read beside that day: after
+  `the calendar for october 12th`, `the 20th` is October 20th.
+- A part that matches no reflex never stands in for a text in quotes of the step beside it. A step cut from a
+  part read as one thing confirms where its call lacks a value the whole held; the prompt names the words.
 
 ## [0.17.0] - 2026-09-30
 

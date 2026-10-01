@@ -241,6 +241,40 @@ impl Day {
         holds.then_some(Self::Calendar { year, month, day })
     }
 
+    /// A day of the month read beside a calendar day it follows, as `resolve` reads one beside today: that day's
+    /// month when on or after it, else the next month that has it; the year follows where the named day has one.
+    /// None for any other pair of readings.
+    #[must_use]
+    pub fn beside(&self, named: &Self) -> Option<Self> {
+        let (
+            Self::Nth { day },
+            Self::Calendar {
+                year,
+                month,
+                day: from,
+            },
+        ) = (self, named)
+        else {
+            return None;
+        };
+        if !(1..=31).contains(day) {
+            return None;
+        }
+        let (mut year, mut month) = (*year, *month);
+        if day < from || *day > days_in(month, year) {
+            loop {
+                (year, month) = match (year, month) {
+                    (year, 12) => (year.map(|year| year + 1), 1),
+                    (year, month) => (year, month + 1),
+                };
+                if *day <= days_in(month, year) {
+                    break;
+                }
+            }
+        }
+        Self::calendar(year, month, *day)
+    }
+
     /// Whether the reading names one day of the calendar whatever today is: a month, a day and a year. What a
     /// body may yield, and what a branch may list; every other reading is relative.
     #[must_use]
@@ -466,6 +500,33 @@ mod tests {
             serde_json::to_string(&date("2026-05-05")).unwrap(),
             "\"2026-05-05\""
         );
+    }
+
+    #[test]
+    fn a_day_of_the_month_is_read_beside_a_calendar_day() {
+        let nth = |day| Day::Nth { day };
+        let named = Day::calendar(None, 10, 12).unwrap();
+        assert_eq!(nth(20).beside(&named), Day::calendar(None, 10, 20));
+        assert_eq!(nth(12).beside(&named), Day::calendar(None, 10, 12));
+        assert_eq!(nth(3).beside(&named), Day::calendar(None, 11, 3));
+        // The next month that has the day; the year turns with December.
+        assert_eq!(
+            nth(31).beside(&Day::calendar(None, 9, 12).unwrap()),
+            Day::calendar(None, 10, 31)
+        );
+        assert_eq!(
+            nth(30).beside(&Day::calendar(Some(2027), 1, 31).unwrap()),
+            Day::calendar(Some(2027), 3, 30)
+        );
+        assert_eq!(
+            nth(5).beside(&Day::calendar(Some(2026), 12, 20).unwrap()),
+            Day::calendar(Some(2027), 1, 5)
+        );
+        // No other pair of readings, and no day a month cannot hold.
+        assert_eq!(nth(0).beside(&named), None);
+        assert_eq!(nth(40).beside(&named), None);
+        assert_eq!(named.beside(&named), None);
+        assert_eq!(nth(5).beside(&Day::Offset { days: 1 }), None);
     }
 
     #[test]

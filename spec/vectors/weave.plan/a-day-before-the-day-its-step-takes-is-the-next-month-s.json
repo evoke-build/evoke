@@ -1,0 +1,491 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-cancelled-flight.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "show my calendar for october 12th, then move those meetings to the 3rd",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "show my calendar for october 12th"
+          },
+          {
+            "outcome": "run",
+            "reflex": "calendar",
+            "args": {
+              "day": {
+                "type": "pick",
+                "span": {
+                  "start": 21,
+                  "end": 33,
+                  "text": "october 12th"
+                },
+                "value": {
+                  "type": "date",
+                  "value": {
+                    "type": "calendar",
+                    "month": 10,
+                    "day": 12
+                  }
+                }
+              }
+            },
+            "call": "calendar day=\"october 12th\"",
+            "effect": "read",
+            "basis": {
+              "day": {
+                "by": "ask",
+                "p": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "show my calendar"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "calendar",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "calendar",
+                "p": 0.95
+              },
+              {
+                "question": "calendar.day",
+                "top": "21-33",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "flights",
+              "route": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "calendar",
+                "route": 0.95
+              },
+              {
+                "reflex": "flights",
+                "route": 0.02
+              },
+              {
+                "reflex": "rooms",
+                "route": 0
+              },
+              {
+                "reflex": "book",
+                "route": 0
+              },
+              {
+                "reflex": "hotel",
+                "route": 0
+              },
+              {
+                "reflex": "meeting",
+                "route": 0
+              },
+              {
+                "reflex": "tell",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "move those meetings to the 3rd"
+          },
+          {
+            "outcome": "run",
+            "reflex": "meeting",
+            "args": {
+              "day": {
+                "type": "pick",
+                "span": {
+                  "start": 23,
+                  "end": 30,
+                  "text": "the 3rd"
+                },
+                "value": {
+                  "type": "date",
+                  "value": {
+                    "type": "day",
+                    "day": 3
+                  }
+                }
+              }
+            },
+            "call": "meeting day=\"the 3rd\"",
+            "effect": "write",
+            "basis": {
+              "day": {
+                "by": "ask",
+                "p": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 19,
+                  "text": "move those meetings"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "meeting",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "meeting",
+                "p": 0.95
+              },
+              {
+                "question": "meeting.day",
+                "top": "23-30",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "flights",
+              "route": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "meeting",
+                "route": 0.95
+              },
+              {
+                "reflex": "flights",
+                "route": 0.02
+              },
+              {
+                "reflex": "rooms",
+                "route": 0
+              },
+              {
+                "reflex": "calendar",
+                "route": 0
+              },
+              {
+                "reflex": "book",
+                "route": 0
+              },
+              {
+                "reflex": "hotel",
+                "route": 0
+              },
+              {
+                "reflex": "tell",
+                "route": 0
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.95
+        },
+        "weave.count": {
+          "two": 0.6,
+          "more": 0.35,
+          "one": 0.05
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "show my calendar for october 12th, then move those meetings to the 3rd",
+        "steps": [
+          {
+            "n": 1,
+            "text": "show my calendar for october 12th",
+            "end": 33,
+            "decision": {
+              "outcome": "run",
+              "reflex": "calendar",
+              "args": {
+                "day": {
+                  "type": "pick",
+                  "span": {
+                    "start": 21,
+                    "end": 33,
+                    "text": "october 12th"
+                  },
+                  "value": {
+                    "type": "date",
+                    "value": {
+                      "type": "calendar",
+                      "month": 10,
+                      "day": 12
+                    }
+                  }
+                }
+              },
+              "call": "calendar day=\"october 12th\"",
+              "effect": "read",
+              "basis": {
+                "day": {
+                  "by": "ask",
+                  "p": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "show my calendar"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "calendar",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "calendar",
+                  "p": 0.95
+                },
+                {
+                  "question": "calendar.day",
+                  "top": "21-33",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "flights",
+                "route": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "calendar",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "flights",
+                  "route": 0.02
+                },
+                {
+                  "reflex": "rooms",
+                  "route": 0
+                },
+                {
+                  "reflex": "book",
+                  "route": 0
+                },
+                {
+                  "reflex": "hotel",
+                  "route": 0
+                },
+                {
+                  "reflex": "meeting",
+                  "route": 0
+                },
+                {
+                  "reflex": "tell",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "calendar",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "move those meetings to the 3rd",
+            "end": 70,
+            "decision": {
+              "outcome": "run",
+              "reflex": "meeting",
+              "args": {
+                "day": {
+                  "type": "pick",
+                  "span": {
+                    "start": 23,
+                    "end": 30,
+                    "text": "the 3rd"
+                  },
+                  "value": {
+                    "type": "date",
+                    "value": {
+                      "type": "calendar",
+                      "month": 11,
+                      "day": 3
+                    }
+                  },
+                  "typed": "november 3rd"
+                }
+              },
+              "call": "meeting day=\"november 3rd\"",
+              "effect": "write",
+              "basis": {
+                "day": {
+                  "by": "ask",
+                  "p": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 19,
+                    "text": "move those meetings"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "meeting",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "meeting",
+                  "p": 0.95
+                },
+                {
+                  "question": "meeting.day",
+                  "top": "23-30",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "flights",
+                "route": 0.02
+              },
+              "contenders": [
+                {
+                  "reflex": "meeting",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "flights",
+                  "route": 0.02
+                },
+                {
+                  "reflex": "rooms",
+                  "route": 0
+                },
+                {
+                  "reflex": "calendar",
+                  "route": 0
+                },
+                {
+                  "reflex": "book",
+                  "route": 0
+                },
+                {
+                  "reflex": "hotel",
+                  "route": 0
+                },
+                {
+                  "reflex": "tell",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "meeting",
+            "effect": "write",
+            "refs": [
+              {
+                "span": {
+                  "start": 5,
+                  "end": 10,
+                  "text": "those"
+                },
+                "from": [
+                  0
+                ],
+                "how": "pronoun",
+                "many": true
+              }
+            ],
+            "after": [
+              1
+            ]
+          }
+        ],
+        "binds": [
+          {
+            "from": 1,
+            "to": 2,
+            "arg": "calendar",
+            "field": "calendar",
+            "via": "takes"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 33,
+            "end": 40,
+            "word": "then",
+            "order": "then",
+            "p": 0.95,
+            "cut": true
+          }
+        ],
+        "count": {
+          "one": 0.05
+        }
+      }
+    }
+  }
+}

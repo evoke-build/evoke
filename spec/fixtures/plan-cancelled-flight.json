@@ -1,0 +1,386 @@
+{
+  "digest": "h1:cf349199290d9e6fdb814b34a203dd8e2a225558f28567ac32f07089bd945fcc",
+  "active": {
+    "flights": {
+      "effect": "read",
+      "run": "flights.mts",
+      "confirm": "Find flights to {to}?",
+      "args": {
+        "to": {
+          "ask": "Which city are you flying to?",
+          "vocab": "cities",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {
+        "flight": "code"
+      },
+      "returns": "flights",
+      "config": {},
+      "tags": [
+        "flights",
+        "cancelled"
+      ]
+    },
+    "rooms": {
+      "effect": "read",
+      "run": "rooms.mts",
+      "confirm": "Find rooms in {city}?",
+      "args": {
+        "city": {
+          "ask": "In which city do you need a room?",
+          "vocab": "cities",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "returns": "rooms",
+      "config": {},
+      "tags": [
+        "rooms",
+        "cancelled"
+      ]
+    },
+    "calendar": {
+      "effect": "read",
+      "run": "calendar.mts",
+      "confirm": "Show the calendar for {day}?",
+      "args": {
+        "day": {
+          "ask": "Which day?",
+          "pick": "date",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "returns": "calendar",
+      "config": {},
+      "tags": [
+        "calendar",
+        "cancelled"
+      ]
+    },
+    "book": {
+      "effect": "destructive",
+      "run": "book.mts",
+      "confirm": "Book {flight}?",
+      "args": {
+        "flight": {
+          "ask": "What is the flight's code?",
+          "pick": "code",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "book",
+        "cancelled"
+      ]
+    },
+    "hotel": {
+      "effect": "write",
+      "run": "hotel.mts",
+      "confirm": "Book the hotel?",
+      "args": {},
+      "takes": {
+        "rooms": "rooms"
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "hotel",
+        "cancelled"
+      ]
+    },
+    "meeting": {
+      "effect": "write",
+      "run": "meeting.mts",
+      "confirm": "Move the meetings?",
+      "args": {
+        "day": {
+          "ask": "To which day?",
+          "pick": "date",
+          "optional": true,
+          "was": []
+        }
+      },
+      "takes": {
+        "calendar": "calendar"
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "meeting",
+        "cancelled"
+      ]
+    },
+    "tell": {
+      "effect": "write",
+      "run": "tell.mts",
+      "confirm": "Tell {channel}?",
+      "args": {
+        "channel": {
+          "ask": "Which chat channel?",
+          "vocab": "channels",
+          "optional": false,
+          "was": []
+        }
+      },
+      "yields": {},
+      "config": {},
+      "tags": [
+        "tell",
+        "cancelled"
+      ]
+    }
+  },
+  "inactive": {},
+  "slots": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "flights": {
+          "what": "Find the next flights to a city.\nTonight's flights, each with its code and departure time, the best first; nothing is booked.",
+          "not_for": [
+            "booking a seat on a flight",
+            "finding hotel rooms in a city",
+            "whether a flight is on time"
+          ],
+          "examples": [
+            "search for a flight to berlin",
+            "any other flights to lisbon",
+            "which flights still go to madrid",
+            "i need another flight to berlin",
+            "find flights to berlin",
+            "next flight to lisbon tonight"
+          ]
+        },
+        "rooms": {
+          "what": "Find hotel rooms in a city for tonight.\nEach hotel with its price a night, the cheapest first; nothing is booked.",
+          "not_for": [
+            "booking the hotel",
+            "finding flights to a city",
+            "a meeting room at the office"
+          ],
+          "examples": [
+            "look for a hotel room in madrid",
+            "hotels in berlin with a free room",
+            "what rooms are free in lisbon",
+            "find rooms in madrid",
+            "I need a hotel in berlin for tonight",
+            "where can I sleep in lisbon tonight"
+          ]
+        },
+        "calendar": {
+          "what": "Show the meetings on your calendar for a day.\nEach meeting's title and time; nothing on the calendar changes.",
+          "not_for": [
+            "moving meetings to another day",
+            "adding a meeting or an event",
+            "asking what the date is"
+          ],
+          "examples": [
+            "which meetings fall on thursday",
+            "my calendar for the day after tomorrow",
+            "show my schedule for this monday",
+            "how does today look on my calendar",
+            "show my calendar for tomorrow",
+            "what meetings do I have on friday"
+          ]
+        },
+        "book": {
+          "what": "Book a seat on a flight by its code.\nThe fare is charged to the travel account and the ticket goes to your inbox; there is no undo.",
+          "not_for": [
+            "finding flights to a city",
+            "booking the hotel",
+            "cancelling a booked flight",
+            "checking in for a flight",
+            "telling a channel about a booking"
+          ],
+          "examples": [
+            "book me onto LX1830",
+            "buy a ticket on FR8342",
+            "rebook me on tp1051",
+            "book flight LX1830",
+            "get me a seat on TP1051"
+          ]
+        },
+        "hotel": {
+          "what": "Book a hotel room for tonight.\nOne night at the first hotel of the rooms just found, on the travel account; the booking can be cancelled.",
+          "not_for": [
+            "finding hotel rooms in a city",
+            "booking a seat on a flight",
+            "booking a taxi or a table",
+            "telling a channel where you are staying"
+          ],
+          "examples": [
+            "book the first hotel",
+            "take the cheapest room",
+            "book one of those rooms",
+            "book the hotel",
+            "book that room for tonight"
+          ]
+        },
+        "meeting": {
+          "what": "Move a day's meetings to another day.\nEvery meeting of the day the calendar just showed, to the day you name or else the day after; a later move puts them back.",
+          "not_for": [
+            "showing a day's meetings",
+            "cancelling a meeting",
+            "adding a new meeting",
+            "changing a flight to another day",
+            "telling a channel the meetings moved"
+          ],
+          "examples": [
+            "move them to thursday",
+            "shift those meetings to this wednesday",
+            "move the meetings to the 14th",
+            "shift everything to tomorrow",
+            "push my meetings to thursday",
+            "move the meetings"
+          ]
+        },
+        "tell": {
+          "what": "Post a message to a chat channel.\nThe message is the words that asked for it, posted to one of your team's own channels and nowhere else.",
+          "not_for": [
+            "an email or a message to one person",
+            "a reminder for yourself",
+            "reading what a channel said"
+          ],
+          "examples": [
+            "tell #travel i land late",
+            "let #team know the client review moved",
+            "post in #travel that the hotel is booked",
+            "tell the travel channel my flight was cancelled",
+            "let my team know I am stuck in madrid"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "fits.flights": {
+      "type": "yesno",
+      "ask": "Does `flights` do the specific thing the request asks for?",
+      "yes": "Find the next flights to a city.\nTonight's flights, each with its code and departure time, the best first; nothing is booked.",
+      "no": "Something else, such as: booking a seat on a flight; finding hotel rooms in a city; whether a flight is on time."
+    },
+    "flights.to": {
+      "type": "choice",
+      "ask": "Which city are you flying to?",
+      "options": {
+        "lisbon": "Lisbon.",
+        "madrid": "Madrid.",
+        "berlin": "Berlin.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.rooms": {
+      "type": "yesno",
+      "ask": "Does `rooms` do the specific thing the request asks for?",
+      "yes": "Find hotel rooms in a city for tonight.\nEach hotel with its price a night, the cheapest first; nothing is booked.",
+      "no": "Something else, such as: booking the hotel; finding flights to a city; a meeting room at the office."
+    },
+    "rooms.city": {
+      "type": "choice",
+      "ask": "In which city do you need a room?",
+      "options": {
+        "lisbon": "Lisbon.",
+        "madrid": "Madrid.",
+        "berlin": "Berlin.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "fits.calendar": {
+      "type": "yesno",
+      "ask": "Does `calendar` do the specific thing the request asks for?",
+      "yes": "Show the meetings on your calendar for a day.\nEach meeting's title and time; nothing on the calendar changes.",
+      "no": "Something else, such as: moving meetings to another day; adding a meeting or an event; asking what the date is."
+    },
+    "calendar.day": {
+      "type": "pick",
+      "ask": "Which day?",
+      "pick": "date",
+      "optional": false,
+      "examples": [
+        "thursday",
+        "the day after tomorrow",
+        "this monday",
+        "today",
+        "tomorrow",
+        "friday"
+      ]
+    },
+    "fits.book": {
+      "type": "yesno",
+      "ask": "Does `book` do the specific thing the request asks for?",
+      "yes": "Book a seat on a flight by its code.\nThe fare is charged to the travel account and the ticket goes to your inbox; there is no undo.",
+      "no": "Something else, such as: finding flights to a city; booking the hotel; cancelling a booked flight; checking in for a flight; telling a channel about a booking."
+    },
+    "book.flight": {
+      "type": "pick",
+      "ask": "What is the flight's code?",
+      "pick": "code",
+      "optional": false,
+      "examples": [
+        "LX1830",
+        "FR8342",
+        "tp1051",
+        "LX1830",
+        "TP1051"
+      ]
+    },
+    "fits.hotel": {
+      "type": "yesno",
+      "ask": "Does `hotel` do the specific thing the request asks for?",
+      "yes": "Book a hotel room for tonight.\nOne night at the first hotel of the rooms just found, on the travel account; the booking can be cancelled.",
+      "no": "Something else, such as: finding hotel rooms in a city; booking a seat on a flight; booking a taxi or a table; telling a channel where you are staying."
+    },
+    "fits.meeting": {
+      "type": "yesno",
+      "ask": "Does `meeting` do the specific thing the request asks for?",
+      "yes": "Move a day's meetings to another day.\nEvery meeting of the day the calendar just showed, to the day you name or else the day after; a later move puts them back.",
+      "no": "Something else, such as: showing a day's meetings; cancelling a meeting; adding a new meeting; changing a flight to another day; telling a channel the meetings moved."
+    },
+    "meeting.day": {
+      "type": "pick",
+      "ask": "To which day?",
+      "pick": "date",
+      "optional": true,
+      "examples": [
+        "thursday",
+        "this wednesday",
+        "the 14th",
+        "tomorrow",
+        "thursday"
+      ]
+    },
+    "fits.tell": {
+      "type": "yesno",
+      "ask": "Does `tell` do the specific thing the request asks for?",
+      "yes": "Post a message to a chat channel.\nThe message is the words that asked for it, posted to one of your team's own channels and nowhere else.",
+      "no": "Something else, such as: an email or a message to one person; a reminder for yourself; reading what a channel said."
+    },
+    "tell.channel": {
+      "type": "choice",
+      "ask": "Which chat channel?",
+      "options": {
+        "#travel": "Where trips are arranged.",
+        "#team": "The team's own channel.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    }
+  },
+  "values": {},
+  "deadline": 30000
+}

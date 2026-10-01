@@ -650,6 +650,28 @@ const MONTHS: [&str; 12] = [
     "november",
     "december",
 ];
+/// A month and a day as they are typed, with the year where the reading holds one: «october 5th», «october 5th
+/// 2026», a form the `date` recognizer reads back whole. None for any other reading.
+#[must_use]
+pub(crate) fn typed_calendar(day: &Day) -> Option<Clean> {
+    let Day::Calendar { year, month, day } = day else {
+        return None;
+    };
+    let name = MONTHS.get(usize::from(*month).checked_sub(1)?)?;
+    let ending = match (day % 100, day % 10) {
+        (11..=13, _) => "th",
+        (_, 1) => "st",
+        (_, 2) => "nd",
+        (_, 3) => "rd",
+        _ => "th",
+    };
+    let typed = match year {
+        Some(year) => format!("{name} {day}{ending} {year}"),
+        None => format!("{name} {day}{ending}"),
+    };
+    Clean::new(&typed).ok()
+}
+
 const MONTHS_SHORT: [(&str, u8); 12] = [
     ("jan", 1),
     ("feb", 2),

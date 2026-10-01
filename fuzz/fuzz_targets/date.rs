@@ -1,7 +1,7 @@
 //! The `date` recognizer over arbitrary text: every candidate that reads as a date re-reads whole at a prompt
-//! through `picked` with the same reading, its value bounded and its wire form round-tripping, and no two
-//! candidates of any kind overlap. Seeded from every propose and picked vector's input, the six problems'
-//! sentences and the probe's, in fuzz/seeds/values (`mise run fuzz`).
+//! through `picked` with the same reading, its value bounded and its wire form round-tripping, a day read beside
+//! another's none or a day of the calendar, and no two candidates of any kind overlap. Seeded from every propose
+//! and picked vector's input, the six problems' sentences and the probe's, in fuzz/seeds/values (`mise run fuzz`).
 
 #![no_main]
 
@@ -31,6 +31,18 @@ fuzz_target!(|data: &[u8]| {
             // Every reading resolves against any day, and lands on a day of the calendar.
             let today: evoke_core::calendar::Date = "2026-05-05".parse().expect("a day");
             let _ = value.resolve(today);
+            // Read beside any other candidate's day, it is none or a day of the calendar that resolves too.
+            for other in &found {
+                if let PickValue::Date { value: named } = &other.value
+                    && let Some(read) = value.beside(named)
+                {
+                    assert!(
+                        matches!(read, evoke_core::calendar::Day::Calendar { .. }),
+                        "{value:?} beside {named:?} reads as {read:?}"
+                    );
+                    let _ = read.resolve(today);
+                }
+            }
         }
         let again: Proposed = serde_json::from_str(
             &serde_json::to_string(candidate).expect("a candidate serializes"),
@@ -43,7 +55,7 @@ fuzz_target!(|data: &[u8]| {
         let typed = candidate.span.text().as_str();
         let width = typed.chars().count();
         match picked(typed, Recognizer::Date) {
-            Some(Value::Pick { span, value }) => {
+            Some(Value::Pick { span, value, .. }) => {
                 assert_eq!(
                     (span.start(), span.end()),
                     (0, width),

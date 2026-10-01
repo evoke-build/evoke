@@ -1,0 +1,440 @@
+{
+  "reflexes": {
+    "flights": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Find the next flights to a city.\nTonight's flights, each with its code and departure time, the best first; nothing is booked.",
+            "not_for": [
+              "booking a seat on a flight",
+              "finding hotel rooms in a city",
+              "whether a flight is on time"
+            ],
+            "tags": [
+              "flights",
+              "cancelled"
+            ],
+            "effect": "read",
+            "confirm": "Find flights to {to}?",
+            "run": "flights.mts",
+            "config": {},
+            "args": {
+              "to": {
+                "ask": "Which city are you flying to?",
+                "vocab": "cities",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {
+              "flight": "code"
+            },
+            "returns": "flights",
+            "examples": {
+              "search for a flight to berlin": {},
+              "any other flights to lisbon": {},
+              "which flights still go to madrid": {},
+              "i need another flight to berlin": {},
+              "find flights to berlin": {},
+              "next flight to lisbon tonight": {}
+            },
+            "tests": {
+              "planes leaving for madrid this evening": {},
+              "list the departures heading for lisbon": {},
+              "what else is flying out": {},
+              "reserve IB3107 for me": false,
+              "is VY8460 running late": false,
+              "accommodation in berlin near the airport": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "rooms": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Find hotel rooms in a city for tonight.\nEach hotel with its price a night, the cheapest first; nothing is booked.",
+            "not_for": [
+              "booking the hotel",
+              "finding flights to a city",
+              "a meeting room at the office"
+            ],
+            "tags": [
+              "rooms",
+              "cancelled"
+            ],
+            "effect": "read",
+            "confirm": "Find rooms in {city}?",
+            "run": "rooms.mts",
+            "config": {},
+            "args": {
+              "city": {
+                "ask": "In which city do you need a room?",
+                "vocab": "cities",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "returns": "rooms",
+            "examples": {
+              "look for a hotel room in madrid": {},
+              "hotels in berlin with a free room": {},
+              "what rooms are free in lisbon": {},
+              "find rooms in madrid": {},
+              "I need a hotel in berlin for tonight": {},
+              "where can I sleep in lisbon tonight": {}
+            },
+            "tests": {
+              "a place to stay in lisbon": {},
+              "cheap accommodation in madrid": {},
+              "any vacancies near the airport": {},
+              "reserve the top one on that list": false,
+              "planes to berlin": false,
+              "reserve the boardroom for 3pm": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "calendar": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Show the meetings on your calendar for a day.\nEach meeting's title and time; nothing on the calendar changes.",
+            "not_for": [
+              "moving meetings to another day",
+              "adding a meeting or an event",
+              "asking what the date is"
+            ],
+            "tags": [
+              "calendar",
+              "cancelled"
+            ],
+            "effect": "read",
+            "confirm": "Show the calendar for {day}?",
+            "run": "calendar.mts",
+            "config": {},
+            "args": {
+              "day": {
+                "ask": "Which day?",
+                "pick": "date",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "returns": "calendar",
+            "examples": {
+              "which meetings fall on thursday": {
+                "day": "thursday"
+              },
+              "my calendar for the day after tomorrow": {
+                "day": "the day after tomorrow"
+              },
+              "show my schedule for this monday": {
+                "day": "this monday"
+              },
+              "how does today look on my calendar": {
+                "day": "today"
+              },
+              "show my calendar for tomorrow": {
+                "day": "tomorrow"
+              },
+              "what meetings do I have on friday": {
+                "day": "friday"
+              }
+            },
+            "tests": {
+              "any calls lined up for friday": {
+                "day": "friday"
+              },
+              "agenda for the 21st": {
+                "day": "the 21st"
+              },
+              "pull up my diary": {
+                "day": false
+              },
+              "push wednesday's calls to monday": false,
+              "set up lunch with ana on friday": false,
+              "which day of the month are we on": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "read",
+      "configured": {}
+    },
+    "book": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Book a seat on a flight by its code.\nThe fare is charged to the travel account and the ticket goes to your inbox; there is no undo.",
+            "not_for": [
+              "finding flights to a city",
+              "booking the hotel",
+              "cancelling a booked flight",
+              "checking in for a flight",
+              "telling a channel about a booking"
+            ],
+            "tags": [
+              "book",
+              "cancelled"
+            ],
+            "effect": "destructive",
+            "confirm": "Book {flight}?",
+            "run": "book.mts",
+            "config": {},
+            "args": {
+              "flight": {
+                "ask": "What is the flight's code?",
+                "pick": "code",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "book me onto LX1830": {
+                "flight": "LX1830"
+              },
+              "buy a ticket on FR8342": {
+                "flight": "FR8342"
+              },
+              "rebook me on tp1051": {
+                "flight": "tp1051"
+              },
+              "book flight LX1830": {
+                "flight": "LX1830"
+              },
+              "get me a seat on TP1051": {
+                "flight": "TP1051"
+              }
+            },
+            "tests": {
+              "reserve IB3107 please": {
+                "flight": "IB3107"
+              },
+              "reserve a seat on the earlier plane": {
+                "flight": false
+              },
+              "cancel TP1043": false,
+              "check me in on AZ0611": false,
+              "which planes leave for berlin": false,
+              "reserve a night at that guesthouse": false,
+              "ping #travel that i'm on KL1776 now": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "destructive",
+      "configured": {}
+    },
+    "hotel": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Book a hotel room for tonight.\nOne night at the first hotel of the rooms just found, on the travel account; the booking can be cancelled.",
+            "not_for": [
+              "finding hotel rooms in a city",
+              "booking a seat on a flight",
+              "booking a taxi or a table",
+              "telling a channel where you are staying"
+            ],
+            "tags": [
+              "hotel",
+              "cancelled"
+            ],
+            "effect": "write",
+            "confirm": "Book the hotel?",
+            "run": "hotel.mts",
+            "config": {},
+            "args": {},
+            "takes": {
+              "rooms": "rooms"
+            },
+            "yields": {},
+            "examples": {
+              "book the first hotel": {},
+              "take the cheapest room": {},
+              "book one of those rooms": {},
+              "book the hotel": {},
+              "book that room for tonight": {}
+            },
+            "tests": {
+              "reserve a night at the top one": {},
+              "grab the top place on that list": {},
+              "which places in lisbon have vacancies": false,
+              "reserve AZ0611 for me": false,
+              "reserve a table for two at eight": false,
+              "ping #team that our lodging is sorted": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    },
+    "meeting": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Move a day's meetings to another day.\nEvery meeting of the day the calendar just showed, to the day you name or else the day after; a later move puts them back.",
+            "not_for": [
+              "showing a day's meetings",
+              "cancelling a meeting",
+              "adding a new meeting",
+              "changing a flight to another day",
+              "telling a channel the meetings moved"
+            ],
+            "tags": [
+              "meeting",
+              "cancelled"
+            ],
+            "effect": "write",
+            "confirm": "Move the meetings?",
+            "run": "meeting.mts",
+            "config": {},
+            "args": {
+              "day": {
+                "ask": "To which day?",
+                "pick": "date",
+                "optional": true,
+                "was": []
+              }
+            },
+            "takes": {
+              "calendar": "calendar"
+            },
+            "yields": {},
+            "examples": {
+              "move them to thursday": {
+                "day": "thursday"
+              },
+              "shift those meetings to this wednesday": {
+                "day": "this wednesday"
+              },
+              "move the meetings to the 14th": {
+                "day": "the 14th"
+              },
+              "shift everything to tomorrow": {
+                "day": "tomorrow"
+              },
+              "push my meetings to thursday": {
+                "day": "thursday"
+              },
+              "move the meetings": {
+                "day": false
+              }
+            },
+            "tests": {
+              "postpone them until monday": {
+                "day": "monday"
+              },
+              "bump the lot back by a day": {
+                "day": false
+              },
+              "list monday's calls": false,
+              "call off tomorrow's one on one": false,
+              "arrange a call with jo for monday": false,
+              "switch my return trip to thursday": false,
+              "message #team that we meet on friday instead": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    },
+    "tell": {
+      "wording": {
+        "ok": {
+          "manifest": {
+            "description": "Post a message to a chat channel.\nThe message is the words that asked for it, posted to one of your team's own channels and nowhere else.",
+            "not_for": [
+              "an email or a message to one person",
+              "a reminder for yourself",
+              "reading what a channel said"
+            ],
+            "tags": [
+              "tell",
+              "cancelled"
+            ],
+            "effect": "write",
+            "confirm": "Tell {channel}?",
+            "run": "tell.mts",
+            "config": {},
+            "args": {
+              "channel": {
+                "ask": "Which chat channel?",
+                "vocab": "channels",
+                "optional": false,
+                "was": []
+              }
+            },
+            "yields": {},
+            "examples": {
+              "tell #travel i land late": {},
+              "let #team know the client review moved": {},
+              "post in #travel that the hotel is booked": {},
+              "tell the travel channel my flight was cancelled": {},
+              "let my team know I am stuck in madrid": {}
+            },
+            "tests": {
+              "message #team that i'm working from the airport lounge": {},
+              "ping #travel with an update on the trip": {},
+              "share my new arrival time in chat": {},
+              "email ana the new itinerary": false,
+              "remind me to call the airline at noon": false,
+              "what did #travel reply earlier": false
+            },
+            "unknown": []
+          },
+          "yours": []
+        }
+      },
+      "consented": "write",
+      "configured": {}
+    }
+  },
+  "vocab": {
+    "channels": {
+      "#travel": {
+        "what": "Where trips are arranged."
+      },
+      "#team": {
+        "what": "The team's own channel."
+      }
+    },
+    "cities": {
+      "lisbon": {
+        "what": "Lisbon."
+      },
+      "madrid": {
+        "what": "Madrid."
+      },
+      "berlin": {
+        "what": "Berlin."
+      }
+    }
+  },
+  "adapter": "replay",
+  "evoke": "0.1.0"
+}

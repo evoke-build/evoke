@@ -11,7 +11,7 @@
 
 use indexmap::IndexMap;
 
-use super::planning::{left_of, reflex_of};
+use super::planning::{dated_at, left_of, reflex_of};
 use super::{
     Asked, Binding, Bound, Executed, Handled, Handling, Progress, Returned, Running, Status, Step,
     StepOutcome, Todo, Via, Weave, When, Why,
@@ -316,10 +316,18 @@ impl Runner<'_> {
                 .iter()
                 .any(|run| run.again && run.words == *words))
         };
-        planned
+        let decision = planned
             .into_iter()
             .filter(|cap| matches!(cap, Cap::Detail { .. }) || again(cap))
-            .fold(decision, |decision, cap| held(self.plan, decision, cap))
+            .fold(decision, |decision, cap| held(self.plan, decision, cap));
+        // A day the plan read beside the day of a step this one takes from is read so at its turn too.
+        dated_at(
+            self.plan,
+            &self.weave.steps,
+            &self.weave.binds,
+            step.n,
+            decision,
+        )
     }
 }
 

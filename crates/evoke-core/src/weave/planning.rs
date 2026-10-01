@@ -11,6 +11,7 @@ use super::{
 };
 use crate::account::Left as Run;
 use crate::adapter::{Fault, Gate, Prob};
+use crate::calendar::Day;
 use crate::call::Value;
 use crate::decide::{
     Basis, Cap, Decision, Prompt, alone, carry, given, held, joined, words, yielded,
@@ -18,6 +19,7 @@ use crate::decide::{
 use crate::manifest::{self, Effect, Kind, MOST_STEPS, Recognizer, Source, Yield};
 use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
 use crate::plan::{Active, Plan};
+use crate::propose::PickValue;
 use crate::text::Clean;
 use crate::waits;
 
@@ -102,6 +104,16 @@ struct Draft {
     asides: Vec<Aside>,
     /// Where each contrast's «not X» stands, which code cut at both ends without asking.
     ruled: Vec<(usize, usize)>,
+    /// What the whole each part the items rule cut came from read as.
+    wholes: Vec<Whole>,
+}
+
+/// A whole the items rule cut that read as a call, for one of its parts: the part by its id, the whole's reflex,
+/// and the words of each value its call held.
+struct Whole {
+    part: usize,
+    reflex: LocalName,
+    read: Vec<(ArgName, String)>,
 }
 
 /// A part of the request folded into a step: its words, the step by its id, the reflex the part read as, the
@@ -200,6 +212,7 @@ impl Draft {
             one: false,
             asides: Vec::new(),
             ruled: Vec::new(),
+            wholes: Vec::new(),
         }
     }
 
@@ -453,6 +466,7 @@ impl<'a> Planner<'a> {
         }
         fold(&mut draft);
         self.again(&mut draft);
+        self.lacking(&mut draft);
         let refs = match self.refer(&draft)? {
             Ok(refs) => refs,
             Err(need) => return Ok(Err(need)),
@@ -1186,7 +1200,19 @@ impl<'a> Planner<'a> {
                 draft.repaired.push((part.text.clone(), Repair::Split));
             }
             let count = placed.len();
+            // What the whole's call held is kept for each part: one that ends as the whole's reflex without a
+            // value of it waits (`lacking`).
+            let whole = read_of(&draft.decisions[k]);
             draft.replace(k, placed, decided, vec![Vec::new(); count]);
+            if let Some((reflex, read)) = whole {
+                for part in k..k + count {
+                    draft.wholes.push(Whole {
+                        part: draft.ids[part],
+                        reflex: reflex.clone(),
+                        read: read.clone(),
+                    });
+                }
+            }
             for s in &inner {
                 let start = base + s.start;
                 draft.taken.push(Split {
@@ -1474,6 +1500,35 @@ impl<'a> Planner<'a> {
                 .any(|j| j != k && reflex_of(&draft.decisions[j]) == Some(reflex));
             if !twice && draft.origins[k].is_empty() {
                 draft.decisions[k] = alone(self.plan, draft.decisions[k].clone());
+            }
+        }
+    }
+
+    /// Once every part is decided and every value given: a part the items rule cut from a whole, which reads as
+    /// the whole's reflex without a value the whole's call held, was not read whole. The words of each such value
+    /// may be its own, and it waits for a yes that names them. A value the part asks for is the person's to give.
+    fn lacking(&self, draft: &mut Draft) {
+        for k in 0..draft.segs.len() {
+            let Some(whole) = draft.wholes.iter().find(|whole| whole.part == draft.ids[k]) else {
+                continue;
+            };
+            if reflex_of(&draft.decisions[k]) != Some(&whole.reflex) {
+                continue;
+            }
+            let own = args_of(&draft.decisions[k]);
+            let asked = |arg: &ArgName| {
+                matches!(&draft.decisions[k], Decision::Ask { missing, .. }
+                    if missing.iter().any(|asked| asked.arg == *arg))
+            };
+            let words: Vec<String> = whole
+                .read
+                .iter()
+                .filter(|(arg, _)| !own.is_some_and(|own| own.contains_key(arg)) && !asked(arg))
+                .map(|(_, words)| words.clone())
+                .collect();
+            for words in words {
+                draft.decisions[k] =
+                    held(self.plan, draft.decisions[k].clone(), Cap::Detail { words });
             }
         }
     }
@@ -2145,6 +2200,17 @@ impl<'a> Planner<'a> {
         let determiner = determined(&fragment_chars);
         let item = item_of(&fragment_chars);
         for (name, value) in args {
+            // A text takes any words, so nothing could tell a fragment put in its place from a clause that reads
+            // as nonsense there: a fragment is never spliced in place of a text.
+            if matches!(
+                value,
+                Value::Pick {
+                    value: PickValue::Quoted { .. },
+                    ..
+                }
+            ) {
+                continue;
+            }
             let Some(text) = stated(value) else {
                 continue;
             };
@@ -2245,6 +2311,7 @@ impl<'a> Planner<'a> {
             because,
             refusals,
         } = self.bind(&steps, &mut after);
+        dated(self.plan, &mut steps, &binds);
         let branched = self.branches(&mut steps, &mut after, &binds, branches);
         for (step, mut edges) in steps.iter_mut().zip(after) {
             edges.sort_unstable();
@@ -2748,6 +2815,127 @@ fn verdict_of(steps: &[Step], binds: &[Binding]) -> Verdict {
         Outcome::Ask
     };
     Verdict { outcome, because }
+}
+
+/// What a decision read as: its reflex, and each value its call holds in the words of the request that hold it,
+/// or as it is typed where code knows none. None where it read as none.
+fn read_of(decision: &Decision) -> Option<(LocalName, Vec<(ArgName, String)>)> {
+    let basis = basis_of(decision);
+    let read = args_of(decision)?
+        .iter()
+        .filter_map(|(arg, value)| {
+            let words = match (value, basis.and_then(|basis| basis.get(arg))) {
+                (Value::Pick { span, .. }, _) => span.text().as_str(),
+                (_, Some(Basis::View { words, .. } | Basis::Words { words, .. })) => {
+                    words.text().as_str()
+                }
+                (
+                    _,
+                    Some(Basis::Views {
+                        anchored: Some(anchored),
+                        ..
+                    }),
+                ) => anchored.words.text().as_str(),
+                _ => value.text()?,
+            };
+            Some((arg.clone(), words.to_owned()))
+        })
+        .collect();
+    Some((reflex_of(decision)?.clone(), read))
+}
+
+/// A day of the month a step's call holds alone, where the step takes from a step whose call holds a calendar
+/// day, is read beside that day, as one is read beside today: in its month when on or after it, else in the next
+/// month that has it. The value is shown as it is then typed.
+fn dated(plan: &Plan, steps: &mut [Step], binds: &[Binding]) {
+    for n in 1..=steps.len() {
+        steps[n - 1].decision = dated_at(plan, steps, binds, n, steps[n - 1].decision.clone());
+    }
+}
+
+/// A decision of step `n`, made by the plan or again at the step's turn, with each day of the month it holds
+/// alone read beside the calendar day of a step it takes from.
+pub(crate) fn dated_at(
+    plan: &Plan,
+    steps: &[Step],
+    binds: &[Binding],
+    n: usize,
+    decision: Decision,
+) -> Decision {
+    binds
+        .iter()
+        .filter(|bind| bind.to == n)
+        .filter_map(|bind| steps.get(bind.from.checked_sub(1)?))
+        .filter_map(|source| calendar_of(&source.decision))
+        .fold(decision, |decision, named| beside(plan, decision, &named))
+}
+
+/// The calendar day a decision's call holds, when it holds exactly one.
+fn calendar_of(decision: &Decision) -> Option<Day> {
+    let mut days = args_of(decision)?.values().filter_map(|value| match value {
+        Value::Pick {
+            value: PickValue::Date { value: day },
+            ..
+        } if matches!(day, Day::Calendar { .. }) => Some(day.clone()),
+        _ => None,
+    });
+    let day = days.next()?;
+    days.next().is_none().then_some(day)
+}
+
+/// A decision with each day of the month its call holds alone read beside a named calendar day; a confirm's
+/// prompt is made again where a day moved, since it shows the call.
+fn beside(plan: &Plan, decision: Decision, named: &Day) -> Decision {
+    let read = |args: &mut IndexMap<ArgName, Value>| {
+        let mut moved = false;
+        for value in args.values_mut() {
+            if let Value::Pick {
+                value: PickValue::Date { value: day },
+                typed,
+                ..
+            } = value
+                && let Some(read) = day.beside(named)
+            {
+                *typed = crate::propose::typed_calendar(&read);
+                *day = read;
+                moved = true;
+            }
+        }
+        moved
+    };
+    match decision {
+        Decision::Run { mut chosen } => {
+            read(&mut chosen.call.args);
+            Decision::Run { chosen }
+        }
+        Decision::Confirm {
+            mut chosen,
+            prompt,
+            because,
+        } => {
+            let moved = read(&mut chosen.call.args);
+            let prompt = match plan.active().get(&chosen.call.reflex) {
+                Some(active) if moved => {
+                    let caps: Vec<Cap> = because.iter().cloned().collect();
+                    Prompt::of(&chosen, active, &caps)
+                }
+                _ => prompt,
+            };
+            Decision::Confirm {
+                chosen,
+                prompt,
+                because,
+            }
+        }
+        Decision::Ask {
+            mut asking,
+            missing,
+        } => {
+            read(&mut asking.args);
+            Decision::Ask { asking, missing }
+        }
+        Decision::Abstain { .. } => decision,
+    }
 }
 
 /// Whether the engine's reading of a whole left it unsettled: it abstained, asked, or sat under the floor — not
