@@ -467,6 +467,7 @@ impl<'a> Planner<'a> {
         fold(&mut draft);
         self.again(&mut draft);
         self.lacking(&mut draft);
+        self.doubted(&mut draft);
         let refs = match self.refer(&draft)? {
             Ok(refs) => refs,
             Err(need) => return Ok(Err(need)),
@@ -1530,6 +1531,32 @@ impl<'a> Planner<'a> {
             for words in words {
                 draft.decisions[k] =
                     held(self.plan, draft.decisions[k].clone(), Cap::Detail { words });
+            }
+        }
+    }
+
+    /// Once every part is decided: two parts of the person's own that a sign typed for «and» cuts apart, on a yes
+    /// the engine gave under `DOUBT` — a cut tried, from `LOW`, and not believed — may be one request. Each waits
+    /// for a yes that names the other's words.
+    fn doubted(&self, draft: &mut Draft) {
+        for k in 1..draft.segs.len() {
+            let unsure = split_before(&draft.taken, &draft.segs, k).is_some_and(|split| {
+                reading::joins(&split.word)
+                    && split.p.is_some_and(|p| (LOW..DOUBT).contains(&p.get()))
+            });
+            if !unsure || !draft.origins[k - 1].is_empty() || !draft.origins[k].is_empty() {
+                continue;
+            }
+            for (at, beside) in [(k - 1, k), (k, k - 1)] {
+                // The other part as it was typed, where the plan wrote its words anew.
+                let words = draft.typed[beside]
+                    .clone()
+                    .unwrap_or_else(|| draft.segs[beside].text.clone());
+                draft.decisions[at] = held(
+                    self.plan,
+                    draft.decisions[at].clone(),
+                    Cap::Detail { words },
+                );
             }
         }
     }

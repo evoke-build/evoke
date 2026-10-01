@@ -147,7 +147,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:7aa3d0ccc79951c994823e9e4a71b7ba44c0db555f1b327ff6b49ff340ea03ff",
+      "digest": "h1:d2f2b391c39c8621dd6bdcff8536806a5e736bd63260b901efb797adcbe6f10d",
       "active": {
         "count": {
           "effect": "write",

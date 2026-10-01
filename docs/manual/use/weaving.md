@@ -23,7 +23,9 @@ den lights off
 - A sign or a letter typed for `and` is such a point too: `+`, `&`, `n`, `nd`, `adn`, alone between two words.
   "check the errors for checkout n pull its logs" is asked about at `n`. It is no such point beside a number or a
   single letter, `2 + 2`, `R & D`, between two capitalised words, `Hartwell & Sons`, after a comma, or inside
-  quotes.
+  quotes. Where the classifier cuts at such a sign without being sure, the two parts may be one request: each
+  confirms before it runs, naming the other, `"start a 10 minute timer" may add a detail this call does not
+  hold`.
 - With the connectives, the classifier is asked how many things the sentence asks for. Where it says one, the
   sentence is one step, and no connective cuts it: "check the errors for checkout, and only in eu-west".
 - Each part is decided as one input is: routed, gated, its arguments read. A part that matches nothing on its own

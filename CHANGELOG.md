@@ -22,7 +22,7 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - A sentence is cut at a sign or a letter typed for `and`: `+`, `&`, `n`. What you say you will do yourself,
   `before I forget`, and a courtesy that opens with `if`, `if you would`, are set aside and no longer read as a
   step or a condition; `why` says which, and the JSON line carries `by` on the part. After `not X,` what
-  follows is kept.
+  follows is kept. Where the cut at such a sign is not sure, both parts confirm, each naming the other.
 - A day of the month in a step that takes from a step naming a month and a day is read beside that day: after
   `the calendar for october 12th`, `the 20th` is October 20th. `why` says beside which step; the JSON line
   carries `beside`.

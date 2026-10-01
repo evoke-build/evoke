@@ -63,9 +63,10 @@ separated by `;`.
   all you said at 0.20, and a call runs at 0.30 or more; it leaves out "in the morning"`. The words named are
   ones no value holds: words a value was read from are not among them. Words that say what you want from the
   result are named apart: `"newest first" says what is wanted from the result`.
-- **a detail beside it**: a part of the sentence that is not in the plan may add a detail to this step, or the
-  step was cut from a longer part read with a value its call lacks. `"the ones since noon" may add a detail this
-  call does not hold` ([Weaving](weaving.md)).
+- **a detail beside it**: a part of the sentence that is not in the plan may add a detail to this step; or the
+  step was cut from a longer part read with a value its call lacks; or it was cut from the part beside it at a
+  sign typed for `and`, and the cut is not sure. `"the ones since noon" may add a detail this call does not
+  hold` ([Weaving](weaving.md)).
 
 `[t]each` records only what the input stated. An argument you filled in at a prompt is not recorded. The answer
 is read from the terminal, never from stdin. With no terminal, a confirm exits 3 with the command to run yourself.

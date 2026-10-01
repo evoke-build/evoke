@@ -22,7 +22,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:6174c9ce4c6d985b1b7b4ebff97a2b7183457216df9d522cbd6f85e7cb8a9fdc",
+      "digest": "h1:0e3bca9fe35073a40002fe966cd073cbfb29a3b6c389050d58b00e118894f2c7",
       "active": {
         "screenshot": {
           "effect": "write",
