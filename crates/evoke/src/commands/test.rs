@@ -4,8 +4,10 @@
 //! kept per plan in the cache. A playbook's steps too: each filled from the first of its records whose reading
 //! fills every slot it holds — never a word of the tool's own; a step no record fills is untested — decided
 //! uncached over the whole set, and judged on whether its words route to a reflex, as the plan would decide it.
-//! In: a name or none, the environment. Out: `Exit`, a line per reflex and one per failure on stdout, the
-//! spinner counting the cases; exit 1 when any case failed, with the count. Nothing runs and nothing is logged.
+//! A case that passes with a call held for what its own words say beside it is reported under its reflex, and
+//! fails nothing. In: a name or none, the environment. Out: `Exit`, a line per reflex and one per failure on
+//! stdout, the spinner counting the cases; exit 1 when any case failed, with the count. Nothing runs and nothing
+//! is logged.
 
 use evoke_core::manifest::{Sentence, Yield};
 use evoke_core::name::{ArgName, LocalName};
@@ -20,7 +22,7 @@ use super::{Exit, nothing_installed};
 use crate::adapter::Adapter;
 use crate::args::Command;
 use crate::hosts::{Environment, Failure, terminal, threads};
-use crate::report::{self, StepBecame, TestedPlaybook, TestedStep};
+use crate::report::{self, HeldCase, StepBecame, TestedPlaybook, TestedStep};
 
 pub fn run(command: &Command, name: Option<&LocalName>, environment: &Environment) -> Exit {
     let session = match session::open(command, false, environment, Opening::Deciding) {
@@ -85,6 +87,7 @@ fn tested(
             .collect();
         (decided, first)
     };
+    let held = held_cases(&cases, &decisions, &first);
     let (filled_steps, untested) = filled_steps(session, &cases, &decisions, &playbooks);
     let step_first = {
         let busy = terminal::busy_over("testing", filled_steps.len());
@@ -128,7 +131,7 @@ fn tested(
         .collect();
     let blocks = playbook_blocks(session, &verdicts, &routed, &untested, &regressed);
     if !records.is_empty() || !blocks.is_empty() {
-        terminal::answer(&report::tested(&records, &regressed, &blocks));
+        terminal::answer(&report::tested(&records, &regressed, &blocks, &held));
     }
     let failed = verdicts
         .iter()
@@ -142,6 +145,17 @@ fn tested(
         cause: None,
         fix: Fix::Rerun,
     }))
+}
+
+/// The records that pass while their call waits for holding less than the record's own words say.
+fn held_cases(cases: &[Case], decisions: &[Decision], first: &[Verdict]) -> Vec<HeldCase> {
+    cases
+        .iter()
+        .zip(decisions)
+        .zip(first)
+        .filter(|(_, verdict)| matches!(verdict, Verdict::Pass))
+        .filter_map(|((case, decision), _)| HeldCase::of(case, decision))
+        .collect()
 }
 
 /// One uncached decision of a text.

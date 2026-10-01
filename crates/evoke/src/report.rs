@@ -12,7 +12,7 @@ use std::fmt::Write as _;
 use evoke_core::adapter::QuestionId;
 use evoke_core::calibrate::{self, BarRow, BinRow, Calibration, LogBlock, Miss, QuestionRow};
 use evoke_core::contract::Change;
-use evoke_core::decide::{Missing, Why};
+use evoke_core::decide::{Cap, Missing, Why};
 use evoke_core::manifest::{Effect, Manifest, Recognizer, Run, Sentence, written as slotted};
 use evoke_core::name::{ArgName, FieldName, LocalName};
 use evoke_core::test::{Claim, Expected, Mismatch};
@@ -2170,6 +2170,35 @@ pub fn change(change: &Change) -> (String, String) {
     }
 }
 
+/// A case `test` passed whose call waits because it holds less than the case's own words say: the case, how far
+/// the call holds them, and the bar a call runs at.
+pub struct HeldCase {
+    pub case: Case,
+    pub p: evoke_core::Prob,
+    pub floor: evoke_core::Prob,
+}
+
+/// Under a reflex's line, after a held case's utterance: how far its call holds the words, and the bar.
+const HELD_CASE: &str = "held: the call holds all of it at {p}, and a call runs at {floor} or more";
+
+impl HeldCase {
+    /// The case with its decision's hold, where the decision waits for one.
+    #[must_use]
+    pub fn of(case: &Case, decision: &Decision) -> Option<Self> {
+        let Decision::Confirm { because, .. } = decision else {
+            return None;
+        };
+        because.iter().find_map(|cap| match cap {
+            Cap::Whole { p, floor } => Some(Self {
+                case: case.clone(),
+                p: *p,
+                floor: *floor,
+            }),
+            _ => None,
+        })
+    }
+}
+
 /// A playbook as `test` judged its steps: each sentence and where it routed, and the effect it claims.
 pub struct TestedPlaybook {
     pub name: LocalName,
@@ -2198,13 +2227,15 @@ pub enum StepBecame {
 }
 
 /// `test`'s block: per reflex its name and counts, then one line per failed case — the utterance and where the
-/// decision missed, `· regression` when it passed at the last run; for a playbook, how many of its steps route,
-/// then each step that does not, and its claim when the steps reach a tighter effect.
+/// decision missed, `· regression` when it passed at the last run — and one per passed case whose call waits for
+/// holding less than its words say; for a playbook, how many of its steps route, then each step that does not,
+/// and its claim when the steps reach a tighter effect.
 #[must_use]
 pub fn tested(
     verdicts: &[(Case, Verdict)],
     regressions: &[Regression],
     playbooks: &[TestedPlaybook],
+    held: &[HeldCase],
 ) -> Text {
     let mut reflexes: Vec<(&LocalName, Vec<&(Case, Verdict)>)> = Vec::new();
     for judged in verdicts {
@@ -2237,6 +2268,14 @@ pub fn tested(
             line.push(" · ")
                 .roled(Role::Failed, &format!("{} failed", failed.len()));
         }
+        let waiting: Vec<&HeldCase> = held
+            .iter()
+            .filter(|held| held.case.reflex == *name)
+            .collect();
+        if !waiting.is_empty() {
+            line.push(" · ")
+                .roled(Role::Warning, &format!("{} held", waiting.len()));
+        }
         let playbook = playbooks.iter().find(|playbook| playbook.name == *name);
         if let Some(playbook) = playbook {
             let routes = playbook
@@ -2257,8 +2296,13 @@ pub fn tested(
             .iter()
             .map(|(case, _)| quoted(case.utterance.text().as_str()))
             .collect();
+        let held_utterances: Vec<String> = waiting
+            .iter()
+            .map(|held| quoted(held.case.utterance.text().as_str()))
+            .collect();
         let inner = utterances
             .iter()
+            .chain(&held_utterances)
             .map(|utterance| utterance.chars().count())
             .max()
             .unwrap_or(0);
@@ -2277,6 +2321,14 @@ pub fn tested(
                 line.push(" · ").roled(Role::Failed, "regression");
             }
             lines.push(line);
+        }
+        for (held, utterance) in waiting.iter().zip(&held_utterances) {
+            lines.push(Text::from(format!(
+                "    {utterance:<inner$}  {}",
+                HELD_CASE
+                    .replace("{p}", &format!("{:.2}", held.p.get()))
+                    .replace("{floor}", &format!("{:.2}", held.floor.get()))
+            )));
         }
         if let Some(playbook) = playbook {
             lines.extend(playbook_lines(playbook));

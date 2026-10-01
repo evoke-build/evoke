@@ -141,7 +141,7 @@ route                                 = { timer = 0.94, lights = 0.02, none = 0.
 "weave.word_timer__label_2"           = { yes = 0.05 }
 "weave.first_timer__label_2272457031" = { unstated = 1.0 }
 "weave.run_timer__label_2272457031"   = { unstated = 1.0 }
-"weave.against_2434852971"            = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.against_2434852971"            = { whole = 0.2, less = 0.75, other = 0.05 }
 
 [answers."start a \"laundry\" timer, 45 minutes"]
 route                              = { timer = 0.96, lights = 0.02, none = 0.02 }
