@@ -9,26 +9,27 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - More requests run without a question. Words that say what you want from the result, like `newest first`,
   no longer hold a call; `why` names them.
 - A call confirms where the input may hold more than the call read: words right after a value, a text in
-  quotes that no value took, a text the reflex takes that may be among the words left, or words that say the
-  call is wanted once more. The prompt names the words; the JSON line carries `cut`, `again` and `quotes`.
-- A value said aloud is read in more forms: a day, a length of time, and a code in the shape of the reflex's
-  examples, `k d oh three one five` as `KD-0315`. Where the words read more than one way, the ask offers what
-  they read as; the JSON line carries them as `choices.readings`.
-- A length written across its units, `1 hour 30 minutes`, reads at a prompt and in a call by name.
+  quotes that no value took, a text the reflex takes that may be among the words left, words that say the call
+  is wanted once more, or a value of the longer part a step was cut from. The prompt names the words; the JSON
+  line carries `cut`, `again` and `quotes`.
+- A value typed the way you say it is read in more forms: a day, a length of time, and a code in the shape of
+  the reflex's examples, `k d oh three one five` as `KD-0315`. Where the words read more than one way, the ask
+  offers what they read as; the JSON line carries them as `choices.readings`. A length written across its
+  units, `1 hour 30 minutes`, reads at a prompt and in a call by name.
 - A word from a vocabulary typed another way is read where your own words name it: `sept` for `september`. A
   name that may be another person's, `Samuel` beside `sam`, is asked, with the nearest word ready for a `y`;
   the JSON line carries it as `likely`.
 - A sentence is cut at a sign or a letter typed for `and`: `+`, `&`, `n`. What you say you will do yourself,
   `before I forget`, and a courtesy that opens with `if`, `if you would`, are set aside and no longer read as a
-  step or a condition; `why` says which. After `not X,` what follows is kept. The JSON line carries `by` on a
-  part set aside. The parts such a sign makes are read while the cut is asked, so the cut adds no wait.
+  step or a condition; `why` says which, and the JSON line carries `by` on the part. After `not X,` what
+  follows is kept.
 - A day of the month in a step that takes from a step naming a month and a day is read beside that day: after
   `the calendar for october 12th`, `the 20th` is October 20th. `why` says beside which step; the JSON line
   carries `beside`.
-- A part that matches no reflex never stands in for a text in quotes of the step beside it. A step cut from a
-  part read as one thing confirms where its call lacks a value the whole held; the prompt names the words.
-- `it leaves out` names only words no value was read from; the JSON line carries `read` on words one was.
-- `evoke test` names a case that passes while its call would wait for a yes; it fails nothing.
+- `it leaves out` names only words no value was read from; the JSON line carries `read` on words one was. A
+  part that matches no reflex is never read as a text in quotes of the step beside it.
+- `evoke test` names a case that passes while its call would wait for a yes; it fails nothing. The rules for
+  authors say how a summary is worded for it.
 
 ## [0.17.0] - 2026-09-30
 
