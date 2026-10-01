@@ -452,6 +452,7 @@ mod tests {
             left: Vec::new(),
             unconsumed: Vec::new(),
             whole: None,
+            quotes: Vec::new(),
             judged,
         }
     }

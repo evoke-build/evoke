@@ -78,3 +78,37 @@ $ evoke why
     a write runs at 0.90 or more, and its least sure judgment is room, 0.93; it holds all you said at 0.90, and a call runs at 0.30 or more
 
   replay answered 15 questions in 2 rounds
+# Words right after a value that answer the same question may be part of it: the call waits, and the line names them.
+$ evoke "set a timer for 1 hour 30"
+  timer duration="1 hour" · write · weakest: route 0.96
+    "30" may be part of the duration
+  Start a 1 hour timer?  [y]es [n]o [t]each > n
+[2]
+$ evoke why
+  "set a timer for 1 hour 30"
+
+  which reflex            timer 0.96   (none of them 0.02 · lights 0.01)
+                          Count down a duration, then sound an alert.
+  duration                "1 hour" 0.97   (not said 0.03)
+  holds all you said      0.90
+  → declined: timer duration="1 hour" · write · weakest: route 0.96
+    "30" may be part of the duration
+
+  replay answered 22 questions in 3 rounds
+# Words in quotes that no value holds make the call wait, where the reflex takes a text in quotes.
+$ evoke "set a timer for 10 minutes 'tea'"
+  timer duration="10 minutes" · write · weakest: route 0.96
+    'tea' is in quotes and the call does not hold it
+  Start a 10 minutes timer?  [y]es [n]o [t]each > n
+[2]
+$ evoke why
+  "set a timer for 10 minutes 'tea'"
+
+  which reflex            timer 0.96   (none of them 0.02 · lights 0.01)
+                          Count down a duration, then sound an alert.
+  duration                "10 minutes" 0.97   (not said 0.03)
+  holds all you said      0.90
+  → declined: timer duration="10 minutes" · write · weakest: route 0.96
+    'tea' is in quotes and the call does not hold it
+
+  replay answered 20 questions in 3 rounds

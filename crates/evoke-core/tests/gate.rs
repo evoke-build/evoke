@@ -245,6 +245,7 @@ fn reading() -> impl Strategy<Value = Reading> {
                     left: Vec::new(),
                     unconsumed: Vec::new(),
                     whole: whole.map(p),
+                    quotes: Vec::new(),
                     runner_up: Some(runner_up),
                 }),
             }

@@ -56,7 +56,7 @@ An app that wants a reflex's wording with a body of its own calls `decide`, swit
 `prompt.own` is `evoke`'s line: the call, the effect and the weakest judgment. `prompt.reason` says in one
 line why the call waits, a phrase for each cap, as the CLI prints it under the call. `prompt.template` is the
 reflex's own question, filled in. `because` lists why it stopped: `destructive`,
-`no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `whole`, `detail`
+`no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `cut`, `quoted`, `whole`, `detail`
 ([Outcomes](../use/outcomes.md#confirm)). A confirm decision runs only with `run(d, { confirmed: true })`.
 
 ## Ask and `fill(d, given)`

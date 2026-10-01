@@ -1,0 +1,196 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "timer",
+          "route": 0.97
+        },
+        {
+          "reflex": "lights",
+          "route": 0.01
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "timer",
+          "p": 0.97
+        },
+        {
+          "question": "timer.duration",
+          "top": "16-26",
+          "p": 0.97
+        }
+      ],
+      "winner": {
+        "reflex": "timer",
+        "args": {
+          "duration": {
+            "type": "pick",
+            "span": {
+              "start": 16,
+              "end": 26,
+              "text": "10 minutes"
+            },
+            "value": {
+              "type": "duration",
+              "value": 600
+            }
+          }
+        },
+        "basis": {
+          "duration": {
+            "by": "ask",
+            "p": 0.97
+          }
+        },
+        "missing": [],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 11,
+              "text": "set a timer"
+            },
+            "does": "action",
+            "p": 0.95
+          },
+          {
+            "words": {
+              "start": 27,
+              "end": 32,
+              "text": "'tea'"
+            },
+            "does": "action",
+            "p": 0.95
+          }
+        ],
+        "unconsumed": [],
+        "whole": 0.9,
+        "quotes": [
+          {
+            "start": 27,
+            "end": 32,
+            "text": "'tea'"
+          }
+        ],
+        "runner_up": {
+          "reflex": "lights",
+          "route": 0.01
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    }
+  },
+  "expect": {
+    "outcome": "confirm",
+    "reflex": "timer",
+    "args": {
+      "duration": {
+        "type": "pick",
+        "span": {
+          "start": 16,
+          "end": 26,
+          "text": "10 minutes"
+        },
+        "value": {
+          "type": "duration",
+          "value": 600
+        }
+      }
+    },
+    "call": "timer duration=\"10 minutes\"",
+    "effect": "write",
+    "basis": {
+      "duration": {
+        "by": "ask",
+        "p": 0.97
+      }
+    },
+    "left": [
+      {
+        "words": {
+          "start": 0,
+          "end": 11,
+          "text": "set a timer"
+        },
+        "does": "action",
+        "p": 0.95
+      },
+      {
+        "words": {
+          "start": 27,
+          "end": 32,
+          "text": "'tea'"
+        },
+        "does": "action",
+        "p": 0.95
+      }
+    ],
+    "whole": 0.9,
+    "quotes": [
+      {
+        "start": 27,
+        "end": 32,
+        "text": "'tea'"
+      }
+    ],
+    "confidence": 0.97,
+    "weakest": {
+      "question": "route",
+      "top": "timer",
+      "p": 0.97
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "timer",
+        "p": 0.97
+      },
+      {
+        "question": "timer.duration",
+        "top": "16-26",
+        "p": 0.97
+      }
+    ],
+    "runner_up": {
+      "reflex": "lights",
+      "route": 0.01
+    },
+    "contenders": [
+      {
+        "reflex": "timer",
+        "route": 0.97
+      },
+      {
+        "reflex": "lights",
+        "route": 0.01
+      }
+    ],
+    "prompt": {
+      "own": "timer duration=\"10 minutes\" · write · weakest: route 0.97",
+      "reason": "'tea' is in quotes and the call does not hold it",
+      "template": "Start a 10 minutes timer?"
+    },
+    "because": [
+      {
+        "type": "quoted",
+        "words": {
+          "start": 27,
+          "end": 32,
+          "text": "'tea'"
+        }
+      }
+    ]
+  }
+}

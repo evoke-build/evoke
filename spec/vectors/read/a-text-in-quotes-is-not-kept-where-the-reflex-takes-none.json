@@ -3,9 +3,16 @@
     "plan": {
       "$ref": "fixtures/plan.json"
     },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
     "request": {
       "state": {
-        "request": "timer for 10 minutes called \"eggs\""
+        "request": "kill the lights in the den 'movie night'"
       },
       "questions": {
         "route": {
@@ -87,7 +94,6 @@
           "type": "choice",
           "ask": "How long?",
           "options": {
-            "10-20": "10 minutes",
             "none": "The request says it, and none of these is it.",
             "unstated": "The request does not say."
           },
@@ -97,8 +103,7 @@
           "type": "choice",
           "ask": "What is the timer for?",
           "options": {
-            "29-33": "eggs",
-            "none": "The request says it, and none of these is it.",
+            "none": "The request says it, in words that are not between quotes.",
             "unstated": "The request does not say."
           },
           "otherwise": "unstated"
@@ -113,6 +118,12 @@
             "unstated": "None: the request names none."
           },
           "otherwise": "unstated"
+        },
+        "weave.is_lights__room_0": {
+          "type": "yesno",
+          "ask": "Which room?",
+          "yes": "The TV room downstairs; also 'the snug'.",
+          "no": "Another one, or none."
         },
         "weave.view_lights__state": {
           "type": "choice",
@@ -136,108 +147,118 @@
           },
           "otherwise": "unstated"
         },
-        "weave.only_timer__duration_10_20": {
+        "weave.is_lights__state_1": {
           "type": "yesno",
-          "ask": "How long?",
-          "yes": "«10 minutes»",
-          "no": "Other words, or none."
+          "ask": "What should the lights do?",
+          "yes": "Switch off.",
+          "no": "Another one, or none."
         },
-        "weave.only_timer__label_29_33": {
-          "type": "yesno",
-          "ask": "What is the timer for?",
-          "yes": "«eggs»",
-          "no": "Other words, or none."
-        },
-        "weave.left_timer_0_0": {
+        "weave.left_lights_0_2": {
           "type": "choice",
-          "ask": "In the request, what do the words «timer» do?",
+          "ask": "In the request, what do the words «kill the lights» do?",
           "options": {
             "action": "They say what to do, or to what.",
-            "arg:duration": "They answer: How long?",
-            "arg:label": "They answer: What is the timer for?",
+            "arg:room": "They answer: Which room?",
+            "arg:state": "They answer: What should the lights do?",
+            "arg:brightness": "They answer: How bright, in percent?",
             "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
             "more": "They ask for another thing as well."
           }
         },
-        "weave.left_timer_4_5": {
+        "weave.left_lights_6_7": {
           "type": "choice",
-          "ask": "In the request, what do the words «called \"eggs\"» do?",
+          "ask": "In the request, what do the words «'movie night'» do?",
           "options": {
             "action": "They say what to do, or to what.",
-            "arg:duration": "They answer: How long?",
-            "arg:label": "They answer: What is the timer for?",
+            "arg:room": "They answer: Which room?",
+            "arg:state": "They answer: What should the lights do?",
+            "arg:brightness": "They answer: How bright, in percent?",
             "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
             "more": "They ask for another thing as well."
+          }
+        },
+        "weave.whole_693291516": {
+          "type": "choice",
+          "ask": "The request was read as: Turn the lights in one room on, off, or dim them. Which room? den. What should the lights do? off. How bright, in percent? (not said) How does that reading stand to the request?",
+          "options": {
+            "whole": "The reading holds everything the request says.",
+            "less": "The request says something more, which the reading leaves out.",
+            "other": "The request asks for something else."
           }
         }
       },
-      "proposed": [
-        {
-          "span": {
-            "start": 10,
-            "end": 20,
-            "text": "10 minutes"
-          },
-          "value": {
-            "type": "duration",
-            "value": 600
+      "proposed": [],
+      "listed": {
+        "lights.room": [
+          {
+            "key": "den",
+            "span": {
+              "start": 23,
+              "end": 26,
+              "text": "den"
+            },
+            "how": "same"
           }
-        },
-        {
-          "span": {
-            "start": 29,
-            "end": 33,
-            "text": "eggs"
-          },
-          "value": {
-            "type": "quoted",
-            "value": "eggs"
-          }
-        }
-      ]
+        ]
+      }
     },
     "raw": {
       "route": {
-        "timer": 0.97,
-        "lights": 0.01,
-        "none": 0.02
+        "lights": 0.96,
+        "timer": 0.01,
+        "none": 0.03
       },
       "lights.room": {
-        "unstated": 1
+        "den": 0.92,
+        "office": 0.03,
+        "none": 0.01,
+        "unstated": 0.04
       },
       "lights.state": {
-        "unstated": 1
+        "off": 0.95,
+        "on": 0.02,
+        "dim": 0.02,
+        "unstated": 0.01
       },
       "lights.brightness": {
         "unstated": 1
       },
       "timer.duration": {
-        "10-20": 0.5,
-        "none": 0.45,
-        "unstated": 0.05
+        "unstated": 1
       },
       "timer.label": {
         "unstated": 1
       },
       "weave.view_lights__room": {
-        "unstated": 1
+        "den": 0.92,
+        "office": 0.03,
+        "none": 0.01,
+        "unstated": 0.04
+      },
+      "weave.is_lights__room_0": {
+        "yes": 0.95
       },
       "weave.view_lights__state": {
-        "unstated": 1
+        "off": 0.95,
+        "on": 0.02,
+        "dim": 0.02,
+        "unstated": 0.01
       },
-      "weave.only_timer__duration_10_20": {
-        "yes": 0.05
+      "weave.is_lights__state_1": {
+        "yes": 0.95
       },
-      "weave.only_timer__label_29_33": {
-        "yes": 0.05
-      },
-      "weave.left_timer_0_0": {
+      "weave.left_lights_0_2": {
         "action": 0.95,
         "courtesy": 0.05
       },
-      "weave.left_timer_4_5": {
+      "weave.left_lights_6_7": {
         "action": 0.95,
         "courtesy": 0.05
+      },
+      "weave.whole_693291516": {
+        "whole": 0.9,
+        "less": 0.07,
+        "other": 0.03
       }
     }
   },
@@ -246,46 +267,54 @@
       "type": "done",
       "ranking": [
         {
-          "reflex": "timer",
-          "route": 0.97
+          "reflex": "lights",
+          "route": 0.96
         },
         {
-          "reflex": "lights",
+          "reflex": "timer",
           "route": 0.01
         }
       ],
       "judgments": [
         {
           "question": "route",
-          "top": "timer",
-          "p": 0.97
+          "top": "lights",
+          "p": 0.96
         },
         {
-          "question": "timer.duration",
-          "top": "10-20",
-          "p": 0.5
+          "question": "lights.room",
+          "top": "den",
+          "p": 0.92
+        },
+        {
+          "question": "lights.state",
+          "top": "off",
+          "p": 0.95
         }
       ],
       "winner": {
-        "reflex": "timer",
+        "reflex": "lights",
         "args": {
-          "duration": {
-            "type": "pick",
-            "span": {
-              "start": 10,
-              "end": 20,
-              "text": "10 minutes"
-            },
-            "value": {
-              "type": "duration",
-              "value": 600
-            }
+          "room": {
+            "type": "word",
+            "word": "den"
+          },
+          "state": {
+            "type": "option",
+            "key": "off"
           }
         },
         "basis": {
-          "duration": {
-            "by": "ask",
-            "p": 0.5
+          "room": {
+            "by": "views",
+            "ask": 0.92,
+            "reader": 0.92
+          },
+          "state": {
+            "by": "views",
+            "ask": 0.95,
+            "reader": 0.95,
+            "yes": 0.95
           }
         },
         "missing": [],
@@ -293,38 +322,26 @@
           {
             "words": {
               "start": 0,
-              "end": 5,
-              "text": "timer"
+              "end": 15,
+              "text": "kill the lights"
             },
             "does": "action",
             "p": 0.95
           },
           {
             "words": {
-              "start": 21,
-              "end": 34,
-              "text": "called \"eggs\""
+              "start": 27,
+              "end": 40,
+              "text": "'movie night'"
             },
             "does": "action",
             "p": 0.95
           }
         ],
-        "unconsumed": [
-          {
-            "start": 29,
-            "end": 33,
-            "text": "eggs"
-          }
-        ],
-        "quotes": [
-          {
-            "start": 28,
-            "end": 34,
-            "text": "\"eggs\""
-          }
-        ],
+        "unconsumed": [],
+        "whole": 0.9,
         "runner_up": {
-          "reflex": "lights",
+          "reflex": "timer",
           "route": 0.01
         }
       }

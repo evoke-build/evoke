@@ -817,8 +817,10 @@ export type Basis =
  *  asks for another thing. */
 export type Does = { does: "action" } | { does: "answers"; arg: ArgName } | { does: "nothing" } | { does: "more" }
 
-/** A run of the request's words that no value holds, with what it does and how sure that is. */
-export type Left = { words: Span; p: Prob } & Does
+/** A run of the request's words that no value holds, with what it does and how sure that is. `cut` is set where
+ *  the words answer an argument that holds a typed value and stand right after it: the value may be cut short of
+ *  them. */
+export type Left = { words: Span; p: Prob; cut?: boolean } & Does
 
 /** The reflex that won the route, with what its arguments read, and what each value read stands on. */
 export interface Winner {
@@ -832,6 +834,8 @@ export interface Winner {
   unconsumed: Span[]
   /** How far the call, held against the request, holds all the request says; absent where it was not held. */
   whole?: Prob
+  /** The texts the request puts in quotes that no value holds, each with its marks; absent when none. */
+  quotes?: Span[]
   runner_up?: Contender
 }
 
@@ -886,6 +890,8 @@ export type Chosen = Call & {
   unconsumed?: Span[]
   /** How far the call, held against the request, holds all the request says; absent where it was not held. */
   whole?: Prob
+  /** The texts the request puts in quotes that no value holds, each with its marks; absent when none. */
+  quotes?: Span[]
 } & (Judged | Unjudged)
 
 /** Called by name, so nothing was judged: no field of `Judged` is present. */
@@ -914,6 +920,8 @@ export interface Asking extends Judged {
   held?: Cap[]
   /** How far the call, held against the request, holds all the request says; absent where it was not held. */
   whole?: Prob
+  /** The texts the request puts in quotes that no value holds, each with its marks; absent when none. */
+  quotes?: Span[]
 }
 
 /** Why a decision stops at confirm; `because` lists them in this order. */
@@ -929,6 +937,10 @@ export type Cap =
   | { type: "text_read"; arg: ArgName }
   /** Words of the request that ask for another thing, which the call does not hold. */
   | { type: "more"; words: Span }
+  /** Words right after a typed value that answer the argument holding it: the value may be cut short of them. */
+  | { type: "cut"; arg: ArgName; words: Span }
+  /** Words the request puts in quotes that no value of the call holds, with their marks. */
+  | { type: "quoted"; words: Span }
   /** The call, held against the request, holds less than the request says. */
   | { type: "whole"; p: Prob; floor: Prob }
   /** A part of the request beside these words that asks for nothing and may add a detail the call does not

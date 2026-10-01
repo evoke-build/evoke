@@ -1,6 +1,7 @@
-//! The account of a text: the runs of its words that no value holds, and what each does in the request. In: the
-//! input and the spans its values hold. Out: the runs, each with the question that asks what it does, and what an
-//! answer says of it.
+//! The account of a text: the runs of its words that no value holds, and what each does in the request; and the
+//! texts it puts in quotes that no value holds. In: the input and the spans its values hold. Out: the runs, each
+//! with the question that asks what it does and what an answer says of it; whether a run follows a value; the
+//! quotes.
 
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
@@ -52,6 +53,17 @@ const ANSWER: &str = "They answer:";
 const COURTESY: &str = "They are politeness, a reason or an aside, and ask for nothing.";
 const MORE: &str = "They ask for another thing as well.";
 
+/// The marks that open and close a text in quotes, each with its pair: double, single and typographic. A mark
+/// opens only at a word's start and closes only at a word's end, so an apostrophe inside a word, «Sam's», is none.
+const QUOTES: [(char, char); 6] = [
+    ('"', '"'),
+    ('\u{201c}', '\u{201d}'),
+    ('\u{2018}', '\u{2019}'),
+    ('\'', '\''),
+    ('\u{ab}', '\u{bb}'),
+    ('\u{201e}', '\u{201c}'),
+];
+
 /// A run of the input's words that no value holds: the places of its first and last word among the input's,
 /// and the words.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -82,6 +94,10 @@ pub struct Left {
     #[serde(flatten)]
     pub does: Does,
     pub p: Prob,
+    /// Whether its words answer an argument that holds a typed value and stand right after that value's words,
+    /// so that the value may be cut short of them: found by code where the words are read.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub cut: bool,
 }
 
 /// The runs of the input that none of the spans holds, six at most: cut where a held word stands and before a
@@ -181,7 +197,49 @@ pub(crate) fn read(run: &Run, question: &Question, answer: &IndexMap<Key, Prob>)
         words: run.words.clone(),
         does,
         p,
+        cut: false,
     })
+}
+
+/// Whether a run stands right after a value's words: only words that carry nothing, and marks, between the two.
+pub(crate) fn follows(input: &Input, value: &Span, run: &Span) -> bool {
+    run.start() >= value.end()
+        && words::tokens(input.as_str())
+            .iter()
+            .filter(|token| token.start >= value.end() && token.end <= run.start())
+            .all(|token| token.plain.is_empty() || words::function(&token.plain))
+}
+
+/// The texts the input puts in quotes that none of the spans holds whole, each with its marks: a mark of
+/// `QUOTES` at a word's start opens, its pair at a word's end closes, and the words between are the text.
+pub(crate) fn quotes(input: &Input, held: &[&Span]) -> Vec<Span> {
+    let chars: Vec<char> = input.as_str().chars().collect();
+    let letter = |i: usize| chars.get(i).is_some_and(|c| c.is_alphanumeric());
+    let space = |i: usize| chars.get(i).is_none_or(|c| c.is_whitespace());
+    let mut found = Vec::new();
+    let mut i = 0;
+    while i < chars.len() {
+        let opened = QUOTES
+            .iter()
+            .find(|(open, _)| *open == chars[i])
+            .filter(|_| (i == 0 || !letter(i - 1)) && !space(i + 1));
+        let closed = opened.and_then(|(_, close)| {
+            (i + 2..chars.len()).find(|&j| chars[j] == *close && !space(j - 1) && !letter(j + 1))
+        });
+        let Some(end) = closed else {
+            i += 1;
+            continue;
+        };
+        // The words inside the marks, which a value holds whole or not at all.
+        let unheld = !held
+            .iter()
+            .any(|span| span.start() <= i + 1 && span.end() >= end);
+        if unheld {
+            found.extend(Span::of(input, i, end + 1));
+        }
+        i = end + 1;
+    }
+    found
 }
 
 fn key(text: &str) -> Key {
@@ -229,5 +287,61 @@ mod tests {
     fn words_that_carry_nothing_make_no_run() {
         assert_eq!(left("and then the den", &[(13, 16)]), Vec::<String>::new());
         assert_eq!(left("please, to me", &[]), Vec::<String>::new());
+    }
+
+    #[test]
+    fn quotes_are_found_at_a_word_s_edges() {
+        let found = |text: &str| -> Vec<String> {
+            let input = Input::new(text).unwrap();
+            quotes(&input, &[])
+                .into_iter()
+                .map(|span| span.text().to_string())
+                .collect()
+        };
+        assert_eq!(found("send it 'running 10 late'"), ["'running 10 late'"]);
+        assert_eq!(
+            found("\u{201c}tea\u{201d} and \u{2018}eggs\u{2019}"),
+            ["\u{201c}tea\u{201d}", "\u{2018}eggs\u{2019}"]
+        );
+        assert_eq!(found("note \"a\" and \"b\"."), ["\"a\"", "\"b\""]);
+        assert_eq!(found("'it's late', she said"), ["'it's late'"]);
+        assert!(
+            found("don't lock Sam's laptop").is_empty(),
+            "an apostrophe inside a word"
+        );
+        assert!(
+            found("the kids' room").is_empty(),
+            "a closing mark with no opening one"
+        );
+        assert!(
+            found("' spaced '").is_empty(),
+            "a mark before a space opens nothing"
+        );
+        let input = Input::new("send it 'running 10 late'").unwrap();
+        let inner = Span::of(&input, 9, 24).unwrap();
+        assert!(
+            quotes(&input, &[&inner]).is_empty(),
+            "a value that holds the words inside"
+        );
+        let part = Span::of(&input, 9, 16).unwrap();
+        assert_eq!(
+            quotes(&input, &[&part]).len(),
+            1,
+            "a value holding part of them"
+        );
+    }
+
+    #[test]
+    fn a_run_follows_a_value_across_words_that_carry_nothing() {
+        let input = Input::new("friday, 2 ocotber and the rest, to be sure").unwrap();
+        let value = Span::of(&input, 0, 6).unwrap();
+        let after = Span::of(&input, 8, 17).unwrap();
+        let far = Span::of(&input, 26, 30).unwrap();
+        assert!(follows(&input, &value, &after));
+        assert!(!follows(&input, &value, &far), "«2 ocotber» carries");
+        let input = Input::new("the next 3 hours").unwrap();
+        let value = Span::of(&input, 9, 16).unwrap();
+        let before = Span::of(&input, 4, 8).unwrap();
+        assert!(!follows(&input, &value, &before), "before the value");
     }
 }

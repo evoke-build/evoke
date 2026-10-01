@@ -1,0 +1,251 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-values.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "meeting",
+          "route": 0.96
+        },
+        {
+          "reflex": "calendar",
+          "route": 0.02
+        },
+        {
+          "reflex": "rollback",
+          "route": 0
+        },
+        {
+          "reflex": "deploys",
+          "route": 0
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "meeting",
+          "p": 0.96
+        },
+        {
+          "question": "meeting.day",
+          "top": "20-27",
+          "p": 0.95
+        },
+        {
+          "question": "meeting.time",
+          "top": "44-47",
+          "p": 0.97
+        }
+      ],
+      "winner": {
+        "reflex": "meeting",
+        "args": {
+          "day": {
+            "type": "pick",
+            "span": {
+              "start": 20,
+              "end": 27,
+              "text": "tuesday"
+            },
+            "value": {
+              "type": "date",
+              "value": {
+                "type": "weekday",
+                "weekday": "tuesday"
+              }
+            }
+          },
+          "time": {
+            "type": "pick",
+            "span": {
+              "start": 44,
+              "end": 47,
+              "text": "3pm"
+            },
+            "value": {
+              "type": "time",
+              "value": "15:00"
+            }
+          }
+        },
+        "basis": {
+          "day": {
+            "by": "ask",
+            "p": 0.95
+          },
+          "time": {
+            "by": "ask",
+            "p": 0.97
+          }
+        },
+        "missing": [],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 16,
+              "text": "move the meeting"
+            },
+            "does": "action",
+            "p": 0.95
+          },
+          {
+            "words": {
+              "start": 32,
+              "end": 40,
+              "text": "thirteen"
+            },
+            "does": "answers",
+            "arg": "day",
+            "p": 0.9,
+            "cut": true
+          }
+        ],
+        "unconsumed": [],
+        "whole": 0.9,
+        "runner_up": {
+          "reflex": "calendar",
+          "route": 0.02
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    }
+  },
+  "expect": {
+    "outcome": "confirm",
+    "reflex": "meeting",
+    "args": {
+      "day": {
+        "type": "pick",
+        "span": {
+          "start": 20,
+          "end": 27,
+          "text": "tuesday"
+        },
+        "value": {
+          "type": "date",
+          "value": {
+            "type": "weekday",
+            "weekday": "tuesday"
+          }
+        }
+      },
+      "time": {
+        "type": "pick",
+        "span": {
+          "start": 44,
+          "end": 47,
+          "text": "3pm"
+        },
+        "value": {
+          "type": "time",
+          "value": "15:00"
+        }
+      }
+    },
+    "call": "meeting day=\"tuesday\" time=\"3pm\"",
+    "effect": "write",
+    "basis": {
+      "day": {
+        "by": "ask",
+        "p": 0.95
+      },
+      "time": {
+        "by": "ask",
+        "p": 0.97
+      }
+    },
+    "left": [
+      {
+        "words": {
+          "start": 0,
+          "end": 16,
+          "text": "move the meeting"
+        },
+        "does": "action",
+        "p": 0.95
+      },
+      {
+        "words": {
+          "start": 32,
+          "end": 40,
+          "text": "thirteen"
+        },
+        "does": "answers",
+        "arg": "day",
+        "p": 0.9,
+        "cut": true
+      }
+    ],
+    "whole": 0.9,
+    "confidence": 0.95,
+    "weakest": {
+      "question": "meeting.day",
+      "top": "20-27",
+      "p": 0.95
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "meeting",
+        "p": 0.96
+      },
+      {
+        "question": "meeting.day",
+        "top": "20-27",
+        "p": 0.95
+      },
+      {
+        "question": "meeting.time",
+        "top": "44-47",
+        "p": 0.97
+      }
+    ],
+    "runner_up": {
+      "reflex": "calendar",
+      "route": 0.02
+    },
+    "contenders": [
+      {
+        "reflex": "meeting",
+        "route": 0.96
+      },
+      {
+        "reflex": "calendar",
+        "route": 0.02
+      },
+      {
+        "reflex": "rollback",
+        "route": 0
+      },
+      {
+        "reflex": "deploys",
+        "route": 0
+      }
+    ],
+    "prompt": {
+      "own": "meeting day=\"tuesday\" time=\"3pm\" · write · weakest: day 0.95",
+      "reason": "\"thirteen\" may be part of the day",
+      "template": "Move the meeting to tuesday at 3pm?"
+    },
+    "because": [
+      {
+        "type": "cut",
+        "arg": "day",
+        "words": {
+          "start": 32,
+          "end": 40,
+          "text": "thirteen"
+        }
+      }
+    ]
+  }
+}

@@ -51,6 +51,10 @@ separated by `;`.
   quotes, which always waits for a yes`.
 - **more words**: the input holds words that ask for another thing, which the call does not hold. `"lock the
   door too" asks for another thing`.
+- **part of a value**: words right after a value answer the same question, so the value may be cut short of
+  them. `"30" may be part of the duration`.
+- **a text in quotes**: the input holds a text in quotes that no value took, and the reflex takes one. `'tea' is
+  in quotes and the call does not hold it`.
 - **less than you typed**: the call, read back against the input, leaves out part of what you typed. `it holds
   all you said at 0.20, and a call runs at 0.30 or more; it leaves out "in the morning"`.
 - **a detail beside it**: a part of the sentence that is not in the plan may add a detail to this step. `"the

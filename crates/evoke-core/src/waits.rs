@@ -22,6 +22,10 @@ const READ_FROM: &str = "{arg} was read from {words}";
 const UNQUOTED: &str = "{arg} was typed without quotes, which always waits for a yes";
 /// Words that ask for another thing than the call does.
 const MORE: &str = "{words} asks for another thing";
+/// Words right after a value that answer its argument: the words, and the argument.
+const CUT: &str = "{words} may be part of the {arg}";
+/// A text in quotes that no value of the call holds: the text with its marks.
+const QUOTED: &str = "{words} is in quotes and the call does not hold it";
 /// A call that holds less than the request says: how far it holds all of it, and the bar.
 const LESS: &str = "it holds all you said at {p}, and a call runs at {floor} or more";
 /// The words such a call leaves out, after the phrase above.
@@ -80,6 +84,14 @@ fn cause(chosen: &Chosen, cap: &Cap) -> String {
         ),
         Cap::TextRead { arg } => said(UNQUOTED, &[("arg", arg.as_str())]),
         Cap::More { words } => said(MORE, &[("words", &quoted(words.text().as_str()))]),
+        Cap::Cut { arg, words } => said(
+            CUT,
+            &[
+                ("words", &quoted(words.text().as_str())),
+                ("arg", arg.as_str()),
+            ],
+        ),
+        Cap::Quoted { words } => said(QUOTED, &[("words", words.text().as_str())]),
         Cap::Whole { p, floor } => {
             let mut line = said(
                 LESS,
@@ -97,7 +109,8 @@ fn cause(chosen: &Chosen, cap: &Cap) -> String {
 }
 
 /// The words a call leaves out: those no value holds that say nothing of what to do — but words that answered
-/// an ask the person then settled — and the values typed that no argument took.
+/// an ask the person then settled, and words that may be part of a value, which have a phrase of their own — and
+/// the values typed that no argument took.
 fn left_out(chosen: &Chosen) -> Vec<&str> {
     let mut out: Vec<&str> = chosen
         .left
@@ -105,7 +118,7 @@ fn left_out(chosen: &Chosen) -> Vec<&str> {
         .filter(|run| match &run.does {
             Does::Action => false,
             Does::Answers { arg } => {
-                !chosen.call.args.contains_key(arg) || chosen.basis.contains_key(arg)
+                !run.cut && (!chosen.call.args.contains_key(arg) || chosen.basis.contains_key(arg))
             }
             Does::Nothing | Does::More => true,
         })

@@ -6,6 +6,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A call confirms where the input may hold more than the call read: words right after a value, or a text in
+  quotes that no value took. The prompt names the words; the JSON line carries `cut` and `quotes`.
+
 ## [0.17.0] - 2026-09-30
 
 - The collection gains `sound`: mute, unmute, or turn the volume up or down by an amount.

@@ -768,12 +768,15 @@ fn holds(sentence: Option<&Sentence>, decision: &Decision) -> Option<Text> {
         .and_then(|sentence| sentence.gate.as_ref())
         .and_then(Gate::whole);
     if floor.is_some_and(|floor| whole < floor) {
-        // Words that answered an ask the person then settled are not left out.
+        // Words that answered an ask the person then settled are not left out; words that may be part of a
+        // value are named by the line that says why the call waits.
         let mut out: Vec<&str> = left
             .iter()
             .filter(|run| match &run.does {
                 Does::Action => false,
-                Does::Answers { arg } => !args.contains_key(arg) || basis.contains_key(arg),
+                Does::Answers { arg } => {
+                    !run.cut && (!args.contains_key(arg) || basis.contains_key(arg))
+                }
                 Does::Nothing | Does::More => true,
             })
             .map(|run| run.words.text().as_str())

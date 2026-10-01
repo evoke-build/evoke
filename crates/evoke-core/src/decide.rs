@@ -100,6 +100,10 @@ pub struct Winner {
     /// How far the call, held against the request, holds all the request says; none where it was not held.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub whole: Option<Prob>,
+    /// The texts the request puts in quotes that no value holds, each with its marks, where the reflex takes a
+    /// text in quotes.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub quotes: Vec<Span>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub runner_up: Option<Contender>,
 }
@@ -299,6 +303,9 @@ pub struct Chosen {
     /// How far the call, held against the request, holds all the request says; none where it was not held.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub whole: Option<Prob>,
+    /// The texts the request puts in quotes that no value holds, each with its marks.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub quotes: Vec<Span>,
     #[serde(flatten)]
     pub judged: Option<Judged>,
 }
@@ -317,6 +324,8 @@ struct RawChosen {
     unconsumed: Vec<Span>,
     #[serde(default)]
     whole: Option<Prob>,
+    #[serde(default)]
+    quotes: Vec<Span>,
     confidence: Option<Prob>,
     weakest: Option<Judgment>,
     judgments: Option<NonEmpty<Judgment>>,
@@ -352,6 +361,7 @@ impl TryFrom<RawChosen> for Chosen {
             left: raw.left,
             unconsumed: raw.unconsumed,
             whole: raw.whole,
+            quotes: raw.quotes,
             judged,
         })
     }
@@ -536,6 +546,9 @@ pub struct Asking {
     /// How far the call, held against the request, holds all the request says; none where it was not held.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub whole: Option<Prob>,
+    /// The texts the request puts in quotes that no value holds, each with its marks.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub quotes: Vec<Span>,
     #[serde(flatten)]
     pub judged: Judged,
 }
@@ -564,6 +577,16 @@ pub enum Cap {
     },
     /// Words of the request that ask for another thing, which the call does not hold.
     More {
+        words: Span,
+    },
+    /// Words of the request, right after a typed value, that answer the argument holding it: the value may be
+    /// cut short of them.
+    Cut {
+        arg: ArgName,
+        words: Span,
+    },
+    /// Words the request puts in quotes that no value of the call holds, with their marks.
+    Quoted {
         words: Span,
     },
     /// The call, held against the request, holds less than the request says.
@@ -1339,6 +1362,16 @@ fn ordered(active: &Active, mut args: IndexMap<ArgName, Value>) -> IndexMap<ArgN
         .collect()
 }
 
+/// Whether a reflex takes a text in quotes: one of its arguments picks one.
+fn takes_quoted(active: &Active) -> bool {
+    active.args.values().any(|argument| {
+        matches!(
+            &argument.kind,
+            Kind::Value { source: Source::Pick(pick), .. } if pick.recognizer() == Recognizer::Quoted
+        )
+    })
+}
+
 /// At this share a run of words answers an argument's ask, or asks for another thing.
 const LEFT: f64 = 0.5;
 
@@ -1404,6 +1437,7 @@ impl Reader<'_> {
             .collect();
         // A value still waits where a question about an argument is open: the call is not yet what it will be.
         let mut waits = !open.is_empty();
+        let mut quotes = Vec::new();
         // The words and the texts are read where the request asks everything, its arguments among it.
         if self.request.scope == Scope::Full {
             draft.left = self.account(&reflex, active, &draft.args, &draft.basis, open);
@@ -1414,6 +1448,16 @@ impl Reader<'_> {
             waits |= open.len() > asked;
             for (arg, span, stands, chose) in texts {
                 draft.worded(&reflex, arg, span, stands, chose);
+            }
+            // Once every value stands: the words that go on after one of them, and the quotes none holds.
+            self.cut(&draft.args, &mut draft.left);
+            if takes_quoted(active) {
+                let held: Vec<&Span> = draft
+                    .args
+                    .iter()
+                    .filter_map(|(arg, value)| self.held(&reflex, arg, value, draft.basis.get(arg)))
+                    .collect();
+                quotes = account::quotes(&self.request.state.request, &held);
             }
         }
         let args = ordered(active, std::mem::take(&mut draft.args));
@@ -1433,6 +1477,7 @@ impl Reader<'_> {
                 left: draft.left,
                 unconsumed,
                 whole,
+                quotes,
                 runner_up,
             },
         ))
@@ -1682,6 +1727,21 @@ impl Reader<'_> {
         }
     }
 
+    /// The runs that answer an argument the call already holds a typed value for, which `answered` sets aside,
+    /// marked where they stand right after the value's words: the value may be cut short of them, «friday 2
+    /// ocotber» read as the day «friday». A bare number is no typed value, and a listed word none either.
+    fn cut(&self, args: &IndexMap<ArgName, Value>, left: &mut [Left]) {
+        let input = &self.request.state.request;
+        for run in left {
+            let Does::Answers { arg } = &run.does else {
+                continue;
+            };
+            run.cut = run.p.get() >= LEFT
+                && matches!(args.get(arg), Some(Value::Pick { span, value, .. })
+                    if value.is_typed() && account::follows(input, span, &run.words));
+        }
+    }
+
     /// The account of the winner's text: the runs of its words that no value holds, each read from the answer
     /// to what it does; a run not asked about yet is put in `open`, and says nothing.
     fn account(
@@ -1920,6 +1980,7 @@ pub fn gate(plan: &Plan, reading: Reading, gate: Option<&Gate>) -> Decision {
             unconsumed: winner.unconsumed,
             held: Vec::new(),
             whole: winner.whole,
+            quotes: winner.quotes,
             judged,
         },
         missing,
@@ -1957,6 +2018,7 @@ pub fn carry(
         unconsumed,
         held,
         whole,
+        quotes,
         judged,
     } = asking;
     let Some(active) = plan.active().get(&reflex) else {
@@ -1985,6 +2047,7 @@ pub fn carry(
             unconsumed,
             held,
             whole,
+            quotes,
             judged,
         },
         missing,
@@ -2012,6 +2075,7 @@ fn decided(
         left: asking.left,
         unconsumed: asking.unconsumed,
         whole: asking.whole,
+        quotes: asking.quotes,
         judged: Some(asking.judged),
     };
     capped(active, chosen, asking.held, gate)
@@ -2160,6 +2224,22 @@ fn capped(active: &Active, chosen: Chosen, held: Vec<Cap>, gate: Option<&Gate>) 
                 words: run.words.clone(),
             }),
     );
+    because.extend(
+        chosen
+            .left
+            .iter()
+            .filter(|run| run.cut)
+            .filter_map(|run| match &run.does {
+                Does::Answers { arg } if chosen.call.args.contains_key(arg) => Some(Cap::Cut {
+                    arg: arg.clone(),
+                    words: run.words.clone(),
+                }),
+                _ => None,
+            }),
+    );
+    because.extend(chosen.quotes.iter().map(|words| Cap::Quoted {
+        words: words.clone(),
+    }));
     if let Some((floor, p)) = gate.and_then(Gate::whole).zip(chosen.whole)
         && p < floor
     {
@@ -2289,6 +2369,11 @@ pub fn joined(plan: &Plan, first: Decision, second: &Decision, gate: Option<&Gat
     }
     one.left.extend(other.left);
     one.unconsumed.extend(other.unconsumed);
+    for quoted in other.quotes {
+        if !one.quotes.contains(&quoted) {
+            one.quotes.push(quoted);
+        }
+    }
     // Held against the request as the first was: the second's words alone stand for no call of their own, and
     // what they add to the first's call holds more of the request, never less.
     one.whole = one.whole.or(other.whole);
@@ -2347,6 +2432,7 @@ fn asking_of(chosen: &Chosen, because: &[Cap]) -> Option<Asking> {
             .cloned()
             .collect(),
         whole: chosen.whole,
+        quotes: chosen.quotes.clone(),
         judged: chosen.judged.clone()?,
     })
 }
@@ -2461,6 +2547,7 @@ pub fn by_name(plan: &Plan, written: Written) -> Result<Decision, Diagnostic> {
         left: Vec::new(),
         unconsumed: Vec::new(),
         whole: None,
+        quotes: Vec::new(),
         judged: None,
     };
     if chosen.effect != Effect::Destructive {

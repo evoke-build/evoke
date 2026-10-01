@@ -3,9 +3,16 @@
     "plan": {
       "$ref": "fixtures/plan.json"
     },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
     "request": {
       "state": {
-        "request": "timer for 10 minutes called \"eggs\""
+        "request": "set a timer for maybe 10 minutes"
       },
       "questions": {
         "route": {
@@ -87,7 +94,7 @@
           "type": "choice",
           "ask": "How long?",
           "options": {
-            "10-20": "10 minutes",
+            "22-32": "10 minutes",
             "none": "The request says it, and none of these is it.",
             "unstated": "The request does not say."
           },
@@ -97,8 +104,7 @@
           "type": "choice",
           "ask": "What is the timer for?",
           "options": {
-            "29-33": "eggs",
-            "none": "The request says it, and none of these is it.",
+            "none": "The request says it, in words that are not between quotes.",
             "unstated": "The request does not say."
           },
           "otherwise": "unstated"
@@ -136,21 +142,15 @@
           },
           "otherwise": "unstated"
         },
-        "weave.only_timer__duration_10_20": {
+        "weave.only_timer__duration_22_32": {
           "type": "yesno",
           "ask": "How long?",
           "yes": "«10 minutes»",
           "no": "Other words, or none."
         },
-        "weave.only_timer__label_29_33": {
-          "type": "yesno",
-          "ask": "What is the timer for?",
-          "yes": "«eggs»",
-          "no": "Other words, or none."
-        },
-        "weave.left_timer_0_0": {
+        "weave.left_timer_0_2": {
           "type": "choice",
-          "ask": "In the request, what do the words «timer» do?",
+          "ask": "In the request, what do the words «set a timer» do?",
           "options": {
             "action": "They say what to do, or to what.",
             "arg:duration": "They answer: How long?",
@@ -159,39 +159,103 @@
             "more": "They ask for another thing as well."
           }
         },
-        "weave.left_timer_4_5": {
+        "weave.left_timer_4_4": {
           "type": "choice",
-          "ask": "In the request, what do the words «called \"eggs\"» do?",
+          "ask": "In the request, what do the words «maybe» do?",
           "options": {
             "action": "They say what to do, or to what.",
             "arg:duration": "They answer: How long?",
             "arg:label": "They answer: What is the timer for?",
             "courtesy": "They are politeness, a reason or an aside, and ask for nothing.",
             "more": "They ask for another thing as well."
+          }
+        },
+        "weave.first_timer__label_1082565864": {
+          "type": "choice",
+          "ask": "What is the timer for?",
+          "options": {
+            "s0": "set a timer for maybe 10 minutes",
+            "s1": "a timer for maybe 10 minutes",
+            "s2": "timer for maybe 10 minutes",
+            "s3": "for maybe 10 minutes",
+            "s4": "maybe 10 minutes",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.run_timer__label_1082565864": {
+          "type": "choice",
+          "ask": "What is the timer for?",
+          "options": {
+            "1-1": "a",
+            "0-0": "set",
+            "3-3": "for",
+            "0-1": "set a",
+            "2-2": "timer",
+            "4-4": "maybe",
+            "1-2": "a timer",
+            "2-3": "timer for",
+            "3-4": "for maybe",
+            "0-2": "set a timer",
+            "1-3": "a timer for",
+            "0-3": "set a timer for",
+            "2-4": "timer for maybe",
+            "1-4": "a timer for maybe",
+            "0-4": "set a timer for maybe",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.word_timer__label_0": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «set», in «set a timer», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_1": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «a», in «set a timer for», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_2": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «timer», in «set a timer for maybe», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_3": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «for», in «a timer for maybe 10», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.word_timer__label_4": {
+          "type": "yesno",
+          "ask": "What is the timer for? Is the word «maybe», in «timer for maybe 10 minutes», part of it?",
+          "yes": "It is part of it.",
+          "no": "It is no part of it."
+        },
+        "weave.whole_3359817700": {
+          "type": "choice",
+          "ask": "The request was read as: Count down a duration, then sound an alert. How long? 10 minutes. What is the timer for? (not said) How does that reading stand to the request?",
+          "options": {
+            "whole": "The reading holds everything the request says.",
+            "less": "The request says something more, which the reading leaves out.",
+            "other": "The request asks for something else."
           }
         }
       },
       "proposed": [
         {
           "span": {
-            "start": 10,
-            "end": 20,
+            "start": 22,
+            "end": 32,
             "text": "10 minutes"
           },
           "value": {
             "type": "duration",
             "value": 600
-          }
-        },
-        {
-          "span": {
-            "start": 29,
-            "end": 33,
-            "text": "eggs"
-          },
-          "value": {
-            "type": "quoted",
-            "value": "eggs"
           }
         }
       ]
@@ -212,9 +276,8 @@
         "unstated": 1
       },
       "timer.duration": {
-        "10-20": 0.5,
-        "none": 0.45,
-        "unstated": 0.05
+        "22-32": 0.97,
+        "unstated": 0.03
       },
       "timer.label": {
         "unstated": 1
@@ -225,19 +288,43 @@
       "weave.view_lights__state": {
         "unstated": 1
       },
-      "weave.only_timer__duration_10_20": {
+      "weave.only_timer__duration_22_32": {
         "yes": 0.05
       },
-      "weave.only_timer__label_29_33": {
-        "yes": 0.05
-      },
-      "weave.left_timer_0_0": {
+      "weave.left_timer_0_2": {
         "action": 0.95,
         "courtesy": 0.05
       },
-      "weave.left_timer_4_5": {
-        "action": 0.95,
+      "weave.left_timer_4_4": {
+        "arg:duration": 0.9,
+        "action": 0.05,
         "courtesy": 0.05
+      },
+      "weave.first_timer__label_1082565864": {
+        "unstated": 1
+      },
+      "weave.run_timer__label_1082565864": {
+        "unstated": 1
+      },
+      "weave.word_timer__label_0": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_1": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_2": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_3": {
+        "yes": 0.05
+      },
+      "weave.word_timer__label_4": {
+        "yes": 0.05
+      },
+      "weave.whole_3359817700": {
+        "whole": 0.9,
+        "less": 0.07,
+        "other": 0.03
       }
     }
   },
@@ -262,8 +349,8 @@
         },
         {
           "question": "timer.duration",
-          "top": "10-20",
-          "p": 0.5
+          "top": "22-32",
+          "p": 0.97
         }
       ],
       "winner": {
@@ -272,8 +359,8 @@
           "duration": {
             "type": "pick",
             "span": {
-              "start": 10,
-              "end": 20,
+              "start": 22,
+              "end": 32,
               "text": "10 minutes"
             },
             "value": {
@@ -285,7 +372,7 @@
         "basis": {
           "duration": {
             "by": "ask",
-            "p": 0.5
+            "p": 0.97
           }
         },
         "missing": [],
@@ -293,36 +380,25 @@
           {
             "words": {
               "start": 0,
-              "end": 5,
-              "text": "timer"
+              "end": 11,
+              "text": "set a timer"
             },
             "does": "action",
             "p": 0.95
           },
           {
             "words": {
-              "start": 21,
-              "end": 34,
-              "text": "called \"eggs\""
+              "start": 16,
+              "end": 21,
+              "text": "maybe"
             },
-            "does": "action",
-            "p": 0.95
+            "does": "answers",
+            "arg": "duration",
+            "p": 0.9
           }
         ],
-        "unconsumed": [
-          {
-            "start": 29,
-            "end": 33,
-            "text": "eggs"
-          }
-        ],
-        "quotes": [
-          {
-            "start": 28,
-            "end": 34,
-            "text": "\"eggs\""
-          }
-        ],
+        "unconsumed": [],
+        "whole": 0.9,
         "runner_up": {
           "reflex": "lights",
           "route": 0.01

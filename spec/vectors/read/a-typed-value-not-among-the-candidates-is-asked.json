@@ -333,6 +333,13 @@
             "text": "eggs"
           }
         ],
+        "quotes": [
+          {
+            "start": 28,
+            "end": 34,
+            "text": "\"eggs\""
+          }
+        ],
         "runner_up": {
           "reflex": "lights",
           "route": 0.01

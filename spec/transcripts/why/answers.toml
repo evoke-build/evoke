@@ -97,3 +97,49 @@ route                      = { lights = 0.85, none = 0.15 }
 "weave.is_lights__state_1" = { yes = 0.95 }
 "weave.left_lights_0_2"    = { action = 0.95, courtesy = 0.05 }
 "weave.left_lights_5_8"    = { action = 0.95, courtesy = 0.05 }
+
+[answers."set a timer for 1 hour 30"]
+route                                 = { timer = 0.96, lights = 0.01, volume = 0.01, none = 0.02 }
+"timer.duration"                      = { 16-22 = 0.97, unstated = 0.03 }
+"lights.room"                         = { unstated = 1.0 }
+"lights.state"                        = { unstated = 1.0 }
+"lights.brightness"                   = { unstated = 1.0 }
+"timer.label"                         = { unstated = 1.0 }
+"volume.level"                        = { unstated = 1.0 }
+"weave.view_lights__room"             = { unstated = 1.0 }
+"weave.view_lights__state"            = { unstated = 1.0 }
+"weave.only_lights__brightness_23_25" = { yes = 0.05 }
+"weave.only_timer__duration_16_22"    = { yes = 0.05 }
+"weave.only_volume__level_23_25"      = { yes = 0.05 }
+"weave.left_timer_0_2"                = { action = 0.95, courtesy = 0.05 }
+"weave.left_timer_6_6"                = { "arg:duration" = 0.9, action = 0.05, courtesy = 0.05 }
+"weave.first_timer__label_3150862695" = { unstated = 1.0 }
+"weave.run_timer__label_3150862695"   = { unstated = 1.0 }
+"weave.word_timer__label_0"           = { yes = 0.05 }
+"weave.word_timer__label_1"           = { yes = 0.05 }
+"weave.word_timer__label_2"           = { yes = 0.05 }
+"weave.word_timer__label_3"           = { yes = 0.05 }
+"weave.word_timer__label_6"           = { yes = 0.05 }
+"weave.whole_541648908"               = { whole = 0.9, less = 0.05, other = 0.05 }
+
+[answers."set a timer for 10 minutes 'tea'"]
+route                                 = { timer = 0.96, lights = 0.01, volume = 0.01, none = 0.02 }
+"timer.duration"                      = { 16-26 = 0.97, unstated = 0.03 }
+"lights.room"                         = { unstated = 1.0 }
+"lights.state"                        = { unstated = 1.0 }
+"lights.brightness"                   = { unstated = 1.0 }
+"timer.label"                         = { unstated = 1.0 }
+"volume.level"                        = { unstated = 1.0 }
+"weave.view_lights__room"             = { unstated = 1.0 }
+"weave.view_lights__state"            = { unstated = 1.0 }
+"weave.only_timer__duration_16_26"    = { yes = 0.05 }
+"weave.left_timer_0_2"                = { action = 0.95, courtesy = 0.05 }
+"weave.left_timer_6_6"                = { action = 0.95, courtesy = 0.05 }
+"weave.first_timer__label_1171567175" = { unstated = 1.0 }
+"weave.run_timer__label_1171567175"   = { unstated = 1.0 }
+"weave.word_timer__label_0"           = { yes = 0.05 }
+"weave.word_timer__label_1"           = { yes = 0.05 }
+"weave.word_timer__label_2"           = { yes = 0.05 }
+"weave.word_timer__label_3"           = { yes = 0.05 }
+"weave.word_timer__label_6"           = { yes = 0.05 }
+"weave.whole_3359817700"              = { whole = 0.9, less = 0.05, other = 0.05 }
