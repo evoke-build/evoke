@@ -58,7 +58,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:8e1812b37625a27a02cf4955eaa8838939c2f2fa3b1067ddb3dcc3e7bd0cfd82",
+      "digest": "h1:460e8f4d3ccd9df244c5f448a4edec475cfe4bfbef3529462b1e0103b1bbb4b2",
       "active": {
         "lights": {
           "effect": "destructive",

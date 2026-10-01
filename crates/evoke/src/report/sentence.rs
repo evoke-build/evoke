@@ -11,7 +11,7 @@ use evoke_core::decide::{Basis, Cap, Choices, Judgment, Missing, View};
 use evoke_core::manifest::{Effect, Recognizer};
 use evoke_core::name::{AdapterId, ArgName};
 use evoke_core::propose::PickValue;
-use evoke_core::weave::reading::Split;
+use evoke_core::weave::reading::{Split, Stretch};
 use evoke_core::weave::{Aside, Because, Count, Folded, Repair, Status};
 use evoke_core::words::{Form, How};
 use evoke_core::{Call, Decision, Does, Gate, Proposed, Raw, Span, render};
@@ -61,6 +61,9 @@ const A_REMARK: &str = "a reason or a remark";
 const A_DETAIL: &str = "adds a detail";
 const ASKS: &str = "asks for something";
 const THANKS: &str = "a word of thanks";
+/// What a part code set aside by its words is: the person's own action, or a courtesy.
+const OWN_ACTION: &str = "your own action";
+const A_COURTESY: &str = "a courtesy";
 const NOT_TO_DO: &str = "what you said not to do";
 
 /// Under a value: a switch that is set, a word said once, the person's own answer, what an ask recalled.
@@ -407,9 +410,11 @@ fn whole(sentence: &Sentence, steps: usize) -> Vec<Text> {
     }
     for aside in &sentence.asides {
         let label = if aside.remark { SET_ASIDE } else { NOT_IN_PLAN };
-        let does = aside.does.map_or_else(
-            || THANKS.to_owned(),
-            |does| {
+        let does = match (aside.by, aside.does) {
+            (Some(Stretch::Own), _) => OWN_ACTION.to_owned(),
+            (Some(Stretch::Courtesy | Stretch::Contrast), _) => A_COURTESY.to_owned(),
+            (None, None) => THANKS.to_owned(),
+            (None, Some(does)) => {
                 let mut shares = [
                     (A_REMARK, does.aside.get()),
                     (A_DETAIL, does.detail.get()),
@@ -421,8 +426,8 @@ fn whole(sentence: &Sentence, steps: usize) -> Vec<Text> {
                     .map(|(what, p)| format!("{what} {}", share(*p)))
                     .collect::<Vec<_>>()
                     .join(" · ")
-            },
-        );
+            }
+        };
         rows.push(row(
             label,
             Text::from(format!("{}: {does}", said(&aside.text))),

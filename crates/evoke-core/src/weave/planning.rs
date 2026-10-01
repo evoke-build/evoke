@@ -4,7 +4,7 @@
 
 use indexmap::IndexMap;
 
-use super::reading::{self, Left, Order, Ref, SURE, Segment, Split, Unclean};
+use super::reading::{self, Left, Order, Ref, SURE, Segment, Split, Stretch, Unclean};
 use super::{
     Answers, Aside, Asked, Because, Binding, Count, Folded, From, Need, Outcome, Parted, Planning,
     Repair, Shared, Step, Verdict, Via, Weave, When, field_names,
@@ -100,6 +100,8 @@ struct Draft {
     one: bool,
     /// The parts that match no reflex and ask for nothing: out of the plan.
     asides: Vec<Aside>,
+    /// Where each contrast's «not X» stands, which code cut at both ends without asking.
+    ruled: Vec<(usize, usize)>,
 }
 
 /// A part of the request folded into a step: its words, the step by its id, the reflex the part read as, the
@@ -169,11 +171,9 @@ struct Branching {
 impl Draft {
     /// The draft over the request's segments: the ones left out apart, the rest the person's own.
     fn new(chars: Vec<char>, segments: &[Segment], taken: Vec<Split>) -> Self {
-        let segs: Vec<Segment> = segments
-            .iter()
-            .filter(|seg| !seg.excluded())
-            .cloned()
-            .collect();
+        // A part code set aside by its words stands apart as a part left out does: never decided, never run.
+        let apart = |seg: &Segment| seg.excluded() || matches!(seg.left, Some(Left::Aside(_)));
+        let segs: Vec<Segment> = segments.iter().filter(|seg| !apart(seg)).cloned().collect();
         let count = segs.len();
         Self {
             chars,
@@ -185,11 +185,7 @@ impl Draft {
                 .filter(|seg| seg.excluded())
                 .map(|seg| seg.text.clone())
                 .collect(),
-            apart: segments
-                .iter()
-                .filter(|seg| seg.excluded())
-                .cloned()
-                .collect(),
+            apart: segments.iter().filter(|seg| apart(seg)).cloned().collect(),
             repaired: Vec::new(),
             shared: Vec::new(),
             origins: vec![Vec::new(); count],
@@ -203,6 +199,7 @@ impl Draft {
             typed: vec![None; count],
             one: false,
             asides: Vec::new(),
+            ruled: Vec::new(),
         }
     }
 
@@ -394,7 +391,11 @@ impl<'a> Planner<'a> {
             .collect();
         // A segment that begins with a negation is left out: what the person said not to do is no step. One that
         // begins with a condition refuses the whole request before anything is decided: no step can judge it.
-        let segments = reading::segments(&self.request, &taken);
+        let mut segments = reading::segments(&self.request, &taken);
+        // A part that is the person's own action or a courtesy is set aside by its words.
+        let places = reading::places(&self.request, true);
+        let stretches = reading::stretches(&self.request, &places);
+        reading::set_aside(&self.request, &mut segments, &stretches);
         if let Some(seg) = segments
             .iter()
             .find(|seg| seg.left == Some(Left::Conditional))
@@ -405,6 +406,11 @@ impl<'a> Planner<'a> {
             return Ok(Ok(self.refused_whole(judged, because)));
         }
         let mut draft = Draft::new(self.request.chars().collect(), &segments, taken);
+        draft.ruled = stretches
+            .iter()
+            .filter(|apart| apart.what == Stretch::Contrast)
+            .map(|apart| (apart.start, apart.end))
+            .collect();
         // A request that asks one thing is read whole, what it rules out with what it asks.
         let whole = self
             .segments(&mut draft)
@@ -418,7 +424,7 @@ impl<'a> Planner<'a> {
                 reviewed: Vec::new(),
                 refusals: Vec::new(),
                 folded: Vec::new(),
-                asides: Vec::new(),
+                asides: by_words(&draft.apart),
                 branches: Vec::new(),
                 spans: draft.apart.iter().map(|seg| (seg.start, seg.end)).collect(),
                 one: false,
@@ -736,11 +742,13 @@ impl<'a> Planner<'a> {
             .map(|seg| (seg.start, seg.end))
             .chain(draft.out.iter().copied())
             .collect();
+        let mut asides = by_words(&draft.apart);
+        asides.extend(draft.asides.iter().cloned());
         Extra {
             reviewed,
             refusals,
             folded,
-            asides: draft.asides.clone(),
+            asides,
             branches: branches_of(draft),
             spans,
             one: draft.one,
@@ -750,7 +758,10 @@ impl<'a> Planner<'a> {
     /// Every split point, judged: a candidate a negation follows is taken without asking; a request the engine
     /// cannot be asked about, a control character among its words, is one step.
     fn judge(&self) -> Result<Result<Vec<Split>, Need>, Fault> {
-        let all = reading::splits(&self.request, true);
+        let mut all = reading::places(&self.request, true);
+        // A stretch code sets apart by its words is cut at its ends without asking.
+        let stretches = reading::stretches(&self.request, &all);
+        all = reading::set_apart(&self.request, all, &stretches);
         if all.len() > MOST_SPLITS {
             return Ok(Ok(Vec::new()));
         }
@@ -803,6 +814,11 @@ impl<'a> Planner<'a> {
         let mut at = 0;
         while at < draft.apart.len() {
             let part = draft.apart[at].clone();
+            // A part set aside by its words names no value of a step; it stays aside.
+            if matches!(part.left, Some(Left::Aside(_))) {
+                at += 1;
+                continue;
+            }
             // The step its words follow, else the one they come before.
             let beside = draft
                 .segs
@@ -1005,7 +1021,7 @@ impl<'a> Planner<'a> {
         let mut k = 0;
         while k < draft.segs.len() {
             let seg = draft.segs[k].clone();
-            let inner: Vec<Split> = reading::splits(&seg.text, true)
+            let inner: Vec<Split> = reading::places(&seg.text, true)
                 .into_iter()
                 .filter(|s| s.order == Order::And)
                 .collect();
@@ -1091,7 +1107,7 @@ impl<'a> Planner<'a> {
         let mut k = 0;
         while k < draft.segs.len() {
             let seg = draft.segs[k].clone();
-            let inner: Vec<Split> = reading::splits(&seg.text, true)
+            let inner: Vec<Split> = reading::places(&seg.text, true)
                 .into_iter()
                 .filter(|s| s.order == Order::And)
                 .collect();
@@ -1211,9 +1227,17 @@ impl<'a> Planner<'a> {
                 k += 1;
                 continue;
             }
+            // A part kept after a contrast's «not X» that matches nothing alone corrects the step before it: no
+            // second task, and the place before it was code's, never the engine's to call two things.
+            let corrects = abstains
+                && k > 0
+                && draft.ruled.iter().any(|&(start, end)| {
+                    draft.segs[k - 1].end <= start && end <= draft.segs[k].start
+                });
             // The fan-out first: for a fragment that matches nothing, and for a doubted part that decided as
             // another reflex — «the logo» as `render` beside «deadline for the flyer».
             if sibling_reflex.is_some()
+                && !corrects
                 && let Some(fan) = self.fanout(
                     &draft.segs[sibling],
                     &draft.decisions[sibling],
@@ -1233,7 +1257,7 @@ impl<'a> Planner<'a> {
             let firm = split
                 .as_ref()
                 .is_some_and(|s| s.p.map_or(0.0, Prob::get) >= FIRM);
-            if !abstains || firm || reading::refers_back(&draft.segs[k].text) {
+            if !abstains || (firm && !corrects) || reading::refers_back(&draft.segs[k].text) {
                 k += 1;
                 continue;
             }
@@ -1253,10 +1277,34 @@ impl<'a> Planner<'a> {
                 k += 1;
                 continue;
             }
-            draft.repaired.push((whole.text.clone(), Repair::Merged));
+            // What the merged words rule out is read with them: it is left out no more.
+            let (start, end) = (whole.start, whole.end);
+            let within = |part: &Segment| start <= part.start && part.end <= end;
+            let ruled_out: Vec<String> = draft
+                .apart
+                .iter()
+                .filter(|part| part.excluded() && within(part))
+                .map(|part| part.text.clone())
+                .collect();
+            let how = if ruled_out.is_empty() {
+                Repair::Merged
+            } else {
+                Repair::Corrected
+            };
+            draft.repaired.push((whole.text.clone(), how));
             draft.merge(a, b, whole, decision);
-            if let Some(split) = split {
-                draft.taken.retain(|s| *s != split);
+            if ruled_out.is_empty() {
+                if let Some(split) = split {
+                    draft.taken.retain(|s| *s != split);
+                }
+            } else {
+                draft
+                    .apart
+                    .retain(|part| !(part.excluded() && within(part)));
+                draft.excluded.retain(|text| !ruled_out.contains(text));
+                draft
+                    .taken
+                    .retain(|split| split.start < start || split.end > end);
             }
             k = 0;
         }
@@ -1389,7 +1437,15 @@ impl<'a> Planner<'a> {
                     draft.decisions[j] = held(self.plan, draft.decisions[j].clone(), cap);
                 }
             }
-            draft.asides.insert(0, Aside { text, remark, does });
+            draft.asides.insert(
+                0,
+                Aside {
+                    text,
+                    remark,
+                    does,
+                    by: None,
+                },
+            );
             draft.leave(k);
         }
     }
@@ -2749,6 +2805,23 @@ fn listed(
     }
     draft.taken.sort_by_key(|s| s.start);
     count
+}
+
+/// The parts code set aside by their words, in the request's order: each a remark, what it is by `by`, asked
+/// nothing.
+fn by_words(apart: &[Segment]) -> Vec<Aside> {
+    apart
+        .iter()
+        .filter_map(|seg| match seg.left {
+            Some(Left::Aside(by)) => Some(Aside {
+                text: seg.text.clone(),
+                remark: true,
+                does: None,
+                by: Some(by),
+            }),
+            _ => None,
+        })
+        .collect()
 }
 
 /// The fold. A part of the person's own that repeats a step a playbook wrote — the same reflex, every value it

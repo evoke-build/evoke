@@ -125,6 +125,63 @@
         ],
         [
           {
+            "text": "only in eu-west"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.05
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
             "text": "pull the payments logs, not the checkout ones, and only in eu-west",
             "whole": true
           },
@@ -247,16 +304,7 @@
             ]
           }
         ]
-      ],
-      "judged": {
-        "weave.split_0": {
-          "yes": 0.2
-        },
-        "weave.count": {
-          "one": 0.9,
-          "two": 0.1
-        }
-      }
+      ]
     }
   },
   "expect": {
@@ -388,7 +436,8 @@
               ]
             },
             "reflex": "logs",
-            "effect": "read"
+            "effect": "read",
+            "repair": "corrected"
           }
         ],
         "stages": [
@@ -413,13 +462,9 @@
             "end": 51,
             "word": "and",
             "order": "and",
-            "p": 0.2
+            "p": 1
           }
-        ],
-        "count": {
-          "one": 0.9,
-          "as_one": true
-        }
+        ]
       }
     }
   }

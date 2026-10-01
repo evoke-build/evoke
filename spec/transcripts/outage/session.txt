@@ -477,9 +477,57 @@ $ evoke why
   → ran: logs service="payments" region="eu-west"  0.95
     a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
 
-  replay answered 89 questions in 4 rounds
+  replay answered 121 questions in 4 rounds
 # A number said in pairs is asked, with what the words read as named beside the ask: a number typed is its own answer.
 $ evoke "open incident three eleven"
   Which incident number?  you wrote "three eleven"  311  > 311
   incident number="311"  0.95
 incident 311: checkout down since 14:02
+# A letter that stands for «and» between two words is a place of the cut, asked as any connective is.
+$ evoke "check the errors for checkout in eu-west n pull the logs for checkout in eu-west"
+  1  errors service="checkout" region="eu-west"  0.95
+  2  logs service="checkout" region="eu-west"  0.95 · with 1
+checkout: 8.4% errors since 14:02
+checkout: 412 timeouts calling payments
+# What you say you will do yourself is no step: it is set aside, and why says what it is.
+$ evoke "pull the payments logs in eu-west before I forget"
+  set aside "before I forget"
+  logs service="payments" region="eu-west"  0.95
+payments: 412 timeouts calling payments
+$ evoke why
+  "pull the payments logs in eu-west before I forget"
+
+  set aside               "before I forget": your own action
+
+  which reflex            logs 0.95   (none of them 0.03 · errors 0.02)
+                          Search a service's logs from the last hour.
+  service                 payments 0.95   (not said 0.05)
+                          asked a second way: payments 0.95; the less sure of the two counts
+  region                  eu-west 0.95   (not said 0.05)
+                          asked a second way: eu-west 0.95; the less sure of the two counts
+  holds all you said      0.90
+  → ran: logs service="payments" region="eu-west"  0.95
+    a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  replay answered 43 questions in 2 rounds
+# A courtesy that opens with «if» is no condition: it is set aside too.
+$ evoke "pull the payments logs in eu-west, if you would"
+  set aside "if you would"
+  logs service="payments" region="eu-west"  0.95
+payments: 412 timeouts calling payments
+$ evoke why
+  "pull the payments logs in eu-west, if you would"
+
+  set aside               "if you would": a courtesy
+
+  which reflex            logs 0.95   (none of them 0.03 · errors 0.02)
+                          Search a service's logs from the last hour.
+  service                 payments 0.95   (not said 0.05)
+                          asked a second way: payments 0.95; the less sure of the two counts
+  region                  eu-west 0.95   (not said 0.05)
+                          asked a second way: eu-west 0.95; the less sure of the two counts
+  holds all you said      0.90
+  → ran: logs service="payments" region="eu-west"  0.95
+    a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  answered from the cache

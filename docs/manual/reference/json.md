@@ -71,8 +71,9 @@ verdict's `because` names `no_source` and `several_sources` where such a result 
 `one`, how surely it asks one thing, and `as_one` where it stands as one step for it. A plan carries `folded`,
 `[{ text, into, gave, picked }]`, the parts of the sentence folded into a step — a call typed again, or a step a
 playbook wrote — with the arguments the part gave and the word of it that picked the step among several; and
-`asides`, `[{ text, remark, does }]`, the parts that ask for nothing: a remark set aside, or words that may add
-a detail to a step, `does` the share of each answer, `{ aside, detail, asks }`. A plan a playbook wrote
+`asides`, `[{ text, remark, does, by }]`, the parts that ask for nothing: a remark set aside, or words that may add
+a detail to a step, `does` the share of each answer, `{ aside, detail, asks }`, and `by` where the part was set
+aside by its words alone, `own` for your own action or `courtesy`. A plan a playbook wrote
 carries `from` on each of its steps and `when` on a step that may not run; its verdict's `because` holds
 `reviewed` per playbook, with the step, the
 sentence's `text` and its `prompt`, and names what refused it: `nested`, `too_deep`, `too_long`, `conditional`,

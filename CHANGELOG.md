@@ -18,6 +18,10 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - A word from a vocabulary typed another way is read where your own words name it: `sept` for `september`. A
   name that may be another person's, `Samuel` beside `sam`, is asked, with the nearest word ready for a `y`;
   the JSON line carries it as `likely`.
+- A sentence is cut at a sign or a letter typed for `and`: `+`, `&`, `n`. What you say you will do yourself,
+  `before I forget`, and a courtesy that opens with `if`, `if you would`, are set aside and no longer read as a
+  step or a condition; `why` says which. After `not X,` what follows is kept. The JSON line carries `by` on a
+  part set aside.
 
 ## [0.17.0] - 2026-09-30
 

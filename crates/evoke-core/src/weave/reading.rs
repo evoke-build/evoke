@@ -44,11 +44,32 @@ pub struct Segment {
     pub left: Option<Left>,
 }
 
-/// Why a segment is no step: it says what not to do, or opens with a condition no step can judge.
+/// Why a segment is no step: it says what not to do, or opens with a condition no step can judge; or code set it
+/// apart by its words as the person's own action or a courtesy: set aside.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Left {
     Negated,
     Conditional,
+    Aside(Stretch),
+}
+
+/// What a stretch of the request code sets apart by its words alone is: the person's own action, «before I call
+/// him back»; a courtesy, «if you would»; a contrast's «not X» before the Y it keeps.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Stretch {
+    Own,
+    Courtesy,
+    Contrast,
+}
+
+/// A stretch set apart, where it stands in characters: from its first word to the end of its last, its marks
+/// outside. Its two ends are places of the cut taken without asking, as a negation's is.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Apart {
+    pub start: usize,
+    pub end: usize,
+    pub what: Stretch,
 }
 
 impl Segment {
@@ -156,9 +177,93 @@ const STOP: [&str; 34] = [
 const YOU: [&str; 3] = ["you", "we", "i"];
 const TENSE: [&str; 4] = ["'ve", "'d", " have", " had"];
 
+/// The tokens that stand for «and» alone between two words, each a place of the cut, shown as typed.
+const JOINERS: [&str; 5] = ["+", "&", "n", "nd", "adn"];
+/// Number words: a joiner beside one joins a number said aloud or a spelled code, «six n v», and is no place.
+const NUMBER_WORDS: [&str; 31] = [
+    "zero",
+    "oh",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+    "eleven",
+    "twelve",
+    "thirteen",
+    "fourteen",
+    "fifteen",
+    "sixteen",
+    "seventeen",
+    "eighteen",
+    "nineteen",
+    "twenty",
+    "thirty",
+    "forty",
+    "fifty",
+    "sixty",
+    "seventy",
+    "eighty",
+    "ninety",
+    "hundred",
+    "thousand",
+];
+/// The words that open a clause of the person's own action, with a subject of `OWN`.
+const OWN_OPENS: [&str; 2] = ["before", "after"];
+/// The subjects of a clause that states the person's own action, «before I call him back».
+const OWN: [&str; 2] = ["i", "we"];
+/// A tense after such a subject, «before I've checked it».
+const OWN_TENSES: [&str; 6] = ["'ve", "'d", "'m", "'ll", " have", " had"];
+/// The head of a request's own clause, the person its subject: where a clause that leads without a mark ends,
+/// «Before I promise anyone a date I need to know …».
+const REQUEST_HEADS: [&str; 14] = [
+    "i need",
+    "i want",
+    "i'd like",
+    "i would like",
+    "i'd love",
+    "i would love",
+    "i must",
+    "i have to",
+    "we need",
+    "we want",
+    "we'd like",
+    "we would like",
+    "we must",
+    "we have to",
+];
+/// The connectives after which a clause leads, «…, and before I decide anything I'd like …», «and not the Pro, …».
+const LEADS: [&str; 7] = ["and", "but", "or", "then", "also", "so", "plus"];
+/// Courtesies that open with «if» and state no condition.
+const COURTESIES: [&str; 7] = [
+    "if it's not too much trouble",
+    "if it is not too much trouble",
+    "if you don't mind",
+    "if you do not mind",
+    "if you would",
+    "if possible",
+    "if so",
+];
+/// The word that opens a contrast, «not X, Y».
+const CONTRAST: &str = "not";
+/// The word that may end a contrast's X, «not X but Y».
+const CONTRAST_BUT: &str = "but";
+/// The marks that close a clause or a sentence.
+const MARKS: &str = ",;:.?!";
+/// The marks a word may carry that say nothing of it: stripped before a joiner's neighbour is read.
+const AROUND: &str = ",;:.?!\"'()";
+/// The marks that end a sentence.
+const ENDS: [char; 3] = ['.', '?', '!'];
+
 /// A `before` or `after` clause, leading or trailing, in the words' own order: «after you X, Y» and «Y after you X»
 /// both read «X, then Y»; «before you X, Y» and «Y before you X» read «Y, then X». Every word stays the person's;
-/// only the order and one connective change, so the rest of the reading needs no second path.
+/// only the order and one connective change, so the rest of the reading needs no second path. A clause whose
+/// subject is the person, «before I forget», is their own action: set apart where it stands, never reordered.
 #[must_use]
 pub fn canonical(input: &str) -> String {
     let chars: Vec<char> = input.chars().collect();
@@ -186,6 +291,9 @@ fn leading(chars: &[char]) -> Option<(&'static str, String, String)> {
         .into_iter()
         .find(|word| starts_with_word(chars, 0, word))?;
     let mut i = spaces(chars, word.len())?;
+    if own_subject(chars, i).is_some() {
+        return None;
+    }
     if let Some(after) = subject(chars, i)
         && let Some(spaced) = spaces(chars, after)
     {
@@ -230,6 +338,7 @@ fn trailing(chars: &[char]) -> Option<(String, &'static str, String)> {
                 .find(|word| starts_with_word(chars, j, word))
                 && let Some(after_word) = spaces(chars, j + word.len())
                 && let Some(after_subject) = subject(chars, after_word)
+                && own_subject(chars, after_word).is_none()
                 && let Some(rest) = spaces(chars, after_subject)
                 && rest < chars.len()
                 && !chars[rest..].contains(&'\n')
@@ -255,6 +364,22 @@ fn subject(chars: &[char], at: usize) -> Option<usize> {
         .find(|tense| starts_with_word(chars, end, tense))
         .map_or(end, |tense| end + tense.len());
     Some(tensed)
+}
+
+/// `i` or `we` as a whole word at `at`, with a tense when one follows as a whole word: where the subject ends.
+fn own_subject(chars: &[char], at: usize) -> Option<usize> {
+    let own = OWN
+        .into_iter()
+        .find(|own| starts_with_word(chars, at, own) && ends_word(chars, at + own.len()))?;
+    let end = at + own.len();
+    Some(
+        OWN_TENSES
+            .into_iter()
+            .find(|tense| {
+                starts_with_word(chars, end, tense) && ends_word(chars, end + tense.len())
+            })
+            .map_or(end, |tense| end + tense.len()),
+    )
 }
 
 /// One or more whitespace characters from `at`: where they end.
@@ -414,6 +539,412 @@ fn quoted(chars: &[char]) -> Vec<(usize, usize)> {
     regions
 }
 
+/// The places the planner cuts at: `splits`, and each joiner that stands for «and» between two words, every one
+/// asked of the engine as a place is.
+#[must_use]
+pub fn places(text: &str, commas: bool) -> Vec<Split> {
+    let mut found = splits(text, commas);
+    let chars: Vec<char> = text.chars().collect();
+    let quoted = quoted(&chars);
+    for split in joiners(&chars, &quoted) {
+        if !found
+            .iter()
+            .any(|s| split.start < s.end && split.end > s.start)
+        {
+            found.push(split);
+        }
+    }
+    found.sort_by_key(|s| s.start);
+    found
+}
+
+/// Every joiner standing alone between two words, outside quotes, as a place: from the end of the word before to
+/// the start of the word after, its word as typed. Never after a mark («sam, n ana»), beside a number or a number
+/// word («2 + 2», «six n v»), beside a single letter («R & D», «with one n»), nor between two capitalised words,
+/// a name («Hartwell & Sons»).
+fn joiners(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Split> {
+    let tokens = words_of(chars);
+    let mut found = Vec::new();
+    for k in 1..tokens.len().saturating_sub(1) {
+        let (start, end) = tokens[k];
+        let token: String = chars[start..end].iter().collect();
+        if !JOINERS.contains(&token.as_str()) || quoted.iter().any(|q| start >= q.0 && start < q.1)
+        {
+            continue;
+        }
+        let (before, after) = (tokens[k - 1], tokens[k + 1]);
+        if MARKS.contains(chars[before.1 - 1]) {
+            continue;
+        }
+        let neighbours = [
+            bare_word(&chars[before.0..before.1]),
+            bare_word(&chars[after.0..after.1]),
+        ];
+        let number = |word: &str| {
+            word.starts_with(char::is_numeric)
+                || NUMBER_WORDS.contains(&word.to_lowercase().as_str())
+        };
+        let capital = |word: &str| word.starts_with(char::is_uppercase);
+        if neighbours
+            .iter()
+            .any(|word| word.chars().count() < 2 || number(word))
+            || neighbours.iter().all(|word| capital(word))
+        {
+            continue;
+        }
+        found.push(Split {
+            start: before.1,
+            end: after.0,
+            word: token,
+            order: Order::And,
+            p: None,
+            cut: false,
+        });
+    }
+    found
+}
+
+/// The words of a text as runs of characters between whitespace, where each starts and ends.
+fn words_of(chars: &[char]) -> Vec<(usize, usize)> {
+    let mut words = Vec::new();
+    let mut i = 0;
+    while i < chars.len() {
+        if chars[i].is_whitespace() {
+            i += 1;
+            continue;
+        }
+        let start = i;
+        while i < chars.len() && !chars[i].is_whitespace() {
+            i += 1;
+        }
+        words.push((start, i));
+    }
+    words
+}
+
+/// A word without the marks around it that say nothing of it.
+fn bare_word(chars: &[char]) -> String {
+    let word: String = chars.iter().collect();
+    word.trim_matches(|c: char| AROUND.contains(c)).to_owned()
+}
+
+/// Every stretch code sets apart by its words, in order and never two over one another: a clause of the person's
+/// own action, a courtesy heading or ending a part by the places found, a contrast's «not X» before the more
+/// words it keeps.
+#[must_use]
+pub fn stretches(text: &str, places: &[Split]) -> Vec<Apart> {
+    let chars: Vec<char> = text.chars().collect();
+    let quoted = quoted(&chars);
+    let mut found = own_clauses(&chars, &quoted);
+    found.extend(courtesies(&chars, &quoted, places));
+    found.extend(contrasts(&chars, &quoted));
+    let mut kept: Vec<Apart> = Vec::new();
+    for apart in found {
+        if !kept
+            .iter()
+            .any(|k| apart.start < k.end && apart.end > k.start)
+        {
+            kept.push(apart);
+        }
+    }
+    kept.sort_by_key(|apart| apart.start);
+    kept
+}
+
+/// The text before `at`, its trailing whitespace aside: where it ends.
+fn trimmed_before(chars: &[char], at: usize) -> usize {
+    let mut i = at;
+    while i > 0 && chars[i - 1].is_whitespace() {
+        i -= 1;
+    }
+    i
+}
+
+/// Whether the words before `at` end a clause or open one: nothing before, a mark («,», «;», «:», a sentence end,
+/// a dash), or a connective of `LEADS`.
+fn leads(chars: &[char], at: usize) -> bool {
+    let end = trimmed_before(chars, at);
+    end == 0
+        || ".?!,;:-\u{2013}\u{2014}".contains(chars[end - 1])
+        || LEADS.iter().any(|word| {
+            let n = word.chars().count();
+            end >= n && starts_with_word(chars, end - n, word) && boundary(chars, end - n)
+        })
+}
+
+/// Where a clause that opens at `from` ends: the first «,» «;» «:», a sentence end, a spaced dash, or the head of a
+/// request's own clause (`REQUEST_HEADS`); and whether that end is a sentence end or the text's own, which a
+/// leading clause may not reach.
+fn clause_end(chars: &[char], from: usize) -> (usize, bool) {
+    let mut i = from;
+    while i < chars.len() {
+        let c = chars[i];
+        if matches!(c, ',' | ';' | ':') {
+            return (i, false);
+        }
+        if ENDS.contains(&c) && chars.get(i + 1).is_none_or(|next| next.is_whitespace()) {
+            return (i, true);
+        }
+        if c.is_whitespace()
+            && chars
+                .get(i + 1)
+                .is_some_and(|d| matches!(d, '-' | '\u{2013}' | '\u{2014}'))
+            && chars.get(i + 2).is_some_and(|w| w.is_whitespace())
+        {
+            return (i, false);
+        }
+        if boundary(chars, i)
+            && REQUEST_HEADS
+                .iter()
+                .any(|head| starts_with_word(chars, i, head) && ends_word(chars, i + head.len()))
+        {
+            return (i, false);
+        }
+        i += 1;
+    }
+    (chars.len(), true)
+}
+
+/// Every clause «before|after I|we …» outside quotes, from its first word to the end of its last. One that leads
+/// (nothing, a mark or a connective before it) ends at a mark, a spaced dash or a request's head, and one that
+/// reaches a sentence end or the text's end first is left as typed, since code cannot say where it ends; one that
+/// trails ends at the first mark, a request's head, or the end.
+fn own_clauses(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
+    let mut found = Vec::new();
+    let mut i = 0;
+    while i < chars.len() {
+        let Some(open) = OWN_OPENS.into_iter().find(|word| {
+            boundary(chars, i)
+                && starts_with_word(chars, i, word)
+                && ends_word(chars, i + word.len())
+        }) else {
+            i += 1;
+            continue;
+        };
+        let Some(head) = spaces(chars, i + open.len()).and_then(|at| own_subject(chars, at)) else {
+            i += 1;
+            continue;
+        };
+        if quoted.iter().any(|q| i >= q.0 && i < q.1) {
+            i = head;
+            continue;
+        }
+        let (end, sentence) = clause_end(chars, head);
+        if leads(chars, i) && sentence {
+            i = head;
+            continue;
+        }
+        found.push(Apart {
+            start: i,
+            end: trimmed_before(chars, end),
+            what: Stretch::Own,
+        });
+        i = end.max(head);
+    }
+    found
+}
+
+/// Every courtesy of `COURTESIES` outside quotes that heads a part — nothing before it, or a place ending where
+/// it starts — or ends one — only marks after it, or a place starting where it ends.
+fn courtesies(chars: &[char], quoted: &[(usize, usize)], places: &[Split]) -> Vec<Apart> {
+    let mut found = Vec::new();
+    let mut i = 0;
+    while i < chars.len() {
+        let Some(courtesy) = COURTESIES.into_iter().find(|phrase| {
+            boundary(chars, i)
+                && starts_with_word(chars, i, phrase)
+                && ends_word(chars, i + phrase.len())
+        }) else {
+            i += 1;
+            continue;
+        };
+        let end = i + courtesy.len();
+        let heads = trimmed_before(chars, i) == 0 || places.iter().any(|p| p.end == i);
+        let ends = chars[end..]
+            .iter()
+            .all(|c| c.is_whitespace() || MARKS.contains(*c))
+            || places.iter().any(|p| p.start == end);
+        if (heads || ends) && !quoted.iter().any(|q| i >= q.0 && i < q.1) {
+            found.push(Apart {
+                start: i,
+                end,
+                what: Stretch::Courtesy,
+            });
+        }
+        i = end;
+    }
+    found
+}
+
+/// Every «not X» that heads a clause (nothing, a mark, a dash or a connective before it) outside quotes, X up to
+/// the first «,», «:» or «but», holding no other mark, with more words after it: X is left out and what follows
+/// kept.
+fn contrasts(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
+    let mut found = Vec::new();
+    let mut i = 0;
+    while i < chars.len() {
+        if !(boundary(chars, i)
+            && starts_with_word(chars, i, CONTRAST)
+            && ends_word(chars, i + CONTRAST.len())
+            && leads(chars, i)
+            && !quoted.iter().any(|q| i >= q.0 && i < q.1))
+        {
+            i += 1;
+            continue;
+        }
+        let from = i + CONTRAST.len();
+        let mut end = None;
+        let mut j = from;
+        while j < chars.len() {
+            let c = chars[j];
+            if matches!(c, ',' | ':') {
+                end = Some((j, j + 1));
+                break;
+            }
+            if matches!(c, ';' | '.' | '?' | '!') {
+                break;
+            }
+            if boundary(chars, j)
+                && j > from
+                && starts_with_word(chars, j, CONTRAST_BUT)
+                && ends_word(chars, j + CONTRAST_BUT.len())
+            {
+                end = Some((j, j + CONTRAST_BUT.len()));
+                break;
+            }
+            j += 1;
+        }
+        i = from;
+        let Some((stop, after)) = end else {
+            continue;
+        };
+        let x_end = trimmed_before(chars, stop);
+        let more = chars[after..].iter().any(|c| !c.is_whitespace());
+        if x_end > from && more {
+            found.push(Apart {
+                start: from - CONTRAST.len(),
+                end: x_end,
+                what: Stretch::Contrast,
+            });
+            i = after;
+        }
+    }
+    found
+}
+
+/// The places with every stretch set apart: no place inside one; at each of its ends a place taken without
+/// asking (`p` at one, as a place a negation follows) — the place found there, or one made of the marks and
+/// spaces between (a connective of `LEADS` before a leading stretch goes with the place); none at the text's
+/// edges. A stretch with no space before it to cut at stays as typed.
+#[must_use]
+pub fn set_apart(text: &str, places: Vec<Split>, stretches: &[Apart]) -> Vec<Split> {
+    let chars: Vec<char> = text.chars().collect();
+    let first = chars.iter().position(|c| !c.is_whitespace()).unwrap_or(0);
+    let mut places = places;
+    for apart in stretches {
+        let mut sure: Vec<Split> = Vec::new();
+        if apart.start > first {
+            if let Some(place) = places.iter().find(|p| p.end == apart.start) {
+                sure.push(place.clone());
+            } else if let Some(place) = place_before(&chars, apart.start) {
+                sure.push(place);
+            } else {
+                continue;
+            }
+        }
+        let rest = (apart.end..chars.len())
+            .find(|&i| !chars[i].is_whitespace() && !MARKS.contains(chars[i]));
+        if let Some(next) = rest {
+            if let Some(place) = places.iter().find(|p| p.start == apart.end) {
+                sure.push(place.clone());
+            } else {
+                let word: String = chars[apart.end..next].iter().collect();
+                sure.push(Split {
+                    start: apart.end,
+                    end: next,
+                    word: word.trim().to_owned(),
+                    order: Order::And,
+                    p: None,
+                    cut: false,
+                });
+            }
+        }
+        let (from, to) = (
+            sure.first()
+                .map_or(apart.start, |s| s.start.min(apart.start)),
+            sure.last().map_or(apart.end, |s| s.end.max(apart.end)),
+        );
+        places.retain(|p| !(p.start < to && p.end > from));
+        places.extend(sure.into_iter().map(|place| Split {
+            p: Some(SURE),
+            ..place
+        }));
+    }
+    places.sort_by_key(|p| p.start);
+    places
+}
+
+/// A place made before a stretch at `at`: the spaces before it, with the mark before them when there is one, or
+/// the connective of `LEADS` and the mark before it; none where no space stands before the stretch.
+fn place_before(chars: &[char], at: usize) -> Option<Split> {
+    let end = trimmed_before(chars, at);
+    if end == at {
+        return None;
+    }
+    let lead = LEADS.iter().find(|word| {
+        let n = word.chars().count();
+        end >= n && starts_with_word(chars, end - n, word) && boundary(chars, end - n)
+    });
+    let start = match lead {
+        Some(word) => {
+            let mut start = trimmed_before(chars, end - word.chars().count());
+            if start > 0 && matches!(chars[start - 1], ',' | ';') {
+                start = trimmed_before(chars, start - 1);
+            }
+            start
+        }
+        None => end,
+    };
+    let word = lead.map_or_else(
+        || {
+            chars[..end]
+                .last()
+                .filter(|c| !c.is_alphanumeric())
+                .map(ToString::to_string)
+                .unwrap_or_default()
+        },
+        |word| (*word).to_owned(),
+    );
+    (start > 0).then_some(Split {
+        start,
+        end: at,
+        word,
+        order: Order::And,
+        p: None,
+        cut: false,
+    })
+}
+
+/// The segments that are a stretch of the person's own action or a courtesy, marked set aside: a segment whose
+/// words, its closing marks aside, are the stretch's.
+pub fn set_aside(text: &str, segments: &mut [Segment], stretches: &[Apart]) {
+    let chars: Vec<char> = text.chars().collect();
+    for apart in stretches {
+        if apart.what == Stretch::Contrast {
+            continue;
+        }
+        let words: String = chars[apart.start..apart.end].iter().collect();
+        for seg in segments.iter_mut() {
+            let own = seg
+                .text
+                .trim_end_matches(|c: char| c.is_whitespace() || MARKS.contains(c));
+            if seg.start <= apart.start && apart.end <= seg.end && own == words {
+                seg.left = Some(Left::Aside(apart.what));
+            }
+        }
+    }
+}
+
 /// The segments a choice of split points yields; one that begins with a negation is marked left out.
 #[must_use]
 pub fn segments(text: &str, taken: &[Split]) -> Vec<Segment> {
@@ -458,7 +989,8 @@ pub fn conditional(text: &str) -> bool {
 fn left(text: &str) -> Option<Left> {
     if negated(text) {
         Some(Left::Negated)
-    } else if conditional(text) {
+    } else if conditional(text) && !heads(text, &COURTESIES) {
+        // «if you would», «if so» state no condition: code sets them apart where they stand.
         Some(Left::Conditional)
     } else {
         None
@@ -693,9 +1225,11 @@ pub(crate) fn judging(
     all: &[Split],
 ) -> Result<Option<(Vec<usize>, Request)>, Unclean> {
     let chars: Vec<char> = request.chars().collect();
-    // A split a negation or a condition follows is taken as sure: what comes after it is no step's to judge.
+    // A split a negation or a condition follows is taken as sure: what comes after it is no step's to judge. A
+    // place code took at a stretch it set apart is never asked either.
     let asked: Vec<usize> = (0..all.len())
         .filter(|&i| left(&chars[all[i].end..].iter().collect::<String>()).is_none())
+        .filter(|&i| all[i].p.is_none())
         .collect();
     if asked.is_empty() {
         return Ok(None);
@@ -1258,5 +1792,246 @@ mod tests {
         referred(&mut refs, &request, raw).unwrap();
         assert_eq!(refs[2][0].from, [1]);
         assert_eq!(refs[2][0].how, How::Engine);
+    }
+
+    /// The places a text is cut at, set apart as the planner sets them, and the parts they make with what each is
+    /// — `-` left out, `x` set aside, `?` a condition, else a part — where the engine answers every place it is
+    /// asked about «one thing»: only the places code takes are cut.
+    fn cut(text: &str) -> (Vec<Split>, Vec<(String, char)>) {
+        let found = places(text, true);
+        let apart = stretches(text, &found);
+        let all = set_apart(text, found, &apart);
+        let asked = judging(text, &all)
+            .unwrap()
+            .map_or_else(Vec::new, |(asked, _)| asked);
+        let taken: Vec<Split> = all
+            .iter()
+            .enumerate()
+            .filter(|(i, _)| !asked.contains(i))
+            .map(|(_, split)| split.clone())
+            .collect();
+        let mut segs = segments(text, &taken);
+        set_aside(text, &mut segs, &stretches(text, &places(text, true)));
+        let parts = segs
+            .into_iter()
+            .map(|seg| {
+                let mark = match seg.left {
+                    Some(Left::Negated) => '-',
+                    Some(Left::Conditional) => '?',
+                    Some(Left::Aside(_)) => 'x',
+                    None => ' ',
+                };
+                (seg.text, mark)
+            })
+            .collect();
+        (all, parts)
+    }
+
+    fn parts(text: &str) -> Vec<(String, char)> {
+        cut(text).1
+    }
+
+    fn owned(parts: &[(&str, char)]) -> Vec<(String, char)> {
+        parts.iter().map(|(t, m)| ((*t).to_owned(), *m)).collect()
+    }
+
+    /// The question the engine is asked of each place, in order.
+    fn asked(text: &str, all: &[Split]) -> Vec<String> {
+        judging(text, all)
+            .unwrap()
+            .map_or_else(Vec::new, |(_, request)| {
+                request
+                    .questions
+                    .values()
+                    .filter_map(|q| match q {
+                        Question::YesNo { ask, .. } => Some(ask.as_str().to_owned()),
+                        Question::Choice(_) => None,
+                    })
+                    .collect()
+            })
+    }
+
+    #[test]
+    fn a_joiner_between_two_words_is_a_place_asked_as_typed() {
+        let text = "ask about stock n costs for the antwerp crates";
+        assert!(splits(text, true).is_empty(), "no connective");
+        let all = places(text, true);
+        assert_eq!(words(&all), [("n", Order::And)]);
+        assert_eq!(
+            asked(text, &all),
+            [
+                "At «n», does the request ask for two things to be done — «ask about stock», and separately «costs for the antwerp crates»?"
+            ]
+        );
+        for (text, word) in [
+            ("find the invoice + send it on", "+"),
+            ("book the room & tell lena@example.com", "&"),
+            ("print the report adn file it", "adn"),
+            ("call lena nd omar", "nd"),
+            ("omar - title & desk?", "&"),
+        ] {
+            assert_eq!(words(&places(text, true)), [(word, Order::And)], "{text}");
+        }
+        // Beside a number or a single letter, inside a name or quotes, after a mark, or not alone: no place.
+        for text in [
+            "what is 3 + 4 again",
+            "wipe f seven one q m four n z t nine k",
+            "open incs four ninety one & five oh three",
+            "remind Brightwell & Daughters about the rent",
+            "the Q & A notes",
+            "It is Hanna, with one n, as she spells it",
+            "rename it \"x + y\" please",
+            "call lena, n omar",
+            "queue the 80's r&b mix",
+            "+ omar",
+        ] {
+            assert!(
+                places(text, true)
+                    .iter()
+                    .all(|s| !JOINERS.contains(&s.word.as_str())),
+                "{text}"
+            );
+        }
+    }
+
+    #[test]
+    fn the_persons_own_action_is_set_aside_never_reordered() {
+        for text in [
+            "jot this down before I forget",
+            "Before I call him back, find his number",
+            "before we've left, order a cab",
+        ] {
+            assert_eq!(canonical(text), text);
+        }
+        assert_eq!(
+            canonical("before you archive the poster, render the poster"),
+            "render the poster, then archive the poster",
+            "«before you» is the order of two steps"
+        );
+        assert_eq!(
+            parts("The plumber rang, jot it down before I forget."),
+            owned(&[
+                ("The plumber rang, jot it down", ' '),
+                ("before I forget.", 'x')
+            ])
+        );
+        let text = "Want to know where the parcel is before I email the client anything, track the order pls";
+        let (all, cut) = cut(text);
+        assert!(
+            all.iter().all(|s| s.p == Some(SURE)),
+            "both ends are code's"
+        );
+        assert!(asked(text, &all).is_empty());
+        assert_eq!(
+            cut,
+            owned(&[
+                ("Want to know where the parcel is", ' '),
+                ("before I email the client anything", 'x'),
+                ("track the order pls", ' ')
+            ])
+        );
+        // A leading clause ends at a mark or at a request's own head.
+        assert_eq!(
+            parts("Before I tell anyone a price I need to see what we paid last year"),
+            owned(&[
+                ("Before I tell anyone a price", 'x'),
+                ("I need to see what we paid last year", ' ')
+            ])
+        );
+        assert_eq!(
+            parts("Before I board the train: how busy is the office today?"),
+            owned(&[
+                ("Before I board the train", 'x'),
+                ("how busy is the office today?", ' ')
+            ])
+        );
+        // One that reaches a sentence end, or no subject of its own, is left as typed.
+        for text in [
+            "before i order anything tell me what is left",
+            "water the plants before it gets dark",
+            "ring Eve after Ian arrives",
+            "write \"before I forget\" on the board",
+        ] {
+            assert_eq!(
+                parts(text).iter().filter(|p| p.1 == 'x').count(),
+                0,
+                "{text}"
+            );
+        }
+    }
+
+    #[test]
+    fn a_courtesy_heading_or_ending_a_part_is_set_aside() {
+        assert_eq!(
+            parts("Tell me who is on call tonight, if you would."),
+            owned(&[
+                ("Tell me who is on call tonight", ' '),
+                ("if you would.", 'x')
+            ])
+        );
+        assert_eq!(
+            parts("is the printer jammed again, and if so since when?"),
+            owned(&[
+                ("is the printer jammed again", ' '),
+                ("if so", 'x'),
+                ("since when?", ' ')
+            ])
+        );
+        assert_eq!(
+            parts("If it's not too much trouble, could you tell me which rooms are free?"),
+            owned(&[
+                ("If it's not too much trouble", 'x'),
+                ("could you tell me which rooms are free?", ' ')
+            ])
+        );
+        // A condition still refuses; a courtesy inside a part stays in it.
+        assert_eq!(parts("if the build is red, start it again")[0].1, '?');
+        assert_eq!(
+            parts("Two reminders if you would: ping the whole team"),
+            owned(&[("Two reminders if you would: ping the whole team", ' ')])
+        );
+    }
+
+    #[test]
+    fn a_contrast_leaves_its_x_out_and_keeps_what_follows() {
+        let text = "Not the March figures this time, I want June's: what we shipped";
+        let (all, cut) = cut(text);
+        assert!(asked(text, &all).is_empty(), "the comma is code's");
+        assert_eq!(
+            cut,
+            owned(&[
+                ("Not the March figures this time", '-'),
+                ("I want June's: what we shipped", ' ')
+            ])
+        );
+        assert_eq!(
+            parts("Just the lobby for now, not the garage: leave a note for the porter"),
+            owned(&[
+                ("Just the lobby for now", ' '),
+                ("not the garage", '-'),
+                ("leave a note for the porter", ' ')
+            ])
+        );
+        assert_eq!(
+            parts("look at sales not in Spain but in Portugal"),
+            owned(&[("look at sales not in Spain but in Portugal", ' ')]),
+            "a «not» inside a clause is no contrast"
+        );
+        assert_eq!(
+            parts("sales for June. not in Spain but in Portugal"),
+            owned(&[
+                ("sales for June.", ' '),
+                ("not in Spain", '-'),
+                ("in Portugal", ' ')
+            ])
+        );
+        // Nothing kept after X, or a sentence end first: no contrast.
+        assert_eq!(
+            parts("Since the update went out, not one parcel has been scanned. Help."),
+            owned(&[
+                ("Since the update went out", ' '),
+                ("not one parcel has been scanned. Help.", '-')
+            ])
+        );
     }
 }

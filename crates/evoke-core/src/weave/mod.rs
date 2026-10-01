@@ -122,6 +122,9 @@ pub struct Aside {
     /// What the part does, as it was answered; none for a part of courtesy alone, a remark by its words.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub does: Option<Parted>,
+    /// What code set the part aside as, by its words alone: the person's own action or a courtesy.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub by: Option<reading::Stretch>,
 }
 
 /// What a part of the request does, by the share of each answer: it gives a reason or a remark, it adds a detail

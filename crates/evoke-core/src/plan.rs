@@ -71,7 +71,7 @@ pub const DEADLINE: Millis = Millis(30_000);
 
 /// The reader's version, which the digest holds before the set: it moves when a question evoke asks is worded
 /// anew, or an answer is read otherwise, so what was answered under one reader is never replayed under another.
-pub const READER: u32 = 7;
+pub const READER: u32 = 8;
 
 /// The sentinel every argument's choice carries, and its text.
 const UNSTATED: &str = "unstated";

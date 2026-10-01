@@ -1184,7 +1184,13 @@ export interface Aside {
   remark: boolean
   /** What the part does, as it was answered; absent for a part of courtesy alone. */
   does?: Parted
+  /** What the part was set aside as by its words alone: the person's own action, or a courtesy. */
+  by?: Stretch
 }
+
+/** What a stretch of the request is by its words alone: the person's `own` action, «before I call him back»; a
+ *  `courtesy`, «if you would»; a `contrast`'s «not X» before the Y it keeps. */
+export type Stretch = "own" | "courtesy" | "contrast"
 
 /** What a part of the request does, by the share of each answer. */
 export interface Parted {

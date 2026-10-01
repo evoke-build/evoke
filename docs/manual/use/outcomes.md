@@ -180,7 +180,9 @@ gate = { write = 0.95 }
 
 `evoke try "<input>"` decides without running, and prints the sentence as it was read. First the sentence,
 then, where it matters, how the sentence was read as a whole: whether it asks one thing or several and where it
-was cut, each part set aside or kept out of the plan, and what was left out because you said not to do it. Then
+was cut, each part set aside or kept out of the plan, and what was left out because you said not to do it. A
+part set aside by its own words says what it is: `"before I forget": your own action`, `"if you would": a
+courtesy`. Then
 each step, under its number when there are several, with a row a judgment:
 
 - `which reflex`: the answers about the reflex, the most probable first, then what the reflex does.

@@ -20,6 +20,10 @@ den lights off
   classifier is asked whether it does. "kill the lights in the den and start a 10 minute timer" is two things.
   "set a timer for 10 minutes and 30 seconds" is one. A sentence with more than two dozen such points, a pasted
   list, is decided as one input.
+- A sign or a letter typed for `and` is such a point too: `+`, `&`, `n`, `nd`, `adn`, alone between two words.
+  "check the errors for checkout n pull its logs" is asked about at `n`. It is no such point beside a number or a
+  single letter, `2 + 2`, `R & D`, between two capitalised words, `Hartwell & Sons`, after a comma, or inside
+  quotes.
 - With the connectives, the classifier is asked how many things the sentence asks for. Where it says one, the
   sentence is one step, and no connective cuts it: "check the errors for checkout, and only in eu-west".
 - Each part is decided as one input is: routed, gated, its arguments read. A part that matches nothing on its own
@@ -34,6 +38,8 @@ den lights off
   you ask evoke not to do is no step. One step beside such a part is decided as one input. A sentence that is only
   such parts is nothing to do, and one line says so. A part that also names a value the step beside it lacks is
   read with that step: in "pull the payments logs, not in us-east, in eu-west" the logs are pulled in eu-west.
+  Where what follows the part is a request of its own, it is kept as one: in "not the office, kill the lights in
+  the den", the office is left out and the den's lights go off.
   And where the classifier says the sentence asks for one thing, nothing is left out: the sentence is read
   whole, what it rules out with what it asks.
 - `then`, `after that` and `next` order the steps. `after you X, Y` and `Y after you X` read as `X, then Y`.
@@ -58,6 +64,12 @@ den lights off
   errors for checkout, and the errors in eu-west" is one check, of checkout in eu-west. Where a part could repeat
   either of two calls, its own words pick one, "the second one", "the last", or it stays a step of its own. The
   plan names the part: `folded "the errors in eu-west" into 1`.
+- What you say you will do yourself is no step. A clause that opens with `before` or `after` and has `I` or
+  `we` as its subject is set aside where it stands: in "pull the payments logs before I forget", the logs are
+  pulled, and the plan says `set aside "before I forget"`. `before you X` and `after you X` still order two
+  steps.
+- A courtesy that opens with `if` is no condition: `if you would`, `if you don't mind`, `if possible`, `if so`,
+  `if it's not too much trouble`. At the head or the end of a part it is set aside the same way.
 - A part that matches no reflex and asks for nothing is set aside, and the plan runs without it: `set aside
   "thanks a lot for this"`. Where the classifier says the part may add a detail to the step beside it, that step
   confirms before it runs, its line ending in `without "the ones since noon"`, and the plan names the part: `not in
