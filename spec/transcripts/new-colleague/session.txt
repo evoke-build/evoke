@@ -22,7 +22,7 @@ $ evoke why
 
   1 · look up maria's hire
     which reflex            hire 0.95   (none of them 0.03 · team 0.02)
-                            Look up a new hire's role and start date.
+                            Look up a new hire by name, with their role and start date.
     person                  maria 0.95   (not said 0.05)
                             asked a second way: maria 0.95; the less sure of the two counts
     holds all you said      0.90

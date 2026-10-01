@@ -1,7 +1,7 @@
 reflex = 1
 
 description = """
-Look up a new hire's role and start date.
+Look up a new hire by name, with their role and start date.
 Only someone who has not started yet; their hire record is read, never changed."""
 not_for = [
   "recruiting for an open role",

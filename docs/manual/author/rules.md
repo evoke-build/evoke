@@ -122,8 +122,12 @@ errors dropped, then roll back» is reported: `step 4 holds "then"; one step is 
 [The manifest](manifest.md) has the keys.
 
 11. The summary, the first line of `description`, says the action and what it acts on, in the words people type,
-    100 characters at most, since a stranger reads it first. *(lint)* The second line draws the boundary: what the
-    reflex covers, what it touches, and what cannot be undone, since a reader takes the effect from those words.
+    100 characters at most, since a stranger reads it first. *(lint)* It says the action with what a person gives
+    it, `Look up a new hire by name, with their role and start date`, never by what comes back alone, `Look up a
+    new hire's role and start date`, since a call is read back against these words, and `look up maria` must read
+    as what the reflex does. `evoke test` names an example whose right call waits for this. The second line draws
+    the boundary: what the reflex covers, what it touches, and what cannot be undone, since a reader takes the
+    effect from those words.
 12. Describe the action and never address the classifier, since one manifest serves every engine and every reader.
     *(lint)*
 13. `not_for` names the near neighbours: what a person might type that sounds like your reflex and is not. Write
@@ -461,7 +465,8 @@ You need not remember these. The tool holds them itself.
 - `steals` and `also fits`, each with the phrase and its owner; a claimed effect its steps pass; a step that
   reaches a reflex without the playbook's tag; a branch source that yields no such field; a step that reaches
   nothing here.
-- `test` fails a record that misses, and a step that reaches nothing or its own plan.
+- `test` fails a record that misses, and a step that reaches nothing or its own plan. It names a record that
+  passes while its call would wait for a yes, since the call holds less than the record's own words: `held`.
 
 ## Exceptions
 
@@ -497,7 +502,7 @@ no sends you to the rule it names.
 - `evoke check` refuses nothing, and you weighed every lint line. (45)
 - `effect` is written, and it is the effect the action has. (33)
 - The second line agrees with the effect. (11)
-- The summary says the action and what it acts on, in the words people type. (11)
+- The summary says the action with what a person gives it, in the words people type. (11)
 - Each argument is one the body uses, with one ask and one source. (3)
 - Each optional argument has a default people mean. (3)
 - Options cover every value people mean; an open value is a pick; a switch is a flag. (4)
