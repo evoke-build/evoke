@@ -1,8 +1,8 @@
 $ evoke test
   lights  3 passed · 1 failed
     "make it darker in here"  state: expected "dim", read "off"
-  timer   8 passed · 1 held
-    "ping me in 2 hours"  held: the call holds all of it at 0.20, and a call runs at 0.30 or more
+  timer   8 passed
+    "ping me in 2 hours"  passes, but would wait for a yes: the call holds all of it at 0.20, and a call runs at 0.30 or more
   1 of 12 cases failed  →  evoke test
 [1]
 $ EVOKE_ANSWERS=~/drift.toml evoke test

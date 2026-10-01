@@ -64,8 +64,8 @@ value.
 $ evoke test
   lights  3 passed · 1 failed
     "make it darker in here"  state: expected "dim", read "off"
-  timer   8 passed · 1 held
-    "ping me in 2 hours"  held: the call holds all of it at 0.20, and a call runs at 0.30 or more
+  timer   8 passed
+    "ping me in 2 hours"  passes, but would wait for a yes: the call holds all of it at 0.20, and a call runs at 0.30 or more
   1 of 12 cases failed  →  evoke test
 [1]
 ```
@@ -83,8 +83,8 @@ A case that passed at the last run and fails now is decided twice more. Two of t
 **regression**. `test` exits 1 when a case failed. It never blocks an install.
 
 A case that passes while its call would wait for a yes, because the call holds less than the case's own words,
-is named under its reflex as `held`, with how far the call holds them. It fails nothing. The cure is the
-summary: write it so that the case reads as what the reflex does
+is named under its reflex, with how far the call holds them. It counts among the passed and fails nothing. The
+cure is the summary: write it so that the case reads as what the reflex does
 ([rule 11](rules.md#3-words-that-reach-the-right-reflex)).
 
 A playbook's steps are tested after its records ([Playbooks](playbooks.md)): each filled from the first record

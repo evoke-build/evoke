@@ -62,7 +62,7 @@ const A_DETAIL: &str = "adds a detail";
 const ASKS: &str = "asks for something";
 const THANKS: &str = "a word of thanks";
 /// What a part code set aside by its words is: the person's own action, or a courtesy.
-const OWN_ACTION: &str = "your own action";
+const OWN_ACTION: &str = "about what you do, not a request";
 const A_COURTESY: &str = "a courtesy";
 const NOT_TO_DO: &str = "what you said not to do";
 

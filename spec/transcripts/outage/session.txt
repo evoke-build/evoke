@@ -497,7 +497,7 @@ payments: 412 timeouts calling payments
 $ evoke why
   "pull the payments logs in eu-west before I forget"
 
-  set aside               "before I forget": your own action
+  set aside               "before I forget": about what you do, not a request
 
   which reflex            logs 0.95   (none of them 0.03 · errors 0.02)
                           Search a service's logs from the last hour.

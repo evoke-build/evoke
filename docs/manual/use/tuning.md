@@ -152,8 +152,8 @@ from the environment at run time, and nowhere else. `--env` works for any key. A
 $ evoke test
   lights  3 passed · 1 failed
     "make it darker in here"  state: expected "dim", read "off"
-  timer   8 passed · 1 held
-    "ping me in 2 hours"  held: the call holds all of it at 0.20, and a call runs at 0.30 or more
+  timer   8 passed
+    "ping me in 2 hours"  passes, but would wait for a yes: the call holds all of it at 0.20, and a call runs at 0.30 or more
   1 of 12 cases failed  →  evoke test
 [1]
 ```
@@ -161,7 +161,7 @@ $ evoke test
 `evoke test [<name>]` decides every example and every test of every active reflex, or of one. It decides against
 the whole installed set, a few cases at a time, never through the cache. It judges each case on its route and its asserted arguments. It
 exits 1 when a case failed, so a script can act on it. It never blocks an install. A case that passes while its
-call would wait for a yes, holding less than the case's own words, is named `held` and fails nothing
+call would wait for a yes, holding less than the case's own words, is named under its reflex and fails nothing
 ([Records](../author/records.md#evoke-test)).
 
 A case that passed last time and fails now is decided twice more. Failing two of three marks it `· regression`.

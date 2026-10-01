@@ -2178,8 +2178,9 @@ pub struct HeldCase {
     pub floor: evoke_core::Prob,
 }
 
-/// Under a reflex's line, after a held case's utterance: how far its call holds the words, and the bar.
-const HELD_CASE: &str = "held: the call holds all of it at {p}, and a call runs at {floor} or more";
+/// Under a reflex's line, after the utterance of a case that passes while its call would wait: how far the call
+/// holds the words, and the bar.
+const HELD_CASE: &str = "passes, but would wait for a yes: the call holds all of it at {p}, and a call runs at {floor} or more";
 
 impl HeldCase {
     /// The case with its decision's hold, where the decision waits for one.
@@ -2227,8 +2228,8 @@ pub enum StepBecame {
 }
 
 /// `test`'s block: per reflex its name and counts, then one line per failed case — the utterance and where the
-/// decision missed, `· regression` when it passed at the last run — and one per passed case whose call waits for
-/// holding less than its words say; for a playbook, how many of its steps route, then each step that does not,
+/// decision missed, `· regression` when it passed at the last run — and one per passed case whose call would wait
+/// for holding less than its words say, counted among the passed; for a playbook, how many of its steps route, then each step that does not,
 /// and its claim when the steps reach a tighter effect.
 #[must_use]
 pub fn tested(
@@ -2272,10 +2273,6 @@ pub fn tested(
             .iter()
             .filter(|held| held.case.reflex == *name)
             .collect();
-        if !waiting.is_empty() {
-            line.push(" · ")
-                .roled(Role::Warning, &format!("{} held", waiting.len()));
-        }
         let playbook = playbooks.iter().find(|playbook| playbook.name == *name);
         if let Some(playbook) = playbook {
             let routes = playbook

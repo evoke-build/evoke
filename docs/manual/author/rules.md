@@ -466,7 +466,7 @@ You need not remember these. The tool holds them itself.
   reaches a reflex without the playbook's tag; a branch source that yields no such field; a step that reaches
   nothing here.
 - `test` fails a record that misses, and a step that reaches nothing or its own plan. It names a record that
-  passes while its call would wait for a yes, since the call holds less than the record's own words: `held`.
+  passes while its call would wait for a yes, since the call holds less than the record's own words.
 
 ## Exceptions
 
