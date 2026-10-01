@@ -558,6 +558,12 @@ pub fn places(text: &str, commas: bool) -> Vec<Split> {
     found
 }
 
+/// Whether a place's word is a sign or a letter typed for «and».
+#[must_use]
+pub fn joins(word: &str) -> bool {
+    JOINERS.contains(&word)
+}
+
 /// Every joiner standing alone between two words, outside quotes, as a place: from the end of the word before to
 /// the start of the word after, its word as typed. Never after a mark («sam, n ana»), beside a number or a number
 /// word («2 + 2», «six n v»), beside a single letter («R & D», «with one n»), nor between two capitalised words,

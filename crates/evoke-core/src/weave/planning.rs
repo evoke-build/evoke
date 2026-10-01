@@ -778,21 +778,32 @@ impl<'a> Planner<'a> {
                 Some(raw) => Ok(reading::judged(&all, &asked, &judge, raw.clone())?),
                 None => Err(Need::Judge {
                     request: judge,
-                    ahead: self.ahead(),
+                    ahead: self.ahead(&all),
                 }),
             },
         })
     }
 
-    /// The whole request, sent ahead of the cut: decided whatever the cut says, it is the one step where nothing
-    /// is cut, and so it waits on no round of its own; nothing, once it is decided.
-    fn ahead(&self) -> Vec<Asked> {
-        let whole = self.segment(self.request.trim());
-        if self.decided(&whole).is_none() {
-            vec![whole]
-        } else {
-            Vec::new()
+    /// What is decided ahead of the cut, beside its question: the whole request, the one step where nothing is cut;
+    /// and, where a sign or a letter typed for «and» is among the places, the parts the places make, which are
+    /// the steps where every place is cut. Each waits on no round of its own; nothing, once it is decided.
+    fn ahead(&self, all: &[Split]) -> Vec<Asked> {
+        let mut texts = vec![self.request.trim().to_owned()];
+        if all.iter().any(|split| reading::joins(&split.word)) {
+            let mut parts = reading::segments(&self.request, all);
+            let stretches = reading::stretches(&self.request, all);
+            reading::set_aside(&self.request, &mut parts, &stretches);
+            for part in parts {
+                if part.left.is_none() && !texts.contains(&part.text) {
+                    texts.push(part.text);
+                }
+            }
         }
+        texts
+            .iter()
+            .map(|text| self.segment(text))
+            .filter(|asked| self.decided(asked).is_none())
+            .collect()
     }
 
     /// The cut made again by the words: a list's items, a whole's parts, a fragment settled beside its

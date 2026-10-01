@@ -21,7 +21,7 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 - A sentence is cut at a sign or a letter typed for `and`: `+`, `&`, `n`. What you say you will do yourself,
   `before I forget`, and a courtesy that opens with `if`, `if you would`, are set aside and no longer read as a
   step or a condition; `why` says which. After `not X,` what follows is kept. The JSON line carries `by` on a
-  part set aside.
+  part set aside. The parts such a sign makes are read while the cut is asked, so the cut adds no wait.
 
 ## [0.17.0] - 2026-09-30
 
