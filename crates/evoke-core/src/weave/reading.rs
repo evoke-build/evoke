@@ -678,6 +678,12 @@ fn leads(chars: &[char], at: usize) -> bool {
         })
 }
 
+/// Whether the mark at `i` stands between two digits, inside a figure: «1:1», «10:30», «1,200». Such a mark ends
+/// no clause.
+fn in_figure(chars: &[char], i: usize) -> bool {
+    i > 0 && chars[i - 1].is_numeric() && chars.get(i + 1).is_some_and(|next| next.is_numeric())
+}
+
 /// Where a clause that opens at `from` ends: the first «,» «;» «:», a sentence end, a spaced dash, or the head of a
 /// request's own clause (`REQUEST_HEADS`); and whether that end is a sentence end or the text's own, which a
 /// leading clause may not reach.
@@ -685,7 +691,7 @@ fn clause_end(chars: &[char], from: usize) -> (usize, bool) {
     let mut i = from;
     while i < chars.len() {
         let c = chars[i];
-        if matches!(c, ',' | ';' | ':') {
+        if matches!(c, ',' | ';' | ':') && !in_figure(chars, i) {
             return (i, false);
         }
         if ENDS.contains(&c) && chars.get(i + 1).is_none_or(|next| next.is_whitespace()) {
@@ -803,7 +809,7 @@ fn contrasts(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
         let mut j = from;
         while j < chars.len() {
             let c = chars[j];
-            if matches!(c, ',' | ':') {
+            if matches!(c, ',' | ':') && !in_figure(chars, j) {
                 end = Some((j, j + 1));
                 break;
             }
@@ -1949,6 +1955,14 @@ mod tests {
             owned(&[
                 ("Before I board the train", 'x'),
                 ("how busy is the office today?", ' ')
+            ])
+        );
+        // A mark inside a figure ends no clause.
+        assert_eq!(
+            parts("before we start the 1:1, dim the lights in the den"),
+            owned(&[
+                ("before we start the 1:1", 'x'),
+                ("dim the lights in the den", ' ')
             ])
         );
         // One that reaches a sentence end, or no subject of its own, is left as typed.
