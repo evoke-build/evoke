@@ -279,6 +279,8 @@ pub struct StepLine {
     pub bound: Vec<Bound>,
     /// The words the request stated once for several steps that reached this one's arguments.
     pub shared: IndexMap<ArgName, Shared>,
+    /// Each day of the step's call read beside the day of a step it takes from: by argument, that step.
+    pub beside: IndexMap<ArgName, usize>,
     /// The playbooks the step came from, outermost first.
     pub from: Vec<From>,
     /// What picks the step, when it may not run.
@@ -478,6 +480,12 @@ impl Line {
                     serde_json::to_value(&step.shared).expect("shared words serialize"),
                 );
             }
+            if !step.beside.is_empty() {
+                line.insert(
+                    "beside".to_owned(),
+                    serde_json::to_value(&step.beside).expect("a step's days serialize"),
+                );
+            }
             if !step.from.is_empty() {
                 line.insert(
                     "from".to_owned(),
@@ -546,6 +554,7 @@ impl Line {
                 why: field("why", take("why"))?,
                 bound: field("bound", take("bound")).unwrap_or_default(),
                 shared: field("shared", take("shared")).unwrap_or_default(),
+                beside: field("beside", take("beside")).unwrap_or_default(),
                 from: field("from", take("from")).unwrap_or_default(),
                 when: field("when", take("when"))?,
             }),

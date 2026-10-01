@@ -38,11 +38,12 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `cancelled`  | ○   |         |     |         | `true` when `Ctrl-C` ended the body; a step of a weave says it as `status` and `why` instead |
 
 A sentence read as several steps ([Weaving](../use/weaving.md)) prints one line per step, as each runs, the
-line of its decision with five fields more: `step` and `steps` first, the step's number and the count; `bound`
+line of its decision with these fields more: `step` and `steps` first, the step's number and the count; `bound`
 after `trace`, where a value came from another step, `[{ arg, from, field, value }]`, `value` absent for a whole
 result, which stays on its source's line as `result.data`; `shared`, where the sentence said a word once for
 several steps and this one took it, `{ "<arg>": { "word", "via" } }`, `via` `fill` for a required argument and
-`rewrite` for an optional one written into the step's words; `from`, where a playbook wrote the step,
+`rewrite` for an optional one written into the step's words; `beside`, where a day of the month was read beside
+the day of a step this one takes from, `{ "<arg>": <step> }`; `from`, where a playbook wrote the step,
 `[{ playbook, step, slots }]`, outermost first; `when`, where the step runs only under a value an earlier step
 yields, `{ step, field, is }`; and `status` last, with `why` when the step stopped. A plan a
 playbook wrote prints the sentence's own line first: `step` 0, `steps` the count, the decision that picked the
@@ -61,7 +62,7 @@ whole instead, on one line: `input`, `steps` with each step's decision, `binds`,
 | `why`    | `{ "type": "earlier_step" }`, `{ "type": "nothing_to_take", "from" }` and `{ "type": "too_large", "from" }` with the source step, `found_nothing`, `{ "type": "not_chosen", "from", "value" }` for a step another value picked past, `no_reflex`, `cancelled`, `{ "type": "read_as", "reflex" }`, or `{ "type": "said", "message" }`: a prompt's own line, a failure, a question no one answered |
 
 In the plan `evoke try --json` prints, a step's `refs` count the steps they may name from 0; `step`, `after`,
-`stages` and `binds` count from 1. A step carries `shared` as the line does, `typed` where the plan wrote its
+`stages` and `binds` count from 1. A step carries `shared` and `beside` as the line does, `typed` where the plan wrote its
 words anew, the words as typed, and `repair` where it was not one part decided on its own: `narrowed` or
 `spliced`, an item of its neighbour's task; `merged`, a part read with its neighbour; `split`, a part of a joint
 the classifier read as one thing; `corrected`, a part that says what not to do read with its step. A binding's

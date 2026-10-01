@@ -123,3 +123,48 @@ $ evoke "our lisbon flight was cancelled"
 [2]
 $ evoke test cancelled
   cancelled  11 passed · 7 steps route
+# A day of the month after a day the calendar names is read in that day's month, and why says beside which step.
+$ evoke "show my calendar for october 12th, then move those meetings to the 20th"
+  1  calendar day="october 12th"  0.95
+  2  meeting day="october 20th"  0.95 · takes calendar from 1
+2026-10-12: 2 meetings, client review at 09:30 and 1:1 with ana at 14:00
+2 meetings moved to 2026-10-20
+$ evoke why
+  "show my calendar for october 12th, then move those meetings to the 20th"
+
+  one thing, or several   several 0.95: cut at ", then" 0.95
+
+  1 · show my calendar for october 12th
+    which reflex            calendar 0.95   (none of them 0.03 · flights 0.02)
+                            Show the meetings on your calendar for a day.
+    day                     "october 12th" 0.95   (not said 0.05)
+    holds all you said      0.90
+    → ran: calendar day="october 12th"  0.95
+      a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  2 · move those meetings to the 20th
+    which reflex            meeting 0.95   (none of them 0.03 · flights 0.02)
+                            Move a day's meetings to another day.
+    day                     "the 20th" 0.95   (not said 0.05)
+                            read beside the day of step 1
+    holds all you said      0.90
+    takes                   calendar from step 1
+    → ran: meeting day="october 20th"  0.95
+      a write runs at 0.90 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  replay answered 46 questions in 3 rounds
+# A step cut from a longer part waits where its call lacks a value the whole part was read with.
+$ evoke "show tomorrow's calendar, find flights to lisbon, then book that flight for friday and move the meetings there"
+  1  calendar day="tomorrow"  0.95
+  2  flights to="lisbon"  0.95
+  3  book · takes flight from 2 · after 1
+  4  meeting · write · weakest: route 0.95 · takes calendar from 1 · after 2
+       "friday" may add a detail this call does not hold
+2026-09-29: 2 meetings, client review at 09:30 and 1:1 with ana at 14:00
+lisbon: 3 flights tonight, the best TP1043 at 18:40
+  3  book flight="TP1043" · destructive · weakest: route 0.95
+       it cannot be undone, so it always waits for a yes
+  Book TP1043?  [y]es [n]o [t]each > n
+  4  meeting · write · weakest: route 0.95 · takes calendar from 1 · after 2 · skipped
+       "friday" may add a detail this call does not hold
+[2]

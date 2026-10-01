@@ -328,6 +328,7 @@ impl Runner<'_> {
             step.n,
             decision,
         )
+        .0
     }
 }
 

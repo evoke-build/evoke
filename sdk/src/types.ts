@@ -1149,6 +1149,9 @@ export interface Step {
   repair?: Repair
   /** The words the request stated once for several steps that reached this one's arguments, by argument. */
   shared?: Record<ArgName, Shared>
+  /** Each day of the month the step's call holds that was read beside the calendar day of a step it takes from:
+   *  by argument, that step. */
+  beside?: Record<ArgName, number>
   /** The steps this one must follow: an explicit `then`, or a binding. */
   after?: number[]
   /** The playbooks this step came from, outermost first; absent on a step of the person's own. */

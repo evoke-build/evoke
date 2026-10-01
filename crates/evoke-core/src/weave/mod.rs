@@ -190,6 +190,10 @@ pub struct Step {
     /// The words the request stated once for several steps that reached this one's arguments, by argument.
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub shared: IndexMap<ArgName, Shared>,
+    /// Each day of the month the step's call holds that was read beside the calendar day of a step it takes from:
+    /// by argument, that step.
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub beside: IndexMap<ArgName, usize>,
     /// The steps this one must follow: an explicit `then`, or a binding.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub after: Vec<usize>,

@@ -69,6 +69,8 @@ const NOT_TO_DO: &str = "what you said not to do";
 /// Under a value: a switch that is set, a word said once, the person's own answer, what an ask recalled.
 const YES: &str = "yes";
 const ONCE_FOR_SEVERAL: &str = "said once in the sentence, for several steps";
+/// Under a day of the month read in the month of the day an earlier step names: that step.
+const BESIDE: &str = "read beside the day of step {n}";
 const YOUR_ANSWER: &str = "your answer";
 const RECALLED: &str = "recalled";
 const FROM: &str = "from";
@@ -627,6 +629,14 @@ fn value(
             (raw(), details)
         }
     };
+    if let Some(from) = line
+        .step
+        .as_ref()
+        .and_then(|step| step.beside.iter().find(|(name, _)| name.as_str() == arg))
+        .map(|(_, from)| *from)
+    {
+        details.push(BESIDE.replace("{n}", &from.to_string()));
+    }
     if let (Some(missing), None) = (missing, bound) {
         details.extend(super::because(missing));
     }

@@ -143,6 +143,7 @@ impl Rounds<'_> {
             why: None,
             bound: handed.bound.to_vec(),
             shared: handed.shared.clone(),
+            beside: handed.beside.clone(),
             from: handed.from.to_vec(),
             when: handed.when.cloned(),
         });
@@ -532,6 +533,7 @@ impl Rounds<'_> {
                 why: Some(why),
                 bound: Vec::new(),
                 shared: step.shared.clone(),
+                beside: step.beside.clone(),
                 from: step.from.clone(),
                 when: step.when.clone(),
             });
@@ -626,6 +628,7 @@ impl Rounds<'_> {
                             bound: &handling.bound,
                             taken: &handling.taken,
                             shared: &step.shared,
+                            beside: &step.beside,
                             from: &step.from,
                             when: step.when.as_ref(),
                             typed: step.typed.as_deref(),
@@ -674,6 +677,7 @@ impl Rounds<'_> {
             why: Some(Stopped::Cancelled),
             bound: handling.bound.clone(),
             shared: step.shared.clone(),
+            beside: step.beside.clone(),
             from: step.from.clone(),
             when: step.when.clone(),
         });
@@ -767,6 +771,7 @@ impl Rounds<'_> {
                 why: outcome.why.clone(),
                 bound: outcome.bound.clone(),
                 shared: step.shared.clone(),
+                beside: step.beside.clone(),
                 from: step.from.clone(),
                 when: step.when.clone(),
             });
@@ -1240,6 +1245,8 @@ pub struct Handed<'a> {
     pub bound: &'a [Bound],
     pub taken: &'a IndexMap<ArgName, Json>,
     pub shared: &'a IndexMap<ArgName, Shared>,
+    /// Each day of the step's call read beside the day of a step it takes from.
+    pub beside: &'a IndexMap<ArgName, usize>,
     pub from: &'a [From],
     pub when: Option<&'a When>,
     /// The step's words as they were typed, where the plan wrote them anew.

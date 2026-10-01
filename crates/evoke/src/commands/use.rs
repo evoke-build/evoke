@@ -117,6 +117,7 @@ impl Using<'_> {
                     bound: &[],
                     taken: &IndexMap::new(),
                     shared: &IndexMap::new(),
+                    beside: &IndexMap::new(),
                     from: &[],
                     when: None,
                     typed: step.and_then(|step| step.typed.as_deref()),

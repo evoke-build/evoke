@@ -506,6 +506,7 @@ impl<'a> Planner<'a> {
                     refs,
                     repair: repair_of(draft, k),
                     shared: draft.shared.get(k).cloned().unwrap_or_default(),
+                    beside: IndexMap::new(),
                     after: Vec::new(),
                     from: draft.origins[k]
                         .iter()
@@ -2846,28 +2847,38 @@ fn read_of(decision: &Decision) -> Option<(LocalName, Vec<(ArgName, String)>)> {
 
 /// A day of the month a step's call holds alone, where the step takes from a step whose call holds a calendar
 /// day, is read beside that day, as one is read beside today: in its month when on or after it, else in the next
-/// month that has it. The value is shown as it is then typed.
+/// month that has it. The value is shown as it is then typed, and the step records the step it was read beside.
 fn dated(plan: &Plan, steps: &mut [Step], binds: &[Binding]) {
     for n in 1..=steps.len() {
-        steps[n - 1].decision = dated_at(plan, steps, binds, n, steps[n - 1].decision.clone());
+        let (decision, read) = dated_at(plan, steps, binds, n, steps[n - 1].decision.clone());
+        steps[n - 1].decision = decision;
+        steps[n - 1].beside.extend(read);
     }
 }
 
 /// A decision of step `n`, made by the plan or again at the step's turn, with each day of the month it holds
-/// alone read beside the calendar day of a step it takes from.
+/// alone read beside the calendar day of a step it takes from; and each argument so read, with that step.
 pub(crate) fn dated_at(
     plan: &Plan,
     steps: &[Step],
     binds: &[Binding],
     n: usize,
     decision: Decision,
-) -> Decision {
-    binds
+) -> (Decision, Vec<(ArgName, usize)>) {
+    let mut read = Vec::new();
+    let decision = binds
         .iter()
         .filter(|bind| bind.to == n)
-        .filter_map(|bind| steps.get(bind.from.checked_sub(1)?))
-        .filter_map(|source| calendar_of(&source.decision))
-        .fold(decision, |decision, named| beside(plan, decision, &named))
+        .filter_map(|bind| {
+            let source = steps.get(bind.from.checked_sub(1)?)?;
+            Some((bind.from, calendar_of(&source.decision)?))
+        })
+        .fold(decision, |decision, (from, named)| {
+            let (decision, moved) = beside(plan, decision, &named);
+            read.extend(moved.into_iter().map(|arg| (arg, from)));
+            decision
+        });
+    (decision, read)
 }
 
 /// The calendar day a decision's call holds, when it holds exactly one.
@@ -2883,12 +2894,12 @@ fn calendar_of(decision: &Decision) -> Option<Day> {
     days.next().is_none().then_some(day)
 }
 
-/// A decision with each day of the month its call holds alone read beside a named calendar day; a confirm's
-/// prompt is made again where a day moved, since it shows the call.
-fn beside(plan: &Plan, decision: Decision, named: &Day) -> Decision {
+/// A decision with each day of the month its call holds alone read beside a named calendar day, and the
+/// arguments so read; a confirm's prompt is made again where a day moved, since it shows the call.
+fn beside(plan: &Plan, decision: Decision, named: &Day) -> (Decision, Vec<ArgName>) {
     let read = |args: &mut IndexMap<ArgName, Value>| {
-        let mut moved = false;
-        for value in args.values_mut() {
+        let mut moved = Vec::new();
+        for (arg, value) in args.iter_mut() {
             if let Value::Pick {
                 value: PickValue::Date { value: day },
                 typed,
@@ -2898,15 +2909,15 @@ fn beside(plan: &Plan, decision: Decision, named: &Day) -> Decision {
             {
                 *typed = crate::propose::typed_calendar(&read);
                 *day = read;
-                moved = true;
+                moved.push(arg.clone());
             }
         }
         moved
     };
     match decision {
         Decision::Run { mut chosen } => {
-            read(&mut chosen.call.args);
-            Decision::Run { chosen }
+            let moved = read(&mut chosen.call.args);
+            (Decision::Run { chosen }, moved)
         }
         Decision::Confirm {
             mut chosen,
@@ -2915,26 +2926,29 @@ fn beside(plan: &Plan, decision: Decision, named: &Day) -> Decision {
         } => {
             let moved = read(&mut chosen.call.args);
             let prompt = match plan.active().get(&chosen.call.reflex) {
-                Some(active) if moved => {
+                Some(active) if !moved.is_empty() => {
                     let caps: Vec<Cap> = because.iter().cloned().collect();
                     Prompt::of(&chosen, active, &caps)
                 }
                 _ => prompt,
             };
-            Decision::Confirm {
-                chosen,
-                prompt,
-                because,
-            }
+            (
+                Decision::Confirm {
+                    chosen,
+                    prompt,
+                    because,
+                },
+                moved,
+            )
         }
         Decision::Ask {
             mut asking,
             missing,
         } => {
-            read(&mut asking.args);
-            Decision::Ask { asking, missing }
+            let moved = read(&mut asking.args);
+            (Decision::Ask { asking, missing }, moved)
         }
-        Decision::Abstain { .. } => decision,
+        Decision::Abstain { .. } => (decision, Vec::new()),
     }
 }
 

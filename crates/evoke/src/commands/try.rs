@@ -116,6 +116,7 @@ fn stepped(session: &Session<'_>, arguments: &Arguments, woven: &Woven) -> Vec<L
                 })
                 .collect(),
             shared: step.shared.clone(),
+            beside: step.beside.clone(),
             from: step.from.clone(),
             when: step.when.clone(),
         });

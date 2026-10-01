@@ -675,6 +675,7 @@ fn weave_of(model: &Model) -> Weave {
             refs: Vec::new(),
             repair: None,
             shared: IndexMap::new(),
+            beside: IndexMap::new(),
             after: spec.after(),
             from: Vec::new(),
             when: None,

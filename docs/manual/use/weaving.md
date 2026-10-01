@@ -104,7 +104,7 @@ classifier assigns it, under the same gate as any words. A date a step yields re
 `2026-05-06`, never as `tomorrow`: a relative day is nothing to take. A day of the month in a step that takes
 from a step naming a month and a day is read beside that day, not beside today: in `show my calendar for october
 12th, then move those meetings to the 20th`, the meetings move to October 20th, and `the 3rd` would be
-November's. Nothing is guessed: a reference that
+November's. The plan shows the day as read, and `evoke why` says `read beside the day of step 1`. Nothing is guessed: a reference that
 several fields could satisfy, or one record of a list, stops with a line naming them. Within one sentence a step refers to another; across sentences, in one
 session, a pick with `recent` recalls what earlier bodies returned, at its ask
 ([Arguments](../author/arguments.md#a-value-recalled)). A step that refers to another whose result it takes
