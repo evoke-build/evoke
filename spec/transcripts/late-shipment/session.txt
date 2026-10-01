@@ -571,9 +571,9 @@ $ evoke test late
   late  9 passed · 7 steps route
 # A code typed with a space is read as its code, and waits for a yes with the words as typed.
 $ evoke "reserve hs 0409"
-  reserve sku="hs-0409" · write · weakest: route 0.95
+  reserve sku="HS-0409" · write · weakest: route 0.95
     sku was read from "hs 0409"
-  Reserve every unit of hs-0409?  [y]es [n]o [t]each > n
+  Reserve every unit of HS-0409?  [y]es [n]o [t]each > n
 [2]
 # An address said aloud is read as it is typed.
 $ evoke "email dana dot weiss at example dot org"
@@ -592,3 +592,39 @@ $ evoke why
     it cannot be undone, so it always waits for a yes
 
   replay answered 19 questions in 2 rounds
+# A code said aloud takes the shape the reflex's examples share, and waits for a yes with the words as typed.
+$ evoke "earmark h s oh four oh nine"
+  reserve sku="HS-0409" · write · weakest: route 0.95
+    sku was read from "h s oh four oh nine"
+  Reserve every unit of HS-0409?  [y]es [n]o [t]each > n
+[2]
+# Figures said in pairs may be part of a longer code: what they read as is offered, and its number takes it.
+$ evoke "earmark v x twenty two ten"
+  Which product code?  you wrote "v x twenty two ten"  [1] VX-2210  [0] none of these  > 1
+  reserve sku="VX-2210"  0.95
+VX-2210 reserved
+# An address that reads two ways is asked with both.
+$ evoke "email the update to ops twenty at example dot com"
+  To which email address?  you wrote "ops twenty at example dot com"  [1] ops20@example.com  [2] 20@example.com  [0] none of these  > 1
+  email to="ops20@example.com" · destructive · weakest: route 0.95
+    it cannot be undone, so it always waits for a yes
+  Email the shipment update to ops20@example.com?  [y]es [n]o [t]each > n
+[2]
+# A playbook asks the same way, before its plan prints.
+$ evoke "sort out the delayed rotterdam pallets for ops twenty at example dot com"
+  1  late shipment="rotterdam" · asks supplier, to
+  Which of our suppliers covers the rest?  [1] nordic  [2] baltic  [+] add one  [0] none of these  > 1
+  To which email address does the update go?  you wrote "ops twenty at example dot com"  [1] ops20@example.com  [2] 20@example.com  [0] none of these  > 1
+  1  shipment shipment="rotterdam"  0.95 · late 1
+  2  stock shipment="rotterdam"  0.95 · late 2
+  3  quotes shipment="rotterdam"  0.95 · late 3
+  4  shortfall  0.95 · takes shipment from 1, stock from 2, quotes from 3 · late 4
+  5  reserve · takes sku from 4 · after 1, 2, 3 · late 5
+  6  buy supplier="nordic" · destructive · weakest: route 0.95 · late 6
+       it cannot be undone, so it always waits for a yes
+  7  email to="ops20@example.com" · destructive · weakest: route 0.95 · late 7
+       it cannot be undone, so it always waits for a yes
+  late shipment="rotterdam" supplier="nordic" to="ops20@example.com" · destructive · weakest: route 0.95
+    it cannot be undone, so it always waits for a yes
+  Run the late shipment plan for rotterdam, ordering from nordic, the update to ops20@example.com?  [y]es [n]o [t]each > n
+[2]

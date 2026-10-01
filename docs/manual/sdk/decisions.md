@@ -68,9 +68,11 @@ every step of a sentence.
 `missing` says, per argument, its `ask`, why it is missing, and what it may be. Missing means never stated, or a
 pick out of range. What it may be is the options, the vocabulary's words, or which recognizer reads it, with
 `choices.recent` listing the values recalled from the results the application handed `decide`, `handle` or
-`weave` as `recent: [{ reflex, data }]`, newest first, when the pick's manifest names the field. `fill` takes what
-a person answered, by argument name: an option's key, a word, or the text a pick reads, a recalled value among
-them. It types the answer and gates again, synchronously:
+`weave` as `recent: [{ reflex, data }]`, newest first, when the pick's manifest names the field. Where the
+input's words say a pick's value aloud and read in more than one way, `words` holds them and `choices.readings`
+lists what they read as: offer those in place of the recalled values. `fill` takes what a person answered, by
+argument name: an option's key, a word, or the text a pick reads, a recalled value or a reading among them. It
+types the answer and gates again, synchronously:
 
 ```ts
 const filled = project.fill(d, { room: "den" })       // a Decision again: run, confirm, or still an ask

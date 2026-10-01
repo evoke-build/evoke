@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use crate::diagnostic::Fix;
 use crate::name::{AdapterId, ArgName, LocalName, OptionKey, VarName, WeaveName, Word};
 use crate::propose::Proposed;
+use crate::spoken::Spoken;
 use crate::text::{Clean, Identity, Input};
 use crate::words::{Listed, Spelled};
 
@@ -307,6 +308,10 @@ pub struct Request {
     pub listed: IndexMap<QuestionId, Vec<Listed>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub spelled: IndexMap<QuestionId, Vec<Spelled>>,
+    /// Per argument, what the reader of values said aloud leaves beside the values it spelled: the runs it asks,
+    /// and the candidates it withdrew from the argument's own question.
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub spoken: IndexMap<QuestionId, Spoken>,
 }
 
 /// A finite number in `[0, 1]`.

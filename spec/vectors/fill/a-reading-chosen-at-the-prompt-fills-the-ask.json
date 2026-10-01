@@ -1,0 +1,215 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-month.json"
+    },
+    "asking": {
+      "reflex": "send",
+      "args": {},
+      "left": [
+        {
+          "words": {
+            "start": 0,
+            "end": 15,
+            "text": "send the report"
+          },
+          "does": "action",
+          "p": 0.95
+        },
+        {
+          "words": {
+            "start": 19,
+            "end": 34,
+            "text": "accounts twenty"
+          },
+          "does": "action",
+          "p": 0.95
+        },
+        {
+          "words": {
+            "start": 38,
+            "end": 53,
+            "text": "example dot com"
+          },
+          "does": "action",
+          "p": 0.95
+        }
+      ],
+      "unconsumed": [],
+      "confidence": 0.96,
+      "weakest": {
+        "question": "route",
+        "top": "send",
+        "p": 0.96
+      },
+      "judgments": [
+        {
+          "question": "route",
+          "top": "send",
+          "p": 0.96
+        }
+      ],
+      "runner_up": {
+        "reflex": "ledger",
+        "route": 0.02
+      },
+      "contenders": [
+        {
+          "reflex": "send",
+          "route": 0.96
+        },
+        {
+          "reflex": "ledger",
+          "route": 0.02
+        },
+        {
+          "reflex": "bank",
+          "route": 0
+        },
+        {
+          "reflex": "invoices",
+          "route": 0
+        },
+        {
+          "reflex": "cards",
+          "route": 0
+        },
+        {
+          "reflex": "payroll",
+          "route": 0
+        },
+        {
+          "reflex": "reconcile",
+          "route": 0
+        }
+      ]
+    },
+    "given": {
+      "to": {
+        "type": "pick",
+        "span": {
+          "start": 0,
+          "end": 22,
+          "text": "accounts20@example.com"
+        },
+        "value": {
+          "type": "email",
+          "value": "accounts20@example.com"
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    }
+  },
+  "expect": {
+    "outcome": "confirm",
+    "reflex": "send",
+    "args": {
+      "to": {
+        "type": "pick",
+        "span": {
+          "start": 0,
+          "end": 22,
+          "text": "accounts20@example.com"
+        },
+        "value": {
+          "type": "email",
+          "value": "accounts20@example.com"
+        }
+      }
+    },
+    "call": "send to=\"accounts20@example.com\"",
+    "effect": "destructive",
+    "left": [
+      {
+        "words": {
+          "start": 0,
+          "end": 15,
+          "text": "send the report"
+        },
+        "does": "action",
+        "p": 0.95
+      },
+      {
+        "words": {
+          "start": 19,
+          "end": 34,
+          "text": "accounts twenty"
+        },
+        "does": "action",
+        "p": 0.95
+      },
+      {
+        "words": {
+          "start": 38,
+          "end": 53,
+          "text": "example dot com"
+        },
+        "does": "action",
+        "p": 0.95
+      }
+    ],
+    "confidence": 0.96,
+    "weakest": {
+      "question": "route",
+      "top": "send",
+      "p": 0.96
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "send",
+        "p": 0.96
+      }
+    ],
+    "runner_up": {
+      "reflex": "ledger",
+      "route": 0.02
+    },
+    "contenders": [
+      {
+        "reflex": "send",
+        "route": 0.96
+      },
+      {
+        "reflex": "ledger",
+        "route": 0.02
+      },
+      {
+        "reflex": "bank",
+        "route": 0
+      },
+      {
+        "reflex": "invoices",
+        "route": 0
+      },
+      {
+        "reflex": "cards",
+        "route": 0
+      },
+      {
+        "reflex": "payroll",
+        "route": 0
+      },
+      {
+        "reflex": "reconcile",
+        "route": 0
+      }
+    ],
+    "prompt": {
+      "own": "send to=\"accounts20@example.com\" · destructive · weakest: route 0.96",
+      "reason": "it cannot be undone, so it always waits for a yes",
+      "template": "Email the closing report to accounts20@example.com?"
+    },
+    "because": [
+      {
+        "type": "destructive"
+      }
+    ]
+  }
+}

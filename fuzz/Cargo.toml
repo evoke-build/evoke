@@ -60,3 +60,11 @@ path  = "fuzz_targets/code.rs"
 test  = false
 doc   = false
 bench = false
+
+# The reader of values said aloud on raw bytes: every run lies in the input, none overlap, and each value proposed or reading offered re-reads whole through `picked`.
+[[bin]]
+name  = "spoken"
+path  = "fuzz_targets/spoken.rs"
+test  = false
+doc   = false
+bench = false

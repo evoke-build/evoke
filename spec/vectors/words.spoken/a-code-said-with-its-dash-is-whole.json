@@ -1,0 +1,28 @@
+{
+  "input": {
+    "input": "put K L dash oh six five oh aside",
+    "kind": "code",
+    "examples": [
+      "HS-0409",
+      "VX-2214"
+    ]
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 4,
+          "end": 27,
+          "text": "K L dash oh six five oh"
+        },
+        "typed": "KL-0650",
+        "value": {
+          "type": "code",
+          "value": "KL-0650"
+        },
+        "form": "aloud",
+        "shape": "whole"
+      }
+    ]
+  }
+}

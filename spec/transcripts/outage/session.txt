@@ -478,3 +478,8 @@ $ evoke why
     a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
 
   replay answered 89 questions in 4 rounds
+# A number said in pairs is asked, with what the words read as named beside the ask: a number typed is its own answer.
+$ evoke "open incident three eleven"
+  Which incident number?  you wrote "three eleven"  311  > 311
+  incident number="311"  0.95
+incident 311: checkout down since 14:02

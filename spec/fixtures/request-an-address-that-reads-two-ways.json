@@ -1,0 +1,294 @@
+{
+  "state": {
+    "request": "send the report to accounts twenty at example dot com"
+  },
+  "questions": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "bank": {
+          "what": "Pull a month's bank transactions.\nEvery debit and credit on the business account, and its balance on the month's last day.",
+          "not_for": [
+            "charges on the company cards",
+            "which invoices customers paid",
+            "salaries and payroll taxes",
+            "matching the bank against the books",
+            "moving money or paying a bill"
+          ],
+          "examples": [
+            "pull the bank transactions for september",
+            "get august's bank feed",
+            "what went through the bank in october",
+            "bank statement for september",
+            "every payment in or out of the bank in august",
+            "show me the bank account for august",
+            "what went through the business account in august"
+          ]
+        },
+        "invoices": {
+          "what": "List a month's invoices.\nWhat was billed to customers that month, and which invoices are paid.",
+          "not_for": [
+            "sending, creating or chasing an invoice",
+            "bills that suppliers send us",
+            "money that came into the bank",
+            "receipts for card charges"
+          ],
+          "examples": [
+            "list september's invoices",
+            "which invoices went out in august",
+            "invoices for october",
+            "how many of september's invoices are paid",
+            "what did we bill customers in august",
+            "which invoices of october are still unpaid"
+          ]
+        },
+        "cards": {
+          "what": "List a month's company card expenses.\nEvery charge on the company cards, and which of them lack a receipt.",
+          "not_for": [
+            "debits on the business account",
+            "salaries and wages",
+            "out-of-pocket costs to pay back",
+            "freezing a card or ordering a new one"
+          ],
+          "examples": [
+            "card expenses for september",
+            "what did we spend on cards in august",
+            "pull the october card charges",
+            "which card charges in september have no receipt",
+            "company card spend for october",
+            "what was charged on the company cards in august",
+            "company card charges for october"
+          ]
+        },
+        "payroll": {
+          "what": "Show a month's payroll run.\nThe salaries, taxes and total of a run already made. It pays no one.",
+          "not_for": [
+            "running payroll or paying salaries",
+            "one person's payslip",
+            "adding someone to payroll or changing a salary"
+          ],
+          "examples": [
+            "show september's payroll",
+            "what did payroll cost in august",
+            "payroll breakdown for october",
+            "payroll taxes for september",
+            "how much was payroll in october",
+            "how much did the salaries cost in august"
+          ]
+        },
+        "reconcile": {
+          "what": "Reconcile a month's bank transactions with its invoices, card expenses and payroll.\nIt works on what was pulled just before it and lists what is left to review. It marks nothing.",
+          "not_for": [
+            "closing the month in the ledger",
+            "pulling the bank transactions",
+            "emailing the closing report",
+            "marking one transaction as matched"
+          ],
+          "examples": [
+            "reconcile them",
+            "reconcile the books",
+            "match everything up",
+            "match them against the bank",
+            "reconcile the four"
+          ]
+        },
+        "ledger": {
+          "what": "Post a month's closing entries to the ledger.\nOnly the closing entries, in the ledger. A posted month can be reopened and its entries reversed.",
+          "not_for": [
+            "looking up the ledger or its balances",
+            "recording a single entry",
+            "reopening a closed month",
+            "reconciling the books",
+            "posting a message in a chat channel",
+            "the whole month-end close"
+          ],
+          "examples": [
+            "post september to the ledger",
+            "book the october entries",
+            "post the closing entries for september",
+            "post october's entries to the general ledger",
+            "write october's closing to the ledger"
+          ]
+        },
+        "send": {
+          "what": "Email the month's closing report.\nOnly the closing report, to the one address you type; once sent it cannot be taken back.",
+          "not_for": [
+            "writing someone an email",
+            "sending an invoice to a customer",
+            "sharing the report in a chat channel",
+            "emailing a statement or a payslip"
+          ],
+          "examples": [
+            "send the report to cfo@example.com",
+            "email the month-end pack to omar@example.com",
+            "mail the month's report to board@example.com",
+            "get the closing report over to finance@example.com",
+            "the closing report goes to board@example.org"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "bank.month": {
+      "type": "choice",
+      "ask": "Which month?",
+      "options": {
+        "august": "August.",
+        "september": "September.",
+        "october": "October.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "invoices.month": {
+      "type": "choice",
+      "ask": "Which month?",
+      "options": {
+        "august": "August.",
+        "september": "September.",
+        "october": "October.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "cards.month": {
+      "type": "choice",
+      "ask": "Which month?",
+      "options": {
+        "august": "August.",
+        "september": "September.",
+        "october": "October.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "payroll.month": {
+      "type": "choice",
+      "ask": "Which month?",
+      "options": {
+        "august": "August.",
+        "september": "September.",
+        "october": "October.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "ledger.month": {
+      "type": "choice",
+      "ask": "Which month?",
+      "options": {
+        "august": "August.",
+        "september": "September.",
+        "october": "October.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "send.to": {
+      "type": "choice",
+      "ask": "To which email address?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.view_bank__month": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "august": "August.",
+        "september": "September.",
+        "october": "October.",
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.view_invoices__month": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "august": "August.",
+        "september": "September.",
+        "october": "October.",
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.view_cards__month": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "august": "August.",
+        "september": "September.",
+        "october": "October.",
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.view_payroll__month": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "august": "August.",
+        "september": "September.",
+        "october": "October.",
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.view_ledger__month": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "august": "August.",
+        "september": "September.",
+        "october": "October.",
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    }
+  },
+  "proposed": [
+    {
+      "span": {
+        "start": 28,
+        "end": 34,
+        "text": "twenty"
+      },
+      "value": {
+        "type": "number",
+        "value": 20
+      }
+    }
+  ],
+  "spoken": {
+    "send.to": {
+      "asked": [
+        {
+          "words": {
+            "start": 19,
+            "end": 53,
+            "text": "accounts twenty at example dot com"
+          },
+          "readings": [
+            "accounts20@example.com",
+            "20@example.com"
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -147,7 +147,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:94e957dfdb04d0d76e7145b776bff27dfb27032e1c9b19653aa97eb4d398cc21",
+      "digest": "h1:ce6737e396c86334dc96e6b824c172d329e4aaddeee86e07ef244d1b63918f7f",
       "active": {
         "count": {
           "effect": "write",
@@ -224,13 +224,22 @@
           "type": "pick",
           "ask": "How long?",
           "pick": "duration",
-          "optional": false
+          "optional": false,
+          "examples": [
+            "10 minutes",
+            "25 minute",
+            "3 minutes",
+            "90 seconds"
+          ]
         },
         "count.label": {
           "type": "pick",
           "ask": "What is the timer for?",
           "pick": "quoted",
-          "optional": true
+          "optional": true,
+          "examples": [
+            "eggs"
+          ]
         }
       },
       "values": {},

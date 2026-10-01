@@ -1,5 +1,5 @@
 {
-  "digest": "h1:317dac65662e86102f75ad901b3cda27bd68e71e5fcb4c0440a7123bffaad8b4",
+  "digest": "h1:15124757f244df561ca20b298ea4c065eea05c916ce0dbd2d39b3e15000b265b",
   "active": {
     "flights": {
       "effect": "read",
@@ -298,7 +298,10 @@
       "type": "pick",
       "ask": "Which flight?",
       "pick": "code",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "TP1043"
+      ]
     },
     "fits.seats": {
       "type": "yesno",
@@ -358,19 +361,28 @@
       "type": "pick",
       "ask": "Which flight?",
       "pick": "code",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "TP1043"
+      ]
     },
     "ticket.day": {
       "type": "pick",
       "ask": "On which day?",
       "pick": "date",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "friday"
+      ]
     },
     "ticket.at": {
       "type": "pick",
       "ask": "At what time?",
       "pick": "time",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "6pm"
+      ]
     },
     "fits.trip": {
       "type": "yesno",

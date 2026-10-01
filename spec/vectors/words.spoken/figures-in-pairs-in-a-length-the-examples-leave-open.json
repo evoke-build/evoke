@@ -1,0 +1,25 @@
+{
+  "input": {
+    "input": "put D K eighty eight thirteen aside",
+    "kind": "code",
+    "examples": [
+      "HS-0409",
+      "VX-221007"
+    ]
+  },
+  "expect": {
+    "said": [],
+    "asked": [
+      {
+        "words": {
+          "start": 4,
+          "end": 29,
+          "text": "D K eighty eight thirteen"
+        },
+        "readings": [
+          "DK-8813"
+        ]
+      }
+    ]
+  }
+}

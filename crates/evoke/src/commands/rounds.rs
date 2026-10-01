@@ -966,14 +966,24 @@ impl Rounds<'_> {
                         }));
                     }
                 }
-                Choices::Pick { pick, recent } => {
-                    // A recalled value by its number, as an options prompt reads one; a number pick names them
-                    // as hints only, since a number typed is its own answer.
-                    let listed = recent
-                        .as_deref()
-                        .filter(|_| *pick != Recognizer::Number)
-                        .unwrap_or_default();
-                    let keys: Vec<&str> = listed.iter().map(String::as_str).collect();
+                Choices::Pick {
+                    pick,
+                    recent,
+                    readings,
+                } => {
+                    // A value the prompt names by its number, as an options prompt reads one; a number pick
+                    // names them as hints only, since a number typed is its own answer.
+                    let keys = if *pick == Recognizer::Number {
+                        Vec::new()
+                    } else {
+                        report::offered(recent.as_deref(), readings)
+                    };
+                    if !keys.is_empty()
+                        && !readings.is_empty()
+                        && (typed == "0" || typed == report::NONE_OF_THESE)
+                    {
+                        return Ok(None);
+                    }
                     let chosen = chosen_from(typed, &keys).map_or(typed, |at| keys[at]);
                     if let Some(value) = picked(chosen, *pick) {
                         return Ok(Some(value));

@@ -71,7 +71,7 @@ A pick reads a piece of the input, word for word. Nine recognizers exist:
 | `pick`     | Recognizes                                      | Value             | `range` |
 | :--------- | :---------------------------------------------- | :---------------- | :------ |
 | `number`   | A number in digits or in words up to the hundreds, unit words kept in the span: `30 percent`, `fifty percent`, `twenty-five`, `two hundred and forty`; a leading minus is the number's: `-5` | The number | yes |
-| `duration` | One number and one unit, the number in digits or in words: `10 minutes`, `2 hours`, `twenty five minutes`; `an hour`, `half an hour`, `a quarter of an hour`, `an hour and a half`, `two and a half hours` | Whole seconds | yes |
+| `duration` | One number and one unit, the number in digits or in words: `10 minutes`, `2 hours`, `twenty five minutes`; `an hour`, `half an hour`, `a quarter of an hour`, `an hour and a half`, `two and a half hours`. A length across units, `1 hour 30 minutes`, is read from a sentence as a value said aloud, and at a prompt or in a call by name as it is typed | Whole seconds | yes |
 | `email`    | An address                                      | The text          | no      |
 | `url`      | A URL                                           | The text          | no      |
 | `quoted`   | `"…"`, `“…”` or `‘…’`; a straight single quote is an apostrophe | The text between the quotes | no |
@@ -85,10 +85,17 @@ A pick reads a piece of the input, word for word. Nine recognizers exist:
 - A text typed without quotes is read for a `quoted` argument where the classifier says the input states one:
   in *set a timer for 10 minutes called tea*, the label is `tea`. The text is a run of the input's words,
   copied, and the call confirms.
-- A value spelled out is read as it is typed, where the classifier says it is meant: an address, a URL, a code
-  or a number said aloud, `dana dot weiss at example dot org`, `five dot oh dot two`; a weekday misspelt,
-  `wendesday`; a code typed with a space, `hs 0409`. The call shows the typed value. After a misspelt day or a
-  spaced code it confirms, with your words on the line ([Outcomes](../use/outcomes.md)).
+- A value spelled out is read as it is typed, where the classifier says it is meant: an address, a URL, a code,
+  a number, a day or a length of time said aloud, `dana dot weiss at example dot org`, `five dot oh dot two`,
+  `an hour and thirty minutes`; a weekday misspelt, `wendesday`; a code typed with a space, `hs 0409`. The call
+  shows the typed value. After a misspelt day or a spaced code it confirms, with your words on the line
+  ([Outcomes](../use/outcomes.md)).
+- A pick's examples set its shape. The values your examples state for a `code` or a `number` argument tell
+  `evoke` how a value said aloud is written: where every example reads like `HS-0409`, `h s oh four oh nine`
+  becomes `HS-0409`, and the call confirms. Where the examples differ in case, the call confirms too. Where they
+  leave the length open, or the words read two ways, `evoke` asks and offers what the words read as. A code
+  argument with no example value is read only as it is typed. So give each pick argument examples that show
+  its real forms ([Saying things](../use/saying-things.md#a-value-typed-the-way-you-say-it)).
 - Text people type freely is never a `quoted` argument, and the body reads it from `input`:
   [rule 21](rules.md#4-words-that-read-each-value).
 - Quotes hide what they enclose. A typed span hides the bare numbers inside it. In *timer for 3 minutes called

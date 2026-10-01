@@ -1,5 +1,5 @@
 {
-  "digest": "h1:dd2e7265d20539595414a5711cb9ae5fc3678cf6cb9865b9e8002204c323087d",
+  "digest": "h1:8bc7085b8e07a68a7f5a2ca03187fef2a7c57310bf034e200b0bdaa831ad7eea",
   "active": {
     "errors": {
       "effect": "read",
@@ -586,7 +586,15 @@
       "ask": "From which release?",
       "pick": "code",
       "optional": false,
-      "recent": "release"
+      "recent": "release",
+      "examples": [
+        "4.12.0",
+        "2.3.1",
+        "7.0.2",
+        "5.4.1",
+        "4.12.0",
+        "4.12.0"
+      ]
     },
     "rollback.region": {
       "type": "choice",
@@ -632,7 +640,13 @@
       "type": "pick",
       "ask": "Which incident number?",
       "pick": "number",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "311",
+        "42",
+        "1207",
+        "88"
+      ]
     },
     "fits.postmortem": {
       "type": "yesno",

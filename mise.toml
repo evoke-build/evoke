@@ -38,16 +38,17 @@ run = [
 ]
 
 [tasks.fuzz]
-description = "Fuzz the manifest reader, the weave's reading and the four value recognizers from their seeds, ten minutes each unless FUZZ_SECONDS says otherwise: libFuzzer through cargo-fuzz on the pinned toolchain, no sanitizer, what it finds kept under fuzz/corpus; outside CI"
+description = "Fuzz the manifest reader, the weave's reading, the four value recognizers and the reader of values said aloud from their seeds, ten minutes each unless FUZZ_SECONDS says otherwise: libFuzzer through cargo-fuzz on the pinned toolchain, no sanitizer, what it finds kept under fuzz/corpus; outside CI"
 tools = { "cargo:cargo-fuzz" = "0.13.2" }
 run = [
-  "mkdir -p fuzz/corpus/manifest fuzz/corpus/reading fuzz/corpus/date fuzz/corpus/time fuzz/corpus/amount fuzz/corpus/code",
+  "mkdir -p fuzz/corpus/manifest fuzz/corpus/reading fuzz/corpus/date fuzz/corpus/time fuzz/corpus/amount fuzz/corpus/code fuzz/corpus/spoken",
   "cargo fuzz run --sanitizer none manifest fuzz/corpus/manifest fuzz/seeds/manifest -- -max_total_time=${FUZZ_SECONDS:-600}",
   "cargo fuzz run --sanitizer none reading fuzz/corpus/reading fuzz/seeds/reading -- -max_total_time=${FUZZ_SECONDS:-600} -max_len=8192 -timeout=10",
   "cargo fuzz run --sanitizer none date fuzz/corpus/date fuzz/seeds/values -- -max_total_time=${FUZZ_SECONDS:-600} -max_len=4096 -timeout=10",
   "cargo fuzz run --sanitizer none time fuzz/corpus/time fuzz/seeds/values -- -max_total_time=${FUZZ_SECONDS:-600} -max_len=4096 -timeout=10",
   "cargo fuzz run --sanitizer none amount fuzz/corpus/amount fuzz/seeds/values -- -max_total_time=${FUZZ_SECONDS:-600} -max_len=4096 -timeout=10",
   "cargo fuzz run --sanitizer none code fuzz/corpus/code fuzz/seeds/values -- -max_total_time=${FUZZ_SECONDS:-600} -max_len=4096 -timeout=10",
+  "cargo fuzz run --sanitizer none spoken fuzz/corpus/spoken fuzz/seeds/spoken -- -max_total_time=${FUZZ_SECONDS:-600} -max_len=4096 -timeout=10",
 ]
 
 [tasks.reflexes]

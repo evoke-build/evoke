@@ -1,0 +1,13 @@
+{
+  "input": {
+    "input": "that supplier still owes us two pallets",
+    "kind": "code",
+    "examples": [
+      "HS-0409",
+      "VX-2214"
+    ]
+  },
+  "expect": {
+    "said": []
+  }
+}

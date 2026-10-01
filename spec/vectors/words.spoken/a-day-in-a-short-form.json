@@ -1,0 +1,32 @@
+{
+  "input": {
+    "input": "what is on next fri",
+    "kind": "date",
+    "examples": [
+      "thursday",
+      "tomorrow"
+    ]
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 11,
+          "end": 19,
+          "text": "next fri"
+        },
+        "typed": "next friday",
+        "value": {
+          "type": "date",
+          "value": {
+            "type": "weekday",
+            "weekday": "friday",
+            "which": "next"
+          }
+        },
+        "form": "misspelt",
+        "shape": "whole"
+      }
+    ]
+  }
+}

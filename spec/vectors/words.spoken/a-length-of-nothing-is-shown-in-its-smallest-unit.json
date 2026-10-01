@@ -1,0 +1,40 @@
+{
+  "input": {
+    "input": "wait zero hours and zero minutes",
+    "kind": "duration",
+    "examples": [
+      "2 hours",
+      "30 minutes"
+    ]
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 5,
+          "end": 32,
+          "text": "zero hours and zero minutes"
+        },
+        "typed": "0 seconds",
+        "value": {
+          "type": "duration",
+          "value": 0
+        },
+        "form": "aloud",
+        "shape": "whole"
+      }
+    ],
+    "withdrawn": [
+      {
+        "start": 5,
+        "end": 15,
+        "text": "zero hours"
+      },
+      {
+        "start": 20,
+        "end": 32,
+        "text": "zero minutes"
+      }
+    ]
+  }
+}

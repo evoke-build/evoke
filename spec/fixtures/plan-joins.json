@@ -1,5 +1,5 @@
 {
-  "digest": "h1:25f9359b72e1df878443d8c21a9fed0c2712ceadcf2e8006da5b5e2c77b60ec0",
+  "digest": "h1:35f76d0c11e17d7dfc294f5f9d9743b0c0b749b589d11df6b90693473f17cf5f",
   "active": {
     "errors": {
       "effect": "read",
@@ -320,7 +320,12 @@
       "type": "pick",
       "ask": "From which release?",
       "pick": "code",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "4.12.0",
+        "2.3.1",
+        "7.0.2"
+      ]
     },
     "fits.incidents": {
       "type": "yesno",
@@ -338,7 +343,12 @@
       "type": "pick",
       "ask": "Which incident number?",
       "pick": "number",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "311",
+        "42",
+        "1207"
+      ]
     },
     "fits.postmortem": {
       "type": "yesno",

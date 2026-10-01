@@ -1,0 +1,25 @@
+{
+  "input": {
+    "input": "bring back four twelve oh",
+    "kind": "code",
+    "examples": [
+      "4.12.0",
+      "2.3.1"
+    ]
+  },
+  "expect": {
+    "said": [],
+    "asked": [
+      {
+        "words": {
+          "start": 11,
+          "end": 25,
+          "text": "four twelve oh"
+        },
+        "readings": [
+          "4.12.0"
+        ]
+      }
+    ]
+  }
+}

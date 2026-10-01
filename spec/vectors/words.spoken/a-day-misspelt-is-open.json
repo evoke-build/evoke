@@ -1,0 +1,31 @@
+{
+  "input": {
+    "input": "what is on tomorow",
+    "kind": "date",
+    "examples": [
+      "thursday",
+      "tomorrow"
+    ]
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 11,
+          "end": 18,
+          "text": "tomorow"
+        },
+        "typed": "tomorrow",
+        "value": {
+          "type": "date",
+          "value": {
+            "type": "offset",
+            "days": 1
+          }
+        },
+        "form": "misspelt",
+        "shape": "open"
+      }
+    ]
+  }
+}

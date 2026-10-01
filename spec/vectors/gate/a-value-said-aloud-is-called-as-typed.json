@@ -29,7 +29,7 @@
           "p": 0.97
         },
         {
-          "question": "weave.said_rollback__release_22_41",
+          "question": "weave.meant_rollback__release_22_41",
           "top": "yes",
           "p": 0.96
         }
@@ -55,7 +55,8 @@
           "release": {
             "by": "spelled",
             "form": "aloud",
-            "yes": 0.96
+            "yes": 0.96,
+            "shape": "whole"
           }
         },
         "missing": [],
@@ -109,7 +110,8 @@
       "release": {
         "by": "spelled",
         "form": "aloud",
-        "yes": 0.96
+        "yes": 0.96,
+        "shape": "whole"
       }
     },
     "left": [
@@ -125,7 +127,7 @@
     ],
     "confidence": 0.96,
     "weakest": {
-      "question": "weave.said_rollback__release_22_41",
+      "question": "weave.meant_rollback__release_22_41",
       "top": "yes",
       "p": 0.96
     },
@@ -136,7 +138,7 @@
         "p": 0.97
       },
       {
-        "question": "weave.said_rollback__release_22_41",
+        "question": "weave.meant_rollback__release_22_41",
         "top": "yes",
         "p": 0.96
       }

@@ -38,9 +38,10 @@ pub(crate) fn is(reflex: &LocalName, arg: &ArgName, place: usize) -> QuestionId 
     own(&format!("is_{}_{place}", pair(reflex, arg)))
 }
 
-/// `weave.said_<reflex>__<argument>_<start>_<end>`: a yes or no on a value the words at the span spell out.
-pub(crate) fn said(reflex: &LocalName, arg: &ArgName, span: &Span) -> QuestionId {
-    own(&format!("said_{}_{}", pair(reflex, arg), ends(span)))
+/// `weave.meant_<reflex>__<argument>_<start>_<end>`: a yes or no on the value the words at the span spell out,
+/// as its argument's kind reads it and its examples shape it.
+pub(crate) fn meant(reflex: &LocalName, arg: &ArgName, span: &Span) -> QuestionId {
+    own(&format!("meant_{}_{}", pair(reflex, arg), ends(span)))
 }
 
 /// `weave.only_<reflex>__<argument>_<start>_<end>`: a yes or no on the one candidate of the argument's kind.
@@ -115,7 +116,7 @@ pub fn argument(question: &QuestionId) -> Option<ArgName> {
     let kinds = [
         ("view_", 0),
         ("is_", 1),
-        ("said_", 2),
+        ("meant_", 2),
         ("only_", 2),
         ("first_", 1),
         ("run_", 1),
@@ -169,7 +170,7 @@ pub(crate) fn is_question(ask: &Clean, meaning: &Clean) -> Question {
 
 /// A yes or no on a value the request spells out, under the argument's own ask: the value as typed with the
 /// words that gave it, or other words.
-pub(crate) fn said_question(ask: &Clean, spelled: &Spelled) -> Question {
+pub(crate) fn meant_question(ask: &Clean, spelled: &Spelled) -> Question {
     let how = match spelled.form {
         Form::Aloud => "said",
         Form::Misspelt | Form::Spaced => "written",
@@ -217,7 +218,7 @@ mod tests {
         for question in [
             view(&reflex, &arg),
             is(&reflex, &arg, 12),
-            said(&reflex, &arg, &span),
+            meant(&reflex, &arg, &span),
             only(&reflex, &arg, &span),
         ] {
             assert_eq!(argument(&question), Some(arg.clone()), "{question}");

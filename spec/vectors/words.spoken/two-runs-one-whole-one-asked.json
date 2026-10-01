@@ -1,0 +1,54 @@
+{
+  "input": {
+    "input": "open incs four ninety one & five oh three",
+    "kind": "number",
+    "examples": [
+      "311",
+      "42",
+      "1207",
+      "88"
+    ]
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 28,
+          "end": 41,
+          "text": "five oh three"
+        },
+        "typed": "503",
+        "value": {
+          "type": "number",
+          "value": 503
+        },
+        "form": "aloud",
+        "shape": "whole"
+      }
+    ],
+    "asked": [
+      {
+        "words": {
+          "start": 10,
+          "end": 25,
+          "text": "four ninety one"
+        },
+        "readings": [
+          "491"
+        ]
+      }
+    ],
+    "withdrawn": [
+      {
+        "start": 28,
+        "end": 32,
+        "text": "five"
+      },
+      {
+        "start": 36,
+        "end": 41,
+        "text": "three"
+      }
+    ]
+  }
+}

@@ -1166,8 +1166,8 @@ pub fn confirm_prompt(prompt: &Prompt, teachable: bool, retry: Option<&str>) -> 
 pub const NONE_OF_THESE: &str = "none of these";
 
 /// The ask prompt: numbered choices and `[0] none of these`, a vocabulary's `[+] add one`, or a pick typed
-/// freely — the values recalled from the process's results numbered before it, a number pick's named as hints;
-/// `retry` says why the last answer did not do.
+/// freely — what the words read as numbered before it, with `[0] none of these`, or else the values recalled
+/// from the process's results; a number pick's are named as hints; `retry` says why the last answer did not do.
 #[must_use]
 pub fn ask_prompt(missing: &Missing, retry: Option<&str>) -> String {
     use evoke_core::decide::Choices;
@@ -1188,30 +1188,48 @@ pub fn ask_prompt(missing: &Missing, retry: Option<&str>) -> String {
             }
             let _ = write!(line, "[+] add one  [0] {NONE_OF_THESE}  ");
         }
-        // A number pick names the recalled values as hints: a number typed is its own answer.
         Choices::Pick {
-            pick: Recognizer::Number,
-            recent: Some(values),
+            pick,
+            recent,
+            readings,
         } => {
-            let _ = write!(line, "{}  ", values.join(" · "));
-        }
-        Choices::Pick {
-            recent: Some(values),
-            ..
-        } => {
-            for (i, value) in values.iter().enumerate() {
-                let _ = write!(line, "[{}] {value}  ", i + 1);
+            let offered = offered(recent.as_deref(), readings);
+            if offered.is_empty() {
+                // Nothing to name: the value is typed.
+            } else if *pick == Recognizer::Number {
+                // A number pick names its values as hints: a number typed is its own answer.
+                let _ = write!(line, "{}  ", offered.join(" · "));
+            } else {
+                for (i, value) in offered.iter().enumerate() {
+                    let _ = write!(line, "[{}] {value}  ", i + 1);
+                }
+                if !readings.is_empty() {
+                    let _ = write!(line, "[0] {NONE_OF_THESE}  ");
+                }
             }
         }
-        Choices::Pick { recent: None, .. } => {}
     }
     line.push_str("> ");
     line
 }
 
+/// The values a pick's prompt names: what the words read as, where they read as any; else the values recalled.
+#[must_use]
+pub fn offered<'a>(recent: Option<&'a [String]>, readings: &'a [Clean]) -> Vec<&'a str> {
+    if readings.is_empty() {
+        recent
+            .unwrap_or_default()
+            .iter()
+            .map(String::as_str)
+            .collect()
+    } else {
+        readings.iter().map(Clean::as_str).collect()
+    }
+}
+
 /// Why an argument is asked, where the question alone does not say: `150 percent is outside 0–100`; that what
 /// the request names is not on the list, with the words where the reading found them; the words that answer the
-/// ask and were read as no value.
+/// ask, with what they read as or as read as no value.
 #[must_use]
 pub fn because(missing: &Missing) -> Option<String> {
     use evoke_core::decide::Choices;
@@ -1238,6 +1256,9 @@ pub fn because(missing: &Missing) -> Option<String> {
                 pick: Recognizer::Quoted,
                 ..
             } => Some(format!("you wrote {words}")),
+            Choices::Pick { readings, .. } if !readings.is_empty() => {
+                Some(format!("you wrote {words}"))
+            }
             Choices::Pick { pick, .. } => Some(format!("{words} is not {}", pick.wants())),
             _ => None,
         },

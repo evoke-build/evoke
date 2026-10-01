@@ -110,7 +110,7 @@
           },
           "otherwise": "unstated"
         },
-        "weave.said_rollback__release_22_41": {
+        "weave.meant_rollback__release_22_41": {
           "type": "yesno",
           "ask": "From which release?",
           "yes": "«5.0.2», said as «five dot oh dot two».",
@@ -195,7 +195,8 @@
               "type": "code",
               "value": "5.0.2"
             },
-            "form": "aloud"
+            "form": "aloud",
+            "shape": "whole"
           }
         ]
       }

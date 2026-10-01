@@ -1,0 +1,26 @@
+{
+  "input": {
+    "input": "lock C O two X K one A B J G five M",
+    "kind": "code",
+    "examples": [
+      "C02XK1ABJG5M",
+      "c02g80t3md6r"
+    ]
+  },
+  "expect": {
+    "said": [],
+    "asked": [
+      {
+        "words": {
+          "start": 5,
+          "end": 35,
+          "text": "C O two X K one A B J G five M"
+        },
+        "readings": [
+          "CO2XK1ABJG5M",
+          "C02XK1ABJG5M"
+        ]
+      }
+    ]
+  }
+}

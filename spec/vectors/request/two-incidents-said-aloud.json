@@ -1,0 +1,608 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "input": "open incs four ninety one & five oh three",
+    "tags": [],
+    "scope": "full"
+  },
+  "expect": {
+    "ok": {
+      "state": {
+        "request": "open incs four ninety one & five oh three"
+      },
+      "questions": {
+        "route": {
+          "type": "choice",
+          "ask": "Which one does the request ask for?",
+          "options": {
+            "errors": {
+              "what": "Show the error rate of a service.\nThe share of its requests failing over the last hour and when it rose, in one region or all.",
+              "not_for": [
+                "the error messages in a service's logs",
+                "what was deployed and when",
+                "a service that is down or broken",
+                "response times and latency"
+              ],
+              "examples": [
+                "check the errors for checkout",
+                "error rate of payments in eu-west",
+                "is search throwing errors",
+                "how many checkout requests are erroring",
+                "show me the 5xx on search in us-east",
+                "what is the error rate of checkout",
+                "is search failing in us east"
+              ]
+            },
+            "deploys": {
+              "what": "List the recent deploys of a service.\nEach release with when it went out and who shipped it, in one region or all.",
+              "not_for": [
+                "rolling back a deploy",
+                "which deploy broke something",
+                "shipping a new release"
+              ],
+              "examples": [
+                "what got deployed to checkout recently",
+                "list the deploys of payments",
+                "recent releases of search in us-east",
+                "who shipped to payments in eu-west",
+                "what went out on checkout",
+                "who released payments last",
+                "show the deploys of search in us east"
+              ]
+            },
+            "logs": {
+              "what": "Search a service's logs from the last hour.\nIts most frequent error messages and how often each came, in one region or all.",
+              "not_for": [
+                "a service's error rate",
+                "a service's deploy log or release history"
+              ],
+              "examples": [
+                "pull the logs for checkout",
+                "search the payments logs in eu-west",
+                "what do the search logs say",
+                "what is checkout logging in us-east",
+                "top log errors for payments",
+                "search the logs of checkout",
+                "what errors are in the payments logs in eu west"
+              ]
+            },
+            "suspect": {
+              "what": "Find the release most likely behind a failure.\nWeighs the errors, deploys and logs found before it in the same request, and names one release.",
+              "not_for": [
+                "listing a service's deploys",
+                "rolling the release back",
+                "who shipped a release"
+              ],
+              "examples": [
+                "find the suspect",
+                "which deploy broke it",
+                "find the release behind the outage",
+                "what release caused this",
+                "find the release to blame"
+              ]
+            },
+            "rollback": {
+              "what": "Roll a service back from a release to the one before it.\nEverywhere or in one region; live traffic moves to the older release, and only a new deploy brings the newer one back.",
+              "not_for": [
+                "listing what was deployed",
+                "finding which release broke something",
+                "shipping a new release",
+                "restarting a service",
+                "a config change or a feature flag"
+              ],
+              "examples": [
+                "roll checkout back from 4.12.0",
+                "revert payments from 2.3.1 in eu-west",
+                "undo the 7.0.2 release of search",
+                "back out 5.4.1 on checkout in us-east",
+                "roll back the last payments deploy",
+                "roll back 4.12.0",
+                "revert release 4.12.0 of payments"
+              ]
+            },
+            "post": {
+              "what": "Post a message to a chat channel.\nTo one of your team's chat channels; the message is the words that asked for it.",
+              "not_for": [
+                "sending an email",
+                "updating the status page",
+                "paging someone on call",
+                "a direct message to one person",
+                "reading what a channel says"
+              ],
+              "examples": [
+                "post to #incident that we are on it",
+                "tell #ops the deploy is done",
+                "let #incident know it is fixed",
+                "drop a line in #ops about payments",
+                "give #incident an update on search",
+                "write in the incident channel that we are on it"
+              ]
+            },
+            "incidents": {
+              "what": "List the open incidents.\nEach with its number and the service it hit; closed ones are left out.",
+              "not_for": [
+                "looking up one incident by its number",
+                "declaring a new incident",
+                "closing or resolving an incident",
+                "incidents already closed"
+              ],
+              "examples": [
+                "list the open incidents",
+                "what incidents are open",
+                "which incidents are still going",
+                "show me active incidents",
+                "any incidents right now"
+              ]
+            },
+            "incident": {
+              "what": "Look up an incident by its number.\nWhat happened, when it opened and which service it hit.",
+              "not_for": [
+                "listing the open incidents",
+                "drafting a postmortem",
+                "closing or resolving an incident",
+                "declaring a new incident"
+              ],
+              "examples": [
+                "look up incident 311",
+                "what happened in incident 42",
+                "show me incident 1207",
+                "details on incident 88"
+              ]
+            },
+            "postmortem": {
+              "what": "Draft the postmortem of an incident.\nWritten from the incident looked up before it in the same request, and saved as a draft for review.",
+              "not_for": [
+                "looking up what happened in an incident",
+                "reading a postmortem already written",
+                "posting a summary to a channel",
+                "a status page update"
+              ],
+              "examples": [
+                "draft the postmortem",
+                "get the postmortem written",
+                "start a postmortem for it",
+                "write the incident review",
+                "write the postmortem for it"
+              ]
+            },
+            "status": {
+              "what": "Update the status page for a service.\nWhat customers see until the next update: investigating, identified, monitoring or resolved; monitoring when none is named.",
+              "not_for": [
+                "asking how a service is doing",
+                "opening the status page",
+                "posting in a chat channel",
+                "emailing customers"
+              ],
+              "examples": [
+                "update the status page for checkout",
+                "mark payments as resolved on the status page",
+                "set the search status to investigating",
+                "show checkout as identified on the status page",
+                "put payments in monitoring on the status page",
+                "mark search as investigating",
+                "tell customers we are monitoring search"
+              ]
+            },
+            "none": "None of these."
+          },
+          "otherwise": "none"
+        },
+        "errors.service": {
+          "type": "choice",
+          "ask": "Which service?",
+          "options": {
+            "checkout": "The checkout service: cart and order confirmation.",
+            "payments": "The payments service: card charges and refunds.",
+            "search": "The search service: product search and suggestions.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "errors.region": {
+          "type": "choice",
+          "ask": "In which region?",
+          "options": {
+            "eu-west": "Europe, the Ireland region.",
+            "us-east": "The United States, the Virginia region.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "deploys.service": {
+          "type": "choice",
+          "ask": "Which service?",
+          "options": {
+            "checkout": "The checkout service: cart and order confirmation.",
+            "payments": "The payments service: card charges and refunds.",
+            "search": "The search service: product search and suggestions.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "deploys.region": {
+          "type": "choice",
+          "ask": "In which region?",
+          "options": {
+            "eu-west": "Europe, the Ireland region.",
+            "us-east": "The United States, the Virginia region.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "logs.service": {
+          "type": "choice",
+          "ask": "Which service?",
+          "options": {
+            "checkout": "The checkout service: cart and order confirmation.",
+            "payments": "The payments service: card charges and refunds.",
+            "search": "The search service: product search and suggestions.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "logs.region": {
+          "type": "choice",
+          "ask": "In which region?",
+          "options": {
+            "eu-west": "Europe, the Ireland region.",
+            "us-east": "The United States, the Virginia region.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "rollback.service": {
+          "type": "choice",
+          "ask": "Which service?",
+          "options": {
+            "checkout": "The checkout service: cart and order confirmation.",
+            "payments": "The payments service: card charges and refunds.",
+            "search": "The search service: product search and suggestions.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "rollback.release": {
+          "type": "choice",
+          "ask": "From which release?",
+          "options": {
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "rollback.region": {
+          "type": "choice",
+          "ask": "In which region?",
+          "options": {
+            "eu-west": "Europe, the Ireland region.",
+            "us-east": "The United States, the Virginia region.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "post.channel": {
+          "type": "choice",
+          "ask": "Which channel?",
+          "options": {
+            "#incident": "Where an outage is handled.",
+            "#ops": "The operations team's channel.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "incident.number": {
+          "type": "choice",
+          "ask": "Which incident number?",
+          "options": {
+            "none": "The request says it, and none of these is it.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "status.component": {
+          "type": "choice",
+          "ask": "Which service?",
+          "options": {
+            "checkout": "The checkout service: cart and order confirmation.",
+            "payments": "The payments service: card charges and refunds.",
+            "search": "The search service: product search and suggestions.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "status.state": {
+          "type": "choice",
+          "ask": "What should the page say: investigating, identified, monitoring or resolved?",
+          "options": {
+            "investigating": {
+              "what": "Looking into a problem.",
+              "examples": [
+                "set the search status to investigating",
+                "mark search as investigating"
+              ]
+            },
+            "identified": {
+              "what": "The cause is known.",
+              "examples": [
+                "show checkout as identified on the status page"
+              ]
+            },
+            "monitoring": {
+              "what": "A fix is out; watching.",
+              "examples": [
+                "put payments in monitoring on the status page",
+                "tell customers we are monitoring search"
+              ]
+            },
+            "resolved": {
+              "what": "Back to normal.",
+              "examples": [
+                "mark payments as resolved on the status page"
+              ]
+            },
+            "none": "The request names one that is not in this list.",
+            "unstated": {
+              "what": "The request does not say.",
+              "examples": [
+                "update the status page for checkout"
+              ]
+            }
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_errors__service": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "checkout": "The checkout service: cart and order confirmation.",
+            "payments": "The payments service: card charges and refunds.",
+            "search": "The search service: product search and suggestions.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_errors__region": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "eu-west": "Europe, the Ireland region.",
+            "us-east": "The United States, the Virginia region.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_deploys__service": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "checkout": "The checkout service: cart and order confirmation.",
+            "payments": "The payments service: card charges and refunds.",
+            "search": "The search service: product search and suggestions.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_deploys__region": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "eu-west": "Europe, the Ireland region.",
+            "us-east": "The United States, the Virginia region.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_logs__service": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "checkout": "The checkout service: cart and order confirmation.",
+            "payments": "The payments service: card charges and refunds.",
+            "search": "The search service: product search and suggestions.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_logs__region": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "eu-west": "Europe, the Ireland region.",
+            "us-east": "The United States, the Virginia region.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_rollback__service": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "checkout": "The checkout service: cart and order confirmation.",
+            "payments": "The payments service: card charges and refunds.",
+            "search": "The search service: product search and suggestions.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_rollback__region": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "eu-west": "Europe, the Ireland region.",
+            "us-east": "The United States, the Virginia region.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_post__channel": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "#incident": "Where an outage is handled.",
+            "#ops": "The operations team's channel.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.meant_incident__number_28_41": {
+          "type": "yesno",
+          "ask": "Which incident number?",
+          "yes": "«503», said as «five oh three».",
+          "no": "Other words, or none."
+        },
+        "weave.view_status__component": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "checkout": "The checkout service: cart and order confirmation.",
+            "payments": "The payments service: card charges and refunds.",
+            "search": "The search service: product search and suggestions.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_status__state": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "investigating": {
+              "what": "Looking into a problem.",
+              "examples": [
+                "set the search status to investigating",
+                "mark search as investigating"
+              ]
+            },
+            "identified": {
+              "what": "The cause is known.",
+              "examples": [
+                "show checkout as identified on the status page"
+              ]
+            },
+            "monitoring": {
+              "what": "A fix is out; watching.",
+              "examples": [
+                "put payments in monitoring on the status page",
+                "tell customers we are monitoring search"
+              ]
+            },
+            "resolved": {
+              "what": "Back to normal.",
+              "examples": [
+                "mark payments as resolved on the status page"
+              ]
+            },
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        }
+      },
+      "proposed": [
+        {
+          "span": {
+            "start": 28,
+            "end": 32,
+            "text": "five"
+          },
+          "value": {
+            "type": "number",
+            "value": 5
+          }
+        },
+        {
+          "span": {
+            "start": 36,
+            "end": 41,
+            "text": "three"
+          },
+          "value": {
+            "type": "number",
+            "value": 3
+          }
+        }
+      ],
+      "spelled": {
+        "incident.number": [
+          {
+            "span": {
+              "start": 28,
+              "end": 41,
+              "text": "five oh three"
+            },
+            "typed": "503",
+            "value": {
+              "type": "number",
+              "value": 503
+            },
+            "form": "aloud",
+            "shape": "whole"
+          }
+        ]
+      },
+      "spoken": {
+        "rollback.release": {
+          "asked": [
+            {
+              "words": {
+                "start": 28,
+                "end": 41,
+                "text": "five oh three"
+              },
+              "readings": [
+                "5.0.3"
+              ]
+            }
+          ]
+        },
+        "incident.number": {
+          "asked": [
+            {
+              "words": {
+                "start": 10,
+                "end": 25,
+                "text": "four ninety one"
+              },
+              "readings": [
+                "491"
+              ]
+            }
+          ],
+          "withdrawn": [
+            {
+              "start": 28,
+              "end": 32,
+              "text": "five"
+            },
+            {
+              "start": 36,
+              "end": 41,
+              "text": "three"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

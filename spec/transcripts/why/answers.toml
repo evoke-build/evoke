@@ -98,9 +98,10 @@ route                      = { lights = 0.85, none = 0.15 }
 "weave.does_lights_0_2"    = { action = 0.95, courtesy = 0.05 }
 "weave.does_lights_5_8"    = { action = 0.95, courtesy = 0.05 }
 
-[answers."set a timer for 1 hour 30"]
+[answers."set a timer for 2 hours 15ish"]
 route                                 = { timer = 0.96, lights = 0.01, volume = 0.01, none = 0.02 }
-"timer.duration"                      = { 16-22 = 0.97, unstated = 0.03 }
+"timer.duration"                      = { 16-23 = 0.97, unstated = 0.03 }
+"weave.does_timer_6_6"                = { "arg:duration" = 0.9, action = 0.05, courtesy = 0.05 }
 "lights.room"                         = { unstated = 1.0 }
 "lights.state"                        = { unstated = 1.0 }
 "lights.brightness"                   = { unstated = 1.0 }
@@ -108,19 +109,18 @@ route                                 = { timer = 0.96, lights = 0.01, volume = 
 "volume.level"                        = { unstated = 1.0 }
 "weave.view_lights__room"             = { unstated = 1.0 }
 "weave.view_lights__state"            = { unstated = 1.0 }
-"weave.only_lights__brightness_23_25" = { yes = 0.05 }
-"weave.only_timer__duration_16_22"    = { yes = 0.05 }
-"weave.only_volume__level_23_25"      = { yes = 0.05 }
+"weave.only_lights__brightness_24_26" = { yes = 0.05 }
+"weave.only_timer__duration_16_23"    = { yes = 0.05 }
+"weave.only_volume__level_24_26"      = { yes = 0.05 }
 "weave.does_timer_0_2"                = { action = 0.95, courtesy = 0.05 }
-"weave.does_timer_6_6"                = { "arg:duration" = 0.9, action = 0.05, courtesy = 0.05 }
-"weave.first_timer__label_3150862695" = { unstated = 1.0 }
-"weave.run_timer__label_3150862695"   = { unstated = 1.0 }
+"weave.first_timer__label_1733581013" = { unstated = 1.0 }
+"weave.run_timer__label_1733581013"   = { unstated = 1.0 }
 "weave.word_timer__label_0"           = { yes = 0.05 }
 "weave.word_timer__label_1"           = { yes = 0.05 }
 "weave.word_timer__label_2"           = { yes = 0.05 }
 "weave.word_timer__label_3"           = { yes = 0.05 }
 "weave.word_timer__label_6"           = { yes = 0.05 }
-"weave.against_541648908"             = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.against_2434852971"            = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."set a timer for 10 minutes 'tea'"]
 route                                 = { timer = 0.96, lights = 0.01, volume = 0.01, none = 0.02 }

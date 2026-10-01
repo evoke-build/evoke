@@ -105,7 +105,7 @@
           },
           "otherwise": "unstated"
         },
-        "weave.said_rollback__release_22_41": {
+        "weave.meant_rollback__release_22_41": {
           "type": "yesno",
           "ask": "From which release?",
           "yes": "«5.0.2», said as «five dot oh dot two».",
@@ -201,7 +201,8 @@
               "type": "code",
               "value": "5.0.2"
             },
-            "form": "aloud"
+            "form": "aloud",
+            "shape": "whole"
           }
         ]
       }
@@ -228,7 +229,7 @@
       "deploys.service": {
         "unstated": 1
       },
-      "weave.said_rollback__release_22_41": {
+      "weave.meant_rollback__release_22_41": {
         "yes": 0.96
       },
       "weave.view_calendar__day": {
@@ -274,7 +275,7 @@
           "p": 0.97
         },
         {
-          "question": "weave.said_rollback__release_22_41",
+          "question": "weave.meant_rollback__release_22_41",
           "top": "yes",
           "p": 0.96
         }
@@ -300,7 +301,8 @@
           "release": {
             "by": "spelled",
             "form": "aloud",
-            "yes": 0.96
+            "yes": 0.96,
+            "shape": "whole"
           }
         },
         "missing": [],

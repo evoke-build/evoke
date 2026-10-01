@@ -1,0 +1,40 @@
+{
+  "input": {
+    "input": "stay awake for an hour and thirty minutes",
+    "kind": "duration",
+    "examples": [
+      "2 hours",
+      "30 minutes"
+    ]
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 15,
+          "end": 41,
+          "text": "an hour and thirty minutes"
+        },
+        "typed": "1 hour 30 minutes",
+        "value": {
+          "type": "duration",
+          "value": 5400
+        },
+        "form": "aloud",
+        "shape": "whole"
+      }
+    ],
+    "withdrawn": [
+      {
+        "start": 15,
+        "end": 22,
+        "text": "an hour"
+      },
+      {
+        "start": 27,
+        "end": 41,
+        "text": "thirty minutes"
+      }
+    ]
+  }
+}

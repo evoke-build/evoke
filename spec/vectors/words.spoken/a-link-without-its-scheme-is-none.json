@@ -1,0 +1,10 @@
+{
+  "input": {
+    "input": "get example dot com slash menu dot pdf",
+    "kind": "url",
+    "examples": []
+  },
+  "expect": {
+    "said": []
+  }
+}

@@ -11,6 +11,7 @@ use crate::adapter::Key;
 use crate::calendar::{Day, Weekday, Which};
 use crate::manifest::Recognizer;
 use crate::propose::{PickValue, Proposed, propose};
+use crate::spoken::Shape;
 use crate::text::{Clean, Input, Span};
 
 /// The words that carry no value by themselves: articles, pronouns, prepositions, auxiliaries, a courtesy, a
@@ -165,6 +166,10 @@ pub struct Spelled {
     pub typed: Clean,
     pub value: PickValue,
     pub form: Form,
+    /// How a value read in its argument's kind stands to the shape the argument's examples share; none where no
+    /// example was held against it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shape: Option<Shape>,
 }
 
 /// A word of the input as typed: where it stands in characters, and the word as it is compared.
@@ -672,6 +677,7 @@ fn aloud(input: &Input, tokens: &[Token], kind: Recognizer) -> Vec<Spelled> {
                 typed,
                 value,
                 form: Form::Aloud,
+                shape: None,
             });
         }
     };
@@ -692,7 +698,7 @@ fn aloud(input: &Input, tokens: &[Token], kind: Recognizer) -> Vec<Spelled> {
 }
 
 /// What a form reads as when the kind's recognizer reads the whole of it.
-fn read_whole(form: &str, kind: Recognizer) -> Option<PickValue> {
+pub(crate) fn read_whole(form: &str, kind: Recognizer) -> Option<PickValue> {
     let input = Input::new(form).ok()?;
     let whole = form.chars().count();
     propose(&input)
@@ -767,6 +773,7 @@ fn misspelt(input: &Input, tokens: &[Token]) -> Vec<Spelled> {
                     },
                 },
                 form: Form::Misspelt,
+                shape: None,
             });
         }
     }
@@ -875,6 +882,7 @@ fn joined(
             typed: Clean::new(&form).ok()?,
             value,
             form: Form::Spaced,
+            shape: None,
         })
     };
     let tickets: Vec<Spelled> = (from..to)

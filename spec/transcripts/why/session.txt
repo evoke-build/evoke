@@ -79,20 +79,20 @@ $ evoke why
 
   replay answered 15 questions in 2 rounds
 # Words right after a value that answer the same question may be part of it: the call waits, and the line names them.
-$ evoke "set a timer for 1 hour 30"
-  timer duration="1 hour" · write · weakest: route 0.96
-    "30" may be part of the duration
-  Start a 1 hour timer?  [y]es [n]o [t]each > n
+$ evoke "set a timer for 2 hours 15ish"
+  timer duration="2 hours" · write · weakest: route 0.96
+    "15ish" may be part of the duration
+  Start a 2 hours timer?  [y]es [n]o [t]each > n
 [2]
 $ evoke why
-  "set a timer for 1 hour 30"
+  "set a timer for 2 hours 15ish"
 
   which reflex            timer 0.96   (none of them 0.02 · lights 0.01)
                           Count down a duration, then sound an alert.
-  duration                "1 hour" 0.97   (not said 0.03)
+  duration                "2 hours" 0.97   (not said 0.03)
   holds all you said      0.90
-  → declined: timer duration="1 hour" · write · weakest: route 0.96
-    "30" may be part of the duration
+  → declined: timer duration="2 hours" · write · weakest: route 0.96
+    "15ish" may be part of the duration
 
   replay answered 22 questions in 3 rounds
 # Words in quotes that no value holds make the call wait, where the reflex takes a text in quotes.

@@ -1,5 +1,5 @@
 {
-  "digest": "h1:2d107e86be3cc4af46321aa80be338eca4727ed4b75e9188a9482eecd4dd2c4b",
+  "digest": "h1:83bcf61339b10ab5cbd463c85a0104b8746c0ab147e61125e9fc99a53484a238",
   "active": {
     "meeting": {
       "effect": "write",
@@ -149,13 +149,19 @@
       "type": "pick",
       "ask": "To which day?",
       "pick": "date",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "friday"
+      ]
     },
     "meeting.time": {
       "type": "pick",
       "ask": "At what time?",
       "pick": "time",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "10am"
+      ]
     },
     "fits.rollback": {
       "type": "yesno",
@@ -168,7 +174,10 @@
       "ask": "From which release?",
       "pick": "code",
       "optional": false,
-      "recent": "release"
+      "recent": "release",
+      "examples": [
+        "4.12.0"
+      ]
     },
     "fits.calendar": {
       "type": "yesno",

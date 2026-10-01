@@ -1,0 +1,25 @@
+{
+  "input": {
+    "input": "send it to carlos dot m at rocha dot com dot br",
+    "kind": "email",
+    "examples": []
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 11,
+          "end": 47,
+          "text": "carlos dot m at rocha dot com dot br"
+        },
+        "typed": "carlos.m@rocha.com.br",
+        "value": {
+          "type": "email",
+          "value": "carlos.m@rocha.com.br"
+        },
+        "form": "aloud",
+        "shape": "whole"
+      }
+    ]
+  }
+}

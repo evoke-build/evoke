@@ -1,0 +1,13 @@
+{
+  "input": {
+    "input": "stand up every fri",
+    "kind": "date",
+    "examples": [
+      "thursday",
+      "tomorrow"
+    ]
+  },
+  "expect": {
+    "said": []
+  }
+}

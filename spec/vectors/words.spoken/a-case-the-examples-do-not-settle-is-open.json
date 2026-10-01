@@ -1,0 +1,28 @@
+{
+  "input": {
+    "input": "is L X eighteen thirty on time",
+    "kind": "code",
+    "examples": [
+      "LX1830",
+      "tp1051"
+    ]
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 3,
+          "end": 22,
+          "text": "L X eighteen thirty"
+        },
+        "typed": "LX1830",
+        "value": {
+          "type": "code",
+          "value": "LX1830"
+        },
+        "form": "aloud",
+        "shape": "open"
+      }
+    ]
+  }
+}

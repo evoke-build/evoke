@@ -111,7 +111,7 @@
           },
           "otherwise": "unstated"
         },
-        "weave.said_meeting__day_20_29": {
+        "weave.meant_meeting__day_20_29": {
           "type": "yesno",
           "ask": "To which day?",
           "yes": "«wednesday», written as «wendesday».",

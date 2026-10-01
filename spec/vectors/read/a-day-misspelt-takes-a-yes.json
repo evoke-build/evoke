@@ -106,7 +106,7 @@
           },
           "otherwise": "unstated"
         },
-        "weave.said_meeting__day_20_29": {
+        "weave.meant_meeting__day_20_29": {
           "type": "yesno",
           "ask": "To which day?",
           "yes": "«wednesday», written as «wendesday».",
@@ -210,7 +210,7 @@
       "deploys.service": {
         "unstated": 1
       },
-      "weave.said_meeting__day_20_29": {
+      "weave.meant_meeting__day_20_29": {
         "yes": 0.95
       },
       "weave.only_meeting__time_33_36": {
@@ -256,7 +256,7 @@
           "p": 0.96
         },
         {
-          "question": "weave.said_meeting__day_20_29",
+          "question": "weave.meant_meeting__day_20_29",
           "top": "yes",
           "p": 0.95
         },

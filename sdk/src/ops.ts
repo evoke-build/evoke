@@ -29,6 +29,7 @@ export interface Ops {
   propose: { input: { input: T.Input }; output: T.Proposed[] }
   "words.listed": { input: { input: T.Input; list: Record<T.Key, T.Clean> }; output: T.Listed[] }
   "words.spelled": { input: { input: T.Input; kind: T.Recognizer }; output: T.Spelled[] }
+  "words.spoken": { input: { input: T.Input; kind: T.Recognizer; range?: [number, number]; examples?: T.Clean[] }; output: T.Heard }
   request: {
     input: { plan: T.Plan; input: string; tags: T.Tag[]; only?: T.LocalName; scope: T.Scope; recent?: T.Recent[] }
     output: T.Result<T.Request, T.Diagnostic>

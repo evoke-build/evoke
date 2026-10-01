@@ -1,0 +1,23 @@
+{
+  "input": {
+    "input": "write to rivera forty one at example dot com",
+    "kind": "email",
+    "examples": []
+  },
+  "expect": {
+    "said": [],
+    "asked": [
+      {
+        "words": {
+          "start": 9,
+          "end": 44,
+          "text": "rivera forty one at example dot com"
+        },
+        "readings": [
+          "rivera41@example.com",
+          "41@example.com"
+        ]
+      }
+    ]
+  }
+}

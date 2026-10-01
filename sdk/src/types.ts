@@ -563,7 +563,7 @@ export interface State {
 /** One call of `answer`: the state, the questions, the candidate spans the pick questions were built from, and
  *  per pick question the values recalled from the process's results, offered at the ask and never asked of the
  *  adapter. Beside them, what code found in the request's own words: per listed argument the listed words they
- *  hold, per typed argument the values they spell out. */
+ *  hold, per typed argument the values they spell out, and the words said aloud that are asked of the person. */
 export interface Request {
   state: State
   questions: Record<QuestionId, Question>
@@ -573,6 +573,7 @@ export interface Request {
   recent?: Record<QuestionId, string[]>
   listed?: Record<QuestionId, Listed[]>
   spelled?: Record<QuestionId, Spelled[]>
+  spoken?: Record<QuestionId, Spoken>
 }
 
 /** A result the process holds, newest first as the host hands them: the reflex that returned it and its `data`,
@@ -693,10 +694,11 @@ export interface Active {
   tags: Tag[]
 }
 
-/** A question that does not depend on the input, or a pick whose options exist only per input. */
+/** A question that does not depend on the input, or a pick whose options exist only per input; `examples` are
+ *  the values the argument's examples state, which give a value said aloud its shape. */
 export type Slot =
   | Question
-  | { type: "pick"; ask: Clean; pick: Recognizer; optional: boolean; recent?: FieldName }
+  | { type: "pick"; ask: Clean; pick: Recognizer; optional: boolean; recent?: FieldName; examples?: Clean[] }
 
 // propose.rs
 
@@ -736,12 +738,40 @@ export interface Listed {
 export type Form = "aloud" | "misspelt" | "spaced"
 
 /** A value the request's words spell out: the words, the form they stand for as it would be typed, what that form
- *  reads as, and how it was read. */
+ *  reads as, and how it was read; `shape` where the value was held against its argument's examples. */
 export interface Spelled {
   span: Span
   typed: Clean
   value: PickValue
   form: Form
+  shape?: Shape
+}
+
+// spoken.rs
+
+/** How a value said aloud stands to the shape its argument's examples share: the words spell it `whole`; a case
+ *  or a separator every example shares `completed` it; or its form is `open`, one the examples do not settle. A
+ *  value that is not whole waits for a yes. */
+export type Shape = "whole" | "completed" | "open"
+
+/** What the words said aloud leave beside the values they spell, for one argument: the runs asked of the person,
+ *  and the candidates of the argument's kind that are part of a run, which its own question no longer offers. */
+export interface Spoken {
+  asked?: Offered[]
+  withdrawn?: Span[]
+}
+
+/** A run of words asked of the person: the words, and what they read as, each a value the kind's recognizer reads
+ *  whole; none where the words fit no example of the argument. */
+export interface Offered {
+  words: Span
+  readings?: Clean[]
+}
+
+/** What an argument's words say aloud: the values spelled, in the order of their words, and what is left beside
+ *  them. */
+export interface Heard extends Spoken {
+  said: Spelled[]
 }
 
 // calendar.rs
@@ -804,8 +834,9 @@ export type Basis =
   | { by: "view"; view: View; p: Prob; other: Key; words: Span; how: How }
   /** No view gave it: words of the request hold it, and a yes says it is meant. */
   | { by: "words"; words: Span; how: How; yes: Prob }
-  /** The request spells it out in a form code reads, and a yes says it is meant. */
-  | { by: "spelled"; form: Form; yes: Prob }
+  /** The request spells it out in a form code reads, and a yes says it is meant; `shape` where the value was
+   *  held against its argument's examples. */
+  | { by: "spelled"; form: Form; yes: Prob; shape?: Shape }
   /** The one candidate of its kind, and a yes says it is meant. */
   | { by: "only"; yes: Prob }
   /** A text typed without quotes: the reading the last choice took, and the readings beside it. */
@@ -867,11 +898,12 @@ export type Why =
   | { type: "unsettled" }
   | { type: "unread" }
 
-/** What a person may answer with; a vocabulary also prompts to add a word. */
+/** What a person may answer with; a vocabulary also prompts to add a word. A pick is typed freely: `readings`
+ *  are what the words that answer the ask read as, each one a value to offer in place of `recent`. */
 export type Choices =
   | { type: "options"; options: Record<OptionKey, Clean> }
   | { type: "vocab"; words: Record<Word, Clean> }
-  | { type: "pick"; pick: Recognizer; recent?: string[] }
+  | { type: "pick"; pick: Recognizer; recent?: string[]; readings?: Clean[] }
 
 /** The outcome, tagged by `outcome` on the wire, the chosen call's fields flattened beside it. */
 export type Decision =

@@ -1,0 +1,28 @@
+{
+  "input": {
+    "input": "put h s oh four oh nine aside",
+    "kind": "code",
+    "examples": [
+      "HS-0409",
+      "VX-2214"
+    ]
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 4,
+          "end": 23,
+          "text": "h s oh four oh nine"
+        },
+        "typed": "HS-0409",
+        "value": {
+          "type": "code",
+          "value": "HS-0409"
+        },
+        "form": "aloud",
+        "shape": "completed"
+      }
+    ]
+  }
+}

@@ -959,6 +959,7 @@ fn request_of(
         recent: IndexMap::new(),
         listed: IndexMap::new(),
         spelled: IndexMap::new(),
+        spoken: IndexMap::new(),
     })
 }
 

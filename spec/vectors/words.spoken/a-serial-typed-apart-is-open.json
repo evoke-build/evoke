@@ -1,0 +1,28 @@
+{
+  "input": {
+    "input": "lock C 0 2 X K 1 A B J G 5 M",
+    "kind": "code",
+    "examples": [
+      "C02XK1ABJG5M",
+      "c02g80t3md6r"
+    ]
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 5,
+          "end": 28,
+          "text": "C 0 2 X K 1 A B J G 5 M"
+        },
+        "typed": "C02XK1ABJG5M",
+        "value": {
+          "type": "code",
+          "value": "C02XK1ABJG5M"
+        },
+        "form": "aloud",
+        "shape": "open"
+      }
+    ]
+  }
+}

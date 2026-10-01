@@ -27,6 +27,7 @@ use crate::plan::{
 };
 use crate::propose::{PickValue, Proposed, propose};
 use crate::settle::{self, One, Settled};
+use crate::spoken::{self, Shape, Spoken};
 use crate::text::{Clean, Input, NonEmpty, Span};
 use crate::waits;
 use crate::words::{self, Form, How, Listed, Spelled};
@@ -140,8 +141,14 @@ pub enum Basis {
     },
     /// No view gave it: words of the request hold it, and a yes says it is meant.
     Words { words: Span, how: How, yes: Prob },
-    /// The request spells it out in a form code reads, and a yes says it is meant.
-    Spelled { form: Form, yes: Prob },
+    /// The request spells it out in a form code reads, and a yes says it is meant; `shape` is how the value
+    /// stands to the shape its argument's examples share, where it was held against them.
+    Spelled {
+        form: Form,
+        yes: Prob,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        shape: Option<Shape>,
+    },
     /// The one candidate of its kind, and a yes says it is meant.
     Only { yes: Prob },
     /// A text typed without quotes: the reading the last choice took, and the readings beside it.
@@ -178,16 +185,18 @@ impl Basis {
     fn cap(&self, arg: &ArgName) -> Option<Cap> {
         match self {
             Self::View { .. } | Self::Words { .. } => Some(Cap::OneView { arg: arg.clone() }),
-            Self::Spelled {
-                form: Form::Misspelt | Form::Spaced,
-                ..
-            } => Some(Cap::Respelt { arg: arg.clone() }),
+            // A value the words spell whole caps nothing; one in a form the examples do not settle, or whose
+            // case or dash their shape completed, is shown for a yes; one held against no example, by its form.
+            Self::Spelled { form, shape, .. } => {
+                let shown = match shape {
+                    Some(Shape::Whole) => false,
+                    Some(Shape::Open | Shape::Completed) => true,
+                    None => matches!(form, Form::Misspelt | Form::Spaced),
+                };
+                shown.then(|| Cap::Respelt { arg: arg.clone() })
+            }
             Self::Text { .. } => Some(Cap::TextRead { arg: arg.clone() }),
-            Self::Ask { .. }
-            | Self::Views { .. }
-            | Self::Spelled { .. }
-            | Self::Only { .. }
-            | Self::Shared { .. } => None,
+            Self::Ask { .. } | Self::Views { .. } | Self::Only { .. } | Self::Shared { .. } => None,
         }
     }
 }
@@ -256,6 +265,10 @@ pub enum Choices {
         pick: Recognizer,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         recent: Option<Vec<String>>,
+        /// What the words that answer the ask read as, where they say a value aloud in more than one reading
+        /// or in a length the argument's examples leave open: each a value the recognizer reads whole.
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        readings: Vec<Clean>,
     },
 }
 
@@ -720,11 +733,26 @@ pub fn request(
             questions.insert(id.clone(), question);
         }
     }
-    let (listed, spelled) = if scope == Scope::Full {
+    let (listed, spelled, spoken) = if scope == Scope::Full {
         found(plan, &narrowed, &input, &proposed)
     } else {
-        (IndexMap::new(), IndexMap::new())
+        (IndexMap::new(), IndexMap::new(), IndexMap::new())
     };
+    // A pick's own question offers no candidate a spoken run holds: «seven oh» offers no 7.
+    for (id, heard) in &spoken {
+        if heard.withdrawn.is_empty() {
+            continue;
+        }
+        if let Some(slot) = plan.slots().get(id) {
+            let kept: Vec<Proposed> = proposed
+                .iter()
+                .filter(|candidate| !heard.withdrawn.contains(&candidate.span))
+                .cloned()
+                .collect();
+            let question = asked(plan, id, slot, &kept, recent, &mut recalled);
+            questions.insert(id.clone(), question);
+        }
+    }
     let mut request = Request {
         state: State { request: input },
         questions,
@@ -733,6 +761,7 @@ pub fn request(
         recent: recalled,
         listed,
         spelled,
+        spoken,
     };
     if scope == Scope::Full {
         let own = ahead(plan, &narrowed, &request);
@@ -780,11 +809,11 @@ fn ahead(
                     let said = request.spelled.get(&id).map_or(&[][..], Vec::as_slice);
                     for spelled in said.iter().take(pins::MOST) {
                         own.insert(
-                            pins::said(reflex, arg, &spelled.span),
-                            pins::said_question(&argument.ask, spelled),
+                            pins::meant(reflex, arg, &spelled.span),
+                            pins::meant_question(&argument.ask, spelled),
                         );
                     }
-                    if let Some(only) = only(pick.recognizer(), &request.proposed) {
+                    if let Some(only) = only_offered(pick.recognizer(), request, &id) {
                         own.insert(
                             pins::only(reflex, arg, &only.span),
                             pins::only_question(&argument.ask, &only.span),
@@ -813,11 +842,20 @@ pub(crate) fn word_question(
     ))
 }
 
-/// The one candidate of a kind among the input's, when it holds one and no more.
-pub(crate) fn only(recognizer: Recognizer, proposed: &[Proposed]) -> Option<&Proposed> {
-    let mut of_kind = proposed
-        .iter()
-        .filter(|proposed| proposes(recognizer, &proposed.value));
+/// The one candidate of a kind an argument's own question offers, when it offers one and no more: the input's
+/// candidates of the kind, less those a spoken run of the argument withdrew.
+pub(crate) fn only_offered<'r>(
+    recognizer: Recognizer,
+    request: &'r Request,
+    id: &QuestionId,
+) -> Option<&'r Proposed> {
+    let withdrawn = request
+        .spoken
+        .get(id)
+        .map_or(&[][..], |heard| heard.withdrawn.as_slice());
+    let mut of_kind = request.proposed.iter().filter(|proposed| {
+        proposes(recognizer, &proposed.value) && !withdrawn.contains(&proposed.span)
+    });
     let first = of_kind.next()?;
     of_kind.next().is_none().then_some(first)
 }
@@ -875,21 +913,24 @@ fn asked(
     ))
 }
 
-/// What code finds in the input's own words for the arguments of the reflexes asked about, by each argument's
-/// question: the listed words they hold, and the values they spell out in a form no recognizer reads as typed.
-/// A word that is the reflex's own name says what to do and is no value; a word the reflex's own words hold is
-/// no part of a code typed with spaces.
-fn found(
-    plan: &Plan,
-    narrowed: &[&LocalName],
-    input: &Input,
-    proposed: &[Proposed],
-) -> (
+/// What code finds in a request's words, per argument: the listed words, the values spelled out, and what the
+/// reader of values said aloud leaves beside them.
+type Findings = (
     IndexMap<QuestionId, Vec<Listed>>,
     IndexMap<QuestionId, Vec<Spelled>>,
-) {
+    IndexMap<QuestionId, Spoken>,
+);
+
+/// What code finds in the input's own words for the arguments of the reflexes asked about, by each argument's
+/// question: the listed words they hold, and the values they spell out in a form no recognizer reads as typed,
+/// each read in its argument's kind and held against the argument's examples, with the runs that reading asks
+/// and the candidates it withdraws. A word that is the reflex's own name says what to do and is no value; a word
+/// the reflex's own words hold is no part of a code typed with spaces; a code with no example has no shape to
+/// be read in, and is read by its words alone.
+fn found(plan: &Plan, narrowed: &[&LocalName], input: &Input, proposed: &[Proposed]) -> Findings {
     let mut listed = IndexMap::new();
     let mut spelled = IndexMap::new();
+    let mut spoken = IndexMap::new();
     for (id, slot) in plan.slots() {
         let QuestionId::Arg(reflex, arg) = id else {
             continue;
@@ -918,9 +959,31 @@ fn found(
                     listed.insert(id.clone(), held);
                 }
             }
-            Slot::Pick { pick, .. } => {
+            Slot::Pick { pick, examples, .. } => {
                 let own = own_words(plan, reflex);
-                let said: Vec<Spelled> = words::spelled(input, *pick, proposed)
+                let argued = plan
+                    .active()
+                    .get(reflex)
+                    .and_then(|active| active.args.get(arg))
+                    .and_then(|argument| match &argument.kind {
+                        Kind::Value {
+                            source: Source::Pick(argued),
+                            ..
+                        } => Some(argued),
+                        _ => None,
+                    })
+                    .filter(|_| !examples.is_empty() || *pick != Recognizer::Code);
+                let said = match argued {
+                    Some(argued) => {
+                        let heard = spoken::heard(input, argued, examples, proposed);
+                        if !heard.spoken.is_empty() {
+                            spoken.insert(id.clone(), heard.spoken);
+                        }
+                        heard.said
+                    }
+                    None => words::spelled(input, *pick, proposed),
+                };
+                let said: Vec<Spelled> = said
                     .into_iter()
                     .filter(|said| {
                         said.form != Form::Spaced
@@ -936,7 +999,7 @@ fn found(
             Slot::Ready(_) => {}
         }
     }
-    (listed, spelled)
+    (listed, spelled, spoken)
 }
 
 /// Whether a key is one of the sentinels a choice carries, which no list holds.
@@ -1194,6 +1257,7 @@ pub fn read(plan: &Plan, gate: Option<&Gate>, request: &Request, raw: Raw) -> Re
                 recent: IndexMap::new(),
                 listed: IndexMap::new(),
                 spelled: IndexMap::new(),
+                spoken: IndexMap::new(),
             },
         });
     }
@@ -1444,12 +1508,22 @@ impl Reader<'_> {
                 malformed(QuestionId::Route, format!("\"{reflex}\" is not active"))
             })?;
         let mut draft = self.arguments(&reflex, active, route, open)?;
+        // A candidate a spoken run of this reflex's arguments withdrew is part of that run, and no span of its own.
+        let withdrawn: Vec<&Span> = self
+            .request
+            .spoken
+            .iter()
+            .filter(|(id, _)| id.reflex() == Some(&reflex))
+            .flat_map(|(_, heard)| &heard.withdrawn)
+            .collect();
         let unconsumed = self
             .request
             .proposed
             .iter()
             .filter(|proposed| {
-                proposed.value.is_typed() && !draft.consumed.contains(&&proposed.span)
+                proposed.value.is_typed()
+                    && !draft.consumed.contains(&&proposed.span)
+                    && !withdrawn.contains(&&proposed.span)
             })
             .map(|proposed| proposed.span.clone())
             .collect();
@@ -1921,6 +1995,7 @@ pub(crate) fn choices(
         Source::Pick(pick) => Choices::Pick {
             pick: pick.recognizer(),
             recent,
+            readings: Vec::new(),
         },
         Source::Vocab(_) => Choices::Vocab {
             words: words(plan, reflex, arg),
@@ -2354,7 +2429,7 @@ pub fn held(plan: &Plan, decision: Decision, cap: Cap) -> Decision {
 }
 
 /// A decision whose reflex no other step of a plan has, or that stands alone with no plan around it: the words
-/// that say the call is wanted once more, «him too», «the same for Berlin», hold it as words that ask for another
+/// that say the call is wanted once more, «him too», «the same for the hall», hold it as words that ask for another
 /// thing do, whatever the engine answered of them.
 #[must_use]
 pub fn alone(plan: &Plan, decision: Decision) -> Decision {
@@ -2503,9 +2578,10 @@ fn asking_of(chosen: &Chosen, because: &[Cap]) -> Option<Asking> {
 }
 
 /// Typed text run through a pick's recognizer, as the prompt and a call by name read it: a candidate of its kind
-/// that covers the whole text, spaces at the ends aside — `1e3` and `1 hour 30 minutes` read as nothing, so a call
-/// by name is refused and a prompt asks again, never trimmed to the part that read; a quoted pick takes the whole
-/// text when no quotes enclose it whole, and a code pick takes a code typed in quotes.
+/// that covers the whole text, spaces at the ends aside — `1e3` and `1 hour or so` read as nothing, so a call by
+/// name is refused and a prompt asks again, never trimmed to the part that read; a quoted pick takes the whole
+/// text when no quotes enclose it whole, a code pick takes a code typed in quotes, and a length written across
+/// its units, `1 hour 30 minutes`, reads as a sentence's words read it.
 #[must_use]
 pub fn picked(text: &str, recognizer: Recognizer) -> Option<Value> {
     let input = Input::new(text.trim()).ok()?;
@@ -2535,8 +2611,24 @@ pub fn picked(text: &str, recognizer: Recognizer) -> Option<Value> {
                 typed: None,
             })
         }
+        (None, Recognizer::Duration) => across_units(&input),
         (None, _) => None,
     }
+}
+
+/// A length its words spell whole across units, the way a sentence's words are read: `1 hour 30 minutes`, the
+/// form such a value is shown in, so that what a call shows can be typed back.
+fn across_units(input: &Input) -> Option<Value> {
+    let whole = input.as_str().chars().count();
+    let heard = spoken::heard(input, &Pick::Duration(None), &[], &propose(input));
+    let said = heard.said.into_iter().find(|said| {
+        said.span.start() == 0 && said.span.end() == whole && said.shape == Some(Shape::Whole)
+    })?;
+    Some(Value::Pick {
+        span: said.span,
+        value: said.value,
+        typed: Some(said.typed),
+    })
 }
 
 /// `evoke run <call>`: no classifier. Every name is followed through `was` and every value typed by its argument's

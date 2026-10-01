@@ -1,0 +1,25 @@
+{
+  "input": {
+    "input": "bring back the seven oh two",
+    "kind": "code",
+    "examples": [
+      "4.12.0",
+      "2.3.1"
+    ]
+  },
+  "expect": {
+    "said": [],
+    "asked": [
+      {
+        "words": {
+          "start": 15,
+          "end": 27,
+          "text": "seven oh two"
+        },
+        "readings": [
+          "7.0.2"
+        ]
+      }
+    ]
+  }
+}

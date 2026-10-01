@@ -58,7 +58,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:9806d28357566277b4d6b274ec37075983718b2f57ca8852883fc1871be890ee",
+      "digest": "h1:ce755bc045e0e197ddddcf8a7fbacc1b7da0caca1c547afe5abe775b5a6ee296",
       "active": {
         "lights": {
           "effect": "destructive",
@@ -208,7 +208,10 @@
           "type": "pick",
           "ask": "How bright, in percent?",
           "pick": "number",
-          "optional": true
+          "optional": true,
+          "examples": [
+            "30 percent"
+          ]
         },
         "fits.power": {
           "type": "yesno",

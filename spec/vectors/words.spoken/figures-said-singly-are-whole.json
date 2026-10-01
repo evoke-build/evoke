@@ -1,0 +1,42 @@
+{
+  "input": {
+    "input": "open incident four oh seven",
+    "kind": "number",
+    "examples": [
+      "311",
+      "42",
+      "1207",
+      "88"
+    ]
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 14,
+          "end": 27,
+          "text": "four oh seven"
+        },
+        "typed": "407",
+        "value": {
+          "type": "number",
+          "value": 407
+        },
+        "form": "aloud",
+        "shape": "whole"
+      }
+    ],
+    "withdrawn": [
+      {
+        "start": 14,
+        "end": 18,
+        "text": "four"
+      },
+      {
+        "start": 22,
+        "end": 27,
+        "text": "seven"
+      }
+    ]
+  }
+}

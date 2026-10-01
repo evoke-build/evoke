@@ -1,0 +1,39 @@
+{
+  "input": {
+    "input": "set the volume to seven oh",
+    "kind": "number",
+    "examples": [
+      "60%",
+      "40"
+    ],
+    "range": [
+      0,
+      100
+    ]
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 18,
+          "end": 26,
+          "text": "seven oh"
+        },
+        "typed": "70",
+        "value": {
+          "type": "number",
+          "value": 70
+        },
+        "form": "aloud",
+        "shape": "whole"
+      }
+    ],
+    "withdrawn": [
+      {
+        "start": 18,
+        "end": 23,
+        "text": "seven"
+      }
+    ]
+  }
+}

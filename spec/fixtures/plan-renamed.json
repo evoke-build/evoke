@@ -1,5 +1,5 @@
 {
-  "digest": "h1:5ff198bfaf60849b516563bfb0c3c258a104526718ea0068fba2b60f4abdf84e",
+  "digest": "h1:3f21b735078ee585b7d37e586ca2dfd26d242ead060af4c41c1d1731c82b6e9b",
   "active": {
     "lights": {
       "effect": "write",
@@ -154,7 +154,10 @@
       "type": "pick",
       "ask": "How bright, in percent?",
       "pick": "number",
-      "optional": true
+      "optional": true,
+      "examples": [
+        "30 percent"
+      ]
     },
     "fits.timer": {
       "type": "yesno",
@@ -166,13 +169,22 @@
       "type": "pick",
       "ask": "How long?",
       "pick": "duration",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "10 minutes",
+        "25 minute",
+        "3 minutes",
+        "90 seconds"
+      ]
     },
     "timer.label": {
       "type": "pick",
       "ask": "What is the timer for?",
       "pick": "quoted",
-      "optional": true
+      "optional": true,
+      "examples": [
+        "eggs"
+      ]
     }
   },
   "values": {

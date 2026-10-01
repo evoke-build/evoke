@@ -1395,7 +1395,7 @@ impl<'a> Planner<'a> {
     }
 
     /// Once every part is decided and folded: a step of the person's own whose words say it is wanted once more
-    /// — «him too», «the same for Berlin» — waits as words that ask for another thing do, whatever the engine
+    /// — «him too», «the same for the hall» — waits as words that ask for another thing do, whatever the engine
     /// answered of them, unless the plan holds another step of its reflex, which is the other time the words
     /// ask for.
     fn again(&self, draft: &mut Draft) {

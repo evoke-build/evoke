@@ -1,0 +1,25 @@
+{
+  "input": {
+    "input": "get h t t p s colon slash slash example dot com slash menu dot pdf",
+    "kind": "url",
+    "examples": []
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 4,
+          "end": 66,
+          "text": "h t t p s colon slash slash example dot com slash menu dot pdf"
+        },
+        "typed": "https://example.com/menu.pdf",
+        "value": {
+          "type": "url",
+          "value": "https://example.com/menu.pdf"
+        },
+        "form": "aloud",
+        "shape": "whole"
+      }
+    ]
+  }
+}

@@ -31,6 +31,7 @@ pub mod project;
 pub mod propose;
 pub mod run;
 mod settle;
+pub mod spoken;
 pub mod test;
 pub mod text;
 pub mod vocabulary;

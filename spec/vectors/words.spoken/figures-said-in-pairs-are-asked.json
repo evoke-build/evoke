@@ -1,0 +1,27 @@
+{
+  "input": {
+    "input": "open incident three eleven",
+    "kind": "number",
+    "examples": [
+      "311",
+      "42",
+      "1207",
+      "88"
+    ]
+  },
+  "expect": {
+    "said": [],
+    "asked": [
+      {
+        "words": {
+          "start": 14,
+          "end": 26,
+          "text": "three eleven"
+        },
+        "readings": [
+          "311"
+        ]
+      }
+    ]
+  }
+}

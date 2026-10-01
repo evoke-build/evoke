@@ -10,7 +10,7 @@ use indexmap::IndexMap;
 use crate::adapter::{Choice, Key, Prob, Question, QuestionId, Request};
 use crate::call::Value;
 use crate::decide::{
-    Answers, Basis, Choices, Judgment, Missing, View, Why, candidate, choices, judge, only,
+    Answers, Basis, Choices, Judgment, Missing, View, Why, candidate, choices, judge, only_offered,
     out_of_range, probability, proposes, required, taken_as, top, unstated, word_question, worded,
 };
 use crate::manifest::{Argument, Pick, Source};
@@ -178,6 +178,7 @@ impl<'a> One<'a, '_> {
                 choices: Choices::Pick {
                     pick: pick.recognizer(),
                     recent: self.recalled(),
+                    readings: Vec::new(),
                 },
             });
         }
@@ -353,7 +354,15 @@ pub(crate) fn typed<'a>(
     {
         return Ok((asked, settled));
     }
-    match proposed(one, pick, open) {
+    let taken = proposed(one, pick, open);
+    // Words said aloud that read two ways, or in a length the examples leave open, are asked where nothing else
+    // took a value, whatever the argument's own question answered.
+    if let Ok(None) = taken
+        && let Some(settled) = heard(one, pick)
+    {
+        return Ok((asked, settled));
+    }
+    match taken {
         Err(Waits) => Ok((asked, Settled::Open)),
         Ok(Some(taken)) => Ok(taken),
         Ok(None) if stated => {
@@ -415,17 +424,17 @@ fn proposed<'a>(
         .iter()
         .take(pins::MOST)
         .map(|spelled| {
-            let id = pins::said(one.reflex, one.arg, &spelled.span);
+            let id = pins::meant(one.reflex, one.arg, &spelled.span);
             let yes = one.yes(
                 &id,
-                || pins::said_question(&one.argument.ask, spelled),
+                || pins::meant_question(&one.argument.ask, spelled),
                 open,
             );
             (spelled, id, yes)
         })
         .collect();
     let alone: Option<(&Proposed, QuestionId, Option<Prob>)> =
-        only(recognizer, &one.request.proposed)
+        only_offered(recognizer, one.request, &one.id())
             .filter(|only| !words::courtesy(only.span.text().as_str()))
             .map(|only| {
                 let id = pins::only(one.reflex, one.arg, &only.span);
@@ -450,9 +459,17 @@ fn proposed<'a>(
         [best, next, ..] => best.2.get() - next.2.get() >= LEAD,
         _ => true,
     };
+    // While the words hold another run of the kind that is asked of the person, no value is taken on a yes
+    // alone, as two spelled values neither of which leads are not: «four ninety one & five oh three».
+    let rivals = one
+        .request
+        .spoken
+        .get(&one.id())
+        .is_some_and(|heard| !heard.asked.is_empty());
     if let Some((spelled, id, yes)) = said.into_iter().next()
         && yes.get() >= PROPOSED
         && leads
+        && !rivals
     {
         let value = Value::Pick {
             span: spelled.span.clone(),
@@ -462,12 +479,14 @@ fn proposed<'a>(
         let stands = Basis::Spelled {
             form: spelled.form,
             yes,
+            shape: spelled.shape,
         };
         let settled = one.ranged(pick, value, stands, Vec::new());
         return Ok(Some((said_yes(id, yes), settled)));
     }
     if let Some((only, id, Some(yes))) = alone
         && yes.get() >= PROPOSED
+        && !rivals
     {
         let value = Value::Pick {
             span: only.span.clone(),
@@ -478,6 +497,28 @@ fn proposed<'a>(
         return Ok(Some((said_yes(id, yes), settled)));
     }
     Ok(None)
+}
+
+/// The run of words said aloud that is asked of the person, with its readings offered: read two ways, or in a
+/// length the examples leave open, it is unsettled; read in no example's length, it is stated and not offered,
+/// and nothing is padded.
+fn heard<'a>(one: &One<'a, '_>, pick: &Pick) -> Option<Settled<'a>> {
+    let asked = one.request.spoken.get(&one.id())?.asked.first()?;
+    Some(Settled::Missing(Missing {
+        arg: one.arg.clone(),
+        ask: one.argument.ask.clone(),
+        because: if asked.readings.is_empty() {
+            Why::NotOffered
+        } else {
+            Why::Unsettled
+        },
+        words: Some(asked.words.clone()),
+        choices: Choices::Pick {
+            pick: pick.recognizer(),
+            recent: one.recalled(),
+            readings: asked.readings.clone(),
+        },
+    }))
 }
 
 /// The judgment of a yes that took a value.

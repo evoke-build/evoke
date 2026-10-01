@@ -54,9 +54,36 @@ from the words you typed without them: in `set a timer for 10 minutes called tea
 waits for your yes, since the words could have been cut otherwise. A word that stands for a value from a list but
 is not on it — the `snug` for a room called `den`, `garage` for no room at all — is read where the list's meanings
 say what it is, and the call waits for a yes; where they do not, `evoke` asks, and names the word:
-`"garage" is not on the list`. An address, a URL, a code or a number said aloud, `dana dot weiss at example dot
-org`, is read as it would be typed, and waits for a yes too. `evoke why` shows each of these under the value it
-gave ([Outcomes](outcomes.md#why-the-last-sentence-explained)).
+`"garage" is not on the list`. `evoke why` shows each of these under the value it gave
+([Outcomes](outcomes.md#why-the-last-sentence-explained)).
+
+## A value typed the way you say it
+
+You can type a value the way you would say it aloud. `evoke` reads an address, a URL, a code, a number, a day
+or a length of time this way: `dana dot weiss at example dot org`, `h s oh four oh nine`, `seven oh`, `an hour
+and thirty minutes`. The call shows the value as it would be typed.
+
+A code takes the shape of the reflex's own examples. Where every example reads like `HS-0409`, your letters
+become capitals and the dash is added. The call then waits for your yes, with your words on the line:
+
+```text
+$ evoke "earmark h s oh four oh nine"
+  reserve sku="HS-0409" · write · weakest: route 0.95
+    sku was read from "h s oh four oh nine"
+  Reserve every unit of HS-0409?  [y]es [n]o [t]each > n
+```
+
+Some words can be read in more than one way. `ops twenty at example dot com` may be `ops20@example.com` or
+`20@example.com`, and `twenty two ten` may be the start of a longer code. `evoke` does not choose for you.
+It asks, and offers what your words read as ([Outcomes](outcomes.md#ask)):
+
+```text
+$ evoke "email the update to ops twenty at example dot com"
+  To which email address?  you wrote "ops twenty at example dot com"  [1] ops20@example.com  [2] 20@example.com  [0] none of these  > 1
+  email to="ops20@example.com" · destructive · weakest: route 0.95
+    it cannot be undone, so it always waits for a yes
+  Email the shipment update to ops20@example.com?  [y]es [n]o [t]each > n
+```
 
 **A filter.** Pipe lines into `evoke`, or into `evoke try`, and every line is one input, answered in order. A line that needs a
 prompt, a confirm or an ask, cannot be answered without a terminal. That line exits 3 and names the command to run

@@ -71,7 +71,7 @@ pub const DEADLINE: Millis = Millis(30_000);
 
 /// The reader's version, which the digest holds before the set: it moves when a question evoke asks is worded
 /// anew, or an answer is read otherwise, so what was answered under one reader is never replayed under another.
-pub const READER: u32 = 4;
+pub const READER: u32 = 5;
 
 /// The sentinel every argument's choice carries, and its text.
 const UNSTATED: &str = "unstated";
@@ -429,6 +429,8 @@ pub enum Slot {
         pick: Recognizer,
         optional: bool,
         recent: Option<FieldName>,
+        /// The values the argument's examples assert, whose shape a value said aloud is put in.
+        examples: Vec<Clean>,
     },
 }
 
@@ -440,6 +442,8 @@ struct RawPick {
     optional: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     recent: Option<FieldName>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    examples: Vec<Clean>,
 }
 
 impl Serialize for Slot {
@@ -451,11 +455,13 @@ impl Serialize for Slot {
                 pick,
                 optional,
                 recent,
+                examples,
             } => RawPick {
                 ask: ask.clone(),
                 pick: *pick,
                 optional: *optional,
                 recent: recent.clone(),
+                examples: examples.clone(),
             }
             .serialize(serializer),
         }
@@ -471,12 +477,14 @@ impl<'de> Deserialize<'de> for Slot {
                 pick,
                 optional,
                 recent,
+                examples,
             } = serde_json::from_value(json).map_err(D::Error::custom)?;
             Ok(Self::Pick {
                 ask,
                 pick,
                 optional,
                 recent,
+                examples,
             })
         } else {
             serde_json::from_value(json)
@@ -914,6 +922,7 @@ fn argument_slots(
                     pick: pick.recognizer(),
                     optional: *optional,
                     recent: argument.recent.clone(),
+                    examples: shown(manifest, arg),
                 },
                 Kind::Value {
                     source: Source::Options(options),
@@ -955,6 +964,21 @@ fn argument_slots(
                 }
             };
             Some((QuestionId::Arg(name.clone(), arg.clone()), slot))
+        })
+        .collect()
+}
+
+/// The values a pick argument's examples assert, as their utterances hold them: `HS-0409`.
+fn shown(manifest: &Manifest, arg: &ArgName) -> Vec<Clean> {
+    manifest
+        .examples
+        .iter()
+        .filter_map(|(_, (_, record))| match record {
+            Record::Asserts(asserts) => match asserts.get(arg) {
+                Some(Assertion::Span(value)) => Some(value.clone()),
+                _ => None,
+            },
+            Record::Never => None,
         })
         .collect()
 }

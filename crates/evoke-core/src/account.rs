@@ -62,8 +62,8 @@ const COURTESY: &str = "They are politeness, a reason or an aside, and ask for n
 const MORE: &str = "They ask for another thing as well.";
 
 /// The words by which a run says the call is wanted once more, for another value or as well: «him too», «the
-/// same for Berlin». Each is found as whole words, in the run or across it and the words beside it that carry
-/// nothing, which a run's ends leave out: «the same for Berlin» is the run «same».
+/// same for the hall». Each is found as whole words, in the run or across it and the words beside it that carry
+/// nothing, which a run's ends leave out: «the same for the hall» is the run «same».
 pub(crate) const AGAIN: [&str; 5] = ["same for", "as well", "aswell", "too", "also"];
 
 /// The marks that open and close a text in quotes, each with its pair: double, single and typographic. A mark
@@ -391,16 +391,16 @@ mod tests {
         assert_eq!(again_of("him too", &[]), pairs(&[("him too", true)]));
         // «second» marks no second request by itself.
         assert_eq!(
-            again_of("lock the second one", &[]),
-            pairs(&[("lock the second one", false)])
+            again_of("mute the second one", &[]),
+            pairs(&[("mute the second one", false)])
         );
-        // «madrid» and «berlin» held: the run is «same», and «the» and «for» beside it make «the same for».
+        // «den» and «hall» held: the run is «same», and «the» and «for» beside it make «the same for».
         assert_eq!(
             again_of(
-                "flights for madrid, and the same for berlin",
-                &[(12, 18), (37, 43)]
+                "lights off in the den, and the same for the hall",
+                &[(18, 21), (44, 48)]
             ),
-            pairs(&[("flights", false), ("same", true)])
+            pairs(&[("lights", false), ("same", true)])
         );
         // «sam's» held: «as» cuts the run, and makes «as well» with «well».
         assert_eq!(
@@ -468,7 +468,7 @@ mod tests {
         let far = Span::of(&input, 26, 30).unwrap();
         assert!(follows(&input, &value, &after));
         assert!(!follows(&input, &value, &far), "«2 ocotber» carries");
-        let input = Input::new("the next 3 hours").unwrap();
+        let input = Input::new("the last 4 weeks").unwrap();
         let value = Span::of(&input, 9, 16).unwrap();
         let before = Span::of(&input, 4, 8).unwrap();
         assert!(!follows(&input, &value, &before), "before the value");

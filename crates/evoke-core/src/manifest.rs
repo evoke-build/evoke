@@ -704,6 +704,22 @@ impl Recognizer {
         }
     }
 
+    /// The pick that names this recognizer, with no range.
+    #[must_use]
+    pub fn unranged(self) -> Pick {
+        match self {
+            Self::Number => Pick::Number(None),
+            Self::Duration => Pick::Duration(None),
+            Self::Email => Pick::Email,
+            Self::Url => Pick::Url,
+            Self::Quoted => Pick::Quoted,
+            Self::Date => Pick::Date,
+            Self::Time => Pick::Time,
+            Self::Amount => Pick::Amount,
+            Self::Code => Pick::Code,
+        }
+    }
+
     /// What the pick wants, for `"soon" is not a duration`.
     #[must_use]
     pub fn wants(self) -> &'static str {
@@ -2104,24 +2120,14 @@ fn options(d: &mut Diagnostics, node: &Node, path: &KeyPath) -> Option<Options> 
 }
 
 fn pick(d: &mut Diagnostics, node: &Node, path: &KeyPath, range: Option<Node>) -> Option<Pick> {
-    let pick = match Recognizer::named(d.str(node)?) {
-        Some(Recognizer::Number) => Pick::Number(None),
-        Some(Recognizer::Duration) => Pick::Duration(None),
-        Some(Recognizer::Email) => Pick::Email,
-        Some(Recognizer::Url) => Pick::Url,
-        Some(Recognizer::Quoted) => Pick::Quoted,
-        Some(Recognizer::Date) => Pick::Date,
-        Some(Recognizer::Time) => Pick::Time,
-        Some(Recognizer::Amount) => Pick::Amount,
-        Some(Recognizer::Code) => Pick::Code,
-        None => {
-            d.fail(
-                node.at.as_ref(),
-                format!("{path}.pick must be {RECOGNIZER_NAMES}"),
-            );
-            return None;
-        }
+    let Some(recognizer) = Recognizer::named(d.str(node)?) else {
+        d.fail(
+            node.at.as_ref(),
+            format!("{path}.pick must be {RECOGNIZER_NAMES}"),
+        );
+        return None;
     };
+    let pick = recognizer.unranged();
     match (pick, range) {
         (pick, None) => Some(pick),
         (Pick::Number(_), Some(range)) => {

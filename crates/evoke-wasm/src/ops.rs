@@ -8,11 +8,12 @@ use evoke_core::calendar::Date;
 use evoke_core::contain::Platform;
 use evoke_core::decide::{Recent, alone};
 use evoke_core::document::Text;
-use evoke_core::manifest::{ConfigSpec, Effect, Recognizer};
+use evoke_core::manifest::{ConfigSpec, Effect, Pick, Range, Recognizer};
 use evoke_core::name::AdapterId;
 use evoke_core::name::{ArgName, ConfigKey, LocalName, RelPath, Tag, VarName, VocabName};
 use evoke_core::plan::Millis;
 use evoke_core::project::Location;
+use evoke_core::spoken::heard;
 use evoke_core::text::NonEmpty;
 use evoke_core::{
     Active, Answer, Baseline, Call, Case, Chosen, Clean, Decision, Declared, Digest, Document,
@@ -106,6 +107,22 @@ fn decide(op: &str, input: &Json) -> Reply {
             ok(spelled(
                 &said,
                 arg::<Recognizer>(input, "kind")?,
+                &propose(&said),
+            ))
+        }
+        "words.spoken" => {
+            let said = arg::<Input>(input, "input")?;
+            let pick = match (
+                arg::<Recognizer>(input, "kind")?.unranged(),
+                opt::<Range<f64>>(input, "range")?,
+            ) {
+                (Pick::Number(_), range) => Pick::Number(range),
+                (pick, _) => pick,
+            };
+            ok(heard(
+                &said,
+                &pick,
+                &opt::<Vec<Clean>>(input, "examples")?.unwrap_or_default(),
                 &propose(&said),
             ))
         }

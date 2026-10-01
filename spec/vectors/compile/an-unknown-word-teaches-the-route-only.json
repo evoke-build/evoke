@@ -121,7 +121,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:1eca30aecaf4d41fbb00c1876114c800167b63029392fdcee4b428a74de402fc",
+      "digest": "h1:aa8fabfc0f466b217056a03793b2de412e69faa472a1bec434b9ea9b56471c79",
       "active": {
         "lights": {
           "effect": "write",
@@ -242,7 +242,10 @@
           "type": "pick",
           "ask": "How bright, in percent?",
           "pick": "number",
-          "optional": true
+          "optional": true,
+          "examples": [
+            "30 percent"
+          ]
         }
       },
       "values": {

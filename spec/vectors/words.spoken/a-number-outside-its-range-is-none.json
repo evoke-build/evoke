@@ -1,0 +1,17 @@
+{
+  "input": {
+    "input": "set the volume to three eleven",
+    "kind": "number",
+    "examples": [
+      "60%",
+      "40"
+    ],
+    "range": [
+      0,
+      100
+    ]
+  },
+  "expect": {
+    "said": []
+  }
+}

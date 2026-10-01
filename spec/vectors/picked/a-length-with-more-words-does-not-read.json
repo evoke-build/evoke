@@ -1,6 +1,6 @@
 {
   "input": {
-    "text": "1 hour 30 minutes",
+    "text": "1 hour or so",
     "recognizer": "duration"
   },
   "expect": null

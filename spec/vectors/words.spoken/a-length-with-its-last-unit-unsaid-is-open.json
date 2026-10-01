@@ -1,0 +1,35 @@
+{
+  "input": {
+    "input": "stay awake for one hr 30",
+    "kind": "duration",
+    "examples": [
+      "2 hours",
+      "30 minutes"
+    ]
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 15,
+          "end": 24,
+          "text": "one hr 30"
+        },
+        "typed": "1 hour 30 minutes",
+        "value": {
+          "type": "duration",
+          "value": 5400
+        },
+        "form": "aloud",
+        "shape": "open"
+      }
+    ],
+    "withdrawn": [
+      {
+        "start": 15,
+        "end": 21,
+        "text": "one hr"
+      }
+    ]
+  }
+}

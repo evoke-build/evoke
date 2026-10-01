@@ -1,5 +1,5 @@
 {
-  "digest": "h1:468d0e0f79f2e366b5dd63892a84a9a0ddba05d97fec10770ee7253dceae2a06",
+  "digest": "h1:eb0a957d6f7182ecd1657767b20bcfd8ed831835bca255374a49d3e881fa0f50",
   "active": {
     "bank": {
       "effect": "read",
@@ -319,7 +319,14 @@
       "type": "pick",
       "ask": "To which email address?",
       "pick": "email",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "cfo@example.com",
+        "omar@example.com",
+        "board@example.com",
+        "finance@example.com",
+        "board@example.org"
+      ]
     }
   },
   "values": {},

@@ -1,0 +1,205 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "incident",
+          "route": 0.96
+        },
+        {
+          "reflex": "deploys",
+          "route": 0.02
+        },
+        {
+          "reflex": "errors",
+          "route": 0
+        },
+        {
+          "reflex": "logs",
+          "route": 0
+        },
+        {
+          "reflex": "suspect",
+          "route": 0
+        },
+        {
+          "reflex": "rollback",
+          "route": 0
+        },
+        {
+          "reflex": "post",
+          "route": 0
+        },
+        {
+          "reflex": "incidents",
+          "route": 0
+        },
+        {
+          "reflex": "postmortem",
+          "route": 0
+        },
+        {
+          "reflex": "status",
+          "route": 0
+        }
+      ],
+      "judgments": [
+        {
+          "question": "route",
+          "top": "incident",
+          "p": 0.96
+        }
+      ],
+      "winner": {
+        "reflex": "incident",
+        "args": {},
+        "missing": [
+          {
+            "arg": "number",
+            "ask": "Which incident number?",
+            "because": {
+              "type": "unsettled"
+            },
+            "words": {
+              "start": 14,
+              "end": 26,
+              "text": "three eleven"
+            },
+            "choices": {
+              "type": "pick",
+              "pick": "number",
+              "readings": [
+                "311"
+              ]
+            }
+          }
+        ],
+        "left": [
+          {
+            "words": {
+              "start": 0,
+              "end": 26,
+              "text": "open incident three eleven"
+            },
+            "does": "action",
+            "p": 0.95
+          }
+        ],
+        "unconsumed": [],
+        "whole": 0.9,
+        "runner_up": {
+          "reflex": "deploys",
+          "route": 0.02
+        }
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    }
+  },
+  "expect": {
+    "outcome": "ask",
+    "reflex": "incident",
+    "args": {},
+    "left": [
+      {
+        "words": {
+          "start": 0,
+          "end": 26,
+          "text": "open incident three eleven"
+        },
+        "does": "action",
+        "p": 0.95
+      }
+    ],
+    "unconsumed": [],
+    "whole": 0.9,
+    "confidence": 0.96,
+    "weakest": {
+      "question": "route",
+      "top": "incident",
+      "p": 0.96
+    },
+    "judgments": [
+      {
+        "question": "route",
+        "top": "incident",
+        "p": 0.96
+      }
+    ],
+    "runner_up": {
+      "reflex": "deploys",
+      "route": 0.02
+    },
+    "contenders": [
+      {
+        "reflex": "incident",
+        "route": 0.96
+      },
+      {
+        "reflex": "deploys",
+        "route": 0.02
+      },
+      {
+        "reflex": "errors",
+        "route": 0
+      },
+      {
+        "reflex": "logs",
+        "route": 0
+      },
+      {
+        "reflex": "suspect",
+        "route": 0
+      },
+      {
+        "reflex": "rollback",
+        "route": 0
+      },
+      {
+        "reflex": "post",
+        "route": 0
+      },
+      {
+        "reflex": "incidents",
+        "route": 0
+      },
+      {
+        "reflex": "postmortem",
+        "route": 0
+      },
+      {
+        "reflex": "status",
+        "route": 0
+      }
+    ],
+    "missing": [
+      {
+        "arg": "number",
+        "ask": "Which incident number?",
+        "because": {
+          "type": "unsettled"
+        },
+        "words": {
+          "start": 14,
+          "end": 26,
+          "text": "three eleven"
+        },
+        "choices": {
+          "type": "pick",
+          "pick": "number",
+          "readings": [
+            "311"
+          ]
+        }
+      }
+    ]
+  }
+}

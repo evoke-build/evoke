@@ -1,0 +1,28 @@
+{
+  "input": {
+    "input": "bring back v four point twelve point oh",
+    "kind": "code",
+    "examples": [
+      "4.12.0",
+      "2.3.1"
+    ]
+  },
+  "expect": {
+    "said": [
+      {
+        "span": {
+          "start": 11,
+          "end": 39,
+          "text": "v four point twelve point oh"
+        },
+        "typed": "4.12.0",
+        "value": {
+          "type": "code",
+          "value": "4.12.0"
+        },
+        "form": "aloud",
+        "shape": "whole"
+      }
+    ]
+  }
+}

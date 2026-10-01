@@ -45,8 +45,9 @@ separated by `;`.
   nothing runs on its own`.
 - **under the bar**: the weakest judgment is under the bar for this effect. `a write runs at 0.90 or more`.
 - **read from your words**: a value from a list was taken from a word of the input, where the answers about it
-  did not agree; or a value was read from words that do not spell it as it is typed, like a day misspelt or a
-  code typed with a space. `room was read from "snug"`, `sku was read from "hs 0409"`.
+  did not agree; or a value was read from words that do not spell it as it is typed, like a day misspelt, a
+  code typed with a space, or a code said aloud that took its capitals or its dash from the reflex's examples.
+  `room was read from "snug"`, `sku was read from "hs 0409"`.
 - **a text without quotes**: a text was read from words you typed without quotes. `label was typed without
   quotes, which always waits for a yes`.
 - **more words**: the input holds words that ask for another thing, which the call does not hold. `"lock the
@@ -98,6 +99,11 @@ The prompt names the words of the input that answer the question, where `evoke` 
   argument takes the whole line when nothing is quoted; a code takes a quoted one.
 - A pick whose manifest names a `recent` field lists what the bodies of this session returned under it, `From
   which release?  [1] 4.12.0  [2] 4.11.3  > `, and a number picks one ([Arguments](../author/arguments.md#a-value-recalled)).
+- Where your words say a pick's value aloud and can be read in more than one way, the prompt quotes them and
+  offers what they read as: `Which product code?  you wrote "v x twenty two ten"  [1] VX-2210  [0] none of
+  these  > `. A number picks one, and you can still type the value yourself. For a number argument the readings
+  are named without a number, `you wrote "three eleven"  311  > `, since a number you type is the answer itself
+  ([Saying things](saying-things.md#a-value-typed-the-way-you-say-it)).
 - An answer that does not fit is asked again, with the reason on the line. An empty line asks again.
 - `+` at a vocabulary's prompt asks `Word?` and `Meaning?`, then `Path?` when a reflex's declaration takes the
   word's value as a path, writes the word to your vocabulary, and goes on.

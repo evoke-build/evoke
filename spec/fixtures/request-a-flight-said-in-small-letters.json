@@ -1,0 +1,329 @@
+{
+  "state": {
+    "request": "a ticket for t p ten forty three on friday at 6pm"
+  },
+  "questions": {
+    "route": {
+      "type": "choice",
+      "ask": "Which one does the request ask for?",
+      "options": {
+        "flights": {
+          "what": "Find the next flight to a city.\nIts code, the day it leaves, the departure time and the fare.",
+          "not_for": [
+            "booking a seat",
+            "printing a ticket"
+          ],
+          "examples": [
+            "find a flight to lisbon"
+          ]
+        },
+        "book": {
+          "what": "Book a seat on a flight.\nThe flight by its code; charged to the travel account.",
+          "not_for": [
+            "finding flights",
+            "printing a ticket"
+          ],
+          "examples": [
+            "book TP1043"
+          ]
+        },
+        "seats": {
+          "what": "Show the seat map of a flight.\nEvery free seat, by its code.",
+          "not_for": [
+            "finding flights",
+            "booking a seat"
+          ],
+          "examples": [
+            "show the seat map"
+          ]
+        },
+        "weather": {
+          "what": "Show the weather of a day.\nThe forecast for the day you name.",
+          "not_for": [
+            "finding flights",
+            "booking a seat"
+          ],
+          "examples": [
+            "check the weather"
+          ]
+        },
+        "traffic": {
+          "what": "Show the traffic before a departure.\nThe roads to the airport at the time you name.",
+          "not_for": [
+            "finding flights",
+            "booking a seat"
+          ],
+          "examples": [
+            "check the traffic"
+          ]
+        },
+        "convert": {
+          "what": "Convert a fare to dollars.\nAt today's rate.",
+          "not_for": [
+            "finding flights",
+            "booking a seat"
+          ],
+          "examples": [
+            "convert the fare"
+          ]
+        },
+        "ticket": {
+          "what": "Print a ticket for a flight.\nThe flight's code, its day and its departure, through the ticket printer.",
+          "not_for": [
+            "booking a seat",
+            "finding flights"
+          ],
+          "examples": [
+            "print the ticket for TP1043 on friday at 6pm"
+          ]
+        },
+        "trip": {
+          "what": "Plan a trip to a city.\nFinds the next flight there, and books it when it leaves tomorrow.",
+          "not_for": [
+            "one lookup on its own"
+          ]
+        },
+        "none": "None of these."
+      },
+      "otherwise": "none"
+    },
+    "flights.to": {
+      "type": "choice",
+      "ask": "To which city?",
+      "options": {
+        "lisbon": "Lisbon, where the client meeting is.",
+        "madrid": "Madrid, the southern office.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "book.flight": {
+      "type": "choice",
+      "ask": "Which flight?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "seats.flight": {
+      "type": "choice",
+      "ask": "Which flight?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "weather.day": {
+      "type": "choice",
+      "ask": "Which day?",
+      "options": {
+        "36-42": "friday",
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "traffic.departure": {
+      "type": "choice",
+      "ask": "At what time?",
+      "options": {
+        "46-49": "6pm",
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "convert.fare": {
+      "type": "choice",
+      "ask": "What fare?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "ticket.flight": {
+      "type": "choice",
+      "ask": "Which flight?",
+      "options": {
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "ticket.day": {
+      "type": "choice",
+      "ask": "On which day?",
+      "options": {
+        "36-42": "friday",
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "ticket.at": {
+      "type": "choice",
+      "ask": "At what time?",
+      "options": {
+        "46-49": "6pm",
+        "none": "The request says it, and none of these is it.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "trip.to": {
+      "type": "choice",
+      "ask": "To which city?",
+      "options": {
+        "lisbon": "Lisbon, where the client meeting is.",
+        "madrid": "Madrid, the southern office.",
+        "none": "The request names one that is not in this list.",
+        "unstated": "The request does not say."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.view_flights__to": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "lisbon": "Lisbon, where the client meeting is.",
+        "madrid": "Madrid, the southern office.",
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    },
+    "weave.meant_book__flight_13_32": {
+      "type": "yesno",
+      "ask": "Which flight?",
+      "yes": "«TP1043», said as «t p ten forty three».",
+      "no": "Other words, or none."
+    },
+    "weave.meant_seats__flight_13_32": {
+      "type": "yesno",
+      "ask": "Which flight?",
+      "yes": "«tp1043», said as «t p ten forty three».",
+      "no": "Other words, or none."
+    },
+    "weave.only_weather__day_36_42": {
+      "type": "yesno",
+      "ask": "Which day?",
+      "yes": "«friday»",
+      "no": "Other words, or none."
+    },
+    "weave.only_traffic__departure_46_49": {
+      "type": "yesno",
+      "ask": "At what time?",
+      "yes": "«6pm»",
+      "no": "Other words, or none."
+    },
+    "weave.meant_ticket__flight_13_32": {
+      "type": "yesno",
+      "ask": "Which flight?",
+      "yes": "«TP1043», said as «t p ten forty three».",
+      "no": "Other words, or none."
+    },
+    "weave.only_ticket__day_36_42": {
+      "type": "yesno",
+      "ask": "On which day?",
+      "yes": "«friday»",
+      "no": "Other words, or none."
+    },
+    "weave.only_ticket__at_46_49": {
+      "type": "yesno",
+      "ask": "At what time?",
+      "yes": "«6pm»",
+      "no": "Other words, or none."
+    },
+    "weave.view_trip__to": {
+      "type": "choice",
+      "ask": "Which of these does the request name?",
+      "options": {
+        "lisbon": "Lisbon, where the client meeting is.",
+        "madrid": "Madrid, the southern office.",
+        "none": "One that is not in this list.",
+        "unstated": "None: the request names none."
+      },
+      "otherwise": "unstated"
+    }
+  },
+  "proposed": [
+    {
+      "span": {
+        "start": 36,
+        "end": 42,
+        "text": "friday"
+      },
+      "value": {
+        "type": "date",
+        "value": {
+          "type": "weekday",
+          "weekday": "friday"
+        }
+      }
+    },
+    {
+      "span": {
+        "start": 46,
+        "end": 49,
+        "text": "6pm"
+      },
+      "value": {
+        "type": "time",
+        "value": "18:00"
+      }
+    }
+  ],
+  "spelled": {
+    "book.flight": [
+      {
+        "span": {
+          "start": 13,
+          "end": 32,
+          "text": "t p ten forty three"
+        },
+        "typed": "TP1043",
+        "value": {
+          "type": "code",
+          "value": "TP1043"
+        },
+        "form": "aloud",
+        "shape": "completed"
+      }
+    ],
+    "seats.flight": [
+      {
+        "span": {
+          "start": 13,
+          "end": 32,
+          "text": "t p ten forty three"
+        },
+        "typed": "tp1043",
+        "value": {
+          "type": "code",
+          "value": "tp1043"
+        },
+        "form": "aloud"
+      }
+    ],
+    "ticket.flight": [
+      {
+        "span": {
+          "start": 13,
+          "end": 32,
+          "text": "t p ten forty three"
+        },
+        "typed": "TP1043",
+        "value": {
+          "type": "code",
+          "value": "TP1043"
+        },
+        "form": "aloud",
+        "shape": "completed"
+      }
+    ]
+  }
+}

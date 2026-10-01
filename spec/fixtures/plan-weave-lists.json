@@ -1,5 +1,5 @@
 {
-  "digest": "h1:b8a76eb9827f470cb6e237e9b46125c85aa3028df366804980f0c348a923c7ff",
+  "digest": "h1:31021f8a2ee0c07ae8b2cbaef94533e5977f0a652decb9a7af3d78a0093c9bc6",
   "active": {
     "lights": {
       "effect": "write",
@@ -257,7 +257,10 @@
       "type": "pick",
       "ask": "How bright, in percent?",
       "pick": "number",
-      "optional": true
+      "optional": true,
+      "examples": [
+        "30 percent"
+      ]
     },
     "fits.timer": {
       "type": "yesno",
@@ -269,13 +272,22 @@
       "type": "pick",
       "ask": "How long?",
       "pick": "duration",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "10 minutes",
+        "25 minute",
+        "3 minutes",
+        "90 seconds"
+      ]
     },
     "timer.label": {
       "type": "pick",
       "ask": "What is the timer for?",
       "pick": "quoted",
-      "optional": true
+      "optional": true,
+      "examples": [
+        "eggs"
+      ]
     },
     "fits.volume": {
       "type": "yesno",
@@ -287,7 +299,12 @@
       "type": "pick",
       "ask": "How loud, in percent?",
       "pick": "number",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "40 percent",
+        "15",
+        "80"
+      ]
     },
     "fits.contact": {
       "type": "yesno",
@@ -316,13 +333,21 @@
       "type": "pick",
       "ask": "To which address?",
       "pick": "email",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "ana@example.com",
+        "sam@example.com",
+        "team@example.com"
+      ]
     },
     "mail.subject": {
       "type": "pick",
       "ask": "What is the subject?",
       "pick": "quoted",
-      "optional": true
+      "optional": true,
+      "examples": [
+        "friday"
+      ]
     }
   },
   "values": {

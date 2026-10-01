@@ -191,6 +191,7 @@ families! {
     picked_vectors => "picked",
     words_listed_vectors => "words.listed",
     words_spelled_vectors => "words.spelled",
+    words_spoken_vectors => "words.spoken",
     vocabulary_vectors => "vocabulary",
     project_vectors => "project",
     name_vectors => "name",

@@ -1,5 +1,5 @@
 {
-  "digest": "h1:491445644b95e8d4e75eeb0e5de051c93c2e1a6deef627077edfe70c79c65736",
+  "digest": "h1:05ee2c8b73d8ff8adcc6402884f2a59e86d0b0094c0ba78055a85d4614c15052",
   "active": {
     "download": {
       "effect": "write",
@@ -59,7 +59,12 @@
       "type": "pick",
       "ask": "Which URL?",
       "pick": "url",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "https://example.com/report.pdf",
+        "https://example.com/photos.zip",
+        "https://example.com/notes.txt"
+      ]
     }
   },
   "values": {},

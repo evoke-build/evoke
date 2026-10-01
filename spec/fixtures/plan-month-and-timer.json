@@ -1,5 +1,5 @@
 {
-  "digest": "h1:668745cadc72786729995ef0fa1c15c2d3351db9192d1d3178230858b721331e",
+  "digest": "h1:59fb1c0c30644d7f22ff8a19b972e53187537f353636ba1af54b116351348d2a",
   "active": {
     "bank": {
       "effect": "read",
@@ -409,7 +409,14 @@
       "type": "pick",
       "ask": "To which email address?",
       "pick": "email",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "cfo@example.com",
+        "omar@example.com",
+        "board@example.com",
+        "finance@example.com",
+        "board@example.org"
+      ]
     },
     "fits.timer": {
       "type": "yesno",
@@ -421,7 +428,14 @@
       "type": "pick",
       "ask": "To which email address?",
       "pick": "email",
-      "optional": false
+      "optional": false,
+      "examples": [
+        "cfo@example.com",
+        "omar@example.com",
+        "board@example.com",
+        "finance@example.com",
+        "board@example.org"
+      ]
     }
   },
   "values": {},
