@@ -1418,7 +1418,8 @@ export type PinnedReflex =
   | { item: Digest }
 
 /** One engine answer the plan took: the text it was asked about and the `Raw` as the engine gave it; the weave's own
- *  questions stand under the whole request's text. */
+ *  questions stand under the whole request's text. A text decided more than once has an entry each time, in the
+ *  order decided. */
 export interface Answer {
   text: string
   raw: Raw

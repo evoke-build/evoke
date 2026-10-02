@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 use super::{Answers, Asked, Need, Planning, Weave, planning, reading};
 use crate::adapter::{Declared, Fault, Gate, Key, Prob, Question, Raw, Request};
 use crate::call::quoted;
-use crate::decide::{self, Decision, Scope};
+use crate::decide::{self, Decision, Reading, Scope};
 use crate::diagnostic::{Diagnostic, Fix};
 use crate::digest::Digest;
 use crate::document::Json;
@@ -205,7 +205,8 @@ impl PinnedReflex {
 }
 
 /// One engine answer the plan took: the text it was asked about and the `Raw` as the engine gave it. The weave's
-/// own questions stand under the whole request's text.
+/// own questions stand under the whole request's text. A text decided more than once has an entry each time, in
+/// the order decided.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Answer {
     pub text: String,
@@ -506,9 +507,10 @@ fn floor(p: Option<Prob>) -> String {
 }
 
 /// The plan made again from the file alone: the sentence as typed planned under the file's gate, every judgment
-/// and decision answered from the file's entries by the text's identity and the questions asked, inside one pure
-/// function that asks no adapter. A text the file does not answer, an entry short of a question, one naming a key
-/// the set does not offer, or a plan that does not read the same as the file's is refused with the save line.
+/// answered from the file's entries by the text's identity and the questions asked, every text decided on the one
+/// entry that answers it as it was asked, inside one pure function that asks no adapter. A text the file does not
+/// answer, an entry short of a question, one naming a key the set does not offer, or a plan that does not read
+/// the same as the file's is refused with the save line.
 pub fn replan(path: &str, pinned: &Pinned, plan: &Plan) -> Result<Replanned, Diagnostic> {
     let save = || Fix::Save {
         file: path.to_owned(),
@@ -521,14 +523,16 @@ pub fn replan(path: &str, pinned: &Pinned, plan: &Plan) -> Result<Replanned, Dia
         fix: save(),
     };
     let unread = |text: &str, fault: &Fault| {
-        refused(format!(
+        format!(
             "the file's answer for {} does not read: {fault}",
             quoted(text)
-        ))
+        )
     };
     let request = reading::canonical(&pinned.input);
     let mut answers = Answers::default();
     let mut decided = Vec::new();
+    // The entries the texts decided so far took, by their place in the file.
+    let mut taken = Vec::new();
     loop {
         let planning = planning::plan(
             plan,
@@ -537,7 +541,7 @@ pub fn replan(path: &str, pinned: &Pinned, plan: &Plan) -> Result<Replanned, Dia
             &pinned.tags,
             &answers,
         )
-        .map_err(|fault| unread(&request, &fault))?;
+        .map_err(|fault| refused(unread(&request, &fault)))?;
         let need = match planning {
             Planning::Done { weave } => {
                 if let Some(message) = differs(&weave, &pinned.weave) {
@@ -576,13 +580,17 @@ pub fn replan(path: &str, pinned: &Pinned, plan: &Plan) -> Result<Replanned, Dia
                 Scope::Full,
                 &[],
             )?;
-            let (request, raw, reading) = decide::reading(
-                plan,
-                pinned.gate.as_ref(),
-                request,
-                |round| answered(pinned, round).map_err(&refused),
-                |fault| unread(&asked.text, &fault),
-            )?;
+            let (at, (request, raw, reading)) = entry_of(pinned, &request, &taken, |entry| {
+                decide::reading(
+                    plan,
+                    pinned.gate.as_ref(),
+                    request.clone(),
+                    |round| cut(entry, round),
+                    |fault| unread(&asked.text, &fault),
+                )
+            })
+            .map_err(&refused)?;
+            taken.push(at);
             let decision = decide::gate(plan, reading, pinned.gate.as_ref());
             answers.decided.push((asked.clone(), decision.clone()));
             decided.push(Decided {
@@ -595,36 +603,90 @@ pub fn replan(path: &str, pinned: &Pinned, plan: &Plan) -> Result<Replanned, Dia
     }
 }
 
-/// The file's answer to a request: among the answers with the text's identity, the one holding the most of the
-/// questions asked, cut to them — as a recording answers — or why the file cannot answer.
+/// The file's answer to one of the plan's own requests: among the entries of the request's words, the one holding
+/// the most of the questions asked, cut to them, or why the file cannot answer.
 fn answered(pinned: &Pinned, request: &Request) -> Result<Raw, String> {
-    let text = request.state.request.as_str();
-    let wanted = identity(text);
-    let entries: Vec<&Answer> = pinned
+    let nearest = entries(pinned, request)
+        .map(|(_, entry)| entry)
+        .reduce(|nearest, entry| {
+            if held(entry, request) > held(nearest, request) {
+                entry
+            } else {
+                nearest
+            }
+        })
+        .ok_or_else(|| unanswered(request))?;
+    cut(nearest, request)
+}
+
+/// A text answered from one entry: every question its reading asked, every answer, and the reading.
+type Answered = (Request, Raw, Reading);
+
+/// The entry a text decided again takes, by its place in the file, with what `read` makes of that entry's answers
+/// alone. The same words asked over the tags, narrowed to one reflex and on a route the whole request named leave
+/// an entry each time, told apart by what they hold: the first every reflex's arguments, the last no route. So
+/// the text's own is, among the entries of its words that answer every question its reading asks, the one holding
+/// the fewest answers beside them; then one no text took before it; then the first in the file. Where none
+/// answers, why the one holding the most of the questions first asked does not.
+fn entry_of(
+    pinned: &Pinned,
+    request: &Request,
+    taken: &[usize],
+    read: impl Fn(&Answer) -> Result<Answered, String>,
+) -> Result<(usize, Answered), String> {
+    let mut why: Option<(usize, String)> = None;
+    entries(pinned, request)
+        .filter_map(|(at, entry)| match read(entry) {
+            Ok(answered) => {
+                let beside = entry.raw.0.len() - answered.1.0.len();
+                Some(((beside, taken.contains(&at), at), answered))
+            }
+            Err(problem) => {
+                let holds = held(entry, request);
+                if why.as_ref().is_none_or(|(most, _)| holds > *most) {
+                    why = Some((holds, problem));
+                }
+                None
+            }
+        })
+        .min_by_key(|(fit, _)| *fit)
+        .map(|((_, _, at), answered)| (at, answered))
+        .ok_or_else(|| why.map_or_else(|| unanswered(request), |(_, problem)| problem))
+}
+
+/// The file's entries of a request's words, each with its place in the file.
+fn entries<'p>(pinned: &'p Pinned, request: &Request) -> impl Iterator<Item = (usize, &'p Answer)> {
+    let wanted = identity(request.state.request.as_str());
+    pinned
         .answers
         .iter()
-        .filter(|entry| identity(&entry.text) == wanted)
-        .collect();
+        .enumerate()
+        .filter(move |(_, entry)| identity(&entry.text) == wanted)
+}
+
+/// How many of the questions a request asks an entry holds.
+fn held(entry: &Answer, request: &Request) -> usize {
+    request
+        .questions
+        .keys()
+        .filter(|id| entry.raw.0.contains_key(&id.to_string()))
+        .count()
+}
+
+/// What a file with no entry of a request's words is refused with.
+fn unanswered(request: &Request) -> String {
+    format!(
+        "the plan asks {}, which the file does not answer",
+        quoted(request.state.request.as_str())
+    )
+}
+
+/// An entry's answers to the questions a request asks, cut to them — as a recording answers — or why the entry
+/// cannot answer: a question it lacks, or a key the question does not offer.
+fn cut(entry: &Answer, request: &Request) -> Result<Raw, String> {
+    let text = request.state.request.as_str();
     let asked: Vec<String> = request.questions.keys().map(ToString::to_string).collect();
-    let present = |entry: &Answer| {
-        asked
-            .iter()
-            .filter(|id| entry.raw.0.contains_key(*id))
-            .count()
-    };
-    let Some(best) = entries.iter().copied().reduce(|best, entry| {
-        if present(entry) > present(best) {
-            entry
-        } else {
-            best
-        }
-    }) else {
-        return Err(format!(
-            "the plan asks {}, which the file does not answer",
-            quoted(text)
-        ));
-    };
-    if let Some(lacking) = asked.iter().find(|id| !best.raw.0.contains_key(*id)) {
+    if let Some(lacking) = asked.iter().find(|id| !entry.raw.0.contains_key(*id)) {
         return Err(format!(
             "the file's answer for {} lacks {lacking}",
             quoted(text)
@@ -635,7 +697,7 @@ fn answered(pinned: &Pinned, request: &Request) -> Result<Raw, String> {
             Question::Choice(choice) => choice.options().keys().map(Key::as_str).collect(),
             Question::YesNo { .. } => vec!["yes", "no"],
         };
-        let answer = &best.raw.0[&id.to_string()];
+        let answer = &entry.raw.0[&id.to_string()];
         if let Some(key) = answer.keys().find(|key| !offered.contains(&key.as_str())) {
             return Err(format!(
                 "the file's answer for {} names {key}, which the set does not offer",
@@ -645,7 +707,7 @@ fn answered(pinned: &Pinned, request: &Request) -> Result<Raw, String> {
     }
     Ok(Raw(asked
         .iter()
-        .map(|id| (id.clone(), best.raw.0[id].clone()))
+        .map(|id| (id.clone(), entry.raw.0[id].clone()))
         .collect()))
 }
 
@@ -737,6 +799,93 @@ mod tests {
         )
         .unwrap_err();
         assert!(shape.message.starts_with("the plan does not read: "));
+    }
+
+    /// A plan file of no step, holding these entries.
+    fn file(answers: &serde_json::Value) -> Pinned {
+        serde_json::from_value(serde_json::json!({
+            "plan": 1,
+            "input": "x",
+            "weave": { "input": "x", "steps": [], "exclusive": false, "stages": [], "verdict": { "outcome": "refuse" } },
+            "evoke": "0.1.0",
+            "adapter": { "name": "replay", "id": "replay" },
+            "set": format!("h1:{}", "a".repeat(64)),
+            "reflexes": {},
+            "vocab": {},
+            "answers": answers
+        }))
+        .unwrap()
+    }
+
+    /// A request about words, each question a choice between `errors` and `none`.
+    fn asking(text: &str, questions: &[&str]) -> Request {
+        let choice = serde_json::json!({
+            "type": "choice", "ask": "Which?", "options": { "errors": "Errors.", "none": "None." }, "otherwise": "none"
+        });
+        let questions: serde_json::Map<String, serde_json::Value> = questions
+            .iter()
+            .map(|id| ((*id).to_owned(), choice.clone()))
+            .collect();
+        serde_json::from_value(serde_json::json!({
+            "state": { "request": text }, "questions": questions, "proposed": []
+        }))
+        .unwrap()
+    }
+
+    /// The entry a request takes, read no further than its own questions.
+    fn taken_by(pinned: &Pinned, request: &Request, taken: &[usize]) -> Result<usize, String> {
+        entry_of(pinned, request, taken, |entry| {
+            let reading = Reading {
+                ranking: Vec::new(),
+                judgments: Vec::new(),
+                winner: None,
+            };
+            cut(entry, request).map(|raw| (request.clone(), raw, reading))
+        })
+        .map(|(at, _)| at)
+    }
+
+    /// The same words asked three times leave three entries, and each asking takes its own: the one that answers
+    /// it with the fewest answers beside, then one not taken, then the first.
+    #[test]
+    fn a_text_takes_the_entry_that_answers_what_it_was_asked() {
+        let one = serde_json::json!({ "errors": 0.4, "none": 0.6 });
+        let other = serde_json::json!({ "deploys": 0.3, "none": 0.7 });
+        let pinned = file(&serde_json::json!([
+            { "text": "check the errors, then the same for US East", "raw": { "weave.split_0": { "yes": 0.9 } } },
+            { "text": "the same for US East.", "raw": { "route": other, "errors.region": one, "deploys.region": one } },
+            { "text": "the same for US East.", "raw": { "route": one, "errors.region": one } },
+            { "text": "The same for US east", "raw": { "errors.region": one } }
+        ]));
+        let narrowed = asking("the same for US East.", &["route", "errors.region"]);
+        assert_eq!(taken_by(&pinned, &narrowed, &[]), Ok(2));
+        let named = asking("the same for US East.", &["errors.region"]);
+        assert_eq!(taken_by(&pinned, &named, &[]), Ok(3));
+        // Two entries that answer alike: the first, then the one no text took.
+        let alike = file(&serde_json::json!([
+            { "text": "the same for US East.", "raw": { "route": one, "errors.region": one } },
+            { "text": "the same for US East.", "raw": { "route": { "errors": 0.8, "none": 0.2 }, "errors.region": one } }
+        ]));
+        assert_eq!(taken_by(&alike, &narrowed, &[]), Ok(0));
+        assert_eq!(taken_by(&alike, &narrowed, &[0]), Ok(1));
+        assert_eq!(taken_by(&alike, &narrowed, &[0, 1]), Ok(0));
+        // None answers: the reason is the nearest entry's, not the first's.
+        let whole = asking(
+            "check the errors, then the same for US East",
+            &["route", "errors.region"],
+        );
+        let nearest = file(&serde_json::json!([
+            { "text": "check the errors, then the same for US East", "raw": { "weave.split_0": { "yes": 0.9 } } },
+            { "text": "check the errors, then the same for US East", "raw": { "route": other, "errors.region": one } }
+        ]));
+        assert_eq!(
+            taken_by(&nearest, &whole, &[]).unwrap_err(),
+            "the file's answer for \"check the errors, then the same for US East\" names deploys, which the set does not offer"
+        );
+        assert_eq!(
+            taken_by(&pinned, &asking("roll it back", &["route"]), &[]).unwrap_err(),
+            "the plan asks \"roll it back\", which the file does not answer"
+        );
     }
 
     #[test]
