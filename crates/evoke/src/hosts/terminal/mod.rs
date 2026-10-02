@@ -91,6 +91,7 @@ fn look() -> Look {
 /// A reflex's result, the `--json` line, or what `--help` and `--version` asked for: stdout, flushed at once,
 /// never styled.
 pub fn result(line: &str) {
+    interrupt::ending_line();
     let mut stdout = io::stdout().lock();
     let _ = writeln!(stdout, "{line}");
     let _ = stdout.flush();
@@ -99,6 +100,7 @@ pub fn result(line: &str) {
 /// What a command was asked to show — `show`'s rows, `try`'s judgments, `test`'s verdicts: stdout, styled where
 /// it is a terminal that shows it, flushed at once so it keeps its place among the notes.
 pub fn answer(text: &Text) {
+    interrupt::ending_line();
     let shown = if look().styled.out {
         text.styled()
     } else {
@@ -111,6 +113,7 @@ pub fn answer(text: &Text) {
 
 /// Everything `evoke` says about what it does: stderr, styled where the terminal shows it.
 pub fn note(text: &Text) {
+    interrupt::ending_line();
     let shown = if look().styled.err {
         text.styled()
     } else {
@@ -168,6 +171,7 @@ pub fn tty() -> Option<Tty> {
 impl Tty {
     /// Shows one line on the terminal, ahead of a prompt.
     pub fn show(&mut self, line: &str) -> Result<(), Failure> {
+        interrupt::ending_line();
         self.writer
             .write_all(line.as_bytes())
             .and_then(|()| self.writer.write_all(b"\n"))
@@ -179,6 +183,7 @@ impl Tty {
     /// Ctrl-C was pressed while the host was armed for it: the prompt returns as an end of input does, and the
     /// host acts on the interrupt.
     pub fn prompt(&mut self, text: &str) -> Result<Option<String>, Failure> {
+        interrupt::ending_line();
         let asked = self
             .writer
             .write_all(text.as_bytes())

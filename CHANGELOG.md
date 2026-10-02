@@ -6,6 +6,9 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- Ctrl-C while a step runs no longer leaves a blank line before the echoed `^C` on a busy machine: the line end
+  after it is written by the first line shown after the interrupt.
+
 ## [0.19.3] - 2026-10-02
 
 - A sentence reads the same way every time where a part holds only values: `buy 3 of OUT-503 and 2 of BOK-603`

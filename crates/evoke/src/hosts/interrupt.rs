@@ -2,8 +2,10 @@
 //! the interrupt and returns, and the host acts on it: every body's group ended, every line logged, then `end`,
 //! the process ending as an unhandled Ctrl-C would have ended it. Unarmed, the default action ends the process at
 //! once, as before. Either way the spinner's line is cleared first, and, armed on a terminal, the echoed `^C`
-//! gets its line end, so what the host prints after it starts on a line of its own. In: `arm`, `pause`, the
-//! spinner's state. Out: `interrupted`, `end`.
+//! gets its line end from the first line the host shows after it, or from `end`, so that what follows starts
+//! on a line of its own — never from the handler, since the terminal delivers the signal before it echoes the
+//! `^C`, and a line end written at once may land ahead of the echo. In: `arm`, `pause`, the spinner's state.
+//! Out: `interrupted`, `ending_line`, `end`.
 
 // The handler does only what a signal handler may: read and write an atomic, `write`, `signal`, `raise`.
 #![expect(unsafe_code)]
@@ -15,6 +17,8 @@ static ARMED: AtomicBool = AtomicBool::new(false);
 static INTERRUPTED: AtomicBool = AtomicBool::new(false);
 static SPINNING: AtomicBool = AtomicBool::new(false);
 static ON_TERMINAL: AtomicBool = AtomicBool::new(false);
+/// Whether the echoed `^C` still wants its line end.
+static LINE_END_PENDING: AtomicBool = AtomicBool::new(false);
 static INSTALLED: Once = Once::new();
 const CLEAR: &[u8] = b"\r\x1b[2K";
 const LINE_END: &[u8] = b"\n";
@@ -37,8 +41,7 @@ extern "C" fn on_interrupt(signal: libc::c_int) {
         // SAFETY: write is async-signal-safe, and the bytes are a static string.
         let _ = unsafe { libc::write(2, CLEAR.as_ptr().cast(), CLEAR.len()) };
     } else if armed && ON_TERMINAL.load(Ordering::Relaxed) {
-        // SAFETY: as above.
-        let _ = unsafe { libc::write(2, LINE_END.as_ptr().cast(), LINE_END.len()) };
+        LINE_END_PENDING.store(true, Ordering::Relaxed);
     }
     if armed {
         INTERRUPTED.store(true, Ordering::Relaxed);
@@ -58,9 +61,19 @@ pub fn interrupted() -> bool {
     INTERRUPTED.load(Ordering::Relaxed)
 }
 
+/// The echoed `^C`'s line end, written once by the first line shown after it: what every write to the terminal
+/// calls first.
+pub fn ending_line() {
+    if LINE_END_PENDING.swap(false, Ordering::Relaxed) {
+        // SAFETY: write is async-signal-safe, and the bytes are a static string.
+        let _ = unsafe { libc::write(2, LINE_END.as_ptr().cast(), LINE_END.len()) };
+    }
+}
+
 /// The interrupt acted on — every body ended, every line logged — the process ends as an unhandled Ctrl-C would
 /// have ended it, with the same status, so the shell sees an interrupted process and a loop breaks as it would.
 pub fn end() -> ! {
+    ending_line();
     // SAFETY: the default action restored, the signal raised on this thread; nothing runs after but the exit.
     unsafe {
         libc::signal(libc::SIGINT, libc::SIG_DFL);
@@ -121,5 +134,14 @@ mod tests {
         }
         assert!(!ARMED.load(Ordering::Relaxed));
         assert!(!interrupted());
+    }
+
+    #[test]
+    fn the_line_end_is_written_once_and_only_when_pending() {
+        assert!(!LINE_END_PENDING.load(Ordering::Relaxed));
+        ending_line();
+        LINE_END_PENDING.store(true, Ordering::Relaxed);
+        ending_line();
+        assert!(!LINE_END_PENDING.load(Ordering::Relaxed));
     }
 }
