@@ -20,7 +20,7 @@ use crate::manifest::{self, Effect, Kind, MOST_STEPS, Recognizer, Source, Yield}
 use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
 use crate::plan::{Active, Plan};
 use crate::propose::PickValue;
-use crate::text::Clean;
+use crate::text::{Clean, Input, Span};
 use crate::waits;
 
 /// A split the engine judged below this is never tried.
@@ -837,7 +837,66 @@ impl<'a> Planner<'a> {
         }
         self.lists(draft, judged)?;
         self.items(draft, judged)?;
+        self.continued(draft)?;
         self.repair(draft)
+    }
+
+    /// A part that continues the step before it. A part whose words are values alone — «2 of BOK-603» after
+    /// «buy 3 of OUT-503» — names no action of its own, so its route was asked of words that hold none, and
+    /// went to whichever reflex takes such values. Where it reads alone as another reflex than the step before
+    /// it, and that step's reflex takes the same values, the action it asks for is that step's: it is put in
+    /// that step's words in place of the values they hold, «buy 2 of BOK-603», every word still the person's
+    /// own, and decided narrowed to that step's reflex, as a fragment spliced is. The reading stands where it
+    /// holds the values the part read alone, and the part stays as it read alone otherwise. The step before a
+    /// run of such parts is the one before the first of them; a step that picks a playbook is continued by none.
+    fn continued(&self, draft: &mut Draft) -> Result<(), Need> {
+        let mut wanted: Vec<(usize, Asked)> = Vec::new();
+        let mut head: Option<usize> = None;
+        for k in 0..draft.segs.len() {
+            let joined = k > 0 && split_before(&draft.taken, &draft.segs, k).is_some();
+            let alone = repair_of(draft, k).is_none()
+                && values_alone(&draft.segs[k].text, &draft.decisions[k]);
+            let Some(h) = head.filter(|_| joined && alone) else {
+                head = Some(k);
+                continue;
+            };
+            let Some(before) = reflex_of(&draft.decisions[h]) else {
+                continue;
+            };
+            if reflex_of(&draft.decisions[k]) == Some(before)
+                || !self.takes_the_same(before, &draft.decisions[k])
+            {
+                continue;
+            }
+            if let Some(text) = in_place(
+                &draft.segs[h].text,
+                &draft.decisions[h],
+                &draft.segs[k].text,
+            ) {
+                wanted.push((k, Self::narrowed(&text, before, None)));
+            }
+        }
+        let mut missing: Vec<Asked> = Vec::new();
+        for (_, asked) in &wanted {
+            if self.decided(asked).is_none() && !missing.contains(asked) {
+                missing.push(asked.clone());
+            }
+        }
+        if !missing.is_empty() {
+            return Err(Need::Decide { asked: missing });
+        }
+        for (k, asked) in wanted {
+            let decision = self
+                .decided(&asked)
+                .cloned()
+                .expect("every part put in place is decided");
+            if same_values(&draft.decisions[k], &decision) {
+                draft.decisions[k] = decision;
+                draft.segs[k].text.clone_from(&asked.text);
+                draft.repaired.push((asked.text, Repair::Spliced));
+            }
+        }
+        Ok(())
     }
 
     /// A part left out that names a value the step beside it lacks — «…, not ireland, virginia» — says what
@@ -1354,6 +1413,34 @@ impl<'a> Planner<'a> {
             k = 0;
         }
         Ok(())
+    }
+
+    /// Whether a reflex that is no playbook takes the values a decision's call holds: for each value, an
+    /// argument of its own from the same source as the argument that holds it — the same recognizer, the same
+    /// vocabulary, the same options.
+    fn takes_the_same(&self, reflex: &LocalName, decision: &Decision) -> bool {
+        let source = |argument: &'a manifest::Argument| match &argument.kind {
+            Kind::Value { source, .. } => Some(source),
+            Kind::Flag => None,
+        };
+        let (Some((_, own)), Some(args), Some(before)) = (
+            self.active_of(decision),
+            args_of(decision),
+            self.plan.active().get(reflex),
+        ) else {
+            return false;
+        };
+        let mut free: Vec<&Source> = before.args.values().filter_map(source).collect();
+        before.steps.is_empty()
+            && args
+                .iter()
+                .filter(|(_, value)| !matches!(value, Value::Flag))
+                .all(|(arg, _)| {
+                    let taken = own.args.get(arg).and_then(source).and_then(|source| {
+                        free.iter().position(|other| same_source(source, other))
+                    });
+                    taken.map(|at| free.swap_remove(at)).is_some()
+                })
     }
 
     /// What the plan asks of the request once its parts are decided, in one request: what each part that
@@ -3641,6 +3728,138 @@ fn item_of(chars: &[char]) -> String {
         .trim_end_matches(['.', '!', '?'])
         .trim()
         .to_owned()
+}
+
+/// The words by which a part says the step before it is wanted once more, for other values: «2 more of
+/// BOK-603», «1004 too». None names an action.
+const ONCE_MORE: [&str; 9] = [
+    "too", "also", "well", "aswell", "more", "another", "again", "extra", "plus",
+];
+
+/// The words of a text that hold its decision's values: a typed value's span; a listed word's by what it
+/// stands on, else the word itself where the text holds it. None where the decision is no call, the text
+/// cannot be read, or a listed word can be placed on no word of it.
+fn held_by(text: &str, decision: &Decision) -> Option<(Input, Vec<Span>)> {
+    let args = args_of(decision)?;
+    let basis = basis_of(decision)?;
+    let input = Input::new(text).ok()?;
+    let tokens = crate::words::tokens(input.as_str());
+    let mut held: Vec<Span> = Vec::new();
+    for (arg, value) in args {
+        let words = match (value, basis.get(arg)) {
+            (Value::Flag, _) => continue,
+            (Value::Pick { span, .. }, _) => span.clone(),
+            (_, Some(Basis::View { words, .. } | Basis::Words { words, .. })) => words.clone(),
+            (
+                _,
+                Some(Basis::Views {
+                    anchored: Some(anchored),
+                    ..
+                }),
+            ) => anchored.words.clone(),
+            _ => {
+                let word = value.text()?.to_lowercase();
+                let token = tokens.iter().find(|token| token.plain == word)?;
+                Span::of(&input, token.start, token.end)?
+            }
+        };
+        held.push(words);
+    }
+    Some((input, held))
+}
+
+/// Whether a text's words are its decision's values alone: every word is one a value holds, one that carries
+/// nothing, or one of `ONCE_MORE`, with one value at least, no text in quotes and no typed span outside a value.
+fn values_alone(text: &str, decision: &Decision) -> bool {
+    let (unconsumed, quotes) = match decision {
+        Decision::Abstain { .. } => return false,
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
+            (&chosen.unconsumed, &chosen.quotes)
+        }
+        Decision::Ask { asking, .. } => (&asking.unconsumed, &asking.quotes),
+    };
+    let Some((input, held)) = held_by(text, decision) else {
+        return false;
+    };
+    let idle =
+        |word: &str| word.is_empty() || crate::words::function(word) || ONCE_MORE.contains(&word);
+    !held.is_empty()
+        && quotes.is_empty()
+        && unconsumed.iter().all(|span| {
+            held.iter()
+                .any(|value| value.start() <= span.start() && span.end() <= value.end())
+        })
+        && crate::words::tokens(input.as_str()).iter().all(|token| {
+            idle(&token.plain)
+                || held
+                    .iter()
+                    .any(|value| token.start < value.end() && value.start() < token.end)
+        })
+}
+
+/// A part put in a step's words in place of the values they hold: the words from the step's first value to its
+/// last replaced by the part's — «buy 2 of BOK-603» from «buy 3 of OUT-503» and «2 of BOK-603». None where the
+/// step's words hold no value, or nothing but values, so that no word of the step's would say what to do.
+fn in_place(step: &str, decision: &Decision, part: &str) -> Option<String> {
+    let (input, held) = held_by(step, decision)?;
+    let start = held.iter().map(Span::start).min()?;
+    let end = held.iter().map(Span::end).max()?;
+    let chars: Vec<char> = input.as_str().chars().collect();
+    let (before, after): (String, String) = (
+        chars[..start.min(chars.len())].iter().collect(),
+        chars[end.min(chars.len())..].iter().collect(),
+    );
+    let spoken = |words: &str| {
+        crate::words::tokens(words)
+            .iter()
+            .any(|token| !token.plain.is_empty() && !crate::words::function(&token.plain))
+    };
+    (spoken(&before) || spoken(&after)).then(|| format!("{before}{part}{after}"))
+}
+
+/// Whether two arguments take their values from the same source: the same recognizer, whatever its range, the
+/// same vocabulary, or the same options.
+fn same_source(a: &Source, b: &Source) -> bool {
+    match (a, b) {
+        (Source::Pick(a), Source::Pick(b)) => {
+            std::mem::discriminant(a) == std::mem::discriminant(b)
+        }
+        _ => a == b,
+    }
+}
+
+/// Whether two decisions read the same values: as many, each of one a value of the other — a typed value of the
+/// same kind from the same words, a listed word or an option the same.
+fn same_values(a: &Decision, b: &Decision) -> bool {
+    let read = |decision: &Decision| -> Vec<Value> {
+        args_of(decision)
+            .into_iter()
+            .flatten()
+            .map(|(_, value)| value.clone())
+            .filter(|value| !matches!(value, Value::Flag))
+            .collect()
+    };
+    let same = |a: &Value, b: &Value| match (a, b) {
+        (
+            Value::Pick {
+                span: a, value: x, ..
+            },
+            Value::Pick {
+                span: b, value: y, ..
+            },
+        ) => a.text() == b.text() && std::mem::discriminant(x) == std::mem::discriminant(y),
+        (Value::Word { word: a, .. }, Value::Word { word: b, .. }) => a == b,
+        (Value::Option { key: a }, Value::Option { key: b }) => a == b,
+        _ => false,
+    };
+    let (a, mut b) = (read(a), read(b));
+    a.len() == b.len()
+        && a.iter().all(|value| {
+            b.iter()
+                .position(|other| same(value, other))
+                .map(|at| b.swap_remove(at))
+                .is_some()
+        })
 }
 
 /// A bare item: a determiner and one word — «the logo» — the shape of a second item of the neighbour's task by the

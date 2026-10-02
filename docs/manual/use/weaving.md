@@ -37,6 +37,14 @@ den lights off
   "pasta", and ring me after`, no second timer is made. When the classifier was sure the two parts were separate things and one still
   matches nothing, the whole request is refused rather than half done. When it was not sure, the part is read
   with its neighbour as one request, and `evoke why` says what its words do.
+- A part that holds only values, with no word of its own for what to do, continues the step before it: in
+  `buy 3 of OUT-503 and 2 of BOK-603`, the second part is a purchase too. Read alone, such a part can look like
+  another reflex that takes the same values, here one that fills the cart. So where it reads alone as another
+  reflex, and the reflex of the step before it takes the same values, the part is read in that step's words,
+  `buy 2 of BOK-603`, and decided as that step's reflex. `evoke why` shows the words it was read in, and `read
+  with the words of the part before it, as one request`. A word like `more`, `another` or `too` beside the
+  values changes nothing: `and 2 more of BOK-603` is a purchase as well. A part that names its own action is
+  read as it always was: `add "aurora kettle" to my cart and check out` is two different steps.
 - A part that begins with `not`, `don't`, `never` or `without` is left out, however the apostrophe is typed. What
   you ask evoke not to do is no step. One step beside such a part is decided as one input. A sentence that is only
   such parts is nothing to do, and one line says so. A part that also names a value the step beside it lacks is
