@@ -1,0 +1,26 @@
+reflex = 1
+
+description = "Buy one product right away, without the cart."
+not_for     = ["putting a product in the cart", "paying for an order"]
+tags        = ["shop"]
+effect      = "write"
+confirm     = "Buy {product} now?"
+run         = "buy.mts"
+
+[args.product]
+ask  = "Which product?"
+pick = "code"
+
+[args.quantity]
+ask      = "How many?"
+pick     = "number"
+optional = true
+
+[examples]
+"buy AUR-110"            = { product = "AUR-110" }
+"order 2 of AUD-101 now" = { product = "AUD-101", quantity = "2" }
+"I'll take 3 of SOK-220" = { product = "SOK-220", quantity = "3" }
+
+[tests]
+"get me 4 of KIT-301 right away" = { product = "KIT-301", quantity = "4" }
+"put KIT-301 in my cart"         = false

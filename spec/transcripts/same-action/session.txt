@@ -1,0 +1,84 @@
+# A part that holds only values names no action of its own: it asks for the action of the step before it, and is
+# read in that step's words. Alone, the second part of each of these sentences reads as another reflex that takes
+# the same values.
+$ evoke "buy 3 of OUT-503 and 2 of BOK-603"
+  1  buy product="OUT-503" quantity="3"  0.95
+  2  buy product="BOK-603" quantity="2"  0.95
+bought 3 of OUT-503
+bought 2 of BOK-603
+$ evoke why
+  "buy 3 of OUT-503 and 2 of BOK-603"
+
+  one thing, or several   several 0.95: cut at "and" 0.85
+
+  1 · buy 3 of OUT-503
+    which reflex            buy 0.95   (none of them 0.03 · cart_add 0.02)
+                            Buy one product right away, without the cart.
+    product                 "OUT-503" 0.95   (not said 0.05)
+    quantity                "3" 0.95   (not said 0.05)
+    holds all you said      0.90
+    → ran: buy product="OUT-503" quantity="3"  0.95
+      a write runs at 0.90 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  2 · buy 2 of BOK-603
+    which reflex            buy 0.95   (none of them 0.05)
+                            Buy one product right away, without the cart.
+    product                 "BOK-603" 0.95   (not said 0.05)
+    quantity                "2" 0.95   (not said 0.05)
+    holds all you said      0.90
+    read with               the words of the part before it, as one request
+    → ran: buy product="BOK-603" quantity="2"  0.95
+      a write runs at 0.90 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  replay answered 52 questions in 5 rounds
+$ evoke "order 2 of OUT-503 and 1 more of KIT-301"
+  1  buy product="OUT-503" quantity="2"  0.95
+  2  buy product="KIT-301" quantity="1" · write · weakest: route 0.86
+       a write runs at 0.90 or more
+bought 2 of OUT-503
+  2  buy product="KIT-301" quantity="1" · write · weakest: route 0.86
+       a write runs at 0.90 or more
+  Buy KIT-301 now?  [y]es [n]o [t]each > y
+bought 1 of KIT-301
+$ evoke "refund order 1001 and 1002"
+  1  refund order="1001"  0.95
+  2  refund order="1002"  0.95
+refunded order 1001
+refunded order 1002
+$ evoke "cancel 1003 and 1004"
+  1  cancel order="1003"  0.95
+  2  cancel order="1004"  0.95
+cancelled order 1003
+cancelled order 1004
+# A part that names its own action is read alone, as it always was.
+$ evoke "add KIT-301 to my cart and check out"
+  1  cart_add product="KIT-301"  0.95
+  2  checkout  0.95
+in your cart: 1 of KIT-301
+order 1018 placed from your cart
+$ evoke "buy KIT-301 and pay for it"
+  1  buy product="KIT-301"  0.95
+  2  pay  0.95 · after 1
+  step 2 refers to step 1, but takes nothing from it
+  Run the plan as it stands?  [y]es [n]o > y
+bought 1 of KIT-301
+paid for order 1017
+$ evoke "buy 3 of OUT-503 and buy 2 of AUD-101"
+  1  buy product="OUT-503" quantity="3"  0.95
+  2  buy product="AUD-101" quantity="2"  0.95
+bought 3 of OUT-503
+bought 2 of AUD-101
+# A sentence that asks one thing is one step, whatever follows its and: this one's amount is asked.
+$ evoke try "deposit 50 euros and 20 more"
+  "deposit 50 euros and 20 more"
+
+  one thing, or several   one thing 0.75: read as one step, and no cut is made
+
+  which reflex            deposit 0.95   (none of them 0.03 · buy 0.02)
+                          Put money into your store wallet.
+  amount                  said, in a form evoke does not read 0.95   (not said 0.05)
+  holds all you said      0.90
+  → asks: deposit amount=?
+    it needs amount
+
+  replay answered 45 questions in 3 rounds

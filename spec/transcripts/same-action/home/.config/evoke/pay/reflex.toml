@@ -1,0 +1,22 @@
+reflex = 1
+
+description = "Pay for an order: the newest one, unless you name another."
+not_for     = ["buying a product", "refunding an order", "putting a product in the cart"]
+tags        = ["shop"]
+effect      = "write"
+confirm     = "Pay for the order?"
+run         = "pay.mts"
+
+[args.order]
+ask      = "Which order?"
+pick     = "number"
+optional = true
+
+[examples]
+"pay for it"         = {}
+"pay the order"      = {}
+"pay for order 1001" = { order = "1001" }
+
+[tests]
+"settle order 1002" = { order = "1002" }
+"refund order 1002" = false

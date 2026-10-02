@@ -1,0 +1,21 @@
+reflex = 1
+
+description = "Refund an order: the money goes back to your card."
+not_for     = ["cancelling an order before it ships", "paying for an order"]
+tags        = ["shop"]
+effect      = "write"
+confirm     = "Refund order {order}?"
+run         = "refund.mts"
+
+[args.order]
+ask  = "Which order?"
+pick = "number"
+
+[examples]
+"refund order 1001"              = { order = "1001" }
+"give me my money back for 1002" = { order = "1002" }
+"refund 1005"                    = { order = "1005" }
+
+[tests]
+"I want a refund for order 1004" = { order = "1004" }
+"cancel order 1004"              = false

@@ -1,0 +1,21 @@
+reflex = 1
+
+description = "Put money into your store wallet."
+not_for     = ["paying for an order", "refunding an order"]
+tags        = ["wallet"]
+effect      = "write"
+confirm     = "Deposit {amount}?"
+run         = "deposit.mts"
+
+[args.amount]
+ask  = "How much?"
+pick = "amount"
+
+[examples]
+"deposit 50 euros"          = { amount = "50 euros" }
+"add 20 euros to my wallet" = { amount = "20 euros" }
+"top up my wallet with $30" = { amount = "$30" }
+
+[tests]
+"put 15 euros in my wallet" = { amount = "15 euros" }
+"pay for order 1001"        = false

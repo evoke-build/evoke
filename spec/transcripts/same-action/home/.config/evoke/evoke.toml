@@ -1,0 +1,10 @@
+adapter = "replay"
+
+[reflexes]
+buy      = "./buy"
+cart_add = "./cart_add"
+checkout = "./checkout"
+pay      = "./pay"
+refund   = "./refund"
+cancel   = "./cancel"
+deposit  = "./deposit"

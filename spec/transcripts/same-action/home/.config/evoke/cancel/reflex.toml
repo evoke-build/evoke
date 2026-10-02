@@ -1,0 +1,21 @@
+reflex = 1
+
+description = "Cancel an order before it ships."
+not_for     = ["refunding an order", "paying for an order"]
+tags        = ["shop"]
+effect      = "write"
+confirm     = "Cancel order {order}?"
+run         = "cancel.mts"
+
+[args.order]
+ask  = "Which order?"
+pick = "number"
+
+[examples]
+"cancel order 1001"   = { order = "1001" }
+"cancel 1003"         = { order = "1003" }
+"call off order 1002" = { order = "1002" }
+
+[tests]
+"scrap order 1004"  = { order = "1004" }
+"refund order 1004" = false
