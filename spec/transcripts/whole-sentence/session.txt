@@ -1,0 +1,47 @@
+# A part that asks for something and matches no reflex alone is read with the whole sentence. Decided as the reflex
+# the sentence gives its words, it is a step of its own, it always waits for a yes, and why says how it was read.
+$ evoke "check the errors for checkout and post in #incident, payments too"
+  1  errors service="checkout"  0.95
+  2  post channel="#incident"  0.95
+  3  errors service="payments" · read · weakest: route 0.85
+       "payments too" matches nothing alone, and the whole request reads it as errors at 0.85, which always waits for a yes
+checkout: 8.4% errors since 14:02
+posted to #incident
+  3  errors service="payments" · read · weakest: route 0.85
+       "payments too" matches nothing alone, and the whole request reads it as errors at 0.85, which always waits for a yes
+  Show the error rate of payments?  [y]es [n]o [t]each > y
+payments: 8.4% errors since 14:02
+$ evoke why
+  "check the errors for checkout and post in #incident, payments too"
+
+  one thing, or several   several 0.95: cut at "and" 0.90, "," 0.85
+
+  1 · check the errors for checkout
+    which reflex            errors 0.95   (none of them 0.03 · post 0.02)
+                            Show the error rate of a service.
+    service                 checkout 0.95   (not said 0.05)
+                            asked a second way: checkout 0.95; the less sure of the two counts
+    holds all you said      0.90
+    → ran: errors service="checkout"  0.95
+      a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  2 · post in #incident
+    which reflex            post 0.95   (none of them 0.03 · errors 0.02)
+                            Post a message to a chat channel.
+    channel                 #incident 0.95   (not said 0.05)
+                            asked a second way: #incident 0.95; the less sure of the two counts
+    holds all you said      0.90
+    → ran: post channel="#incident"  0.95
+      a write runs at 0.90 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
+
+  3 · payments too
+    which reflex            errors 0.85
+                            Show the error rate of a service.
+    service                 payments 0.95   (not said 0.05)
+                            asked a second way: payments 0.95; the less sure of the two counts
+    holds all you said      0.90
+    read with               the whole request: alone it matches nothing
+    → ran at your yes: errors service="payments" · read · weakest: route 0.85
+      "payments too" matches nothing alone, and the whole request reads it as errors at 0.85, which always waits for a yes
+
+  replay answered 56 questions in 9 rounds

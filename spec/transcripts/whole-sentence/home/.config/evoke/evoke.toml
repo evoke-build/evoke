@@ -1,0 +1,5 @@
+adapter = "replay"
+
+[reflexes]
+errors = "./errors"
+post   = "./post"

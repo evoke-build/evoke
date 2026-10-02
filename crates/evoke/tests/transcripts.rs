@@ -226,6 +226,11 @@ fn plans() {
     flow("plans");
 }
 
+#[test]
+fn whole_sentence() {
+    flow("whole-sentence");
+}
+
 /// The recipe yields the commit `spec/transcripts/update/home/.config/evoke/evoke.lock` records.
 #[test]
 fn the_recipe_reproduces_the_locked_commit() {

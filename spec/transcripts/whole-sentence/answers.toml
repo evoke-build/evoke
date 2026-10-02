@@ -1,0 +1,72 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md): the errors and post stand-ins of the whole-sentence flow.
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.8
+write = 0.9
+whole = 0.3
+
+[answers."check the errors for checkout and post in #incident, payments too"]
+"weave.split_0"              = { yes = 0.9 }
+"weave.split_1"              = { yes = 0.85 }
+"weave.count"                = { more = 0.6, two = 0.35, one = 0.05 }
+"weave.part_53_65"           = { asks = 0.75, detail = 0.2, aside = 0.05 }
+"weave.span_53_65"           = { errors = 0.85, post = 0.05, none = 0.1 }
+route                        = { none = 0.95, errors = 0.05 }
+"errors.service"             = { unstated = 1.0 }
+"errors.region"              = { unstated = 1.0 }
+"post.channel"               = { unstated = 1.0 }
+"weave.view_errors__service" = { unstated = 1.0 }
+"weave.is_errors__service_0" = { yes = 0.05 }
+"weave.is_errors__service_1" = { yes = 0.05 }
+"weave.view_errors__region"  = { unstated = 1.0 }
+"weave.view_post__channel"   = { unstated = 1.0 }
+"weave.is_post__channel_0"   = { yes = 0.05 }
+
+[answers."check the errors for checkout"]
+route                        = { errors = 0.95, post = 0.02, none = 0.03 }
+"errors.service"             = { checkout = 0.95, unstated = 0.05 }
+"errors.region"              = { unstated = 1.0 }
+"post.channel"               = { unstated = 1.0 }
+"weave.view_errors__service" = { checkout = 0.95, unstated = 0.05 }
+"weave.is_errors__service_0" = { yes = 0.95 }
+"weave.view_errors__region"  = { unstated = 1.0 }
+"weave.view_post__channel"   = { unstated = 1.0 }
+"weave.does_errors_0_2"      = { action = 0.95, courtesy = 0.05 }
+"weave.against_2100990710"   = { whole = 0.9, less = 0.05, other = 0.05 }
+
+[answers."post in #incident"]
+route                        = { post = 0.95, errors = 0.02, none = 0.03 }
+"post.channel"               = { "#incident" = 0.95, unstated = 0.05 }
+"errors.service"             = { unstated = 1.0 }
+"errors.region"              = { unstated = 1.0 }
+"weave.view_errors__service" = { unstated = 1.0 }
+"weave.view_errors__region"  = { unstated = 1.0 }
+"weave.view_post__channel"   = { "#incident" = 0.95, unstated = 0.05 }
+"weave.is_post__channel_0"   = { yes = 0.95 }
+"weave.does_post_0_0"        = { action = 0.95, courtesy = 0.05 }
+"weave.against_1461761989"   = { whole = 0.9, less = 0.05, other = 0.05 }
+
+[answers."payments too"]
+route                        = { none = 0.9, post = 0.1 }
+"errors.service"             = { payments = 0.95, unstated = 0.05 }
+"errors.region"              = { unstated = 1.0 }
+"post.channel"               = { unstated = 1.0 }
+"weave.view_errors__service" = { payments = 0.95, unstated = 0.05 }
+"weave.is_errors__service_1" = { yes = 0.95 }
+"weave.view_errors__region"  = { unstated = 1.0 }
+"weave.view_post__channel"   = { unstated = 1.0 }
+"weave.does_errors_1_1"      = { action = 0.95, courtesy = 0.05 }
+"weave.against_1594943914"   = { whole = 0.9, less = 0.05, other = 0.05 }
+
+[answers."post in payments too"]
+route                        = { none = 0.9, post = 0.1 }
+"post.channel"               = { unstated = 1.0 }
+"weave.view_post__channel"   = { unstated = 1.0 }
+"errors.service"             = { unstated = 1.0 }
+"errors.region"              = { unstated = 1.0 }
+"weave.view_errors__service" = { unstated = 1.0 }
+"weave.is_errors__service_1" = { yes = 0.05 }
+"weave.view_errors__region"  = { unstated = 1.0 }
