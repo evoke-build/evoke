@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.19.1] - 2026-10-02
+
 - `evoke run <file>`, and `weave` in the SDK, run a plan saved from a sentence with a part that matches nothing
   on its own: `check the error rate for payments in EU West, then the same for US East`.
 
