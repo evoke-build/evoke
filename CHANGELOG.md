@@ -6,6 +6,17 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A sentence reads the same way every time where a part holds only values: `buy 3 of OUT-503 and 2 of BOK-603`
+  is two purchases whatever the second part looked like on its own, where before it could keep a coin-toss
+  route of its own.
+- Two verbs before one thing are two steps: `buy and pay 3 of OUT-503` buys, then pays the order it placed, and
+  `buy and pay 3 of OUT-503 and 2 of BOK-603` pays each purchase. Before, the second verb was dropped without a
+  word, or read the count as an order number.
+- Words that point at a value this session returned take it, with no question: `buy it` after a product shown,
+  `pay that order`, `pay my last order`; `pay the last 2 orders` and `pay both orders` pay the two newest, one
+  step each. A number before the plural of the argument's name, `2 orders`, is a count, never the value. `why`
+  names the words and the value's place among the results.
+
 ## [0.19.2] - 2026-10-02
 
 - A part of a sentence that holds values and no action of its own is read as the action of the step before it:

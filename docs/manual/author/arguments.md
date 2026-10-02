@@ -139,10 +139,18 @@ checkout: 2 deploys today, the last 4.12.0 at 13:58
 ```
 
 A number picks one; anything else is read as typed. A `number` pick names the values as hints instead, since a
-number typed is its own answer. The session is one process: the REPL and the stdin filter remember every result,
+number typed is its own answer. Words that point at one of the values take it without a question: `it`, `that
+order`, `this one`, `the last order`, `my latest order`, `the most recent order`, with the argument's name or
+the field's as the noun. After a product is shown, `buy it` buys it; after two orders, `pay that order` pays the
+newest, and `pay the last 2 orders`, `those two orders` or `both orders` pay the two newest, one step each.
+`evoke why` names the words and the value's place: `the newest of this session's results, named by "it"`. A
+number before the plural of the argument's name, `2 orders`, is a count and never the value; where the call
+still has to ask, the prompt names those words. `the order`, `them` and a bare count point at nothing, and the
+ask lists the values as above. The session is one process: the REPL and the stdin filter remember every result,
 a one-shot call remembers none, and in the SDK an application hands the results it keeps. A sentence of several
 steps takes nothing from memory: its second step asks as it always did. The classifier is never asked about a
-recalled value; you choose, and `evoke why` names what was offered. `recent` is contract, beside a pick only.
+recalled value; the words or you choose, and `evoke why` names what was offered. `recent` is contract, beside a
+pick only.
 
 ## Flags
 

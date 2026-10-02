@@ -104,7 +104,8 @@ The prompt names the words of the input that answer the question, where `evoke` 
   is a number, a duration, an address, a URL, a quoted phrase, a date, a time, an amount or a code. A quoted
   argument takes the whole line when nothing is quoted; a code takes a quoted one.
 - A pick whose manifest names a `recent` field lists what the bodies of this session returned under it, `From
-  which release?  [1] 4.12.0  [2] 4.11.3  > `, and a number picks one ([Arguments](../author/arguments.md#a-value-recalled)).
+  which release?  [1] 4.12.0  [2] 4.11.3  > `, and a number picks one; words that point at one, `it`, `that
+  order`, `my last order`, take the newest with no prompt ([Arguments](../author/arguments.md#a-value-recalled)).
 - Where one listed word is the likely answer, the prompt puts it ready before the choices: `Which colleague's
   laptop?  you wrote "Samuel's": sam?  [y]es, or  [1] sam  [2] ana  [3] jo  [+] add one  [0] none of these  > `.
   `y` takes it. The choices keep their order, and a number or a word still picks any of them

@@ -34,7 +34,8 @@ den lights off
 
 The session remembers what its reflexes returned. A pick whose author named a `recent` field offers those values
 back when a sentence leaves the argument out, so after a listing, «roll back the last deploy» asks with the
-releases numbered ([Arguments](../author/arguments.md#a-value-recalled)):
+releases numbered; words that point at one, «buy it» after a product shown, «pay my last order», take the newest
+without asking ([Arguments](../author/arguments.md#a-value-recalled)):
 
 ```text
 > list the checkout deploys
