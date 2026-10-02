@@ -325,6 +325,7 @@ pub struct Prob(f64);
 
 impl Prob {
     pub const ZERO: Self = Self(0.0);
+    pub const ONE: Self = Self(1.0);
 
     #[must_use]
     pub const fn new(p: f64) -> Option<Self> {

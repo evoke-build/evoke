@@ -4,17 +4,18 @@
 
 use indexmap::IndexMap;
 
-use super::reading::{self, Left, Order, Ref, SURE, Segment, Split, Stretch, Unclean};
+use super::reading::{self, How, Left, Order, Ref, SURE, Segment, Split, Stretch, Unclean, Where};
 use super::{
     Answers, Aside, Asked, Because, Binding, Count, Folded, From, Need, Outcome, Parted, Planning,
     Repair, Shared, Step, Verdict, Via, Weave, When, field_names, named,
 };
-use crate::account::Left as Run;
+use crate::account::{Does, Left as Run};
 use crate::adapter::{Fault, Gate, Key, Prob, Question, QuestionId, Scope};
 use crate::calendar::Day;
 use crate::call::Value;
 use crate::decide::{
-    Basis, Cap, Decision, Judgment, Prompt, alone, carry, given, held, joined, words, yielded,
+    Basis, Cap, Choices, Decision, Judgment, Prompt, alone, carry, given, held, joined, names_of,
+    words, yielded,
 };
 use crate::manifest::{self, Effect, Kind, MOST_STEPS, Recognizer, Source, Yield};
 use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
@@ -34,6 +35,8 @@ const DOUBT: f64 = 0.5;
 const MOST_SPLITS: usize = 24;
 /// At this share of *one thing*, a request the split points cut is one step, and no cut is made.
 const ONE: f64 = 0.5;
+/// At this share a run of a step's words says what to do, as the account reads it.
+const SAYS: f64 = 0.5;
 /// How deep a plan may stand inside a plan: a step of a playbook that routes to a playbook expands once more, and
 /// a playbook inside that is refused.
 const HOPS: usize = 2;
@@ -106,6 +109,11 @@ struct Draft {
     ruled: Vec<(usize, usize)>,
     /// What the whole each part the items rule cut came from read as.
     wholes: Vec<Whole>,
+    /// Per segment a second verb made, by id: the id of the step whose object it shares.
+    verbs: Vec<(usize, usize)>,
+    /// The segments filled from this session's results by words that point at them, by id: a word of theirs
+    /// names no step.
+    recalled: Vec<usize>,
 }
 
 /// A whole the items rule cut that read as a call, for one of its parts: the part by its id, the whole's reflex,
@@ -213,6 +221,8 @@ impl Draft {
             asides: Vec::new(),
             ruled: Vec::new(),
             wholes: Vec::new(),
+            verbs: Vec::new(),
+            recalled: Vec::new(),
         }
     }
 
@@ -288,6 +298,39 @@ impl Draft {
         self.typed.remove(k);
     }
 
+    /// Whether segment `k` is a second verb's step: never folded, merged or held as a neighbour.
+    fn verb(&self, k: usize) -> bool {
+        self.verbs.iter().any(|(verb, _)| *verb == self.ids[k])
+    }
+
+    /// The neighbour a part is read beside: the segment before it, else the one after; never a second verb's
+    /// step, which stands in for none, and none for such a step.
+    fn neighbour(&self, k: usize) -> Option<usize> {
+        if self.verb(k) {
+            return None;
+        }
+        if k > 0 {
+            (0..k).rev().find(|&j| !self.verb(j))
+        } else {
+            (k + 1..self.segs.len()).find(|&j| !self.verb(j))
+        }
+    }
+
+    /// A segment of the person's own put in right after `k`, in every parallel list: its id.
+    fn insert(&mut self, k: usize, seg: Segment, decision: Decision) -> usize {
+        let at = k + 1;
+        if self.shared.len() == self.segs.len() {
+            self.shared.insert(at, IndexMap::new());
+        }
+        self.segs.insert(at, seg);
+        self.decisions.insert(at, decision);
+        self.origins.insert(at, Vec::new());
+        self.ids.insert(at, self.next);
+        self.typed.insert(at, None);
+        self.next += 1;
+        self.next - 1
+    }
+
     /// Whether the segment at `k` is refused for what its words route to: no word is carried into it.
     fn refused_at(&self, k: usize) -> bool {
         self.refusals.iter().any(|(id, _)| *id == self.ids[k])
@@ -357,6 +400,21 @@ struct Fan {
     decision: Decision,
     text: String,
     how: Repair,
+}
+
+/// Two verbs before one object: kept whole, step `k`'s words without the second verb, and the second verb; or
+/// cut, step `k` a bare verb, the next part's object and its verb.
+enum Verbs {
+    Whole {
+        k: usize,
+        base: String,
+        second: String,
+    },
+    Cut {
+        k: usize,
+        object: String,
+        verb: String,
+    },
 }
 
 impl<'a> Planner<'a> {
@@ -457,8 +515,10 @@ impl<'a> Planner<'a> {
                 extra,
             )));
         }
+        self.recalled(&mut draft);
         let phases = self
-            .recut(&mut draft, &judged)
+            .coordinated(&mut draft)
+            .and_then(|()| self.recut(&mut draft, &judged))
             .and_then(|()| self.corrected(&mut draft))
             .and_then(|()| self.expand(&mut draft))
             .and_then(|()| self.share(&mut draft))
@@ -842,42 +902,52 @@ impl<'a> Planner<'a> {
     }
 
     /// A part that continues the step before it. A part whose words are values alone — «2 of BOK-603» after
-    /// «buy 3 of OUT-503» — names no action of its own, so its route was asked of words that hold none, and
-    /// went to whichever reflex takes such values. Where it reads alone as another reflex than the step before
-    /// it, and that step's reflex takes the same values, the action it asks for is that step's: it is put in
-    /// that step's words in place of the values they hold, «buy 2 of BOK-603», every word still the person's
-    /// own, and decided narrowed to that step's reflex, as a fragment spliced is. The reading stands where it
-    /// holds the values the part read alone, and the part stays as it read alone otherwise. The step before a
-    /// run of such parts is the one before the first of them; a step that picks a playbook is continued by none.
+    /// «buy 3 of OUT-503» — names no action of its own, so its route was asked of words that hold none, and goes
+    /// to whichever reflex takes such values, a coin toss between the step's reflex and a sibling. Whatever the
+    /// engine made of it alone, the action it asks for is the step's: it is put in that step's words in place of
+    /// the values they hold, «buy 2 of BOK-603», every word still the person's own, and decided narrowed to that
+    /// step's reflex, as a fragment spliced is, so that the route is never the part's own toss. The reading
+    /// stands where it reads every value the part holds into the arguments the step's values filled, and the
+    /// part stays as it read alone otherwise. The step before a run of such parts is the one before the first
+    /// of them; a step that picks a playbook is continued by none.
     fn continued(&self, draft: &mut Draft) -> Result<(), Need> {
-        let mut wanted: Vec<(usize, Asked)> = Vec::new();
+        let mut wanted: Vec<(usize, usize, Asked, usize, Vec<Span>)> = Vec::new();
         let mut head: Option<usize> = None;
         for k in 0..draft.segs.len() {
+            // A second verb's step stands between a step and its continuation, and is neither.
+            if draft.verb(k) {
+                continue;
+            }
             let joined = k > 0 && split_before(&draft.taken, &draft.segs, k).is_some();
-            let alone = repair_of(draft, k).is_none()
-                && values_alone(&draft.segs[k].text, &draft.decisions[k]);
-            let Some(h) = head.filter(|_| joined && alone) else {
+            let alone = if repair_of(draft, k).is_none() {
+                values_alone(&draft.segs[k].text, Some(&draft.decisions[k]))
+            } else {
+                None
+            };
+            let (Some(h), Some(values)) = (head.filter(|_| joined), alone) else {
                 head = Some(k);
                 continue;
             };
             let Some(before) = reflex_of(&draft.decisions[h]) else {
                 continue;
             };
-            if reflex_of(&draft.decisions[k]) == Some(before)
-                || !self.takes_the_same(before, &draft.decisions[k])
+            // A part that reads alone as a call of other values than the step before it takes is no
+            // continuation of it; one that reads as nothing, or as any call of the same values, may be.
+            if reflex_of(&draft.decisions[k]).is_some()
+                && !self.takes_the_same(before, &draft.decisions[k])
             {
                 continue;
             }
-            if let Some(text) = in_place(
+            if let Some((text, at)) = in_place(
                 &draft.segs[h].text,
                 &draft.decisions[h],
                 &draft.segs[k].text,
             ) {
-                wanted.push((k, Self::narrowed(&text, before, None)));
+                wanted.push((k, h, Self::narrowed(&text, before, None), at, values));
             }
         }
         let mut missing: Vec<Asked> = Vec::new();
-        for (_, asked) in &wanted {
+        for (_, _, asked, _, _) in &wanted {
             if self.decided(asked).is_none() && !missing.contains(asked) {
                 missing.push(asked.clone());
             }
@@ -885,18 +955,342 @@ impl<'a> Planner<'a> {
         if !missing.is_empty() {
             return Err(Need::Decide { asked: missing });
         }
-        for (k, asked) in wanted {
+        let mut paid: Vec<(usize, usize)> = Vec::new();
+        for (k, h, asked, at, values) in wanted {
             let decision = self
                 .decided(&asked)
                 .cloned()
                 .expect("every part put in place is decided");
-            if same_values(&draft.decisions[k], &decision) {
+            if continues(&draft.decisions[h], &decision, &asked.text, at, &values) {
                 draft.decisions[k] = decision;
                 draft.segs[k].text.clone_from(&asked.text);
                 draft.repaired.push((asked.text, Repair::Spliced));
+                // A second verb of the step is the continuation's too: «buy and pay 3 of OUT-503 and 2 of
+                // BOK-603» pays each purchase.
+                let source = draft.ids[h];
+                if let Some(j) = (0..draft.segs.len()).find(|&j| {
+                    draft
+                        .verbs
+                        .iter()
+                        .any(|(verb, of)| *verb == draft.ids[j] && *of == source)
+                }) {
+                    paid.push((k, j));
+                }
+            }
+        }
+        for (k, j) in paid.into_iter().rev() {
+            let seg = Segment {
+                text: draft.segs[j].text.clone(),
+                start: draft.segs[k].start,
+                end: draft.segs[k].end,
+                left: None,
+            };
+            let decision = draft.decisions[j].clone();
+            let of = draft.ids[k];
+            let id = draft.insert(k, seg, decision);
+            draft.verbs.push((id, of));
+        }
+        Ok(())
+    }
+
+    /// A second verb before the object of the first: «buy and pay 3 of OUT-503». The engine may keep the words
+    /// whole — cut at the «and», «pay 3 of OUT-503» asks for nothing a reflex does — and the account then reads
+    /// «buy and pay» as what the step does, so the second verb is lost; or it may cut them, and «pay 2 of
+    /// HOM-403» reads the count as an order. Either way the object is the first verb's, and the second verb is a
+    /// step of its own right after it, which takes from the first's result as «it» would, under its own gate as
+    /// any step is. Kept whole, the words after the «and» in the run that says what to do are read alone; cut,
+    /// the second part's object is put after the first's bare verb, «buy 2 of HOM-403», decided narrowed to its
+    /// reflex, and the second part keeps its verb alone. A second verb that reads as the first's reflex, or as
+    /// none, changes nothing.
+    fn coordinated(&self, draft: &mut Draft) -> Result<(), Need> {
+        let mut wanted: Vec<Verbs> = Vec::new();
+        for k in 0..draft.segs.len() {
+            if !draft.origins[k].is_empty() {
+                continue;
+            }
+            if let Some((base, second)) = second_verb(&draft.segs[k].text, &draft.decisions[k]) {
+                wanted.push(Verbs::Whole { k, base, second });
+            } else if let Some((object, verb)) = self.cut_apart(draft, k) {
+                wanted.push(Verbs::Cut { k, object, verb });
+            }
+        }
+        let mut missing: Vec<Asked> = Vec::new();
+        for verbs in &wanted {
+            for asked in self.verbs_asked(draft, verbs) {
+                if self.decided(&asked).is_none() && !missing.contains(&asked) {
+                    missing.push(asked);
+                }
+            }
+        }
+        if !missing.is_empty() {
+            return Err(Need::Decide { asked: missing });
+        }
+        // The later steps first, so that a step put in moves no earlier one.
+        for verbs in wanted.into_iter().rev() {
+            match verbs {
+                Verbs::Whole { k, base, second } => {
+                    let decision = self
+                        .decide(self.segment(&second))
+                        .expect("every second verb is decided");
+                    let Some(first) = reflex_of(&draft.decisions[k]).cloned() else {
+                        continue;
+                    };
+                    if reflex_of(&decision).is_none_or(|reflex| *reflex == first) {
+                        continue;
+                    }
+                    // The step's words without the second verb, where they read as the step read with it: a
+                    // continuation is then put in words that say one thing.
+                    let without = self
+                        .decide(Self::narrowed(&base, &first, None))
+                        .expect("every step without its second verb is decided");
+                    if alike(&draft.decisions[k], &without) {
+                        let typed = draft.as_typed(k);
+                        draft.typed[k] = Some(typed);
+                        draft.decisions[k] = without;
+                        draft.segs[k].text.clone_from(&base);
+                        draft.repaired.push((base, Repair::First));
+                    }
+                    let seg = Segment {
+                        text: second.clone(),
+                        start: draft.segs[k].start,
+                        end: draft.segs[k].end,
+                        left: None,
+                    };
+                    let source = draft.ids[k];
+                    let id = draft.insert(k, seg, decision);
+                    draft.verbs.push((id, source));
+                    draft.repaired.push((second, Repair::Verb));
+                }
+                Verbs::Cut { k, object, verb } => {
+                    let Some(first) = reflex_of(&draft.decisions[k]).cloned() else {
+                        continue;
+                    };
+                    let text = format!("{} {object}", draft.segs[k].text);
+                    let whole = self
+                        .decide(Self::narrowed(&text, &first, None))
+                        .expect("every object put after its verb is decided");
+                    let alone = self
+                        .decide(self.segment(&verb))
+                        .expect("every verb left alone is decided");
+                    let at = draft.segs[k].text.chars().count() + 1;
+                    let Some(values) = values_alone(&object, None) else {
+                        continue;
+                    };
+                    let takes = reflex_of(&alone).is_some_and(|reflex| *reflex != first);
+                    if !takes || !shares(&draft.decisions[k], &whole, &text, at, &values) {
+                        continue;
+                    }
+                    draft.decisions[k] = whole;
+                    draft.segs[k].text.clone_from(&text);
+                    draft.repaired.push((text, Repair::Spliced));
+                    draft.decisions[k + 1] = alone;
+                    draft.segs[k + 1].text.clone_from(&verb);
+                    draft.verbs.push((draft.ids[k + 1], draft.ids[k]));
+                    draft.repaired.push((verb, Repair::Verb));
+                }
             }
         }
         Ok(())
+    }
+
+    /// The texts a shared object asks to decide: the second verb alone; or the object after the first verb,
+    /// narrowed to its reflex, and the second verb alone.
+    fn verbs_asked(&self, draft: &Draft, verbs: &Verbs) -> Vec<Asked> {
+        match verbs {
+            Verbs::Whole { k, base, second } => {
+                let Some(first) = reflex_of(&draft.decisions[*k]) else {
+                    return Vec::new();
+                };
+                vec![Self::narrowed(base, first, None), self.segment(second)]
+            }
+            Verbs::Cut { k, object, verb } => {
+                let Some(first) = reflex_of(&draft.decisions[*k]) else {
+                    return Vec::new();
+                };
+                let text = format!("{} {object}", draft.segs[*k].text);
+                vec![Self::narrowed(&text, first, None), self.segment(verb)]
+            }
+        }
+    }
+
+    /// A bare verb cut by «and» from a verb with the object: «buy» and «pay 2 of HOM-403». The first part reads
+    /// as a reflex and asks for a value, holding none; the next part was cut from it by «and», reads as another
+    /// reflex, and opens with words that say what to do, its values after them, typed values alone; and no
+    /// word of the next part names an argument its call read, «pay order 1024», which keeps the object its
+    /// own. The object, and the next part's verb.
+    fn cut_apart(&self, draft: &Draft, k: usize) -> Option<(String, String)> {
+        let next = k + 1;
+        if next >= draft.segs.len() || !draft.origins[next].is_empty() {
+            return None;
+        }
+        let split = split_before(&draft.taken, &draft.segs, next)?;
+        if split.order != Order::And {
+            return None;
+        }
+        let (first, theirs) = (reflex_of(&draft.decisions[k])?, &draft.decisions[next]);
+        let second = reflex_of(theirs)?;
+        if second == first || !matches!(draft.decisions[k], Decision::Ask { .. }) {
+            return None;
+        }
+        // The first part: a bare verb, no value in its words and none read, and no word that points back.
+        let bare = Input::new(&draft.segs[k].text).ok()?;
+        if args_of(&draft.decisions[k]).is_some_and(|args| !args.is_empty())
+            || !crate::propose::propose(&bare).is_empty()
+            || reading::refers_back(&draft.segs[k].text)
+        {
+            return None;
+        }
+        let acts = |text: &str, decision: &Decision| {
+            left_of(decision)
+                .iter()
+                .find(|run| {
+                    run.does == Does::Action && run.p.get() >= SAYS && stands_in(text, &run.words)
+                })
+                .map(|run| run.words.clone())
+        };
+        acts(&draft.segs[k].text, &draft.decisions[k])?;
+        // The next part: its verb first, its values after it.
+        let verb = acts(&draft.segs[next].text, theirs)?;
+        let (_, held) = held_by(&draft.segs[next].text, theirs)?;
+        if verb.start() != 0
+            || held.is_empty()
+            || held.iter().any(|value| value.start() < verb.end())
+        {
+            return None;
+        }
+        let chars: Vec<char> = draft.segs[next].text.chars().collect();
+        let object: String = chars[verb.end().min(chars.len())..].iter().collect();
+        let object = object.trim().to_owned();
+        // The object is values alone, typed: «2 of HOM-403»; words that hold a listed word only, «in
+        // eu-west», are the next part's own.
+        if object.is_empty() || values_alone(&object, None).is_none() {
+            return None;
+        }
+        // A part that names what its call reads, «pay order 1024», keeps its object as its own.
+        let names: Vec<String> = args_of(theirs)
+            .into_iter()
+            .flatten()
+            .flat_map(|(arg, _)| names_of(self.plan, &QuestionId::Arg(second.clone(), arg.clone())))
+            .collect();
+        let lowered = draft.segs[next].text.to_lowercase();
+        if names.iter().any(|name| occurrences(&lowered, name) > 0) {
+            return None;
+        }
+        Some((object, verb.text().as_str().to_owned()))
+    }
+
+    /// The words of a step that count several things of an argument the call holds one of — «the last 2
+    /// orders», «both orders». Where the step asks for the argument, the words point at what was said before,
+    /// and the session recalls as many under the field the pick names, the step is one step per value, newest
+    /// first, each standing on the words. Where the words count and the call takes one, the ask names them.
+    fn recalled(&self, draft: &mut Draft) {
+        let mut k = 0;
+        while k < draft.segs.len() {
+            let Some(found) = self.counted(draft, k) else {
+                k += 1;
+                continue;
+            };
+            let (arg, pick, pointer, values) = found;
+            let Decision::Ask { asking, .. } = &draft.decisions[k] else {
+                k += 1;
+                continue;
+            };
+            // The call was held against the request without its value: that says nothing of a step that
+            // holds one of the values the words count.
+            let asking = crate::decide::Asking {
+                whole: None,
+                ..asking.clone()
+            };
+            let decisions: Vec<Decision> = values
+                .iter()
+                .take(pointer.count)
+                .enumerate()
+                .filter_map(|(i, text)| {
+                    let Value::Pick { value, .. } = yielded(text, pick)? else {
+                        return None;
+                    };
+                    let value = Value::Pick {
+                        span: pointer.words.clone(),
+                        value,
+                        typed: Clean::new(text).ok(),
+                    };
+                    let stands = Basis::Recalled {
+                        words: pointer.words.clone(),
+                        place: i + 1,
+                    };
+                    Some(carry(
+                        self.plan,
+                        asking.clone(),
+                        IndexMap::from([(arg.clone(), value)]),
+                        IndexMap::from([(arg.clone(), stands)]),
+                        self.gate,
+                    ))
+                })
+                .collect();
+            if pointer.points && decisions.len() == pointer.count {
+                let segs = vec![draft.segs[k].clone(); pointer.count];
+                draft.replace(k, segs, decisions, vec![Vec::new(); pointer.count]);
+                draft
+                    .recalled
+                    .extend(draft.ids[k..k + pointer.count].iter().copied());
+                k += pointer.count;
+                continue;
+            }
+            // The call takes one: the ask names the words that count, so that nothing is dropped in silence.
+            if let Decision::Ask { asking, missing } = &draft.decisions[k] {
+                let named: Vec<crate::decide::Missing> = missing
+                    .iter()
+                    .cloned()
+                    .map(|mut asked| {
+                        if asked.arg == arg {
+                            asked.words.get_or_insert_with(|| pointer.words.clone());
+                        }
+                        asked
+                    })
+                    .collect();
+                if let Ok(missing) = crate::text::NonEmpty::try_from(named) {
+                    draft.decisions[k] = Decision::Ask {
+                        asking: asking.clone(),
+                        missing,
+                    };
+                }
+            }
+            k += 1;
+        }
+    }
+
+    /// The words of step `k` that count several things of an argument its call asks for: the argument, its
+    /// recognizer, the words, and the values this session recalls for the ask. None where no words count.
+    fn counted(
+        &self,
+        draft: &Draft,
+        k: usize,
+    ) -> Option<(ArgName, Recognizer, crate::pointer::Pointer, Vec<String>)> {
+        if !draft.origins[k].is_empty() {
+            return None;
+        }
+        let Decision::Ask { asking, missing } = &draft.decisions[k] else {
+            return None;
+        };
+        let input = Input::new(&draft.segs[k].text).ok()?;
+        let proposed = crate::propose::propose(&input);
+        missing.iter().find_map(|asked| {
+            let Choices::Pick { pick, recent, .. } = &asked.choices else {
+                return None;
+            };
+            let id = QuestionId::Arg(asking.reflex.clone(), asked.arg.clone());
+            let names = names_of(self.plan, &id);
+            let names: Vec<&str> = names.iter().map(String::as_str).collect();
+            let pointer = crate::pointer::pointed(&input, &proposed, &names)?;
+            (pointer.count >= 2).then(|| {
+                (
+                    asked.arg.clone(),
+                    *pick,
+                    pointer,
+                    recent.clone().unwrap_or_default(),
+                )
+            })
+        })
     }
 
     /// A part left out that names a value the step beside it lacks — «…, not ireland, virginia» — says what
@@ -1317,7 +1711,10 @@ impl<'a> Planner<'a> {
                 k += 1;
                 continue;
             }
-            let sibling = if k > 0 { k - 1 } else { k + 1 };
+            let Some(sibling) = draft.neighbour(k) else {
+                k += 1;
+                continue;
+            };
             let split = split_before(&draft.taken, &draft.segs, k.max(1)).cloned();
             let sibling_reflex = reflex_of(&draft.decisions[sibling]).cloned();
             let doubted = split
@@ -1366,6 +1763,11 @@ impl<'a> Planner<'a> {
                 continue;
             }
             let (a, b) = if k > 0 { (k - 1, k) } else { (k, k + 1) };
+            // A second verb's step between two parts is merged into neither: the fragment stays as it is.
+            if draft.verb(a) || draft.verb(b) {
+                k += 1;
+                continue;
+            }
             let whole = Segment {
                 text: draft.chars[draft.segs[a].start..draft.segs[b].end.min(draft.chars.len())]
                     .iter()
@@ -1731,7 +2133,11 @@ impl<'a> Planner<'a> {
                 let beside = [k.checked_sub(1), Some(k + 1)]
                     .into_iter()
                     .flatten()
-                    .find(|&j| j < draft.segs.len() && reflex_of(&draft.decisions[j]).is_some());
+                    .find(|&j| {
+                        j < draft.segs.len()
+                            && !draft.verb(j)
+                            && reflex_of(&draft.decisions[j]).is_some()
+                    });
                 if let Some(j) = beside {
                     let cap = Cap::Detail {
                         words: text.clone(),
@@ -1807,7 +2213,12 @@ impl<'a> Planner<'a> {
                 reading::joins(&split.word)
                     && split.p.is_some_and(|p| (LOW..DOUBT).contains(&p.get()))
             });
-            if !unsure || !draft.origins[k - 1].is_empty() || !draft.origins[k].is_empty() {
+            if !unsure
+                || !draft.origins[k - 1].is_empty()
+                || !draft.origins[k].is_empty()
+                || draft.verb(k - 1)
+                || draft.verb(k)
+            {
                 continue;
             }
             for (at, beside) in [(k - 1, k), (k, k - 1)] {
@@ -1981,6 +2392,7 @@ impl<'a> Planner<'a> {
         // A playbook that still asks is a part as any other; one whose call is complete is its plan.
         let own = |draft: &Draft, k: usize| {
             draft.origins[k].is_empty()
+                && !draft.verb(k)
                 && !draft.refused_at(k)
                 && self.active_of(&draft.decisions[k]).is_some()
                 && !self.plays(&draft.decisions[k])
@@ -2455,13 +2867,38 @@ impl<'a> Planner<'a> {
             .collect();
         let mut refs: Vec<Vec<Ref>> = (0..draft.segs.len())
             .map(|k| {
-                if k == 0 {
+                if k == 0 || draft.recalled.contains(&draft.ids[k]) {
                     Vec::new()
                 } else {
                     reading::refs_by_code(&draft.segs, k, &fields)
                 }
             })
             .collect();
+        // A second verb's step names the step whose object it shares, by code.
+        for (k, id) in draft.ids.iter().enumerate() {
+            let Some((_, source)) = draft.verbs.iter().find(|(verb, _)| verb == id) else {
+                continue;
+            };
+            let Some(from) = draft.position(*source).checked_sub(1) else {
+                continue;
+            };
+            let text = draft.segs[k].text.clone();
+            refs[k].push(Ref {
+                span: Where {
+                    start: 0,
+                    end: text.chars().count(),
+                    text,
+                },
+                from: vec![from],
+                how: How::Shared,
+                // Code's: a reference only when something takes it, so a first verb that yields nothing a
+                // second takes holds nothing for a yes.
+                weak: true,
+                noun: None,
+                many: false,
+                p: None,
+            });
+        }
         if let Ok(Some(refer)) = reading::referring(&self.request, &draft.segs, &refs) {
             match &self.answers.referred {
                 Some(raw) => reading::referred(&mut refs, &refer, raw.clone())?,
@@ -3347,7 +3784,8 @@ fn fold(draft: &mut Draft) {
     let mut k = 0;
     while k < draft.segs.len() {
         let asks = asked_of(&draft.decisions[k]);
-        if !draft.origins[k].is_empty() {
+        // A second verb's step is its own call, of the step whose object it shares: never one said again.
+        if !draft.origins[k].is_empty() || draft.verb(k) {
             k += 1;
             continue;
         }
@@ -3360,6 +3798,7 @@ fn fold(draft: &mut Draft) {
         // Only into a step the author wrote that always runs: the person asked unconditionally.
         let target = (0..draft.segs.len()).find(|&j| {
             j != k
+                && !draft.verb(j)
                 && draft.origins[j]
                     .last()
                     .is_some_and(|origin| origin.when.is_none())
@@ -3768,39 +4207,44 @@ fn held_by(text: &str, decision: &Decision) -> Option<(Input, Vec<Span>)> {
     Some((input, held))
 }
 
-/// Whether a text's words are its decision's values alone: every word is one a value holds, one that carries
-/// nothing, or one of `ONCE_MORE`, with one value at least, no text in quotes and no typed span outside a value.
-fn values_alone(text: &str, decision: &Decision) -> bool {
-    let (unconsumed, quotes) = match decision {
-        Decision::Abstain { .. } => return false,
-        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => {
-            (&chosen.unconsumed, &chosen.quotes)
+/// The words of a text that are values, where its words are values alone: every word is one a value the
+/// decision read holds, one code proposes as a typed value, one that carries nothing, or one of `ONCE_MORE`,
+/// with one value at least and no text in quotes. None otherwise. Code's candidates count beside the decision's
+/// values, so that a part reads as values alone whatever the engine made of it: alone, «2 of BOK-603» may
+/// read as nothing, or as a call that took the number or left it.
+fn values_alone(text: &str, decision: Option<&Decision>) -> Option<Vec<Span>> {
+    let input = Input::new(text).ok()?;
+    if !crate::account::quotes(&input, &[]).is_empty() {
+        return None;
+    }
+    let mut held: Vec<Span> = decision
+        .and_then(|decision| held_by(text, decision))
+        .map(|(_, held)| held)
+        .unwrap_or_default();
+    for proposed in crate::propose::propose(&input) {
+        let within = held.iter().any(|value| {
+            value.start() <= proposed.span.start() && proposed.span.end() <= value.end()
+        });
+        if !within {
+            held.push(proposed.span);
         }
-        Decision::Ask { asking, .. } => (&asking.unconsumed, &asking.quotes),
-    };
-    let Some((input, held)) = held_by(text, decision) else {
-        return false;
-    };
+    }
     let idle =
         |word: &str| word.is_empty() || crate::words::function(word) || ONCE_MORE.contains(&word);
-    !held.is_empty()
-        && quotes.is_empty()
-        && unconsumed.iter().all(|span| {
-            held.iter()
-                .any(|value| value.start() <= span.start() && span.end() <= value.end())
-        })
-        && crate::words::tokens(input.as_str()).iter().all(|token| {
-            idle(&token.plain)
-                || held
-                    .iter()
-                    .any(|value| token.start < value.end() && value.start() < token.end)
-        })
+    let covered = crate::words::tokens(input.as_str()).iter().all(|token| {
+        idle(&token.plain)
+            || held
+                .iter()
+                .any(|value| token.start < value.end() && value.start() < token.end)
+    });
+    (!held.is_empty() && covered).then_some(held)
 }
 
 /// A part put in a step's words in place of the values they hold: the words from the step's first value to its
-/// last replaced by the part's — «buy 2 of BOK-603» from «buy 3 of OUT-503» and «2 of BOK-603». None where the
-/// step's words hold no value, or nothing but values, so that no word of the step's would say what to do.
-fn in_place(step: &str, decision: &Decision, part: &str) -> Option<String> {
+/// last replaced by the part's — «buy 2 of BOK-603» from «buy 3 of OUT-503» and «2 of BOK-603» — and where the
+/// part begins in them. None where the step's words hold no value, or nothing but values, so that no word of
+/// the step's would say what to do.
+fn in_place(step: &str, decision: &Decision, part: &str) -> Option<(String, usize)> {
     let (input, held) = held_by(step, decision)?;
     let start = held.iter().map(Span::start).min()?;
     let end = held.iter().map(Span::end).max()?;
@@ -3814,7 +4258,128 @@ fn in_place(step: &str, decision: &Decision, part: &str) -> Option<String> {
             .iter()
             .any(|token| !token.plain.is_empty() && !crate::words::function(&token.plain))
     };
-    (spoken(&before) || spoken(&after)).then(|| format!("{before}{part}{after}"))
+    (spoken(&before) || spoken(&after)).then(|| (format!("{before}{part}{after}"), start))
+}
+
+/// Whether a part put in a step's words reads as the step's call over the part's own values: the reading holds
+/// a value for each argument the step's call holds and no other, asks for nothing the step did not ask, and
+/// every value the part holds, standing at `at` in the words, is held by a value it read.
+fn continues(step: &Decision, spliced: &Decision, text: &str, at: usize, values: &[Span]) -> bool {
+    let (Some(before), Some(after)) = (args_of(step), args_of(spliced)) else {
+        return false;
+    };
+    let asked = asked_of(step);
+    let same = before.len() == after.len() && before.keys().all(|arg| after.contains_key(arg));
+    let Some((_, held)) = held_by(text, spliced) else {
+        return false;
+    };
+    same && asked_of(spliced).iter().all(|arg| asked.contains(arg))
+        && values.iter().all(|value| {
+            held.iter()
+                .any(|read| read.start() <= value.start() + at && value.end() + at <= read.end())
+        })
+}
+
+/// Whether an object put after a bare verb reads as that verb's call over the object's values: the reading
+/// holds a value for every argument the verb alone asked, and every value the object holds, standing at `at` in
+/// the words, is held by a value it read.
+fn shares(verb: &Decision, whole: &Decision, text: &str, at: usize, values: &[Span]) -> bool {
+    let Some(read) = args_of(whole) else {
+        return false;
+    };
+    let Some((_, held)) = held_by(text, whole) else {
+        return false;
+    };
+    asked_of(verb).iter().all(|arg| read.contains_key(*arg))
+        && values.iter().all(|value| {
+            held.iter()
+                .any(|read| read.start() <= value.start() + at && value.end() + at <= read.end())
+        })
+}
+
+/// A second verb before the object of the first, in a step's words: a run that says what to do holds a sign
+/// for «and» between two words, the words after the sign carry a word and no value, and the run stands before
+/// every value the call holds. The step's words without the sign and the second verb, and the second verb:
+/// «buy 3 of OUT-503» and «pay» from «buy and pay 3 of OUT-503».
+fn second_verb(text: &str, decision: &Decision) -> Option<(String, String)> {
+    let held = held_by(text, decision)
+        .map(|(_, held)| held)
+        .unwrap_or_default();
+    let chars: Vec<char> = text.chars().collect();
+    left_of(decision)
+        .iter()
+        .filter(|run| run.does == Does::Action && run.p.get() >= SAYS)
+        .filter(|run| stands_in(text, &run.words))
+        .filter(|run| held.iter().all(|value| run.words.end() <= value.start()))
+        .find_map(|run| {
+            let words = run.words.text().as_str();
+            let place = reading::places(words, false)
+                .into_iter()
+                .find(|split| split.order == Order::And)?;
+            let own: Vec<char> = words.chars().collect();
+            let before: String = own[..place.start.min(own.len())].iter().collect();
+            let after: String = own[place.end.min(own.len())..].iter().collect();
+            let (before, after) = (before.trim(), after.trim());
+            // Two verbs, each a word or two that carry something and point at nothing: never the last two
+            // items of a list, «the invoices and card expenses», «cards and payroll».
+            if !verb_group(before) || !verb_group(after) {
+                return None;
+            }
+            let input = Input::new(after).ok()?;
+            if !crate::propose::propose(&input).is_empty() {
+                return None;
+            }
+            let cut = (run.words.start() + place.start).min(chars.len());
+            let rest = run.words.end().min(chars.len());
+            let base: String = chars[..cut]
+                .iter()
+                .chain(chars[rest..].iter())
+                .collect::<String>()
+                .split_whitespace()
+                .collect::<Vec<_>>()
+                .join(" ");
+            Some((base, after.to_owned()))
+        })
+}
+
+/// Whether words are a verb group as a second verb is told by its shape: one word or two, each carrying
+/// something, none a mark, and nothing that points back.
+fn verb_group(words: &str) -> bool {
+    let tokens = crate::words::tokens(words);
+    !tokens.is_empty()
+        && tokens.len() <= 2
+        && tokens.iter().all(|token| {
+            !token.plain.is_empty()
+                && !crate::words::function(&token.plain)
+                && token.end - token.start == token.plain.chars().count()
+        })
+        && !reading::refers_back(words)
+}
+
+/// Whether a span stands in a text: its characters are the text's at its place.
+fn stands_in(text: &str, span: &Span) -> bool {
+    let own: String = text
+        .chars()
+        .skip(span.start())
+        .take(span.end() - span.start())
+        .collect();
+    own == span.text().as_str()
+}
+
+/// Whether a step decided again in other words read as it did: the same reflex, the same arguments with the
+/// same values, as the words state them, and the same arguments asked.
+fn alike(before: &Decision, after: &Decision) -> bool {
+    let (Some(held), Some(theirs)) = (args_of(before), args_of(after)) else {
+        return false;
+    };
+    reflex_of(before) == reflex_of(after)
+        && held.len() == theirs.len()
+        && held.iter().all(|(arg, value)| {
+            theirs
+                .get(arg)
+                .is_some_and(|other| stated_of(other) == stated_of(value))
+        })
+        && asked_of(before) == asked_of(after)
 }
 
 /// Whether two arguments take their values from the same source: the same recognizer, whatever its range, the
@@ -3826,40 +4391,6 @@ fn same_source(a: &Source, b: &Source) -> bool {
         }
         _ => a == b,
     }
-}
-
-/// Whether two decisions read the same values: as many, each of one a value of the other — a typed value of the
-/// same kind from the same words, a listed word or an option the same.
-fn same_values(a: &Decision, b: &Decision) -> bool {
-    let read = |decision: &Decision| -> Vec<Value> {
-        args_of(decision)
-            .into_iter()
-            .flatten()
-            .map(|(_, value)| value.clone())
-            .filter(|value| !matches!(value, Value::Flag))
-            .collect()
-    };
-    let same = |a: &Value, b: &Value| match (a, b) {
-        (
-            Value::Pick {
-                span: a, value: x, ..
-            },
-            Value::Pick {
-                span: b, value: y, ..
-            },
-        ) => a.text() == b.text() && std::mem::discriminant(x) == std::mem::discriminant(y),
-        (Value::Word { word: a, .. }, Value::Word { word: b, .. }) => a == b,
-        (Value::Option { key: a }, Value::Option { key: b }) => a == b,
-        _ => false,
-    };
-    let (a, mut b) = (read(a), read(b));
-    a.len() == b.len()
-        && a.iter().all(|value| {
-            b.iter()
-                .position(|other| same(value, other))
-                .map(|at| b.swap_remove(at))
-                .is_some()
-        })
 }
 
 /// A bare item: a determiner and one word — «the logo» — the shape of a second item of the neighbour's task by the

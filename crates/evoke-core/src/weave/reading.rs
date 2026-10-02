@@ -88,13 +88,15 @@ pub struct Where {
     pub text: String,
 }
 
-/// How a reference was found: a pronoun, a determiner and a noun, or the engine choosing among steps.
+/// How a reference was found: a pronoun, a determiner and a noun, the engine choosing among steps, or a second
+/// verb before the object of the first, whose step takes from the first's as «it» would — code's, and certain.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum How {
     Pronoun,
     Phrase,
     Engine,
+    Shared,
 }
 
 /// A reference in one step to earlier ones: the words, the steps it may name, how it was found, how surely.
@@ -1450,7 +1452,8 @@ pub(crate) fn referring(
     let mut questions = IndexMap::new();
     for (k, seg) in segs.iter().enumerate().skip(2) {
         for (i, r) in refs[k].iter().enumerate() {
-            if r.from.len() > 1 {
+            // A plural names every earlier step; a shared object names the one step code found it in.
+            if r.from.len() > 1 || r.how == How::Shared {
                 continue;
             }
             let ask = Clean::new(&format!(

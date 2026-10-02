@@ -44,6 +44,9 @@ const MERGED: &str = "the part beside it, as one request: alone it matches nothi
 const CORRECTED: &str = "the part beside it, which says what not to do";
 const SPLIT: &str = "as a call of its own, where the parts were kept whole";
 const NAMED: &str = "the whole request: alone it matches nothing";
+const FIRST: &str = "from its second verb, a thing of its own to do, which is the step after it";
+const VERB: &str =
+    "a second thing to do before the object of the part before it, which it takes from";
 
 /// An answer's key as a person reads it: of the question about the reflex; of an argument, by what it takes.
 const NONE_OF_THEM: &str = "none of them";
@@ -612,13 +615,14 @@ fn value(
                 said(gave.map(|folded| folded.text.as_str()).unwrap_or_default())
             )],
         ),
-        // A value spelled out in words, or another part's: the yes that took it.
+        // A value spelled out in words, another part's, or one of this session's results named by the words:
+        // the yes that took it, where one did; the argument's own answer says nothing of it.
         (
             Some(value),
-            Some(basis @ (Basis::Spelled { yes, .. } | Basis::Shared { yes, .. })),
+            Some(basis @ (Basis::Spelled { .. } | Basis::Shared { .. } | Basis::Recalled { .. })),
             None,
         ) => (
-            alone(&shown, Some(yes.get())),
+            alone(&shown, took(basis)),
             stands(basis, value, &shown, takes, &line.proposed),
         ),
         // A value read from the request: what was answered of it, and what it stands on.
@@ -658,6 +662,14 @@ fn value(
         body.push("\n").push(&detail);
     }
     Some(row(arg, body))
+}
+
+/// The yes that took a value spelled out or shared; none for one this session's results hold.
+fn took(basis: &Basis) -> Option<f64> {
+    match basis {
+        Basis::Spelled { yes, .. } | Basis::Shared { yes, .. } => Some(yes.get()),
+        _ => None,
+    }
 }
 
 /// A value alone, weighted, with the share of what gave it where one did.
@@ -784,6 +796,18 @@ fn stands(
             "said once, in {}: it is this part's too",
             said(from)
         )],
+        Basis::Recalled { words: held, place } => {
+            vec![format!("{}, named by {}", newest(*place), words(held))]
+        }
+    }
+}
+
+/// A result's place among this session's, newest first, as a line names it.
+fn newest(place: usize) -> String {
+    match place {
+        1 => "the newest of this session's results".to_owned(),
+        2 => "the one before the newest of this session's results".to_owned(),
+        n => format!("the {n}th newest of this session's results"),
     }
 }
 
@@ -890,6 +914,8 @@ fn rules(sentence: Option<&Sentence>, line: &Line) -> Vec<Text> {
             Repair::Corrected => (READ_WITH, CORRECTED),
             Repair::Split => (READ_APART, SPLIT),
             Repair::Named => (READ_WITH, NAMED),
+            Repair::First => (READ_APART, FIRST),
+            Repair::Verb => (READ_APART, VERB),
         };
         rows.push(row(label, Text::from(says)));
     }

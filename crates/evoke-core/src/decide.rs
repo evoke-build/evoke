@@ -26,6 +26,7 @@ use crate::pins;
 use crate::plan::{
     Active, Plan, Slot, none as none_key, not_among, unstated as unstated_key, unstated_text,
 };
+use crate::pointer;
 use crate::propose::{PickValue, Proposed, propose};
 use crate::settle::{self, One, Settled};
 use crate::spoken::{self, Shape, Spoken};
@@ -167,6 +168,9 @@ pub enum Basis {
     },
     /// A value another part of the request states, which a yes says is this part's too: that part's words.
     Shared { from: String, yes: Prob },
+    /// A value of this session's results, named by words that point at it — «it», «that order», «my last
+    /// order»: those words, and the value's place among the results, newest first, from 1.
+    Recalled { words: Span, place: usize },
 }
 
 impl Basis {
@@ -186,6 +190,8 @@ impl Basis {
             | Self::Spelled { yes, .. }
             | Self::Only { yes }
             | Self::Shared { yes, .. } => *yes,
+            // The words point, and code reads them: the value is as sure as the result it came from.
+            Self::Recalled { .. } => Prob::ONE,
         }
     }
 
@@ -204,7 +210,12 @@ impl Basis {
                 shown.then(|| Cap::Respelt { arg: arg.clone() })
             }
             Self::Text { .. } => Some(Cap::TextRead { arg: arg.clone() }),
-            Self::Ask { .. } | Self::Views { .. } | Self::Only { .. } | Self::Shared { .. } => None,
+            // The words point, code reads them, and the value is the person's own result: nothing to confirm.
+            Self::Ask { .. }
+            | Self::Views { .. }
+            | Self::Only { .. }
+            | Self::Shared { .. }
+            | Self::Recalled { .. } => None,
         }
     }
 }
@@ -759,7 +770,7 @@ pub fn request(
             if !argument || !id.reflex().is_some_and(|name| narrowed.contains(&name)) {
                 continue;
             }
-            let question = asked(plan, id, slot, &proposed, recent, &mut recalled);
+            let question = asked(plan, &input, id, slot, &proposed, recent, &mut recalled);
             questions.insert(id.clone(), question);
         }
     }
@@ -779,7 +790,7 @@ pub fn request(
                 .filter(|candidate| !heard.withdrawn.contains(&candidate.span))
                 .cloned()
                 .collect();
-            let question = asked(plan, id, slot, &kept, recent, &mut recalled);
+            let question = asked(plan, &input, id, slot, &kept, recent, &mut recalled);
             questions.insert(id.clone(), question);
         }
     }
@@ -864,7 +875,7 @@ fn ahead(
                             pins::meant_question(&argument.ask, spelled),
                         );
                     }
-                    if let Some(only) = only_offered(pick.recognizer(), request, &id) {
+                    if let Some(only) = only_offered(plan, pick.recognizer(), request, &id) {
                         own.insert(
                             pins::only(reflex, arg, &only.span),
                             pins::only_question(&argument.ask, &only.span),
@@ -962,6 +973,7 @@ pub(crate) fn word_question(
 /// The one candidate of a kind an argument's own question offers, when it offers one and no more: the input's
 /// candidates of the kind, less those a spoken run of the argument withdrew.
 pub(crate) fn only_offered<'r>(
+    plan: &Plan,
     recognizer: Recognizer,
     request: &'r Request,
     id: &QuestionId,
@@ -970,11 +982,39 @@ pub(crate) fn only_offered<'r>(
         .spoken
         .get(id)
         .map_or(&[][..], |heard| heard.withdrawn.as_slice());
+    let counted = counted(plan, &request.state.request, &request.proposed, id);
     let mut of_kind = request.proposed.iter().filter(|proposed| {
-        proposes(recognizer, &proposed.value) && !withdrawn.contains(&proposed.span)
+        proposes(recognizer, &proposed.value)
+            && !withdrawn.contains(&proposed.span)
+            && !counted.contains(&proposed.span)
     });
     let first = of_kind.next()?;
     of_kind.next().is_none().then_some(first)
+}
+
+/// The names an argument's values go by, for the words that point at or count them: the argument's own, and
+/// the field its pick recalls.
+pub(crate) fn names_of(plan: &Plan, id: &QuestionId) -> Vec<String> {
+    let QuestionId::Arg(_, arg) = id else {
+        return Vec::new();
+    };
+    let mut names = vec![arg.to_string()];
+    if let Some(Slot::Pick {
+        recent: Some(field),
+        ..
+    }) = plan.slots().get(id)
+        && field.as_str() != arg.as_str()
+    {
+        names.push(field.to_string());
+    }
+    names
+}
+
+/// The numbers among the candidates that count an argument's own things, «2 orders»: no value of it.
+fn counted(plan: &Plan, input: &Input, proposed: &[Proposed], id: &QuestionId) -> Vec<Span> {
+    let names = names_of(plan, id);
+    let names: Vec<&str> = names.iter().map(String::as_str).collect();
+    pointer::counts(input, proposed, &names)
 }
 
 /// One slot of the plan as the request asks it: a question that does not depend on the input as it stands; a
@@ -982,6 +1022,7 @@ pub(crate) fn only_offered<'r>(
 /// them. Beside it, for a pick that names a yielded field, the values the session's results returned under it.
 fn asked(
     plan: &Plan,
+    input: &Input,
     id: &QuestionId,
     slot: &Slot,
     proposed: &[Proposed],
@@ -994,6 +1035,8 @@ fn asked(
             ask, pick, recent, ..
         } => (ask, *pick, recent),
     };
+    // A number that counts the argument's own things, «2 orders», is no value of it.
+    let counted = counted(plan, input, proposed, id);
     if let (Some(field), QuestionId::Arg(reflex, arg)) = (field, id) {
         let values = plan
             .active()
@@ -1013,7 +1056,7 @@ fn asked(
     }
     let mut options: IndexMap<Key, Text> = proposed
         .iter()
-        .filter(|proposed| proposes(pick, &proposed.value))
+        .filter(|proposed| proposes(pick, &proposed.value) && !counted.contains(&proposed.span))
         .map(|proposed| {
             (
                 candidate(&proposed.span),

@@ -360,7 +360,7 @@ function key(asked: W.Asked): string {
  *  and so were words a shared word was written into, the route the whole request's where it gave it; any other step
  *  over the tags, whole when its words are the whole request. */
 function askedFor(step: W.Step, tags: string[], input: string): W.Asked {
-  const narrowed = step.repair === "narrowed" || step.repair === "spliced" || step.repair === "named" || Object.values(step.shared ?? {}).some(shared => shared.via === "rewrite")
+  const narrowed = step.repair === "narrowed" || step.repair === "spliced" || step.repair === "named" || step.repair === "first" || Object.values(step.shared ?? {}).some(shared => shared.via === "rewrite")
   const own = narrowed ? step.reflex : undefined
   if (own !== undefined) return { text: step.text, only: own, ...namedRoute(step.decision) }
   return step.text === input.trim() ? { text: step.text, tags, whole: true } : { text: step.text, tags }

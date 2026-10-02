@@ -89,7 +89,8 @@ pub enum Planning {
 /// narrowed to its neighbour's reflex, spliced into its words, or merged back; a part the engine kept whole at a
 /// comma or an `and` was split, its parts each a reflex of their own; a part that says what not to do and names
 /// a value was read with the step beside it; a part that matched nothing alone was decided narrowed to the reflex
-/// the whole request, its words named, gave it.
+/// the whole request, its words named, gave it; the first of two verbs before one object was decided again
+/// without the second, narrowed to its reflex, and the second verb alone, a step of its own after the first's.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Repair {
@@ -99,6 +100,8 @@ pub enum Repair {
     Split,
     Corrected,
     Named,
+    First,
+    Verb,
 }
 
 /// A word of a vocabulary the request stated for several steps, as it reached one of them: a required argument
@@ -499,7 +502,7 @@ impl Weave {
     pub fn asked_for(&self, step: &Step, tags: &[Tag]) -> Asked {
         let narrowed = matches!(
             step.repair,
-            Some(Repair::Narrowed | Repair::Spliced | Repair::Named)
+            Some(Repair::Narrowed | Repair::Spliced | Repair::Named | Repair::First)
         ) || step
             .shared
             .values()

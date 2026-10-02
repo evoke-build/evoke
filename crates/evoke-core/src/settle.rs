@@ -10,16 +10,18 @@ use indexmap::IndexMap;
 use crate::adapter::{Choice, Key, Prob, Question, QuestionId, Request};
 use crate::call::Value;
 use crate::decide::{
-    Answers, Basis, Choices, Judgment, Missing, View, Why, candidate, choices, judge, only_offered,
-    out_of_range, probability, proposes, required, taken_as, top, unstated, word_question, worded,
+    Answers, Basis, Choices, Judgment, Missing, View, Why, candidate, choices, judge, names_of,
+    only_offered, out_of_range, probability, proposes, required, taken_as, top, unstated,
+    word_question, worded, yielded,
 };
 use crate::manifest::{Argument, Kind, Pick, Source};
 use crate::name::{ArgName, LocalName, Word};
 use crate::otherwise::{self, ANCHORED, Anchored, LIKELY, Proposal};
 use crate::pins;
 use crate::plan::{Plan, none};
+use crate::pointer;
 use crate::propose::Proposed;
-use crate::text::Span;
+use crate::text::{Clean, Span};
 use crate::words::{self, How, Listed, Spelled};
 use crate::{Fault, adapter};
 
@@ -194,6 +196,51 @@ impl<'a> One<'a, '_> {
     /// The values the request kept for a pick's ask from the session's results, when it kept any.
     fn recalled(&self) -> Option<Vec<String>> {
         self.request.recent.get(&self.id()).cloned()
+    }
+
+    /// The newest of this session's results under the field the pick recalls, where the request's words point
+    /// at one thing by the argument's name or the field's — «it», «that order», «my last order» — standing on
+    /// those words, which hold every candidate inside them, with the judgment that took it: the words, read by
+    /// code, as sure as the result they name. None where the words point at nothing, count several, or the
+    /// session recalls nothing.
+    fn recalled_by_words(&self, pick: &Pick) -> Option<(Judgment, Settled<'a>)> {
+        let values = self.recalled()?;
+        let names = names_of(self.plan, &self.id());
+        let names: Vec<&str> = names.iter().map(String::as_str).collect();
+        let input = &self.request.state.request;
+        let pointer = pointer::pointed(input, &self.request.proposed, &names)?;
+        if pointer.count != 1 || !pointer.points {
+            return None;
+        }
+        let text = values.first()?;
+        let Value::Pick { value, .. } = yielded(text, pick.recognizer())? else {
+            return None;
+        };
+        let within = |span: &Span| {
+            pointer.words.start() <= span.start() && span.end() <= pointer.words.end()
+        };
+        let consumed: Vec<&'a Span> = self
+            .request
+            .proposed
+            .iter()
+            .filter(|proposed| within(&proposed.span))
+            .map(|proposed| &proposed.span)
+            .collect();
+        let value = Value::Pick {
+            span: pointer.words.clone(),
+            value,
+            typed: Some(Clean::new(text).ok()?),
+        };
+        let judgment = Judgment {
+            question: self.id(),
+            top: candidate(&pointer.words),
+            p: Prob::ONE,
+        };
+        let stands = Basis::Recalled {
+            words: pointer.words,
+            place: 1,
+        };
+        Some((judgment, self.ranged(pick, value, stands, consumed)))
     }
 
     /// The yes a question of evoke's own was answered with; where it was not asked, the question is opened.
@@ -538,11 +585,18 @@ pub(crate) fn typed<'a>(
     match taken {
         Err(Waits) => Ok((asked, Settled::Open)),
         Ok(Some(taken)) => Ok(taken),
-        Ok(None) if stated => {
-            let source = Source::Pick(pick.clone());
-            Ok((asked, one.asked(&source, Why::NotOffered)))
+        Ok(None) => {
+            // Words that point at one of this session's results name it, whatever the own question made of
+            // them.
+            if let Some(recalled) = one.recalled_by_words(pick) {
+                return Ok(recalled);
+            }
+            if stated {
+                let source = Source::Pick(pick.clone());
+                return Ok((asked, one.asked(&source, Why::NotOffered)));
+            }
+            Ok((asked, one.unsaid()))
         }
-        Ok(None) => Ok((asked, one.unsaid())),
     }
 }
 
@@ -607,7 +661,7 @@ fn proposed<'a>(
         })
         .collect();
     let alone: Option<(&Proposed, QuestionId, Option<Prob>)> =
-        only_offered(recognizer, one.request, &one.id())
+        only_offered(one.plan, recognizer, one.request, &one.id())
             .filter(|only| !words::courtesy(only.span.text().as_str()))
             .map(|only| {
                 let id = pins::only(one.reflex, one.arg, &only.span);

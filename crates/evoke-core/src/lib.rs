@@ -28,6 +28,7 @@ pub mod otherwise;
 pub mod overlay;
 pub mod pins;
 pub mod plan;
+mod pointer;
 pub mod project;
 pub mod propose;
 pub mod run;

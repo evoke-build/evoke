@@ -846,6 +846,9 @@ export type Basis =
   | { by: "text"; p: Prob; others?: Span[] }
   /** A value another part of the request states, which a yes says is this part's too: that part's words. */
   | { by: "shared"; from: string; yes: Prob }
+  /** A value of this session's results, named by words that point at it — `it`, `that order`, `my last order`:
+   *  those words, and the value's place among the results, newest first, from 1. */
+  | { by: "recalled"; words: Span; place: number }
 
 /** What a run of words does in the request: it says what to do, answers an argument's ask, says what is wanted
  *  from the result, asks for nothing, or asks for another thing. */
@@ -1120,7 +1123,9 @@ export interface Where {
 export interface Ref {
   span: Where
   from: number[]
-  how: "pronoun" | "phrase" | "engine"
+  /** A pronoun, a determiner and a noun, the engine choosing among steps, or a second verb before the object of
+   *  the first, whose step takes from the first's as `it` would. */
+  how: "pronoun" | "phrase" | "engine" | "shared"
   /** `the <noun>`: a reference only when something takes it. */
   weak?: boolean
   /** A phrase's noun, singular, which may name a field of the source's result. */
@@ -1134,7 +1139,7 @@ export interface Ref {
  *  its neighbour's reflex, spliced into its words, or merged back; or a part the engine kept whole split, its parts each
  *  a reflex of their own; or a part that matched nothing alone decided narrowed to the reflex the whole request, its
  *  words named, gave it. */
-export type Repair = "narrowed" | "spliced" | "merged" | "split" | "corrected" | "named"
+export type Repair = "narrowed" | "spliced" | "merged" | "split" | "corrected" | "named" | "first" | "verb"
 
 /** A word of a vocabulary the request stated for several steps, as it reached one of them: a required argument filled
  *  as a person's answer would fill it, or an optional one written into the step's words and decided again narrowed. */
