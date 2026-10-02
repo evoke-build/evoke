@@ -1,0 +1,188 @@
+# The shop's stand-ins over the replay adapter: two verbs before one thing, a part that holds values alone, and
+# the words that point at what the session returned.
+$ evoke "buy and pay 3 of OUT-503 and 2 of BOK-603"
+  1  buy product="OUT-503" quantity="3" · write · weakest: quantity 0.73
+       a write runs at 0.90 or more
+  2  pay · takes order from 1
+  3  buy product="BOK-603" quantity="2"  0.90
+  4  pay · takes order from 3
+  1  buy product="OUT-503" quantity="3" · write · weakest: quantity 0.73
+       a write runs at 0.90 or more
+  Buy OUT-503 now?  [y]es [n]o [t]each > y
+order 1025 placed: 3 of OUT-503
+  2  pay order="1025"  1.00
+order 1025 paid
+order 1026 placed: 2 of BOK-603
+  4  pay order="1026"  1.00
+order 1026 paid
+$ evoke why
+  "buy and pay 3 of OUT-503 and 2 of BOK-603"
+
+  one thing, or several   several 0.57: cut at "and" 0.62
+
+  1 · buy and pay 3 of OUT-503
+    which reflex            buy 0.99   (none of them 0.01)
+                            Buy one product right away, without the cart.
+    product                 "OUT-503" 0.99   (said, in a form evoke does not read 0.01)
+    quantity                "3" 0.73   (said, in a form evoke does not read 0.26 · not said 0.01)
+    read apart              from its second verb, a thing of its own to do, which is the step after it
+    → ran at your yes: buy product="OUT-503" quantity="3" · write · weakest: quantity 0.73
+      a write runs at 0.90 or more
+
+  2 · pay
+    which reflex            pay 1.00
+                            Pay for an order from your balance.
+    order                   "1025"
+                            taken from step 1, its order
+    holds all you said      0.76
+    read apart              a second thing to do before the object of the part before it, which it takes from
+    → ran: pay order="1025"  1.00
+      a write runs at 0.90 or more, and its least sure judgment is which reflex, 1.00; it holds all you said at 0.76, and a call runs at 0.30 or more
+
+  3 · buy 2 of BOK-603
+    which reflex            buy 0.99   (none of them 0.01)
+                            Buy one product right away, without the cart.
+    product                 "BOK-603" 1.00
+    quantity                "2" 0.90   (said, in a form evoke does not read 0.09 · not said 0.01)
+    holds all you said      0.64
+    read with               the words of the part before it, as one request
+    → ran: buy product="BOK-603" quantity="2"  0.90
+      a write runs at 0.90 or more, and its least sure judgment is quantity, 0.90; it holds all you said at 0.64, and a call runs at 0.30 or more
+
+  4 · pay
+    which reflex            pay 1.00
+                            Pay for an order from your balance.
+    order                   "1026"
+                            taken from step 3, its order
+    holds all you said      0.76
+    read apart              a second thing to do before the object of the part before it, which it takes from
+    → ran: pay order="1026"  1.00
+      a write runs at 0.90 or more, and its least sure judgment is which reflex, 1.00; it holds all you said at 0.76, and a call runs at 0.30 or more
+
+  replay answered 66 questions in 7 rounds
+$ evoke "buy and pay 2 of HOM-403"
+  1  buy product="HOM-403" quantity="2"  0.91
+  2  pay · takes order from 1
+order 1027 placed: 2 of HOM-403
+  2  pay order="1027"  1.00
+order 1027 paid
+$ evoke "buy and pay order 1024"
+  1  buy · asks product
+  Which product?  > AUR-110
+  1  buy product="AUR-110"  1.00
+  2  pay order="1024"  0.91
+order 1030 placed: 1 of AUR-110
+order 1024 paid
+$ evoke "buy 3 of OUT-503 and 2 of BOK-603"
+  1  buy product="OUT-503" quantity="3" · write · weakest: quantity 0.73
+       a write runs at 0.90 or more
+  2  buy product="BOK-603" quantity="2"  0.90
+  1  buy product="OUT-503" quantity="3" · write · weakest: quantity 0.73
+       a write runs at 0.90 or more
+  Buy OUT-503 now?  [y]es [n]o [t]each > y
+order 1025 placed: 3 of OUT-503
+order 1026 placed: 2 of BOK-603
+$ evoke why
+  "buy 3 of OUT-503 and 2 of BOK-603"
+
+  one thing, or several   several 0.95: cut at "and" 0.86
+
+  1 · buy 3 of OUT-503
+    which reflex            buy 0.99   (none of them 0.01)
+                            Buy one product right away, without the cart.
+    product                 "OUT-503" 0.99   (said, in a form evoke does not read 0.01)
+    quantity                "3" 0.73   (said, in a form evoke does not read 0.26 · not said 0.01)
+    → ran at your yes: buy product="OUT-503" quantity="3" · write · weakest: quantity 0.73
+      a write runs at 0.90 or more
+
+  2 · buy 2 of BOK-603
+    which reflex            buy 0.99   (none of them 0.01)
+                            Buy one product right away, without the cart.
+    product                 "BOK-603" 1.00
+    quantity                "2" 0.90   (said, in a form evoke does not read 0.09 · not said 0.01)
+    holds all you said      0.64
+    read with               the words of the part before it, as one request
+    → ran: buy product="BOK-603" quantity="2"  0.90
+      a write runs at 0.90 or more, and its least sure judgment is quantity, 0.90; it holds all you said at 0.64, and a call runs at 0.30 or more
+
+  replay answered 27 questions in 2 rounds
+# A part that names its own action is read as it always was.
+$ evoke "add KIT-301 to my cart and check out"
+  1  cart_add product="KIT-301"  1.00
+  2  checkout  1.00
+in your cart: 1 of KIT-301
+order 1018 placed from your cart
+$ evoke "buy 3 of OUT-503 and buy 2 of BOK-603"
+  1  buy product="OUT-503" quantity="3" · write · weakest: quantity 0.73
+       a write runs at 0.90 or more
+  2  buy product="BOK-603" quantity="2"  0.90
+  1  buy product="OUT-503" quantity="3" · write · weakest: quantity 0.73
+       a write runs at 0.90 or more
+  Buy OUT-503 now?  [y]es [n]o [t]each > y
+order 1025 placed: 3 of OUT-503
+order 1026 placed: 2 of BOK-603
+$ evoke "buy KIT-301 and pay for it"
+  1  buy product="KIT-301"  1.00
+  2  pay · takes order from 1
+order 1028 placed: 1 of KIT-301
+  2  pay order="1028"  0.99
+order 1028 paid
+# Words that point at a result of the session take it; a count before the plural is no order number.
+$ evoke
+> buy 3 of OUT-503
+  buy product="OUT-503" quantity="3" · write · weakest: quantity 0.73
+    a write runs at 0.90 or more
+  Buy OUT-503 now?  [y]es [n]o [t]each > y
+order 1025 placed: 3 of OUT-503
+> buy 1 of BOK-603
+  buy product="BOK-603" quantity="1" · write · weakest: quantity 0.72
+    a write runs at 0.90 or more
+  Buy BOK-603 now?  [y]es [n]o [t]each > y
+order 1026 placed: 1 of BOK-603
+> pay the order
+  Which order?  1026 · 1025  > 1026
+  pay order="1026"  0.98
+order 1026 paid
+> pay the last 2 orders
+  1  pay order="1026"  0.94
+  2  pay order="1025"  0.94
+order 1026 paid
+order 1025 paid
+> show me the product BOK-602
+  product product="BOK-602"  1.00
+BOK-602: a book, 12.00, 40 in stock
+> buy it
+  buy product="BOK-602"  0.97
+order 1029 placed: 1 of BOK-602
+> pay that order
+  pay order="1029"  0.99
+order 1029 paid
+> pay my last order
+  pay order="1029"  1.00
+order 1029 paid
+> pay both orders
+  1  pay order="1029"  1.00
+  2  pay order="1025"  1.00
+order 1029 paid
+order 1025 paid
+>
+$ evoke why
+  "pay both orders"
+
+  1 · pay both orders
+    which reflex            pay 1.00
+                            Pay for an order from your balance.
+    order                   "1029"
+                            the newest of this session's results, named by "both orders"
+    → ran: pay order="1029"  1.00
+      a write runs at 0.90 or more, and its least sure judgment is which reflex, 1.00
+
+  2 · pay both orders
+    which reflex            pay 1.00
+                            Pay for an order from your balance.
+    order                   "1025"
+                            the one before the newest of this session's results, named by "both orders"
+    → ran: pay order="1025"  1.00
+      a write runs at 0.90 or more, and its least sure judgment is which reflex, 1.00
+
+  replay answered 10 questions in 2 rounds

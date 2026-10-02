@@ -236,6 +236,11 @@ fn same_action() {
     flow("same-action");
 }
 
+#[test]
+fn orders() {
+    flow("orders");
+}
+
 /// The recipe yields the commit `spec/transcripts/update/home/.config/evoke/evoke.lock` records.
 #[test]
 fn the_recipe_reproduces_the_locked_commit() {

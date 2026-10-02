@@ -1,0 +1,460 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md): the shop's stand-ins of the orders flow, as the engine answered them on 2026-10-03.
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.8
+write = 0.9
+whole = 0.3
+
+[answers."buy and pay 3 of out-503 and 2 of bok-603"]
+"weave.split_0"      = { yes = 0.31 }
+"weave.split_1"      = { yes = 0.62 }
+"weave.count"        = { one = 0.43, more = 0.05, two = 0.52 }
+route                = { checkout = 0.01, none = 0.08, cart_add = 0.05, buy = 0.79, pay = 0.07 }
+"buy.product"        = { none = 0.52, unstated = 0.14, 17-24 = 0.31, 34-41 = 0.03 }
+"buy.quantity"       = { 29-30 = 0.01, none = 0.81, unstated = 0.05, 12-13 = 0.13 }
+"cart_add.product"   = { none = 0.49, unstated = 0.15, 17-24 = 0.34, 34-41 = 0.02 }
+"cart_add.quantity"  = { 29-30 = 0.01, none = 0.82, unstated = 0.06, 12-13 = 0.11 }
+"product.product"    = { none = 0.54, unstated = 0.15, 17-24 = 0.29, 34-41 = 0.02 }
+"pay.order"          = { 29-30 = 0.01, none = 0.1, 12-13 = 0.07, unstated = 0.82 }
+"find_order.order"   = { 29-30 = 0.01, none = 0.07, 12-13 = 0.04, unstated = 0.88 }
+"weave.does_buy_0_9" = { result = 0.01, "arg:product" = 0.03, action = 0.94, "arg:quantity" = 0.02 }
+
+[answers."buy and pay 3 of out-503"]
+route                                 = { pay = 0.03, cart_add = 0.01, buy = 0.93, none = 0.03 }
+"buy.product"                         = { 17-24 = 0.97, unstated = 0.01, none = 0.02 }
+"buy.quantity"                        = { 12-13 = 0.72, unstated = 0.01, none = 0.27 }
+"cart_add.product"                    = { 17-24 = 0.99, none = 0.01 }
+"cart_add.quantity"                   = { 12-13 = 0.85, unstated = 0.01, none = 0.14 }
+"product.product"                     = { 17-24 = 0.99, none = 0.01 }
+"pay.order"                           = { 12-13 = 0.4, unstated = 0.38, none = 0.22 }
+"find_order.order"                    = { 12-13 = 0.42, unstated = 0.38, none = 0.2 }
+"weave.only_buy__product_17_24"       = { yes = 0.94 }
+"weave.only_buy__quantity_12_13"      = { yes = 0.94 }
+"weave.only_cart_add__product_17_24"  = { yes = 0.94 }
+"weave.only_cart_add__quantity_12_13" = { yes = 0.94 }
+"weave.only_product__product_17_24"   = { yes = 0.94 }
+"weave.only_pay__order_12_13"         = { yes = 0.77 }
+"weave.only_find_order__order_12_13"  = { yes = 0.77 }
+"weave.does_buy_0_2"                  = { action = 0.96, result = 0.04 }
+
+[answers."2 of bok-603"]
+"buy.quantity"                      = { 0-1 = 0.98, none = 0.01, unstated = 0.01 }
+"weave.only_cart_add__quantity_0_1" = { yes = 0.93 }
+"buy.product"                       = { none = 0.01, 5-12 = 0.98, unstated = 0.01 }
+"find_order.order"                  = { 0-1 = 0.64, none = 0.11, unstated = 0.25 }
+"weave.only_buy__product_5_12"      = { yes = 0.93 }
+"weave.only_cart_add__product_5_12" = { yes = 0.93 }
+"weave.only_find_order__order_0_1"  = { yes = 0.77 }
+route                               = { buy = 0.64, none = 0.02, cart_add = 0.34 }
+"cart_add.product"                  = { none = 0.01, 5-12 = 0.98, unstated = 0.01 }
+"product.product"                   = { none = 0.01, 5-12 = 0.98, unstated = 0.01 }
+"weave.only_product__product_5_12"  = { yes = 0.93 }
+"weave.only_pay__order_0_1"         = { yes = 0.77 }
+"cart_add.quantity"                 = { 0-1 = 0.98, none = 0.01, unstated = 0.01 }
+"pay.order"                         = { 0-1 = 0.59, none = 0.12, unstated = 0.29 }
+"weave.only_buy__quantity_0_1"      = { yes = 0.92 }
+
+[answers."buy 3 of out-503"]
+route                               = { buy = 0.99, none = 0.01 }
+"buy.product"                       = { none = 0.01, 9-16 = 0.99 }
+"buy.quantity"                      = { unstated = 0.01, 4-5 = 0.73, none = 0.26 }
+"weave.only_buy__product_9_16"      = { yes = 0.93 }
+"weave.only_buy__quantity_4_5"      = { yes = 0.95 }
+"weave.does_buy_0_0"                = { result = 0.01, action = 0.99 }
+"cart_add.product"                  = { 9-16 = 1.0 }
+"cart_add.quantity"                 = { 4-5 = 0.85, none = 0.14, unstated = 0.01 }
+"product.product"                   = { 9-16 = 1.0 }
+"pay.order"                         = { 4-5 = 0.5, none = 0.27, unstated = 0.23 }
+"find_order.order"                  = { 4-5 = 0.49, none = 0.23, unstated = 0.28 }
+"weave.only_cart_add__product_9_16" = { yes = 0.93 }
+"weave.only_cart_add__quantity_4_5" = { yes = 0.94 }
+"weave.only_product__product_9_16"  = { yes = 0.93 }
+"weave.only_pay__order_4_5"         = { yes = 0.83 }
+"weave.only_find_order__order_4_5"  = { yes = 0.81 }
+
+[answers."pay"]
+route                      = { pay = 1.0 }
+"buy.product"              = { unstated = 1.0 }
+"buy.quantity"             = { unstated = 1.0 }
+"cart_add.product"         = { unstated = 1.0 }
+"cart_add.quantity"        = { unstated = 1.0 }
+"product.product"          = { unstated = 1.0 }
+"pay.order"                = { unstated = 0.96, none = 0.04 }
+"find_order.order"         = { unstated = 0.95, none = 0.05 }
+"weave.does_pay_0_0"       = { action = 1.0 }
+"weave.against_2471528237" = { less = 0.18, other = 0.06, whole = 0.76 }
+
+[answers."buy 2 of bok-603"]
+route                               = { buy = 0.99, none = 0.01 }
+"buy.product"                       = { 9-16 = 1.0 }
+"buy.quantity"                      = { none = 0.09, 4-5 = 0.9, unstated = 0.01 }
+"weave.only_buy__product_9_16"      = { yes = 0.94 }
+"weave.only_buy__quantity_4_5"      = { yes = 0.94 }
+"weave.does_buy_0_0"                = { action = 1.0 }
+"weave.against_3944535866"          = { whole = 0.64, other = 0.17, less = 0.19 }
+"cart_add.product"                  = { 9-16 = 1.0 }
+"cart_add.quantity"                 = { none = 0.12, 4-5 = 0.87, unstated = 0.01 }
+"product.product"                   = { 9-16 = 1.0 }
+"pay.order"                         = { none = 0.14, 4-5 = 0.63, unstated = 0.23 }
+"find_order.order"                  = { none = 0.17, 4-5 = 0.57, unstated = 0.26 }
+"weave.only_cart_add__product_9_16" = { yes = 0.95 }
+"weave.only_cart_add__quantity_4_5" = { yes = 0.94 }
+"weave.only_product__product_9_16"  = { yes = 0.95 }
+"weave.only_pay__order_4_5"         = { yes = 0.83 }
+"weave.only_find_order__order_4_5"  = { yes = 0.83 }
+
+[answers."buy and pay 2 of hom-403"]
+"weave.split_0"                       = { yes = 0.39 }
+"weave.count"                         = { one = 0.16, more = 0.01, two = 0.83 }
+route                                 = { pay = 0.02, none = 0.04, buy = 0.92, checkout = 0.01, cart_add = 0.01 }
+"buy.product"                         = { 17-24 = 1.0 }
+"buy.quantity"                        = { unstated = 0.01, 12-13 = 0.78, none = 0.21 }
+"cart_add.product"                    = { 17-24 = 0.99, none = 0.01 }
+"cart_add.quantity"                   = { unstated = 0.01, 12-13 = 0.84, none = 0.15 }
+"product.product"                     = { 17-24 = 1.0 }
+"pay.order"                           = { unstated = 0.35, 12-13 = 0.41, none = 0.24 }
+"find_order.order"                    = { unstated = 0.31, 12-13 = 0.47, none = 0.22 }
+"weave.only_buy__product_17_24"       = { yes = 0.95 }
+"weave.only_buy__quantity_12_13"      = { yes = 0.94 }
+"weave.only_cart_add__product_17_24"  = { yes = 0.95 }
+"weave.only_cart_add__quantity_12_13" = { yes = 0.94 }
+"weave.only_product__product_17_24"   = { yes = 0.95 }
+"weave.only_pay__order_12_13"         = { yes = 0.78 }
+"weave.only_find_order__order_12_13"  = { yes = 0.78 }
+"weave.does_buy_0_2"                  = { action = 0.96, result = 0.04 }
+
+[answers."buy"]
+route                      = { buy = 1.0 }
+"buy.product"              = { unstated = 1.0 }
+"buy.quantity"             = { unstated = 1.0 }
+"cart_add.product"         = { unstated = 1.0 }
+"cart_add.quantity"        = { unstated = 1.0 }
+"product.product"          = { unstated = 1.0 }
+"pay.order"                = { none = 0.32, unstated = 0.68 }
+"find_order.order"         = { none = 0.38, unstated = 0.62 }
+"weave.does_buy_0_0"       = { action = 1.0 }
+"weave.against_3893984032" = { whole = 0.41, less = 0.34, other = 0.25 }
+
+[answers."pay 2 of hom-403"]
+"cart_add.product"                  = { 9-16 = 0.98, none = 0.01, unstated = 0.01 }
+"find_order.order"                  = { none = 0.27, 4-5 = 0.44, unstated = 0.29 }
+"weave.only_buy__product_9_16"      = { yes = 0.93 }
+"weave.only_cart_add__quantity_4_5" = { yes = 0.92 }
+"buy.product"                       = { 9-16 = 0.98, none = 0.01, unstated = 0.01 }
+"buy.quantity"                      = { 4-5 = 0.89, none = 0.1, unstated = 0.01 }
+"product.product"                   = { 9-16 = 0.98, none = 0.01, unstated = 0.01 }
+"pay.order"                         = { 4-5 = 0.41, none = 0.28, unstated = 0.31 }
+"weave.only_find_order__order_4_5"  = { yes = 0.77 }
+"cart_add.quantity"                 = { 4-5 = 0.88, none = 0.1, unstated = 0.02 }
+"weave.only_buy__quantity_4_5"      = { yes = 0.93 }
+"weave.only_cart_add__product_9_16" = { yes = 0.93 }
+"weave.only_pay__order_4_5"         = { yes = 0.75 }
+"weave.only_product__product_9_16"  = { yes = 0.94 }
+route                               = { none = 0.03, cart_add = 0.02, pay = 0.81, buy = 0.14 }
+"weave.does_pay_0_0"                = { action = 1.0 }
+"weave.does_pay_3_3"                = { "arg:order" = 1.0 }
+
+[answers."buy 2 of hom-403"]
+route                          = { buy = 0.99, none = 0.01 }
+"buy.product"                  = { 9-16 = 1.0 }
+"buy.quantity"                 = { none = 0.08, 4-5 = 0.91, unstated = 0.01 }
+"weave.only_buy__product_9_16" = { yes = 0.94 }
+"weave.only_buy__quantity_4_5" = { yes = 0.94 }
+"weave.does_buy_0_0"           = { action = 1.0 }
+"weave.against_3951634808"     = { less = 0.21, whole = 0.68, other = 0.11 }
+"pay.order"                    = { 4-5 = 0.68, unstated = 0.18, none = 0.14 }
+"weave.only_pay__order_4_5"    = { yes = 0.83 }
+
+[answers."buy 3 of out-503 and 2 of bok-603"]
+"weave.split_0"      = { yes = 0.86 }
+"weave.count"        = { two = 0.95, one = 0.05 }
+route                = { buy = 0.95, cart_add = 0.05 }
+"buy.product"        = { unstated = 0.19, none = 0.39, 26-33 = 0.02, 9-16 = 0.4 }
+"buy.quantity"       = { unstated = 0.02, 4-5 = 0.82, none = 0.16 }
+"cart_add.product"   = { unstated = 0.15, none = 0.35, 26-33 = 0.02, 9-16 = 0.48 }
+"cart_add.quantity"  = { unstated = 0.02, 4-5 = 0.86, none = 0.12 }
+"product.product"    = { unstated = 0.17, none = 0.39, 26-33 = 0.02, 9-16 = 0.42 }
+"pay.order"          = { unstated = 0.42, 21-22 = 0.03, none = 0.4, 4-5 = 0.15 }
+"find_order.order"   = { unstated = 0.46, 21-22 = 0.02, none = 0.37, 4-5 = 0.15 }
+"weave.does_buy_0_0" = { action = 1.0 }
+"weave.does_buy_5_7" = { more = 0.5, "arg:quantity" = 0.29, result = 0.01, action = 0.01, "arg:product" = 0.19 }
+
+[answers."add kit-301 to my cart and check out"]
+"weave.split_0"                     = { yes = 0.97 }
+"weave.count"                       = { two = 1.0 }
+route                               = { cart_add = 0.6, checkout = 0.38, none = 0.02 }
+"buy.product"                       = { 4-11 = 1.0 }
+"buy.quantity"                      = { none = 0.1, unstated = 0.9 }
+"cart_add.product"                  = { 4-11 = 1.0 }
+"cart_add.quantity"                 = { none = 0.08, unstated = 0.92 }
+"product.product"                   = { 4-11 = 1.0 }
+"pay.order"                         = { none = 0.46, unstated = 0.54 }
+"find_order.order"                  = { none = 0.44, unstated = 0.56 }
+"weave.only_buy__product_4_11"      = { yes = 0.94 }
+"weave.only_cart_add__product_4_11" = { yes = 0.94 }
+"weave.only_product__product_4_11"  = { yes = 0.94 }
+"weave.does_cart_add_0_0"           = { action = 1.0 }
+"weave.does_cart_add_4_6"           = { action = 0.82, result = 0.03, more = 0.15 }
+
+[answers."add kit-301 to my cart"]
+route                               = { cart_add = 1.0 }
+"buy.product"                       = { 4-11 = 1.0 }
+"buy.quantity"                      = { none = 0.02, unstated = 0.98 }
+"cart_add.product"                  = { 4-11 = 1.0 }
+"cart_add.quantity"                 = { none = 0.01, unstated = 0.99 }
+"product.product"                   = { 4-11 = 1.0 }
+"pay.order"                         = { none = 0.36, unstated = 0.64 }
+"find_order.order"                  = { none = 0.44, unstated = 0.56 }
+"weave.only_buy__product_4_11"      = { yes = 0.92 }
+"weave.only_cart_add__product_4_11" = { yes = 0.92 }
+"weave.only_product__product_4_11"  = { yes = 0.93 }
+"weave.does_cart_add_0_0"           = { action = 1.0 }
+"weave.does_cart_add_4_4"           = { "arg:product" = 0.01, action = 0.45, result = 0.54 }
+"weave.against_36457879"            = { whole = 0.93, less = 0.07 }
+
+[answers."check out"]
+route                      = { checkout = 1.0 }
+"buy.product"              = { none = 0.01, unstated = 0.99 }
+"buy.quantity"             = { none = 0.01, unstated = 0.99 }
+"cart_add.product"         = { none = 0.01, unstated = 0.99 }
+"cart_add.quantity"        = { none = 0.01, unstated = 0.99 }
+"product.product"          = { none = 0.01, unstated = 0.99 }
+"pay.order"                = { none = 0.04, unstated = 0.96 }
+"find_order.order"         = { none = 0.04, unstated = 0.96 }
+"weave.does_checkout_0_0"  = { result = 0.01, action = 0.99 }
+"weave.against_3346407000" = { whole = 0.75, less = 0.12, other = 0.13 }
+
+[answers."buy 3 of out-503 and buy 2 of bok-603"]
+"weave.split_0"      = { yes = 0.96 }
+"weave.count"        = { two = 1.0 }
+route                = { cart_add = 0.03, buy = 0.97 }
+"buy.product"        = { none = 0.36, unstated = 0.18, 30-37 = 0.02, 9-16 = 0.44 }
+"buy.quantity"       = { none = 0.17, unstated = 0.02, 4-5 = 0.81 }
+"cart_add.product"   = { none = 0.44, unstated = 0.17, 30-37 = 0.02, 9-16 = 0.37 }
+"cart_add.quantity"  = { none = 0.16, unstated = 0.03, 4-5 = 0.81 }
+"product.product"    = { none = 0.44, unstated = 0.14, 30-37 = 0.02, 9-16 = 0.4 }
+"pay.order"          = { 25-26 = 0.02, none = 0.17, unstated = 0.76, 4-5 = 0.05 }
+"find_order.order"   = { 25-26 = 0.02, none = 0.14, unstated = 0.79, 4-5 = 0.05 }
+"weave.does_buy_0_0" = { action = 0.99, result = 0.01 }
+"weave.does_buy_5_8" = { action = 0.23, result = 0.01, "arg:product" = 0.05, more = 0.65, "arg:quantity" = 0.06 }
+
+[answers."buy kit-301 and pay for it"]
+"weave.split_0"                     = { yes = 0.7 }
+"weave.count"                       = { two = 0.99, one = 0.01 }
+route                               = { pay = 0.01, none = 0.01, buy = 0.98 }
+"buy.product"                       = { 4-11 = 1.0 }
+"buy.quantity"                      = { unstated = 0.91, none = 0.09 }
+"cart_add.product"                  = { 4-11 = 1.0 }
+"cart_add.quantity"                 = { unstated = 0.96, none = 0.04 }
+"product.product"                   = { 4-11 = 1.0 }
+"pay.order"                         = { unstated = 0.37, none = 0.63 }
+"find_order.order"                  = { unstated = 0.35, none = 0.65 }
+"weave.only_buy__product_4_11"      = { yes = 0.94 }
+"weave.only_cart_add__product_4_11" = { yes = 0.95 }
+"weave.only_product__product_4_11"  = { yes = 0.95 }
+"weave.does_buy_0_0"                = { action = 1.0 }
+"weave.does_buy_3_3"                = { more = 0.19, result = 0.1, action = 0.71 }
+"weave.against_3144978613"          = { other = 0.01, whole = 0.31, less = 0.68 }
+
+[answers."buy kit-301"]
+route                               = { buy = 1.0 }
+"buy.product"                       = { 4-11 = 1.0 }
+"buy.quantity"                      = { unstated = 0.99, none = 0.01 }
+"cart_add.product"                  = { 4-11 = 1.0 }
+"cart_add.quantity"                 = { unstated = 0.99, none = 0.01 }
+"product.product"                   = { 4-11 = 1.0 }
+"pay.order"                         = { unstated = 0.36, none = 0.64 }
+"find_order.order"                  = { unstated = 0.35, none = 0.65 }
+"weave.only_buy__product_4_11"      = { yes = 0.92 }
+"weave.only_cart_add__product_4_11" = { yes = 0.92 }
+"weave.only_product__product_4_11"  = { yes = 0.92 }
+"weave.does_buy_0_0"                = { action = 1.0 }
+"weave.against_3144978613"          = { less = 0.14, whole = 0.84, other = 0.02 }
+
+[answers."pay for it"]
+route                      = { none = 0.01, pay = 0.99 }
+"buy.product"              = { unstated = 1.0 }
+"buy.quantity"             = { none = 0.01, unstated = 0.99 }
+"cart_add.product"         = { unstated = 1.0 }
+"cart_add.quantity"        = { none = 0.01, unstated = 0.99 }
+"product.product"          = { unstated = 1.0 }
+"pay.order"                = { none = 0.03, unstated = 0.97 }
+"find_order.order"         = { none = 0.04, unstated = 0.96 }
+"weave.does_pay_0_0"       = { action = 1.0 }
+"weave.against_2471528237" = { other = 0.06, whole = 0.64, less = 0.3 }
+
+[answers."buy 1 of bok-603"]
+route                               = { buy = 1.0 }
+"buy.product"                       = { 9-16 = 1.0 }
+"buy.quantity"                      = { 4-5 = 0.72, unstated = 0.01, none = 0.27 }
+"cart_add.product"                  = { 9-16 = 1.0 }
+"cart_add.quantity"                 = { 4-5 = 0.79, unstated = 0.01, none = 0.2 }
+"product.product"                   = { 9-16 = 1.0 }
+"pay.order"                         = { 4-5 = 0.69, unstated = 0.16, none = 0.15 }
+"find_order.order"                  = { 4-5 = 0.68, unstated = 0.15, none = 0.17 }
+"weave.only_buy__product_9_16"      = { yes = 0.93 }
+"weave.only_buy__quantity_4_5"      = { yes = 0.94 }
+"weave.only_cart_add__product_9_16" = { yes = 0.94 }
+"weave.only_cart_add__quantity_4_5" = { yes = 0.95 }
+"weave.only_product__product_9_16"  = { yes = 0.94 }
+"weave.only_pay__order_4_5"         = { yes = 0.81 }
+"weave.only_find_order__order_4_5"  = { yes = 0.82 }
+"weave.does_buy_0_0"                = { action = 1.0 }
+
+[answers."show me the product bok-602"]
+route                                = { product = 1.0 }
+"buy.product"                        = { 20-27 = 0.99, none = 0.01 }
+"buy.quantity"                       = { none = 0.12, unstated = 0.88 }
+"cart_add.product"                   = { 20-27 = 0.99, none = 0.01 }
+"cart_add.quantity"                  = { none = 0.1, unstated = 0.9 }
+"product.product"                    = { 20-27 = 1.0 }
+"pay.order"                          = { none = 0.12, unstated = 0.88 }
+"find_order.order"                   = { none = 0.16, unstated = 0.84 }
+"weave.only_buy__product_20_27"      = { yes = 0.93 }
+"weave.only_cart_add__product_20_27" = { yes = 0.93 }
+"weave.only_product__product_20_27"  = { yes = 0.92 }
+"weave.against_558653655"            = { whole = 0.76, less = 0.16, other = 0.08 }
+"weave.does_product_0_3"             = { courtesy = 0.01, "arg:product" = 0.01, result = 0.07, action = 0.91 }
+
+[answers."pay the last 2 orders"]
+route                                 = { pay = 0.94, settle = 0.06 }
+"buy.product"                         = { none = 0.02, unstated = 0.98 }
+"buy.quantity"                        = { none = 0.15, unstated = 0.03, 13-14 = 0.82 }
+"cart_add.product"                    = { none = 0.03, unstated = 0.97 }
+"cart_add.quantity"                   = { none = 0.18, unstated = 0.03, 13-14 = 0.79 }
+"product.product"                     = { none = 0.02, unstated = 0.98 }
+"pay.order"                           = { none = 0.21, unstated = 0.79 }
+"find_order.order"                    = { none = 0.29, unstated = 0.71 }
+"weave.only_buy__quantity_13_14"      = { yes = 0.93 }
+"weave.only_cart_add__quantity_13_14" = { yes = 0.93 }
+"weave.does_pay_0_4"                  = { action = 0.67, "arg:order" = 0.33 }
+"weave.against_2471528237"            = { other = 0.05, less = 0.95 }
+
+[answers."buy it"]
+route                      = { none = 0.02, buy = 0.97, checkout = 0.01 }
+"buy.product"              = { unstated = 1.0 }
+"buy.quantity"             = { unstated = 1.0 }
+"cart_add.product"         = { unstated = 1.0 }
+"cart_add.quantity"        = { unstated = 1.0 }
+"product.product"          = { unstated = 1.0 }
+"pay.order"                = { unstated = 0.97, none = 0.03 }
+"find_order.order"         = { unstated = 0.97, none = 0.03 }
+"weave.does_buy_0_0"       = { action = 1.0 }
+"weave.against_3893984032" = { less = 0.41, other = 0.18, whole = 0.41 }
+"weave.against_3710758652" = { whole = 0.39, other = 0.43, less = 0.18 }
+
+[answers."pay that order"]
+route                      = { settle = 0.01, pay = 0.99 }
+"buy.product"              = { unstated = 1.0 }
+"buy.quantity"             = { unstated = 0.99, none = 0.01 }
+"cart_add.product"         = { unstated = 1.0 }
+"cart_add.quantity"        = { unstated = 0.99, none = 0.01 }
+"product.product"          = { unstated = 1.0 }
+"pay.order"                = { unstated = 1.0 }
+"find_order.order"         = { unstated = 1.0 }
+"weave.does_pay_0_0"       = { action = 1.0 }
+"weave.does_pay_2_2"       = { "arg:order" = 0.84, action = 0.14, result = 0.02 }
+"weave.against_2471528237" = { less = 0.34, whole = 0.61, other = 0.05 }
+"weave.against_3317783137" = { other = 0.14, whole = 0.67, less = 0.19 }
+
+[answers."show my order"]
+route                       = { find_order = 1.0 }
+"buy.product"               = { unstated = 1.0 }
+"buy.quantity"              = { none = 0.01, unstated = 0.99 }
+"cart_add.product"          = { unstated = 1.0 }
+"cart_add.quantity"         = { none = 0.01, unstated = 0.99 }
+"product.product"           = { unstated = 1.0 }
+"pay.order"                 = { unstated = 1.0 }
+"find_order.order"          = { unstated = 1.0 }
+"weave.does_find_order_0_2" = { result = 0.01, action = 0.9, "arg:order" = 0.09 }
+"weave.against_2601193236"  = { other = 0.05, whole = 0.58, less = 0.37 }
+
+[answers."pay both orders"]
+route                      = { pay = 1.0 }
+"buy.product"              = { unstated = 0.94, none = 0.06 }
+"buy.quantity"             = { unstated = 0.46, none = 0.54 }
+"cart_add.product"         = { unstated = 0.93, none = 0.07 }
+"cart_add.quantity"        = { unstated = 0.41, none = 0.59 }
+"product.product"          = { unstated = 0.93, none = 0.07 }
+"pay.order"                = { unstated = 0.89, none = 0.11 }
+"find_order.order"         = { unstated = 0.92, none = 0.08 }
+"weave.does_pay_0_2"       = { "arg:order" = 0.2, more = 0.03, action = 0.77 }
+"weave.against_2471528237" = { less = 0.95, other = 0.05 }
+
+[answers."pay order 1024"]
+route                                 = { pay = 1.0 }
+"buy.product"                         = { none = 0.05, unstated = 0.95 }
+"buy.quantity"                        = { 10-14 = 0.58, none = 0.1, unstated = 0.32 }
+"cart_add.product"                    = { none = 0.04, unstated = 0.96 }
+"cart_add.quantity"                   = { 10-14 = 0.61, none = 0.09, unstated = 0.3 }
+"product.product"                     = { none = 0.07, unstated = 0.93 }
+"pay.order"                           = { 10-14 = 0.91, none = 0.09 }
+"find_order.order"                    = { 10-14 = 0.91, none = 0.09 }
+"weave.only_buy__quantity_10_14"      = { yes = 0.71 }
+"weave.only_cart_add__quantity_10_14" = { yes = 0.71 }
+"weave.only_pay__order_10_14"         = { yes = 0.93 }
+"weave.only_find_order__order_10_14"  = { yes = 0.92 }
+"weave.does_pay_0_1"                  = { action = 1.0 }
+"weave.against_489417786"             = { other = 0.02, whole = 0.89, less = 0.09 }
+
+[answers."buy and pay order 1024"]
+"weave.split_0"                       = { yes = 0.51 }
+"weave.count"                         = { one = 0.09, two = 0.91 }
+route                                 = { none = 0.9, buy = 0.05, pay = 0.05 }
+"buy.product"                         = { unstated = 1.0 }
+"buy.quantity"                        = { unstated = 0.9, 18-22 = 0.1 }
+"cart_add.product"                    = { unstated = 1.0 }
+"cart_add.quantity"                   = { unstated = 0.9, 18-22 = 0.1 }
+"product.product"                     = { unstated = 1.0 }
+"pay.order"                           = { 18-22 = 0.95, unstated = 0.05 }
+"find_order.order"                    = { unstated = 0.9, 18-22 = 0.1 }
+"weave.only_buy__quantity_18_22"      = { yes = 0.05 }
+"weave.only_cart_add__quantity_18_22" = { yes = 0.05 }
+"weave.only_pay__order_18_22"         = { yes = 0.95 }
+"weave.only_find_order__order_18_22"  = { yes = 0.05 }
+
+[answers."buy 2 of kit-301"]
+route                               = { cart_add = 0.06, buy = 0.94 }
+"buy.product"                       = { 9-16 = 1.0 }
+"buy.quantity"                      = { 4-5 = 0.9, unstated = 0.01, none = 0.09 }
+"cart_add.product"                  = { 9-16 = 1.0 }
+"cart_add.quantity"                 = { 4-5 = 0.89, unstated = 0.01, none = 0.1 }
+"product.product"                   = { 9-16 = 1.0 }
+"pay.order"                         = { 4-5 = 0.66, unstated = 0.19, none = 0.15 }
+"find_order.order"                  = { 4-5 = 0.68, unstated = 0.2, none = 0.12 }
+"weave.only_buy__product_9_16"      = { yes = 0.95 }
+"weave.only_buy__quantity_4_5"      = { yes = 0.94 }
+"weave.only_cart_add__product_9_16" = { yes = 0.94 }
+"weave.only_cart_add__quantity_4_5" = { yes = 0.94 }
+"weave.only_product__product_9_16"  = { yes = 0.95 }
+"weave.only_pay__order_4_5"         = { yes = 0.83 }
+"weave.only_find_order__order_4_5"  = { yes = 0.83 }
+"weave.does_buy_0_0"                = { action = 1.0 }
+"weave.against_3346615382"          = { whole = 0.69, other = 0.12, less = 0.19 }
+
+[answers."pay the order"]
+route                      = { settle = 0.02, pay = 0.98 }
+"buy.product"              = { unstated = 0.99, none = 0.01 }
+"buy.quantity"             = { unstated = 0.99, none = 0.01 }
+"cart_add.product"         = { unstated = 1.0 }
+"cart_add.quantity"        = { unstated = 0.99, none = 0.01 }
+"product.product"          = { unstated = 0.99, none = 0.01 }
+"pay.order"                = { unstated = 1.0 }
+"find_order.order"         = { unstated = 1.0 }
+"weave.does_pay_0_2"       = { action = 1.0 }
+"weave.against_2471528237" = { other = 0.05, whole = 0.58, less = 0.37 }
+
+[answers."pay my last order"]
+route                      = { pay = 1.0 }
+"buy.product"              = { none = 0.01, unstated = 0.99 }
+"buy.quantity"             = { none = 0.06, unstated = 0.94 }
+"cart_add.product"         = { none = 0.01, unstated = 0.99 }
+"cart_add.quantity"        = { none = 0.1, unstated = 0.9 }
+"product.product"          = { none = 0.01, unstated = 0.99 }
+"pay.order"                = { none = 0.22, unstated = 0.78 }
+"find_order.order"         = { none = 0.22, unstated = 0.78 }
+"weave.does_pay_0_0"       = { action = 1.0 }
+"weave.against_3317783137" = { whole = 0.9, less = 0.05, other = 0.05 }

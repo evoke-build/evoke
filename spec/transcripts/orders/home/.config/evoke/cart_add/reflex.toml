@@ -1,0 +1,27 @@
+reflex = 1
+
+description = "Put a product in your shopping cart."
+not_for     = ["buying one product right away", "showing a product"]
+tags        = ["shop"]
+effect      = "write"
+confirm     = "Put {product} in your cart?"
+run         = "cart_add.mts"
+
+[args.product]
+ask    = "Which product?"
+pick   = "code"
+recent = "product"
+
+[args.quantity]
+ask      = "How many?"
+pick     = "number"
+optional = true
+
+[examples]
+"add AUR-110 to my cart"         = { product = "AUR-110" }
+"put 2 of KIT-301 in the basket" = { product = "KIT-301", quantity = "2" }
+"3 of BOK-201 in my cart"        = { product = "BOK-201", quantity = "3" }
+
+[tests]
+"stick 2 of SOK-220 in my cart" = { product = "SOK-220", quantity = "2" }
+"buy SOK-220 now"               = false

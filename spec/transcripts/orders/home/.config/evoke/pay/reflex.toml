@@ -1,0 +1,25 @@
+reflex = 1
+
+description = "Pay for an order from your balance."
+not_for     = ["buying a product", "showing an order", "putting a product in the cart"]
+tags        = ["shop"]
+effect      = "write"
+confirm     = "Pay order {order}?"
+run         = "pay.mts"
+
+[args.order]
+ask    = "Which order?"
+pick   = "number"
+recent = "order"
+
+[yields]
+order = "number"
+
+[examples]
+"pay for order 1001" = { order = "1001" }
+"settle order 1002"  = { order = "1002" }
+"pay order 1003 now" = { order = "1003" }
+
+[tests]
+"pay 1004"          = { order = "1004" }
+"refund order 1004" = false

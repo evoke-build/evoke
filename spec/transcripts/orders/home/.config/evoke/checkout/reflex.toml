@@ -1,0 +1,17 @@
+reflex = 1
+
+description = "Check out: the cart becomes one order."
+not_for     = ["putting a product in the cart", "buying one product right away", "paying for an order"]
+tags        = ["shop"]
+effect      = "write"
+confirm     = "Check out the cart?"
+run         = "checkout.mts"
+
+[examples]
+"check out"                = {}
+"checkout my cart"         = {}
+"order what is in my cart" = {}
+
+[tests]
+"go to checkout"         = {}
+"put AUR-110 in my cart" = false

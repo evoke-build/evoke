@@ -1,0 +1,26 @@
+reflex = 1
+
+description = "Show one of your orders: with no number, the latest one."
+not_for     = ["paying for an order", "buying a product", "showing a product"]
+tags        = ["shop"]
+effect      = "read"
+confirm     = "Show the order?"
+run         = "find_order.mts"
+
+[args.order]
+ask      = "Which order?"
+pick     = "number"
+recent   = "order"
+optional = true
+
+[yields]
+order = "number"
+
+[examples]
+"show my order"       = {}
+"find order 1001"     = { order = "1001" }
+"where is order 1002" = { order = "1002" }
+
+[tests]
+"look up order 1003" = { order = "1003" }
+"pay order 1003"     = false

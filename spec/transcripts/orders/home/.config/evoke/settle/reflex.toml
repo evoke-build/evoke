@@ -1,0 +1,17 @@
+reflex = 1
+
+description = "Settle up: pay what you owe on your account."
+not_for     = ["buying a product", "showing a product"]
+tags        = ["shop"]
+effect      = "write"
+confirm     = "Settle up?"
+steps       = ["show my order", "pay for it"]
+
+[examples]
+"settle up"         = {}
+"settle my account" = {}
+"pay what I owe"    = {}
+
+[tests]
+"square up my account" = {}
+"buy AUR-110"          = false

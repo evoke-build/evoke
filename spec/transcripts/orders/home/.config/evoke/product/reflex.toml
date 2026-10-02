@@ -1,0 +1,25 @@
+reflex = 1
+
+description = "Show one product: its name, price and stock."
+not_for     = ["buying a product", "putting a product in the cart", "showing an order"]
+tags        = ["shop"]
+effect      = "read"
+confirm     = "Show {product}?"
+run         = "product.mts"
+
+[args.product]
+ask    = "Which product?"
+pick   = "code"
+recent = "product"
+
+[yields]
+product = "code"
+
+[examples]
+"show me the product BOK-602" = { product = "BOK-602" }
+"what is HOM-403"             = { product = "HOM-403" }
+"details of AUR-110"          = { product = "AUR-110" }
+
+[tests]
+"tell me about KIT-301" = { product = "KIT-301" }
+"buy KIT-301"           = false
