@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.19.3] - 2026-10-02
+
 - A sentence reads the same way every time where a part holds only values: `buy 3 of OUT-503 and 2 of BOK-603`
   is two purchases whatever the second part looked like on its own, where before it could keep a coin-toss
   route of its own.

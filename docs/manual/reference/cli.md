@@ -5,7 +5,7 @@ Every command, flag and exit code, as `evoke --help` prints them and with what e
 are use, tune and install; the SDK has its own [reference](../sdk/getting-started.md).
 
 ```text
-evoke 0.19.2 · you invoke a function; you evoke a reflex
+evoke 0.19.3 · you invoke a function; you evoke a reflex
 
 use
   evoke "<input>"                         decide, gate, run
