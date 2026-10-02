@@ -1,0 +1,829 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "check the errors for payments in eu-west, post in #incident, then the same for us-east",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "check the errors for payments in eu-west"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "payments"
+              },
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "call": "errors service=\"payments\" region=\"eu-west\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              },
+              "region": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.95
+              },
+              {
+                "question": "errors.service",
+                "top": "payments",
+                "p": 0.95
+              },
+              {
+                "question": "errors.region",
+                "top": "eu-west",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0.03
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.95
+              },
+              {
+                "reflex": "deploys",
+                "route": 0.03
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "post in #incident"
+          },
+          {
+            "outcome": "run",
+            "reflex": "post",
+            "args": {
+              "channel": {
+                "type": "word",
+                "word": "#incident"
+              }
+            },
+            "call": "post channel=\"#incident\"",
+            "effect": "write",
+            "basis": {
+              "channel": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "post"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "post",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "post",
+                "p": 0.95
+              },
+              {
+                "question": "post.channel",
+                "top": "#incident",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03
+            },
+            "contenders": [
+              {
+                "reflex": "post",
+                "route": 0.95
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "the same for us-east"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.1
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.9
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "the same for us-east",
+            "only": "post"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "post",
+                "route": 0.1
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.9
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "post in the same for us-east",
+            "only": "post"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "post",
+                "route": 0.1
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.9
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "the same for us-east",
+            "only": "errors",
+            "named": {
+              "question": "weave.span_66_86",
+              "top": "errors",
+              "p": 0.9
+            }
+          },
+          {
+            "outcome": "ask",
+            "reflex": "errors",
+            "args": {
+              "region": {
+                "type": "word",
+                "word": "us-east"
+              }
+            },
+            "basis": {
+              "region": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 4,
+                  "end": 8,
+                  "text": "same"
+                },
+                "does": "action",
+                "p": 0.95,
+                "again": true
+              }
+            ],
+            "unconsumed": [],
+            "whole": 0.9,
+            "confidence": 0.9,
+            "weakest": {
+              "question": "weave.span_66_86",
+              "top": "errors",
+              "p": 0.9
+            },
+            "judgments": [
+              {
+                "question": "weave.span_66_86",
+                "top": "errors",
+                "p": 0.9
+              },
+              {
+                "question": "errors.region",
+                "top": "us-east",
+                "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.9
+              }
+            ],
+            "missing": [
+              {
+                "arg": "service",
+                "ask": "Which service?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "checkout": "The checkout service: cart and order confirmation.",
+                    "payments": "The payments service: card charges and refunds.",
+                    "search": "The search service: product search and suggestions."
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        },
+        "weave.split_1": {
+          "yes": 0.95
+        },
+        "weave.count": {
+          "more": 0.6,
+          "two": 0.35,
+          "one": 0.05
+        }
+      },
+      "verified": {
+        "weave.part_66_86": {
+          "asks": 0.85,
+          "detail": 0.1,
+          "aside": 0.05
+        },
+        "weave.span_66_86": {
+          "errors": 0.9,
+          "logs": 0.05,
+          "none": 0.05
+        }
+      },
+      "referred": {
+        "weave.ref_2_0": {
+          "step0": 0.9,
+          "step1": 0.1
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "check the errors for payments in eu-west, post in #incident, then the same for us-east",
+        "steps": [
+          {
+            "n": 1,
+            "text": "check the errors for payments in eu-west",
+            "end": 40,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "payments"
+                },
+                "region": {
+                  "type": "word",
+                  "word": "eu-west"
+                }
+              },
+              "call": "errors service=\"payments\" region=\"eu-west\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                },
+                "region": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "check the errors"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "errors",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "errors",
+                  "p": 0.95
+                },
+                {
+                  "question": "errors.service",
+                  "top": "payments",
+                  "p": 0.95
+                },
+                {
+                  "question": "errors.region",
+                  "top": "eu-west",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "deploys",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "post",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                },
+                {
+                  "reflex": "status",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "post in #incident",
+            "end": 59,
+            "decision": {
+              "outcome": "run",
+              "reflex": "post",
+              "args": {
+                "channel": {
+                  "type": "word",
+                  "word": "#incident"
+                }
+              },
+              "call": "post channel=\"#incident\"",
+              "effect": "write",
+              "basis": {
+                "channel": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "post"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "post",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "post",
+                  "p": 0.95
+                },
+                {
+                  "question": "post.channel",
+                  "top": "#incident",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "post",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                },
+                {
+                  "reflex": "status",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "post",
+            "effect": "write"
+          },
+          {
+            "n": 3,
+            "text": "the same for us-east",
+            "end": 86,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "payments"
+                },
+                "region": {
+                  "type": "word",
+                  "word": "us-east"
+                }
+              },
+              "call": "errors service=\"payments\" region=\"us-east\"",
+              "effect": "read",
+              "basis": {
+                "region": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                },
+                "service": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 4,
+                    "end": 8,
+                    "text": "same"
+                  },
+                  "does": "action",
+                  "p": 0.95,
+                  "again": true
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.9,
+              "weakest": {
+                "question": "weave.span_66_86",
+                "top": "errors",
+                "p": 0.9
+              },
+              "judgments": [
+                {
+                  "question": "weave.span_66_86",
+                  "top": "errors",
+                  "p": 0.9
+                },
+                {
+                  "question": "errors.region",
+                  "top": "us-east",
+                  "p": 0.95
+                },
+                {
+                  "question": "errors.service",
+                  "top": "payments",
+                  "p": 0.95
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.9
+                }
+              ],
+              "prompt": {
+                "own": "errors service=\"payments\" region=\"us-east\" · read · weakest: route 0.90",
+                "reason": "\"the same for us-east\" matches nothing alone, and the whole request reads it as errors at 0.90, which always waits for a yes",
+                "template": "Show the error rate of payments?"
+              },
+              "because": [
+                {
+                  "type": "named",
+                  "words": "the same for us-east",
+                  "p": 0.9
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read",
+            "refs": [
+              {
+                "span": {
+                  "start": 0,
+                  "end": 12,
+                  "text": "the same for"
+                },
+                "from": [
+                  0
+                ],
+                "how": "engine",
+                "weak": true,
+                "noun": "for",
+                "p": 0.9
+              }
+            ],
+            "repair": "named",
+            "shared": {
+              "service": {
+                "word": "payments",
+                "via": "fill"
+              }
+            },
+            "after": [
+              1,
+              2
+            ]
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 40,
+            "end": 42,
+            "word": ",",
+            "order": "and",
+            "p": 0.9,
+            "cut": true
+          },
+          {
+            "start": 59,
+            "end": 66,
+            "word": "then",
+            "order": "then",
+            "p": 0.95,
+            "cut": true
+          }
+        ],
+        "count": {
+          "one": 0.05
+        }
+      }
+    }
+  }
+}

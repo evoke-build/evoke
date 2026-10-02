@@ -14,7 +14,7 @@ use indexmap::IndexMap;
 use super::planning::{dated_at, left_of, reflex_of};
 use super::{
     Asked, Binding, Bound, Executed, Handled, Handling, Progress, Returned, Running, Status, Step,
-    StepOutcome, Todo, Via, Weave, When, Why,
+    StepOutcome, Todo, Via, Weave, When, Why, named,
 };
 use crate::adapter::Gate;
 use crate::call::Value;
@@ -276,11 +276,13 @@ impl Runner<'_> {
             return Ok(Prepared::Refused(Why::NoReflex));
         };
         let text = rewrite(step, values);
+        // A step the whole request found stands on its route at its turn too.
         let asked = Asked {
             text: text.clone(),
             tags: Vec::new(),
             only: Some(reflex.clone()),
             whole: false,
+            named: named(&step.decision).cloned(),
         };
         let Some((_, decision)) = self.progress.decided.iter().find(|(a, _)| *a == asked) else {
             return Err(Todo::Decide {
@@ -303,8 +305,8 @@ impl Runner<'_> {
     }
 
     /// What the plan held a step for holds it at its turn: a decision made again there waits as the planner's
-    /// did, for the part beside the step that may add a detail, and for the step's words that say it is wanted
-    /// once more.
+    /// did, for the part beside the step that may add a detail, for words that matched nothing alone and were
+    /// read with the whole request, and for the step's words that say it is wanted once more.
     fn held(&self, step: &Step, decision: Decision) -> Decision {
         let planned: Vec<Cap> = match &step.decision {
             Decision::Confirm { because, .. } => because.iter().cloned().collect(),
@@ -318,7 +320,7 @@ impl Runner<'_> {
         };
         let decision = planned
             .into_iter()
-            .filter(|cap| matches!(cap, Cap::Detail { .. }) || again(cap))
+            .filter(|cap| matches!(cap, Cap::Detail { .. } | Cap::Named { .. }) || again(cap))
             .fold(decision, |decision, cap| held(self.plan, decision, cap));
         // A day the plan read beside the day of a step this one takes from is read so at its turn too.
         dated_at(

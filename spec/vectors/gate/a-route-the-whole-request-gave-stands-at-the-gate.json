@@ -1,0 +1,153 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage-playbook.json"
+    },
+    "reading": {
+      "ranking": [
+        {
+          "reflex": "errors",
+          "route": 1
+        }
+      ],
+      "judgments": [
+        {
+          "question": "weave.span_51_72",
+          "top": "errors",
+          "p": 1
+        },
+        {
+          "question": "errors.region",
+          "top": "us-east",
+          "p": 1
+        }
+      ],
+      "winner": {
+        "reflex": "errors",
+        "args": {
+          "region": {
+            "type": "word",
+            "word": "us-east"
+          }
+        },
+        "basis": {
+          "region": {
+            "by": "views",
+            "ask": 1,
+            "reader": 1
+          }
+        },
+        "missing": [
+          {
+            "arg": "service",
+            "ask": "Which service?",
+            "because": {
+              "type": "unstated"
+            },
+            "choices": {
+              "type": "vocab",
+              "words": {
+                "checkout": "The checkout service: cart and order confirmation.",
+                "payments": "The payments service: card charges and refunds.",
+                "search": "The search service: product search and suggestions."
+              }
+            }
+          }
+        ],
+        "left": [
+          {
+            "words": {
+              "start": 4,
+              "end": 8,
+              "text": "same"
+            },
+            "does": "action",
+            "p": 0.67,
+            "again": true
+          }
+        ],
+        "unconsumed": [],
+        "whole": 0.9
+      }
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    }
+  },
+  "expect": {
+    "outcome": "ask",
+    "reflex": "errors",
+    "args": {
+      "region": {
+        "type": "word",
+        "word": "us-east"
+      }
+    },
+    "basis": {
+      "region": {
+        "by": "views",
+        "ask": 1,
+        "reader": 1
+      }
+    },
+    "left": [
+      {
+        "words": {
+          "start": 4,
+          "end": 8,
+          "text": "same"
+        },
+        "does": "action",
+        "p": 0.67,
+        "again": true
+      }
+    ],
+    "unconsumed": [],
+    "whole": 0.9,
+    "confidence": 1,
+    "weakest": {
+      "question": "weave.span_51_72",
+      "top": "errors",
+      "p": 1
+    },
+    "judgments": [
+      {
+        "question": "weave.span_51_72",
+        "top": "errors",
+        "p": 1
+      },
+      {
+        "question": "errors.region",
+        "top": "us-east",
+        "p": 1
+      }
+    ],
+    "contenders": [
+      {
+        "reflex": "errors",
+        "route": 1
+      }
+    ],
+    "missing": [
+      {
+        "arg": "service",
+        "ask": "Which service?",
+        "because": {
+          "type": "unstated"
+        },
+        "choices": {
+          "type": "vocab",
+          "words": {
+            "checkout": "The checkout service: cart and order confirmation.",
+            "payments": "The payments service: card charges and refunds.",
+            "search": "The search service: product search and suggestions."
+          }
+        }
+      }
+    ]
+  }
+}

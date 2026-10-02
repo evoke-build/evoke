@@ -585,6 +585,7 @@ fn stolen(
                 case.utterance.text().as_str(),
                 &[],
                 None,
+                None,
                 Scope::Fits,
                 &[],
             )
@@ -635,7 +636,8 @@ fn reached(
         .filter(|case| case.reflex == *name)
         .collect();
     let decide = |text: &str| -> Result<Decision, Exit> {
-        let request = request(plan, text, &[], None, Scope::Full, &[]).map_err(Exit::Human)?;
+        let request =
+            request(plan, text, &[], None, None, Scope::Full, &[]).map_err(Exit::Human)?;
         let floors = adapter.declared().gate.as_ref();
         let (_, _, reading) = reading(plan, floors, request, asked(plan, adapter), Exit::Adapter)?;
         Ok(gate(plan, reading, floors))

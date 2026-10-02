@@ -7,6 +7,7 @@ use std::fmt;
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
+use crate::decide::Judgment;
 use crate::diagnostic::Fix;
 use crate::name::{AdapterId, ArgName, LocalName, OptionKey, VarName, WeaveName, Word};
 use crate::propose::Proposed;
@@ -294,7 +295,8 @@ impl Scope {
 /// per pick that names a yielded field, the values the session's results returned under it — the ask's closed
 /// choices, which no question offers; absent when none. Beside them, what code found in the request's own
 /// words before any question: per listed argument the listed words they hold, per typed argument the values
-/// they spell out; absent when none. And what the request asks, when it is not everything.
+/// they spell out; absent when none. And what the request asks, when it is not everything; and the route, when
+/// the whole request gave it, its words named, and it is not asked.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Request {
     pub state: State,
@@ -302,6 +304,8 @@ pub struct Request {
     pub proposed: Vec<Proposed>,
     #[serde(default, skip_serializing_if = "Scope::is_full")]
     pub scope: Scope,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub named: Option<Box<Judgment>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub recent: IndexMap<QuestionId, Vec<String>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]

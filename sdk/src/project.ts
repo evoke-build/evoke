@@ -350,19 +350,28 @@ function shown(input: string): string {
   return input.length > 60 ? `${input.slice(0, 59)}…` : input
 }
 
-/** What was asked, as one key: the text, the tags, the one reflex. */
+/** What was asked, as one key: the text, the tags, the one reflex and the route the whole request gave it. */
 function key(asked: W.Asked): string {
-  return JSON.stringify([asked.text, asked.tags ?? [], asked.only ?? null, asked.whole ?? false])
+  return JSON.stringify([asked.text, asked.tags ?? [], asked.only ?? null, asked.whole ?? false, asked.named ?? null])
 }
 
 /** What the planner asked to decide a step, as its repair and its shared words tell: a fragment narrowed to its
- *  neighbour's reflex, or spliced into its words, was decided under that reflex alone, and so were words a shared word
- *  was written into; any other step over the tags, whole when its words are the whole request. */
+ *  neighbour's reflex, or spliced into its words, or named by the whole request, was decided under that reflex alone,
+ *  and so were words a shared word was written into, the route the whole request's where it gave it; any other step
+ *  over the tags, whole when its words are the whole request. */
 function askedFor(step: W.Step, tags: string[], input: string): W.Asked {
-  const narrowed = step.repair === "narrowed" || step.repair === "spliced" || Object.values(step.shared ?? {}).some(shared => shared.via === "rewrite")
+  const narrowed = step.repair === "narrowed" || step.repair === "spliced" || step.repair === "named" || Object.values(step.shared ?? {}).some(shared => shared.via === "rewrite")
   const own = narrowed ? step.reflex : undefined
-  if (own !== undefined) return { text: step.text, only: own }
+  if (own !== undefined) return { text: step.text, only: own, ...namedRoute(step.decision) }
   return step.text === input.trim() ? { text: step.text, tags, whole: true } : { text: step.text, tags }
+}
+
+/** The judgment a step's route stands on where the whole request gave it, its words named — `weave.span_<start>_<end>`
+ *  — as an `Asked` carries it; nothing where its own route was asked. */
+function namedRoute(decision: W.Decision): { named?: W.Judgment } {
+  if (decision.outcome === "abstain") return {}
+  const judgment = (decision.judgments ?? []).find(judgment => judgment.question.startsWith("weave.span_"))
+  return judgment === undefined ? {} : { named: judgment }
 }
 
 /** One text read for the plan: its decision, and its answers as the plan file keeps them. */
@@ -526,16 +535,20 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   /** One text asked, answered, read and gated, its raw answers kept beside the decision — for the plan file. The
    *  text's questions are asked, then each round of questions its answers open, until nothing is left to ask. A
    *  text decided `alone`, with no plan around it, is held as a plan holds a step no other step repeats. */
-  async function decidedText(input: string, options: DecideOptions, alone = false): Promise<{ decision: Decision<AnyReflexes>; raw: W.Raw }> {
+  async function decidedText(input: string, options: DecideOptions & { named?: W.Judgment }, alone = false): Promise<{ decision: Decision<AnyReflexes>; raw: W.Raw }> {
     const invoked = invocation(input)
     const recent = options.recent === undefined || options.recent.length === 0 ? {} : { recent: options.recent }
-    const request = call("request", { plan, input, tags: options.tags ?? [], ...(options.only === undefined ? {} : { only: options.only }), scope: "full", ...recent }, invoked)
+    const narrowed = { ...(options.only === undefined ? {} : { only: options.only }), ...(options.named === undefined ? {} : { named: options.named }) }
+    const request = call("request", { plan, input, tags: options.tags ?? [], ...narrowed, scope: "full", ...recent }, invoked)
     const raw: W.Raw = {}
     const traces: Trace[] = []
     for (let round = request; ; ) {
-      const answer = await answered(adapter, round, plan.deadline, options.signal, invoked)
-      Object.assign(raw, answer.raw)
-      traces.push(answer.trace)
+      // A request that asks nothing — a reflex without arguments, its route given — is never sent.
+      if (Object.keys(round.questions).length > 0) {
+        const answer = await answered(adapter, round, plan.deadline, options.signal, invoked)
+        Object.assign(raw, answer.raw)
+        traces.push(answer.trace)
+      }
       const read = call("read", { plan, ...gate, request, raw }, invoked)
       if (read.type === "done") {
         const { type: _, ...reading } = read
@@ -597,6 +610,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
   async function decided(asked: W.Asked, options: DecideOptions, gathered: Gathering): Promise<Read> {
     const { decision, raw } = await decidedText(asked.text, {
       ...(asked.only === undefined ? { tags: asked.tags ?? [] } : { only: asked.only }),
+      ...(asked.named === undefined ? {} : { named: asked.named }),
       ...(options.signal === undefined ? {} : { signal: options.signal }),
       ...(asked.whole === true && options.recent !== undefined ? { recent: options.recent } : {}),
     })
@@ -730,7 +744,7 @@ function make(ground: Ground, invoked: string): Project<AnyReflexes> {
       for (const handling of todo.handling) {
         const step = woven.steps[handling.step - 1]
         // A round decided again with its values in its words has its own trace; any other round has its step's.
-        const own = step?.reflex === undefined || !handling.bound?.length ? undefined : traces.get(key({ text: handling.input, only: step.reflex }))
+        const own = step?.reflex === undefined || !handling.bound?.length ? undefined : traces.get(key({ text: handling.input, only: step.reflex, ...namedRoute(step.decision) }))
         const trace = own ?? (step === undefined ? undefined : traces.get(key(askedFor(step, options.tags ?? [], woven.input)))) ?? []
         const decision = lined(handling.decision, { input: handling.input, plan: plan.digest, trace })
         // Nothing starts after the signal: a round handed after it is cancelled without a question asked.

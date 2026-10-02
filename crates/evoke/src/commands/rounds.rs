@@ -578,14 +578,7 @@ impl Rounds<'_> {
                         let _paused = interrupt::pause();
                         self.engine
                             .resolved(&self.session, input)
-                            .and_then(|adapter| {
-                                self.session.decide(
-                                    adapter,
-                                    &asked.text,
-                                    &asked.tags,
-                                    asked.only.as_ref(),
-                                )
-                            })
+                            .and_then(|adapter| self.session.decide(adapter, &asked))
                     };
                     let decided = match decided {
                         Ok(decided) => decided,
@@ -610,6 +603,7 @@ impl Rounds<'_> {
                             tags: Vec::new(),
                             only: step.reflex.clone(),
                             whole: false,
+                            named: weave::named(&step.decision).cloned(),
                         };
                         let decided = rewritten
                             .iter()

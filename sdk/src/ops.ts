@@ -31,7 +31,7 @@ export interface Ops {
   "words.spelled": { input: { input: T.Input; kind: T.Recognizer }; output: T.Spelled[] }
   "words.spoken": { input: { input: T.Input; kind: T.Recognizer; range?: [number, number]; examples?: T.Clean[] }; output: T.Heard }
   request: {
-    input: { plan: T.Plan; input: string; tags: T.Tag[]; only?: T.LocalName; scope: T.Scope; recent?: T.Recent[] }
+    input: { plan: T.Plan; input: string; tags: T.Tag[]; only?: T.LocalName; named?: T.Judgment; scope: T.Scope; recent?: T.Recent[] }
     output: T.Result<T.Request, T.Diagnostic>
   }
   read: { input: { plan: T.Plan; gate?: T.Gate; request: T.Request; raw: T.Raw }; output: T.Result<T.Read, T.Fault> }

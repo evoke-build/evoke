@@ -237,6 +237,10 @@
           "asks": 0.9,
           "detail": 0.05,
           "aside": 0.05
+        },
+        "weave.span_44_57": {
+          "none": 0.9,
+          "timer": 0.1
         }
       }
     }

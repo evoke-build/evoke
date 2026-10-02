@@ -7,14 +7,14 @@ use indexmap::IndexMap;
 use super::reading::{self, Left, Order, Ref, SURE, Segment, Split, Stretch, Unclean};
 use super::{
     Answers, Aside, Asked, Because, Binding, Count, Folded, From, Need, Outcome, Parted, Planning,
-    Repair, Shared, Step, Verdict, Via, Weave, When, field_names,
+    Repair, Shared, Step, Verdict, Via, Weave, When, field_names, named,
 };
 use crate::account::Left as Run;
-use crate::adapter::{Fault, Gate, Prob};
+use crate::adapter::{Fault, Gate, Key, Prob, Question, QuestionId, Scope};
 use crate::calendar::Day;
 use crate::call::Value;
 use crate::decide::{
-    Basis, Cap, Decision, Prompt, alone, carry, given, held, joined, words, yielded,
+    Basis, Cap, Decision, Judgment, Prompt, alone, carry, given, held, joined, words, yielded,
 };
 use crate::manifest::{self, Effect, Kind, MOST_STEPS, Recognizer, Source, Yield};
 use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
@@ -298,12 +298,17 @@ impl Draft {
         self.ids.iter().position(|i| *i == id).map_or(0, |i| i + 1)
     }
 
+    /// Segment `k`'s words as the person typed them, where a rewrite wrote them anew; its text otherwise.
+    fn as_typed(&self, k: usize) -> String {
+        self.typed[k]
+            .clone()
+            .unwrap_or_else(|| self.segs[k].text.clone())
+    }
+
     /// Segment `k`, a part of the person's own, folded into the step of this id: gone, its words kept as typed,
     /// with the arguments it gave the step and the word of it that picked the step.
     fn fold_into(&mut self, k: usize, into: usize, gave: Vec<ArgName>, picked: Option<String>) {
-        let text = self.typed[k]
-            .clone()
-            .unwrap_or_else(|| self.segs[k].text.clone());
+        let text = self.as_typed(k);
         let reflex = reflex_of(&self.decisions[k]).cloned();
         // What was folded into the part goes where the part goes.
         let was = self.ids[k];
@@ -372,16 +377,18 @@ impl<'a> Planner<'a> {
             tags: self.tags.to_vec(),
             only: None,
             whole: text == self.request.trim(),
+            named: None,
         }
     }
 
-    /// A text decided narrowed to one reflex.
-    fn narrowed(text: &str, reflex: &LocalName) -> Asked {
+    /// A text decided narrowed to one reflex, its route the one the whole request gave, where it gave one.
+    fn narrowed(text: &str, reflex: &LocalName, named: Option<&Judgment>) -> Asked {
         Asked {
             text: text.to_owned(),
             tags: Vec::new(),
             only: Some(reflex.clone()),
             whole: false,
+            named: named.cloned(),
         }
     }
 
@@ -913,7 +920,8 @@ impl<'a> Planner<'a> {
             text,
             self.tags,
             Some(reflex),
-            crate::adapter::Scope::Full,
+            None,
+            Scope::Full,
             &[],
         ) else {
             return false;
@@ -923,7 +931,7 @@ impl<'a> Planner<'a> {
             if held.is_some_and(|held| held.contains_key(arg)) {
                 return false;
             }
-            let id = crate::adapter::QuestionId::Arg(reflex.clone(), arg.clone());
+            let id = QuestionId::Arg(reflex.clone(), arg.clone());
             match &argument.kind {
                 Kind::Flag => false,
                 Kind::Value {
@@ -933,12 +941,10 @@ impl<'a> Planner<'a> {
                     .questions
                     .get(&id)
                     .is_some_and(|question| match question {
-                        crate::adapter::Question::Choice(choice) => {
-                            choice.options().keys().any(|key| {
-                                Some(key) != choice.otherwise() && *key != crate::plan::none()
-                            })
-                        }
-                        crate::adapter::Question::YesNo { .. } => false,
+                        Question::Choice(choice) => choice.options().keys().any(|key| {
+                            Some(key) != choice.otherwise() && *key != crate::plan::none()
+                        }),
+                        Question::YesNo { .. } => false,
                     }),
                 Kind::Value { .. } => request.listed.contains_key(&id),
             }
@@ -1351,9 +1357,12 @@ impl<'a> Planner<'a> {
     }
 
     /// What the plan asks of the request once its parts are decided, in one request: what each part that
-    /// matches no reflex does, and whether a value one part states is another's. A part that asks for nothing
-    /// is set aside, a remark; where it may add a detail, the step beside it waits for a yes with the part's
-    /// words. A value is another part's where a yes says so, and stands on that yes.
+    /// matches no reflex does, and whether a value one part states is another's. A value is another part's where a
+    /// yes says so, and stands on that yes. A part that asks for something is then asked, in a request of its own,
+    /// which reflex its words ask for, read in the whole request; where that gives one, the part is decided as it,
+    /// on that route, its values its own words': a step so found takes the values stated once as any step does,
+    /// and waits for a yes. A part that asks for nothing is set aside, a remark; where it may add a detail, the
+    /// step beside it waits for a yes with the part's words.
     fn verify(&self, draft: &mut Draft) -> Result<(), Need> {
         let silent: Vec<usize> = (0..draft.segs.len())
             .filter(|&k| draft.segs.len() > 1 && draft.origins[k].is_empty())
@@ -1361,52 +1370,83 @@ impl<'a> Planner<'a> {
             .collect();
         let offers = self.offers_of(draft);
         // A part or a value whose words cannot be asked about is asked nothing, and stays as it was read.
-        let parts: Vec<_> = silent
+        let parts: Vec<(usize, (QuestionId, Question))> = silent
             .iter()
             .filter(|&&k| !crate::words::courtesy(&draft.segs[k].text))
-            .filter_map(|&k| reading::part(&draft.segs[k]).ok())
+            .filter_map(|&k| Some((k, reading::part(&draft.segs[k]).ok()?)))
             .collect();
-        let shares: Vec<_> = offers
-            .iter()
-            .filter_map(|offer| {
-                let asked = reading::shared(
-                    (&draft.segs[offer.taker], &draft.segs[offer.giver]),
-                    (&offer.reflex, &offer.arg),
-                    &offer.ask,
-                    (&offer.shown, offer.no),
-                )
-                .ok()?;
-                Some((offer, asked.0, asked.1))
-            })
-            .collect();
-        let answered = self.answers.verified.as_ref();
-        let missing: IndexMap<_, _> = parts
-            .iter()
-            .cloned()
-            .chain(
+        let shares = shares_of(draft, &offers);
+        self.ask(
+            parts.iter().map(|(_, asked)| asked.clone()).chain(
                 shares
                     .iter()
                     .map(|(_, id, question)| (id.clone(), question.clone())),
-            )
-            .filter(|(id, _)| answered.is_none_or(|raw| !raw.0.contains_key(&id.to_string())))
+            ),
+        )?;
+        self.give(draft, &shares);
+        // Only a part that asks for something is read in the whole request, in a request after the first.
+        let asking: Vec<(usize, (QuestionId, Question))> = parts
+            .iter()
+            .filter(|(_, (id, _))| self.asks(id))
+            .filter_map(|(k, _)| Some((*k, self.span_of(&draft.segs[*k])?)))
             .collect();
+        self.ask(asking.iter().map(|(_, asked)| asked.clone()))?;
+        let found = self.found(draft, &asking)?;
+        let steps: Vec<usize> = found.iter().map(|(k, _)| *k).collect();
+        self.carried(draft, &steps)?;
+        // A step only the whole request found never runs unasked.
+        for (k, p) in found {
+            let cap = Cap::Named {
+                words: draft.as_typed(k),
+                p,
+            };
+            draft.decisions[k] = held(self.plan, draft.decisions[k].clone(), cap);
+        }
+        let rest: Vec<usize> = silent.into_iter().filter(|k| !steps.contains(k)).collect();
+        self.aside(draft, &rest);
+        Ok(())
+    }
+
+    /// The plan's own questions of the request not answered yet, asked in one request; where its words cannot be
+    /// asked about, nothing is, and the plan goes on with what it has.
+    fn ask(&self, questions: impl Iterator<Item = (QuestionId, Question)>) -> Result<(), Need> {
+        let missing: IndexMap<_, _> = questions.filter(|(id, _)| !self.answered(id)).collect();
         if !missing.is_empty()
             && let Ok(request) = reading::asking(&self.request, missing)
         {
             return Err(Need::Verify { request });
         }
-        let share = |id: &crate::adapter::QuestionId, key: &str| -> f64 {
-            answered
-                .and_then(|raw| raw.0.get(&id.to_string()))
-                .and_then(|answer| answer.get(key))
-                .copied()
-                .unwrap_or(0.0)
-        };
-        for (offer, id, _) in &shares {
-            let yes = share(id, "yes");
+        Ok(())
+    }
+
+    /// Whether the plan's own question about the request was answered.
+    fn answered(&self, id: &QuestionId) -> bool {
+        self.answers
+            .verified
+            .as_ref()
+            .is_some_and(|raw| raw.0.contains_key(&id.to_string()))
+    }
+
+    /// The share an answer about the request gives a key of one of the plan's own questions; none reads as 0.
+    fn said(&self, id: &QuestionId, key: &str) -> f64 {
+        self.answers
+            .verified
+            .as_ref()
+            .and_then(|raw| raw.0.get(&id.to_string()))
+            .and_then(|answer| answer.get(key))
+            .copied()
+            .unwrap_or(0.0)
+    }
+
+    /// Each value another part states, given to the part a yes says it is and that holds none: it stands on that
+    /// yes.
+    fn give(&self, draft: &mut Draft, shares: &[Offered<'_>]) {
+        for (offer, id, _) in shares {
             let held = args_of(&draft.decisions[offer.taker])
                 .is_some_and(|args| args.contains_key(&offer.arg));
-            let Some(yes) = Prob::new(yes).filter(|yes| yes.get() >= SHARE && !held) else {
+            let Some(yes) =
+                Prob::new(self.said(id, "yes")).filter(|yes| yes.get() >= SHARE && !held)
+            else {
                 continue;
             };
             let stands = Basis::Shared {
@@ -1422,18 +1462,159 @@ impl<'a> Planner<'a> {
             );
             draft.decisions[offer.taker] = given;
         }
-        self.aside(draft, &silent, &share);
+    }
+
+    /// Which reflex a part's words ask for, read in the whole request: over the route's own options, as the route
+    /// offers them for those words; none where they cannot be asked about.
+    fn span_of(&self, seg: &Segment) -> Option<(QuestionId, Question)> {
+        let request = crate::decide::request(
+            self.plan,
+            &seg.text,
+            self.tags,
+            None,
+            None,
+            Scope::Route,
+            &[],
+        )
+        .ok()?;
+        match request.questions.get(&QuestionId::Route) {
+            Some(Question::Choice(route)) => reading::span(seg, route).ok(),
+            _ => None,
+        }
+    }
+
+    /// The parts the whole request reads as a reflex — each one that asks for something, whose words the whole
+    /// request gives a reflex at the route's own floor — each decided as that reflex, side by side: its route the
+    /// whole request's, never asked of its words alone, its values read from its own words. A part so decided is a
+    /// step, unless its call lacks a listed word its words hold. The parts that became steps, each with the share
+    /// the whole request gave its reflex.
+    fn found(
+        &self,
+        draft: &mut Draft,
+        parts: &[(usize, (QuestionId, Question))],
+    ) -> Result<Vec<(usize, Prob)>, Need> {
+        let wanted: Vec<(usize, Asked, Prob)> = parts
+            .iter()
+            .filter_map(|(k, span)| {
+                let (reflex, named) = self.route_of(span)?;
+                let asked = Self::narrowed(&draft.segs[*k].text, &reflex, Some(&named));
+                Some((*k, asked, named.p))
+            })
+            .collect();
+        let mut missing: Vec<Asked> = Vec::new();
+        for (_, asked, _) in &wanted {
+            if self.decided(asked).is_none() && !missing.contains(asked) {
+                missing.push(asked.clone());
+            }
+        }
+        if !missing.is_empty() {
+            return Err(Need::Decide { asked: missing });
+        }
+        let mut found = Vec::new();
+        for (k, asked, p) in wanted {
+            let decision = self
+                .decided(&asked)
+                .cloned()
+                .expect("every part named is decided");
+            // A part a host decided as no reflex stays as it was; so does one whose call lacks a listed word its
+            // words hold, «the same for Jo» read as a call that takes no person.
+            if matches!(decision, Decision::Abstain { .. })
+                || self.lacks(&draft.as_typed(k), &decision)
+            {
+                continue;
+            }
+            draft.decisions[k] = decision;
+            draft.repaired.push((asked.text, Repair::Named));
+            found.push((k, p));
+        }
+        Ok(found)
+    }
+
+    /// Whether a call lacks a listed word its part's own words hold: a word of a vocabulary some reflex of the
+    /// plan takes, which no value of the call is. Such a call does not say what the words say.
+    fn lacks(&self, text: &str, decision: &Decision) -> bool {
+        let held: Vec<String> = args_of(decision)
+            .into_iter()
+            .flatten()
+            .filter_map(|(_, value)| stated_of(value))
+            .collect();
+        self.plan.active().iter().any(|(reflex, active)| {
+            active.args.iter().any(|(arg, argument)| {
+                matches!(
+                    &argument.kind,
+                    Kind::Value {
+                        source: Source::Vocab(_),
+                        ..
+                    }
+                ) && words(self.plan, reflex, arg).keys().any(|word| {
+                    occurrences(text, word.as_str()) > 0
+                        && !held.contains(&word.as_str().to_lowercase())
+                })
+            })
+        })
+    }
+
+    /// The route the whole request gives a part's words, by the answer about them: the reflex first offered with
+    /// the highest share, and the judgment that names it, where it is a reflex at the route's own floor.
+    fn route_of(&self, (id, question): &(QuestionId, Question)) -> Option<(LocalName, Judgment)> {
+        let Question::Choice(choice) = question else {
+            return None;
+        };
+        if !self.answered(id) {
+            return None;
+        }
+        let answer: IndexMap<Key, Prob> = choice
+            .options()
+            .keys()
+            .filter_map(|key| Some((key.clone(), Prob::new(self.said(id, key.as_str()))?)))
+            .collect();
+        let (top, p) = crate::decide::top(choice, &answer)?;
+        let floored = self.gate.is_some_and(|gate| p < gate.route());
+        if Some(&top) == choice.otherwise() || floored {
+            return None;
+        }
+        let reflex = LocalName::new(top.as_str()).ok()?;
+        let question = id.clone();
+        Some((reflex, Judgment { question, top, p }))
+    }
+
+    /// The steps the whole request found take what carries a value stated once to a step that lacks it, as any
+    /// step does: a word of a vocabulary the request states once, then a value another part states, by a yes.
+    fn carried(&self, draft: &mut Draft, found: &[usize]) -> Result<(), Need> {
+        if found.is_empty() {
+            return Ok(());
+        }
+        self.reach(draft, found)?;
+        let offers: Vec<Offer> = self
+            .offers_of(draft)
+            .into_iter()
+            .filter(|offer| found.contains(&offer.taker))
+            .collect();
+        let shares = shares_of(draft, &offers);
+        self.ask(
+            shares
+                .iter()
+                .map(|(_, id, question)| (id.clone(), question.clone())),
+        )?;
+        self.give(draft, &shares);
         Ok(())
+    }
+
+    /// Whether the answer about what a part does says it asks for something.
+    fn asks(&self, id: &QuestionId) -> bool {
+        self.answered(id) && self.said(id, "asks") >= 1.0 - ASIDE
+    }
+
+    /// Whether the answer about what a part does sets it aside, and as what: a remark, `true`, or words that may
+    /// add a detail, `false`; none where it asks for something, or was not answered, and it stays as it was read.
+    fn set_aside(&self, id: &QuestionId) -> Option<bool> {
+        (self.answered(id) && self.said(id, "asks") < 1.0 - ASIDE)
+            .then(|| self.said(id, "aside") >= ASIDE)
     }
 
     /// The parts that match no reflex and ask for nothing, out of the plan: a part of courtesy alone is a
     /// remark by its words; any other by what the answer says it does. One step at least stays.
-    fn aside(
-        &self,
-        draft: &mut Draft,
-        silent: &[usize],
-        share: &dyn Fn(&crate::adapter::QuestionId, &str) -> f64,
-    ) {
+    fn aside(&self, draft: &mut Draft, silent: &[usize]) {
         for &k in silent.iter().rev() {
             if draft.segs.len() < 2 {
                 break;
@@ -1445,23 +1626,18 @@ impl<'a> Planner<'a> {
                 let Ok((id, _)) = reading::part(&draft.segs[k]) else {
                     continue;
                 };
-                let answered = self
-                    .answers
-                    .verified
-                    .as_ref()
-                    .is_some_and(|raw| raw.0.contains_key(&id.to_string()));
-                if !answered || share(&id, "asks") >= 1.0 - ASIDE {
+                let Some(remark) = self.set_aside(&id) else {
                     continue;
-                }
-                let does = Prob::new(share(&id, "aside"))
-                    .zip(Prob::new(share(&id, "detail")))
-                    .zip(Prob::new(share(&id, "asks")))
+                };
+                let does = Prob::new(self.said(&id, "aside"))
+                    .zip(Prob::new(self.said(&id, "detail")))
+                    .zip(Prob::new(self.said(&id, "asks")))
                     .map(|((aside, detail), asks)| Parted {
                         aside,
                         detail,
                         asks,
                     });
-                (share(&id, "aside") >= ASIDE, does)
+                (remark, does)
             };
             if !remark {
                 // The step beside it, before it first, waits for a yes with the part's words.
@@ -1549,9 +1725,7 @@ impl<'a> Planner<'a> {
             }
             for (at, beside) in [(k - 1, k), (k, k - 1)] {
                 // The other part as it was typed, where the plan wrote its words anew.
-                let words = draft.typed[beside]
-                    .clone()
-                    .unwrap_or_else(|| draft.segs[beside].text.clone());
+                let words = draft.as_typed(beside);
                 draft.decisions[at] = held(
                     self.plan,
                     draft.decisions[at].clone(),
@@ -1903,23 +2077,35 @@ impl<'a> Planner<'a> {
         if draft.segs.len() < 2 {
             return Ok(());
         }
+        let everyone: Vec<usize> = (0..draft.segs.len()).collect();
+        self.reach(draft, &everyone)
+    }
+
+    /// The shared value reaching the steps given, each that lacks an argument of its vocabulary: by a rewrite,
+    /// then by a fill.
+    fn reach(&self, draft: &mut Draft, takers: &[usize]) -> Result<(), Need> {
         // The words as the person typed them: a step's text a rewrite appended a word to states nothing more.
-        let original: Vec<String> = draft.segs.iter().map(|seg| seg.text.clone()).collect();
-        self.rewritten(draft, &original)?;
-        self.filled(draft, &original);
+        let original: Vec<String> = (0..draft.segs.len()).map(|k| draft.as_typed(k)).collect();
+        self.rewritten(draft, &original, takers)?;
+        self.filled(draft, &original, takers);
         Ok(())
     }
 
     /// An optional vocabulary argument a step left unstated takes the word its run states once — the run being
     /// the steps joined by coordinating connectives, an ordering word ending it — by a rewrite: the word appended
-    /// to the step's words, decided again narrowed to the step's reflex, kept only when the reflex holds, the
-    /// word lands on that argument and no other argument moved; else the step stays. Every rewrite is decided
-    /// side by side, one need.
-    fn rewritten(&self, draft: &mut Draft, original: &[String]) -> Result<(), Need> {
+    /// to the step's words, decided again narrowed to the step's reflex, on the route the whole request gave it
+    /// where it gave one, kept only when the reflex holds, the word lands on that argument and no other argument
+    /// moved; else the step stays. Every rewrite is decided side by side, one need.
+    fn rewritten(
+        &self,
+        draft: &mut Draft,
+        original: &[String],
+        takers: &[usize],
+    ) -> Result<(), Need> {
         let mut rewrites: Vec<(usize, IndexMap<ArgName, Word>, Asked)> = Vec::new();
         for run in runs_of(&draft.taken, &draft.segs) {
             for &k in &run {
-                if draft.refused_at(k) {
+                if !takers.contains(&k) || draft.refused_at(k) {
                     continue;
                 }
                 let Some((reflex, active)) = self.active_of(&draft.decisions[k]) else {
@@ -1951,7 +2137,8 @@ impl<'a> Planner<'a> {
                 }
                 let appended: Vec<&str> = carried.values().map(Word::as_str).collect();
                 let text = format!("{} {}", draft.segs[k].text, appended.join(" "));
-                rewrites.push((k, carried, Self::narrowed(&text, reflex)));
+                let asked = Self::narrowed(&text, reflex, named(&draft.decisions[k]));
+                rewrites.push((k, carried, asked));
             }
         }
         let missing: Vec<Asked> = rewrites
@@ -1992,9 +2179,9 @@ impl<'a> Planner<'a> {
 
     /// A required vocabulary argument a step lacks takes the one distinct word of its vocabulary the whole
     /// request states, however often: the decision filled as `fill` fills a person's answer, no request.
-    fn filled(&self, draft: &mut Draft, original: &[String]) {
+    fn filled(&self, draft: &mut Draft, original: &[String], takers: &[usize]) {
         let everyone: Vec<usize> = (0..draft.segs.len()).collect();
-        for k in 0..draft.segs.len() {
+        for &k in takers {
             if draft.refused_at(k) {
                 continue;
             }
@@ -2209,7 +2396,7 @@ impl<'a> Planner<'a> {
         let Some(reflex) = reflex_of(decided) else {
             return Ok(None);
         };
-        let narrowed = self.decide(Self::narrowed(fragment, reflex))?;
+        let narrowed = self.decide(Self::narrowed(fragment, reflex, None))?;
         if !matches!(narrowed, Decision::Abstain { .. }) {
             return Ok(Some(Fan {
                 decision: narrowed,
@@ -2263,7 +2450,7 @@ impl<'a> Planner<'a> {
                     sibling_chars[(at + needle.chars().count()).min(sibling_chars.len())..].iter(),
                 )
                 .collect();
-            let decision = self.decide(Self::narrowed(&spliced, reflex))?;
+            let decision = self.decide(Self::narrowed(&spliced, reflex, None))?;
             if matches!(decision, Decision::Abstain { .. }) || reflex_of(&decision) != Some(reflex)
             {
                 continue;
@@ -3119,6 +3306,26 @@ struct Offer {
     shown: String,
     no: &'static str,
     value: Value,
+}
+
+/// A value offered, with the question whether it is the taker's too.
+type Offered<'o> = (&'o Offer, QuestionId, Question);
+
+/// The question of each value offered: whether it is the taker's too; none for words that cannot be asked about.
+fn shares_of<'o>(draft: &Draft, offers: &'o [Offer]) -> Vec<Offered<'o>> {
+    offers
+        .iter()
+        .filter_map(|offer| {
+            let (id, question) = reading::shared(
+                (&draft.segs[offer.taker], &draft.segs[offer.giver]),
+                (&offer.reflex, &offer.arg),
+                &offer.ask,
+                (&offer.shown, offer.no),
+            )
+            .ok()?;
+            Some((offer, id, question))
+        })
+        .collect()
 }
 
 /// The most values of other parts one argument is offered.

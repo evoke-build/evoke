@@ -1,0 +1,739 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "check the errors for checkout and post in #incident, payments too",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "check the errors for checkout"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "errors service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.95
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0.03
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.95
+              },
+              {
+                "reflex": "deploys",
+                "route": 0.03
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "post in #incident"
+          },
+          {
+            "outcome": "run",
+            "reflex": "post",
+            "args": {
+              "channel": {
+                "type": "word",
+                "word": "#incident"
+              }
+            },
+            "call": "post channel=\"#incident\"",
+            "effect": "write",
+            "basis": {
+              "channel": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "post"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "post",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "post",
+                "p": 0.95
+              },
+              {
+                "question": "post.channel",
+                "top": "#incident",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03
+            },
+            "contenders": [
+              {
+                "reflex": "post",
+                "route": 0.95
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "payments too"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.1
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.9
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "payments too",
+            "only": "post"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "post",
+                "route": 0.1
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.9
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "post in payments too",
+            "only": "post"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "post",
+                "route": 0.1
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.9
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "payments too",
+            "only": "errors",
+            "named": {
+              "question": "weave.span_53_65",
+              "top": "errors",
+              "p": 0.85
+            }
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "payments"
+              }
+            },
+            "call": "errors service=\"payments\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 9,
+                  "end": 12,
+                  "text": "too"
+                },
+                "does": "action",
+                "p": 0.95,
+                "again": true
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.85,
+            "weakest": {
+              "question": "weave.span_53_65",
+              "top": "errors",
+              "p": 0.85
+            },
+            "judgments": [
+              {
+                "question": "weave.span_53_65",
+                "top": "errors",
+                "p": 0.85
+              },
+              {
+                "question": "errors.service",
+                "top": "payments",
+                "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.85
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.9
+        },
+        "weave.split_1": {
+          "yes": 0.85
+        },
+        "weave.count": {
+          "more": 0.6,
+          "two": 0.35,
+          "one": 0.05
+        }
+      },
+      "verified": {
+        "weave.part_53_65": {
+          "asks": 0.75,
+          "detail": 0.2,
+          "aside": 0.05
+        },
+        "weave.span_53_65": {
+          "errors": 0.85,
+          "deploys": 0.05,
+          "none": 0.1
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "check the errors for checkout and post in #incident, payments too",
+        "steps": [
+          {
+            "n": 1,
+            "text": "check the errors for checkout",
+            "end": 29,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "errors service=\"checkout\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "check the errors"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "errors",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "errors",
+                  "p": 0.95
+                },
+                {
+                  "question": "errors.service",
+                  "top": "checkout",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "deploys",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "post",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                },
+                {
+                  "reflex": "status",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "post in #incident",
+            "end": 51,
+            "decision": {
+              "outcome": "run",
+              "reflex": "post",
+              "args": {
+                "channel": {
+                  "type": "word",
+                  "word": "#incident"
+                }
+              },
+              "call": "post channel=\"#incident\"",
+              "effect": "write",
+              "basis": {
+                "channel": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "post"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "post",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "post",
+                  "p": 0.95
+                },
+                {
+                  "question": "post.channel",
+                  "top": "#incident",
+                  "p": 0.95
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "post",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                },
+                {
+                  "reflex": "status",
+                  "route": 0
+                }
+              ]
+            },
+            "reflex": "post",
+            "effect": "write"
+          },
+          {
+            "n": 3,
+            "text": "payments too",
+            "end": 65,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "payments"
+                }
+              },
+              "call": "errors service=\"payments\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 9,
+                    "end": 12,
+                    "text": "too"
+                  },
+                  "does": "action",
+                  "p": 0.95,
+                  "again": true
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.85,
+              "weakest": {
+                "question": "weave.span_53_65",
+                "top": "errors",
+                "p": 0.85
+              },
+              "judgments": [
+                {
+                  "question": "weave.span_53_65",
+                  "top": "errors",
+                  "p": 0.85
+                },
+                {
+                  "question": "errors.service",
+                  "top": "payments",
+                  "p": 0.95
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.85
+                }
+              ],
+              "prompt": {
+                "own": "errors service=\"payments\" · read · weakest: route 0.85",
+                "reason": "\"payments too\" matches nothing alone, and the whole request reads it as errors at 0.85, which always waits for a yes",
+                "template": "Show the error rate of payments?"
+              },
+              "because": [
+                {
+                  "type": "named",
+                  "words": "payments too",
+                  "p": 0.85
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read",
+            "repair": "named"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 29,
+            "end": 34,
+            "word": "and",
+            "order": "and",
+            "p": 0.9,
+            "cut": true
+          },
+          {
+            "start": 51,
+            "end": 53,
+            "word": ",",
+            "order": "and",
+            "p": 0.85,
+            "cut": true
+          }
+        ],
+        "count": {
+          "one": 0.05
+        }
+      }
+    }
+  }
+}

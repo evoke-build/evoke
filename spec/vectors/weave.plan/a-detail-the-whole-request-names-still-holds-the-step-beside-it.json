@@ -10,7 +10,7 @@
       "write": 0.9,
       "whole": 0.3
     },
-    "input": "check the errors for checkout, thanks a lot for this",
+    "input": "check the errors for checkout, the ones since noon",
     "tags": [],
     "answers": {
       "decided": [
@@ -116,7 +116,7 @@
         ],
         [
           {
-            "text": "thanks a lot for this"
+            "text": "the ones since noon"
           },
           {
             "outcome": "abstain",
@@ -173,7 +173,7 @@
         ],
         [
           {
-            "text": "thanks a lot for this",
+            "text": "the ones since noon",
             "only": "errors"
           },
           {
@@ -195,7 +195,7 @@
         ],
         [
           {
-            "text": "check the errors for thanks a lot for this",
+            "text": "check the errors for the ones since noon",
             "only": "errors"
           },
           {
@@ -221,20 +221,20 @@
           "yes": 0.9
         },
         "weave.count": {
-          "two": 0.6,
-          "more": 0.35,
-          "one": 0.05
+          "two": 0.55,
+          "one": 0.4,
+          "more": 0.05
         }
       },
       "verified": {
-        "weave.part_31_52": {
-          "asks": 0.8,
-          "aside": 0.1,
-          "detail": 0.1
+        "weave.part_31_50": {
+          "detail": 0.7,
+          "asks": 0.1,
+          "aside": 0.2
         },
-        "weave.span_31_52": {
-          "none": 0.9,
-          "errors": 0.1
+        "weave.span_31_50": {
+          "errors": 0.9,
+          "none": 0.1
         }
       }
     }
@@ -243,14 +243,14 @@
     "ok": {
       "type": "done",
       "weave": {
-        "input": "check the errors for checkout, thanks a lot for this",
+        "input": "check the errors for checkout, the ones since noon",
         "steps": [
           {
             "n": 1,
             "text": "check the errors for checkout",
             "end": 29,
             "decision": {
-              "outcome": "run",
+              "outcome": "confirm",
               "reflex": "errors",
               "args": {
                 "service": {
@@ -342,85 +342,43 @@
                   "reflex": "status",
                   "route": 0
                 }
+              ],
+              "prompt": {
+                "own": "errors service=\"checkout\" · read · weakest: route 0.95",
+                "reason": "\"the ones since noon\" may add a detail this call does not hold",
+                "template": "Show the error rate of checkout?"
+              },
+              "because": [
+                {
+                  "type": "detail",
+                  "words": "the ones since noon"
+                }
               ]
             },
             "reflex": "errors",
             "effect": "read"
-          },
-          {
-            "n": 2,
-            "text": "thanks a lot for this",
-            "end": 52,
-            "decision": {
-              "outcome": "abstain",
-              "contenders": [
-                {
-                  "reflex": "errors",
-                  "route": 0.05
-                },
-                {
-                  "reflex": "deploys",
-                  "route": 0
-                },
-                {
-                  "reflex": "logs",
-                  "route": 0
-                },
-                {
-                  "reflex": "suspect",
-                  "route": 0
-                },
-                {
-                  "reflex": "rollback",
-                  "route": 0
-                },
-                {
-                  "reflex": "post",
-                  "route": 0
-                },
-                {
-                  "reflex": "incidents",
-                  "route": 0
-                },
-                {
-                  "reflex": "incident",
-                  "route": 0
-                },
-                {
-                  "reflex": "postmortem",
-                  "route": 0
-                },
-                {
-                  "reflex": "status",
-                  "route": 0
-                }
-              ],
-              "judgments": [
-                {
-                  "question": "route",
-                  "top": "none",
-                  "p": 0.95
-                }
-              ]
-            }
           }
         ],
         "stages": [
           [
-            1,
-            2
+            1
           ]
         ],
         "verdict": {
-          "outcome": "refuse",
-          "because": [
-            {
-              "type": "no_reflex",
-              "step": 2
-            }
-          ]
+          "outcome": "run"
         },
         "exclusive": false,
+        "asides": [
+          {
+            "text": "the ones since noon",
+            "remark": false,
+            "does": {
+              "aside": 0.2,
+              "detail": 0.7,
+              "asks": 0.1
+            }
+          }
+        ],
         "splits": [
           {
             "start": 29,
@@ -432,7 +390,7 @@
           }
         ],
         "count": {
-          "one": 0.05
+          "one": 0.4
         }
       }
     }

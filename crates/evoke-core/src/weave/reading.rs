@@ -1323,6 +1323,11 @@ const PART_ASKS: &str = "It asks for something to be done.";
 const PART_DETAIL: &str = "It adds a detail to another part of the request.";
 const PART_ASIDE: &str = "It gives a reason, a circumstance or a remark, and asks for nothing.";
 
+/// Which reflex the words of a part ask for, read in the whole request: the words stand for `{words}`.
+const NAMED: &str = "In the request, which one do the words \"{words}\" ask for?";
+/// The kind of that question's name, before where the part's words stand.
+const SPAN: &str = "span_";
+
 /// The no of a value one part states, asked of another.
 pub(crate) const ANOTHER: &str = "Another one, or none.";
 
@@ -1350,6 +1355,24 @@ pub(crate) fn part(seg: &Segment) -> Result<(QuestionId, Question), Unclean> {
         own(&format!("part_{}_{}", seg.start, seg.end)),
         Question::Choice(choice),
     ))
+}
+
+/// Which reflex a part's words ask for, read in the whole request: `weave.span_<start>_<end>`, by where its words
+/// stand in the request, over the route's own options as the route offers them, its ask naming the words.
+pub(crate) fn span(seg: &Segment, route: &Choice) -> Result<(QuestionId, Question), Unclean> {
+    let ask = Clean::new(&NAMED.replace("{words}", &seg.text)).map_err(|_| Unclean)?;
+    let choice = Choice::new(ask, route.options().clone(), route.otherwise().cloned())
+        .map_err(|_| Unclean)?;
+    Ok((
+        own(&format!("{SPAN}{}_{}", seg.start, seg.end)),
+        Question::Choice(choice),
+    ))
+}
+
+/// Whether a question asks which reflex a part's words ask for, read in the whole request: its judgment stands for
+/// the route in a decision of the part's words.
+pub(crate) fn is_span(question: &QuestionId) -> bool {
+    matches!(question, QuestionId::Weave(name) if name.as_str().starts_with(SPAN))
 }
 
 /// Whether a value one part states is another part's: `weave.share_<taker>_<giver>_<reflex>__<argument>`, the
@@ -1502,6 +1525,7 @@ fn request_of(
         questions,
         proposed: Vec::new(),
         scope: Scope::Full,
+        named: None,
         recent: IndexMap::new(),
         listed: IndexMap::new(),
         spelled: IndexMap::new(),
@@ -1804,6 +1828,43 @@ mod tests {
         referred(&mut refs, &request, raw).unwrap();
         assert_eq!(refs[2][0].from, [1]);
         assert_eq!(refs[2][0].how, How::Engine);
+    }
+
+    #[test]
+    fn a_part_is_asked_which_reflex_its_words_ask_for_over_the_routes_own_options() {
+        let route = Choice::closed(
+            plain("Which one does the request ask for?"),
+            [(
+                key("keys"),
+                Text::Rich {
+                    what: plain("List a person's API keys."),
+                    not_for: vec![plain("revoking a key")],
+                    examples: vec![plain("list the API keys for ana")],
+                },
+            )]
+            .into_iter()
+            .collect(),
+            (key("none"), Text::Plain(plain("None of these."))),
+        );
+        let seg = Segment {
+            text: "Sam".to_owned(),
+            start: 37,
+            end: 40,
+            left: None,
+        };
+        let (id, question) = span(&seg, &route).unwrap();
+        assert_eq!(id.to_string(), "weave.span_37_40");
+        assert!(is_span(&id));
+        assert!(!is_span(&part(&seg).unwrap().0));
+        let Question::Choice(choice) = question else {
+            panic!("a choice");
+        };
+        assert_eq!(
+            choice.ask().as_str(),
+            "In the request, which one do the words \"Sam\" ask for?"
+        );
+        assert_eq!(choice.options(), route.options());
+        assert_eq!(choice.otherwise(), route.otherwise());
     }
 
     /// The places a text is cut at, set apart as the planner sets them, and the parts they make with what each is

@@ -67,6 +67,9 @@ separated by `;`.
   step was cut from a longer part read with a value its call lacks; or it was cut from the part beside it at a
   sign typed for `and`, and the cut is not sure. `"the ones since noon" may add a detail this call does not
   hold` ([Weaving](weaving.md)).
+- **read with the whole sentence**: the step's words match nothing alone, and the step comes from reading them
+  with the rest of the sentence. `"payments too" matches nothing alone, and the whole request reads it as errors
+  at 0.85, which always waits for a yes` ([Weaving](weaving.md)).
 
 `[t]each` records only what the input stated. An argument you filled in at a prompt is not recorded. The answer
 is read from the terminal, never from stdin. With no terminal, a confirm exits 3 with the command to run yourself.

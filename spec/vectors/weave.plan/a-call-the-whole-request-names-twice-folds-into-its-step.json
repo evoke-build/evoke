@@ -10,7 +10,7 @@
       "write": 0.9,
       "whole": 0.3
     },
-    "input": "check the errors for checkout, thanks a lot for this",
+    "input": "check the errors for checkout and post in #incident, checkout too",
     "tags": [],
     "answers": {
       "decided": [
@@ -68,7 +68,7 @@
             ],
             "runner_up": {
               "reflex": "deploys",
-              "route": 0.02
+              "route": 0.03
             },
             "contenders": [
               {
@@ -77,7 +77,7 @@
               },
               {
                 "reflex": "deploys",
-                "route": 0.02
+                "route": 0.03
               },
               {
                 "reflex": "logs",
@@ -116,14 +116,114 @@
         ],
         [
           {
-            "text": "thanks a lot for this"
+            "text": "post in #incident"
+          },
+          {
+            "outcome": "run",
+            "reflex": "post",
+            "args": {
+              "channel": {
+                "type": "word",
+                "word": "#incident"
+              }
+            },
+            "call": "post channel=\"#incident\"",
+            "effect": "write",
+            "basis": {
+              "channel": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "post"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "post",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "post",
+                "p": 0.95
+              },
+              {
+                "question": "post.channel",
+                "top": "#incident",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0.03
+            },
+            "contenders": [
+              {
+                "reflex": "post",
+                "route": 0.95
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "checkout too"
           },
           {
             "outcome": "abstain",
             "contenders": [
               {
                 "reflex": "errors",
-                "route": 0.05
+                "route": 0.1
               },
               {
                 "reflex": "deploys",
@@ -166,51 +266,118 @@
               {
                 "question": "route",
                 "top": "none",
-                "p": 0.95
+                "p": 0.9
               }
             ]
           }
         ],
         [
           {
-            "text": "thanks a lot for this",
-            "only": "errors"
+            "text": "checkout too",
+            "only": "post"
           },
           {
             "outcome": "abstain",
             "contenders": [
               {
-                "reflex": "errors",
-                "route": 0.05
+                "reflex": "post",
+                "route": 0.1
               }
             ],
             "judgments": [
               {
                 "question": "route",
                 "top": "none",
-                "p": 0.95
+                "p": 0.9
               }
             ]
           }
         ],
         [
           {
-            "text": "check the errors for thanks a lot for this",
-            "only": "errors"
+            "text": "post in checkout too",
+            "only": "post"
           },
           {
             "outcome": "abstain",
             "contenders": [
               {
-                "reflex": "errors",
-                "route": 0.05
+                "reflex": "post",
+                "route": 0.1
               }
             ],
             "judgments": [
               {
                 "question": "route",
                 "top": "none",
+                "p": 0.9
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "checkout too",
+            "only": "errors",
+            "named": {
+              "question": "weave.span_53_65",
+              "top": "errors",
+              "p": 0.85
+            }
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "errors service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 9,
+                  "end": 12,
+                  "text": "too"
+                },
+                "does": "action",
+                "p": 0.95,
+                "again": true
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.85,
+            "weakest": {
+              "question": "weave.span_53_65",
+              "top": "errors",
+              "p": 0.85
+            },
+            "judgments": [
+              {
+                "question": "weave.span_53_65",
+                "top": "errors",
+                "p": 0.85
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
                 "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.85
               }
             ]
           }
@@ -220,21 +387,24 @@
         "weave.split_0": {
           "yes": 0.9
         },
+        "weave.split_1": {
+          "yes": 0.85
+        },
         "weave.count": {
-          "two": 0.6,
-          "more": 0.35,
+          "more": 0.6,
+          "two": 0.35,
           "one": 0.05
         }
       },
       "verified": {
-        "weave.part_31_52": {
-          "asks": 0.8,
-          "aside": 0.1,
-          "detail": 0.1
+        "weave.part_53_65": {
+          "asks": 0.7,
+          "detail": 0.25,
+          "aside": 0.05
         },
-        "weave.span_31_52": {
-          "none": 0.9,
-          "errors": 0.1
+        "weave.span_53_65": {
+          "errors": 0.85,
+          "none": 0.15
         }
       }
     }
@@ -243,14 +413,14 @@
     "ok": {
       "type": "done",
       "weave": {
-        "input": "check the errors for checkout, thanks a lot for this",
+        "input": "check the errors for checkout and post in #incident, checkout too",
         "steps": [
           {
             "n": 1,
             "text": "check the errors for checkout",
             "end": 29,
             "decision": {
-              "outcome": "run",
+              "outcome": "confirm",
               "reflex": "errors",
               "args": {
                 "service": {
@@ -276,6 +446,16 @@
                   },
                   "does": "action",
                   "p": 0.95
+                },
+                {
+                  "words": {
+                    "start": 9,
+                    "end": 12,
+                    "text": "too"
+                  },
+                  "does": "action",
+                  "p": 0.95,
+                  "again": true
                 }
               ],
               "whole": 0.9,
@@ -299,7 +479,7 @@
               ],
               "runner_up": {
                 "reflex": "deploys",
-                "route": 0.02
+                "route": 0.03
               },
               "contenders": [
                 {
@@ -308,59 +488,7 @@
                 },
                 {
                   "reflex": "deploys",
-                  "route": 0.02
-                },
-                {
-                  "reflex": "logs",
-                  "route": 0
-                },
-                {
-                  "reflex": "suspect",
-                  "route": 0
-                },
-                {
-                  "reflex": "rollback",
-                  "route": 0
-                },
-                {
-                  "reflex": "post",
-                  "route": 0
-                },
-                {
-                  "reflex": "incidents",
-                  "route": 0
-                },
-                {
-                  "reflex": "incident",
-                  "route": 0
-                },
-                {
-                  "reflex": "postmortem",
-                  "route": 0
-                },
-                {
-                  "reflex": "status",
-                  "route": 0
-                }
-              ]
-            },
-            "reflex": "errors",
-            "effect": "read"
-          },
-          {
-            "n": 2,
-            "text": "thanks a lot for this",
-            "end": 52,
-            "decision": {
-              "outcome": "abstain",
-              "contenders": [
-                {
-                  "reflex": "errors",
-                  "route": 0.05
-                },
-                {
-                  "reflex": "deploys",
-                  "route": 0
+                  "route": 0.03
                 },
                 {
                   "reflex": "logs",
@@ -395,39 +523,166 @@
                   "route": 0
                 }
               ],
+              "prompt": {
+                "own": "errors service=\"checkout\" · read · weakest: route 0.95",
+                "reason": "\"checkout too\" matches nothing alone, and the whole request reads it as errors at 0.85, which always waits for a yes; \"too\" asks for another thing",
+                "template": "Show the error rate of checkout?"
+              },
+              "because": [
+                {
+                  "type": "named",
+                  "words": "checkout too",
+                  "p": 0.85
+                },
+                {
+                  "type": "more",
+                  "words": {
+                    "start": 9,
+                    "end": 12,
+                    "text": "too"
+                  }
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read"
+          },
+          {
+            "n": 2,
+            "text": "post in #incident",
+            "end": 51,
+            "decision": {
+              "outcome": "run",
+              "reflex": "post",
+              "args": {
+                "channel": {
+                  "type": "word",
+                  "word": "#incident"
+                }
+              },
+              "call": "post channel=\"#incident\"",
+              "effect": "write",
+              "basis": {
+                "channel": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "post"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "post",
+                "p": 0.95
+              },
               "judgments": [
                 {
                   "question": "route",
-                  "top": "none",
+                  "top": "post",
+                  "p": 0.95
+                },
+                {
+                  "question": "post.channel",
+                  "top": "#incident",
                   "p": 0.95
                 }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              "contenders": [
+                {
+                  "reflex": "post",
+                  "route": 0.95
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0.03
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                },
+                {
+                  "reflex": "status",
+                  "route": 0
+                }
               ]
-            }
+            },
+            "reflex": "post",
+            "effect": "write"
           }
         ],
         "stages": [
           [
-            1,
+            1
+          ],
+          [
             2
           ]
         ],
         "verdict": {
-          "outcome": "refuse",
-          "because": [
-            {
-              "type": "no_reflex",
-              "step": 2
-            }
-          ]
+          "outcome": "run"
         },
-        "exclusive": false,
+        "exclusive": true,
+        "folded": [
+          {
+            "text": "checkout too",
+            "into": 1
+          }
+        ],
         "splits": [
           {
             "start": 29,
-            "end": 31,
-            "word": ",",
+            "end": 34,
+            "word": "and",
             "order": "and",
             "p": 0.9,
+            "cut": true
+          },
+          {
+            "start": 51,
+            "end": 53,
+            "word": ",",
+            "order": "and",
+            "p": 0.85,
             "cut": true
           }
         ],

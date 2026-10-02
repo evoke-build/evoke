@@ -12,7 +12,7 @@ use evoke_core::manifest::{Effect, Recognizer};
 use evoke_core::name::{AdapterId, ArgName};
 use evoke_core::propose::PickValue;
 use evoke_core::weave::reading::{Split, Stretch};
-use evoke_core::weave::{Aside, Because, Count, Folded, Repair, Status};
+use evoke_core::weave::{self, Aside, Because, Count, Folded, Repair, Status};
 use evoke_core::words::{Form, How};
 use evoke_core::{Call, Decision, Does, Gate, Proposed, Raw, Span, render};
 use serde::{Deserialize, Serialize};
@@ -43,6 +43,7 @@ const SPLICED: &str = "the words of the part before it, as one request";
 const MERGED: &str = "the part beside it, as one request: alone it matches nothing";
 const CORRECTED: &str = "the part beside it, which says what not to do";
 const SPLIT: &str = "as a call of its own, where the parts were kept whole";
+const NAMED: &str = "the whole request: alone it matches nothing";
 
 /// An answer's key as a person reads it: of the question about the reflex; of an argument, by what it takes.
 const NONE_OF_THEM: &str = "none of them";
@@ -444,11 +445,16 @@ fn whole(sentence: &Sentence, steps: usize) -> Vec<Text> {
     rows
 }
 
-/// One step's rows: the reflex, each value, how far the call holds all that was said, what a rule did, then what
-/// became of the call and why.
+/// One step's rows: the reflex — as the whole request gave it, where its words were named there — each value, how
+/// far the call holds all that was said, what a rule did, then what became of the call and why.
 fn step(sentence: Option<&Sentence>, line: &Line, tried: bool) -> Vec<Text> {
     let mut rows = Vec::new();
-    let route = sorted(&line.answers, "route");
+    let mut route = sorted(&line.answers, "route");
+    if route.is_empty()
+        && let Some(named) = weave::named(&line.decision)
+    {
+        route.push((named.top.to_string(), named.p.get()));
+    }
     if !route.is_empty() {
         let mut body = answers(&route, |key| match key {
             "none" => NONE_OF_THEM.to_owned(),
@@ -883,6 +889,7 @@ fn rules(sentence: Option<&Sentence>, line: &Line) -> Vec<Text> {
             Repair::Merged => (READ_WITH, MERGED),
             Repair::Corrected => (READ_WITH, CORRECTED),
             Repair::Split => (READ_APART, SPLIT),
+            Repair::Named => (READ_WITH, NAMED),
         };
         rows.push(row(label, Text::from(says)));
     }
@@ -1099,9 +1106,10 @@ fn clears(
         Effect::Write => ("a write", gate.write()),
         Effect::Destructive => return None,
     };
-    let about = match weakest.question {
-        QuestionId::Route => WHICH.to_owned(),
-        _ => weakest.about(),
+    let about = if weakest.is_route() {
+        WHICH.to_owned()
+    } else {
+        weakest.about()
     };
     let mut line = format!(
         "{kind} runs at {} or more, and its least sure judgment is {about}, {}",

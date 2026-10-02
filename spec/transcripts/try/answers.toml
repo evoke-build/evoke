@@ -51,6 +51,7 @@ route                      = { none = 0.95, lights = 0.02, timer = 0.02, volume 
 "weave.split_0"            = { yes = 0.95 }
 "weave.count"              = { two = 0.6, more = 0.35, one = 0.05 }
 "weave.part_31_43"         = { asks = 0.9, detail = 0.05, aside = 0.05 }
+"weave.span_31_43"         = { none = 0.9, lights = 0.1 }
 route                      = { none = 0.95, lights = 0.05 }
 "lights.room"              = { unstated = 1.0 }
 "lights.state"             = { unstated = 1.0 }

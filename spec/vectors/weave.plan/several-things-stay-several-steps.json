@@ -288,6 +288,10 @@
           "asks": 0.9,
           "detail": 0.05,
           "aside": 0.05
+        },
+        "weave.span_35_50": {
+          "none": 0.9,
+          "errors": 0.1
         }
       }
     }

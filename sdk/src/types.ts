@@ -570,6 +570,8 @@ export interface Request {
   proposed: Proposed[]
   /** What the request asks, when it is not everything. */
   scope?: Scope
+  /** The route, when the whole request gave it, its words named, and it is not asked. */
+  named?: Judgment
   recent?: Record<QuestionId, string[]>
   listed?: Record<QuestionId, Listed[]>
   spelled?: Record<QuestionId, Spelled[]>
@@ -984,6 +986,9 @@ export type Cap =
   /** A part of the request beside these words that asks for nothing and may add a detail the call does not
    *  hold. */
   | { type: "detail"; words: string }
+  /** Words of the request that match nothing alone, which the whole request, its words named, reads as the call's
+   *  reflex at this share. */
+  | { type: "named"; words: string; p: Prob }
 
 /** The confirm prompt: `evoke`'s own line, why the call waits, then the manifest's template filled in. */
 export interface Prompt {
@@ -1049,12 +1054,14 @@ export interface Envelope {
 // ---- weave ----
 
 /** A text for the foundation to decide: over the reflexes the tags allow, or one reflex alone; `whole` when the
- *  text is the whole request, which alone memory reaches. */
+ *  text is the whole request, which alone memory reaches; `named` when the whole request, the text's words named,
+ *  gave the one reflex: its judgment stands for the route, which is then not asked. */
 export interface Asked {
   text: string
   tags?: Tag[]
   only?: LocalName
   whole?: boolean
+  named?: Judgment
 }
 
 /** What the plan needs a host to do next: judge the split points, name each reference's step, or decide texts. */
@@ -1125,8 +1132,9 @@ export interface Ref {
 
 /** How a step came to be that is not one part decided on its own: a segment that matched nothing settled narrowed to
  *  its neighbour's reflex, spliced into its words, or merged back; or a part the engine kept whole split, its parts each
- *  a reflex of their own. */
-export type Repair = "narrowed" | "spliced" | "merged" | "split" | "corrected"
+ *  a reflex of their own; or a part that matched nothing alone decided narrowed to the reflex the whole request, its
+ *  words named, gave it. */
+export type Repair = "narrowed" | "spliced" | "merged" | "split" | "corrected" | "named"
 
 /** A word of a vocabulary the request stated for several steps, as it reached one of them: a required argument filled
  *  as a person's answer would fill it, or an optional one written into the step's words and decided again narrowed. */

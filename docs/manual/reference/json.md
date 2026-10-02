@@ -27,7 +27,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `left`       | ○   | ○       | ○   |         | The words of the input that no value holds, each with what it does: `{ words, does, p }`, `does` one of `action`, `answers` with its `arg`, `result`, `nothing`, `more`; `cut` is `true` where the words follow a value and may be part of it, `again` where they say the call is wanted once more, `read` where a value of the call was read from them |
 | `whole`      | ○   | ○       | ○   |         | How far the call holds all the input says, where the call was read back against it |
 | `quotes`     | ○   | ○       | ○   |         | The texts in quotes that no value took, each with its marks, where the reflex takes a text in quotes |
-| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `cut`, `quoted`, `text_left`, `whole`, `detail` |
+| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `cut`, `quoted`, `text_left`, `whole`, `detail`, `named` |
 | `unconsumed` | ○   | ○       | ●   |         | Typed spans no argument took                                    |
 | `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because` (`unstated`, `out_of_range`, `not_offered`, `unsettled` or `unread`), `words` when the input holds words that answer the ask, `choices`; a pick's `choices.recent` lists the values recalled from this session's results, when any, and its `choices.readings` what the words that answer the ask read as, when they say a value aloud; `likely`, the listed word made ready for a yes, when there is one |
 | `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call, a round of questions each: `{ adapter, questions, ms }`. Empty when the answers came from the cache |
@@ -65,7 +65,9 @@ In the plan `evoke try --json` prints, a step's `refs` count the steps they may 
 `stages` and `binds` count from 1. A step carries `shared` and `beside` as the line does, `typed` where the plan wrote its
 words anew, the words as typed, and `repair` where it was not one part decided on its own: `narrowed` or
 `spliced`, an item of its neighbour's task; `merged`, a part read with its neighbour; `split`, a part of a joint
-the classifier read as one thing; `corrected`, a part that says what not to do read with its step. A binding's
+the classifier read as one thing; `corrected`, a part that says what not to do read with its step; `named`, a part
+that matched nothing alone, read as the reflex the whole sentence gives its words, its decision judging the reflex
+by that question, `weave.span_<start>_<end>`, in place of `route`. A binding's
 `via` is `fill`, `rewrite` or `takes`, a whole result by the name its source returns, with no `kind`; the
 verdict's `because` names `no_source` and `several_sources` where such a result stops the plan. Each of
 `splits` carries `cut` where the plan cuts the sentence there; `count`, where the sentence could be cut, holds

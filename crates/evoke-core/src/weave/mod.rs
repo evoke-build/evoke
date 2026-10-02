@@ -15,7 +15,7 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
 use crate::adapter::{Prob, Request};
-use crate::decide::{Decision, Prompt};
+use crate::decide::{Decision, Judgment, Prompt};
 use crate::document::Json;
 use crate::manifest::{Effect, Recognizer};
 use crate::name::{ArgName, FieldName, LocalName, Tag, Word};
@@ -24,8 +24,9 @@ pub use reading::{How, Order, Ref, Split, Where};
 
 /// A text for the foundation to decide: over the reflexes the tags allow, or one reflex alone. `whole` when the
 /// text is the whole request: the one segment of an unsplit draft, never a part, a rewrite or a playbook's filled
-/// sentence — the one text a host may hand the session's results to `request` for.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+/// sentence — the one text a host may hand the session's results to `request` for. `named` when the whole request,
+/// the text's words named, gave the one reflex: its judgment stands for the route, which `request` then leaves out.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Asked {
     pub text: String,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -34,6 +35,8 @@ pub struct Asked {
     pub only: Option<LocalName>,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub whole: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub named: Option<Judgment>,
 }
 
 /// What the plan needs a host to do next.
@@ -54,7 +57,8 @@ pub enum Need {
     /// Decide each text, side by side where the host can.
     Decide { asked: Vec<Asked> },
     /// Ask the adapter what the plan asks of the request once its parts are decided: what a part that matches
-    /// nothing does, `weave.part_<start>_<end>`, and whether a value one part states is another's,
+    /// nothing does, `weave.part_<start>_<end>`, and which reflex its words ask for in the whole request,
+    /// `weave.span_<start>_<end>`; and whether a value one part states is another's,
     /// `weave.share_<taker>_<giver>_<reflex>__<argument>`. Every answer is kept beside those before it.
     Verify { request: Request },
 }
@@ -84,7 +88,8 @@ pub enum Planning {
 /// How a step came to be that is not one part decided on its own: a segment that matched nothing was settled
 /// narrowed to its neighbour's reflex, spliced into its words, or merged back; a part the engine kept whole at a
 /// comma or an `and` was split, its parts each a reflex of their own; a part that says what not to do and names
-/// a value was read with the step beside it.
+/// a value was read with the step beside it; a part that matched nothing alone was decided narrowed to the reflex
+/// the whole request, its words named, gave it.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Repair {
@@ -93,6 +98,7 @@ pub enum Repair {
     Merged,
     Split,
     Corrected,
+    Named,
 }
 
 /// A word of a vocabulary the request stated for several steps, as it reached one of them: a required argument
@@ -486,30 +492,50 @@ impl Weave {
     }
 
     /// What the planner asked to decide a step, as its repair and its shared words tell: a fragment narrowed to
-    /// its neighbour's reflex, or spliced into its words, was decided under that reflex alone, and so were words
-    /// a shared word was written into; any other step over the tags — whole when its words are the whole request.
+    /// its neighbour's reflex, or spliced into its words, or named by the whole request, was decided under that
+    /// reflex alone, and so were words a shared word was written into, the route the whole request's where it gave
+    /// it; any other step over the tags — whole when its words are the whole request.
     #[must_use]
     pub fn asked_for(&self, step: &Step, tags: &[Tag]) -> Asked {
-        let narrowed = matches!(step.repair, Some(Repair::Narrowed | Repair::Spliced))
-            || step
-                .shared
-                .values()
-                .any(|shared| shared.via == Via::Rewrite);
+        let narrowed = matches!(
+            step.repair,
+            Some(Repair::Narrowed | Repair::Spliced | Repair::Named)
+        ) || step
+            .shared
+            .values()
+            .any(|shared| shared.via == Via::Rewrite);
         match (narrowed, &step.reflex) {
             (true, Some(reflex)) => Asked {
                 text: step.text.clone(),
                 tags: Vec::new(),
                 only: Some(reflex.clone()),
                 whole: false,
+                named: named(&step.decision).cloned(),
             },
             _ => Asked {
                 text: step.text.clone(),
                 tags: tags.to_vec(),
                 only: None,
                 whole: step.text == self.input.trim(),
+                named: None,
             },
         }
     }
+}
+
+/// The judgment a decision's route stands on where the whole request gave it, the decided words named: which
+/// reflex they ask for read in the whole request, `weave.span_<start>_<end>`; none where its own route was asked.
+#[must_use]
+pub fn named(decision: &Decision) -> Option<&Judgment> {
+    let judged = match decision {
+        Decision::Abstain { .. } => return None,
+        Decision::Run { chosen } | Decision::Confirm { chosen, .. } => chosen.judged.as_ref()?,
+        Decision::Ask { asking, .. } => &asking.judged,
+    };
+    judged
+        .judgments()
+        .iter()
+        .find(|judgment| reading::is_span(&judgment.question))
 }
 
 /// A value bound into a step at its turn: the argument it reached and the field it came from; a whole result

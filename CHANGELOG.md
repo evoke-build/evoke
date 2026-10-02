@@ -6,6 +6,11 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A part of a sentence that matches nothing alone is read with the whole sentence: in `check the errors for
+  checkout and post in #incident, payments too`, `payments too` is the errors for payments, a third step. A step
+  read this way always confirms; `why` names the words and what they read as, and the JSON line carries `named`.
+  A part that names a listed value its step cannot take still refuses the request.
+
 ## [0.18.0] - 2026-10-01
 
 - More requests run without a question. Words that say what you want from the result, like `newest first`,

@@ -203,17 +203,21 @@ pub(super) fn planned_under(
                 }
                 Need::Refer { .. } => panic!("no part refers back"),
                 // No part points at another's value and every part reads as a reflex, or the words say
-                // nothing of it: every value stays its part's, and a part that matches nothing asks.
+                // nothing of it: every value stays its part's, and a part that matches nothing asks, its
+                // words no reflex's in the whole request either.
                 Need::Verify { request } => {
                     let raw = answers.verified.get_or_insert_default();
                     for id in request.questions.keys() {
-                        let answer = if id.to_string().starts_with("weave.part_") {
+                        let id = id.to_string();
+                        let answer = if id.starts_with("weave.part_") {
                             "asks"
+                        } else if id.starts_with("weave.span_") {
+                            "none"
                         } else {
                             "no"
                         };
                         let answer = [(answer.to_owned(), 1.0)].into_iter().collect();
-                        raw.0.insert(id.to_string(), answer);
+                        raw.0.insert(id, answer);
                     }
                 }
                 Need::Decide { asked } => {

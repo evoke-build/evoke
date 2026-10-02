@@ -135,8 +135,8 @@ pinned.set       // the plan digest it was decided over; pinned.answers, every a
 Each step carries its `decision`, the `Decision` `decide` would have made of its words alone; `shared` names
 the words the sentence said once for several steps that reached it, `{ service: { word: "checkout", via:
 "fill" } }`; `repair` says how a part that was not decided on its own became a step, `"narrowed"`, `"spliced"`,
-`"merged"` or `"split"`. A binding whose `via` is `"takes"` is a whole result by the name its source returns,
-with no `kind`; a plan with no source for one, or two, has `verdict.outcome` `"refuse"` and `no_source` or
+`"merged"`, `"split"` or `"named"`. A binding whose `via` is `"takes"` is a whole result by the name its source
+returns, with no `kind`; a plan with no source for one, or two, has `verdict.outcome` `"refuse"` and `no_source` or
 `several_sources` among its `because`. A step a playbook wrote carries `from`, the playbook, its step and the
 slots the sentence filled ([Playbooks](../author/playbooks.md)); `folded` names the parts of the sentence that
 repeat one of its steps; and the verdict's `because` holds `reviewed` per playbook, with the sentence's own

@@ -572,6 +572,7 @@ pub fn replan(path: &str, pinned: &Pinned, plan: &Plan) -> Result<Replanned, Dia
                 &asked.text,
                 &asked.tags,
                 asked.only.as_ref(),
+                asked.named.as_ref(),
                 Scope::Full,
                 &[],
             )?;

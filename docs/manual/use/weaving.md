@@ -73,11 +73,19 @@ den lights off
   steps.
 - A courtesy that opens with `if` is no condition: `if you would`, `if you don't mind`, `if possible`, `if so`,
   `if it's not too much trouble`. At the head or the end of a part it is set aside the same way.
+- For a part that asks for something and still matches no reflex, the classifier is asked once more which reflex
+  its words ask for, this time reading the whole sentence. Where it picks one, the part is decided as that reflex,
+  its values read from its own words, and becomes a step. Like any step it takes a word or a value the sentence
+  says once, and it always confirms before it runs: in "check the errors for checkout and post in #incident,
+  payments too", the errors for payments are a third step, `"payments too" matches nothing alone, and the whole
+  request reads it as errors at 0.85, which always waits for a yes`. A part that names a listed word its step
+  cannot take stays unread, and the whole request is refused: read as `post`, which takes no service, the part
+  shows `"payments too" · no reflex`.
 - A part that matches no reflex and asks for nothing is set aside, and the plan runs without it: `set aside
   "thanks a lot for this"`. Where the classifier says the part may add a detail to the step beside it, that step
   confirms before it runs, its line ending in `without "the ones since noon"`, and the plan names the part: `not in
-  the plan "the ones since noon"`. A part that asks for something and matches nothing still refuses the whole
-  request.
+  the plan "the ones since noon"`. A part that asks for something and matches nothing, alone or with the whole
+  sentence, still refuses the whole request.
 - Two items the classifier read as one thing, "invoices, card expenses", are two steps when each is a reflex of
   its own: the joint is split, and a word the sentence says once reaches both. A joint it read firmly as one
   task stays one. A step made this way confirms where the whole was read as its reflex with a value the step's

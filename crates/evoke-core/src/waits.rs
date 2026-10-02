@@ -38,6 +38,8 @@ const ABOUT_RESULT: &str = "; {words} says what is wanted from the result";
 const ABOUT_RESULTS: &str = "; {words} say what is wanted from the result";
 /// A part out of the plan that may add a detail to the call.
 const DETAIL: &str = "{words} may add a detail this call does not hold";
+/// Words that match nothing alone, read as the call's reflex in the whole request: the words, the reflex, its share.
+const NAMED: &str = "{words} matches nothing alone, and the whole request reads it as {reflex} at {p}, which always waits for a yes";
 /// A call held for a cause that has no words of its own.
 const WAITS: &str = "it waits for a yes";
 /// A playbook, whose plan is reviewed whole.
@@ -142,6 +144,15 @@ fn cause(chosen: &Chosen, because: &[Cap], cap: &Cap) -> String {
             line
         }
         Cap::Detail { words } => said(DETAIL, &[("words", &quoted(words))]),
+        // The person's words last: nothing in them is read as a place to fill.
+        Cap::Named { words, p } => said(
+            NAMED,
+            &[
+                ("reflex", chosen.call.reflex.as_str()),
+                ("p", &share(p.get())),
+                ("words", &quoted(words)),
+            ],
+        ),
     }
 }
 

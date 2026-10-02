@@ -31,6 +31,7 @@ use crate::settle::{self, One, Settled};
 use crate::spoken::{self, Shape, Spoken};
 use crate::text::{Clean, Input, NonEmpty, Span};
 use crate::waits;
+use crate::weave::reading::is_span;
 use crate::words::{self, Form, How, Listed, Spelled};
 
 /// The most values an ask lists from the session's results.
@@ -217,15 +218,24 @@ pub struct Judgment {
 }
 
 impl Judgment {
-    /// What the judgment is about, as a person names it: the argument, where its question is about one.
+    /// What the judgment is about, as a person names it: the argument, where its question is about one; the
+    /// route, where it says which reflex.
     #[must_use]
     pub fn about(&self) -> String {
         match &self.question {
             QuestionId::Arg(_, arg) => arg.to_string(),
+            _ if self.is_route() => QuestionId::Route.to_string(),
             question => {
                 pins::argument(question).map_or_else(|| question.to_string(), |arg| arg.to_string())
             }
         }
+    }
+
+    /// Whether the judgment says which reflex: the route's own question, or the one that stood for it, which
+    /// reflex the words ask for read in the whole request.
+    #[must_use]
+    pub fn is_route(&self) -> bool {
+        self.question == QuestionId::Route || is_span(&self.question)
     }
 }
 
@@ -511,7 +521,7 @@ impl Judged {
     fn route(&self) -> Option<Prob> {
         self.judgments
             .iter()
-            .find(|judgment| judgment.question == QuestionId::Route)
+            .find(|judgment| judgment.is_route())
             .map(|judgment| judgment.p)
     }
 }
@@ -628,6 +638,12 @@ pub enum Cap {
     Detail {
         words: String,
     },
+    /// Words of the request that match nothing alone, which the whole request, its words named, reads as the
+    /// call's reflex at this share.
+    Named {
+        words: String,
+        p: Prob,
+    },
 }
 
 /// The confirm prompt: `evoke`'s own line, why the call waits under it, then the manifest's template filled in.
@@ -681,14 +697,16 @@ impl Prompt {
 }
 
 /// The one call of `answer`: an input over the cap is refused; `--tag` narrows the set, or `only` narrows it to
-/// one reflex — what a weave decides a fragment or a rewritten step by; a pick is asked over its candidates.
-/// `recent` is what the session's bodies returned, newest first: a pick that names a yielded field
+/// one reflex — what a weave decides a fragment or a rewritten step by; `named`, the judgment the whole request
+/// gave that reflex, its words named, stands for the route, which is then not asked; a pick is asked over its
+/// candidates. `recent` is what the session's bodies returned, newest first: a pick that names a yielded field
 /// keeps the values under it that its recognizer reads whole, for its ask to list; no question offers them.
 pub fn request(
     plan: &Plan,
     input: &str,
     tags: &[Tag],
     only: Option<&LocalName>,
+    named: Option<&Judgment>,
     scope: Scope,
     recent: &[Recent],
 ) -> Result<Request, Diagnostic> {
@@ -713,11 +731,13 @@ pub fn request(
     if narrowed.is_empty() {
         return Err(nothing_to_ask(plan, tags));
     }
-    let route = plan
-        .route()
-        .narrowed(|key| narrowed.iter().any(|name| name.as_str() == key.as_str()));
     let mut questions = IndexMap::new();
-    questions.insert(QuestionId::Route, Question::Choice(route));
+    if named.is_none() {
+        let route = plan
+            .route()
+            .narrowed(|key| narrowed.iter().any(|name| name.as_str() == key.as_str()));
+        questions.insert(QuestionId::Route, Question::Choice(route));
+    }
     let proposed = if scope == Scope::Full {
         propose(&input)
     } else {
@@ -768,6 +788,7 @@ pub fn request(
         questions,
         proposed,
         scope,
+        named: named.cloned().map(Box::new),
         recent: recalled,
         listed,
         spelled,
@@ -1308,28 +1329,14 @@ pub(crate) type Answers<'a> = IndexMap<&'a QuestionId, IndexMap<Key, Prob>>;
 /// values; or the questions the answers open, which the reading waits for. The gate is the adapter's: a call
 /// that would run by its floors is held against the request.
 pub fn read(plan: &Plan, gate: Option<&Gate>, request: &Request, raw: Raw) -> Result<Read, Fault> {
-    let unanswered = Fault::Unanswered {
-        question: QuestionId::Route,
-    };
     let reader = Reader {
         plan,
         gate,
         request,
         answers: validated(request, raw)?,
     };
-    let Some(Question::Choice(route)) = request.questions.get(&QuestionId::Route) else {
-        return Err(unanswered);
-    };
-    let answer = reader.answers.get(&QuestionId::Route).ok_or(unanswered)?;
-    let ranking = reader.ranking(route, answer)?;
-    let (winner, p) = top(route, answer)
-        .ok_or_else(|| malformed(QuestionId::Route, "the route has no options"))?;
-    let judgment = Judgment {
-        question: QuestionId::Route,
-        top: winner.clone(),
-        p,
-    };
-    if Some(&winner) == route.otherwise() {
+    let (ranking, judgment, reflex) = reader.route()?;
+    let Some(reflex) = reflex else {
         return Ok(Read::Done {
             reading: Reading {
                 ranking,
@@ -1337,9 +1344,7 @@ pub fn read(plan: &Plan, gate: Option<&Gate>, request: &Request, raw: Raw) -> Re
                 winner: None,
             },
         });
-    }
-    let reflex =
-        LocalName::new(winner.as_str()).map_err(|why| malformed(QuestionId::Route, why))?;
+    };
     let mut open = IndexMap::new();
     let (judgments, winner) =
         reader.winner(reflex, judgment, ranking.get(1).cloned(), &mut open)?;
@@ -1350,6 +1355,7 @@ pub fn read(plan: &Plan, gate: Option<&Gate>, request: &Request, raw: Raw) -> Re
                 questions: open,
                 proposed: Vec::new(),
                 scope: request.scope,
+                named: None,
                 recent: IndexMap::new(),
                 listed: IndexMap::new(),
                 spelled: IndexMap::new(),
@@ -1367,7 +1373,8 @@ pub fn read(plan: &Plan, gate: Option<&Gate>, request: &Request, raw: Raw) -> Re
 }
 
 /// A text read to its end: the request's questions answered by `answer`, then each round of questions the
-/// answers open, until nothing is left to ask. Out: every question asked, every answer, and the reading.
+/// answers open, until nothing is left to ask. A request that asks nothing — a reflex without arguments, its
+/// route given — is never sent. Out: every question asked, every answer, and the reading.
 pub fn reading<E>(
     plan: &Plan,
     gate: Option<&Gate>,
@@ -1375,7 +1382,11 @@ pub fn reading<E>(
     mut answer: impl FnMut(&Request) -> Result<Raw, E>,
     fault: impl Fn(Fault) -> E,
 ) -> Result<(Request, Raw, Reading), E> {
-    let mut answers = answer(&request)?;
+    let mut answers = if request.questions.is_empty() {
+        Raw::default()
+    } else {
+        answer(&request)?
+    };
     loop {
         match read(plan, gate, &request, answers.clone()).map_err(&fault)? {
             Read::Done { reading } => return Ok((request, answers, reading)),
@@ -1562,6 +1573,43 @@ struct Reader<'a> {
 }
 
 impl Reader<'_> {
+    /// The route read: every reflex offered ranked, the judgment on top, and the reflex it names — none for the
+    /// route's `none`. Where the whole request gave the route, its words named, its judgment stands for the route,
+    /// which is not asked of these words again, and its reflex is the one ranked.
+    fn route(&self) -> Result<(Vec<Contender>, Judgment, Option<LocalName>), Fault> {
+        if let Some(named) = &self.request.named {
+            let reflex = LocalName::new(named.top.as_str())
+                .map_err(|why| malformed(named.question.clone(), why))?;
+            let ranking = vec![Contender {
+                reflex: reflex.clone(),
+                route: named.p,
+                fits: None,
+            }];
+            return Ok((ranking, Judgment::clone(named), Some(reflex)));
+        }
+        let unanswered = Fault::Unanswered {
+            question: QuestionId::Route,
+        };
+        let Some(Question::Choice(route)) = self.request.questions.get(&QuestionId::Route) else {
+            return Err(unanswered);
+        };
+        let answer = self.answers.get(&QuestionId::Route).ok_or(unanswered)?;
+        let ranking = self.ranking(route, answer)?;
+        let (winner, p) = top(route, answer)
+            .ok_or_else(|| malformed(QuestionId::Route, "the route has no options"))?;
+        let reflex = if Some(&winner) == route.otherwise() {
+            None
+        } else {
+            Some(LocalName::new(winner.as_str()).map_err(|why| malformed(QuestionId::Route, why))?)
+        };
+        let judgment = Judgment {
+            question: QuestionId::Route,
+            top: winner,
+            p,
+        };
+        Ok((ranking, judgment, reflex))
+    }
+
     /// Every reflex offered, by route probability, with its `fits` when that was asked.
     fn ranking(
         &self,
@@ -2669,9 +2717,7 @@ pub fn joined(plan: &Plan, first: Decision, second: &Decision, gate: Option<&Gat
                 .judged
                 .judgments
                 .iter()
-                .filter(|judged| {
-                    judged.question != QuestionId::Route && judged.about() == arg.as_str()
-                })
+                .filter(|judged| !judged.is_route() && judged.about() == arg.as_str())
                 .cloned(),
         );
         if let Some(stands) = other.basis.get(&arg) {
@@ -2740,7 +2786,7 @@ fn asking_of(chosen: &Chosen, because: &[Cap]) -> Option<Asking> {
         unconsumed: chosen.unconsumed.clone(),
         held: because
             .iter()
-            .filter(|cap| matches!(cap, Cap::Detail { .. }))
+            .filter(|cap| matches!(cap, Cap::Detail { .. } | Cap::Named { .. }))
             .cloned()
             .collect(),
         whole: chosen.whole,

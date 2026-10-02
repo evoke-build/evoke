@@ -10,7 +10,7 @@
       "write": 0.9,
       "whole": 0.3
     },
-    "input": "check the errors for checkout, thanks a lot for this",
+    "input": "check the errors for checkout, they have been failing since noon",
     "tags": [],
     "answers": {
       "decided": [
@@ -68,7 +68,7 @@
             ],
             "runner_up": {
               "reflex": "deploys",
-              "route": 0.02
+              "route": 0.03
             },
             "contenders": [
               {
@@ -77,7 +77,7 @@
               },
               {
                 "reflex": "deploys",
-                "route": 0.02
+                "route": 0.03
               },
               {
                 "reflex": "logs",
@@ -116,14 +116,14 @@
         ],
         [
           {
-            "text": "thanks a lot for this"
+            "text": "they have been failing since noon"
           },
           {
             "outcome": "abstain",
             "contenders": [
               {
                 "reflex": "errors",
-                "route": 0.05
+                "route": 0.1
               },
               {
                 "reflex": "deploys",
@@ -166,14 +166,14 @@
               {
                 "question": "route",
                 "top": "none",
-                "p": 0.95
+                "p": 0.9
               }
             ]
           }
         ],
         [
           {
-            "text": "thanks a lot for this",
+            "text": "they have been failing since noon",
             "only": "errors"
           },
           {
@@ -181,21 +181,21 @@
             "contenders": [
               {
                 "reflex": "errors",
-                "route": 0.05
+                "route": 0.1
               }
             ],
             "judgments": [
               {
                 "question": "route",
                 "top": "none",
-                "p": 0.95
+                "p": 0.9
               }
             ]
           }
         ],
         [
           {
-            "text": "check the errors for thanks a lot for this",
+            "text": "check the errors for they have been failing since noon",
             "only": "errors"
           },
           {
@@ -203,14 +203,14 @@
             "contenders": [
               {
                 "reflex": "errors",
-                "route": 0.05
+                "route": 0.1
               }
             ],
             "judgments": [
               {
                 "question": "route",
                 "top": "none",
-                "p": 0.95
+                "p": 0.9
               }
             ]
           }
@@ -227,14 +227,14 @@
         }
       },
       "verified": {
-        "weave.part_31_52": {
-          "asks": 0.8,
-          "aside": 0.1,
+        "weave.part_31_64": {
+          "aside": 0.8,
+          "asks": 0.1,
           "detail": 0.1
         },
-        "weave.span_31_52": {
-          "none": 0.9,
-          "errors": 0.1
+        "weave.span_31_64": {
+          "errors": 0.7,
+          "none": 0.3
         }
       }
     }
@@ -243,7 +243,7 @@
     "ok": {
       "type": "done",
       "weave": {
-        "input": "check the errors for checkout, thanks a lot for this",
+        "input": "check the errors for checkout, they have been failing since noon",
         "steps": [
           {
             "n": 1,
@@ -299,7 +299,7 @@
               ],
               "runner_up": {
                 "reflex": "deploys",
-                "route": 0.02
+                "route": 0.03
               },
               "contenders": [
                 {
@@ -308,7 +308,7 @@
                 },
                 {
                   "reflex": "deploys",
-                  "route": 0.02
+                  "route": 0.03
                 },
                 {
                   "reflex": "logs",
@@ -346,81 +346,28 @@
             },
             "reflex": "errors",
             "effect": "read"
-          },
-          {
-            "n": 2,
-            "text": "thanks a lot for this",
-            "end": 52,
-            "decision": {
-              "outcome": "abstain",
-              "contenders": [
-                {
-                  "reflex": "errors",
-                  "route": 0.05
-                },
-                {
-                  "reflex": "deploys",
-                  "route": 0
-                },
-                {
-                  "reflex": "logs",
-                  "route": 0
-                },
-                {
-                  "reflex": "suspect",
-                  "route": 0
-                },
-                {
-                  "reflex": "rollback",
-                  "route": 0
-                },
-                {
-                  "reflex": "post",
-                  "route": 0
-                },
-                {
-                  "reflex": "incidents",
-                  "route": 0
-                },
-                {
-                  "reflex": "incident",
-                  "route": 0
-                },
-                {
-                  "reflex": "postmortem",
-                  "route": 0
-                },
-                {
-                  "reflex": "status",
-                  "route": 0
-                }
-              ],
-              "judgments": [
-                {
-                  "question": "route",
-                  "top": "none",
-                  "p": 0.95
-                }
-              ]
-            }
           }
         ],
         "stages": [
           [
-            1,
-            2
+            1
           ]
         ],
         "verdict": {
-          "outcome": "refuse",
-          "because": [
-            {
-              "type": "no_reflex",
-              "step": 2
-            }
-          ]
+          "outcome": "run"
         },
         "exclusive": false,
+        "asides": [
+          {
+            "text": "they have been failing since noon",
+            "remark": true,
+            "does": {
+              "aside": 0.8,
+              "detail": 0.1,
+              "asks": 0.1
+            }
+          }
+        ],
         "splits": [
           {
             "start": 29,

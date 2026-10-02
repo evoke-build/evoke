@@ -17,14 +17,14 @@ use evoke_core::spoken::heard;
 use evoke_core::text::NonEmpty;
 use evoke_core::{
     Active, Answer, Baseline, Call, Case, Chosen, Clean, Decision, Declared, Digest, Document,
-    Facts, Fault, Fix, Gate, Input, Installed, Key, Lesson, Limits, Lock, Logged, Manifest, Needs,
-    Overlay, Pinned, Plan, Policy, Prob, Project, Raw, Request, Routed, Scope, Utterance, Value,
-    Values, Verdict, Weave, Written, add_entry, argv, baseline, by_name, calibrate,
-    call as call_grammar, cases, compile, compose, consent, diff, effective, envelope, fill, gate,
-    identity, judge, landlock, lint, listed, lock, log_block, manifest, needs, node_flags, overlay,
-    picked, pin, pinned, project, project_dts, propose, read, reference, reflex_dts, regressions,
-    remove_entry, render_lock, replan, report, request, resolve, seatbelt, set_config, spelled,
-    stale, teach, thieves, vocab_edit, vocabulary, weave, widens,
+    Facts, Fault, Fix, Gate, Input, Installed, Judgment, Key, Lesson, Limits, Lock, Logged,
+    Manifest, Needs, Overlay, Pinned, Plan, Policy, Prob, Project, Raw, Request, Routed, Scope,
+    Utterance, Value, Values, Verdict, Weave, Written, add_entry, argv, baseline, by_name,
+    calibrate, call as call_grammar, cases, compile, compose, consent, diff, effective, envelope,
+    fill, gate, identity, judge, landlock, lint, listed, lock, log_block, manifest, needs,
+    node_flags, overlay, picked, pin, pinned, project, project_dts, propose, read, reference,
+    reflex_dts, regressions, remove_entry, render_lock, replan, report, request, resolve, seatbelt,
+    set_config, spelled, stale, teach, thieves, vocab_edit, vocabulary, weave, widens,
 };
 use indexmap::IndexMap;
 use serde::Serialize;
@@ -131,6 +131,7 @@ fn decide(op: &str, input: &Json) -> Reply {
             text(input, "input")?,
             &arg::<Vec<Tag>>(input, "tags")?,
             opt::<LocalName>(input, "only")?.as_ref(),
+            opt::<Judgment>(input, "named")?.as_ref(),
             arg::<Scope>(input, "scope")?,
             &opt::<Vec<Recent>>(input, "recent")?.unwrap_or_default(),
         )),

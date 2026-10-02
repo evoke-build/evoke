@@ -900,15 +900,9 @@ impl Session<'_> {
     /// One input: request → the cache, else the adapter → read → gate, a spinner turning while the adapter
     /// answers. The cache is keyed by the plan, the utterance and the questions asked, so a decision narrowed
     /// with `--tag` has an entry of its own; an entry that no longer reads against the request is a miss.
-    pub fn decide(
-        &self,
-        adapter: &dyn Adapter,
-        input: &str,
-        tags: &[Tag],
-        only: Option<&LocalName>,
-    ) -> Result<Decided, Exit> {
+    pub fn decide(&self, adapter: &dyn Adapter, asked: &Asked) -> Result<Decided, Exit> {
         let _busy = terminal::busy("deciding");
-        self.decided(adapter, input, tags, only, true, &[])
+        self.decided(adapter, asked, true, &[])
     }
 
     /// One request read into its steps: the engine asked whether each connective separates two things, each
@@ -1013,14 +1007,7 @@ impl Session<'_> {
         recent: &[Recent],
     ) -> Result<Decided, Exit> {
         let recalled = if asked.whole { recent } else { &[] };
-        self.decided(
-            adapter,
-            &asked.text,
-            &asked.tags,
-            asked.only.as_ref(),
-            true,
-            recalled,
-        )
+        self.decided(adapter, asked, true, recalled)
     }
 
     /// The texts of one round decided side by side, in the order asked; a text started ahead of the cut is
@@ -1101,20 +1088,35 @@ impl Session<'_> {
         input: &str,
         tags: &[Tag],
     ) -> Result<Decided, Exit> {
-        self.decided(adapter, input, tags, None, false, &[])
+        let asked = Asked {
+            text: input.to_owned(),
+            tags: tags.to_vec(),
+            only: None,
+            whole: true,
+            named: None,
+        };
+        self.decided(adapter, &asked, false, &[])
     }
 
+    /// A text decided as it was asked: over its tags, or its one reflex, on the route the whole request gave it
+    /// where it gave one.
     fn decided(
         &self,
         adapter: &dyn Adapter,
-        input: &str,
-        tags: &[Tag],
-        only: Option<&LocalName>,
+        asked: &Asked,
         cached: bool,
         recent: &[Recent],
     ) -> Result<Decided, Exit> {
-        let request =
-            request(&self.plan, input, tags, only, Scope::Full, recent).map_err(Exit::Human)?;
+        let request = request(
+            &self.plan,
+            &asked.text,
+            &asked.tags,
+            asked.only.as_ref(),
+            asked.named.as_ref(),
+            Scope::Full,
+            recent,
+        )
+        .map_err(Exit::Human)?;
         let mut trace = Vec::new();
         // The text's questions, then each round its answers open: every round through the cache, or never.
         let floors = adapter.declared().gate.as_ref();

@@ -1,0 +1,96 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage-playbook.json"
+    },
+    "input": "the same for US East.",
+    "tags": [],
+    "only": "errors",
+    "named": {
+      "question": "weave.span_51_72",
+      "top": "errors",
+      "p": 1
+    },
+    "scope": "full"
+  },
+  "expect": {
+    "ok": {
+      "state": {
+        "request": "the same for US East."
+      },
+      "questions": {
+        "errors.service": {
+          "type": "choice",
+          "ask": "Which service?",
+          "options": {
+            "checkout": "The checkout service: cart and order confirmation.",
+            "payments": "The payments service: card charges and refunds.",
+            "search": "The search service: product search and suggestions.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "errors.region": {
+          "type": "choice",
+          "ask": "In which region?",
+          "options": {
+            "eu-west": "Europe, the Ireland region.",
+            "us-east": "The United States, the Virginia region.",
+            "none": "The request names one that is not in this list.",
+            "unstated": "The request does not say."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_errors__service": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "checkout": "The checkout service: cart and order confirmation.",
+            "payments": "The payments service: card charges and refunds.",
+            "search": "The search service: product search and suggestions.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.view_errors__region": {
+          "type": "choice",
+          "ask": "Which of these does the request name?",
+          "options": {
+            "eu-west": "Europe, the Ireland region.",
+            "us-east": "The United States, the Virginia region.",
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          },
+          "otherwise": "unstated"
+        },
+        "weave.is_errors__region_1": {
+          "type": "yesno",
+          "ask": "In which region?",
+          "yes": "The United States, the Virginia region.",
+          "no": "Another one, or none."
+        }
+      },
+      "proposed": [],
+      "named": {
+        "question": "weave.span_51_72",
+        "top": "errors",
+        "p": 1
+      },
+      "listed": {
+        "errors.region": [
+          {
+            "key": "us-east",
+            "span": {
+              "start": 13,
+              "end": 20,
+              "text": "US East"
+            },
+            "how": "form"
+          }
+        ]
+      }
+    }
+  }
+}
