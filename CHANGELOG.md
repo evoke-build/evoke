@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.19.2] - 2026-10-02
+
 - A part of a sentence that holds values and no action of its own is read as the action of the step before it:
   in `buy 3 of OUT-503 and 2 of BOK-603`, both parts buy, where another reflex takes the same values too. `why`
   shows the words the part was read in.
