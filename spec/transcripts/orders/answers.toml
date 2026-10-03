@@ -158,15 +158,23 @@ route                               = { none = 0.03, cart_add = 0.02, pay = 0.81
 "weave.does_pay_3_3"                = { "arg:order" = 1.0 }
 
 [answers."buy 2 of hom-403"]
-route                          = { buy = 0.99, none = 0.01 }
-"buy.product"                  = { 9-16 = 1.0 }
-"buy.quantity"                 = { none = 0.08, 4-5 = 0.91, unstated = 0.01 }
-"weave.only_buy__product_9_16" = { yes = 0.94 }
-"weave.only_buy__quantity_4_5" = { yes = 0.94 }
-"weave.does_buy_0_0"           = { action = 1.0 }
-"weave.against_3951634808"     = { less = 0.21, whole = 0.68, other = 0.11 }
-"pay.order"                    = { 4-5 = 0.68, unstated = 0.18, none = 0.14 }
-"weave.only_pay__order_4_5"    = { yes = 0.83 }
+route                               = { buy = 0.99, none = 0.01 }
+"buy.product"                       = { 9-16 = 1.0 }
+"buy.quantity"                      = { none = 0.08, 4-5 = 0.91, unstated = 0.01 }
+"weave.only_buy__product_9_16"      = { yes = 0.94 }
+"weave.only_buy__quantity_4_5"      = { yes = 0.94 }
+"weave.does_buy_0_0"                = { action = 1.0 }
+"weave.against_3951634808"          = { less = 0.21, whole = 0.68, other = 0.11 }
+"pay.order"                         = { 4-5 = 0.68, unstated = 0.18, none = 0.14 }
+"weave.only_pay__order_4_5"         = { yes = 0.83 }
+"cart_add.product"                  = { unstated = 1.0 }
+"cart_add.quantity"                 = { unstated = 1.0 }
+"product.product"                   = { unstated = 1.0 }
+"find_order.order"                  = { unstated = 1.0 }
+"weave.only_cart_add__product_9_16" = { yes = 0.05 }
+"weave.only_cart_add__quantity_4_5" = { yes = 0.05 }
+"weave.only_product__product_9_16"  = { yes = 0.05 }
+"weave.only_find_order__order_4_5"  = { yes = 0.05 }
 
 [answers."buy 3 of out-503 and 2 of bok-603"]
 "weave.split_0"      = { yes = 0.86 }
@@ -458,3 +466,5 @@ route                      = { pay = 1.0 }
 "find_order.order"         = { none = 0.22, unstated = 0.78 }
 "weave.does_pay_0_0"       = { action = 1.0 }
 "weave.against_3317783137" = { whole = 0.9, less = 0.05, other = 0.05 }
+"weave.does_pay_0_3"       = { action = 0.95, courtesy = 0.05 }
+"weave.against_2471528237" = { whole = 0.9, less = 0.05, other = 0.05 }

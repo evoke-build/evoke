@@ -71,7 +71,17 @@ pub const DEADLINE: Millis = Millis(30_000);
 
 /// The reader's version, which the digest holds before the set: it moves when a question evoke asks is worded
 /// anew, or an answer is read otherwise, so what was answered under one reader is never replayed under another.
-pub const READER: u32 = 10;
+pub const READER: u32 = 11;
+
+/// What the plan's digest holds before the set: the reader's version, then each built-in language pack's tag and
+/// digest, one a line, so that a pack that changes moves the digest as a reworded question does.
+fn reader_line() -> String {
+    let packs: Vec<String> = crate::pack::packs()
+        .iter()
+        .map(|pack| format!("{} {}\n", pack.tag, pack.digest))
+        .collect();
+    format!("reader {READER}\n{}", packs.concat())
+}
 
 /// The sentinel every argument's choice carries, and its text.
 const UNSTATED: &str = "unstated";
@@ -571,7 +581,7 @@ pub fn compile(
         })
         .collect();
     Ok(Plan {
-        digest: Digest::of(&[format!("reader {READER}\n").as_bytes(), &json].concat()),
+        digest: Digest::of(&[reader_line().as_bytes(), &json].concat()),
         active,
         inactive,
         tagged,
@@ -1105,10 +1115,21 @@ mod tests {
         .unwrap();
         let plan = compile(&set, &Values::new(), None, None).unwrap();
         let json = serde_json::to_vec(&set).unwrap();
-        let under =
-            |reader: u32| Digest::of(&[format!("reader {reader}\n").as_bytes(), &json].concat());
-        assert_eq!(plan.digest(), under(READER));
-        assert_ne!(plan.digest(), under(READER + 1));
+        let packs: Vec<String> = crate::pack::packs()
+            .iter()
+            .map(|pack| format!("{} {}\n", pack.tag, pack.digest))
+            .collect();
+        let packs = packs.concat();
+        let under = |reader: u32, packs: &str| {
+            Digest::of(&[format!("reader {reader}\n{packs}").as_bytes(), &json].concat())
+        };
+        assert_eq!(plan.digest(), under(READER, &packs));
+        assert_ne!(plan.digest(), under(READER + 1, &packs));
+        // A pack that changes moves the digest.
+        assert_ne!(
+            plan.digest(),
+            under(READER, &packs.replacen("en ", "xx ", 1))
+        );
         assert_ne!(plan.digest(), Digest::of(&json));
     }
 

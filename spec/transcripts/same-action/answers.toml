@@ -92,13 +92,24 @@ route                               = { cart_add = 0.62, buy = 0.3, none = 0.08 
 "weave.only_cancel__order_0_1"      = { yes = 0.05 }
 
 [answers."buy 2 of bok-603"]
-route                          = { buy = 0.95, none = 0.05 }
-"buy.product"                  = { 9-16 = 0.95, unstated = 0.05 }
-"buy.quantity"                 = { 4-5 = 0.95, unstated = 0.05 }
-"weave.only_buy__product_9_16" = { yes = 0.05 }
-"weave.only_buy__quantity_4_5" = { yes = 0.05 }
-"weave.does_buy_0_0"           = { action = 0.95, courtesy = 0.05 }
-"weave.against_3944535866"     = { whole = 0.9, less = 0.05, other = 0.05 }
+route                               = { buy = 0.95, none = 0.05 }
+"buy.product"                       = { 9-16 = 0.95, unstated = 0.05 }
+"buy.quantity"                      = { 4-5 = 0.95, unstated = 0.05 }
+"weave.only_buy__product_9_16"      = { yes = 0.05 }
+"weave.only_buy__quantity_4_5"      = { yes = 0.05 }
+"weave.does_buy_0_0"                = { action = 0.95, courtesy = 0.05 }
+"weave.against_3944535866"          = { whole = 0.9, less = 0.05, other = 0.05 }
+"cart_add.product"                  = { unstated = 1.0 }
+"cart_add.quantity"                 = { unstated = 1.0 }
+"pay.order"                         = { unstated = 1.0 }
+"refund.order"                      = { unstated = 1.0 }
+"cancel.order"                      = { unstated = 1.0 }
+"deposit.amount"                    = { unstated = 1.0 }
+"weave.only_cart_add__product_9_16" = { yes = 0.05 }
+"weave.only_cart_add__quantity_4_5" = { yes = 0.05 }
+"weave.only_pay__order_4_5"         = { yes = 0.05 }
+"weave.only_refund__order_4_5"      = { yes = 0.05 }
+"weave.only_cancel__order_4_5"      = { yes = 0.05 }
 
 [answers."order 2 of out-503 and 1 more of kit-301"]
 route               = { none = 0.95, buy = 0.05 }
@@ -153,13 +164,24 @@ route                                = { cart_add = 0.74, buy = 0.25, none = 0.0
 "weave.does_cart_add_1_1"            = { action = 0.95, courtesy = 0.05 }
 
 [answers."order 1 more of kit-301"]
-route                           = { buy = 0.86, none = 0.14 }
-"buy.product"                   = { 16-23 = 0.95, unstated = 0.05 }
-"buy.quantity"                  = { 6-7 = 0.95, unstated = 0.05 }
-"weave.only_buy__product_16_23" = { yes = 0.05 }
-"weave.only_buy__quantity_6_7"  = { yes = 0.05 }
-"weave.does_buy_0_0"            = { action = 0.95, courtesy = 0.05 }
-"weave.does_buy_2_2"            = { action = 0.95, courtesy = 0.05 }
+route                                = { buy = 0.86, none = 0.14 }
+"buy.product"                        = { 16-23 = 0.95, unstated = 0.05 }
+"buy.quantity"                       = { 6-7 = 0.95, unstated = 0.05 }
+"weave.only_buy__product_16_23"      = { yes = 0.05 }
+"weave.only_buy__quantity_6_7"       = { yes = 0.05 }
+"weave.does_buy_0_0"                 = { action = 0.95, courtesy = 0.05 }
+"weave.does_buy_2_2"                 = { action = 0.95, courtesy = 0.05 }
+"cart_add.product"                   = { unstated = 1.0 }
+"cart_add.quantity"                  = { unstated = 1.0 }
+"pay.order"                          = { unstated = 1.0 }
+"refund.order"                       = { unstated = 1.0 }
+"cancel.order"                       = { unstated = 1.0 }
+"deposit.amount"                     = { unstated = 1.0 }
+"weave.only_cart_add__product_16_23" = { yes = 0.05 }
+"weave.only_cart_add__quantity_6_7"  = { yes = 0.05 }
+"weave.only_pay__order_6_7"          = { yes = 0.05 }
+"weave.only_refund__order_6_7"       = { yes = 0.05 }
+"weave.only_cancel__order_6_7"       = { yes = 0.05 }
 
 [answers."refund order 1001 and 1002"]
 route               = { none = 0.95, buy = 0.05 }
@@ -193,11 +215,22 @@ route                                 = { refund = 0.95, buy = 0.02, none = 0.03
 "weave.against_2892139398"            = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."refund order 1002"]
-route                            = { refund = 0.95, none = 0.05 }
-"refund.order"                   = { 13-17 = 0.95, unstated = 0.05 }
-"weave.only_refund__order_13_17" = { yes = 0.05 }
-"weave.does_refund_0_1"          = { action = 0.95, courtesy = 0.05 }
-"weave.against_2496548944"       = { whole = 0.9, less = 0.05, other = 0.05 }
+route                                 = { refund = 0.95, none = 0.05 }
+"refund.order"                        = { 13-17 = 0.95, unstated = 0.05 }
+"weave.only_refund__order_13_17"      = { yes = 0.05 }
+"weave.does_refund_0_1"               = { action = 0.95, courtesy = 0.05 }
+"weave.against_2496548944"            = { whole = 0.9, less = 0.05, other = 0.05 }
+"buy.product"                         = { unstated = 1.0 }
+"buy.quantity"                        = { unstated = 1.0 }
+"cart_add.product"                    = { unstated = 1.0 }
+"cart_add.quantity"                   = { unstated = 1.0 }
+"pay.order"                           = { unstated = 1.0 }
+"cancel.order"                        = { unstated = 1.0 }
+"deposit.amount"                      = { unstated = 1.0 }
+"weave.only_buy__quantity_13_17"      = { yes = 0.05 }
+"weave.only_cart_add__quantity_13_17" = { yes = 0.05 }
+"weave.only_pay__order_13_17"         = { yes = 0.05 }
+"weave.only_cancel__order_13_17"      = { yes = 0.05 }
 
 [answers."cancel 1003 and 1004"]
 route               = { none = 0.95, buy = 0.05 }
@@ -231,11 +264,22 @@ route                                = { cancel = 0.95, buy = 0.02, none = 0.03 
 "weave.against_3090202370"           = { whole = 0.9, less = 0.05, other = 0.05 }
 
 [answers."cancel 1004"]
-route                           = { cancel = 0.95, none = 0.05 }
-"cancel.order"                  = { 7-11 = 0.95, unstated = 0.05 }
-"weave.only_cancel__order_7_11" = { yes = 0.05 }
-"weave.does_cancel_0_0"         = { action = 0.95, courtesy = 0.05 }
-"weave.against_1680608260"      = { whole = 0.9, less = 0.05, other = 0.05 }
+route                                = { cancel = 0.95, none = 0.05 }
+"cancel.order"                       = { 7-11 = 0.95, unstated = 0.05 }
+"weave.only_cancel__order_7_11"      = { yes = 0.05 }
+"weave.does_cancel_0_0"              = { action = 0.95, courtesy = 0.05 }
+"weave.against_1680608260"           = { whole = 0.9, less = 0.05, other = 0.05 }
+"buy.product"                        = { unstated = 1.0 }
+"buy.quantity"                       = { unstated = 1.0 }
+"cart_add.product"                   = { unstated = 1.0 }
+"cart_add.quantity"                  = { unstated = 1.0 }
+"pay.order"                          = { unstated = 1.0 }
+"refund.order"                       = { unstated = 1.0 }
+"deposit.amount"                     = { unstated = 1.0 }
+"weave.only_buy__quantity_7_11"      = { yes = 0.05 }
+"weave.only_cart_add__quantity_7_11" = { yes = 0.05 }
+"weave.only_pay__order_7_11"         = { yes = 0.05 }
+"weave.only_refund__order_7_11"      = { yes = 0.05 }
 
 [answers."add kit-301 to my cart and check out"]
 route                               = { none = 0.95, buy = 0.05 }

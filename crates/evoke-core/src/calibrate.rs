@@ -49,6 +49,18 @@ pub struct Calibration {
     pub misses: Vec<Miss>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub variance: Option<Variance>,
+    /// The inputs each language pack other than the first read, and how their first decisions fared.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub packs: Vec<PackRow>,
+}
+
+/// The inputs one language pack read: how many, how many whole calls were right and how many wrong.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PackRow {
+    pub name: String,
+    pub inputs: usize,
+    pub right: usize,
+    pub wrong: usize,
 }
 
 /// How many inputs ended in each outcome.
@@ -331,7 +343,48 @@ pub fn calibrate(
         brier: (!known.is_empty()).then(|| brier(&known, &edges)),
         misses: misses(&inputs, &judged),
         variance: (repeats > 1).then(|| variance(gate, &inputs, &judged)),
+        packs: pack_rows(&inputs, &judged),
     }
+}
+
+/// A row per language pack other than the first that read an input, in the order the packs are built in: the
+/// inputs it read, and the whole calls among their first decisions that were right and wrong.
+fn pack_rows(
+    inputs: &IndexMap<&Identity, Grouped<'_>>,
+    judged: &[Vec<Judged<'_>>],
+) -> Vec<PackRow> {
+    let first = &crate::pack::packs()[0];
+    let mut rows: IndexMap<&str, PackRow> = IndexMap::new();
+    for (input, repeats) in inputs.values().zip(judged) {
+        let Some(text) = input
+            .cases
+            .first()
+            .map(|case| case.utterance.text().as_str())
+        else {
+            continue;
+        };
+        let truth = repeats.first().and_then(|j| j.truth);
+        for shown in crate::pack::lexicon(text).shown() {
+            if shown.pack.tag == first.tag {
+                continue;
+            }
+            let row = rows
+                .entry(shown.pack.name.as_str())
+                .or_insert_with(|| PackRow {
+                    name: shown.pack.name.clone(),
+                    inputs: 0,
+                    right: 0,
+                    wrong: 0,
+                });
+            row.inputs += 1;
+            match truth {
+                Some(true) => row.right += 1,
+                Some(false) => row.wrong += 1,
+                None => {}
+            }
+        }
+    }
+    rows.into_values().collect()
 }
 
 /// The log's block: the lines under the adapter — a line the cache answered names none, and counts — by what

@@ -1611,6 +1611,15 @@ pub fn calibrated(calibration: &Calibration, log: &LogBlock) -> Text {
         lines.push(Text::from("each judgment on its own"));
         lines.extend(questions(&c.questions));
     }
+    if !c.packs.is_empty() {
+        lines.push(Text::from("by language pack"));
+        for pack in &c.packs {
+            lines.push(Text::from(format!(
+                "  {}  {} inputs · {} right · {} wrong",
+                pack.name, pack.inputs, pack.right, pack.wrong
+            )));
+        }
+    }
     if let Some(brier) = &c.brier {
         lines.push(Text::from(format!(
             "Brier {:.3} · reliability {:.3} · resolution {:.3}",
@@ -2241,6 +2250,38 @@ pub enum StepBecame {
 /// for holding less than its words say, counted among the passed; for a playbook, how many of its steps route, then each step that does not,
 /// and its claim when the steps reach a tighter effect.
 #[must_use]
+/// A line per language pack other than the first that read a case, where one did: how many of its cases passed
+/// and failed.
+fn by_pack(verdicts: &[(Case, Verdict)]) -> Vec<Text> {
+    let mut packs: Vec<(String, usize, usize)> = Vec::new();
+    for (case, verdict) in verdicts {
+        for shown in sentence::ShownPack::of(case.utterance.text().as_str()) {
+            let at = packs
+                .iter()
+                .position(|(name, ..)| *name == shown.name)
+                .unwrap_or_else(|| {
+                    packs.push((shown.name.clone(), 0, 0));
+                    packs.len() - 1
+                });
+            match verdict {
+                Verdict::Pass => packs[at].1 += 1,
+                Verdict::Fail { .. } => packs[at].2 += 1,
+            }
+        }
+    }
+    packs
+        .iter()
+        .map(|(name, passed, failed)| {
+            let mut line = Text::from(format!("  {name}  {passed} passed"));
+            if *failed > 0 {
+                line.push(" · ")
+                    .roled(Role::Failed, &format!("{failed} failed"));
+            }
+            line
+        })
+        .collect()
+}
+
 pub fn tested(
     verdicts: &[(Case, Verdict)],
     regressions: &[Regression],
@@ -2265,7 +2306,7 @@ pub fn tested(
         .map(|(name, _)| name.as_str().chars().count())
         .max()
         .unwrap_or(0);
-    let mut lines = Vec::new();
+    let mut lines = by_pack(verdicts);
     for (name, cases) in reflexes {
         let failed: Vec<&(Case, Verdict)> = cases
             .iter()

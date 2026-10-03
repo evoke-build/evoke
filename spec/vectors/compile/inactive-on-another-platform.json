@@ -116,7 +116,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:f56d386f2ea74e1630134fdbd367dc304510124122986569b68be32e25c3ef67",
+      "digest": "h1:b1d660e7085a30d6cac59ffe48955327a4294b5d73edd5019c7e1bc9c2311532",
       "active": {},
       "inactive": {
         "lights": [
