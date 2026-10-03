@@ -12,7 +12,7 @@ use crate::calendar::{Day, Weekday, Which};
 use crate::manifest::Recognizer;
 use crate::propose::{PickValue, Proposed, propose};
 use crate::spoken::Shape;
-use crate::text::{Clean, Input, Span};
+use crate::text::{self, Clean, Input, Span, fold};
 
 /// The words that carry no value by themselves: articles, pronouns, prepositions, auxiliaries, a courtesy, a
 /// greeting. A run of them alone is no run, and none of them is a listed word misspelt or a word of a meaning.
@@ -237,11 +237,11 @@ fn token(chars: &[char], start: usize, end: usize) -> Token {
 #[must_use]
 pub fn listed(input: &Input, list: &IndexMap<Key, Clean>) -> Vec<Listed> {
     let tokens = tokens(input.as_str());
-    let words: Vec<String> = tokens.iter().map(|token| named(&token.plain)).collect();
-    let keys: Vec<String> = list
-        .keys()
-        .map(|key| named(&key.as_str().to_lowercase()))
+    let words: Vec<String> = tokens
+        .iter()
+        .map(|token| named(&fold(&token.plain)))
         .collect();
+    let keys: Vec<String> = list.keys().map(|key| named(&fold(key.as_str()))).collect();
     let mut found = Vec::new();
     let meanings: Vec<Vec<String>> = list.values().map(said_of).collect();
     for (at, (key, word)) in list.keys().zip(&keys).enumerate() {
@@ -309,9 +309,7 @@ fn holding(key: &str, keys: &[String], words: &[String]) -> Option<(usize, usize
 /// The words of a meaning that may name its listed word: longer than three letters, no function word and no
 /// word for a kind of thing.
 fn said_of(meaning: &Clean) -> Vec<String> {
-    meaning
-        .as_str()
-        .to_lowercase()
+    fold(meaning.as_str())
         .split(|c: char| !c.is_alphanumeric())
         .filter(|word| word.chars().count() > 3 && !function(word) && !KIND.contains(word))
         .map(str::to_owned)
@@ -436,18 +434,17 @@ pub(crate) fn courtesy(text: &str) -> bool {
 #[must_use]
 pub(crate) fn says_what_to_do(held: &Listed, reflex: &str) -> bool {
     let said = held.span.text().as_str();
-    names(said, reflex) && (held.how != How::Same || said.to_lowercase() == reflex.to_lowercase())
+    names(said, reflex) && (held.how != How::Same || fold(said) == fold(reflex))
 }
 
 /// Whether a word of the request is a reflex's own name, whatever its number or tense: «downloaded» is
 /// `download`, «notes» is `note`. Such a word says what to do, and supports no value.
 #[must_use]
 pub(crate) fn names(word: &str, reflex: &str) -> bool {
-    let word = word
-        .to_lowercase()
+    let word = fold(word)
         .trim_matches(|c: char| ".,;:!?\"'".contains(c))
         .to_owned();
-    let name = reflex.to_lowercase();
+    let name = fold(reflex);
     let forms = [
         word.clone(),
         word.trim_end_matches('e').to_owned(),
@@ -527,10 +524,7 @@ enum Said {
 
 /// Letters and figures as an address, a link and a code are typed: the alphabet they are written in.
 fn typed_word(word: &str) -> bool {
-    !word.is_empty()
-        && word
-            .chars()
-            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit())
+    !word.is_empty() && word.chars().all(|c| text::small(c) || text::figure(c))
 }
 
 fn sign(word: &str) -> Option<&'static str> {
@@ -559,10 +553,10 @@ fn said(word: &str) -> Said {
     } else if (figures(word).is_some() && word != "o")
         || tens(word).is_some()
         || word == HUNDRED
-        || (!word.is_empty() && word.chars().all(|c| c.is_ascii_digit()))
+        || (!word.is_empty() && word.chars().all(text::figure))
     {
         Said::Number
-    } else if word.len() == 1 && word.chars().all(|c| c.is_ascii_lowercase()) {
+    } else if word.chars().count() == 1 && word.chars().all(text::small) {
         Said::Letter
     } else if typed_word(word) {
         Said::Word
@@ -814,19 +808,19 @@ enum Part {
 }
 
 fn part(token: &Token, typed: &str) -> Part {
-    let ascii = !typed.is_empty() && typed.chars().all(|c| c.is_ascii_alphanumeric());
-    if !ascii || function(&token.plain) || token.from != token.start {
+    let typed_whole = !typed.is_empty() && typed.chars().all(text::latin_or_figure);
+    if !typed_whole || function(&token.plain) || token.from != token.start {
         return Part::None;
     }
-    let letters = typed.chars().filter(char::is_ascii_alphabetic).count();
+    let letters = typed.chars().filter(|c| text::latin(*c)).count();
     let length = typed.chars().count();
     if letters == 0 {
         Part::Figures
     } else if letters < length {
         Part::Mixed
-    } else if typed.chars().all(|c| c.is_ascii_uppercase()) {
+    } else if typed.chars().all(text::capital) {
         Part::Capitals
-    } else if length <= 3 && typed.chars().all(|c| c.is_ascii_lowercase()) {
+    } else if length <= 3 && typed.chars().all(text::small) {
         Part::Small(length)
     } else {
         Part::None

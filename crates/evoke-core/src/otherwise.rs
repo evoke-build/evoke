@@ -16,7 +16,7 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
 use crate::adapter::{Key, Prob};
-use crate::text::{Clean, Input, Span};
+use crate::text::{Clean, Input, Span, fold};
 use crate::words::{self, Listed};
 
 /// At this share the choice anchored on the words confirms a listed word code found by its spelling or its meaning,
@@ -137,7 +137,7 @@ pub fn proposed(
     let tokens = words::tokens(input.as_str());
     let keys: Vec<String> = list
         .keys()
-        .map(|key| words::named(&key.as_str().to_lowercase()))
+        .map(|key| words::named(&fold(key.as_str())))
         .collect();
     let free: Vec<&words::Token> = tokens
         .iter()
@@ -242,7 +242,7 @@ fn diminutive(word: &str, keys: &[String]) -> Option<usize> {
 
 /// A word as it is compared: lower case, a channel's `#` and a possessive's ending dropped.
 fn bare(word: &str) -> String {
-    let lowered = words::named(&word.to_lowercase());
+    let lowered = words::named(&fold(word));
     POSSESSIVE
         .iter()
         .find_map(|ending| lowered.strip_suffix(ending))
@@ -261,10 +261,8 @@ pub fn given(words: &str) -> bool {
 #[must_use]
 pub fn another(words: &str, key: &Key, meaning: &Clean) -> bool {
     let word = bare(words);
-    let listed = words::named(&key.as_str().to_lowercase());
-    let meant = meaning
-        .as_str()
-        .to_lowercase()
+    let listed = words::named(&fold(key.as_str()));
+    let meant = fold(meaning.as_str())
         .split(|c: char| !c.is_alphanumeric())
         .any(|said| said == word);
     given(&word) && word != listed && !meant

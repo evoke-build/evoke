@@ -20,7 +20,7 @@ use crate::calendar::{Day, Weekday, Which};
 use crate::decide::proposes;
 use crate::manifest::{Pick, Recognizer};
 use crate::propose::{PickValue, Proposed};
-use crate::text::{Clean, Input, Span};
+use crate::text::{self, Clean, Input, Span};
 use crate::words::{self, Form, Spelled};
 
 /// The number words for one figure, each with it: «oh» stands for nought.
@@ -519,7 +519,7 @@ fn number_word(word: &str) -> bool {
 }
 
 fn figures(word: &str) -> bool {
-    !word.is_empty() && word.chars().all(|c| c.is_ascii_digit())
+    !word.is_empty() && word.chars().all(text::figure)
 }
 
 /// A unit that a tens word takes after it: one to nine.
@@ -991,18 +991,15 @@ fn piece(word: &Word, version: bool) -> Option<Piece> {
     if length == 1 && raw.chars().all(char::is_alphabetic) {
         return Some(Piece::Letter);
     }
-    let alphanumeric = raw.chars().all(|c| c.is_ascii_alphanumeric());
-    if alphanumeric
-        && raw.chars().any(|c| c.is_ascii_digit())
-        && raw.chars().any(|c| c.is_ascii_alphabetic())
-    {
+    let typed = raw.chars().all(text::latin_or_figure);
+    if typed && raw.chars().any(text::figure) && raw.chars().any(text::latin) {
         return Some(Piece::Typed);
     }
-    if (2..=4).contains(&length) && raw.chars().all(|c| c.is_ascii_uppercase()) {
+    if (2..=4).contains(&length) && raw.chars().all(text::capital) {
         return Some(Piece::Capitals);
     }
     if (2..=3).contains(&length)
-        && raw.chars().all(|c| c.is_ascii_lowercase())
+        && raw.chars().all(text::small)
         && !words::function(plain)
         && !PRONOUNS.contains(&plain)
     {
@@ -1306,10 +1303,7 @@ fn whole_address(raw: &str) -> bool {
     let Some((_, top)) = host.rsplit_once('.') else {
         return false;
     };
-    plain(local)
-        && plain(host)
-        && top.chars().count() >= 2
-        && top.chars().all(|c| c.is_ascii_alphabetic())
+    plain(local) && plain(host) && top.chars().count() >= 2 && top.chars().all(text::latin)
 }
 
 /// Whether a word may be a part of a host: small letters and figures, a dot or a dash inside where `dotted`.
@@ -1317,10 +1311,8 @@ fn host_word(word: &str, dotted: bool) -> bool {
     let mut chars = word.chars();
     chars
         .next()
-        .is_some_and(|c| c.is_ascii_lowercase() || c.is_ascii_digit())
-        && chars.all(|c| {
-            c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-' || (dotted && c == '.')
-        })
+        .is_some_and(|c| text::small(c) || text::figure(c))
+        && chars.all(|c| text::small(c) || text::figure(c) || c == '-' || (dotted && c == '.'))
 }
 
 /// Whether a domain reads whole: labels of small letters, figures and dashes joined by dots, ending on two letters
@@ -1331,13 +1323,13 @@ fn whole_domain(domain: &str) -> bool {
         !label.is_empty()
             && label
                 .chars()
-                .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-')
+                .all(|c| text::small(c) || text::figure(c) || c == '-')
     };
     labels.len() >= 2
         && labels.iter().all(label)
-        && labels.last().is_some_and(|top| {
-            top.chars().count() >= 2 && top.chars().all(|c| c.is_ascii_lowercase())
-        })
+        && labels
+            .last()
+            .is_some_and(|top| top.chars().count() >= 2 && top.chars().all(text::small))
 }
 
 /// What a word is in an address's local part.
@@ -1362,9 +1354,8 @@ fn local(word: &Word) -> Option<Local> {
     let mut chars = plain.chars();
     let opens = chars
         .next()
-        .is_some_and(|c| c.is_ascii_lowercase() || c.is_ascii_digit());
-    let rest =
-        chars.all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || matches!(c, '.' | '_' | '-'));
+        .is_some_and(|c| text::small(c) || text::figure(c));
+    let rest = chars.all(|c| text::small(c) || text::figure(c) || matches!(c, '.' | '_' | '-'));
     (opens && rest && !words::function(plain)).then_some(Local::Word)
 }
 
@@ -1982,7 +1973,7 @@ fn once<T: PartialEq>(list: &mut Vec<T>, value: T) {
 
 /// A ticket's letters, whether a dash follows them, and its figures: `HS-0409`.
 fn ticket(value: &str) -> Option<(&str, bool, &str)> {
-    let letters = value.chars().take_while(char::is_ascii_alphabetic).count();
+    let letters = value.chars().take_while(|c| text::latin(*c)).count();
     let (head, rest) = value.split_at(letters);
     let (dashed, tail) = match rest.strip_prefix('-') {
         Some(tail) => (true, tail),
@@ -2050,7 +2041,7 @@ impl Examples {
                     once(&mut shown.parts, value.split('.').count());
                 }
                 (Recognizer::Number, _) => {
-                    let lead: String = value.chars().take_while(char::is_ascii_digit).collect();
+                    let lead: String = value.chars().take_while(|c| text::figure(*c)).collect();
                     let count = if lead.is_empty() {
                         let said: Vec<&str> = value
                             .split_whitespace()
@@ -2119,9 +2110,9 @@ fn version_fit(value: &str, marks: Marks, shown: &Examples) -> Fit {
 /// example has, in the examples' case.
 fn serial_fit(value: &str, marks: Marks, shown: &Examples) -> (String, Marks, Fit) {
     let core: String = value.chars().filter(|c| *c != '-').collect();
-    let letters = core.chars().any(|c| c.is_ascii_alphabetic());
-    let digits = core.chars().any(|c| c.is_ascii_digit());
-    if !core.chars().all(|c| c.is_ascii_alphanumeric()) || !letters || !digits {
+    let letters = core.chars().any(text::latin);
+    let digits = core.chars().any(text::figure);
+    if !core.chars().all(text::latin_or_figure) || !letters || !digits {
         return (value.to_owned(), marks, Fit::None);
     }
     let length = core.chars().count();
@@ -2209,7 +2200,7 @@ fn fixed_length(recognizer: Recognizer, shown: &Examples, value: &Value) -> bool
         }
         (Recognizer::Code, Value::Code(code)) => match shown.family {
             Some(Family::Ticket) => {
-                let count = code.chars().filter(char::is_ascii_digit).count();
+                let count = code.chars().filter(|c| text::figure(*c)).count();
                 shown.figures.len() == 1 && shown.figures.contains(&count)
             }
             Some(Family::Serial) => shown.lengths.len() == 1,

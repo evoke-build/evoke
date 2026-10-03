@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::adapter::{Choice, Key, Prob, Question, QuestionId, Raw, Request, Scope, State, Text};
 use crate::decide::validated;
 use crate::name::{ArgName, LocalName, WeaveName};
-use crate::text::{Clean, Input};
+use crate::text::{Clean, Input, fold, fold_char};
 
 /// What a connective does: `then` orders what follows after what precedes; the rest coordinate.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -289,10 +289,10 @@ pub fn canonical(input: &str) -> String {
 /// «before you X, Y»: the word, X and Y; the subject is optional, and a clause that begins `that`, `this` or
 /// `which` is a connective, not a clause.
 fn leading(chars: &[char]) -> Option<(&'static str, String, String)> {
-    let word = ["before", "after"]
+    let (word, after) = ["before", "after"]
         .into_iter()
-        .find(|word| starts_with_word(chars, 0, word))?;
-    let mut i = spaces(chars, word.len())?;
+        .find_map(|word| Some((word, word_end(chars, 0, word)?)))?;
+    let mut i = spaces(chars, after)?;
     if own_subject(chars, i).is_some() {
         return None;
     }
@@ -303,7 +303,7 @@ fn leading(chars: &[char]) -> Option<(&'static str, String, String)> {
     }
     if ["that", "this", "which"]
         .iter()
-        .any(|w| starts_with_word(chars, i, w) && ends_word(chars, i + w.len()))
+        .any(|w| whole_word(chars, i, w).is_some())
     {
         return None;
     }
@@ -335,10 +335,10 @@ fn trailing(chars: &[char]) -> Option<(String, &'static str, String)> {
             while j < chars.len() && chars[j].is_whitespace() {
                 j += 1;
             }
-            if let Some(word) = ["before", "after"]
+            if let Some((word, after_word)) = ["before", "after"]
                 .into_iter()
-                .find(|word| starts_with_word(chars, j, word))
-                && let Some(after_word) = spaces(chars, j + word.len())
+                .find_map(|word| Some((word, word_end(chars, j, word)?)))
+                && let Some(after_word) = spaces(chars, after_word)
                 && let Some(after_subject) = subject(chars, after_word)
                 && own_subject(chars, after_word).is_none()
                 && let Some(rest) = spaces(chars, after_subject)
@@ -357,30 +357,23 @@ fn trailing(chars: &[char]) -> Option<(String, &'static str, String)> {
 
 /// `you`, `we` or `i`, with `'ve`, `'d`, ` have` or ` had` when one follows: where the subject ends.
 fn subject(chars: &[char], at: usize) -> Option<usize> {
-    let you = YOU
-        .into_iter()
-        .find(|you| starts_with_word(chars, at, you))?;
-    let end = at + you.len();
-    let tensed = TENSE
-        .into_iter()
-        .find(|tense| starts_with_word(chars, end, tense))
-        .map_or(end, |tense| end + tense.len());
-    Some(tensed)
+    let end = YOU.into_iter().find_map(|you| word_end(chars, at, you))?;
+    Some(
+        TENSE
+            .into_iter()
+            .find_map(|tense| word_end(chars, end, tense))
+            .unwrap_or(end),
+    )
 }
 
 /// `i` or `we` as a whole word at `at`, with a tense when one follows as a whole word: where the subject ends.
 fn own_subject(chars: &[char], at: usize) -> Option<usize> {
-    let own = OWN
-        .into_iter()
-        .find(|own| starts_with_word(chars, at, own) && ends_word(chars, at + own.len()))?;
-    let end = at + own.len();
+    let end = OWN.into_iter().find_map(|own| whole_word(chars, at, own))?;
     Some(
         OWN_TENSES
             .into_iter()
-            .find(|tense| {
-                starts_with_word(chars, end, tense) && ends_word(chars, end + tense.len())
-            })
-            .map_or(end, |tense| end + tense.len()),
+            .find_map(|tense| whole_word(chars, end, tense))
+            .unwrap_or(end),
     )
 }
 
@@ -393,17 +386,38 @@ fn spaces(chars: &[char], at: usize) -> Option<usize> {
     (i > at).then_some(i)
 }
 
-/// Whether `word` stands at `at`, letter for letter, case aside; a curly apostrophe reads as the straight one, so
-/// «don’t», as a Mac types it, is «don't».
-fn starts_with_word(chars: &[char], at: usize, word: &str) -> bool {
+/// Where `word`, lower case, ends when it stands at `at`, the text's letters folded as they are read
+/// (`text::fold`): «ANSCHLIESSEND» and «anschließend» both end the word; a curly apostrophe reads as the straight
+/// one, so «don’t», as a Mac types it, is «don't». None where it does not stand there.
+fn word_end(chars: &[char], at: usize, word: &str) -> Option<usize> {
+    let mut want = word.chars().peekable();
     let mut i = at;
-    for w in word.chars() {
-        match chars.get(i) {
-            Some(c) if c.to_ascii_lowercase() == w || (*c == '\u{2019}' && w == '\'') => i += 1,
-            _ => return false,
+    while want.peek().is_some() {
+        let c = *chars.get(i)?;
+        if c == '\u{2019}' && want.peek() == Some(&'\'') {
+            want.next();
+        } else {
+            for folded in fold_char(c) {
+                if want.next() != Some(folded) {
+                    return None;
+                }
+            }
         }
+        i += 1;
     }
-    true
+    Some(i)
+}
+
+/// Where `word` ends when it stands whole at `at`: no word character continues it.
+fn whole_word(chars: &[char], at: usize, word: &str) -> Option<usize> {
+    word_end(chars, at, word).filter(|&end| ends_word(chars, end))
+}
+
+/// Where `word` begins when it ends at `end`, whole: a fold may write a letter of the text as two, so the word
+/// takes as many characters as it has, or fewer.
+fn word_before(chars: &[char], end: usize, word: &str) -> Option<usize> {
+    let most = word.chars().count();
+    (end.saturating_sub(most)..end).find(|&start| word_end(chars, start, word) == Some(end))
 }
 
 /// `\b` before `at`: a word character on one side only.
@@ -418,9 +432,9 @@ fn ends_word(chars: &[char], at: usize) -> bool {
     !chars.get(at).is_some_and(|c| is_word(*c))
 }
 
-/// A word character as the regex engine the research ran counts one: ASCII letters, digits and `_`.
+/// A word character: a letter or a figure of any script, and `_`.
 fn is_word(c: char) -> bool {
-    c.is_ascii_alphanumeric() || c == '_'
+    c.is_alphanumeric() || c == '_'
 }
 
 /// Every split point the words offer, in order of position, one per position, none inside quotes: the ordering
@@ -503,17 +517,17 @@ fn connective(
     if !boundary(chars, at) {
         return None;
     }
-    let phrase = phrases.iter().find(|phrase| {
-        starts_with_word(chars, at, phrase) && ends_word(chars, at + phrase.len())
-    })?;
-    let mut end = at + phrase.len();
+    let word_end = phrases
+        .iter()
+        .find_map(|phrase| whole_word(chars, at, phrase))?;
+    let mut end = word_end;
     if chars.get(end) == Some(&',') {
         end += 1;
     }
     while end < chars.len() && chars[end].is_whitespace() {
         end += 1;
     }
-    Some((end, chars[at..at + phrase.len()].iter().collect()))
+    Some((end, chars[at..word_end].iter().collect()))
 }
 
 /// The quoted regions of the text: `"…"`, `“…”` and `‘…’`.
@@ -589,8 +603,7 @@ fn joiners(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Split> {
             bare_word(&chars[after.0..after.1]),
         ];
         let number = |word: &str| {
-            word.starts_with(char::is_numeric)
-                || NUMBER_WORDS.contains(&word.to_lowercase().as_str())
+            word.starts_with(char::is_numeric) || NUMBER_WORDS.contains(&fold(word).as_str())
         };
         let capital = |word: &str| word.starts_with(char::is_uppercase);
         if neighbours
@@ -674,10 +687,9 @@ fn leads(chars: &[char], at: usize) -> bool {
     let end = trimmed_before(chars, at);
     end == 0
         || ".?!,;:-\u{2013}\u{2014}".contains(chars[end - 1])
-        || LEADS.iter().any(|word| {
-            let n = word.chars().count();
-            end >= n && starts_with_word(chars, end - n, word) && boundary(chars, end - n)
-        })
+        || LEADS
+            .iter()
+            .any(|word| word_before(chars, end, word).is_some_and(|start| boundary(chars, start)))
 }
 
 /// Whether the mark at `i` stands between two digits, inside a figure: «1:1», «10:30», «1,200». Such a mark ends
@@ -710,7 +722,7 @@ fn clause_end(chars: &[char], from: usize) -> (usize, bool) {
         if boundary(chars, i)
             && REQUEST_HEADS
                 .iter()
-                .any(|head| starts_with_word(chars, i, head) && ends_word(chars, i + head.len()))
+                .any(|head| whole_word(chars, i, head).is_some())
         {
             return (i, false);
         }
@@ -727,15 +739,14 @@ fn own_clauses(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
     let mut found = Vec::new();
     let mut i = 0;
     while i < chars.len() {
-        let Some(open) = OWN_OPENS.into_iter().find(|word| {
-            boundary(chars, i)
-                && starts_with_word(chars, i, word)
-                && ends_word(chars, i + word.len())
-        }) else {
+        let Some(opened) = OWN_OPENS
+            .into_iter()
+            .find_map(|word| whole_word(chars, i, word).filter(|_| boundary(chars, i)))
+        else {
             i += 1;
             continue;
         };
-        let Some(head) = spaces(chars, i + open.len()).and_then(|at| own_subject(chars, at)) else {
+        let Some(head) = spaces(chars, opened).and_then(|at| own_subject(chars, at)) else {
             i += 1;
             continue;
         };
@@ -764,15 +775,13 @@ fn courtesies(chars: &[char], quoted: &[(usize, usize)], places: &[Split]) -> Ve
     let mut found = Vec::new();
     let mut i = 0;
     while i < chars.len() {
-        let Some(courtesy) = COURTESIES.into_iter().find(|phrase| {
-            boundary(chars, i)
-                && starts_with_word(chars, i, phrase)
-                && ends_word(chars, i + phrase.len())
-        }) else {
+        let Some(end) = COURTESIES
+            .into_iter()
+            .find_map(|phrase| whole_word(chars, i, phrase).filter(|_| boundary(chars, i)))
+        else {
             i += 1;
             continue;
         };
-        let end = i + courtesy.len();
         let heads = trimmed_before(chars, i) == 0 || places.iter().any(|p| p.end == i);
         let ends = chars[end..]
             .iter()
@@ -797,16 +806,13 @@ fn contrasts(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
     let mut found = Vec::new();
     let mut i = 0;
     while i < chars.len() {
-        if !(boundary(chars, i)
-            && starts_with_word(chars, i, CONTRAST)
-            && ends_word(chars, i + CONTRAST.len())
-            && leads(chars, i)
-            && !quoted.iter().any(|q| i >= q.0 && i < q.1))
-        {
+        let Some(from) = whole_word(chars, i, CONTRAST).filter(|_| {
+            boundary(chars, i) && leads(chars, i) && !quoted.iter().any(|q| i >= q.0 && i < q.1)
+        }) else {
             i += 1;
             continue;
-        }
-        let from = i + CONTRAST.len();
+        };
+        let not_at = i;
         let mut end = None;
         let mut j = from;
         while j < chars.len() {
@@ -820,10 +826,9 @@ fn contrasts(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
             }
             if boundary(chars, j)
                 && j > from
-                && starts_with_word(chars, j, CONTRAST_BUT)
-                && ends_word(chars, j + CONTRAST_BUT.len())
+                && let Some(but) = whole_word(chars, j, CONTRAST_BUT)
             {
-                end = Some((j, j + CONTRAST_BUT.len()));
+                end = Some((j, but));
                 break;
             }
             j += 1;
@@ -836,7 +841,7 @@ fn contrasts(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
         let more = chars[after..].iter().any(|c| !c.is_whitespace());
         if x_end > from && more {
             found.push(Apart {
-                start: from - CONTRAST.len(),
+                start: not_at,
                 end: x_end,
                 what: Stretch::Contrast,
             });
@@ -905,13 +910,14 @@ fn place_before(chars: &[char], at: usize) -> Option<Split> {
     if end == at {
         return None;
     }
-    let lead = LEADS.iter().find(|word| {
-        let n = word.chars().count();
-        end >= n && starts_with_word(chars, end - n, word) && boundary(chars, end - n)
+    let lead = LEADS.iter().find_map(|word| {
+        word_before(chars, end, word)
+            .filter(|&start| boundary(chars, start))
+            .map(|start| (word, start))
     });
     let start = match lead {
-        Some(word) => {
-            let mut start = trimmed_before(chars, end - word.chars().count());
+        Some((_, opens)) => {
+            let mut start = trimmed_before(chars, opens);
             if start > 0 && matches!(chars[start - 1], ',' | ';') {
                 start = trimmed_before(chars, start - 1);
             }
@@ -927,7 +933,7 @@ fn place_before(chars: &[char], at: usize) -> Option<Split> {
                 .map(ToString::to_string)
                 .unwrap_or_default()
         },
-        |word| (*word).to_owned(),
+        |(word, _)| (*word).to_owned(),
     );
     (start > 0).then_some(Split {
         start,
@@ -1016,7 +1022,7 @@ fn heads(text: &str, words: &[&str]) -> bool {
     let chars: Vec<char> = text.chars().collect();
     words
         .iter()
-        .any(|word| starts_with_word(&chars, 0, word) && ends_word(&chars, word.len()))
+        .any(|word| whole_word(&chars, 0, word).is_some())
 }
 
 /// Whether a fragment carries a pronoun — «pull up every one of them», «fax it to the warehouse»: by the words it
@@ -1035,8 +1041,7 @@ fn pronoun_at(chars: &[char], i: usize) -> Option<(usize, &'static str)> {
     }
     PRONOUNS
         .into_iter()
-        .find(|word| starts_with_word(chars, i, word) && ends_word(chars, i + word.len()))
-        .map(|word| (i + word.len(), word))
+        .find_map(|word| whole_word(chars, i, word).map(|end| (end, word)))
 }
 
 /// Code's reading of references in segment `k`: a pronoun names the step before, a plural one every earlier step;
@@ -1118,24 +1123,28 @@ fn phrase_at(chars: &[char], i: usize) -> Option<(usize, &'static str, String)> 
     if !boundary(chars, i) {
         return None;
     }
-    let det = DETERMINERS
+    let (det, after) = DETERMINERS
         .into_iter()
-        .find(|det| starts_with_word(chars, i, det) && ends_word(chars, i + det.len()))?;
-    let mut j = spaces(chars, i + det.len())?;
-    if let Some(adjective) = ADJECTIVES.into_iter().find(|adjective| {
-        starts_with_word(chars, j, adjective) && ends_word(chars, j + adjective.len())
-    }) && let Some(after) = spaces(chars, j + adjective.len())
+        .find_map(|det| Some((det, whole_word(chars, i, det)?)))?;
+    let mut j = spaces(chars, after)?;
+    if let Some(after) = ADJECTIVES
+        .into_iter()
+        .find_map(|adjective| whole_word(chars, j, adjective))
+        && let Some(after) = spaces(chars, after)
     {
         j = after;
     }
     let mut end = j;
-    while end < chars.len() && chars[end].is_ascii_alphabetic() {
+    while end < chars.len() && chars[end].is_alphabetic() {
         end += 1;
     }
     if end == j || !ends_word(chars, end) {
         return None;
     }
-    let noun: String = chars[j..end].iter().map(char::to_ascii_lowercase).collect();
+    let noun: String = chars[j..end]
+        .iter()
+        .flat_map(|c| c.to_lowercase())
+        .collect();
     Some((end, det, noun))
 }
 
@@ -1188,13 +1197,10 @@ pub(crate) fn stem_of(word: &str) -> &str {
 /// Whether a noun, as written, stands whole among step `j`'s words or names a field of its result.
 fn attested(segs: &[Segment], fields: &[Vec<String>], j: usize, noun: &str) -> bool {
     let chars: Vec<char> = segs[j].text.chars().collect();
-    (0..chars.len()).any(|i| {
-        boundary(&chars, i)
-            && starts_with_word(&chars, i, noun)
-            && ends_word(&chars, i + noun.len())
-    }) || fields
-        .get(j)
-        .is_some_and(|fields| fields.iter().any(|f| f == noun))
+    (0..chars.len()).any(|i| boundary(&chars, i) && whole_word(&chars, i, noun).is_some())
+        || fields
+            .get(j)
+            .is_some_and(|fields| fields.iter().any(|f| f == noun))
 }
 
 /// `\b<stem>s?\b` in the text, case aside: where the first one starts, in characters.
@@ -1202,12 +1208,13 @@ fn word_at(text: &str, stem: &str) -> Option<usize> {
     let chars: Vec<char> = text.chars().collect();
     (0..chars.len()).find(|&i| {
         boundary(&chars, i)
-            && starts_with_word(&chars, i, stem)
-            && (ends_word(&chars, i + stem.len())
-                || (chars
-                    .get(i + stem.len())
-                    .is_some_and(|c| c.eq_ignore_ascii_case(&'s'))
-                    && ends_word(&chars, i + stem.len() + 1)))
+            && word_end(&chars, i, stem).is_some_and(|end| {
+                ends_word(&chars, end)
+                    || (chars
+                        .get(end)
+                        .is_some_and(|c| c.to_lowercase().eq("s".chars()))
+                        && ends_word(&chars, end + 1))
+            })
     })
 }
 
@@ -1542,10 +1549,7 @@ fn request_of(
 #[must_use]
 pub(crate) fn checked_that(text: &str) -> Option<String> {
     let chars: Vec<char> = text.chars().collect();
-    if !starts_with_word(&chars, 0, "check") {
-        return None;
-    }
-    let after = spaces(&chars, "check".len())?;
+    let after = spaces(&chars, word_end(&chars, 0, "check")?)?;
     match phrase_at(&chars, after) {
         Some((_, "that", noun)) if !STOP.contains(&noun.as_str()) => Some(noun),
         _ => None,

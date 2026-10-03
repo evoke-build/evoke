@@ -162,6 +162,96 @@ impl fmt::Display for Identity {
     }
 }
 
+/// A word as it is compared with a listed word or a word the reader knows: lowered by Unicode's rules, the letters
+/// a full case fold writes as two written so («ß» as «ss», «ﬁ» as «fi»), and any script's decimal digit as its
+/// figure. Only ever a comparison's form: what a person typed stays as typed, and no value is made from it.
+#[must_use]
+pub fn fold(text: &str) -> String {
+    text.chars().flat_map(fold_char).collect()
+}
+
+/// One character as `fold` writes it.
+pub(crate) fn fold_char(c: char) -> impl Iterator<Item = char> {
+    let folded: &str = match c {
+        'ß' | 'ẞ' => "ss",
+        'ﬀ' => "ff",
+        'ﬁ' => "fi",
+        'ﬂ' => "fl",
+        'ﬃ' => "ffi",
+        'ﬄ' => "ffl",
+        'ﬅ' | 'ﬆ' => "st",
+        'ς' => "σ",
+        _ => "",
+    };
+    let digit = figure_of(c);
+    let lowered: Vec<char> = if !folded.is_empty() {
+        folded.chars().collect()
+    } else if let Some(digit) = digit {
+        vec![digit]
+    } else {
+        c.to_lowercase().collect()
+    };
+    lowered.into_iter()
+}
+
+/// The zero of every run of ten decimal digits Unicode 16 has, in order: a digit's figure is its distance from the
+/// zero before it.
+const ZEROS: [u32; 76] = [
+    0x30, 0x660, 0x6F0, 0x7C0, 0x966, 0x9E6, 0xA66, 0xAE6, 0xB66, 0xBE6, 0xC66, 0xCE6, 0xD66,
+    0xDE6, 0xE50, 0xED0, 0xF20, 0x1040, 0x1090, 0x17E0, 0x1810, 0x1946, 0x19D0, 0x1A80, 0x1A90,
+    0x1B50, 0x1BB0, 0x1C40, 0x1C50, 0xA620, 0xA8D0, 0xA900, 0xA9D0, 0xA9F0, 0xAA50, 0xABF0, 0xFF10,
+    0x104A0, 0x10D30, 0x10D40, 0x11066, 0x110F0, 0x11136, 0x111D0, 0x112F0, 0x11450, 0x114D0,
+    0x11650, 0x116C0, 0x116D0, 0x116DA, 0x11730, 0x118E0, 0x11950, 0x11BF0, 0x11C50, 0x11D50,
+    0x11DA0, 0x11F50, 0x16130, 0x16A60, 0x16AC0, 0x16B50, 0x16D70, 0x1CCF0, 0x1D7CE, 0x1D7D8,
+    0x1D7E2, 0x1D7EC, 0x1D7F6, 0x1E140, 0x1E2F0, 0x1E4F0, 0x1E5F1, 0x1E950, 0x1FBF0,
+];
+
+/// A decimal digit of any script as its figure, `0` to `9`; none for any other character.
+fn figure_of(c: char) -> Option<char> {
+    if !c.is_numeric() {
+        return None;
+    }
+    let point = u32::from(c);
+    let zero = ZEROS
+        .iter()
+        .rev()
+        .find(|zero| **zero <= point)
+        .filter(|zero| point - **zero < 10)?;
+    char::from_digit(point - zero, 10)
+}
+
+/// A figure as a value is typed and a form is read: `0` to `9`. The forms the recognizers read — a figure, a code,
+/// an address, a link, a currency's code — are written in these characters whatever the language, so a test of one
+/// of them is a test of the form, not of a word.
+#[must_use]
+pub(crate) fn figure(c: char) -> bool {
+    c.is_ascii_digit()
+}
+
+/// A letter as a code, an address or a link is typed: the Latin alphabet, either case.
+#[must_use]
+pub(crate) fn latin(c: char) -> bool {
+    c.is_ascii_alphabetic()
+}
+
+/// A letter or a figure as a code is typed.
+#[must_use]
+pub(crate) fn latin_or_figure(c: char) -> bool {
+    c.is_ascii_alphanumeric()
+}
+
+/// A capital as a code or a currency's code is typed.
+#[must_use]
+pub(crate) fn capital(c: char) -> bool {
+    c.is_ascii_uppercase()
+}
+
+/// A small letter as a code, an address or a link is typed.
+#[must_use]
+pub(crate) fn small(c: char) -> bool {
+    c.is_ascii_lowercase()
+}
+
 /// An utterance as written, with its identity: the text is what the classifier reads, the id what keys it. One
 /// non-empty line, as a record's key is; the error is a fragment to follow the text.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]

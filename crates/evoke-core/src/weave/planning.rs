@@ -21,7 +21,7 @@ use crate::manifest::{self, Effect, Kind, MOST_STEPS, Recognizer, Source, Yield}
 use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
 use crate::plan::{Active, Plan};
 use crate::propose::PickValue;
-use crate::text::{Clean, Input, Span};
+use crate::text::{self, Clean, Input, Span};
 use crate::waits;
 
 /// A split the engine judged below this is never tried.
@@ -3887,7 +3887,7 @@ fn says(text: &str, phrases: &[&str]) -> bool {
     let words: Vec<String> = text
         .split(|c: char| !c.is_alphanumeric())
         .filter(|word| !word.is_empty())
-        .map(str::to_lowercase)
+        .map(text::fold)
         .collect();
     phrases.iter().any(|phrase| {
         let phrase: Vec<&str> = phrase.split(' ').collect();
@@ -4090,12 +4090,12 @@ fn holds(text: &str, vocabulary: &IndexMap<Word, Clean>) -> bool {
 /// How often a text holds a word, bounded as the research counted it and in any letter case: «checkout's» holds
 /// `checkout`, «#incident» holds `#incident`, «eu-west» holds neither `eu` nor `west`.
 fn occurrences(text: &str, word: &str) -> usize {
-    let text: Vec<char> = text.to_lowercase().chars().collect();
-    let word: Vec<char> = word.to_lowercase().chars().collect();
+    let text: Vec<char> = text::fold(text).chars().collect();
+    let word: Vec<char> = text::fold(word).chars().collect();
     if word.is_empty() || word.len() > text.len() {
         return 0;
     }
-    let joins = |c: char| c.is_ascii_alphanumeric() || c == '_' || c == '-';
+    let joins = |c: char| c.is_alphanumeric() || c == '_' || c == '-';
     (0..=text.len() - word.len())
         .filter(|&i| {
             text[i..i + word.len()] == word[..]
@@ -4144,11 +4144,7 @@ pub(crate) fn args_of(decision: &Decision) -> Option<&IndexMap<ArgName, Value>> 
 /// A determiner — `the`, `a`, `an` — at the head of the words, and the whitespace after it: where the item begins.
 fn determined(chars: &[char]) -> Option<usize> {
     ["the", "a", "an"].into_iter().find_map(|det| {
-        let head: String = chars
-            .iter()
-            .take(det.len())
-            .collect::<String>()
-            .to_lowercase();
+        let head = text::fold(&chars.iter().take(det.len()).collect::<String>());
         let mut end = det.len();
         while end < chars.len() && chars[end].is_whitespace() {
             end += 1;
@@ -4399,7 +4395,7 @@ fn bare(text: &str) -> bool {
     let chars: Vec<char> = text.chars().collect();
     determined(&chars).is_some() && {
         let item = item_of(&chars);
-        !item.is_empty() && item.chars().all(|c| c.is_ascii_alphabetic())
+        !item.is_empty() && item.chars().all(char::is_alphabetic)
     }
 }
 

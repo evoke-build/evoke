@@ -9,6 +9,8 @@ use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 
+use crate::text::figure;
+
 /// A calendar day, `YYYY-MM-DD`: what the host hands in, and what a relative day resolves to.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
@@ -80,8 +82,8 @@ impl FromStr for Date {
         }
         let number = |from: usize, to: usize| {
             let part = &text[from..to];
-            part.bytes()
-                .all(|b| b.is_ascii_digit())
+            part.chars()
+                .all(figure)
                 .then(|| part.parse::<u32>().ok())
                 .flatten()
         };
@@ -379,10 +381,7 @@ impl FromStr for Clock {
         let bytes = text.as_bytes();
         if bytes.len() != 5
             || bytes[2] != b':'
-            || !bytes
-                .iter()
-                .enumerate()
-                .all(|(i, b)| i == 2 || b.is_ascii_digit())
+            || !text.chars().enumerate().all(|(i, c)| i == 2 || figure(c))
         {
             return Err(malformed());
         }

@@ -12,7 +12,7 @@ use std::ops::Range;
 use serde::{Deserialize, Serialize};
 
 use crate::calendar::{Clock, Day, Weekday, Which, days_in};
-use crate::text::{Clean, Input, Span};
+use crate::text::{self, Clean, Input, Span, fold_char};
 
 /// A candidate for a pick: where it is in the input, and what its recognizer read.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -112,7 +112,7 @@ pub struct Currency(String);
 
 impl Currency {
     pub fn new(code: &str) -> Result<Self, String> {
-        if code.len() == 3 && code.bytes().all(|b| b.is_ascii_uppercase()) {
+        if code.chars().count() == 3 && code.chars().all(text::capital) {
             Ok(Self(code.to_owned()))
         } else {
             Err(format!(
@@ -289,11 +289,11 @@ fn url(chars: &[char], i: usize) -> Scan {
         return Scan::Nothing;
     };
     let inner = |c: char| !(c.is_whitespace() || matches!(c, '<' | '>' | '"' | '\''));
-    let mut j = i + scheme.len();
+    let mut j = i + scheme.chars().count();
     while j < chars.len() && inner(chars[j]) {
         j += 1;
     }
-    let Some(end) = (i + scheme.len() + 2..=j)
+    let Some(end) = (i + scheme.chars().count() + 2..=j)
         .rev()
         .find(|&end| !matches!(chars[end - 1], '.' | ',' | ';' | ':' | '!' | '?' | ')'))
     else {
@@ -303,8 +303,8 @@ fn url(chars: &[char], i: usize) -> Scan {
 }
 
 fn email(chars: &[char], i: usize) -> Scan {
-    let local = |c: char| c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '%' | '+' | '-');
-    let domain = |c: char| c.is_ascii_alphanumeric() || matches!(c, '.' | '-');
+    let local = |c: char| text::latin_or_figure(c) || matches!(c, '.' | '_' | '%' | '+' | '-');
+    let domain = |c: char| text::latin_or_figure(c) || matches!(c, '.' | '-');
     let mut at = i;
     while at < chars.len() && local(chars[at]) {
         at += 1;
@@ -322,7 +322,7 @@ fn email(chars: &[char], i: usize) -> Scan {
         .find_map(|dot| {
             let letters = chars[dot + 1..j]
                 .iter()
-                .take_while(|c| c.is_ascii_alphabetic())
+                .take_while(|c| text::latin(**c))
                 .count();
             (letters >= 2).then_some(dot + 1 + letters)
         })
@@ -377,7 +377,7 @@ fn amount(chars: &[char], i: usize) -> Scan {
         };
         let scaled = chars
             .get(figure.end)
-            .is_some_and(|c| matches!(c.to_ascii_lowercase(), 'k' | 'm'))
+            .is_some_and(|c| matches!(c, 'k' | 'K' | 'm' | 'M'))
             && ends_word(chars, figure.end + 1);
         if scaled {
             return Scan::Nothing;
@@ -443,7 +443,7 @@ fn figure(chars: &[char], i: usize) -> Option<Figure> {
     let mut j = digits;
     while chars.get(j) == Some(&',')
         && two_or_more_digits(chars, j + 1, 3)
-        && !chars.get(j + 4).is_some_and(char::is_ascii_digit)
+        && !chars.get(j + 4).is_some_and(|c| text::figure(*c))
     {
         j += 4;
     }
@@ -451,7 +451,7 @@ fn figure(chars: &[char], i: usize) -> Option<Figure> {
     let mut text: String = chars[i..j].iter().filter(|c| **c != ',').collect();
     let mut end = j;
     let mut fraction = 0;
-    if chars.get(j) == Some(&'.') && chars.get(j + 1).is_some_and(char::is_ascii_digit) {
+    if chars.get(j) == Some(&'.') && chars.get(j + 1).is_some_and(|c| text::figure(*c)) {
         end = digit_run(chars, j + 1)?;
         fraction = end - j - 1;
         text.extend(&chars[j..end]);
@@ -466,7 +466,7 @@ fn figure(chars: &[char], i: usize) -> Option<Figure> {
 
 /// Whether exactly `count` digits stand at `at`.
 fn two_or_more_digits(chars: &[char], at: usize, count: usize) -> bool {
-    (0..count).all(|k| chars.get(at + k).is_some_and(char::is_ascii_digit))
+    (0..count).all(|k| chars.get(at + k).is_some_and(|c| text::figure(*c)))
 }
 
 /// A figure in words, bounded: `<small>`, `a hundred [and <small>]`, `<small> hundred [and <small>]`, and with
@@ -588,10 +588,7 @@ fn version(chars: &[char], i: usize) -> Option<usize> {
 
 /// `[A-Za-z]{2,6}-\d{1,6}` at `i`.
 fn ticket(chars: &[char], i: usize) -> Option<usize> {
-    let letters = chars[i..]
-        .iter()
-        .take_while(|c| c.is_ascii_alphabetic())
-        .count();
+    let letters = chars[i..].iter().take_while(|c| text::latin(**c)).count();
     if !(2..=6).contains(&letters) || chars.get(i + letters) != Some(&'-') {
         return None;
     }
@@ -604,13 +601,13 @@ fn ticket(chars: &[char], i: usize) -> Option<usize> {
 fn serial(chars: &[char], i: usize) -> Option<usize> {
     let length = chars[i..]
         .iter()
-        .take_while(|c| c.is_ascii_alphanumeric())
+        .take_while(|c| text::latin_or_figure(**c))
         .count();
     let run = &chars[i..i + length];
-    let letters = run.iter().any(char::is_ascii_alphabetic);
-    let digits = run.iter().filter(|c| c.is_ascii_digit()).count();
+    let letters = run.iter().any(|c| text::latin(*c));
+    let digits = run.iter().filter(|c| text::figure(**c)).count();
     let quantity =
-        run.first().is_some_and(char::is_ascii_digit) && run.iter().any(char::is_ascii_lowercase);
+        run.first().is_some_and(|c| text::figure(*c)) && run.iter().any(|c| text::small(*c));
     (length >= 6 && letters && digits >= 2 && !quantity).then_some(i + length)
 }
 
@@ -1055,7 +1052,7 @@ fn day_number_at(chars: &[char], i: usize) -> Option<(u8, usize)> {
     if let Some((day, end)) = digits_at(chars, i)
         && (1..=31).contains(&day)
         && !(matches!(chars.get(end), Some(':' | '.'))
-            && chars.get(end + 1).is_some_and(char::is_ascii_digit))
+            && chars.get(end + 1).is_some_and(|c| text::figure(*c)))
     {
         return u8::try_from(day).ok().map(|day| (day, end));
     }
@@ -1068,7 +1065,7 @@ fn ordinal_at(chars: &[char], i: usize) -> Option<(u8, usize)> {
         let suffix: String = chars
             .get(end..end + 2)?
             .iter()
-            .map(char::to_ascii_lowercase)
+            .flat_map(|c| c.to_lowercase())
             .collect();
         return (matches!(suffix.as_str(), "st" | "nd" | "rd" | "th")
             && ends_word(chars, end + 2)
@@ -1190,7 +1187,7 @@ fn led_by_time(chars: &[char], i: usize) -> bool {
     }
     let word: String = chars[start..end]
         .iter()
-        .flat_map(|c| c.to_lowercase())
+        .flat_map(|c| fold_char(*c))
         .collect();
     TIME_LEADS.contains(&word.as_str()) || WEEKDAYS.contains(&word.as_str())
 }
@@ -1307,10 +1304,10 @@ fn minutes_past_or_to(chars: &[char], i: usize) -> Option<Scan> {
     };
     let minutes = whole(minutes).filter(|minutes| (1..=59).contains(minutes))?;
     for (lead, past) in [(" past ", true), (" to ", false)] {
-        if !phrase_lower(chars, mend, lead) {
+        let Some(after) = lowered_end(chars, mend, lead) else {
             continue;
-        }
-        let Some((hour, hend)) = hour_word(chars, mend + lead.len()) else {
+        };
+        let Some((hour, hend)) = hour_word(chars, after) else {
             continue;
         };
         return Some(past_or_to_read(
@@ -1353,10 +1350,10 @@ fn digital(chars: &[char], i: usize) -> Option<Scan> {
     if meridiem.is_none()
         && minute.is_some()
         && let Some(c) = chars.get(j)
-        && matches!(c.to_ascii_lowercase(), 'a' | 'p')
+        && matches!(c, 'a' | 'A' | 'p' | 'P')
         && ends_word(chars, j + 1)
     {
-        let half = if c.eq_ignore_ascii_case(&'a') {
+        let half = if matches!(c, 'a' | 'A') {
             Meridiem::Am
         } else {
             Meridiem::Pm
@@ -1395,7 +1392,7 @@ fn digital(chars: &[char], i: usize) -> Option<Scan> {
 
 /// Exactly two digits at `at`, a third not following: the minutes.
 fn two_digit_minutes(chars: &[char], at: usize) -> Option<u8> {
-    if !two_or_more_digits(chars, at, 2) || chars.get(at + 2).is_some_and(char::is_ascii_digit) {
+    if !two_or_more_digits(chars, at, 2) || chars.get(at + 2).is_some_and(|c| text::figure(*c)) {
         return None;
     }
     chars[at..at + 2].iter().collect::<String>().parse().ok()
@@ -1404,8 +1401,8 @@ fn two_digit_minutes(chars: &[char], at: usize) -> Option<u8> {
 /// Whether what stands at `at` up to two characters on is digits: a seconds part, `:17`, refused with its time.
 fn digits_follow(chars: &[char], at: usize) -> bool {
     match (chars.get(at), chars.get(at + 1)) {
-        (Some(a), Some(b)) => a.is_ascii_digit() && b.is_ascii_digit(),
-        (Some(a), None) => a.is_ascii_digit(),
+        (Some(a), Some(b)) => text::figure(*a) && text::figure(*b),
+        (Some(a), None) => text::figure(*a),
         _ => false,
     }
 }
@@ -1640,7 +1637,7 @@ fn number(chars: &[char], i: usize) -> Scan {
         None => {
             // A minus is the number's when nothing wordlike stands before it and a digit follows: `-5`, never `5-10`.
             let signed = chars[i] == '-'
-                && chars.get(i + 1).is_some_and(char::is_ascii_digit)
+                && chars.get(i + 1).is_some_and(|c| text::figure(*c))
                 && (i == 0 || !is_word(chars[i - 1]));
             let Some((value, after)) = decimal(chars, if signed { i + 1 } else { i }) else {
                 return Scan::Nothing;
@@ -1833,18 +1830,18 @@ fn unit(chars: &[char], at: usize, letters: bool) -> Option<(usize, f64)> {
 /// `\b\d+(\.\d+)?` at `i`: the number and where it ends; digits past what a number holds are no candidate, and
 /// neither are the digits after a digit and a comma or a point, `000` in `1,000` and `4` in `0.4`.
 fn decimal(chars: &[char], i: usize) -> Option<(f64, usize)> {
-    let inside = i >= 2 && matches!(chars[i - 1], ',' | '.') && chars[i - 2].is_ascii_digit();
-    if !chars[i].is_ascii_digit() || (i > 0 && is_word(chars[i - 1])) || inside {
+    let inside = i >= 2 && matches!(chars[i - 1], ',' | '.') && text::figure(chars[i - 2]);
+    if !text::figure(chars[i]) || (i > 0 && is_word(chars[i - 1])) || inside {
         return None;
     }
     let digits = |from: usize| {
         from + chars[from..]
             .iter()
-            .take_while(|c| c.is_ascii_digit())
+            .take_while(|c| text::figure(**c))
             .count()
     };
     let mut end = digits(i);
-    if chars.get(end) == Some(&'.') && chars.get(end + 1).is_some_and(char::is_ascii_digit) {
+    if chars.get(end) == Some(&'.') && chars.get(end + 1).is_some_and(|c| text::figure(*c)) {
         end = digits(end + 1);
     }
     let value: f64 = chars[i..end].iter().collect::<String>().parse().ok()?;
@@ -1886,16 +1883,15 @@ fn skip_space(chars: &[char], at: usize) -> usize {
     }
 }
 
-/// Where `unit` ends when it stands at `at` and no word continues it.
+/// Where `unit` ends when it stands at `at`, as typed, and no word continues it.
 fn unit_end(chars: &[char], at: usize, unit: &str) -> Option<usize> {
-    let end = at + unit.len();
+    let end = at + unit.chars().count();
     (starts_with(chars, at, unit) && !chars.get(end).is_some_and(|&c| is_word(c))).then_some(end)
 }
 
 /// Where `text`, words in any letter case, ends when it stands at `at` and no word continues it.
 fn phrase_end(chars: &[char], at: usize, text: &str) -> Option<usize> {
-    let end = at + text.chars().count();
-    (phrase_lower(chars, at, text) && !chars.get(end).is_some_and(|&c| is_word(c))).then_some(end)
+    lowered_end(chars, at, text).filter(|&end| !chars.get(end).is_some_and(|&c| is_word(c)))
 }
 
 /// Where `text` ends when it stands at `at` at a word boundary, in any letter case, and no word continues it.
@@ -1906,13 +1902,21 @@ fn phrase(chars: &[char], at: usize, text: &str) -> Option<usize> {
     phrase_end(chars, at, text)
 }
 
-/// Whether `text`, in any letter case, stands at `at`.
-fn phrase_lower(chars: &[char], at: usize, text: &str) -> bool {
-    text.chars().enumerate().all(|(k, c)| {
-        chars
-            .get(at + k)
-            .is_some_and(|d| d.to_ascii_lowercase() == c)
-    })
+/// Where `text`, lower case, ends when it stands at `at`, the input's letters folded as they are read
+/// (`text::fold`); none where it does not stand there.
+fn lowered_end(chars: &[char], at: usize, text: &str) -> Option<usize> {
+    let mut want = text.chars().peekable();
+    let mut i = at;
+    while want.peek().is_some() {
+        let c = *chars.get(i)?;
+        for folded in fold_char(c) {
+            if want.next() != Some(folded) {
+                return None;
+            }
+        }
+        i += 1;
+    }
+    Some(i)
 }
 
 /// The alphabetic word at `i`, lowered, and where it ends; none when no letter stands there.
@@ -1924,10 +1928,7 @@ fn word_at(chars: &[char], i: usize) -> Option<(String, usize)> {
         .count();
     (end > i).then(|| {
         (
-            chars[i..end]
-                .iter()
-                .flat_map(|c| c.to_lowercase())
-                .collect(),
+            chars[i..end].iter().flat_map(|c| fold_char(*c)).collect(),
             end,
         )
     })
@@ -1954,7 +1955,7 @@ fn digit_run(chars: &[char], at: usize) -> Option<usize> {
         + chars
             .get(at..)?
             .iter()
-            .take_while(|c| c.is_ascii_digit())
+            .take_while(|c| text::figure(**c))
             .count();
     (end > at).then_some(end)
 }

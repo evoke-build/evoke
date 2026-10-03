@@ -11,7 +11,7 @@ use crate::adapter::{Choice, Key, Question, QuestionId, Text};
 use crate::digest::Digest;
 use crate::name::{ArgName, LocalName, WeaveName};
 use crate::plan::{none, unstated};
-use crate::text::{Clean, Span, identity};
+use crate::text::{Clean, Span, figure, identity};
 use crate::words::{Form, Spelled};
 
 /// The most words of a list, and the most spelled forms, one argument is asked a yes or no about.
@@ -142,7 +142,7 @@ pub fn argument(question: &QuestionId) -> Option<ArgName> {
     let mut pair = rest;
     for _ in 0..places {
         let (head, place) = pair.rsplit_once('_')?;
-        if place.is_empty() || !place.chars().all(|c| c.is_ascii_digit()) {
+        if place.is_empty() || !place.chars().all(figure) {
             return None;
         }
         pair = head;
