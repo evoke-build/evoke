@@ -298,7 +298,7 @@ fn and(lexicon: &Lexicon, word: &str) -> bool {
 
 /// Nought said as a letter or as «oh»: a figure in a run of figures, never a number by itself.
 fn oh(lexicon: &Lexicon, word: &str) -> bool {
-    lexicon.holds(|pack| &pack.numbers.oh, word)
+    lexicon.grammar_holds(|pack| &pack.numbers.oh, word)
 }
 
 /// The sign a word says, as the packs list the signs said aloud: «at», «dot», «dash».
@@ -354,10 +354,26 @@ fn figures(word: &str) -> bool {
 }
 
 /// A unit that a tens word takes after it: one to nine.
-fn unit_after_tens(lexicon: &Lexicon, word: Option<&&str>) -> Option<u64> {
-    let word = word.filter(|word| !lexicon.holds(|pack| &pack.numbers.noughts, word))?;
+fn unit_after_tens(
+    lexicon: &Lexicon,
+    tens: u64,
+    words: &[&str],
+    at: usize,
+) -> Option<(u64, usize)> {
+    // The pack's joiner between the tens word and the ones word, «treinta y uno», «trente et un».
+    let (word, taken) = match words.get(at) {
+        Some(word) if and(lexicon, word) => (*words.get(at + 1)?, 2),
+        Some(word) => (*word, 1),
+        None => return None,
+    };
+    if lexicon.holds(|pack| &pack.numbers.noughts, word) {
+        return None;
+    }
     // A teen after a tens word adds to it where the pack has it so: «soixante-douze».
-    unit(lexicon, word).or_else(|| teen(lexicon, word).filter(|_| lexicon.teens_after_tens()))
+    let adds_teen = u32::try_from(tens).is_ok_and(|value| lexicon.teens_after(value));
+    unit(lexicon, word)
+        .or_else(|| teen(lexicon, word).filter(|_| adds_teen))
+        .map(|unit| (unit, taken))
 }
 
 /// How far a misspelling may stray from a day's name: none under four letters, one up to seven, two beyond
@@ -492,8 +508,8 @@ fn readings(
 fn small_at(lexicon: &Lexicon, words: &[&str], i: usize) -> Option<(u64, usize)> {
     let word = *words.get(i)?;
     if let Some(tens) = ten(lexicon, word) {
-        return Some(match unit_after_tens(lexicon, words.get(i + 1)) {
-            Some(unit) => (tens + unit, i + 2),
+        return Some(match unit_after_tens(lexicon, tens, words, i + 1) {
+            Some((unit, taken)) => (tens + unit, i + 1 + taken),
             None => (tens, i + 1),
         });
     }
@@ -595,10 +611,10 @@ fn digits(lexicon: &Lexicon, words: &[&str]) -> Option<(String, bool)> {
             out.push_str(&teen.to_string());
             pairs = true;
         } else if let Some(tens) = ten(lexicon, word) {
-            match unit_after_tens(lexicon, words.get(i + 1)) {
-                Some(unit) => {
+            match unit_after_tens(lexicon, tens, words, i + 1) {
+                Some((unit, taken)) => {
                     out.push_str(&(tens + unit).to_string());
-                    i += 1;
+                    i += taken;
                 }
                 None => out.push_str(&tens.to_string()),
             }
@@ -1076,10 +1092,10 @@ fn pointless(lexicon: &Lexicon, words: &[Word], parts: usize) -> Vec<Reading> {
         let mut i = 0;
         while i < said.len() {
             if let Some(tens) = ten(lexicon, said[i])
-                && let Some(unit) = unit_after_tens(lexicon, said.get(i + 1))
+                && let Some((unit, taken)) = unit_after_tens(lexicon, tens, &said, i + 1)
             {
                 groups.push((tens + unit).to_string());
-                i += 2;
+                i += 1 + taken;
                 continue;
             }
             let value = unit(lexicon, said[i])

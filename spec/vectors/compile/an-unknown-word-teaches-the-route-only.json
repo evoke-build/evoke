@@ -121,7 +121,7 @@
   },
   "expect": {
     "ok": {
-      "digest": "h1:a2342d0eb9b5c7c137cb950cad729ac713bb7b1ee43bce1e049dd7972d84ed1d",
+      "digest": "h1:7b14291bd78d9706f54489640d3ac79276e5e47cf4aa9db2d0c8e299498ba370",
       "active": {
         "lights": {
           "effect": "write",

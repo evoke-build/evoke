@@ -334,8 +334,8 @@ pub struct Numbers {
     pub joiner: String,
     /// Whether a number's words are written as one, «einundzwanzig», «zweihundert».
     pub fused: bool,
-    /// Whether a teen may follow a tens word and add to it, «soixante-douze».
-    pub teens_after_tens: bool,
+    /// The tens words a teen may follow and add to, by value: 60 and 80 in French, «soixante-douze».
+    pub teens_after_tens: Vec<i64>,
     pub years_in_pairs: bool,
     pub decimal_mark: char,
     pub group_mark: char,
@@ -399,6 +399,8 @@ pub struct Days {
     pub noun_after: Phrases,
     /// Words near a day's name that are no day, however near: «Montage», «Leute».
     pub never: Phrases,
+    /// Whether «next», «last» may follow the weekday as well as lead it: «lundi dernier», «el viernes pasado».
+    pub which_after: bool,
     pub followers: Phrases,
     pub leads: Phrases,
     pub which: Named,
@@ -859,6 +861,12 @@ impl Lexicon {
         &self.shown
     }
 
+    /// The packs whose grammar applies to the text: the shown ones, or the first where none is shown.
+    #[must_use]
+    pub fn grammar(&self) -> &[&'static Pack] {
+        &self.grammar
+    }
+
     /// Whether a pack's word may propose in the text: every word of a shown pack, and of the first pack; of the
     /// others, where no pack is shown, a word that is not short and that the first pack does not list — a word two
     /// languages share is read as the first lists it.
@@ -1007,12 +1015,39 @@ impl Lexicon {
         marks.all(|mark| mark == first).then_some(first)
     }
 
-    /// Whether a teen may follow a tens word and add to it, as any pack whose grammar applies has it.
+    /// Whether a teen may follow the tens word of this value and add to it, as any pack whose grammar applies
+    /// has it: «soixante-douze», never «vingt-douze».
     #[must_use]
-    pub fn teens_after_tens(&self) -> bool {
+    pub fn teens_after(&self, tens: u32) -> bool {
         self.grammar
             .iter()
-            .any(|pack| pack.numbers.teens_after_tens)
+            .any(|pack| pack.numbers.teens_after_tens.contains(&i64::from(tens)))
+    }
+
+    /// One phrase list of the packs whose grammar applies, joined, the longest phrase first: the words that cut a
+    /// request are the grammar's, so another language's «plus» or «and» cuts nothing here.
+    pub fn grammar_phrases(
+        &self,
+        table: impl Fn(&'static Pack) -> &'static Phrases,
+    ) -> Vec<&'static str> {
+        let mut phrases: Vec<&'static str> = self
+            .grammar
+            .iter()
+            .flat_map(|pack| table(pack).iter())
+            .collect();
+        if self.grammar.len() > 1 {
+            phrases.sort_by_key(|phrase| Reverse(phrase.chars().count()));
+        }
+        phrases
+    }
+
+    /// Whether a word, as typed, is in one typed list of a pack whose grammar applies.
+    pub fn grammar_typed(
+        &self,
+        table: impl Fn(&'static Pack) -> &'static Typed,
+        word: &str,
+    ) -> bool {
+        self.grammar.iter().any(|pack| table(pack).holds(word))
     }
 
     /// The hours a clock counts: 24 where every pack whose grammar applies counts so, else 12.

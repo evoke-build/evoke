@@ -395,10 +395,11 @@ pub(crate) fn names(word: &str, reflex: &str) -> bool {
     if names_as(&lexicon, &word, &name) {
         return true;
     }
-    // A verb carrying a pronoun at its end, «annule-la», «envíalo», names the reflex its verb names.
-    lexicon
-        .phrases(|pack| &pack.refer.clitics)
-        .into_iter()
+    // A verb carrying a pronoun at its end, «annule-la», «envíalo», names the reflex its verb names: the clitics
+    // of every built-in pack, since one word alone shows no pack.
+    pack::packs()
+        .iter()
+        .flat_map(|pack| pack.refer.clitics.iter())
         .filter_map(|clitic| word.strip_suffix(clitic))
         .filter(|verb| verb.chars().count() >= 3)
         .any(|verb| names_as(&lexicon, verb, &name))

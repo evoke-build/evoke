@@ -122,9 +122,9 @@ pub struct Ref {
 }
 
 /// The marks that close a clause or a sentence.
-const MARKS: &str = ",;:.?!";
+const MARKS: &str = ",;:.?!¿¡";
 /// The marks a word may carry that say nothing of it: stripped before a joiner's neighbour is read.
-const AROUND: &str = ",;:.?!\"'()";
+const AROUND: &str = ",;:.?!¿¡\"'()";
 /// The marks that end a sentence.
 const ENDS: [char; 3] = ['.', '?', '!'];
 
@@ -375,8 +375,16 @@ pub fn splits(text: &str, commas: bool) -> Vec<Split> {
             });
         }
     };
-    add(&lexicon.phrases(|pack| &pack.cut.then), Order::Then, None);
-    add(&lexicon.phrases(|pack| &pack.cut.and), Order::And, None);
+    add(
+        &lexicon.grammar_phrases(|pack| &pack.cut.then),
+        Order::Then,
+        None,
+    );
+    add(
+        &lexicon.grammar_phrases(|pack| &pack.cut.and),
+        Order::And,
+        None,
+    );
     add(&[], Order::And, Some(';'));
     if commas {
         add(&[], Order::And, Some(','));
@@ -389,7 +397,7 @@ pub fn splits(text: &str, commas: bool) -> Vec<Split> {
 /// — a comma, a semicolon, a sentence end — or the text's end. The clause is the grammar's: no joiner inside it is
 /// a place to cut, as the comma before it is none.
 fn subordinate(lexicon: &Lexicon, chars: &[char]) -> Vec<(usize, usize)> {
-    let openers = lexicon.phrases(|pack| &pack.cut.subordinators);
+    let openers = lexicon.grammar_phrases(|pack| &pack.cut.subordinators);
     let mut found = Vec::new();
     let mut i = 0;
     while i < chars.len() {
@@ -440,7 +448,7 @@ fn connective(
         }
         // A comma a subordinate clause follows, «, dass», «, bevor», is the grammar's and no cut.
         let held = lexicon
-            .phrases(|pack| &pack.cut.subordinators)
+            .grammar_phrases(|pack| &pack.cut.subordinators)
             .iter()
             .any(|word| whole_word(chars, j, word).is_some());
         if held {
@@ -517,7 +525,7 @@ pub fn places(text: &str, commas: bool) -> Vec<Split> {
 /// Whether a place's word is a sign or a letter typed for «and».
 #[must_use]
 pub fn joins(word: &str) -> bool {
-    pack::lexicon(word).typed(|pack| &pack.cut.signs, word)
+    pack::lexicon(word).grammar_typed(|pack| &pack.cut.signs, word)
 }
 
 /// Whether a word is a number word: a joiner beside one joins a number said aloud or a spelled code, «six n v»,
@@ -540,7 +548,7 @@ fn joiners(lexicon: &Lexicon, chars: &[char], quoted: &[(usize, usize)]) -> Vec<
     for k in 1..tokens.len().saturating_sub(1) {
         let (start, end) = tokens[k];
         let token: String = chars[start..end].iter().collect();
-        if !lexicon.typed(|pack| &pack.cut.signs, &token)
+        if !lexicon.grammar_typed(|pack| &pack.cut.signs, &token)
             || quoted.iter().any(|q| start >= q.0 && start < q.1)
         {
             continue;
@@ -642,7 +650,7 @@ fn leads(lexicon: &Lexicon, chars: &[char], at: usize) -> bool {
     end == 0
         || ".?!,;:-\u{2013}\u{2014}".contains(chars[end - 1])
         || lexicon
-            .phrases(|pack| &pack.cut.leads)
+            .grammar_phrases(|pack| &pack.cut.leads)
             .iter()
             .any(|word| word_before(chars, end, word).is_some_and(|start| boundary(chars, start)))
 }
@@ -765,8 +773,8 @@ fn courtesies(
 /// the first «,», «:» or «but», holding no other mark, with more words after it: X is left out and what follows
 /// kept.
 fn contrasts(lexicon: &Lexicon, chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
-    let contrast = lexicon.phrases(|pack| &pack.cut.contrast);
-    let but = lexicon.phrases(|pack| &pack.cut.but);
+    let contrast = lexicon.grammar_phrases(|pack| &pack.cut.contrast);
+    let but = lexicon.grammar_phrases(|pack| &pack.cut.but);
     let mut found = Vec::new();
     let mut i = 0;
     while i < chars.len() {
@@ -882,7 +890,7 @@ fn place_before(lexicon: &Lexicon, chars: &[char], at: usize) -> Option<Split> {
         return None;
     }
     let lead = lexicon
-        .phrases(|pack| &pack.cut.leads)
+        .grammar_phrases(|pack| &pack.cut.leads)
         .into_iter()
         .find_map(|word| {
             word_before(chars, end, word)
@@ -972,7 +980,7 @@ pub fn segments(text: &str, taken: &[Split]) -> Vec<Segment> {
 pub fn negated(text: &str) -> bool {
     heads(
         text,
-        &pack::lexicon(text).phrases(|pack| &pack.cut.negation),
+        &pack::lexicon(text).grammar_phrases(|pack| &pack.cut.negation),
     )
 }
 
@@ -981,7 +989,7 @@ pub fn negated(text: &str) -> bool {
 pub fn conditional(text: &str) -> bool {
     heads(
         text,
-        &pack::lexicon(text).phrases(|pack| &pack.cut.condition),
+        &pack::lexicon(text).grammar_phrases(|pack| &pack.cut.condition),
     )
 }
 

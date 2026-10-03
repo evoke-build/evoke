@@ -9,14 +9,11 @@ capitals_mark_names = true
 then = [
   "y luego",
   "luego",
-  "después",
   "y después",
-  "despues",
   "y despues",
   "a continuación",
   "y a continuación",
   "y al final",
-  "al final",
   "por último",
   "y por último",
   "finalmente",
@@ -24,9 +21,9 @@ then = [
   "y entonces",
   "entonces",
 ]
-and = ["y", "e", "además", "y también", "también", "tb", "y tb", "más", "junto con"]
-signs = ["+", "&"]
-leads = ["y", "e", "pero", "o", "u", "luego", "entonces", "pues", "además", "también"]
+and = ["y", "además", "y también", "también", "tb", "y tb"]
+signs = ["+", "&", "e"]
+leads = ["y", "pero", "o", "u", "luego", "entonces", "pues", "además", "también"]
 negation = ["no", "nunca", "jamás", "jamas", "sin", "ningún", "ninguna", "ningun", "ni", "tampoco", "nada de"]
 condition = ["si", "en caso de que", "en caso de", "a menos que", "salvo que", "siempre que", "cuando"]
 contrast = ["no"]
@@ -70,15 +67,14 @@ subordinators = [
   "cuya",
   "cuyos",
   "cuyas",
-  "sobre todo",
 ]
 
 # A clause before or after another, read in the words' own order, and a clause of the person's own action.
 [clause]
 before = ["antes de", "antes de que"]
-after = ["después de", "despues de", "después de que", "una vez que", "en cuanto", "tras"]
+after = ["después de", "despues de", "después de que", "una vez que", "tras"]
 joiner = ["luego"]
-subjects = ["tú", "tu", "usted", "ustedes", "vosotros", "nosotros", "yo"]
+subjects = ["tú", "usted", "ustedes", "vosotros", "nosotros", "yo"]
 tenses = []
 own = ["yo", "nosotros"]
 own_tenses = []
@@ -333,14 +329,12 @@ points = [
   "cada",
   "ellos",
   "ellas",
+  "él",
+  "ella",
   "le",
   "les",
   "su",
   "sus",
-  "lo",
-  "la",
-  "los",
-  "las",
 ]
 repeats = [
   "lo mismo",
@@ -414,7 +408,7 @@ clitics = [
 
 # Words that recall a value of an earlier step.
 [recalled]
-it = ["eso", "esto", "lo", "la"]
+it = ["eso", "esto"]
 one = ["uno", "una", "ello"]
 that = ["ese", "esa", "esos", "esas", "aquel", "aquella", "aquellos", "aquellas", "este", "esta", "estos", "estas"]
 owns = ["el", "la", "los", "las", "mi", "mis", "nuestro", "nuestra", "nuestros", "nuestras"]
@@ -640,7 +634,6 @@ introduces = [
   "asunto",
   "acerca de",
   "respecto a",
-  "sobre todo",
   "que",
   "diciendo",
   "hasta",
@@ -652,7 +645,7 @@ to_self = ["a mí", "a mí mismo", "a mi", "para mí", "para mi", "me"]
 
 # The endings a word takes: a stem's, a plural's, a possessive's, a tense's.
 [endings]
-stem = [["ción", "ción"], ["ces", "z"], ["es", ""], ["s", ""]]
+stem = [["ones", "ón"], ["ces", "z"], ["es", ""], ["e", ""], ["s", ""]]
 plural = ["s", "es"]
 possessive = ["'s", "’s"]
 tense = [
@@ -688,9 +681,9 @@ tense = [
 
 # A number said in words: a tens word, «y» and a ones word, «treinta y uno»; the twenties as one word, «veintiuno»; the hundreds as one word, «doscientos»; the comma before a fraction, «1,5».
 [numbers]
-ones             = { cero = 0, uno = 1, un = 1, una = 1, dos = 2, tres = 3, cuatro = 4, cinco = 5, seis = 6, siete = 7, ocho = 8, nueve = 9, diez = 10, once = 11, doce = 12, trece = 13, catorce = 14, quince = 15, "dieciséis" = 16, dieciseis = 16, diecisiete = 17, dieciocho = 18, diecinueve = 19, veintiuno = 21, veintiuna = 21, "veintidós" = 22, veintidos = 22, "veintitrés" = 23, veintitres = 23, veinticuatro = 24, veinticinco = 25, "veintiséis" = 26, veintiseis = 26, veintisiete = 27, veintiocho = 28, veintinueve = 29 }
+ones             = { cero = 0, uno = 1, un = 1, una = 1, dos = 2, tres = 3, cuatro = 4, cinco = 5, seis = 6, siete = 7, ocho = 8, nueve = 9, diez = 10, once = 11, doce = 12, trece = 13, catorce = 14, quince = 15, "dieciséis" = 16, dieciseis = 16, diecisiete = 17, dieciocho = 18, diecinueve = 19, veintiuno = 21, veintiuna = 21, "veintidós" = 22, veintidos = 22, "veintitrés" = 23, veintitres = 23, veinticuatro = 24, veinticinco = 25, "veintiséis" = 26, veintiseis = 26, veintisiete = 27, veintiocho = 28, veintinueve = 29, "veintiún" = 21, veintiun = 21 }
 tens             = { veinte = 20, treinta = 30, cuarenta = 40, cincuenta = 50, sesenta = 60, setenta = 70, ochenta = 80, noventa = 90 }
-scale            = { cien = 100, ciento = 100, doscientos = 200, trescientos = 300, cuatrocientos = 400, quinientos = 500, seiscientos = 600, setecientos = 700, ochocientos = 800, novecientos = 900, mil = 1000 }
+scale            = { cien = 100, ciento = 100, doscientos = 200, trescientos = 300, cuatrocientos = 400, quinientos = 500, seiscientos = 600, setecientos = 700, ochocientos = 800, novecientos = 900, mil = 1000, doscientas = 200, trescientas = 300, cuatrocientas = 400, quinientas = 500, seiscientas = 600, setecientas = 700, ochocientas = 800, novecientas = 900 }
 beyond           = ["millón", "millon", "millones", "mil millones", "billón", "billones"]
 article          = ["un", "una", "uno"]
 and              = ["y"]
@@ -702,7 +695,7 @@ and_a_half       = ["y medio", "y media"]
 compose          = "tens-ones"
 joiner           = "y"
 fused            = false
-teens_after_tens = false
+teens_after_tens = []
 years_in_pairs   = false
 decimal_mark     = ","
 group_mark       = "."
@@ -710,13 +703,13 @@ percent          = ["por ciento", "porciento"]
 
 # An ordinal: a day of the month, a place among several.
 [ordinals]
-words    = { primero = 1, primera = 1, primer = 1, segundo = 2, segunda = 2, tercero = 3, tercera = 3, tercer = 3, cuarto = 4, cuarta = 4, quinto = 5, quinta = 5, sexto = 6, sexta = 6, "séptimo" = 7, "séptima" = 7, octavo = 8, octava = 8, noveno = 9, novena = 9, "décimo" = 10, "décima" = 10, "undécimo" = 11, undecimo = 11, "duodécimo" = 12, duodecimo = 12, decimotercero = 13, decimocuarto = 14, decimoquinto = 15, "vigésimo" = 20, vigesimo = 20, "trigésimo" = 30, trigesimo = 30 }
+words    = { primero = 1, primera = 1, primer = 1 }
 suffixes = { other = "º", 1 = "º" }
 picks    = { primero = 0, primera = 0, primer = 0, segundo = 1, segunda = 1, tercero = 2, tercera = 2, tercer = 2, cuarto = 3, cuarta = 3, "último" = -1, "última" = -1, ultimo = -1, ultima = -1 }
 
 # The days: recurrences, the words around a date, and the day words themselves.
 [days]
-every = ["cada", "todos los", "todas las"]
+every = ["cada", "todos los", "todas las", "los", "las"]
 recurring = [
   "día",
   "dia",
@@ -728,7 +721,6 @@ recurring = [
   "noche",
   "día laborable",
   "fin de semana",
-  "finde",
   "trimestre",
   "fin de mes",
 ]
@@ -747,14 +739,32 @@ recurrences = [
   "cada semana",
   "cada mes",
 ]
-periods = ["semana", "semanas", "mes", "meses", "año", "años", "fin de semana", "finde", "trimestre", "quincena"]
+periods = ["semana", "semanas", "mes", "meses", "año", "años", "fin de semana", "trimestre", "quincena"]
 ahead = ["en", "dentro de"]
 from_now = ["a partir de hoy", "a partir de ahora", "desde hoy", "desde ahora"]
 the = ["el", "al", "del"]
 of = ["de"]
 day_after = ["el día después de", "el día siguiente a", "al día siguiente de"]
-noun_after = ["por la", "esta", "mañana por la", "cada", "de la"]
-never = ["mañanas", "marte", "martas", "lune", "lunas"]
+noun_after = ["la", "las", "esta", "cada"]
+never = [
+  "mañanas",
+  "marte",
+  "martas",
+  "lune",
+  "lunas",
+  "luces",
+  "partes",
+  "sacado",
+  "sacados",
+  "sabido",
+  "salado",
+  "dominio",
+  "dominios",
+  "jueces",
+  "nueves",
+  "mares",
+]
+which_after = true
 followers = [
   "a",
   "es",
@@ -767,8 +777,6 @@ followers = [
   "que viene",
   "hasta",
   "desde",
-  "de",
-  "del",
   "al",
   "en",
   "cae",
@@ -811,7 +819,7 @@ leads = [
 
 [days.which]
 next = ["próximo", "próxima", "proximo", "proxima", "que viene", "siguiente"]
-this = ["este", "esta", "esté"]
+this = ["este", "esta"]
 last = ["pasado", "pasada", "último", "última", "anterior"]
 
 [days.weekdays]
@@ -820,8 +828,8 @@ tuesday   = ["martes"]
 wednesday = ["miércoles", "miercoles"]
 thursday  = ["jueves"]
 friday    = ["viernes"]
-saturday  = ["sábado", "sabado"]
-sunday    = ["domingo"]
+saturday  = ["sábado", "sabado", "sábados", "sabados"]
+sunday    = ["domingo", "domingos"]
 
 [days.short]
 monday    = ["lun"]
@@ -862,7 +870,7 @@ saturday  = ["sáb"]
 [times]
 hour_cycle = 24
 half_to = []
-oclock = ["h", "horas", "hora", "hs"]
+oclock = ["h", "horas", "hora", "hs", "en punto"]
 at = [
   "a las",
   "a la",
@@ -875,24 +883,19 @@ at = [
   "entre las",
   "y las",
   "a eso de las",
-  "a",
-  "las",
 ]
 am = ["de la mañana", "por la mañana", "de la madrugada", "am", "a.m."]
 pm = ["de la tarde", "por la tarde", "de la noche", "por la noche", "pm", "p.m."]
-past = ["y"]
-to = ["menos"]
+past = []
+to = []
 
 [times.named]
 "12:00" = ["mediodía", "mediodia"]
 "00:00" = ["medianoche"]
 
 [times.minutes_past]
-15 = ["y cuarto"]
-30 = ["y media"]
 
 [times.minutes_to]
-15 = ["menos cuarto"]
 
 # A length of time, its units in seconds: the form shown for one, then for more than one, then the short forms.
 [durations.units]
@@ -902,10 +905,8 @@ to = ["menos"]
 
 [durations.articles]
 "0.25" = ["un cuarto de", "cuarto de"]
-"0.5"  = ["media", "medio", "media hora de"]
-"1.5"  = ["una y media", "hora y media"]
+"0.5"  = ["media", "medio"]
 1      = ["una", "un"]
-"2.5"  = ["dos y media"]
 "0.75" = ["tres cuartos de"]
 
 # An amount in a currency.
@@ -941,10 +942,9 @@ codes = [
 [amounts.words]
 EUR = ["euro", "euros", "eur", "pavos"]
 USD = ["dólar", "dólares", "dolar", "dolares"]
-GBP = ["libra", "libras", "libra esterlina", "libras esterlinas"]
-CHF = ["franco", "francos", "franco suizo", "francos suizos"]
+GBP = ["libra", "libras"]
+CHF = ["franco", "francos"]
 JPY = ["yen", "yenes"]
-MXN = ["peso", "pesos", "peso mexicano", "pesos mexicanos"]
 
 # A value said aloud: the signs by their names, and the words a code or a link is said with.
 [spoken]

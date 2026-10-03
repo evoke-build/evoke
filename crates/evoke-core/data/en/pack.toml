@@ -305,7 +305,7 @@ compose          = "tens-ones"
 joiner           = ""
 years_in_pairs   = true
 fused            = false
-teens_after_tens = false
+teens_after_tens = []
 decimal_mark     = "."
 group_mark       = ","
 percent          = ["percent"]
@@ -329,6 +329,7 @@ of = ["of"]
 day_after = ["the day after"]
 noun_after = []
 never = []
+which_after = false
 followers = [
   "at",
   "is",

@@ -818,7 +818,7 @@ and_a_half       = ["und eine halbe", "und einen halben", "einhalb"]
 compose          = "ones-tens"
 joiner           = "und"
 fused            = true
-teens_after_tens = false
+teens_after_tens = []
 years_in_pairs   = false
 decimal_mark     = ","
 group_mark       = "."
@@ -883,6 +883,7 @@ of = []
 day_after = ["der tag nach", "den tag nach"]
 noun_after = ["guten", "am", "heute", "gestern", "vorgestern", "jeden", "diesen", "ganzen"]
 never = ["dienst", "dienste", "diensten", "montage", "montagen", "leute", "leuten"]
+which_after = false
 followers = [
   "um",
   "ist",

@@ -378,7 +378,7 @@ fn amount(lexicon: &Lexicon, chars: &[char], i: usize) -> Scan {
         (figure.value, figure.end, false)
     } else if let Some((tokens, end)) = run(lexicon, chars, i) {
         // A run of number words reads whole or not at all: one that fits no form is passed over.
-        match figure_value(&tokens, lexicon.teens_after_tens()) {
+        match figure_value(&tokens, lexicon) {
             Some(value) => (value, end, false),
             None => return Scan::Skip(end),
         }
@@ -478,70 +478,75 @@ fn two_or_more_digits(chars: &[char], at: usize, count: usize) -> bool {
 /// A figure in words, bounded: `<small>`, `a hundred [and <small>]`, `<small> hundred [and <small>]`, and with
 /// `thousand` before any of those: `twelve hundred`, `one thousand two hundred and fifty`, `two thousand and
 /// seventeen`, `a thousand`. Read only before a currency; a run that fits no form is nothing.
-fn figure_value(tokens: &[Token], teens: bool) -> Option<f64> {
+fn figure_value(tokens: &[Token], lexicon: &Lexicon) -> Option<f64> {
     let (thousands, rest) = match tokens.iter().position(|token| *token == Token::Thousand) {
         Some(at) => (
-            Some(thousands_head(&tokens[..at], teens)?),
+            Some(thousands_head(&tokens[..at], lexicon)?),
             &tokens[at + 1..],
         ),
         None => (None, tokens),
     };
     let rest = match (rest, thousands) {
         ([], Some(_)) => 0.0,
-        ([Token::And, small @ ..], Some(_)) => small_value(small, teens)?,
-        (rest, _) => hundreds_or_small(rest, teens)?,
+        ([Token::And, small @ ..], Some(_)) => small_value(small, lexicon)?,
+        (rest, _) => hundreds_or_small(rest, lexicon)?,
     };
     Some(thousands.unwrap_or(0.0) * 1000.0 + rest)
 }
 
 /// What stands before `thousand`: `a`, a small number, or hundreds.
-fn thousands_head(tokens: &[Token], teens: bool) -> Option<f64> {
+fn thousands_head(tokens: &[Token], lexicon: &Lexicon) -> Option<f64> {
     match tokens {
         [Token::A] => Some(1.0),
-        [Token::Ones(_) | Token::Tens(_) | Token::Fused(_), ..] => hundreds_or_small(tokens, teens),
+        [Token::Ones(_) | Token::Tens(_) | Token::Fused(_), ..] => {
+            hundreds_or_small(tokens, lexicon)
+        }
         _ => None,
     }
 }
 
 /// `<small>`, `a hundred [[and] <small>]` or `<small> hundred [[and] <small>]`.
-fn hundreds_or_small(tokens: &[Token], teens: bool) -> Option<f64> {
+fn hundreds_or_small(tokens: &[Token], lexicon: &Lexicon) -> Option<f64> {
     if let [Token::A, Token::Hundred, rest @ ..] = tokens {
-        return Some(100.0 + after_hundred(rest, teens)?);
+        return Some(100.0 + after_hundred(rest, lexicon)?);
     }
     if let [Token::Hundred, rest @ ..] = tokens {
-        return Some(100.0 + after_hundred(rest, teens)?);
+        return Some(100.0 + after_hundred(rest, lexicon)?);
     }
-    let (small, rest) = small_prefix(tokens, teens)?;
+    let (small, rest) = small_prefix(tokens, lexicon)?;
     match rest {
         [] => Some(small),
-        [Token::Hundred, rest @ ..] => Some(small * 100.0 + after_hundred(rest, teens)?),
+        [Token::Hundred, rest @ ..] => Some(small * 100.0 + after_hundred(rest, lexicon)?),
         _ => None,
     }
 }
 
 /// What follows «hundred»: nothing, or a small number, with «and» before it or without.
-fn after_hundred(tokens: &[Token], teens: bool) -> Option<f64> {
+fn after_hundred(tokens: &[Token], lexicon: &Lexicon) -> Option<f64> {
     match tokens {
         [] => Some(0.0),
-        [Token::And, small @ ..] | small => small_value(small, teens),
+        [Token::And, small @ ..] | small => small_value(small, lexicon),
     }
 }
 
 /// A small number alone: one word to ninety, or a tens word joined to a word from one to nine.
-fn small_value(tokens: &[Token], teens: bool) -> Option<f64> {
-    let (small, rest) = small_prefix(tokens, teens)?;
+fn small_value(tokens: &[Token], lexicon: &Lexicon) -> Option<f64> {
+    let (small, rest) = small_prefix(tokens, lexicon)?;
     rest.is_empty().then_some(small)
 }
 
 /// A small number at the head of the run: a tens word with a ones word after it — joined by the pack's joiner,
-/// «vingt et un», or a teen where the pack adds one, «soixante-douze» — else one word of the tables.
+/// «vingt et un», or a teen where the pack adds one to that tens word, «soixante-douze» — else one word of the
+/// tables.
 #[expect(clippy::cast_precision_loss)] // a number said in words is small
-fn small_prefix(tokens: &[Token], with_teens: bool) -> Option<(f64, &[Token])> {
-    let adds = |ones: &u32| (1..=9).contains(ones) || (with_teens && (10..=19).contains(ones));
+fn small_prefix<'t>(tokens: &'t [Token], lexicon: &Lexicon) -> Option<(f64, &'t [Token])> {
+    let adds = |tens: &u32, ones: &u32| {
+        (1..=9).contains(ones) || (lexicon.teens_after(*tens) && (10..=19).contains(ones))
+    };
     match tokens {
         [Token::Tens(tens), Token::Ones(ones), rest @ ..]
         | [Token::Tens(tens), Token::And, Token::Ones(ones), rest @ ..]
-            if adds(ones) =>
+            if adds(tens, ones) =>
         {
             Some((f64::from(tens + ones), rest))
         }
@@ -768,6 +773,25 @@ fn weekday(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
             && let Some(joined) = weekday_day(lexicon, chars, i, end)
         {
             return Some(joined);
+        }
+        // «lundi dernier», «el viernes pasado»: the which-word after the day, where the pack puts it there.
+        if which.is_none() && lexicon.grammar().iter().any(|pack| pack.days.which_after) {
+            let k = skip_space(chars, end);
+            if k > end
+                && let Some((form, wend)) = lexicon
+                    .named(|pack| &pack.days.which)
+                    .into_iter()
+                    .find_map(|(word, form)| phrase_end(chars, k, word).map(|wend| (form, wend)))
+            {
+                return Some(found(
+                    i,
+                    wend,
+                    Read::Date(Day::Weekday {
+                        weekday,
+                        which: pack::which(form),
+                    }),
+                ));
+            }
         }
         return Some(found(i, end, Read::Date(Day::Weekday { weekday, which })));
     }
@@ -1375,10 +1399,17 @@ fn digital(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
         {
             return None;
         }
+        // Two figures right after the attached word are the minutes: «14h30».
+        let (minute, end) = match two_digit_minutes(chars, oc).filter(|_| attached) {
+            Some(minute) if minute < 60 && !chars.get(oc + 2).is_some_and(|&c| is_word(c)) => {
+                (minute, oc + 2)
+            }
+            _ => (0, oc),
+        };
         if (two || lexicon.hour_cycle() == 24) && hour <= 23 {
-            return Some(timed(i, oc, hour, 0, None));
+            return Some(timed(i, end, hour, minute, None));
         }
-        return Some(Scan::Hide(oc));
+        return Some(Scan::Hide(end));
     }
     if let Some(minute) = minute
         && ends_word(chars, j)
@@ -1490,10 +1521,20 @@ fn half_letters(lexicon: &Lexicon) -> Option<(char, char)> {
     Some((first(|pack| &pack.times.am)?, first(|pack| &pack.times.pm)?))
 }
 
-/// `o'clock` in its spellings, after one space at most.
+/// `o'clock` in its spellings, after one space at most, or attached to the figure where the pack's word allows it:
+/// «9h», «14h30».
 fn oclock_at(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<usize> {
     let j = skip_space(chars, i);
-    phrase_in(chars, j, &lexicon.phrases(|pack| &pack.times.oclock))
+    let phrases = lexicon.phrases(|pack| &pack.times.oclock);
+    phrase_in(chars, j, &phrases).or_else(|| {
+        if j != i {
+            return None;
+        }
+        phrases.iter().find_map(|word| {
+            let end = lowered_end(chars, i, word)?;
+            (!chars.get(end).is_some_and(|&c| c.is_alphabetic())).then_some(end)
+        })
+    })
 }
 
 /// Whether the o'clock word found from `i` to `end` is also a unit of time the packs list, «heures», «h».
@@ -1529,15 +1570,19 @@ fn at_before(lexicon: &Lexicon, chars: &[char], i: usize) -> bool {
 
 /// An hour word, `one` to `twelve`, at a word boundary.
 fn hour_word(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(u8, usize)> {
-    let (word, end) = word_at(chars, i)?;
-    let hour = ones(lexicon, &word)?;
-    (hour <= 12 && boundary(chars, i)).then_some((hour, end))
+    if !boundary(chars, i) {
+        return None;
+    }
+    // «dix-sept heures» on a 24-hour clock; to twelve where a half of the day is needed.
+    let most = if lexicon.hour_cycle() == 24 { 23 } else { 12 };
+    let (hour, end) = small_words(lexicon, chars, i)?;
+    (hour <= most).then_some((hour, end))
 }
 
 /// `thirty`, `fifteen`, `forty five`, `oh five`: minutes after an hour word.
 fn minute_words(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(u8, usize)> {
     let (word, end) = word_at(chars, i)?;
-    if lexicon.holds(|pack| &pack.numbers.oh, &word)
+    if lexicon.grammar_holds(|pack| &pack.numbers.oh, &word)
         && let Some((next, nend)) = word_at(chars, skip_space(chars, end))
         && let Some(minute) = ones(lexicon, &next)
         && minute < 10
@@ -1570,7 +1615,7 @@ fn small_words(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(u8, usize
         Token::Tens(tens) => {
             // «twenty one», «vingt-deux», «vingt et un»; «soixante-douze» where the pack adds a teen.
             let adds = |ones: u32| {
-                (1..=9).contains(&ones) || (lexicon.teens_after_tens() && (10..=19).contains(&ones))
+                (1..=9).contains(&ones) || (lexicon.teens_after(tens) && (10..=19).contains(&ones))
             };
             if matches!(chars.get(end), Some(' ' | '-'))
                 && let Some((next, nend)) = token_at(lexicon, chars, end + 1)
@@ -1817,7 +1862,7 @@ fn words(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Words> {
     let (tokens, end) = run(lexicon, chars, i)?;
     Some(Words {
         end,
-        value: hundreds_or_small(&tokens, lexicon.teens_after_tens()),
+        value: hundreds_or_small(&tokens, lexicon),
     })
 }
 
