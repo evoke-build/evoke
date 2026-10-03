@@ -139,7 +139,7 @@ pub fn proposed(
         .iter()
         .filter(|token| {
             !token.plain.is_empty()
-                && !words::function(&token.plain)
+                && !words::function(&lexicon, &token.plain)
                 && !words::names(&token.plain, reflex)
                 && !own.contains(&token.plain)
                 && !found

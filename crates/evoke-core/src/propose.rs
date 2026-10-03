@@ -359,7 +359,7 @@ fn amount(lexicon: &Lexicon, chars: &[char], i: usize) -> Scan {
             return Scan::Nothing;
         }
         let j = skip_space(chars, i + 1);
-        let Some(figure) = figure(chars, j) else {
+        let Some(figure) = figure(lexicon, chars, j) else {
             return Scan::Nothing;
         };
         let scaled = chars
@@ -374,7 +374,7 @@ fn amount(lexicon: &Lexicon, chars: &[char], i: usize) -> Scan {
         }
         return moneyed(i, figure.end, figure.value, currency);
     }
-    let (value, end, article) = if let Some(figure) = figure(chars, i) {
+    let (value, end, article) = if let Some(figure) = figure(lexicon, chars, i) {
         (figure.value, figure.end, false)
     } else if let Some((tokens, end)) = run(lexicon, chars, i) {
         // A run of number words reads whole or not at all: one that fits no form is passed over.
@@ -388,11 +388,25 @@ fn amount(lexicon: &Lexicon, chars: &[char], i: usize) -> Scan {
         return Scan::Nothing;
     };
     let j = skip_space(chars, end);
+    // A symbol after the figure, «12 €», where a pack that reads the text writes it so.
+    if lexicon.symbol_after()
+        && !article
+        && let Some(after) = chars.get(j)
+        && let Some((_, currency)) = lexicon
+            .packs()
+            .iter()
+            .flat_map(|pack| pack.amounts.symbols.iter())
+            .find(|(symbol, _)| symbol.chars().eq(std::iter::once(*after)))
+        && ends_word(chars, j + 1)
+    {
+        return moneyed(i, j + 1, value, currency);
+    }
     let Some((word, wend)) = word_at(chars, j) else {
         return Scan::Nothing;
     };
     if let Some(currency) = lexicon.form_of(|pack| &pack.amounts.words, &word) {
-        if lexicon.holds(|pack| &pack.amounts.singular, &word) && (value - 1.0).abs() > f64::EPSILON
+        if lexicon.grammar_holds(|pack| &pack.amounts.singular, &word)
+            && (value - 1.0).abs() > f64::EPSILON
         {
             return Scan::Nothing;
         }
@@ -422,27 +436,31 @@ struct Figure {
     dotted: bool,
 }
 
-/// A figure at `i` with thousands groups and a fraction: `1,200`, `19.99`, `1,234.56`.
-fn figure(chars: &[char], i: usize) -> Option<Figure> {
+/// A figure at `i` with thousands groups and a fraction, the marks as the packs that read the text write them:
+/// `1,200`, `19.99`, `1,234.56`; `1.200`, `19,99` where the fraction's mark is the comma.
+fn figure(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Figure> {
     if !boundary(chars, i) {
         return None;
     }
+    let decimal = lexicon.decimal_mark().unwrap_or('.');
+    let group = if decimal == '.' { ',' } else { '.' };
     let digits = digit_run(chars, i)?;
     let mut j = digits;
-    while chars.get(j) == Some(&',')
+    while chars.get(j) == Some(&group)
         && two_or_more_digits(chars, j + 1, 3)
         && !chars.get(j + 4).is_some_and(|c| text::figure(*c))
     {
         j += 4;
     }
     let grouped = j > digits;
-    let mut text: String = chars[i..j].iter().filter(|c| **c != ',').collect();
+    let mut text: String = chars[i..j].iter().filter(|c| **c != group).collect();
     let mut end = j;
     let mut fraction = 0;
-    if chars.get(j) == Some(&'.') && chars.get(j + 1).is_some_and(|c| text::figure(*c)) {
+    if chars.get(j) == Some(&decimal) && chars.get(j + 1).is_some_and(|c| text::figure(*c)) {
         end = digit_run(chars, j + 1)?;
         fraction = end - j - 1;
-        text.extend(&chars[j..end]);
+        text.push('.');
+        text.extend(&chars[j + 1..end]);
     }
     let value: f64 = text.parse().ok()?;
     value.is_finite().then_some(Figure {
@@ -477,7 +495,7 @@ fn figure_value(tokens: &[Token]) -> Option<f64> {
 fn thousands_head(tokens: &[Token]) -> Option<f64> {
     match tokens {
         [Token::A] => Some(1.0),
-        [Token::Ones(_) | Token::Tens(_), ..] => hundreds_or_small(tokens),
+        [Token::Ones(_) | Token::Tens(_) | Token::Fused(_), ..] => hundreds_or_small(tokens),
         _ => None,
     }
 }
@@ -509,12 +527,14 @@ fn small_value(tokens: &[Token]) -> Option<f64> {
     rest.is_empty().then_some(small)
 }
 
+#[expect(clippy::cast_precision_loss)] // a number said in words is small
 fn small_prefix(tokens: &[Token]) -> Option<(f64, &[Token])> {
     match tokens {
         [Token::Tens(tens), Token::Ones(ones), rest @ ..] if (1..=9).contains(ones) => {
             Some((f64::from(tens + ones), rest))
         }
         [Token::Tens(value) | Token::Ones(value), rest @ ..] => Some((f64::from(*value), rest)),
+        [Token::Fused(value), rest @ ..] => Some((*value as f64, rest)),
         _ => None,
     }
 }
@@ -643,6 +663,10 @@ fn dated(start: usize, end: usize, day: Option<Day>) -> Scan {
 /// A relative day, `today`, `tonight`, `tomorrow`, `yesterday`, `the day after tomorrow`, a plural's ending
 /// read with it and a possessive left outside the span.
 fn day_word(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
+    // After some words the day's word is a plain noun: «guten Morgen».
+    if lexicon.holds(|pack| &pack.days.noun_after, &before_word(chars, i)) {
+        return None;
+    }
     let plurals = lexicon.phrases(|pack| &pack.endings.plural);
     for (word, form) in lexicon.named(|pack| &pack.days.relative) {
         let days: i32 = form.parse().ok()?;
@@ -652,10 +676,33 @@ fn day_word(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
                 .find_map(|ending| phrase(chars, i, &format!("{word}{ending}")))
         });
         if let Some(end) = end {
+            // A word that names a half of the day, «morgens», is no day.
+            let whole: String = chars[i..end].iter().flat_map(|c| fold_char(*c)).collect();
+            if lexicon.holds(|pack| &pack.times.am, &whole)
+                || lexicon.holds(|pack| &pack.times.pm, &whole)
+            {
+                return None;
+            }
             return Some(dated(i, end, Day::offset(days)));
         }
     }
     None
+}
+
+/// The word before `i`, as `fold` writes it, the spaces between skipped; empty where none stands there.
+fn before_word(chars: &[char], i: usize) -> String {
+    let mut end = i;
+    while end > 0 && chars[end - 1].is_whitespace() {
+        end -= 1;
+    }
+    let mut start = end;
+    while start > 0 && chars[start - 1].is_alphabetic() {
+        start -= 1;
+    }
+    chars[start..end]
+        .iter()
+        .flat_map(|c| fold_char(*c))
+        .collect()
 }
 
 /// `every monday`, `each sunday`, `everyday`: passed over whole, hiding what they name.
@@ -954,8 +1001,15 @@ fn ordinal_at(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(u8, usize)
             .flat_map(|pack| pack.ordinals.suffixes.all())
             .collect();
         suffixes.sort_by_key(|suffix| Reverse(suffix.chars().count()));
+        // An ending of marks alone, «5.», is an ordinal's only where a word follows it.
         let after = suffixes.iter().find_map(|suffix| {
-            lowered_end(chars, end, suffix).filter(|&at| ends_word(chars, at))
+            lowered_end(chars, end, suffix).filter(|&at| {
+                ends_word(chars, at)
+                    && (suffix.chars().any(char::is_alphabetic)
+                        || chars
+                            .get(skip_space(chars, at))
+                            .is_some_and(|c| c.is_alphanumeric()))
+            })
         })?;
         return (1..=31)
             .contains(&day)
@@ -1119,6 +1173,7 @@ fn time(lexicon: &Lexicon, chars: &[char], i: usize) -> Scan {
         return Scan::Nothing;
     }
     named_time(lexicon, chars, i)
+        .or_else(|| half_to(lexicon, chars, i))
         .or_else(|| past_or_to(lexicon, chars, i))
         .or_else(|| minutes_past_or_to(lexicon, chars, i))
         .or_else(|| digital(lexicon, chars, i))
@@ -1297,7 +1352,7 @@ fn digital(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
         {
             return Some(timed(i, mend, hour, 0, Some(half)));
         }
-        if two && hour <= 23 {
+        if (two || lexicon.hour_cycle() == 24) && hour <= 23 {
             return Some(timed(i, oc, hour, 0, None));
         }
         return Some(Scan::Hide(oc));
@@ -1359,8 +1414,26 @@ fn spoken(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
     let oc = oclock_at(lexicon, chars, k)?;
     Some(match meridiem_at(lexicon, chars, oc) {
         Some((half, mend)) => timed(i, mend, hour, minute, Some(half)),
+        None if lexicon.hour_cycle() == 24 => timed(i, oc, hour, minute, None),
         None => Scan::Nothing,
     })
+}
+
+/// «halb drei», half an hour before the hour named, where the pack says it so: on the 24-hour clock the hour as
+/// said, else hidden whole, since its half of the day is not said.
+fn half_to(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
+    let end = phrase_in(chars, i, &lexicon.phrases(|pack| &pack.times.half_to))?;
+    let k = skip_space(chars, end);
+    let (hour, hend) = hour_word(lexicon, chars, k).or_else(|| {
+        digits_at(chars, k).and_then(|(hour, end)| Some((u8::try_from(hour).ok()?, end)))
+    })?;
+    if !(1..=12).contains(&hour) {
+        return None;
+    }
+    if lexicon.hour_cycle() == 24 {
+        return Some(timed(i, hend, hour - 1, 30, None));
+    }
+    Some(Scan::Hide(hend))
 }
 
 /// A half of the day as the packs write it, in any case, after one space at most: `am`, `pm`, `a.m.`, `p.m.`,
@@ -1444,7 +1517,14 @@ fn small_words(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(u8, usize
         }
         return Some((tens, end));
     }
-    ones(lexicon, &word).map(|ones| (ones, end))
+    ones(lexicon, &word)
+        .or_else(|| {
+            lexicon
+                .number(&word)
+                .filter(|value| *value < 100)
+                .and_then(|value| u8::try_from(value).ok())
+        })
+        .map(|ones| (ones, end))
 }
 
 /// A number word to nineteen, as a small number reads it.
@@ -1503,7 +1583,7 @@ fn before_unit(lexicon: &Lexicon, chars: &[char], i: usize) -> Before {
     if i > 0 && chars[i - 1] == '-' && (i == 1 || !is_word(chars[i - 2])) {
         return Before::Nothing;
     }
-    match decimal(chars, i) {
+    match decimal(lexicon, chars, i) {
         Some((value, end)) => Before::Read(value, end, true),
         None => Before::Nothing,
     }
@@ -1546,7 +1626,8 @@ fn number(lexicon: &Lexicon, chars: &[char], i: usize) -> Scan {
             let signed = chars[i] == '-'
                 && chars.get(i + 1).is_some_and(|c| text::figure(*c))
                 && (i == 0 || !is_word(chars[i - 1]));
-            let Some((value, after)) = decimal(chars, if signed { i + 1 } else { i }) else {
+            let Some((value, after)) = decimal(lexicon, chars, if signed { i + 1 } else { i })
+            else {
                 return Scan::Nothing;
             };
             (if signed { -value } else { value }, after)
@@ -1581,6 +1662,9 @@ enum Token {
     A,
     /// «and», after «hundred» or a word beyond it and before a number word: «a hundred and fifty».
     And,
+    /// A number said as one word that is no single word of the tables, as a pack that writes a number's words as
+    /// one has it: «einundzwanzig», «zweihundert».
+    Fused(u64),
 }
 
 /// A word as a token of a run of number words, as the packs list the words: the ones, the tens, the scale words
@@ -1607,7 +1691,7 @@ fn token(lexicon: &Lexicon, word: &str) -> Option<Token> {
     if lexicon.holds(|pack| &pack.numbers.and, word) {
         return Some(Token::And);
     }
-    None
+    lexicon.number(word).map(Token::Fused)
 }
 
 /// The word at `at`, in any letter case, as a token, with where it ends.
@@ -1715,22 +1799,28 @@ fn half_after(lexicon: &Lexicon, chars: &[char], at: usize) -> Option<usize> {
         .find_map(|words| phrase_end(chars, after, words))
 }
 
-/// The unit at `at`, as typed, and its seconds, the longest form first; a one-letter form, `10m`, only after a
-/// number.
+/// The unit at `at` and its seconds, the longest form first, in any letter case; a one-letter form, `10m`, only
+/// after a number and as typed, since a capital letter is a code's, «2 H K L».
 fn unit(lexicon: &Lexicon, chars: &[char], at: usize, letters: bool) -> Option<(usize, f64)> {
     lexicon
         .named(|pack| &pack.durations.units)
         .into_iter()
         .filter(|(unit, _)| letters || unit.chars().count() > 1)
         .find_map(|(unit, form)| {
-            let end = unit_end(chars, at, unit)?;
+            let end = if unit.chars().count() == 1 {
+                let end = at + 1;
+                (starts_with(chars, at, unit) && !chars.get(end).is_some_and(|&c| is_word(c)))
+                    .then_some(end)?
+            } else {
+                unit_end(chars, at, unit)?
+            };
             Some((end, form.parse::<f64>().ok()?))
         })
 }
 
 /// `\b\d+(\.\d+)?` at `i`: the number and where it ends; digits past what a number holds are no candidate, and
 /// neither are the digits after a digit and a comma or a point, `000` in `1,000` and `4` in `0.4`.
-fn decimal(chars: &[char], i: usize) -> Option<(f64, usize)> {
+fn decimal(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(f64, usize)> {
     let inside = i >= 2 && matches!(chars[i - 1], ',' | '.') && text::figure(chars[i - 2]);
     if !text::figure(chars[i]) || (i > 0 && is_word(chars[i - 1])) || inside {
         return None;
@@ -1741,11 +1831,16 @@ fn decimal(chars: &[char], i: usize) -> Option<(f64, usize)> {
             .take_while(|c| text::figure(**c))
             .count()
     };
+    let mark = lexicon.decimal_mark().unwrap_or('.');
     let mut end = digits(i);
-    if chars.get(end) == Some(&'.') && chars.get(end + 1).is_some_and(|c| text::figure(*c)) {
-        end = digits(end + 1);
+    let mut text: String = chars[i..end].iter().collect();
+    if chars.get(end) == Some(&mark) && chars.get(end + 1).is_some_and(|c| text::figure(*c)) {
+        let fraction = digits(end + 1);
+        text.push('.');
+        text.extend(&chars[end + 1..fraction]);
+        end = fraction;
     }
-    let value: f64 = chars[i..end].iter().collect::<String>().parse().ok()?;
+    let value: f64 = text.parse().ok()?;
     value.is_finite().then_some((value, end))
 }
 
@@ -1784,10 +1879,9 @@ fn skip_space(chars: &[char], at: usize) -> usize {
     }
 }
 
-/// Where `unit` ends when it stands at `at`, as typed, and no word continues it.
+/// Where `unit`, lower case, ends when it stands at `at` in any letter case, and no word continues it.
 fn unit_end(chars: &[char], at: usize, unit: &str) -> Option<usize> {
-    let end = at + unit.chars().count();
-    (starts_with(chars, at, unit) && !chars.get(end).is_some_and(|&c| is_word(c))).then_some(end)
+    lowered_end(chars, at, unit).filter(|&end| !chars.get(end).is_some_and(|&c| is_word(c)))
 }
 
 /// Where `text`, words in any letter case, ends when it stands at `at` and no word continues it.
@@ -1955,7 +2049,8 @@ mod tests {
             spans("twenty five or twenty-five"),
             [(0, 11, number(25.0)), (15, 26, number(25.0))]
         );
-        assert_eq!(spans("One Hundred Percent"), [(0, 11, number(100.0))]);
+        // A unit reads in any letter case.
+        assert_eq!(spans("One Hundred Percent"), [(0, 19, number(100.0))]);
         assert_eq!(spans("one hundred percent"), [(0, 19, number(100.0))]);
         assert_eq!(
             spans("two hundred, a hundred and fifty or three hundred forty seven"),

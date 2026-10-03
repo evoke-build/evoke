@@ -86,10 +86,11 @@ pub(crate) struct Token {
     pub plain: String,
 }
 
-/// Whether a word carries no value by itself: an article, a pronoun, a preposition, an auxiliary, a courtesy, a
-/// greeting. A run of them alone is no run, and none of them is a listed word misspelt or a word of a meaning.
-pub(crate) fn function(word: &str) -> bool {
-    pack::lexicon(word).holds(|pack| &pack.words.function, &fold(word))
+/// Whether a word carries no value by itself in a text the lexicon reads: an article, a pronoun, a preposition, an
+/// auxiliary, a courtesy, a greeting. A run of them alone is no run, and none of them is a listed word misspelt or
+/// a word of a meaning.
+pub(crate) fn function(lexicon: &Lexicon, word: &str) -> bool {
+    lexicon.holds(|pack| &pack.words.function, &fold(word))
 }
 
 /// The longest of `phrases` that stands at `at` among the words, each word as `fold` writes it: how many words it
@@ -210,12 +211,17 @@ fn holding(
                 Some((How::Same, 0))
             } else if run == spaced || tight == key || tight == joined || run == joined {
                 Some((How::Form, 0))
-            } else if n == 1 && stem(lexicon, &run) == stem(lexicon, key) {
+            } else if n == 1
+                && stem(lexicon, &run) == stem(lexicon, key)
+                && (crate::otherwise::given(key) || !crate::otherwise::given(&run))
+            {
+                // A stem meets its word, unless the word whole is a given name the listed word is not: «Andreas»
+                // is no «Andrea».
                 Some((How::Stem, 0))
             } else if n == 1
                 && radius > 0
                 && run.chars().all(char::is_alphabetic)
-                && !function(&run)
+                && !function(lexicon, &run)
             {
                 let distance =
                     distance(&run, key).min(distance(&stem(lexicon, &run), &stem(lexicon, key)));
@@ -240,7 +246,7 @@ fn said_of(lexicon: &Lexicon, meaning: &Clean) -> Vec<String> {
         .split(|c: char| !c.is_alphanumeric())
         .filter(|word| {
             word.chars().count() > 3
-                && !function(word)
+                && !function(lexicon, word)
                 && !lexicon.holds(|pack| &pack.words.kind, word)
         })
         .map(str::to_owned)
@@ -268,7 +274,7 @@ fn meant(
         .position(|word| {
             let length = word.chars().count();
             length >= 4
-                && !function(word)
+                && !function(lexicon, word)
                 && said.iter().any(|meant| {
                     *meant == word
                         || stem(lexicon, meant) == stem(lexicon, word)
@@ -425,7 +431,7 @@ pub fn spelled(input: &Input, kind: Recognizer, proposed: &[Proposed]) -> Vec<Sp
             aloud(&lexicon, input, &tokens, kind)
         }
         Recognizer::Code => {
-            let mut found = spaced(input, &tokens);
+            let mut found = spaced(&lexicon, input, &tokens);
             // The same words read both ways are a code typed with spaces.
             let again: Vec<Spelled> = aloud(&lexicon, input, &tokens, kind)
                 .into_iter()
@@ -487,6 +493,14 @@ fn figures(lexicon: &Lexicon, word: &str) -> Option<String> {
     lexicon
         .value(|pack| &pack.numbers.ones, &word)
         .map(|value| value.to_string())
+        .or_else(|| {
+            // A number said as one word the pack writes so, «fünfundvierzig».
+            lexicon
+                .number(&word)
+                .filter(|_| lexicon.value(|pack| &pack.numbers.tens, &word).is_none())
+                .filter(|_| lexicon.value(|pack| &pack.numbers.scale, &word).is_none())
+                .map(|value| value.to_string())
+        })
 }
 
 /// The first figure of a tens word: «twenty» is 2.
@@ -711,8 +725,10 @@ fn misspelt(lexicon: &Lexicon, input: &Input, tokens: &[Token]) -> Vec<Spelled> 
         let word = fold(&token.plain);
         let recurs = i > 0 && lexicon.holds(|pack| &pack.days.every, &fold(&tokens[i - 1].plain));
         if word.is_empty()
+            || function(lexicon, &word)
             || !word.chars().all(char::is_alphabetic)
             || weekdays.iter().any(|(day, ..)| *day == word)
+            || lexicon.holds(|pack| &pack.days.never, &word)
             || recurs
         {
             continue;
@@ -776,9 +792,9 @@ enum Part {
     None,
 }
 
-fn part(token: &Token, typed: &str) -> Part {
+fn part(lexicon: &Lexicon, token: &Token, typed: &str) -> Part {
     let typed_whole = !typed.is_empty() && typed.chars().all(text::latin_or_figure);
-    if !typed_whole || function(&token.plain) || token.from != token.start {
+    if !typed_whole || function(lexicon, &token.plain) || token.from != token.start {
         return Part::None;
     }
     let letters = typed.chars().filter(|c| text::latin(*c)).count();
@@ -803,7 +819,7 @@ const MOST_PARTS: usize = 6;
 /// in the code's grammar once joined. Letters before figures are a ticket, joined by a dash, «BR 1187»; any
 /// other run is joined by nothing, «C02 YT8 HNK P3W». A run opens with capitals, figures or two small letters,
 /// ends on capitals or figures, holds a figure, and stops at a mark: «BR 1187,» ends there.
-fn spaced(input: &Input, tokens: &[Token]) -> Vec<Spelled> {
+fn spaced(lexicon: &Lexicon, input: &Input, tokens: &[Token]) -> Vec<Spelled> {
     let typed: Vec<String> = tokens
         .iter()
         .map(|token| chars_of(input, token.from, token.to))
@@ -811,7 +827,7 @@ fn spaced(input: &Input, tokens: &[Token]) -> Vec<Spelled> {
     let parts: Vec<Part> = tokens
         .iter()
         .zip(&typed)
-        .map(|(token, typed)| part(token, typed))
+        .map(|(token, typed)| part(lexicon, token, typed))
         .collect();
     let mut found = Vec::new();
     let mut from = 0;

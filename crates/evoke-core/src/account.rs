@@ -147,7 +147,8 @@ pub(crate) fn runs(input: &Input, held: &[&Span]) -> Vec<Run> {
 
 /// The run between two places, less the words that carry nothing at its ends and the marks that close it.
 fn run(input: &Input, tokens: &[Token], from: usize, to: usize) -> Option<Run> {
-    let carries = |i: &usize| !words::function(&tokens[*i].plain);
+    let lexicon = pack::lexicon(input.as_str());
+    let carries = |i: &usize| !words::function(&lexicon, &tokens[*i].plain);
     let first = (from..=to).find(carries)?;
     let last = (from..=to).rev().find(carries)?;
     let chars: Vec<char> = input.as_str().chars().collect();
@@ -238,8 +239,9 @@ pub(crate) fn read(run: &Run, question: &Question, answer: &IndexMap<Key, Prob>)
 /// run was cut by, as `runs` took them.
 pub(crate) fn again(input: &Input, held: &[&Span], run: &Run) -> bool {
     let tokens = words::tokens(input.as_str());
+    let lexicon = pack::lexicon(input.as_str());
     let beside = |token: &Token| {
-        words::function(&token.plain)
+        words::function(&lexicon, &token.plain)
             && !held
                 .iter()
                 .any(|span| token.start < span.end() && token.end > span.start())
@@ -256,7 +258,6 @@ pub(crate) fn again(input: &Input, held: &[&Span], run: &Run) -> bool {
         .iter()
         .map(|token| fold(&token.plain))
         .collect();
-    let lexicon = pack::lexicon(input.as_str());
     lexicon
         .phrases(|pack| &pack.refer.again)
         .iter()
@@ -270,11 +271,12 @@ pub(crate) fn again(input: &Input, held: &[&Span], run: &Run) -> bool {
 
 /// Whether a run stands right after a value's words: only words that carry nothing, and marks, between the two.
 pub(crate) fn follows(input: &Input, value: &Span, run: &Span) -> bool {
+    let lexicon = pack::lexicon(input.as_str());
     run.start() >= value.end()
         && words::tokens(input.as_str())
             .iter()
             .filter(|token| token.start >= value.end() && token.end <= run.start())
-            .all(|token| token.plain.is_empty() || words::function(&token.plain))
+            .all(|token| token.plain.is_empty() || words::function(&lexicon, &token.plain))
 }
 
 /// The texts the input puts in quotes that none of the spans holds whole, each with its marks: a mark that opens a

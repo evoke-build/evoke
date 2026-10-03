@@ -1,0 +1,1070 @@
+# German, as evoke reads it: the words each stage of the reader proposes from, written lower case as they are
+# compared, each under the neutral form it stands for, the form shown first. A pack reads a sentence where the
+# sentence shows its words; the core holds no word of any language, only how a table is read.
+tag = "de"
+# Every noun is written with a capital, so a capital marks neither a name nor a code.
+capitals_mark_names = false
+
+# Where a request may be cut, and the words that set a part apart.
+[cut]
+then = [
+  "und dann",
+  "und danach",
+  "dann",
+  "danach",
+  "anschließend",
+  "anschliessend",
+  "und anschließend",
+  "und anschliessend",
+  "im anschluss",
+  "und im anschluss",
+  "zum schluss",
+  "und zum schluss",
+  "schließlich",
+  "und schließlich",
+  "und zuletzt",
+  "als nächstes",
+  "und als nächstes",
+  "abschließend",
+  "und abschließend",
+  "und nachher",
+  "und später",
+  "hinterher",
+]
+and = [
+  "und",
+  "sowie",
+  "außerdem",
+  "ausserdem",
+  "plus",
+  "und auch",
+  "sowie auch",
+  "als auch",
+  "und außerdem",
+  "und ausserdem",
+  "gleichzeitig",
+  "und gleichzeitig",
+  "währenddessen",
+  "in der zwischenzeit",
+]
+signs = ["+", "&", "u", "u."]
+leads = ["und", "aber", "oder", "dann", "also", "sowie", "plus", "sondern", "denn"]
+negation = ["nicht", "nie", "niemals", "ohne", "weder", "nich", "keinesfalls", "auf keinen fall"]
+condition = [
+  "wenn",
+  "falls",
+  "sofern",
+  "sobald",
+  "im fall",
+  "für den fall",
+  "es sei denn",
+  "außer wenn",
+  "ausser wenn",
+  "im falle",
+]
+contrast = ["nicht", "nich"]
+but = ["sondern", "aber"]
+subordinators = [
+  "dass",
+  "daß",
+  "ob",
+  "weil",
+  "damit",
+  "bevor",
+  "nachdem",
+  "sobald",
+  "während",
+  "obwohl",
+  "solange",
+  "bis",
+  "wie",
+  "wo",
+  "was",
+  "wann",
+  "wer",
+  "warum",
+  "wieso",
+  "weshalb",
+  "welche",
+  "welcher",
+  "welches",
+  "welchen",
+  "womit",
+  "wofür",
+  "worauf",
+  "wohin",
+  "woher",
+  "um",
+  "als",
+  "seit",
+  "seitdem",
+  "sodass",
+  "indem",
+  "denen",
+  "deren",
+  "dessen",
+]
+
+# A clause before or after another, read in the words' own order, and a clause of the person's own action.
+[clause]
+before = ["bevor", "ehe"]
+after = ["nachdem"]
+joiner = ["dann"]
+subjects = ["du", "sie", "wir", "ich", "ihr"]
+tenses = []
+own = ["ich", "wir"]
+own_tenses = []
+conjunctions = []
+heads = [
+  "ich brauche",
+  "ich brauch",
+  "ich will",
+  "ich möchte",
+  "ich muss",
+  "ich hätte gern",
+  "ich hätte gerne",
+  "ich würde gern",
+  "ich würde gerne",
+  "wir brauchen",
+  "wir wollen",
+  "wir möchten",
+  "wir müssen",
+]
+
+# Politeness, which asks for nothing.
+[courtesy]
+words = [
+  "bitte",
+  "danke",
+  "dankeschön",
+  "bitteschön",
+  "merci",
+  "grazie",
+  "thx",
+  "thanks",
+  "vielen",
+  "dank",
+  "lieben",
+  "besten",
+  "schönen",
+  "herzlichen",
+  "hallo",
+  "hi",
+  "hey",
+  "moin",
+  "servus",
+  "ciao",
+  "gruß",
+  "grüße",
+  "lg",
+  "vg",
+  "mfg",
+  "dir",
+  "euch",
+  "ihnen",
+  "mal",
+  "kurz",
+  "eben",
+  "doch",
+  "sehr",
+  "im",
+  "voraus",
+  "freundlicherweise",
+  "hallöchen",
+  "vielmals",
+  "tschüss",
+  "tschüs",
+]
+phrases = [
+  "wenn du kurz zeit hast",
+  "wenn du mal zeit hast",
+  "wenn du mal eben zeit hast",
+  "wenn du zeit hast",
+  "wenn sie zeit haben",
+  "wenn du magst",
+  "wenn du kannst",
+  "wenn sie können",
+  "wenn du so lieb wärst",
+  "wenn es geht",
+  "wenn das geht",
+  "wenn möglich",
+  "falls möglich",
+  "falls es geht",
+  "wenn es dir nichts ausmacht",
+  "wenn es ihnen nichts ausmacht",
+  "wenn du dazu kommst",
+  "falls du kurz zeit hast",
+  "falls du zeit hast",
+  "wenn sie kurz zeit haben",
+  "wenns geht",
+  "wenn's geht",
+  "wenn es passt",
+  "wenn nötig",
+  "falls nötig",
+  "wenn notwendig",
+  "falls notwendig",
+  "wenn du so nett wärst",
+  "wenn sie so nett wären",
+  "sobald du kannst",
+  "sobald du zeit hast",
+  "sobald es geht",
+  "sobald möglich",
+  "sofern möglich",
+  "ganz lieben dank",
+  "danke schön",
+  "tausend dank",
+  "liebe grüße",
+  "viele grüße",
+  "beste grüße",
+]
+
+# Words that point at an earlier step, or say one is done again.
+[refer]
+one = ["es", "ihn"]
+many = [
+  "beide",
+  "beiden",
+  "beides",
+  "alle beide",
+  "alle davon",
+  "ihnen",
+  "die beiden",
+  "jeden davon",
+  "jede davon",
+  "jedes davon",
+  "jeden von ihnen",
+  "jede von ihnen",
+  "jeder von ihnen",
+  "jedem von ihnen",
+  "alle von ihnen",
+  "sie alle",
+]
+determiners = [
+  "dieser",
+  "diese",
+  "dieses",
+  "diesen",
+  "diesem",
+  "der",
+  "die",
+  "das",
+  "den",
+  "dem",
+  "des",
+  "jeder",
+  "jede",
+  "jedes",
+  "jeden",
+  "jedem",
+  "dessen",
+  "deren",
+  "denselben",
+  "dieselbe",
+  "dasselbe",
+  "derselbe",
+  "desselben",
+  "demselben",
+  "dieselben",
+]
+weak = [
+  "der",
+  "die",
+  "das",
+  "den",
+  "dem",
+  "des",
+  "denselben",
+  "dieselbe",
+  "dasselbe",
+  "derselbe",
+  "desselben",
+  "demselben",
+  "dieselben",
+]
+each = ["jeder", "jede", "jedes", "jeden", "jedem"]
+adjectives = [
+  "gleiche",
+  "gleichen",
+  "selbe",
+  "selben",
+  "neue",
+  "neuen",
+  "fertige",
+  "fertigen",
+  "entstandene",
+  "entstandenen",
+  "erstellte",
+  "erstellten",
+  "erzeugte",
+  "erzeugten",
+  "generierte",
+  "generierten",
+  "resultierende",
+  "resultierenden",
+]
+stop = [
+  "eine",
+  "einer",
+  "einem",
+  "einen",
+  "eines",
+  "ist",
+  "war",
+  "sind",
+  "waren",
+  "wird",
+  "werden",
+  "kann",
+  "könnte",
+  "soll",
+  "sollte",
+  "es",
+  "da",
+  "dort",
+  "wir",
+  "sie",
+  "ihr",
+  "ich",
+  "du",
+  "nicht",
+  "kein",
+  "keine",
+  "alle",
+  "alles",
+  "einige",
+  "manche",
+  "erste",
+  "zweite",
+  "letzte",
+  "nächste",
+  "gleiche",
+  "selbe",
+  "andere",
+  "rest",
+  "weg",
+  "mal",
+  "zeit",
+  "von",
+  "dass",
+  "was",
+  "wie",
+  "ersten",
+  "zweiten",
+  "letzten",
+  "nächsten",
+  "anderen",
+  "gleichen",
+  "selben",
+  "für",
+  "mit",
+  "bei",
+  "auf",
+  "an",
+  "in",
+  "nach",
+  "zu",
+  "zum",
+  "zur",
+  "im",
+  "am",
+]
+points = [
+  "es",
+  "ihn",
+  "ihm",
+  "ihnen",
+  "sie",
+  "dasselbe",
+  "das gleiche",
+  "dort",
+  "dahin",
+  "dorthin",
+  "beide",
+  "jeden",
+  "jede",
+  "jedes",
+  "dieser",
+  "diese",
+  "dieses",
+  "diesen",
+  "davon",
+  "dazu",
+  "damit",
+  "darauf",
+  "daran",
+  "dafür",
+  "dies",
+  "ihre",
+  "ihren",
+  "ihrem",
+  "seine",
+  "seinen",
+  "seinem",
+  "desselben",
+  "demselben",
+  "dieselben",
+  "jene",
+]
+repeats = [
+  "dasselbe",
+  "das gleiche",
+  "genauso",
+  "ebenso",
+  "gleichfalls",
+  "ebenfalls",
+  "wie vorher",
+  "wie zuvor",
+  "wie davor",
+  "das selbe",
+  "dieselbe",
+  "derselbe",
+]
+once_more = [
+  "auch",
+  "ebenfalls",
+  "noch",
+  "mehr",
+  "nochmal",
+  "noch einmal",
+  "noch mal",
+  "wieder",
+  "erneut",
+  "extra",
+  "zusätzlich",
+  "plus",
+  "dazu",
+  "ebenso",
+  "gleichfalls",
+  "genauso",
+  "weitere",
+  "weiteren",
+]
+again = [
+  "auch",
+  "ebenfalls",
+  "ebenso",
+  "genauso",
+  "gleichfalls",
+  "dasselbe für",
+  "das gleiche für",
+  "nochmal",
+  "noch einmal",
+  "noch mal",
+  "wieder",
+  "erneut",
+  "dazu",
+]
+
+# Words that point at a value this session returned, or count such values.
+[recalled]
+it = ["es", "ihn"]
+one = ["davon"]
+that = ["dieser", "diese", "dieses", "diesen", "diesem", "jene", "jenen", "jenes", "jener", "jenem"]
+owns = ["der", "die", "das", "den", "dem", "mein", "meine", "meinen", "meiner", "meinem", "unser", "unsere", "unseren"]
+several = ["diese", "diesen", "jene", "jenen", "beide", "beiden"]
+orders = [
+  "letzte",
+  "letzten",
+  "letzter",
+  "letztes",
+  "neueste",
+  "neuesten",
+  "aktuellste",
+  "aktuellsten",
+  "vorherige",
+  "vorherigen",
+  "vorige",
+  "vorigen",
+  "jüngste",
+  "jüngsten",
+  "neuste",
+  "neusten",
+  "neuster",
+  "neustes",
+  "neuester",
+  "neuestes",
+  "aktuellster",
+  "aktuellstes",
+  "vorheriger",
+  "vorheriges",
+  "voriger",
+  "voriges",
+  "jüngster",
+  "jüngstes",
+]
+both = ["beide", "beiden", "beides"]
+
+# Words that carry no value by themselves, and words that introduce one.
+[words]
+function = [
+  "der",
+  "die",
+  "das",
+  "den",
+  "dem",
+  "des",
+  "ein",
+  "eine",
+  "einen",
+  "einem",
+  "einer",
+  "eines",
+  "ich",
+  "du",
+  "er",
+  "sie",
+  "es",
+  "wir",
+  "ihr",
+  "mir",
+  "mich",
+  "dir",
+  "dich",
+  "ihm",
+  "ihn",
+  "uns",
+  "euch",
+  "ihnen",
+  "sich",
+  "man",
+  "mein",
+  "meine",
+  "meinen",
+  "meinem",
+  "meiner",
+  "meines",
+  "dein",
+  "deine",
+  "deinen",
+  "deinem",
+  "deiner",
+  "sein",
+  "seine",
+  "seinen",
+  "seinem",
+  "seiner",
+  "unser",
+  "unsere",
+  "unseren",
+  "unserem",
+  "unserer",
+  "euer",
+  "eure",
+  "euren",
+  "eurem",
+  "eurer",
+  "zu",
+  "zum",
+  "zur",
+  "von",
+  "vom",
+  "mit",
+  "nach",
+  "bei",
+  "beim",
+  "für",
+  "um",
+  "an",
+  "am",
+  "ans",
+  "auf",
+  "aus",
+  "in",
+  "im",
+  "ins",
+  "über",
+  "unter",
+  "vor",
+  "hinter",
+  "zwischen",
+  "durch",
+  "ohne",
+  "gegen",
+  "seit",
+  "bis",
+  "ab",
+  "und",
+  "oder",
+  "aber",
+  "denn",
+  "dann",
+  "also",
+  "doch",
+  "so",
+  "wie",
+  "als",
+  "ob",
+  "dass",
+  "daß",
+  "nicht",
+  "kein",
+  "keine",
+  "keinen",
+  "keinem",
+  "keiner",
+  "ist",
+  "sind",
+  "war",
+  "waren",
+  "bin",
+  "bist",
+  "wird",
+  "werden",
+  "wurde",
+  "wurden",
+  "würde",
+  "würden",
+  "kann",
+  "können",
+  "könnte",
+  "könnten",
+  "konnte",
+  "soll",
+  "sollen",
+  "sollte",
+  "sollten",
+  "muss",
+  "müssen",
+  "musste",
+  "müsste",
+  "darf",
+  "dürfen",
+  "dürfte",
+  "will",
+  "wollen",
+  "wollte",
+  "mag",
+  "möchte",
+  "möchten",
+  "hat",
+  "haben",
+  "hatte",
+  "hatten",
+  "habe",
+  "hast",
+  "gibt",
+  "mal",
+  "bitte",
+  "danke",
+  "hallo",
+  "hi",
+  "hey",
+  "moin",
+  "ok",
+  "okay",
+  "ja",
+  "nein",
+  "jetzt",
+  "gleich",
+  "noch",
+  "schon",
+  "nur",
+  "auch",
+  "halt",
+  "eben",
+  "da",
+  "hier",
+  "dort",
+  "mehr",
+  "sehr",
+  "ganz",
+  "etwas",
+  "was",
+  "wer",
+  "wo",
+  "wann",
+  "warum",
+  "wieso",
+  "weshalb",
+  "welche",
+  "welcher",
+  "welches",
+  "welchen",
+  "kannst",
+  "könntest",
+  "würdest",
+  "willst",
+  "möchtest",
+  "musst",
+  "sollst",
+  "darfst",
+  "wäre",
+  "wären",
+  "hätte",
+  "hätten",
+  "werde",
+  "wirst",
+  "hab",
+  "is",
+  "nich",
+  "einfach",
+  "gerade",
+  "grad",
+  "eigentlich",
+  "vielleicht",
+  "sofort",
+  "schnell",
+  "nun",
+  "eh",
+  "sowieso",
+  "zurück",
+  "weiter",
+  "hinzu",
+  "raus",
+  "rein",
+  "rüber",
+  "runter",
+]
+kind = [
+  "auch",
+  "wo",
+  "team",
+  "kanal",
+  "ordner",
+  "dienst",
+  "service",
+  "region",
+  "bereich",
+  "abteilung",
+  "verzeichnis",
+  "gruppe",
+  "channel",
+]
+introduces = [
+  "an",
+  "für",
+  "auf",
+  "nach",
+  "in",
+  "um",
+  "bei",
+  "zu",
+  "von",
+  "mit",
+  "über",
+  "namens",
+  "betreff",
+  "betr",
+  "zum",
+  "zur",
+  "beim",
+  "vom",
+  "ins",
+  "ans",
+  "als",
+  "wegen",
+  "bezüglich",
+  "bzgl",
+  "thema",
+  "genannt",
+  "titel",
+  "mit dem titel",
+  "mit dem namen",
+  "bis",
+  "ab",
+  "dass",
+  "daß",
+  "wg",
+  "wg.",
+  "betreffend",
+  "aus",
+  "unter",
+]
+articles = [
+  "der",
+  "die",
+  "das",
+  "den",
+  "dem",
+  "des",
+  "ein",
+  "eine",
+  "einen",
+  "einem",
+  "einer",
+  "eines",
+  "n",
+  "ne",
+  "nen",
+  "nem",
+  "ner",
+]
+after_name = ["dass", "daß", "das", "dies", "folgendes", "folgende"]
+to_self = ["an mich", "an mich selbst", "für mich"]
+
+# The endings a word takes: what comes off before it is compared with a listed word.
+[endings]
+stem       = [["innen", "in"], ["en", ""], ["e", ""], ["n", ""], ["s", ""]]
+plural     = ["e", "en", "n", "s", "er"]
+possessive = ["'s", "’s", "'", "’"]
+tense      = ["en", "st", "te", "ten", "t", "e"]
+
+# A number said in words: a ones word, «und» and a tens word written as one, «einundzwanzig»; a count before a
+# scale word, «zweihundert»; the comma before a fraction, «1,5».
+[numbers]
+ones           = { null = 0, eins = 1, zwei = 2, zwo = 2, drei = 3, vier = 4, "fünf" = 5, fuenf = 5, funf = 5, sechs = 6, sieben = 7, acht = 8, neun = 9, zehn = 10, elf = 11, "zwölf" = 12, zwoelf = 12, zwolf = 12, dreizehn = 13, vierzehn = 14, "fünfzehn" = 15, fuenfzehn = 15, funfzehn = 15, sechzehn = 16, siebzehn = 17, achtzehn = 18, neunzehn = 19 }
+tens           = { zwanzig = 20, "dreißig" = 30, dreissig = 30, vierzig = 40, "fünfzig" = 50, fuenfzig = 50, funfzig = 50, fuffzig = 50, sechzig = 60, siebzig = 70, achtzig = 80, neunzig = 90 }
+scale          = { hundert = 100, tausend = 1000 }
+beyond         = ["million", "millionen", "milliarde", "milliarden"]
+article        = ["ein", "eine", "einen", "einem", "einer", "eines", "n", "ne", "nen", "nem", "ner"]
+and            = ["und"]
+noughts        = ["null"]
+oh             = ["o"]
+repeat         = { doppel = 2 }
+half           = ["halb", "halbe", "halben"]
+and_a_half     = ["und eine halbe", "und einen halben", "einhalb"]
+compose        = "ones-tens"
+joiner         = "und"
+fused          = true
+years_in_pairs = false
+decimal_mark   = ","
+group_mark     = "."
+percent        = ["prozent"]
+
+# An ordinal: a day of the month, a place among several. Written with a point after the number: «5.».
+[ordinals]
+words    = { erste = 1, ersten = 1, erster = 1, erstes = 1, zweite = 2, zweiten = 2, zweiter = 2, zweites = 2, dritte = 3, dritten = 3, dritter = 3, drittes = 3, vierte = 4, vierten = 4, "fünfte" = 5, "fünften" = 5, sechste = 6, sechsten = 6, siebte = 7, siebten = 7, achte = 8, achten = 8, neunte = 9, neunten = 9, zehnte = 10, zehnten = 10, elfte = 11, elften = 11, "zwölfte" = 12, "zwölften" = 12, dreizehnte = 13, dreizehnten = 13, vierzehnte = 14, vierzehnten = 14, "fünfzehnte" = 15, "fünfzehnten" = 15, sechzehnte = 16, sechzehnten = 16, siebzehnte = 17, siebzehnten = 17, achtzehnte = 18, achtzehnten = 18, neunzehnte = 19, neunzehnten = 19, zwanzigste = 20, zwanzigsten = 20, einundzwanzigste = 21, einundzwanzigsten = 21, zweiundzwanzigste = 22, zweiundzwanzigsten = 22, dreiundzwanzigste = 23, dreiundzwanzigsten = 23, vierundzwanzigste = 24, vierundzwanzigsten = 24, "fünfundzwanzigste" = 25, "fünfundzwanzigsten" = 25, sechsundzwanzigste = 26, sechsundzwanzigsten = 26, siebenundzwanzigste = 27, siebenundzwanzigsten = 27, achtundzwanzigste = 28, achtundzwanzigsten = 28, neunundzwanzigste = 29, neunundzwanzigsten = 29, "dreißigste" = 30, "dreißigsten" = 30, "einunddreißigste" = 31, "einunddreißigsten" = 31 }
+suffixes = { other = "." }
+picks    = { erste = 0, ersten = 0, erstere = 0, ersteres = 0, zweite = 1, zweiten = 1, dritte = 2, dritten = 2, vierte = 3, vierten = 3, letzte = -1, letzten = -1, letztere = -1, letzteres = -1 }
+
+# A day as the words say it.
+[days]
+every = ["jeden", "jede", "jedes", "jeder", "alle"]
+recurring = [
+  "tag",
+  "woche",
+  "monat",
+  "jahr",
+  "morgen",
+  "abend",
+  "nacht",
+  "werktag",
+  "wochenende",
+  "arbeitstag",
+  "vormittag",
+  "nachmittag",
+  "quartal",
+  "monatsende",
+]
+recurrences = [
+  "täglich",
+  "wöchentlich",
+  "monatlich",
+  "jährlich",
+  "werktags",
+  "wochentags",
+  "stündlich",
+  "vierteljährlich",
+  "halbjährlich",
+  "zweiwöchentlich",
+]
+periods = [
+  "woche",
+  "wochen",
+  "monat",
+  "monate",
+  "jahr",
+  "jahre",
+  "wochenende",
+  "quartal",
+  "kw",
+  "kalenderwoche",
+  "monaten",
+  "jahren",
+  "halbjahr",
+]
+ahead = ["in"]
+from_now = ["ab heute", "ab jetzt", "von heute an", "von jetzt an"]
+the = ["am", "den", "der", "dem"]
+of = []
+day_after = ["der tag nach", "den tag nach"]
+noun_after = ["guten", "am", "heute", "gestern", "vorgestern", "jeden", "diesen", "ganzen"]
+never = ["dienst", "dienste", "diensten", "montage", "montagen", "leute", "leuten"]
+followers = [
+  "um",
+  "ist",
+  "oder",
+  "und",
+  "bis",
+  "ab",
+  "von",
+  "an",
+  "in",
+  "fällt",
+  "kommt",
+  "schon",
+  "dann",
+  "noch",
+  "statt",
+  "rum",
+  "mit",
+  "für",
+  "bei",
+  "im",
+  "zum",
+  "bitte",
+  "wieder",
+  "zurück",
+  "raus",
+  "da",
+  "fertig",
+  "fällig",
+  "spätestens",
+  "früh",
+  "abends",
+  "morgens",
+]
+leads = ["am", "bis", "ab", "vom", "zum", "seit", "vor", "nach", "für", "den", "der"]
+
+[days.which]
+next = ["nächsten", "nächste", "nächster", "nächstes", "kommenden", "kommende", "kommender"]
+this = ["diesen", "diese", "dieser", "dieses", "diesem"]
+last = ["letzten", "letzte", "letzter", "letztes", "vergangenen", "vergangene", "vorigen", "vorige"]
+
+[days.weekdays]
+monday    = ["montag"]
+tuesday   = ["dienstag"]
+wednesday = ["mittwoch"]
+thursday  = ["donnerstag"]
+friday    = ["freitag"]
+saturday  = ["samstag", "sonnabend"]
+sunday    = ["sonntag"]
+
+# Short forms a person types, shown for a yes: two letters, which propose only where the sentence shows German.
+[days.short]
+monday    = ["mo"]
+tuesday   = ["di"]
+wednesday = ["mi"]
+thursday  = ["do"]
+friday    = ["fr"]
+saturday  = ["sa"]
+
+# Days by their distance from today.
+[days.relative]
+"0"  = ["heute", "heut"]
+"1"  = ["morgen"]
+"-1" = ["gestern"]
+"2"  = ["übermorgen"]
+"-2" = ["vorgestern"]
+
+[days.relative_short]
+"1" = ["mrgn", "morgn"]
+
+# Lengths of days, in days.
+[days.units]
+"1" = ["tage", "tagen", "tag"]
+"7" = ["wochen", "woche"]
+
+# The months, by number.
+[months]
+"1"  = ["januar", "jan", "jänner"]
+"2"  = ["februar", "feb"]
+"3"  = ["märz", "maerz", "mär", "mrz"]
+"4"  = ["april", "apr"]
+"5"  = ["mai"]
+"6"  = ["juni", "jun"]
+"7"  = ["juli", "jul"]
+"8"  = ["august", "aug"]
+"9"  = ["september", "sep", "sept"]
+"10" = ["oktober", "okt"]
+"11" = ["november", "nov"]
+"12" = ["dezember", "dez"]
+
+# A clock time: «14 Uhr» on the 24-hour clock, «halb drei» half an hour before three.
+[times]
+hour_cycle = 24
+half_to    = ["halb"]
+oclock     = ["uhr"]
+am         = ["morgens", "vormittags", "früh", "am morgen", "am vormittag", "in der früh"]
+pm         = ["nachmittags", "abends", "mittags", "am nachmittag", "am abend"]
+past       = ["nach"]
+to         = ["vor"]
+
+[times.named]
+"12:00" = ["mittag"]
+"00:00" = ["mitternacht"]
+
+[times.minutes_past]
+"15" = ["viertel nach"]
+
+[times.minutes_to]
+"15" = ["viertel vor", "dreiviertel"]
+
+# A length of time, its units in seconds: the form shown for one, then for more than one, then the short forms.
+[durations.units]
+"3600" = ["stunde", "stunden", "std", "std.", "h"]
+"60"   = ["minute", "minuten", "min", "min.", "m"]
+"1"    = ["sekunde", "sekunden", "sek", "sek.", "s"]
+
+[durations.articles]
+"0.25" = ["eine viertel", "einer viertel", "ne viertel"]
+"0.5"  = ["eine halbe", "einer halben", "einen halben", "ein halbes", "ne halbe"]
+"1.5"  = ["anderthalb", "eineinhalb", "einundeinhalb"]
+"1"    = ["eine", "einer", "einen", "einem", "ein", "ne", "nen", "ner"]
+"2.5"  = ["zweieinhalb"]
+"3.5"  = ["dreieinhalb"]
+"4.5"  = ["viereinhalb"]
+"0.75" = ["dreiviertel", "eine dreiviertel"]
+
+# An amount in a currency: the symbol after the figure, «12 €».
+[amounts]
+symbol_after = true
+symbols = { "€" = "EUR", "$" = "USD", "£" = "GBP" }
+singular = ["pfund"]
+codes = [
+  "USD",
+  "EUR",
+  "GBP",
+  "JPY",
+  "INR",
+  "CAD",
+  "AUD",
+  "CHF",
+  "CNY",
+  "SEK",
+  "NOK",
+  "DKK",
+  "NZD",
+  "MXN",
+  "BRL",
+  "ZAR",
+  "SGD",
+  "HKD",
+  "KRW",
+  "PLN",
+  "CZK",
+  "TRY",
+]
+
+[amounts.words]
+EUR = ["euro", "euros"]
+USD = ["dollar", "dollars"]
+GBP = ["pfund"]
+CHF = ["franken"]
+JPY = ["yen"]
+
+# A value said aloud: the signs by their names, and the words a code or a link is said with.
+[spoken]
+version  = ["v", "version"]
+schemes  = ["https", "http"]
+letters  = []
+pronouns = ["er", "es", "du", "wo", "ja", "da", "so", "ab", "an", "am", "im", "um", "zu"]
+
+[spoken.signs]
+"@" = ["at", "ät", "et", "klammeraffe"]
+"." = ["punkt", "dot"]
+"-" = ["bindestrich", "minus", "strich"]
+"_" = ["unterstrich", "underscore"]
+"/" = ["slash", "schrägstrich"]
+":" = ["doppelpunkt"]
+"#" = ["hashtag", "raute", "hash"]
+
+# The marks around a value in quotes, and around a text in quotes.
+[quotes]
+value = [["„", "“"], ["»", "«"], ["«", "»"], ["‚", "‘"], ["“", "”"], ["‘", "’"], ["\"", "\""]]
+text  = [["„", "“"], ["»", "«"], ["‚", "‘"], ["\"", "\""], ["«", "»"], ["'", "'"]]
+
+# The whole words a prompt takes for yes and for no.
+[prompt]
+yes = ["ja", "jawohl", "jep", "jo"]
+no  = ["nein", "nee", "nö"]

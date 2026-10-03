@@ -256,7 +256,7 @@ impl<'a> Sought<'a> {
         }
         // A word that introduces the text, and the words before it that carry nothing: «its for the tea».
         let introduces = |i: usize| lexicon.holds(|pack| &pack.words.introduces, &folded[i]);
-        let carries = (a..b).find(|&i| !words::function(plain(i)) || introduces(i));
+        let carries = (a..b).find(|&i| !words::function(&lexicon, plain(i)) || introduces(i));
         if let Some(i) = carries
             && introduces(i)
         {

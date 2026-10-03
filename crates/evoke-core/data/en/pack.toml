@@ -4,6 +4,8 @@
 # built-in packs are read the same way, and nothing detects a language: a pack reads a sentence where the sentence
 # shows its words.
 tag = "en"
+# A capital letter marks a name or a code; in a language that writes every noun with one it marks nothing.
+capitals_mark_names = true
 
 # Where a request may be cut, and the words that set a part apart.
 [cut]
@@ -300,6 +302,7 @@ and_a_half     = ["and a half"]
 compose        = "tens-ones"
 joiner         = ""
 years_in_pairs = true
+fused          = false
 decimal_mark   = "."
 group_mark     = ","
 percent        = ["percent"]
@@ -321,6 +324,8 @@ from_now = ["from now", "from today"]
 the = ["the"]
 of = ["of"]
 day_after = ["the day after"]
+noun_after = []
+never = []
 followers = [
   "at",
   "is",
@@ -401,11 +406,13 @@ sunday    = ["sun"]
 
 # A clock time.
 [times]
-oclock = ["o'clock", "o’clock", "oclock", "o clock"]
-am     = ["a.m.", "a.m", "am", "in the morning"]
-pm     = ["p.m.", "p.m", "pm", "in the afternoon", "in the evening", "at night"]
-past   = ["past"]
-to     = ["to"]
+hour_cycle = 12
+half_to    = []
+oclock     = ["o'clock", "o’clock", "oclock", "o clock"]
+am         = ["a.m.", "a.m", "am", "in the morning"]
+pm         = ["p.m.", "p.m", "pm", "in the afternoon", "in the evening", "at night"]
+past       = ["past"]
+to         = ["to"]
 
 [times.named]
 "12:00" = ["noontime", "noon", "midday", "twelve noon"]
@@ -431,6 +438,7 @@ to     = ["to"]
 
 # An amount in a currency.
 [amounts]
+symbol_after = false
 symbols = { "$" = "USD", "€" = "EUR", "£" = "GBP" }
 singular = ["dollar", "euro", "pound", "rupee"]
 codes = [

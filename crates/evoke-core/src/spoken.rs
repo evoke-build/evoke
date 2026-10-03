@@ -323,6 +323,21 @@ fn number_word(lexicon: &Lexicon, word: &str) -> bool {
         || ten(lexicon, word).is_some()
         || hundred(lexicon, word)
         || thousand(lexicon, word)
+        || fused(lexicon, word).is_some()
+}
+
+/// A number said as one word that is no single word of the tables, as a pack that writes a number's words as one
+/// has it: «fünfundvierzig».
+fn fused(lexicon: &Lexicon, word: &str) -> Option<u64> {
+    if unit(lexicon, word).is_some()
+        || teen(lexicon, word).is_some()
+        || ten(lexicon, word).is_some()
+        || hundred(lexicon, word)
+        || thousand(lexicon, word)
+    {
+        return None;
+    }
+    lexicon.number(word)
 }
 
 fn figures(word: &str) -> bool {
@@ -480,7 +495,7 @@ fn small_at(lexicon: &Lexicon, words: &[&str], i: usize) -> Option<(u64, usize)>
     {
         return Some((unit, i + 1));
     }
-    None
+    fused(lexicon, word).map(|value| (value, i + 1))
 }
 
 /// A number under a thousand at `i`: a small number, then «hundred» and what follows it.
@@ -569,6 +584,9 @@ fn digits(lexicon: &Lexicon, words: &[&str]) -> Option<(String, bool)> {
                 }
                 None => out.push_str(&tens.to_string()),
             }
+            pairs = true;
+        } else if let Some(value) = fused(lexicon, word) {
+            out.push_str(&value.to_string());
             pairs = true;
         } else if hundred(lexicon, word)
             && !out.is_empty()
@@ -817,7 +835,7 @@ fn piece(lexicon: &Lexicon, word: &Word, version: bool) -> Option<Piece> {
     }
     if (2..=3).contains(&length)
         && raw.chars().all(text::small)
-        && !words::function(plain)
+        && !words::function(lexicon, plain)
         && !lexicon.holds(|pack| &pack.spoken.pronouns, folded)
     {
         return Some(Piece::Short);
@@ -1180,7 +1198,7 @@ fn local(lexicon: &Lexicon, word: &Word) -> Option<Local> {
         .next()
         .is_some_and(|c| text::small(c) || text::figure(c));
     let rest = chars.all(|c| text::small(c) || text::figure(c) || matches!(c, '.' | '_' | '-'));
-    (opens && rest && !words::function(plain)).then_some(Local::Word)
+    (opens && rest && !words::function(lexicon, plain)).then_some(Local::Word)
 }
 
 /// The group of an address's local part that ends at `k`: letters said apart, or one word; where it begins.
@@ -1321,29 +1339,8 @@ fn urls(lexicon: &Lexicon, words: &[Word]) -> Vec<Reading> {
         };
         let mut path = String::new();
         while j + 1 < words.len() && slash(j) {
-            let mut segment = words[j + 1].plain.clone();
-            j += 2;
-            while j + 1 < words.len()
-                && let Some(sign) = address_sign(lexicon, &words[j].folded)
-            {
-                j += 1;
-                if slash(j) {
-                    break;
-                }
-                let mut letters = String::new();
-                while j < words.len() && single_character(&words[j].plain) {
-                    letters.push_str(&words[j].plain);
-                    j += 1;
-                }
-                if letters.is_empty() {
-                    segment.push_str(sign);
-                    segment.push_str(&words[j].plain);
-                    j += 1;
-                } else {
-                    segment.push_str(sign);
-                    segment.push_str(&letters);
-                }
-            }
+            let (segment, next) = path_segment(lexicon, words, j + 1);
+            j = next;
             path.push('/');
             path.push_str(&segment);
         }
@@ -1360,6 +1357,68 @@ fn urls(lexicon: &Lexicon, words: &[Word]) -> Vec<Reading> {
         i = j;
     }
     out
+}
+
+/// A path's segment said from `at`, up to the next slash: its first word, then after each sign said aloud the
+/// characters said one by one — a number among them said in words, «v two» as «v2», «antrag bindestrich zwei» as
+/// «antrag-2» — or the one word said; the segment, and where the words after it begin.
+fn path_segment(lexicon: &Lexicon, words: &[Word], at: usize) -> (String, usize) {
+    let slash = |at: usize| {
+        words
+            .get(at)
+            .is_some_and(|word| sign(lexicon, &word.folded) == Some('/'))
+    };
+    let mut segment = words[at].plain.clone();
+    let mut j = at + 1;
+    while j + 1 < words.len()
+        && let Some(sign) = address_sign(lexicon, &words[j].folded)
+    {
+        j += 1;
+        if slash(j) {
+            break;
+        }
+        let mut letters = String::new();
+        while j < words.len() {
+            if single_character(&words[j].plain) {
+                letters.push_str(&words[j].plain);
+                j += 1;
+            } else if let Some((figures, taken)) = spelled_figures(lexicon, &words[j..]) {
+                letters.push_str(&figures);
+                j += taken;
+            } else {
+                break;
+            }
+        }
+        segment.push_str(sign);
+        if letters.is_empty() {
+            segment.push_str(&words[j].plain);
+            j += 1;
+        } else {
+            segment.push_str(&letters);
+        }
+    }
+    (segment, j)
+}
+
+/// The figures a run of number words at the head of `words` says — digit by digit where each is one, «two three»
+/// as «23», else as the number they make, «twenty» as «20» — and how many words it takes; none where the first
+/// word is no number word.
+fn spelled_figures(lexicon: &Lexicon, words: &[Word]) -> Option<(String, usize)> {
+    let taken = words
+        .iter()
+        .take_while(|word| number_word(lexicon, &word.folded))
+        .count();
+    if taken == 0 {
+        return None;
+    }
+    let said: Vec<&str> = words[..taken]
+        .iter()
+        .map(|word| word.folded.as_str())
+        .collect();
+    let figures = digits(lexicon, &said)
+        .map(|(figures, _)| figures)
+        .or_else(|| cardinal(lexicon, &said).map(|value| value.to_string()))?;
+    Some((figures, taken))
 }
 
 fn single_letter(word: &str) -> bool {
@@ -1408,12 +1467,18 @@ fn days(lexicon: &Lexicon, words: &[Word]) -> Vec<Reading> {
             continue;
         }
         let folded = word.folded.as_str();
+        // An ending comes off where what it leaves keeps three letters at least, as a stem does: «tues» is
+        // «tue», «dis» is no «di».
         let bare = if relative_short(folded).is_some() || relative(folded).is_some() {
             folded
         } else {
             endings
                 .iter()
-                .find_map(|ending| folded.strip_suffix(ending))
+                .find_map(|ending| {
+                    folded
+                        .strip_suffix(ending)
+                        .filter(|bare| bare.chars().count() >= 3)
+                })
                 .unwrap_or(folded)
         };
         let mut marks = Marks::default();
@@ -1530,9 +1595,10 @@ fn misspelt_day(lexicon: &Lexicon, word: &str) -> Option<i32> {
     let weekdays = lexicon.named(|pack| &pack.days.weekdays);
     if !word.chars().all(char::is_alphabetic)
         || word.chars().count() < 4
-        || words::function(word)
+        || words::function(lexicon, word)
         || weekdays.iter().any(|(name, _)| *name == word)
         || relative.iter().any(|(name, _)| *name == word)
+        || lexicon.holds(|pack| &pack.days.never, word)
     {
         return None;
     }

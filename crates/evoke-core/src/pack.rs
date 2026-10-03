@@ -5,6 +5,7 @@
 //! what it holds is how a table is read. A pack proposes; the classifier decides.
 
 use std::cmp::Reverse;
+use std::collections::HashSet;
 use std::sync::OnceLock;
 
 use indexmap::IndexMap;
@@ -16,7 +17,10 @@ use crate::digest::Digest;
 use crate::text::fold;
 
 /// The packs built in, in their order: the author's language first.
-const BUILT_IN: [&str; 1] = [include_str!("../data/en/pack.toml")];
+const BUILT_IN: [&str; 2] = [
+    include_str!("../data/en/pack.toml"),
+    include_str!("../data/de/pack.toml"),
+];
 
 /// The built-in packs, read once.
 ///
@@ -26,12 +30,34 @@ const BUILT_IN: [&str; 1] = [include_str!("../data/en/pack.toml")];
 pub fn packs() -> &'static [Pack] {
     static PACKS: OnceLock<Vec<Pack>> = OnceLock::new();
     PACKS.get_or_init(|| {
-        BUILT_IN
+        let mut packs: Vec<Pack> = BUILT_IN
             .iter()
             .map(|text| Pack::read(text).expect("a built-in pack reads"))
-            .collect()
+            .collect();
+        // A pack's own words: three letters or more, no courtesy word, listed by no other pack.
+        let all: Vec<HashSet<String>> = packs.iter().map(|pack| pack.listed.clone()).collect();
+        for (at, pack) in packs.iter_mut().enumerate() {
+            let courtesy: HashSet<String> = pack.courtesy.words.iter().map(str::to_owned).collect();
+            pack.own = pack
+                .listed
+                .iter()
+                .filter(|word| word.chars().count() > SHORT)
+                .filter(|word| !courtesy.contains(*word))
+                .filter(|word| {
+                    all.iter()
+                        .enumerate()
+                        .all(|(other, words)| other == at || !words.contains(*word))
+                })
+                .cloned()
+                .collect();
+        }
+        packs
     })
 }
+
+/// How many letters a word has at most to be short: a short word shows no pack, and a pack that the text does not
+/// show holds its short words back — the two-letter forms, «so», «do», «u».
+const SHORT: usize = 2;
 
 /// A list of phrases as a matcher tries them: the longest first, so «and then» wins over «and»; each as `fold`
 /// writes it.
@@ -293,6 +319,8 @@ pub struct Numbers {
     pub compose: Compose,
     /// The word a fused or spaced number joins its parts with, if any.
     pub joiner: String,
+    /// Whether a number's words are written as one, «einundzwanzig», «zweihundert».
+    pub fused: bool,
     pub years_in_pairs: bool,
     pub decimal_mark: char,
     pub group_mark: char,
@@ -352,6 +380,10 @@ pub struct Days {
     pub the: Phrases,
     pub of: Phrases,
     pub day_after: Phrases,
+    /// The words after which a day's word is a plain noun, not a day: «guten Morgen».
+    pub noun_after: Phrases,
+    /// Words near a day's name that are no day, however near: «Montage», «Leute».
+    pub never: Phrases,
     pub followers: Phrases,
     pub leads: Phrases,
     pub which: Named,
@@ -365,6 +397,10 @@ pub struct Days {
 /// A clock time.
 #[derive(Clone, Debug, Deserialize)]
 pub struct Times {
+    /// 12, where a bare hour needs its half of the day; 24, where «9 Uhr» is nine in the morning.
+    pub hour_cycle: u8,
+    /// The words before an hour that mean half an hour before it: «halb drei» is half past two.
+    pub half_to: Phrases,
     pub oclock: Phrases,
     pub am: Phrases,
     pub pm: Phrases,
@@ -385,6 +421,8 @@ pub struct Durations {
 /// An amount in a currency.
 #[derive(Clone, Debug, Deserialize)]
 pub struct Amounts {
+    /// Whether a currency's symbol may follow the figure: «12 €».
+    pub symbol_after: bool,
     pub symbols: IndexMap<String, String>,
     pub singular: Phrases,
     /// The currencies' codes, as typed: `USD`.
@@ -421,6 +459,7 @@ pub struct Prompt {
 #[serde(deny_unknown_fields)]
 struct Raw {
     tag: String,
+    capitals_mark_names: bool,
     cut: Cut,
     clause: Clause,
     courtesy: Courtesy,
@@ -447,6 +486,12 @@ pub struct Pack {
     pub tag: String,
     /// The digest of the pack's file, which a plan's digest carries.
     pub digest: Digest,
+    /// Whether a capital letter marks a name or a code.
+    pub capitals_mark_names: bool,
+    /// Every word the pack lists, as `fold` writes it.
+    listed: HashSet<String>,
+    /// The words that show the pack: four letters or more, no courtesy, listed by no other built-in pack.
+    own: HashSet<String>,
     pub cut: Cut,
     pub clause: Clause,
     pub courtesy: Courtesy,
@@ -471,11 +516,16 @@ impl Pack {
     pub fn read(text: &str) -> Result<Self, String> {
         let parsed = toml_edit::Document::parse(text.to_owned())
             .map_err(|error| error.message().to_owned())?;
-        let raw: Raw =
-            serde_json::from_value(json_of(parsed.as_item())).map_err(|error| error.to_string())?;
+        let json = json_of(parsed.as_item());
+        let mut listed = HashSet::new();
+        words_of(&json, &mut listed);
+        let raw: Raw = serde_json::from_value(json).map_err(|error| error.to_string())?;
         Ok(Self {
             tag: raw.tag,
             digest: Digest::of(text.as_bytes()),
+            capitals_mark_names: raw.capitals_mark_names,
+            listed,
+            own: HashSet::new(),
             cut: raw.cut,
             clause: raw.clause,
             courtesy: raw.courtesy,
@@ -494,6 +544,113 @@ impl Pack {
             quotes: raw.quotes,
             prompt: raw.prompt,
         })
+    }
+}
+
+impl Pack {
+    /// Whether a word, as `fold` writes it, is one the pack lists anywhere.
+    #[must_use]
+    pub fn lists(&self, word: &str) -> bool {
+        self.listed.contains(word)
+    }
+
+    /// Whether a word, as `fold` writes it, shows the pack.
+    #[must_use]
+    pub fn shows(&self, word: &str) -> bool {
+        self.own.contains(word)
+    }
+
+    /// A number said in words as one word, as `fold` writes it: a number word of the tables, or, where the pack
+    /// writes a number's words as one, their composition — a ones word, the joiner and a tens word
+    /// («einundzwanzig»), a count before a scale word and what follows it («zweihundertdreißig»).
+    #[must_use]
+    pub fn number(&self, word: &str) -> Option<u64> {
+        let numbers = &self.numbers;
+        let single = numbers
+            .ones
+            .value(word)
+            .or_else(|| numbers.tens.value(word))
+            .or_else(|| numbers.scale.value(word));
+        if let Some(value) = single {
+            return u64::try_from(value).ok();
+        }
+        if !numbers.fused || word.is_empty() {
+            return None;
+        }
+        // The largest scale first, so that «zweitausenddreihundert» splits at «tausend».
+        let mut scales: Vec<_> = numbers.scale.iter().collect();
+        scales.sort_by_key(|(_, scale)| Reverse(*scale));
+        for (scale_word, scale) in scales {
+            let Some(at) = word.find(scale_word) else {
+                continue;
+            };
+            let (head, rest) = (&word[..at], &word[at + scale_word.len()..]);
+            let count = if head.is_empty() || numbers.article.holds(head) {
+                Some(1)
+            } else {
+                self.number(head)
+            };
+            let Some(count) = count else {
+                continue;
+            };
+            let rest = if rest.is_empty() {
+                Some(0)
+            } else {
+                self.number(rest)
+            };
+            if let Some(rest) = rest
+                && let Ok(scale) = u64::try_from(scale)
+            {
+                return Some(count * scale + rest);
+            }
+        }
+        for (tens_word, tens) in numbers.tens.iter() {
+            let Some(head) = word.strip_suffix(tens_word) else {
+                continue;
+            };
+            let Some(ones_word) = head.strip_suffix(numbers.joiner.as_str()) else {
+                continue;
+            };
+            // «ein» before the joiner is one, as it is before a scale word: «einundzwanzig».
+            let ones = numbers
+                .ones
+                .value(ones_word)
+                .or_else(|| numbers.article.holds(ones_word).then_some(1));
+            if let Some(ones) = ones
+                && (1..10).contains(&ones)
+                && let (Ok(ones), Ok(tens)) = (u64::try_from(ones), u64::try_from(tens))
+            {
+                return Some(tens + ones);
+            }
+        }
+        None
+    }
+}
+
+/// Every word a pack's file lists, as `fold` writes it: the items of its arrays, and the keys of its tables of
+/// numbers. A table's keys that name a form stand for no word, and a setting is no word.
+fn words_of(json: &Json, into: &mut HashSet<String>) {
+    match json {
+        Json::Array(items) => {
+            for item in items {
+                match item {
+                    Json::String(word) => {
+                        into.insert(fold(word));
+                    }
+                    other => words_of(other, into),
+                }
+            }
+        }
+        Json::Object(entries) => {
+            for (key, value) in entries {
+                if value.is_number() {
+                    into.insert(fold(key));
+                } else {
+                    words_of(value, into);
+                }
+            }
+        }
+        _ => {}
     }
 }
 
@@ -562,17 +719,75 @@ pub fn which_form(which: Which) -> String {
         .unwrap_or_default()
 }
 
-/// The words the reader knows for one text: the packs that read it, in order, their tables joined.
+/// A pack a text shows, and the words that show it.
 #[derive(Clone, Debug)]
-pub struct Lexicon {
-    packs: Vec<&'static Pack>,
+pub struct Shown {
+    pub pack: &'static Pack,
+    pub words: Vec<String>,
 }
 
-/// The lexicon of a text: every built-in pack reads it.
+/// The words the reader knows for one text: the packs that read it, in order, their tables joined. The first
+/// built-in pack, the author's language, reads every text; another pack reads a text where the text holds more of
+/// the pack's own words than of any other pack's, or as many as of another pack's that is not the first — a tie
+/// with the first pack is the first pack's. A text that shows no pack is read by every pack, but a pack other than
+/// the first holds back its short forms there, and every word the first pack lists. A pack's grammar — its endings,
+/// how its numbers compose, its marks and its clock — applies only where the pack is shown, and the first pack's
+/// where none is.
+#[derive(Clone, Debug)]
+pub struct Lexicon {
+    /// The packs that read the text: the shown ones first, the first built-in pack among them, then the rest where
+    /// none is shown.
+    packs: Vec<&'static Pack>,
+    /// The packs whose grammar applies.
+    grammar: Vec<&'static Pack>,
+    shown: Vec<Shown>,
+    unshown: bool,
+}
+
+/// The lexicon of a text.
 #[must_use]
-pub fn lexicon(_text: &str) -> Lexicon {
+pub fn lexicon(text: &str) -> Lexicon {
+    let all = packs();
+    let first = &all[0];
+    let tokens: Vec<String> = text
+        .split_whitespace()
+        .map(|token| fold(token.trim_matches(|c: char| !c.is_alphanumeric())))
+        .filter(|token| !token.is_empty())
+        .collect();
+    let mut shown: Vec<Shown> = all
+        .iter()
+        .map(|pack| Shown {
+            pack,
+            words: tokens
+                .iter()
+                .filter(|token| pack.shows(token))
+                .cloned()
+                .collect(),
+        })
+        .collect();
+    let most = shown.iter().map(|s| s.words.len()).max().unwrap_or(0);
+    if most == 0 {
+        return Lexicon {
+            packs: all.iter().collect(),
+            grammar: vec![first],
+            shown: Vec::new(),
+            unshown: true,
+        };
+    }
+    shown.retain(|s| s.words.len() == most);
+    // A tie with the first pack is the first pack's.
+    if shown.len() > 1 && shown.iter().any(|s| s.pack.tag == first.tag) {
+        shown.retain(|s| s.pack.tag == first.tag);
+    }
+    let mut packs: Vec<&'static Pack> = shown.iter().map(|s| s.pack).collect();
+    if !packs.iter().any(|pack| pack.tag == first.tag) {
+        packs.push(first);
+    }
     Lexicon {
-        packs: packs().iter().collect(),
+        grammar: shown.iter().map(|s| s.pack).collect(),
+        packs,
+        shown,
+        unshown: false,
     }
 }
 
@@ -583,12 +798,32 @@ impl Lexicon {
         &self.packs
     }
 
+    /// The packs the text shows, with the words that show each; none where it shows none.
+    #[must_use]
+    pub fn shown(&self) -> &[Shown] {
+        &self.shown
+    }
+
+    /// Whether a pack's word may propose in the text: every word of a shown pack, and of the first pack; of the
+    /// others, where no pack is shown, a word that is not short and that the first pack does not list — a word two
+    /// languages share is read as the first lists it.
+    fn offers(&self, pack: &Pack, word: &str) -> bool {
+        let first = &packs()[0];
+        !self.unshown
+            || pack.tag == first.tag
+            || (word.chars().count() > SHORT && !first.lists(word))
+    }
+
     /// One phrase list of every pack, joined, the longest phrase first.
     pub fn phrases(&self, table: impl Fn(&'static Pack) -> &'static Phrases) -> Vec<&'static str> {
         let mut phrases: Vec<&'static str> = self
             .packs
             .iter()
-            .flat_map(|pack| table(pack).iter())
+            .flat_map(|pack| {
+                table(pack)
+                    .iter()
+                    .filter(|phrase| self.offers(pack, phrase))
+            })
             .collect();
         if self.packs.len() > 1 {
             phrases.sort_by_key(|phrase| Reverse(phrase.chars().count()));
@@ -598,12 +833,25 @@ impl Lexicon {
 
     /// Whether a word, as `fold` writes it, is in one phrase list of some pack.
     pub fn holds(&self, table: impl Fn(&'static Pack) -> &'static Phrases, word: &str) -> bool {
-        self.packs.iter().any(|pack| table(pack).holds(word))
+        self.packs
+            .iter()
+            .any(|pack| self.offers(pack, word) && table(pack).holds(word))
     }
 
     /// Whether a word, as typed, is in one typed list of some pack.
     pub fn typed(&self, table: impl Fn(&'static Pack) -> &'static Typed, word: &str) -> bool {
-        self.packs.iter().any(|pack| table(pack).holds(word))
+        self.packs
+            .iter()
+            .any(|pack| self.offers(pack, word) && table(pack).holds(word))
+    }
+
+    /// Whether a word, as `fold` writes it, is in one phrase list of a pack whose grammar applies.
+    pub fn grammar_holds(
+        &self,
+        table: impl Fn(&'static Pack) -> &'static Phrases,
+        word: &str,
+    ) -> bool {
+        self.grammar.iter().any(|pack| table(pack).holds(word))
     }
 
     /// The form a word stands for in one named table of some pack, the first pack that holds it.
@@ -612,7 +860,10 @@ impl Lexicon {
         table: impl Fn(&'static Pack) -> &'static Named,
         word: &str,
     ) -> Option<&'static str> {
-        self.packs.iter().find_map(|pack| table(pack).form_of(word))
+        self.packs
+            .iter()
+            .filter(|pack| self.offers(pack, word))
+            .find_map(|pack| table(pack).form_of(word))
     }
 
     /// Every word of one named table of every pack with its form, the longest word first.
@@ -623,7 +874,11 @@ impl Lexicon {
         let mut words: Vec<(&'static str, &'static str)> = self
             .packs
             .iter()
-            .flat_map(|pack| table(pack).words())
+            .flat_map(|pack| {
+                table(pack)
+                    .words()
+                    .filter(|(word, _)| self.offers(pack, word))
+            })
             .collect();
         if self.packs.len() > 1 {
             words.sort_by_key(|(word, _)| Reverse(word.chars().count()));
@@ -637,15 +892,33 @@ impl Lexicon {
         table: impl Fn(&'static Pack) -> &'static Numbered,
         word: &str,
     ) -> Option<i64> {
-        self.packs.iter().find_map(|pack| table(pack).value(word))
+        self.packs
+            .iter()
+            .filter(|pack| self.offers(pack, word))
+            .find_map(|pack| table(pack).value(word))
     }
 
-    /// Every ending a stem comes off with and what it leaves, of every pack, the longest ending first.
+    /// A number said as one word, as `fold` writes it: a number word of some pack, or a composition a pack whose
+    /// grammar applies writes as one word.
+    #[must_use]
+    pub fn number(&self, word: &str) -> Option<u64> {
+        let single = self
+            .value(|pack| &pack.numbers.ones, word)
+            .or_else(|| self.value(|pack| &pack.numbers.tens, word))
+            .or_else(|| self.value(|pack| &pack.numbers.scale, word))
+            .and_then(|value| u64::try_from(value).ok());
+        single.or_else(|| self.grammar.iter().find_map(|pack| pack.number(word)))
+    }
+
+    /// Every ending a stem comes off with and what it leaves, of the one pack the text shows most — the first
+    /// where two show alike, so that one language's endings never come off another's words — the longest ending
+    /// first.
     #[must_use]
     pub fn stems(&self) -> Vec<(&'static str, &'static str)> {
         let mut stems: Vec<(&'static str, &'static str)> = self
-            .packs
+            .grammar
             .iter()
+            .take(1)
             .flat_map(|pack| {
                 pack.endings
                     .stem
@@ -671,7 +944,37 @@ impl Lexicon {
         pairs
     }
 
-    /// The first pack: how a form is written back.
+    /// The mark every pack whose grammar applies puts before a number's fraction; none where they differ.
+    #[must_use]
+    pub fn decimal_mark(&self) -> Option<char> {
+        let mut marks = self.grammar.iter().map(|pack| pack.numbers.decimal_mark);
+        let first = marks.next()?;
+        marks.all(|mark| mark == first).then_some(first)
+    }
+
+    /// The hours a clock counts: 24 where every pack whose grammar applies counts so, else 12.
+    #[must_use]
+    pub fn hour_cycle(&self) -> u8 {
+        if self.grammar.iter().all(|pack| pack.times.hour_cycle == 24) {
+            24
+        } else {
+            12
+        }
+    }
+
+    /// Whether a capital marks a name or a code in the text: so for every pack whose grammar applies.
+    #[must_use]
+    pub fn capitals_mark_names(&self) -> bool {
+        self.grammar.iter().all(|pack| pack.capitals_mark_names)
+    }
+
+    /// Whether a currency's symbol may follow the figure, as some pack whose grammar applies writes it.
+    #[must_use]
+    pub fn symbol_after(&self) -> bool {
+        self.grammar.iter().any(|pack| pack.amounts.symbol_after)
+    }
+
+    /// The first pack that reads the text: how a form is written back.
     #[must_use]
     pub fn first(&self) -> &'static Pack {
         self.packs.first().copied().unwrap_or_else(|| &packs()[0])
@@ -706,6 +1009,40 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn a_text_is_read_by_the_pack_it_shows_most_and_the_first_pack_always() {
+        let first = packs()[0].tag.as_str();
+        let tags = |text: &str| -> Vec<String> {
+            lexicon(text)
+                .packs()
+                .iter()
+                .map(|pack| pack.tag.clone())
+                .collect()
+        };
+        // Own words of three letters or more show a pack; a tie with the first pack is the first pack's.
+        assert_eq!(tags("clear out the bin for good"), [first]);
+        assert_eq!(tags("call the man"), [first]);
+        assert_eq!(
+            tags("schau dir Incident 318 und Incident 330 an"),
+            ["de", first]
+        );
+        assert_eq!(tags("liste anas sessions auf"), ["de", first]);
+        // A text that shows no pack is read by every pack, short words of the others held back.
+        let none = lexicon("wipe C02G8TVYPQ3K asap");
+        assert_eq!(none.packs().len(), packs().len());
+        assert!(none.shown().is_empty());
+        assert!(!none.typed(|pack| &pack.cut.signs, "u"));
+        assert!(
+            lexicon("liste anas sessions auf u meld sie ab").typed(|pack| &pack.cut.signs, "u")
+        );
+        // The first pack's grammar where none is shown; the shown pack's where one is.
+        assert_eq!(
+            none.decimal_mark(),
+            lexicon("send it to the team").decimal_mark()
+        );
+        assert_eq!(lexicon("liste anas sessions auf").decimal_mark(), Some(','));
     }
 
     #[test]

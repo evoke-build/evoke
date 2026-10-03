@@ -4213,7 +4213,7 @@ fn values_alone(text: &str, decision: Option<&Decision>) -> Option<Vec<Span>> {
     let lexicon = pack::lexicon(input.as_str());
     let idle = |word: &str| {
         word.is_empty()
-            || crate::words::function(word)
+            || crate::words::function(&lexicon, word)
             || lexicon.holds(|pack| &pack.refer.once_more, &text::fold(word))
     };
     let covered = crate::words::tokens(input.as_str()).iter().all(|token| {
@@ -4239,9 +4239,9 @@ fn in_place(step: &str, decision: &Decision, part: &str) -> Option<(String, usiz
         chars[end.min(chars.len())..].iter().collect(),
     );
     let spoken = |words: &str| {
-        crate::words::tokens(words)
-            .iter()
-            .any(|token| !token.plain.is_empty() && !crate::words::function(&token.plain))
+        crate::words::tokens(words).iter().any(|token| {
+            !token.plain.is_empty() && !crate::words::function(&pack::lexicon(words), &token.plain)
+        })
     };
     (spoken(&before) || spoken(&after)).then(|| (format!("{before}{part}{after}"), start))
 }
@@ -4335,7 +4335,7 @@ fn verb_group(words: &str) -> bool {
         && tokens.len() <= 2
         && tokens.iter().all(|token| {
             !token.plain.is_empty()
-                && !crate::words::function(&token.plain)
+                && !crate::words::function(&pack::lexicon(words), &token.plain)
                 && token.end - token.start == token.plain.chars().count()
         })
         && !reading::refers_back(words)

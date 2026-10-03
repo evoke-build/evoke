@@ -343,11 +343,12 @@ pub fn splits(text: &str, commas: bool) -> Vec<Split> {
     let chars: Vec<char> = text.chars().collect();
     let lexicon = pack::lexicon(text);
     let quoted = quoted(&lexicon, &chars);
+    let held = subordinate(&lexicon, &chars);
     let mut found: Vec<Split> = Vec::new();
     let mut add = |phrases: &[&str], order: Order, bare: Option<char>| {
         let mut i = 0;
         while i < chars.len() {
-            let Some((end, word)) = connective(&chars, i, phrases, bare) else {
+            let Some((end, word)) = connective(&lexicon, &chars, i, phrases, bare) else {
                 i += 1;
                 continue;
             };
@@ -356,7 +357,9 @@ pub fn splits(text: &str, commas: bool) -> Vec<Split> {
             if start == 0 || end == chars.len() {
                 continue;
             }
-            if quoted.iter().any(|q| start >= q.0 && start < q.1) {
+            if quoted.iter().any(|q| start >= q.0 && start < q.1)
+                || held.iter().any(|(from, to)| start >= *from && end <= *to)
+            {
                 continue;
             }
             if found.iter().any(|s| start < s.end && end > s.start) {
@@ -382,9 +385,42 @@ pub fn splits(text: &str, commas: bool) -> Vec<Split> {
     found
 }
 
+/// The stretches of a subordinate clause: from the word that opens it, «dass», «weil», to the mark that closes it
+/// — a comma, a semicolon, a sentence end — or the text's end. The clause is the grammar's: no joiner inside it is
+/// a place to cut, as the comma before it is none.
+fn subordinate(lexicon: &Lexicon, chars: &[char]) -> Vec<(usize, usize)> {
+    let openers = lexicon.phrases(|pack| &pack.cut.subordinators);
+    let mut found = Vec::new();
+    let mut i = 0;
+    while i < chars.len() {
+        let opened = boundary(chars, i)
+            .then(|| openers.iter().find_map(|word| whole_word(chars, i, word)))
+            .flatten();
+        let Some(opened) = opened else {
+            i += 1;
+            continue;
+        };
+        let mut k = opened;
+        while k < chars.len() {
+            let c = chars[k];
+            if matches!(c, ',' | ';') && !in_figure(chars, k) {
+                break;
+            }
+            if ENDS.contains(&c) && chars.get(k + 1).is_none_or(|next| next.is_whitespace()) {
+                break;
+            }
+            k += 1;
+        }
+        found.push((opened, k));
+        i = k.max(opened);
+    }
+    found
+}
+
 /// A connective at `i`: `\s*[,;]?\s*\b(phrase)\b,?\s*`, or a bare `\s*;\s*` and `\s*,\s*`; where it ends, and
 /// its word as a person names it.
 fn connective(
+    lexicon: &Lexicon,
     chars: &[char],
     i: usize,
     phrases: &[&str],
@@ -401,6 +437,14 @@ fn connective(
         j += 1;
         while j < chars.len() && chars[j].is_whitespace() {
             j += 1;
+        }
+        // A comma a subordinate clause follows, «, dass», «, bevor», is the grammar's and no cut.
+        let held = lexicon
+            .phrases(|pack| &pack.cut.subordinators)
+            .iter()
+            .any(|word| whole_word(chars, j, word).is_some());
+        if held {
+            return None;
         }
         return Some((j, mark.to_string()));
     }
@@ -480,9 +524,7 @@ pub fn joins(word: &str) -> bool {
 /// and is no place.
 fn number_word(lexicon: &Lexicon, word: &str) -> bool {
     let word = fold(word);
-    lexicon.value(|pack| &pack.numbers.ones, &word).is_some()
-        || lexicon.value(|pack| &pack.numbers.tens, &word).is_some()
-        || lexicon.value(|pack| &pack.numbers.scale, &word).is_some()
+    lexicon.number(&word).is_some()
         || lexicon.holds(|pack| &pack.numbers.oh, &word)
         || lexicon.holds(|pack| &pack.numbers.noughts, &word)
 }
@@ -493,6 +535,7 @@ fn number_word(lexicon: &Lexicon, word: &str) -> bool {
 /// a name («Hartwell & Sons»).
 fn joiners(lexicon: &Lexicon, chars: &[char], quoted: &[(usize, usize)]) -> Vec<Split> {
     let tokens = words_of(chars);
+    let held = subordinate(lexicon, chars);
     let mut found = Vec::new();
     for k in 1..tokens.len().saturating_sub(1) {
         let (start, end) = tokens[k];
@@ -503,7 +546,11 @@ fn joiners(lexicon: &Lexicon, chars: &[char], quoted: &[(usize, usize)]) -> Vec<
             continue;
         }
         let (before, after) = (tokens[k - 1], tokens[k + 1]);
-        if MARKS.contains(chars[before.1 - 1]) {
+        if MARKS.contains(chars[before.1 - 1])
+            || held
+                .iter()
+                .any(|(from, to)| before.1 >= *from && after.0 <= *to)
+        {
             continue;
         }
         let neighbours = [
@@ -515,7 +562,7 @@ fn joiners(lexicon: &Lexicon, chars: &[char], quoted: &[(usize, usize)]) -> Vec<
         if neighbours
             .iter()
             .any(|word| word.chars().count() < 2 || number(word))
-            || neighbours.iter().all(|word| capital(word))
+            || (lexicon.capitals_mark_names() && neighbours.iter().all(|word| capital(word)))
         {
             continue;
         }
