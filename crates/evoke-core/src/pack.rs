@@ -539,7 +539,12 @@ impl Pack {
             .map_err(|error| error.message().to_owned())?;
         let json = json_of(parsed.as_item());
         let mut listed = HashSet::new();
-        words_of(&json, &mut listed);
+        // An ending is no word: «ada» ends a Spanish verb and names a person in an English flow.
+        let mut worded = json.clone();
+        if let Some(tables) = worded.as_object_mut() {
+            tables.remove("endings");
+        }
+        words_of(&worded, &mut listed);
         let raw: Raw = serde_json::from_value(json).map_err(|error| error.to_string())?;
         Ok(Self {
             tag: raw.tag,
@@ -650,7 +655,7 @@ impl Pack {
 }
 
 /// Every word a pack's file lists, as `fold` writes it: the items of its arrays, and the keys of its tables of
-/// numbers. A table's keys that name a form stand for no word, and a setting is no word.
+/// numbers. A table's keys that name a form stand for no word, a setting is no word, and the endings are none.
 fn words_of(json: &Json, into: &mut HashSet<String>) {
     match json {
         Json::Array(items) => {
