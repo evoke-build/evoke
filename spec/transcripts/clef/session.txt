@@ -1,0 +1,19 @@
+$ evoke "lock the screen"
+  clef needs CLOUDFLARE_API_TOKEN, a key from dash.cloudflare.com  →  export CLOUDFLARE_API_TOKEN=<value>
+  clef needs CLOUDFLARE_ACCOUNT_ID, an account id from dash.cloudflare.com  →  export CLOUDFLARE_ACCOUNT_ID=<value>
+[3]
+$ CLOUDFLARE_API_TOKEN=example evoke "lock the screen"
+  clef needs CLOUDFLARE_ACCOUNT_ID, an account id from dash.cloudflare.com  →  export CLOUDFLARE_ACCOUNT_ID=<value>
+[3]
+$ CLOUDFLARE_API_TOKEN=example CLOUDFLARE_ACCOUNT_ID=accounts/../zones evoke "lock the screen"
+  CLOUDFLARE_ACCOUNT_ID is not an account id: 32 hex digits, in lowercase  →  export CLOUDFLARE_ACCOUNT_ID=<value>
+[3]
+$ CLOUDFLARE_API_TOKEN=example CLOUDFLARE_ACCOUNT_ID=0123456789abcdef0123456789abcdef evoke "lock the screen"
+  no reflexes are installed  →  evoke add evoke-build/reflexes
+[3]
+$ printf '\n[adapters.clef]\ngate = { write = 0.95 }\n' >> .config/evoke/evoke.toml && CLOUDFLARE_API_TOKEN=example CLOUDFLARE_ACCOUNT_ID=0123456789abcdef0123456789abcdef evoke "lock the screen"
+  adapters.clef.gate needs route, read and write, since clef ships no floors  →  evoke check
+[3]
+$ printf 'adapter = "clef_flash"\n\n[adapters.clef_flash]\ngate = { route = 0.6, read = 0.97, write = 0.95 }\n' > .config/evoke/evoke.toml && CLOUDFLARE_API_TOKEN=example CLOUDFLARE_ACCOUNT_ID=0123456789abcdef0123456789abcdef evoke "lock the screen"
+  adapters.clef_flash.gate: read 0.97 is above write 0.95  →  evoke check
+[3]

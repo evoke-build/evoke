@@ -1,0 +1,14 @@
+{
+  "input": {
+    "door": "clef",
+    "status": 401,
+    "body": "{\"result\":null,\"success\":false,\"errors\":[{\"code\":10000,\"message\":\"Authentication error\"}],\"messages\":[]}"
+  },
+  "expect": {
+    "err": {
+      "type": "refused",
+      "credential": "CLOUDFLARE_API_TOKEN",
+      "account": "CLOUDFLARE_ACCOUNT_ID"
+    }
+  }
+}

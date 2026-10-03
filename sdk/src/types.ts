@@ -621,7 +621,7 @@ export type Raw = Record<QuestionId, Record<Key, number>>
 export type Fault =
   | { type: "transport"; message: string }
   | { type: "status"; status: number }
-  | { type: "refused"; credential: VarName } // the engine refused the key the variable holds
+  | { type: "refused"; credential: VarName; account?: VarName } // the engine refused the key the variable holds, for the account the other names
   | { type: "retired"; id: AdapterId }
   | { type: "unanswered"; question: QuestionId }
   | { type: "malformed"; question: QuestionId; message: string }
@@ -1797,17 +1797,17 @@ export interface Counted {
 // systemone
 
 /** A door on the System One wire: which address, under which key, naming which model. Its adapter name. */
-export type Door = "jev" | "openjev"
+export type Door = "jev" | "openjev" | "clef" | "clef_flash"
 
 /** What both hosts read before the first call. */
 export interface Settings {
   declared: Declared
   /** The variable the API key is read from. */
   credential: VarName
+  /** The variable the account's id is read from, at a door whose address names an account. */
+  account?: VarName
   /** Where a key comes from, as the line that asks for one says it. */
   issuer: string
-  /** The endpoint both hosts post to. */
-  url: string
   policy: Transport
 }
 

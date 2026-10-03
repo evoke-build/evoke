@@ -1,22 +1,25 @@
-// The System One wire, behind two doors: jev, TypeSafe AI's own address under TYPESAFE_API_KEY, and openjev,
-// OpenJEV, an independent service that forwards requests to Jev, under OPENJEV_API_KEY. The mapping is the
-// core's — systemone.settings, systemone.request and systemone.answers through the module — and the SDK adds
-// the transport: one kept-alive agent for the process, through the proxy the environment names, the bearer key,
-// and the policy loop the settings declare: once more after a connect error or a retried status, never after a
-// client error, and a 429 that names a pause waited out and sent again while the deadline allows. In: a door and
-// its options. Out: an Adapter.
+// The System One wire, behind four doors: jev, TypeSafe AI's own address under TYPESAFE_API_KEY; openjev,
+// OpenJEV, an independent service that forwards requests to Jev, under OPENJEV_API_KEY; clef and clef_flash,
+// Cloudflare's Clef and Clef-flash on Workers AI, under CLOUDFLARE_API_TOKEN at the account CLOUDFLARE_ACCOUNT_ID
+// names. The mapping is the core's — systemone.settings, systemone.address, systemone.request and
+// systemone.answers through the module — and the SDK adds the transport: one kept-alive agent for the process,
+// through the proxy the environment names, the bearer key, and the policy loop the settings declare: once more
+// after a connect error or a retried status, never after a client error, and a 429 that names a pause waited out
+// and sent again while the deadline allows. In: a door and its options. Out: an Adapter.
 
 import { Agent } from "node:https"
 
 import type { Adapter } from "./adapter.ts"
 import { call, command, fromCode, reply } from "./core.ts"
-import { DiagnosticError, FailureError } from "./errors.ts"
+import { DiagnosticError, FailureError, type Problem } from "./errors.ts"
 import { type Response, Unanswered, post } from "./https.ts"
 import type { Diagnostic, Door, Gate, Question, Raw, Settings, State } from "./types.ts"
 
 export interface DoorOptions {
-  /** The API key; absent, the door's own variable from the environment: `TYPESAFE_API_KEY` for jev, `OPENJEV_API_KEY` for openjev. */
+  /** The API key; absent, the door's own variable from the environment: `TYPESAFE_API_KEY` for jev, `OPENJEV_API_KEY` for openjev, `CLOUDFLARE_API_TOKEN` for clef and clef_flash. */
   key?: string | undefined
+  /** The account's id, at a door whose address names an account; absent, `CLOUDFLARE_ACCOUNT_ID` from the environment. */
+  account?: string | undefined
   /** Floors over the defaults, as `[adapters.<door>] gate = { … }` in evoke.toml. */
   gate?: Partial<Gate> | undefined
   /** @internal The project's `[adapters.<door>]` table, when `load` resolves the adapter by name. */
@@ -62,47 +65,69 @@ export function proxied(door: Door): { env: Record<string, string>; via: string 
 export function over(door: Door, options: DoorOptions, send: Post): Adapter {
   const table = options.table ?? (options.gate === undefined ? undefined : { gate: options.gate })
   const settings = validated(door, table, options.table === undefined)
-  // An empty key is no key.
+  // An empty key is no key. Every variable the door lacks is named at once: the key, and the account its
+  // address names.
   const key = options.key || process.env[settings.credential] || undefined
-  if (key === undefined) {
+  const url = address(door, settings, options.account)
+  if (key === undefined || typeof url !== "string") {
     const fix = { type: "export_key", var: settings.credential } as const
-    throw new DiagnosticError([{ message: `${door} needs ${settings.credential}, a key from ${settings.issuer}`, fix, command: command(fix) }])
+    const keyless: Problem = { message: `${door} needs ${settings.credential}, a key from ${settings.issuer}`, fix, command: command(fix) }
+    throw new DiagnosticError([...(key === undefined ? [keyless] : []), ...(typeof url === "string" ? [] : [url])])
   }
-  const { policy, url } = settings
+  const { policy } = settings
   const [lowest, highest] = policy.retry_statuses
   const declared = settings.declared
+  /** The policy loop over one body. */
+  const posted = async (body: string, signal: AbortSignal): Promise<Raw> => {
+    let retried = 0
+    for (;;) {
+      const again = retried < policy.retries
+      let response: Response
+      try {
+        response = await send(url, key, body, signal, policy.timeout)
+      } catch (error) {
+        if (error instanceof Unanswered && again && !error.connected && !signal.aborted) {
+          retried += 1
+          continue
+        }
+        throw error
+      }
+      if (again && response.status >= lowest && response.status <= highest) {
+        retried += 1
+        continue
+      }
+      // The service asked for a pause before the next attempt: honoured until the deadline ends the wait.
+      if (response.status === 429 && response.retryAfter !== undefined && !signal.aborted) {
+        await pausing(response.retryAfter, signal)
+        if (!signal.aborted) continue
+      }
+      return call("systemone.answers", { door, status: response.status, body: response.body })
+    }
+  }
   return {
     id: declared.id,
     ...(declared.limits === undefined ? {} : { limits: declared.limits }),
     ...(declared.gate === undefined ? {} : { gate: declared.gate }),
+    /** The request's bodies, one after the other under the one signal; their answers together are the request's. */
     async answer(state: State, questions: Record<string, Question>, signal: AbortSignal): Promise<Raw> {
-      const body = JSON.stringify(call("systemone.request", { request: { state, questions, proposed: [] } }))
-      let retried = 0
-      for (;;) {
-        const again = retried < policy.retries
-        let response: Response
-        try {
-          response = await send(url, key, body, signal, policy.timeout)
-        } catch (error) {
-          if (error instanceof Unanswered && again && !error.connected && !signal.aborted) {
-            retried += 1
-            continue
-          }
-          throw error
-        }
-        if (again && response.status >= lowest && response.status <= highest) {
-          retried += 1
-          continue
-        }
-        // The service asked for a pause before the next attempt: honoured until the deadline ends the wait.
-        if (response.status === 429 && response.retryAfter !== undefined && !signal.aborted) {
-          await pausing(response.retryAfter, signal)
-          if (!signal.aborted) continue
-        }
-        return call("systemone.answers", { status: response.status, body: response.body, credential: settings.credential })
-      }
+      const bodies = call("systemone.request", { door, request: { state, questions, proposed: [] } })
+      const raw: Raw = {}
+      for (const body of bodies) Object.assign(raw, await posted(JSON.stringify(body), signal))
+      return raw
     },
   }
+}
+
+/** The address the door posts to: its own, or with the account its variable holds; a missing or malformed id is
+ * the problem, with the export line that fixes it. */
+function address(door: Door, settings: Settings, given: string | undefined): string | Problem {
+  // An empty id is no id.
+  const account = given || (settings.account === undefined ? undefined : process.env[settings.account]) || undefined
+  const answer = reply("systemone.address", account === undefined ? { door } : { door, account })
+  if ("ok" in answer) return answer.ok as string
+  if ("bug" in answer) throw new Error(`evoke's core hit a bug: ${answer.bug}`)
+  const diagnostic = answer.err as Diagnostic
+  return { ...diagnostic, command: command(diagnostic.fix) }
 }
 
 /** A pause the service asked for, ended early by the signal. */

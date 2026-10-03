@@ -85,6 +85,95 @@ test("openjev is a second door on the same wire: its own key, address, model and
   }
 })
 
+test("clef is two doors at one service: its token and account, its envelope, no floors of its own", async () => {
+  const account = "0123456789abcdef0123456789abcdef"
+  const enveloped = JSON.stringify({ result: { model: "clef", ...JSON.parse(answers), usage: { input_tokens: 9, output_tokens: 0 } }, success: true, errors: [], messages: [] })
+  const seen: { url: string; bearer: string; body: string; timeout: number }[] = []
+  const send: Post = async (url, bearer, body, _signal, timeout) => {
+    seen.push({ url, bearer, body, timeout })
+    return { status: 200, body: enveloped }
+  }
+  const door = over("clef", { key: "t", account }, send)
+  equal(door.id, "clef-2026-10-03")
+  deepStrictEqual(door.limits, { options: 255 })
+  equal(door.gate, undefined)
+  const { raw } = await answered(door, phrase, 30_000, undefined, "decide()")
+  deepStrictEqual(raw["fits.lights"], { yes: 0.7 })
+  equal(seen[0]?.url, `https://api.cloudflare.com/client/v4/accounts/${account}/ai/run/@cf/cloudflare/clef`)
+  equal(seen[0]?.bearer, "t")
+  equal(seen[0]?.timeout, 6000)
+  ok(seen[0]?.body.includes('"model":"clef"'))
+  const flash = over("clef_flash", { key: "t", account, gate: { route: 0.6, read: 0.85, write: 0.95 } }, send)
+  equal(flash.id, "clef-flash-2026-10-03")
+  deepStrictEqual(flash.gate, { route: 0.6, read: 0.85, write: 0.95 })
+  await answered(flash, phrase, 30_000, undefined, "decide()")
+  equal(seen[1]?.url, `https://api.cloudflare.com/client/v4/accounts/${account}/ai/run/@cf/cloudflare/clef-flash`)
+  equal(seen[1]?.timeout, 3000)
+  ok(seen[1]?.body.includes('"model":"clef-flash"'))
+  throws(
+    () => over("clef", { key: "t", account, gate: { write: 0.95 } }, send),
+    (error: DiagnosticError) => error.message === "adapters.clef.gate needs route, read and write, since clef ships no floors  →  clef({ gate })",
+  )
+  await rejects(
+    answered(over("clef", { key: "t", account }, async () => ({ status: 401, body: "" })), request, 30_000, undefined, "decide()"),
+    (error: FaultError) =>
+      error.message === "the key in CLOUDFLARE_API_TOKEN was refused for the account in CLOUDFLARE_ACCOUNT_ID  →  export CLOUDFLARE_API_TOKEN=<value>",
+  )
+  const kept = { CLOUDFLARE_API_TOKEN: process.env.CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID }
+  delete process.env.CLOUDFLARE_API_TOKEN
+  delete process.env.CLOUDFLARE_ACCOUNT_ID
+  try {
+    // Every variable the door lacks, at once.
+    throws(
+      () => over("clef", {}, send),
+      (error: DiagnosticError) =>
+        error.message ===
+        "clef needs CLOUDFLARE_API_TOKEN, a key from dash.cloudflare.com  →  export CLOUDFLARE_API_TOKEN=<value>\nclef needs CLOUDFLARE_ACCOUNT_ID, an account id from dash.cloudflare.com  →  export CLOUDFLARE_ACCOUNT_ID=<value>",
+    )
+    throws(
+      () => over("clef", { key: "t" }, send),
+      (error: DiagnosticError) => error.message === "clef needs CLOUDFLARE_ACCOUNT_ID, an account id from dash.cloudflare.com  →  export CLOUDFLARE_ACCOUNT_ID=<value>",
+    )
+    // An account is 32 hex digits in lowercase, so nothing it holds moves the address.
+    for (const malformed of ["0123456789ABCDEF0123456789ABCDEF", "0123456789abcdef/../../89abcdef0", "short"]) {
+      throws(
+        () => over("clef_flash", { key: "t", account: malformed }, send),
+        (error: DiagnosticError) => error.message === "CLOUDFLARE_ACCOUNT_ID is not an account id: 32 hex digits, in lowercase  →  export CLOUDFLARE_ACCOUNT_ID=<value>",
+      )
+    }
+    process.env.CLOUDFLARE_ACCOUNT_ID = account
+    equal(over("clef", { key: "t" }, send).id, "clef-2026-10-03")
+  } finally {
+    delete process.env.CLOUDFLARE_ACCOUNT_ID
+    for (const [name, value] of Object.entries(kept)) if (value !== undefined) process.env[name] = value
+  }
+})
+
+test("a clef request of more than sixty-four questions goes out as several bodies, answered as one", async () => {
+  const questions: Request["questions"] = {}
+  for (let n = 0; n < 130; n += 1) questions[`weave.split_${n}`] = { type: "yesno", ask: "At «and», two things?", yes: "Two things.", no: "One thing." }
+  const many: Request = { state: { request: "check stock and look up order 4821" }, questions, proposed: [] }
+  const sizes: number[] = []
+  const send: Post = async (_url, _bearer, body) => {
+    const asked = Object.keys((JSON.parse(body) as { questions: Record<string, unknown> }).questions)
+    sizes.push(asked.length)
+    const answers = Object.fromEntries(asked.map(id => [id, { type: "noul", noul: 0.5 }]))
+    return { status: 200, body: JSON.stringify({ result: { model: "clef", answers, usage: { input_tokens: 9, output_tokens: 0 } }, success: true, errors: [], messages: [] }) }
+  }
+  const { raw } = await answered(over("clef", { key: "t", account: "0123456789abcdef0123456789abcdef" }, send), many, 30_000, undefined, "decide()")
+  deepStrictEqual(sizes, [64, 64, 2])
+  deepStrictEqual(Object.keys(raw), Object.keys(questions))
+  // A door without a ceiling posts one body.
+  const whole: number[] = []
+  const jev = over("jev", { key: "k" }, async (_url, _bearer, body) => {
+    const asked = Object.keys((JSON.parse(body) as { questions: Record<string, unknown> }).questions)
+    whole.push(asked.length)
+    return { status: 200, body: JSON.stringify({ answers: Object.fromEntries(asked.map(id => [id, { type: "noul", noul: 0.5 }])) }) }
+  })
+  await answered(jev, many, 30_000, undefined, "decide()")
+  deepStrictEqual(whole, [130])
+})
+
 test("a question of evoke's own, weave.<name>, travels through jev and replay like any other", async () => {
   const own: Request = {
     state: { request: "check stock and look up order 4821" },

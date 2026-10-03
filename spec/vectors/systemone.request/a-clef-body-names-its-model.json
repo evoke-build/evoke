@@ -1,13 +1,13 @@
 {
   "input": {
-    "door": "jev",
+    "door": "clef_flash",
     "request": {
       "$ref": "fixtures/request-kill-the-lights.json"
     }
   },
   "expect": [
     {
-      "model": "jev-1.13.0",
+      "model": "clef-flash",
       "state": {
         "request": "kill the lights"
       },

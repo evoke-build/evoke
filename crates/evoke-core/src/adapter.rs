@@ -480,9 +480,12 @@ pub enum Fault {
     Status {
         status: u16,
     },
-    /// The engine refused the key the named variable holds; the fix is a new value for it.
+    /// The engine refused the key the named variable holds; the fix is a new value for it. At a door whose
+    /// address names an account, the key was refused for that account, whose variable is named beside it.
     Refused {
         credential: VarName,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        account: Option<VarName>,
     },
     Retired {
         id: AdapterId,
@@ -505,7 +508,17 @@ impl fmt::Display for Fault {
         match self {
             Self::Transport { message } => f.write_str(message),
             Self::Status { status } => write!(f, "the adapter answered {status}"),
-            Self::Refused { credential } => write!(f, "the key in {credential} was refused"),
+            Self::Refused {
+                credential,
+                account: None,
+            } => write!(f, "the key in {credential} was refused"),
+            Self::Refused {
+                credential,
+                account: Some(account),
+            } => write!(
+                f,
+                "the key in {credential} was refused for the account in {account}"
+            ),
             Self::Retired { id } => write!(f, "adapter {id} is retired"),
             Self::Unanswered { question } => write!(f, "{question} was not answered"),
             Self::Malformed { question, message } => write!(f, "{question}: {message}"),
@@ -519,7 +532,7 @@ impl Fault {
     pub fn fix(&self) -> Fix {
         match self {
             Self::Retired { .. } => Fix::Update { reflex: None },
-            Self::Refused { credential } => Fix::ExportKey {
+            Self::Refused { credential, .. } => Fix::ExportKey {
                 var: credential.clone(),
             },
             Self::Transport { .. }
@@ -646,7 +659,8 @@ mod tests {
         let key = VarName::new("TYPESAFE_API_KEY").unwrap();
         assert_eq!(
             Fault::Refused {
-                credential: key.clone()
+                credential: key.clone(),
+                account: None,
             }
             .fix(),
             Fix::ExportKey { var: key }
@@ -678,6 +692,7 @@ mod tests {
         let credential = VarName::new("TYPESAFE_API_KEY").unwrap();
         let refused = Fault::Refused {
             credential: credential.clone(),
+            account: None,
         };
         assert_eq!(
             refused.to_string(),
@@ -687,6 +702,24 @@ mod tests {
         assert_eq!(
             serde_json::to_value(&refused).unwrap(),
             serde_json::json!({ "type": "refused", "credential": "TYPESAFE_API_KEY" })
+        );
+        let token = VarName::new("CLOUDFLARE_API_TOKEN").unwrap();
+        let refused = Fault::Refused {
+            credential: token.clone(),
+            account: Some(VarName::new("CLOUDFLARE_ACCOUNT_ID").unwrap()),
+        };
+        assert_eq!(
+            refused.to_string(),
+            "the key in CLOUDFLARE_API_TOKEN was refused for the account in CLOUDFLARE_ACCOUNT_ID"
+        );
+        assert_eq!(refused.fix(), Fix::ExportKey { var: token });
+        assert_eq!(
+            serde_json::to_value(&refused).unwrap(),
+            serde_json::json!({
+                "type": "refused",
+                "credential": "CLOUDFLARE_API_TOKEN",
+                "account": "CLOUDFLARE_ACCOUNT_ID",
+            })
         );
     }
 }

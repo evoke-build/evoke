@@ -1,0 +1,21 @@
+{
+  "input": {
+    "door": "clef_flash",
+    "table": {
+      "gate": {
+        "write": 0.95,
+        "whole": 0.5
+      }
+    }
+  },
+  "expect": {
+    "err": [
+      {
+        "message": "adapters.clef_flash.gate needs route, read and write, since clef_flash ships no floors",
+        "fix": {
+          "type": "check"
+        }
+      }
+    ]
+  }
+}

@@ -1,100 +1,103 @@
 {
   "input": {
+    "door": "jev",
     "request": {
       "$ref": "fixtures/request-screenshot-window.json"
     }
   },
-  "expect": {
-    "model": "jev-1.13.0",
-    "state": {
-      "request": "screenshot this window"
-    },
-    "questions": {
-      "route": {
-        "type": "choice",
-        "instructions": "Which one does the request ask for?",
-        "criteria": {
-          "screenshot": {
-            "what": "Capture the screen, a window or a selection.\nSaved to the desktop as PNG, or copied to the clipboard.",
-            "not_for": [
-              "recording the screen"
-            ],
-            "examples": [
-              "take a screenshot",
-              "screenshot this window",
-              "grab the screen to the clipboard"
-            ]
-          },
-          "none": "None of these."
-        }
+  "expect": [
+    {
+      "model": "jev-1.13.0",
+      "state": {
+        "request": "screenshot this window"
       },
-      "screenshot.area": {
-        "type": "choice",
-        "instructions": "The whole screen, a window, or a selection?",
-        "criteria": {
-          "screen": {
-            "what": "Everything on every display.",
-            "examples": [
-              "grab the screen to the clipboard"
-            ]
-          },
-          "window": {
-            "what": "One window, chosen by clicking it.",
-            "examples": [
-              "screenshot this window"
-            ]
-          },
-          "unstated": {
-            "what": "The request does not say.",
-            "examples": [
-              "take a screenshot"
-            ]
-          },
-          "none": "The request names one that is not in this list."
-        }
-      },
-      "screenshot.clipboard": {
-        "type": "choice",
-        "instructions": "To the clipboard instead of a file?",
-        "criteria": {
-          "yes": {
-            "what": "The request asks for this.",
-            "examples": [
-              "grab the screen to the clipboard"
-            ]
-          },
-          "no": "The request asks for the opposite.",
-          "unstated": "The request does not say."
-        }
-      },
-      "weave.view_screenshot__area": {
-        "type": "choice",
-        "instructions": "Which of these does the request name?",
-        "criteria": {
-          "screen": {
-            "what": "Everything on every display.",
-            "examples": [
-              "grab the screen to the clipboard"
-            ]
-          },
-          "window": {
-            "what": "One window, chosen by clicking it.",
-            "examples": [
-              "screenshot this window"
-            ]
-          },
-          "none": "One that is not in this list.",
-          "unstated": "None: the request names none."
-        }
-      },
-      "weave.is_screenshot__area_1": {
-        "type": "noul",
-        "instructions": "The whole screen, a window, or a selection?",
-        "criteria": {
-          "true": "One window, chosen by clicking it.",
-          "false": "Another one, or none."
+      "questions": {
+        "route": {
+          "type": "choice",
+          "instructions": "Which one does the request ask for?",
+          "criteria": {
+            "screenshot": {
+              "what": "Capture the screen, a window or a selection.\nSaved to the desktop as PNG, or copied to the clipboard.",
+              "not_for": [
+                "recording the screen"
+              ],
+              "examples": [
+                "take a screenshot",
+                "screenshot this window",
+                "grab the screen to the clipboard"
+              ]
+            },
+            "none": "None of these."
+          }
+        },
+        "screenshot.area": {
+          "type": "choice",
+          "instructions": "The whole screen, a window, or a selection?",
+          "criteria": {
+            "screen": {
+              "what": "Everything on every display.",
+              "examples": [
+                "grab the screen to the clipboard"
+              ]
+            },
+            "window": {
+              "what": "One window, chosen by clicking it.",
+              "examples": [
+                "screenshot this window"
+              ]
+            },
+            "unstated": {
+              "what": "The request does not say.",
+              "examples": [
+                "take a screenshot"
+              ]
+            },
+            "none": "The request names one that is not in this list."
+          }
+        },
+        "screenshot.clipboard": {
+          "type": "choice",
+          "instructions": "To the clipboard instead of a file?",
+          "criteria": {
+            "yes": {
+              "what": "The request asks for this.",
+              "examples": [
+                "grab the screen to the clipboard"
+              ]
+            },
+            "no": "The request asks for the opposite.",
+            "unstated": "The request does not say."
+          }
+        },
+        "weave.view_screenshot__area": {
+          "type": "choice",
+          "instructions": "Which of these does the request name?",
+          "criteria": {
+            "screen": {
+              "what": "Everything on every display.",
+              "examples": [
+                "grab the screen to the clipboard"
+              ]
+            },
+            "window": {
+              "what": "One window, chosen by clicking it.",
+              "examples": [
+                "screenshot this window"
+              ]
+            },
+            "none": "One that is not in this list.",
+            "unstated": "None: the request names none."
+          }
+        },
+        "weave.is_screenshot__area_1": {
+          "type": "noul",
+          "instructions": "The whole screen, a window, or a selection?",
+          "criteria": {
+            "true": "One window, chosen by clicking it.",
+            "false": "Another one, or none."
+          }
         }
       }
     }
-  }
+  ]
 }

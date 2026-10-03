@@ -1,8 +1,8 @@
 //! Who answers: the `Adapter` trait over the built-ins, resolved by name. In: the project's adapter name and its
 //! `[adapters.<name>]` table, the environment. Out: a boxed adapter, or every diagnostic in its way; a `Trace`
-//! per call. `SystemOne` is the pure mapping behind a door — `jev` or `openjev` — plus the network and the
-//! policy loop; `Replay` is the recording `EVOKE_ANSWERS` names plus its lookup. `declared` reads what an adapter
-//! declares without its credential, for the commands that never ask.
+//! per call. `SystemOne` is the pure mapping behind a door — `jev`, `openjev`, `clef` or `clef_flash` — plus the
+//! network and the policy loop; `Replay` is the recording `EVOKE_ANSWERS` names plus its lookup. `declared` reads
+//! what an adapter declares without its credential, for the commands that never ask.
 
 use std::fmt::Write as _;
 use std::path::Path;
@@ -91,7 +91,7 @@ fn unknown(name: &str) -> Diagnostic {
         reflex: None,
         at: None,
         message: format!(
-            "adapter \"{name}\" is unknown; the built-ins are jev, openjev and replay"
+            "adapter \"{name}\" is unknown; the built-ins are jev, openjev, clef, clef_flash and replay"
         ),
         fix: Fix::Check,
     }
@@ -107,14 +107,17 @@ fn unset(what: &str, var: VarName) -> Diagnostic {
     }
 }
 
-/// One door on the System One wire, with its key and a connection.
+/// One door on the System One wire, with its address, its key and a connection.
 struct SystemOne {
+    door: Door,
     settings: Settings,
+    url: String,
     key: String,
     agent: Agent,
 }
 
 impl SystemOne {
+    /// The door ready to answer, or every variable it lacks: the key, and the account its address names.
     fn resolve(
         door: Door,
         table: Option<&Json>,
@@ -127,36 +130,36 @@ impl SystemOne {
             .ok_or_else(|| {
                 let mut needs = unset(door.name(), settings.credential.clone());
                 let _ = write!(needs.message, ", a key from {}", settings.issuer);
-                vec![needs]
-            })?
-            .to_owned();
-        let agent = Agent::new(environment).map_err(|problem| vec![problem])?;
-        Ok(Self {
-            settings,
-            key,
-            agent,
-        })
+                needs
+            });
+        let account = settings
+            .account
+            .as_ref()
+            .and_then(|account| environment.get(account.as_str()));
+        match (key, systemone::address(door, account)) {
+            (Ok(key), Ok(url)) => Ok(Self {
+                door,
+                settings,
+                url,
+                key: key.to_owned(),
+                agent: Agent::new(environment).map_err(|problem| vec![problem])?,
+            }),
+            (key, url) => Err(key.err().into_iter().chain(url.err()).collect()),
+        }
     }
-}
 
-impl Adapter for SystemOne {
-    fn declared(&self) -> &Declared {
-        &self.settings.declared
-    }
-
-    /// The policy loop: once more after a connect error or a retried status, never after a client error; a 429
-    /// that names a pause is waited out and sent again, as often as the deadline allows.
-    fn answer(&self, request: &Request, deadline: Deadline) -> Result<Raw, Fault> {
-        let body = systemone::request(request).to_string();
+    /// The policy loop over one body: once more after a connect error or a retried status, never after a client
+    /// error; a 429 that names a pause is waited out and sent again, as often as the deadline allows.
+    fn post(&self, body: &str, deadline: Deadline) -> Result<Raw, Fault> {
         let policy = &self.settings.policy;
         let mut retried = 0;
         loop {
             let again = retried < policy.retries;
             let sent = network::post(
                 &self.agent,
-                &self.settings.url,
+                &self.url,
                 &self.key,
-                &body,
+                body,
                 deadline,
                 policy.timeout,
             );
@@ -169,14 +172,26 @@ impl Adapter for SystemOne {
                     ..
                 }) if pause <= deadline.remaining() => thread::sleep(pause),
                 Ok(response) => {
-                    return systemone::answers(
-                        response.status,
-                        &response.body,
-                        &self.settings.credential,
-                    );
+                    return systemone::answers(self.door, response.status, &response.body);
                 }
             }
         }
+    }
+}
+
+impl Adapter for SystemOne {
+    fn declared(&self) -> &Declared {
+        &self.settings.declared
+    }
+
+    /// The request's bodies, one after the other under the one deadline; their answers together are the
+    /// request's.
+    fn answer(&self, request: &Request, deadline: Deadline) -> Result<Raw, Fault> {
+        let mut raw = Raw::default();
+        for body in systemone::request(self.door, request) {
+            raw.0.extend(self.post(&body.to_string(), deadline)?.0);
+        }
+        Ok(raw)
     }
 }
 
@@ -270,7 +285,7 @@ mod tests {
         assert_eq!(problems.len(), 1);
         assert_eq!(
             problems[0].message,
-            "adapter \"gpt\" is unknown; the built-ins are jev, openjev and replay"
+            "adapter \"gpt\" is unknown; the built-ins are jev, openjev, clef, clef_flash and replay"
         );
         assert_eq!(problems[0].fix, Fix::Check);
         assert_eq!(declared(&name, None, &environment).unwrap_err(), problems);
@@ -294,6 +309,7 @@ mod tests {
             let problems = resolve(&AdapterName::new(name).unwrap(), None, &environment)
                 .err()
                 .unwrap();
+            assert_eq!(problems.len(), 1);
             assert_eq!(problems[0].message, line);
             assert_eq!(
                 problems[0].fix,
@@ -305,6 +321,53 @@ mod tests {
     }
 
     #[test]
+    fn a_door_at_an_account_asks_for_its_key_and_its_account() {
+        let lines = |pairs: &[(&str, &str)]| -> Vec<(String, Fix)> {
+            let environment = Environment(
+                pairs
+                    .iter()
+                    .map(|(var, value)| ((*var).to_owned(), (*value).to_owned()))
+                    .collect(),
+            );
+            resolve(&AdapterName::new("clef_flash").unwrap(), None, &environment)
+                .err()
+                .unwrap()
+                .into_iter()
+                .map(|problem| (problem.message, problem.fix))
+                .collect()
+        };
+        let export = |var: &str| Fix::ExportKey {
+            var: VarName::new(var).unwrap(),
+        };
+        let key = (
+            "clef_flash needs CLOUDFLARE_API_TOKEN, a key from dash.cloudflare.com".to_owned(),
+            export("CLOUDFLARE_API_TOKEN"),
+        );
+        let account = (
+            "clef_flash needs CLOUDFLARE_ACCOUNT_ID, an account id from dash.cloudflare.com"
+                .to_owned(),
+            export("CLOUDFLARE_ACCOUNT_ID"),
+        );
+        assert_eq!(lines(&[]), [key.clone(), account.clone()]);
+        assert_eq!(lines(&[("CLOUDFLARE_API_TOKEN", "t")]), [account]);
+        assert_eq!(
+            lines(&[("CLOUDFLARE_ACCOUNT_ID", "0123456789abcdef0123456789abcdef")]),
+            [key]
+        );
+        assert_eq!(
+            lines(&[
+                ("CLOUDFLARE_API_TOKEN", "t"),
+                ("CLOUDFLARE_ACCOUNT_ID", "../accounts")
+            ]),
+            [(
+                "CLOUDFLARE_ACCOUNT_ID is not an account id: 32 hex digits, in lowercase"
+                    .to_owned(),
+                export("CLOUDFLARE_ACCOUNT_ID")
+            )]
+        );
+    }
+
+    #[test]
     fn a_declaration_needs_no_credential() {
         let environment = Environment(std::collections::BTreeMap::new());
         let jev = declared(&AdapterName::new("jev").unwrap(), None, &environment).unwrap();
@@ -312,6 +375,9 @@ mod tests {
         let openjev = declared(&AdapterName::new("openjev").unwrap(), None, &environment).unwrap();
         assert_eq!(openjev.id, jev.id);
         assert_eq!(openjev.gate, jev.gate);
+        let clef = declared(&AdapterName::new("clef").unwrap(), None, &environment).unwrap();
+        assert_eq!(clef.id.as_str(), "clef-2026-10-03");
+        assert!(clef.gate.is_none());
         let replay = declared(&AdapterName::new("replay").unwrap(), None, &environment).unwrap();
         assert_eq!(replay.id.as_str(), "replay");
         assert!(replay.gate.is_none() && replay.limits.is_none());

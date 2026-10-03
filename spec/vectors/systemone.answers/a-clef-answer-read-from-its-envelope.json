@@ -1,0 +1,19 @@
+{
+  "input": {
+    "door": "clef",
+    "status": 200,
+    "body": "{\"result\":{\"model\":\"clef\",\"answers\":{\"route\":{\"type\":\"choice\",\"choice\":\"lights\",\"probabilities\":{\"lights\":0.8913,\"timer\":0.0312,\"none\":0.0775},\"confidence\":0.6541},\"fits.lights\":{\"type\":\"noul\",\"noul\":0.9627}},\"usage\":{\"input_tokens\":1092,\"output_tokens\":0}},\"success\":true,\"errors\":[],\"messages\":[]}"
+  },
+  "expect": {
+    "ok": {
+      "route": {
+        "lights": 0.8913,
+        "timer": 0.0312,
+        "none": 0.0775
+      },
+      "fits.lights": {
+        "yes": 0.9627
+      }
+    }
+  }
+}

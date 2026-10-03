@@ -45,7 +45,7 @@
     },
     "adapters": {
       "type": "object",
-      "description": "Settings per adapter, under its name: jev, openjev or replay. A table for an unselected adapter is inert.",
+      "description": "Settings per adapter, under its name: jev, openjev, clef, clef_flash or replay. A table for an unselected adapter is inert.",
       "propertyNames": { "$ref": "#/definitions/name" },
       "additionalProperties": { "type": "object" },
       "properties": {
@@ -59,6 +59,18 @@
           "type": "object",
           "additionalProperties": false,
           "description": "Jev through OpenJEV, an independent service, under OPENJEV_API_KEY; the same gate keys.",
+          "properties": { "gate": { "$ref": "#/definitions/gate" } }
+        },
+        "clef": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Clef on Cloudflare's Workers AI, under CLOUDFLARE_API_TOKEN at the account CLOUDFLARE_ACCOUNT_ID names. It ships no thresholds: a gate here gives route, read and write.",
+          "properties": { "gate": { "$ref": "#/definitions/gate" } }
+        },
+        "clef_flash": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Clef-flash on Cloudflare's Workers AI, under the same variables as clef; the same gate keys.",
           "properties": { "gate": { "$ref": "#/definitions/gate" } }
         },
         "replay": {

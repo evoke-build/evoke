@@ -1,0 +1,13 @@
+{
+  "input": {
+    "door": "clef_flash",
+    "status": 422,
+    "body": "{\"result\":null,\"success\":false,\"errors\":[{\"code\":5012,\"message\":\"AiError\"}],\"messages\":[]}"
+  },
+  "expect": {
+    "err": {
+      "type": "status",
+      "status": 422
+    }
+  }
+}

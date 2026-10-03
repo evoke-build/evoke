@@ -10,7 +10,7 @@ use evoke_core::decide::{Recent, alone};
 use evoke_core::document::Text;
 use evoke_core::manifest::{ConfigSpec, Effect, Pick, Range, Recognizer};
 use evoke_core::name::AdapterId;
-use evoke_core::name::{ArgName, ConfigKey, LocalName, RelPath, Tag, VarName, VocabName};
+use evoke_core::name::{ArgName, ConfigKey, LocalName, RelPath, Tag, VocabName};
 use evoke_core::plan::Millis;
 use evoke_core::project::Location;
 use evoke_core::spoken::heard;
@@ -367,11 +367,18 @@ fn adapters(op: &str, input: &Json) -> Reply {
             arg::<Door>(input, "door")?,
             opt::<Json>(input, "table")?.as_ref(),
         )),
-        "systemone.request" => ok(systemone::request(&arg::<Request>(input, "request")?)),
+        "systemone.address" => result(systemone::address(
+            arg::<Door>(input, "door")?,
+            opt::<String>(input, "account")?.as_deref(),
+        )),
+        "systemone.request" => ok(systemone::request(
+            arg::<Door>(input, "door")?,
+            &arg::<Request>(input, "request")?,
+        )),
         "systemone.answers" => result(systemone::answers(
+            arg::<Door>(input, "door")?,
             arg(input, "status")?,
             text(input, "body")?,
-            &arg::<VarName>(input, "credential")?,
         )),
         "replay.recording" => result(replay::recording(text(input, "toml")?)),
         "replay.render" => ok(replay::render(&arg(input, "recording")?)),

@@ -283,7 +283,7 @@ async function named(project: W.Project, root: string | undefined): Promise<Adap
     return Promise.reject(new DiagnosticError([{ message, fix: { type: "rerun" }, command: form }]))
   }
   if (root === undefined) return line("no adapter: none is named and none was passed", "jev()")
-  if (name === "jev" || name === "openjev") {
+  if (name === "jev" || name === "openjev" || name === "clef" || name === "clef_flash") {
     const { through } = await import("./systemone.ts")
     return through(name, { table: project.adapters[name] })
   }

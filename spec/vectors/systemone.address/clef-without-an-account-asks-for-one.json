@@ -1,0 +1,14 @@
+{
+  "input": {
+    "door": "clef"
+  },
+  "expect": {
+    "err": {
+      "message": "clef needs CLOUDFLARE_ACCOUNT_ID, an account id from dash.cloudflare.com",
+      "fix": {
+        "type": "export_key",
+        "var": "CLOUDFLARE_ACCOUNT_ID"
+      }
+    }
+  }
+}

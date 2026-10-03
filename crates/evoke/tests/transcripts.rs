@@ -72,6 +72,11 @@ fn openjev() {
 }
 
 #[test]
+fn clef() {
+    flow("clef");
+}
+
+#[test]
 fn test_nothing() {
     flow("test-nothing");
 }

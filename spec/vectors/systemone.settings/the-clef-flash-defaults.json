@@ -1,24 +1,18 @@
 {
   "input": {
-    "door": "openjev"
+    "door": "clef_flash"
   },
   "expect": {
     "ok": {
       "declared": {
-        "id": "jev-1.13.0",
+        "id": "clef-flash-2026-10-03",
         "limits": {
           "options": 255
-        },
-        "gate": {
-          "route": 0.5,
-          "fits": 0.3,
-          "read": 0.8,
-          "write": 0.9,
-          "whole": 0.3
         }
       },
-      "credential": "OPENJEV_API_KEY",
-      "issuer": "openjev.sh",
+      "credential": "CLOUDFLARE_API_TOKEN",
+      "account": "CLOUDFLARE_ACCOUNT_ID",
+      "issuer": "dash.cloudflare.com",
       "policy": {
         "timeout": 3000,
         "retries": 1,

@@ -42,6 +42,10 @@
       "types": "./dist/openjev.d.ts",
       "default": "./dist/openjev.js"
     },
+    "./clef": {
+      "types": "./dist/clef.d.ts",
+      "default": "./dist/clef.js"
+    },
     "./testing": {
       "types": "./dist/testing.d.ts",
       "default": "./dist/testing.js"

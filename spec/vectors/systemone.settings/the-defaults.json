@@ -19,7 +19,6 @@
       },
       "credential": "TYPESAFE_API_KEY",
       "issuer": "typesafe.ai",
-      "url": "https://api.typesafe.ai/v1/systemone",
       "policy": {
         "timeout": 1500,
         "retries": 1,

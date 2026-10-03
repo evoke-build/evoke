@@ -1,0 +1,8 @@
+{
+  "input": {
+    "door": "openjev"
+  },
+  "expect": {
+    "ok": "https://api.openjev.sh/v1/systemone"
+  }
+}

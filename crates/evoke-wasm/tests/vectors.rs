@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
 use serde_json::{Value, json};
 
 /// The families whose function returns a `Result`, so their `expect` is already `{ ok } | { err }`.
-const RESULTS: [&str; 25] = [
+const RESULTS: [&str; 26] = [
     "manifest",
     "envelope",
     "needs.resolve",
@@ -32,6 +32,7 @@ const RESULTS: [&str; 25] = [
     "weave.stale",
     "weave.replan",
     "systemone.settings",
+    "systemone.address",
     "systemone.answers",
     "replay.recording",
     "replay.answer",
@@ -197,6 +198,7 @@ families! {
     name_vectors => "name",
     location_vectors => "location",
     systemone_settings_vectors => "systemone.settings",
+    systemone_address_vectors => "systemone.address",
     systemone_request_vectors => "systemone.request",
     systemone_answers_vectors => "systemone.answers",
     replay_recording_vectors => "replay.recording",

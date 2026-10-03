@@ -1,0 +1,15 @@
+{
+  "input": {
+    "door": "clef",
+    "account": "0123456789abcdef/../../89abcdef0"
+  },
+  "expect": {
+    "err": {
+      "message": "CLOUDFLARE_ACCOUNT_ID is not an account id: 32 hex digits, in lowercase",
+      "fix": {
+        "type": "export_key",
+        "var": "CLOUDFLARE_ACCOUNT_ID"
+      }
+    }
+  }
+}

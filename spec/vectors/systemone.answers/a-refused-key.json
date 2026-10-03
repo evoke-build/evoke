@@ -1,8 +1,8 @@
 {
   "input": {
+    "door": "jev",
     "status": 401,
-    "body": "",
-    "credential": "TYPESAFE_API_KEY"
+    "body": ""
   },
   "expect": {
     "err": {

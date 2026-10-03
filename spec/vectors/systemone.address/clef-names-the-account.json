@@ -1,0 +1,9 @@
+{
+  "input": {
+    "door": "clef",
+    "account": "0123456789abcdef0123456789abcdef"
+  },
+  "expect": {
+    "ok": "https://api.cloudflare.com/client/v4/accounts/0123456789abcdef0123456789abcdef/ai/run/@cf/cloudflare/clef"
+  }
+}

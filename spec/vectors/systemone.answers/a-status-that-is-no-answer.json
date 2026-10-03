@@ -1,8 +1,8 @@
 {
   "input": {
+    "door": "jev",
     "status": 503,
-    "body": "busy",
-    "credential": "TYPESAFE_API_KEY"
+    "body": "busy"
   },
   "expect": {
     "err": {

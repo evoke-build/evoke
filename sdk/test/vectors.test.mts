@@ -33,6 +33,7 @@ const RESULTS = new Set([
   "weave.stale",
   "weave.replan",
   "systemone.settings",
+  "systemone.address",
   "systemone.answers",
   "replay.recording",
   "replay.answer",

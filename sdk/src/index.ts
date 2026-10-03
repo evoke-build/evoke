@@ -1,5 +1,5 @@
 // @evoke-build/evoke: load a project, decide, run. Six things to learn, in order: reflex() · load() · handle() ·
-// a Decision · run() · replay() — the last under ./testing, and the two doors to Jev under ./jev and ./openjev, so
+// a Decision · run() · replay() — the last under ./testing, and the doors under ./jev, ./openjev and ./clef, so
 // this entry imports no engine.
 
 export { load } from "./project.ts"
