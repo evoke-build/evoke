@@ -44,6 +44,9 @@ $ evoke calibrate
   thin: under 100 calls in every bin, nothing proven at any bar
 ```
 
+A record typed in a language other than English adds a block, `by language pack`, with a line per language that read
+one: how many inputs it read, and how many of their whole calls were right and wrong ([Languages](languages.md)).
+
 Line by line:
 
 - **The head** counts the records, the reflexes they belong to and the distinct inputs, and says how many times

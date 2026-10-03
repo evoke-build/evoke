@@ -43,6 +43,7 @@ git. A **TypeScript SDK** that puts the same decisions inside your app. You invo
 | Page                                         | Read it when                                                     |
 | :------------------------------------------- | :--------------------------------------------------------------- |
 | [Typing a request](use/saying-things.md)     | Bare input, the REPL, a pipe, `--json`, `--tag`, exit codes       |
+| [Languages](use/languages.md)                | English, German, French and Spanish: how `evoke` tells, what stays as typed, what `why` says |
 | [Outcomes](use/outcomes.md)                  | Run, confirm, ask and abstain; `try`, `why`, `run`                |
 | [Weaving](use/weaving.md)                    | Several things in one sentence: the plan, what a step takes from another |
 | [Installing reflexes](use/installing.md)     | `add`, `remove`, `update`, `sync`, `trust`; refs, the lock, the store |

@@ -6,6 +6,16 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- A request typed in German, French or Spanish is read as an English one is: the words that join two steps, the
+  ones that ask for nothing, the pronouns that point back, the numbers, the days and months, the clock, the units
+  and the currencies, the signs said aloud. Nothing is set: the words of the request show the language, a request
+  that mixes two is read in both, and a value stays as typed, never translated. The questions `evoke` asks and
+  what it says back stay English.
+- `why` and `try` name the language that read a request when it was not English, with the words that showed it.
+  `calibrate` and `test` print a line per such language with how its records fared.
+- A yes or a no at a prompt does in any of the four languages: `ja`, `oui`, `sí`; `nein`, `non`.
+- A plan file carries the digest of every language pack it was read with, so a release that changes a pack
+  refuses a plan file made under the old one as stale.
 - Ctrl-C while a step runs no longer leaves a blank line before the echoed `^C` on a busy machine: the line end
   after it is written by the first line shown after the interrupt.
 

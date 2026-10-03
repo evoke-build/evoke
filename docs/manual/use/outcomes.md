@@ -32,8 +32,8 @@ group-7 lights dim
 
 | Answer      | Does                                                                                           |
 | :---------- | :--------------------------------------------------------------------------------------------- |
-| `y`, `yes`  | Runs                                                                                           |
-| `n`, `no`   | Declines, exit 2                                                                               |
+| `y`, `yes`  | Runs; so does a yes in any language `evoke` reads, `ja`, `oui`, `sí` ([Languages](languages.md)) |
+| `n`, `no`   | Declines, exit 2; so does `nein`, `non`                                                        |
 | `t`, `teach`| Records what you said as an example of this call in your overlay, then runs                    |
 
 These are the reasons a decision stops at confirm, each with the line it prints; several print on one line,

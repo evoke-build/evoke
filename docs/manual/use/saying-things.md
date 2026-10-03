@@ -58,6 +58,15 @@ say what it is, and the call waits for a yes; where they do not, `evoke` asks, a
 `"garage" is not on the list`. `evoke why` shows each of these under the value it gave
 ([Outcomes](outcomes.md#why-the-last-sentence-explained)).
 
+## Languages
+
+`evoke` reads a request typed in English, German, French or Spanish, and there is nothing to set: the words of the
+request say which language it is in, and a request that mixes two is read in both. A value stays as you typed it and
+is never translated: `zieh die Umsätze für August` reads the month, `timer fünfundvierzig Minuten für die Wäsche`
+reads the length and keeps `Wäsche` as the label, `treinta y uno` is 31. The questions `evoke` asks you and what it
+says back stay English in this release. `evoke why` names the language that read a request when it was not English,
+with the words that showed it ([Languages](languages.md)).
+
 ## A value typed the way you say it
 
 You can type a value the way you would say it aloud. `evoke` reads an address, a URL, a code, a number, a day

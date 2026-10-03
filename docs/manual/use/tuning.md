@@ -164,7 +164,9 @@ exits 1 when a case failed, so a script can act on it. It never blocks an instal
 call would wait for a yes, holding less than the case's own words, is named under its reflex and fails nothing
 ([Records](../author/records.md#evoke-test)).
 
-A case that passed last time and fails now is decided twice more. Failing two of three marks it `· regression`.
+A case typed in a language other than English puts a line before the reflexes, one per such language, with how
+many of its cases passed and failed ([Languages](languages.md)). A case that passed last time and fails now is
+decided twice more. Failing two of three marks it `· regression`.
 The last verdicts are kept per installed set, on this machine. What the confidence beside each call meant on the
 same records is `evoke calibrate`'s answer: [Calibrating](calibrating.md).
 
