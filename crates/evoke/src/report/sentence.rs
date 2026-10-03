@@ -10,6 +10,7 @@ use evoke_core::call::Value;
 use evoke_core::decide::{Basis, Cap, Choices, Judgment, Missing, View};
 use evoke_core::manifest::{Effect, Recognizer};
 use evoke_core::name::{AdapterId, ArgName};
+use evoke_core::pack;
 use evoke_core::propose::PickValue;
 use evoke_core::weave::reading::{Split, Stretch};
 use evoke_core::weave::{self, Aside, Because, Count, Folded, Repair, Status};
@@ -24,6 +25,7 @@ use crate::hosts::terminal::{Role, Text};
 
 /// The rows' labels.
 const SEVERAL: &str = "one thing, or several";
+const READ_BY: &str = "read by";
 const SET_ASIDE: &str = "set aside";
 const NOT_IN_PLAN: &str = "not in the plan";
 const LEFT_OUT: &str = "left out";
@@ -130,6 +132,33 @@ pub struct Sentence {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gate: Option<Gate>,
     pub asked: Asked,
+    /// The language packs other than the first that read the sentence, each with the words that showed it.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub packs: Vec<ShownPack>,
+}
+
+/// A language pack that read a sentence: its name, and the words of the sentence that showed it.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ShownPack {
+    pub name: String,
+    pub words: Vec<String>,
+}
+
+impl ShownPack {
+    /// The packs other than the first that read a text, with their words; none where the first pack reads alone.
+    #[must_use]
+    pub fn of(text: &str) -> Vec<Self> {
+        let first = &pack::packs()[0];
+        pack::lexicon(text)
+            .shown()
+            .iter()
+            .filter(|shown| shown.pack.tag != first.tag)
+            .map(|shown| Self {
+                name: shown.pack.name.clone(),
+                words: shown.words.clone(),
+            })
+            .collect()
+    }
 }
 
 /// What the adapter was asked for a sentence: by which adapter, how many questions, in how many rounds; nothing
@@ -173,6 +202,7 @@ impl Sentence {
             },
             gate: gate.copied(),
             asked: Asked::default(),
+            packs: ShownPack::of(&weave.input),
         }
     }
 
@@ -413,6 +443,13 @@ fn whole(sentence: &Sentence, steps: usize) -> Vec<Text> {
                 )),
             ));
         }
+    }
+    for pack in &sentence.packs {
+        let words: Vec<String> = pack.words.iter().map(|word| said(word)).collect();
+        rows.push(row(
+            READ_BY,
+            Text::from(format!("{}, shown by {}", pack.name, words.join(", "))),
+        ));
     }
     for aside in &sentence.asides {
         let label = if aside.remark { SET_ASIDE } else { NOT_IN_PLAN };
@@ -1212,5 +1249,20 @@ fn closing(sentence: Option<&Sentence>, lines: &[Line]) -> Text {
             Text::from(format!("{adapter} answered {questions} in {rounds}"))
         }
         _ => Text::from("answered from the cache"),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_sentence_names_the_packs_other_than_the_first_that_read_it() {
+        let shown = ShownPack::of("liste anas sessions auf und meld sie ab");
+        assert_eq!(shown.len(), 1);
+        assert_eq!(shown[0].name, "German");
+        assert!(shown[0].words.contains(&"und".to_owned()));
+        assert!(ShownPack::of("list anas sessions and sign her out").is_empty());
+        assert!(ShownPack::of("wipe C02G8TVYPQ3K").is_empty());
     }
 }

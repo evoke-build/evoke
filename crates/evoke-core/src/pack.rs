@@ -459,6 +459,7 @@ pub struct Prompt {
 #[serde(deny_unknown_fields)]
 struct Raw {
     tag: String,
+    name: String,
     capitals_mark_names: bool,
     cut: Cut,
     clause: Clause,
@@ -484,6 +485,8 @@ struct Raw {
 pub struct Pack {
     /// The language's tag: `en`, `de`.
     pub tag: String,
+    /// The language's name, as evoke says it: `English`, `German`.
+    pub name: String,
     /// The digest of the pack's file, which a plan's digest carries.
     pub digest: Digest,
     /// Whether a capital letter marks a name or a code.
@@ -522,6 +525,7 @@ impl Pack {
         let raw: Raw = serde_json::from_value(json).map_err(|error| error.to_string())?;
         Ok(Self {
             tag: raw.tag,
+            name: raw.name,
             digest: Digest::of(text.as_bytes()),
             capitals_mark_names: raw.capitals_mark_names,
             listed,
@@ -719,6 +723,21 @@ pub fn which_form(which: Which) -> String {
         .unwrap_or_default()
 }
 
+/// A yes or a no typed at a prompt, in any built-in pack's words: `Some(true)` for a yes, `Some(false)` for a no,
+/// none for any other word. The word is compared as `fold` writes it.
+#[must_use]
+pub fn answer(typed: &str) -> Option<bool> {
+    let word = fold(typed.trim());
+    let packs = packs();
+    if packs.iter().any(|pack| pack.prompt.yes.holds(&word)) {
+        return Some(true);
+    }
+    packs
+        .iter()
+        .any(|pack| pack.prompt.no.holds(&word))
+        .then_some(false)
+}
+
 /// A pack a text shows, and the words that show it.
 #[derive(Clone, Debug)]
 pub struct Shown {
@@ -749,10 +768,16 @@ pub struct Lexicon {
 pub fn lexicon(text: &str) -> Lexicon {
     let all = packs();
     let first = &all[0];
+    // A token with a figure or an address's mark inside is a code, a URL or an address: it shows no pack.
     let tokens: Vec<String> = text
         .split_whitespace()
         .map(|token| fold(token.trim_matches(|c: char| !c.is_alphanumeric())))
-        .filter(|token| !token.is_empty())
+        .filter(|token| {
+            !token.is_empty()
+                && !token
+                    .chars()
+                    .any(|c| c.is_numeric() || matches!(c, '@' | '/' | ':'))
+        })
         .collect();
     let mut shown: Vec<Shown> = all
         .iter()
@@ -1009,6 +1034,30 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn a_yes_or_a_no_is_read_from_every_pack_and_no_word_is_both() {
+        for pack in packs() {
+            assert!(!pack.name.is_empty(), "{}: no name", pack.tag);
+            for word in pack.prompt.yes.iter() {
+                assert_eq!(answer(word), Some(true), "{}: «{word}» is no yes", pack.tag);
+            }
+            for word in pack.prompt.no.iter() {
+                assert_eq!(answer(word), Some(false), "{}: «{word}» is no no", pack.tag);
+            }
+        }
+        let yes: Vec<&str> = packs()
+            .iter()
+            .flat_map(|pack| pack.prompt.yes.iter())
+            .collect();
+        for pack in packs() {
+            for word in pack.prompt.no.iter() {
+                assert!(!yes.contains(&word), "«{word}» is a yes and a no");
+            }
+        }
+        assert_eq!(answer("Ja"), Some(true));
+        assert_eq!(answer("maybe"), None);
     }
 
     #[test]

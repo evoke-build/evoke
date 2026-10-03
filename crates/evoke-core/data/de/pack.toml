@@ -1,7 +1,8 @@
 # German, as evoke reads it: the words each stage of the reader proposes from, written lower case as they are
 # compared, each under the neutral form it stands for, the form shown first. A pack reads a sentence where the
 # sentence shows its words; the core holds no word of any language, only how a table is read.
-tag = "de"
+tag  = "de"
+name = "German"
 # Every noun is written with a capital, so a capital marks neither a name nor a code.
 capitals_mark_names = false
 

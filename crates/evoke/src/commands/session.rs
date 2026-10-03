@@ -1396,10 +1396,10 @@ impl Session<'_> {
                 return Ok(None);
             };
             match typed.trim().to_lowercase().as_str() {
-                "y" | "yes" => return Ok(Some(Confirmed::Yes)),
-                "n" | "no" => return Ok(Some(Confirmed::No)),
                 "t" | "teach" if teachable => return Ok(Some(Confirmed::Teach)),
                 "" => retry = None,
+                word if report::yes(word) => return Ok(Some(Confirmed::Yes)),
+                word if report::no(word) => return Ok(Some(Confirmed::No)),
                 _ => {
                     retry = Some(format!(
                         "{} is not one of them",

@@ -950,7 +950,7 @@ impl Rounds<'_> {
                 }
                 Choices::Vocab { words } => {
                     // The word made ready, taken by a yes.
-                    if report::YES.contains(&typed)
+                    if report::yes(typed)
                         && let Some(likely) = &missing.likely
                         && let Some(word) =
                             words.keys().find(|word| word.as_str() == likely.as_str())

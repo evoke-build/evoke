@@ -1174,8 +1174,17 @@ pub fn confirm_prompt(prompt: &Prompt, teachable: bool, retry: Option<&str>) -> 
 /// What a listed choice offers last: none of them, which declines the question.
 pub const NONE_OF_THESE: &str = "none of these";
 
-/// What takes the word a listed ask makes ready.
-pub const YES: [&str; 2] = ["y", "yes"];
+/// Whether what was typed is a yes: the prompt's own key, or a yes in any language evoke reads.
+#[must_use]
+pub fn yes(typed: &str) -> bool {
+    typed == "y" || evoke_core::pack::answer(typed) == Some(true)
+}
+
+/// Whether what was typed is a no: the prompt's own key, or a no in any language evoke reads.
+#[must_use]
+pub fn no(typed: &str) -> bool {
+    typed == "n" || evoke_core::pack::answer(typed) == Some(false)
+}
 
 /// The ask prompt: numbered choices and `[0] none of these`, a vocabulary's `[+] add one`, or a pick typed
 /// freely — what the words read as numbered before it, with `[0] none of these`, or else the values recalled

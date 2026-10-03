@@ -3,7 +3,8 @@
 # holds no word of any language, only how a table is read; a pack proposes, and the classifier decides. The four
 # built-in packs are read the same way, and nothing detects a language: a pack reads a sentence where the sentence
 # shows its words.
-tag = "en"
+tag  = "en"
+name = "English"
 # A capital letter marks a name or a code; in a language that writes every noun with one it marks nothing.
 capitals_mark_names = true
 
