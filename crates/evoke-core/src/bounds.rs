@@ -6,13 +6,13 @@
 
 use indexmap::IndexMap;
 
-use crate::account::INTRODUCES;
 use crate::adapter::{Choice, Key, Prob, Question, QuestionId, Text};
 use crate::decide::Answers;
 use crate::name::{ArgName, LocalName};
+use crate::pack;
 use crate::pins;
 use crate::plan::{unstated, unstated_text};
-use crate::text::{Clean, Input, Span};
+use crate::text::{Clean, Input, Span, fold};
 use crate::words::{self, Token};
 
 /// The most words of the input a text is looked for among.
@@ -32,12 +32,6 @@ const FINAL: f64 = 0.5;
 
 /// The marks that close a text and are no part of it.
 const CLOSING: [char; 6] = [',', '.', ';', ':', '!', '?'];
-
-/// What follows the action's name and is no part of the text: «note that …», «note this: …».
-const AFTER_NAME: [&str; 2] = ["that", "this"];
-
-/// A note addressed to oneself: «note to self …».
-const TO_SELF: [&str; 2] = ["to", "self"];
 
 /// Whether a word is part of the text, and its two answers.
 const PART: &str = "part of it?";
@@ -246,20 +240,25 @@ impl<'a> Sought<'a> {
                     .iter()
                     .all(|c| "-:".contains(*c))
         };
+        let lexicon = pack::lexicon(self.input.as_str());
+        let folded: Vec<String> = self.tokens.iter().map(|token| fold(&token.plain)).collect();
         let (mut a, mut b) = (from, to);
         if a < b && words::names(plain(a), self.reflex.as_str()) {
             a += 1;
-            if a < b && (AFTER_NAME.contains(&plain(a)) || mark(a)) {
+            if a < b && (lexicon.holds(|pack| &pack.words.after_name, &folded[a]) || mark(a)) {
                 a += 1;
-            } else if a + 1 < b && [plain(a), plain(a + 1)] == TO_SELF {
-                a += 2;
+            } else if let Some(taken) =
+                words::phrase_at(&folded, a, &lexicon.phrases(|pack| &pack.words.to_self))
+                    .filter(|taken| a + taken <= b)
+            {
+                a += taken;
             }
         }
         // A word that introduces the text, and the words before it that carry nothing: «its for the tea».
-        let carries =
-            (a..b).find(|&i| !words::function(plain(i)) || INTRODUCES.contains(&plain(i)));
+        let introduces = |i: usize| lexicon.holds(|pack| &pack.words.introduces, &folded[i]);
+        let carries = (a..b).find(|&i| !words::function(plain(i)) || introduces(i));
         if let Some(i) = carries
-            && INTRODUCES.contains(&plain(i))
+            && introduces(i)
         {
             a = i + 1;
         }

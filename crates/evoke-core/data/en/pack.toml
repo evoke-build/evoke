@@ -1,0 +1,492 @@
+# English, as evoke reads it. A language is one of these files: the words each stage of the reader proposes from,
+# written lower case as they are compared, each under the neutral form it stands for, the form shown first. The core
+# holds no word of any language, only how a table is read; a pack proposes, and the classifier decides. The four
+# built-in packs are read the same way, and nothing detects a language: a pack reads a sentence where the sentence
+# shows its words.
+tag = "en"
+
+# Where a request may be cut, and the words that set a part apart.
+[cut]
+then = [
+  "and then",
+  "and after that",
+  "and afterwards",
+  "and afterward",
+  "and next",
+  "then",
+  "after that",
+  "afterwards",
+  "afterward",
+  "after which",
+  "next",
+]
+and = [
+  "and also",
+  "and meanwhile",
+  "and in the meantime",
+  "and at the same time",
+  "meanwhile",
+  "in the meantime",
+  "at the same time",
+  "and",
+  "but",
+  "plus",
+  "as well as",
+  "also",
+]
+signs = ["+", "&", "n", "nd", "adn"]
+leads = ["and", "but", "or", "then", "also", "so", "plus"]
+negation = ["not", "don't", "do not", "never", "without", "nor"]
+condition = ["if", "unless", "in case"]
+contrast = ["not"]
+but = ["but"]
+subordinators = []
+
+# A clause before or after another, read in the words' own order, and a clause of the person's own action.
+[clause]
+before = ["before"]
+after = ["after"]
+joiner = ["then"]
+subjects = ["you", "we", "i"]
+tenses = ["'ve", "'d", " have", " had"]
+own = ["i", "we"]
+own_tenses = ["'ve", "'d", "'m", "'ll", " have", " had"]
+conjunctions = ["that", "this", "which"]
+heads = [
+  "i need",
+  "i want",
+  "i'd like",
+  "i would like",
+  "i'd love",
+  "i would love",
+  "i must",
+  "i have to",
+  "we need",
+  "we want",
+  "we'd like",
+  "we would like",
+  "we must",
+  "we have to",
+]
+
+# Politeness, which asks for nothing.
+[courtesy]
+words = ["please", "pls", "plz", "thanks", "thank", "you", "thx", "cheers", "ta", "kindly"]
+phrases = [
+  "if it's not too much trouble",
+  "if it is not too much trouble",
+  "if you don't mind",
+  "if you do not mind",
+  "if you would",
+  "if possible",
+  "if so",
+]
+
+# Words that point at an earlier step, or say one is done again.
+[refer]
+one = ["it"]
+many = ["both of them", "each of them", "all of them", "the two", "them", "those", "these", "both"]
+determiners = ["that", "this", "those", "these", "the", "its", "each", "every"]
+weak = ["the"]
+each = ["each", "every"]
+adjectives = ["same", "resulting", "new"]
+stop = [
+  "one",
+  "same",
+  "other",
+  "way",
+  "time",
+  "first",
+  "second",
+  "last",
+  "next",
+  "rest",
+  "the",
+  "a",
+  "an",
+  "it",
+  "is",
+  "was",
+  "are",
+  "were",
+  "will",
+  "would",
+  "can",
+  "could",
+  "should",
+  "there",
+  "they",
+  "we",
+  "you",
+  "i",
+  "no",
+  "not",
+  "all",
+  "any",
+  "some",
+  "of",
+]
+points = [
+  "it",
+  "its",
+  "them",
+  "their",
+  "they",
+  "that",
+  "this",
+  "those",
+  "these",
+  "the same",
+  "there",
+  "him",
+  "her",
+  "his",
+  "both",
+  "each",
+]
+repeats = ["the same", "likewise", "as before"]
+once_more = ["too", "also", "well", "aswell", "more", "another", "again", "extra", "plus"]
+again = ["same for", "as well", "aswell", "too", "also"]
+
+# Words that point at a value this session returned, or count such values.
+[recalled]
+it      = ["it"]
+one     = ["one"]
+that    = ["that", "this"]
+owns    = ["the", "my"]
+several = ["those", "these"]
+orders  = ["last", "latest", "newest", "previous", "recent", "most recent"]
+both    = ["both"]
+
+# Words that carry no value by themselves, and words that introduce one.
+[words]
+function = [
+  "a",
+  "an",
+  "the",
+  "this",
+  "that",
+  "these",
+  "those",
+  "my",
+  "your",
+  "our",
+  "his",
+  "her",
+  "its",
+  "their",
+  "me",
+  "i",
+  "you",
+  "we",
+  "it",
+  "to",
+  "of",
+  "in",
+  "on",
+  "at",
+  "for",
+  "from",
+  "with",
+  "by",
+  "as",
+  "into",
+  "onto",
+  "and",
+  "or",
+  "then",
+  "so",
+  "but",
+  "if",
+  "is",
+  "are",
+  "was",
+  "be",
+  "been",
+  "am",
+  "do",
+  "does",
+  "did",
+  "can",
+  "could",
+  "will",
+  "would",
+  "shall",
+  "should",
+  "may",
+  "might",
+  "must",
+  "have",
+  "has",
+  "had",
+  "not",
+  "no",
+  "please",
+  "pls",
+  "plz",
+  "thanks",
+  "thank",
+  "thx",
+  "kindly",
+  "hey",
+  "hi",
+  "hello",
+  "ok",
+  "okay",
+  "just",
+  "now",
+  "some",
+  "any",
+  "there",
+  "here",
+  "up",
+  "out",
+  "off",
+  "over",
+  "about",
+]
+kind = ["also", "where", "team", "channel", "folder", "service", "region"]
+introduces = [
+  "about",
+  "regarding",
+  "concerning",
+  "re",
+  "called",
+  "named",
+  "titled",
+  "labelled",
+  "labeled",
+  "entitled",
+  "subject",
+  "saying",
+  "that",
+  "for",
+  "to",
+  "from",
+  "into",
+  "in",
+  "on",
+  "at",
+  "with",
+  "by",
+  "as",
+  "until",
+  "till",
+]
+articles = ["the", "a", "an"]
+after_name = ["that", "this"]
+to_self = ["to self"]
+
+# The endings a word takes: what comes off before it is compared with a listed word.
+[endings]
+stem       = [["sses", "ss"], ["ies", "y"], ["s", ""]]
+plural     = ["s", "es"]
+possessive = ["'s", "’s", "'", "’"]
+tense      = ["ing", "ed", "es", "s", "d"]
+
+# A number said in words.
+[numbers]
+ones           = { zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5, six = 6, seven = 7, eight = 8, nine = 9, ten = 10, eleven = 11, twelve = 12, thirteen = 13, fourteen = 14, fifteen = 15, sixteen = 16, seventeen = 17, eighteen = 18, nineteen = 19 }
+tens           = { twenty = 20, thirty = 30, forty = 40, fifty = 50, sixty = 60, seventy = 70, eighty = 80, ninety = 90 }
+scale          = { hundred = 100, thousand = 1000 }
+beyond         = ["million", "billion"]
+article        = ["a", "an"]
+and            = ["and"]
+noughts        = ["zero", "oh"]
+oh             = ["oh", "o"]
+repeat         = { double = 2, triple = 3 }
+half           = ["half"]
+and_a_half     = ["and a half"]
+compose        = "tens-ones"
+joiner         = ""
+years_in_pairs = true
+decimal_mark   = "."
+group_mark     = ","
+percent        = ["percent"]
+
+# An ordinal: a day of the month, a place among several.
+[ordinals]
+words    = { first = 1, second = 2, third = 3, fourth = 4, fifth = 5, sixth = 6, seventh = 7, eighth = 8, ninth = 9, tenth = 10, eleventh = 11, twelfth = 12, twelveth = 12, thirteenth = 13, fourteenth = 14, fifteenth = 15, sixteenth = 16, seventeenth = 17, eighteenth = 18, nineteenth = 19, twentieth = 20, thirtieth = 30 }
+suffixes = { "1" = "st", "2" = "nd", "3" = "rd", "11" = "th", "12" = "th", "13" = "th", other = "th" }
+picks    = { first = 0, former = 0, "1st" = 0, second = 1, "2nd" = 1, third = 2, "3rd" = 2, fourth = 3, "4th" = 3, last = -1, latter = -1 }
+
+# A day as the words say it.
+[days]
+every = ["every", "each"]
+recurring = ["day", "week", "month", "year", "morning", "night", "evening", "weekday", "weekend"]
+recurrences = ["everyday", "weekly", "daily", "monthly"]
+periods = ["week", "weeks", "month", "months", "year", "years", "weekend", "fortnight"]
+ahead = ["in"]
+from_now = ["from now", "from today"]
+the = ["the"]
+of = ["of"]
+day_after = ["the day after"]
+followers = [
+  "at",
+  "is",
+  "or",
+  "and",
+  "this",
+  "next",
+  "until",
+  "till",
+  "from",
+  "to",
+  "on",
+  "in",
+  "fall",
+  "falls",
+  "come",
+  "comes",
+  "already",
+]
+leads = ["on", "for", "by", "until", "till", "from", "before", "after", "since", "of"]
+
+[days.which]
+next = ["next"]
+this = ["this"]
+last = ["last"]
+
+[days.weekdays]
+monday    = ["monday"]
+tuesday   = ["tuesday"]
+wednesday = ["wednesday"]
+thursday  = ["thursday"]
+friday    = ["friday"]
+saturday  = ["saturday"]
+sunday    = ["sunday"]
+
+# Short forms a person types, shown for a yes.
+[days.short]
+monday    = ["mon"]
+tuesday   = ["tue", "tues"]
+wednesday = ["wed", "weds"]
+thursday  = ["thu", "thur", "thurs"]
+friday    = ["fri"]
+saturday  = ["sat"]
+sunday    = ["sun"]
+
+# Days by their distance from today.
+[days.relative]
+"0"  = ["today", "tonight"]
+"1"  = ["tomorrow"]
+"-1" = ["yesterday"]
+"2"  = ["the day after tomorrow", "day after tomorrow"]
+"-2" = ["the day before yesterday"]
+
+[days.relative_short]
+"0" = ["2day", "tdy"]
+"1" = ["tmrw", "tmr", "tmw", "tmrow", "2moro", "2morrow", "2mrw"]
+
+# Lengths of days, in days.
+[days.units]
+"1"  = ["days", "day"]
+"7"  = ["weeks", "week"]
+"14" = ["fortnight"]
+
+# The months, by number.
+[months]
+"1"  = ["january", "jan"]
+"2"  = ["february", "feb"]
+"3"  = ["march", "mar"]
+"4"  = ["april", "apr"]
+"5"  = ["may"]
+"6"  = ["june", "jun"]
+"7"  = ["july", "jul"]
+"8"  = ["august", "aug"]
+"9"  = ["september", "sep", "sept"]
+"10" = ["october", "oct"]
+"11" = ["november", "nov"]
+"12" = ["december", "dec"]
+
+# A clock time.
+[times]
+oclock = ["o'clock", "o’clock", "oclock", "o clock"]
+am     = ["a.m.", "a.m", "am", "in the morning"]
+pm     = ["p.m.", "p.m", "pm", "in the afternoon", "in the evening", "at night"]
+past   = ["past"]
+to     = ["to"]
+
+[times.named]
+"12:00" = ["noontime", "noon", "midday", "twelve noon"]
+"00:00" = ["midnight", "twelve midnight"]
+
+[times.minutes_past]
+"30" = ["half past"]
+"15" = ["quarter past", "a quarter past"]
+
+[times.minutes_to]
+"15" = ["quarter to", "a quarter to"]
+
+# A length of time, its units in seconds: the form shown for one, then for more than one, then the short forms.
+[durations.units]
+"3600" = ["hour", "hours", "hrs", "hr", "h"]
+"60"   = ["minute", "minutes", "mins", "min", "m"]
+"1"    = ["second", "seconds", "secs", "sec", "s"]
+
+[durations.articles]
+"0.25" = ["a quarter of an", "a quarter of a"]
+"0.5"  = ["half an", "half a"]
+"1"    = ["an", "a"]
+
+# An amount in a currency.
+[amounts]
+symbols = { "$" = "USD", "€" = "EUR", "£" = "GBP" }
+singular = ["dollar", "euro", "pound", "rupee"]
+codes = [
+  "USD",
+  "EUR",
+  "GBP",
+  "JPY",
+  "INR",
+  "CAD",
+  "AUD",
+  "CHF",
+  "CNY",
+  "SEK",
+  "NOK",
+  "DKK",
+  "NZD",
+  "MXN",
+  "BRL",
+  "ZAR",
+  "SGD",
+  "HKD",
+  "KRW",
+  "PLN",
+  "CZK",
+  "TRY",
+]
+
+[amounts.words]
+USD = ["dollar", "dollars"]
+EUR = ["euro", "euros"]
+GBP = ["pound", "pounds"]
+JPY = ["yen"]
+INR = ["rupee", "rupees"]
+
+# A value said aloud: the signs by their names, and the words a code or a link is said with.
+[spoken]
+version  = ["v", "version"]
+schemes  = ["https", "http"]
+letters  = ["a", "i"]
+pronouns = ["us", "he", "him", "she"]
+
+[spoken.signs]
+"@" = ["at"]
+"." = ["dot", "point"]
+"-" = ["dash", "hyphen", "minus"]
+"_" = ["underscore"]
+"/" = ["slash"]
+":" = ["colon"]
+"#" = ["hashtag", "hash"]
+
+# The marks around a value in quotes, and around a text in quotes.
+[quotes]
+value = [["\"", "\""], ["“", "”"], ["‘", "’"]]
+text  = [["\"", "\""], ["“", "”"], ["‘", "’"], ["'", "'"], ["«", "»"], ["„", "“"]]
+
+# The whole words a prompt takes for yes and for no.
+[prompt]
+yes = ["yes"]
+no  = ["no"]

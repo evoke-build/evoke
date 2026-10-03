@@ -7,11 +7,13 @@
 //! reads relative, resolved at the body's door; a bare hour is a number, since a half of the day would be
 //! invented.
 
+use std::cmp::Reverse;
 use std::ops::Range;
 
 use serde::{Deserialize, Serialize};
 
-use crate::calendar::{Clock, Day, Weekday, Which, days_in};
+use crate::calendar::{Clock, Day, days_in};
+use crate::pack::{self, Lexicon, Pack};
 use crate::text::{self, Clean, Input, Span, fold_char};
 
 /// A candidate for a pick: where it is in the input, and what its recognizer read.
@@ -139,12 +141,13 @@ impl TryFrom<String> for Currency {
 #[must_use]
 pub fn propose(input: &Input) -> Vec<Proposed> {
     let chars: Vec<char> = input.as_str().chars().collect();
+    let lexicon = pack::lexicon(input.as_str());
     let mut hidden: Vec<Range<usize>> = Vec::new();
     let mut found = Vec::new();
     for recognize in RECOGNIZERS {
         let mut i = 0;
         while i < chars.len() {
-            let Found { span, after, read } = match recognize(&chars, i) {
+            let Found { span, after, read } = match recognize(&lexicon, &chars, i) {
                 Scan::Found(found) => found,
                 Scan::Skip(after) => {
                     i = after.max(i + 1);
@@ -249,8 +252,8 @@ impl Read {
     }
 }
 
-/// What one kind finds at a position of the input.
-type Recognizer = fn(&[char], usize) -> Scan;
+/// What one kind finds at a position of the input, the words of the lexicon in hand.
+type Recognizer = fn(&Lexicon, &[char], usize) -> Scan;
 
 /// In this order: an earlier kind's match hides the candidates that reach into it. An amount stands before a
 /// code, so `500USD` is an amount; a code before a date and a number, so `4.12.0` is no decimal; a date before a
@@ -259,14 +262,15 @@ const RECOGNIZERS: [Recognizer; 9] = [
     quoted, url, email, amount, code, date, time, duration, number,
 ];
 
-fn quoted(chars: &[char], i: usize) -> Scan {
-    let close = match chars[i] {
-        '"' => '"',
-        '\u{201c}' => '\u{201d}',
-        '\u{2018}' => '\u{2019}',
-        _ => return Scan::Nothing,
-    };
+fn quoted(lexicon: &Lexicon, chars: &[char], i: usize) -> Scan {
     let open = chars[i];
+    let Some((_, close)) = lexicon
+        .pairs(|pack| &pack.quotes.value)
+        .into_iter()
+        .find(|(opens, _)| *opens == open)
+    else {
+        return Scan::Nothing;
+    };
     let mut j = i + 1;
     while j < chars.len() && chars[j] != open && chars[j] != close {
         j += 1;
@@ -281,9 +285,11 @@ fn quoted(chars: &[char], i: usize) -> Scan {
     })
 }
 
-fn url(chars: &[char], i: usize) -> Scan {
-    let Some(scheme) = ["https://", "http://"]
+fn url(lexicon: &Lexicon, chars: &[char], i: usize) -> Scan {
+    let Some(scheme) = lexicon
+        .phrases(|pack| &pack.spoken.schemes)
         .into_iter()
+        .map(|scheme| format!("{scheme}://"))
         .find(|scheme| starts_with(chars, i, scheme))
     else {
         return Scan::Nothing;
@@ -302,7 +308,7 @@ fn url(chars: &[char], i: usize) -> Scan {
     found(i, end, Read::Url)
 }
 
-fn email(chars: &[char], i: usize) -> Scan {
+fn email(_: &Lexicon, chars: &[char], i: usize) -> Scan {
     let local = |c: char| text::latin_or_figure(c) || matches!(c, '.' | '_' | '%' | '+' | '-');
     let domain = |c: char| text::latin_or_figure(c) || matches!(c, '.' | '-');
     let mut at = i;
@@ -334,40 +340,21 @@ fn email(chars: &[char], i: usize) -> Scan {
 
 // ---- an amount in a currency -------------------------------------------------------------------------------
 
-/// The symbols read before a figure, and what each stands for: `$` is the US dollar.
-const SYMBOLS: [(char, &str); 3] = [('$', "USD"), ('€', "EUR"), ('£', "GBP")];
-
-/// The currency words read after a figure or number words.
-const CURRENCY_WORDS: [(&str, &str); 9] = [
-    ("dollar", "USD"),
-    ("dollars", "USD"),
-    ("euro", "EUR"),
-    ("euros", "EUR"),
-    ("pound", "GBP"),
-    ("pounds", "GBP"),
-    ("yen", "JPY"),
-    ("rupee", "INR"),
-    ("rupees", "INR"),
-];
-
-/// The singular words: a currency after `1`, `one` or `a` only, so `3 pound beef` is a weight.
-const SINGULAR: [&str; 4] = ["dollar", "euro", "pound", "rupee"];
-
-/// The ISO codes read as themselves, in capitals, after a figure or number words.
-const CODES: [&str; 22] = [
-    "USD", "EUR", "GBP", "JPY", "INR", "CAD", "AUD", "CHF", "CNY", "SEK", "NOK", "DKK", "NZD",
-    "MXN", "BRL", "ZAR", "SGD", "HKD", "KRW", "PLN", "CZK", "TRY",
-];
-
 /// An amount: a symbol before a figure, `€1,200`; a figure, number words, `a` or `an` before a currency word,
 /// `50 dollars`, `twelve hundred euros`, `a dollar`; or a figure before a code in capitals, `1000 USD`, `500USD`.
 /// A sign before the figure is the number's; `$5k` reads nothing; a symbol before a dotted thousands figure,
-/// `€1.200`, is two readings, refused whole.
-fn amount(chars: &[char], i: usize) -> Scan {
+/// `€1.200`, is two readings, refused whole. A currency's singular word is a currency after `1`, `one` or `a`
+/// only, so `3 pound beef` is a weight.
+fn amount(lexicon: &Lexicon, chars: &[char], i: usize) -> Scan {
     if i > 0 && chars[i - 1] == '-' && (i == 1 || !is_word(chars[i - 2])) {
         return Scan::Nothing;
     }
-    if let Some((_, currency)) = SYMBOLS.into_iter().find(|(symbol, _)| *symbol == chars[i]) {
+    let symbol = lexicon
+        .packs()
+        .iter()
+        .flat_map(|pack| pack.amounts.symbols.iter())
+        .find(|(symbol, _)| symbol.chars().eq(std::iter::once(chars[i])));
+    if let Some((_, currency)) = symbol {
         if !boundary(chars, i) {
             return Scan::Nothing;
         }
@@ -389,13 +376,13 @@ fn amount(chars: &[char], i: usize) -> Scan {
     }
     let (value, end, article) = if let Some(figure) = figure(chars, i) {
         (figure.value, figure.end, false)
-    } else if let Some((tokens, end)) = run(chars, i) {
+    } else if let Some((tokens, end)) = run(lexicon, chars, i) {
         // A run of number words reads whole or not at all: one that fits no form is passed over.
         match figure_value(&tokens) {
             Some(value) => (value, end, false),
             None => return Scan::Skip(end),
         }
-    } else if let Some(end) = phrase(chars, i, "a").or_else(|| phrase(chars, i, "an")) {
+    } else if let Some(end) = phrase_in(chars, i, &lexicon.phrases(|pack| &pack.numbers.article)) {
         (1.0, end, true)
     } else {
         return Scan::Nothing;
@@ -404,14 +391,15 @@ fn amount(chars: &[char], i: usize) -> Scan {
     let Some((word, wend)) = word_at(chars, j) else {
         return Scan::Nothing;
     };
-    if let Some((_, currency)) = CURRENCY_WORDS.into_iter().find(|(w, _)| *w == word) {
-        if SINGULAR.contains(&word.as_str()) && (value - 1.0).abs() > f64::EPSILON {
+    if let Some(currency) = lexicon.form_of(|pack| &pack.amounts.words, &word) {
+        if lexicon.holds(|pack| &pack.amounts.singular, &word) && (value - 1.0).abs() > f64::EPSILON
+        {
             return Scan::Nothing;
         }
         return moneyed(i, wend, value, currency);
     }
     let code: String = chars[j..wend].iter().collect();
-    if !article && CODES.contains(&code.as_str()) {
+    if !article && lexicon.typed(|pack| &pack.amounts.codes, &code) {
         return moneyed(i, wend, value, &code);
     }
     Scan::Nothing
@@ -538,7 +526,7 @@ fn small_prefix(tokens: &[Token]) -> Option<(f64, &[Token])> {
 /// letters and digits with at least one letter and two digits; a letter in either case, so `inc-311` and
 /// `tp1043` read as they are typed, and `10mins` stays a duration. At a word boundary, never after `-` or `.`,
 /// ending at one; `4.12` is a decimal, `27.03.2017` a dotted date, `2.0.0-rc.1` nothing.
-fn code(chars: &[char], i: usize) -> Scan {
+fn code(_: &Lexicon, chars: &[char], i: usize) -> Scan {
     if !boundary(chars, i) || (i > 0 && matches!(chars[i - 1], '-' | '.')) {
         return Scan::Nothing;
     }
@@ -613,55 +601,16 @@ fn serial(chars: &[char], i: usize) -> Option<usize> {
 
 // ---- a date ------------------------------------------------------------------------------------------------
 
-const DAY_WORDS: [(&str, i32); 4] = [
-    ("today", 0),
-    ("tonight", 0),
-    ("tomorrow", 1),
-    ("yesterday", -1),
-];
-const DAY_PHRASES: [(&str, i32); 3] = [
-    ("the day after tomorrow", 2),
-    ("day after tomorrow", 2),
-    ("the day before yesterday", -2),
-];
-const WEEKDAYS: [&str; 7] = [
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday",
-];
-const MONTHS: [&str; 12] = [
-    "january",
-    "february",
-    "march",
-    "april",
-    "may",
-    "june",
-    "july",
-    "august",
-    "september",
-    "october",
-    "november",
-    "december",
-];
-/// A month and a day as they are typed, with the year where the reading holds one: «october 5th», «october 5th
-/// 2026», a form the `date` recognizer reads back whole. None for any other reading.
+/// A month and a day as they are typed in the lexicon's first pack, with the year where the reading holds one:
+/// «october 5th», «october 5th 2026», a form the `date` recognizer reads back whole. None for any other reading.
 #[must_use]
-pub(crate) fn typed_calendar(day: &Day) -> Option<Clean> {
+pub(crate) fn typed_calendar(lexicon: &Lexicon, day: &Day) -> Option<Clean> {
     let Day::Calendar { year, month, day } = day else {
         return None;
     };
-    let name = MONTHS.get(usize::from(*month).checked_sub(1)?)?;
-    let ending = match (day % 100, day % 10) {
-        (11..=13, _) => "th",
-        (_, 1) => "st",
-        (_, 2) => "nd",
-        (_, 3) => "rd",
-        _ => "th",
-    };
+    let pack = lexicon.first();
+    let name = pack.months.shown(&month.to_string())?;
+    let ending = pack.ordinals.suffixes.of(*day);
     let typed = match year {
         Some(year) => format!("{name} {day}{ending} {year}"),
         None => format!("{name} {day}{ending}"),
@@ -669,90 +618,20 @@ pub(crate) fn typed_calendar(day: &Day) -> Option<Clean> {
     Clean::new(&typed).ok()
 }
 
-const MONTHS_SHORT: [(&str, u8); 12] = [
-    ("jan", 1),
-    ("feb", 2),
-    ("mar", 3),
-    ("apr", 4),
-    ("jun", 6),
-    ("jul", 7),
-    ("aug", 8),
-    ("sep", 9),
-    ("sept", 9),
-    ("oct", 10),
-    ("nov", 11),
-    ("dec", 12),
-];
-const ORDINALS: [(&str, u8); 22] = [
-    ("first", 1),
-    ("second", 2),
-    ("third", 3),
-    ("fourth", 4),
-    ("fifth", 5),
-    ("sixth", 6),
-    ("seventh", 7),
-    ("eighth", 8),
-    ("ninth", 9),
-    ("tenth", 10),
-    ("eleventh", 11),
-    ("twelfth", 12),
-    ("twelveth", 12),
-    ("thirteenth", 13),
-    ("fourteenth", 14),
-    ("fifteenth", 15),
-    ("sixteenth", 16),
-    ("seventeenth", 17),
-    ("eighteenth", 18),
-    ("nineteenth", 19),
-    ("twentieth", 20),
-    ("thirtieth", 30),
-];
-/// What `every` or `each` may name: a recurrence, passed over whole.
-const RECURRING: [&str; 9] = [
-    "day", "week", "month", "year", "morning", "night", "evening", "weekday", "weekend",
-];
-/// A period after `this`, `next` or `last`: not a day.
-const PERIODS: [&str; 8] = [
-    "week",
-    "weeks",
-    "month",
-    "months",
-    "year",
-    "years",
-    "weekend",
-    "fortnight",
-];
-const DAY_UNITS: [(&str, i32); 5] = [
-    ("days", 1),
-    ("day", 1),
-    ("weeks", 7),
-    ("week", 7),
-    ("fortnight", 14),
-];
-/// What may follow a day of the month for it to read as one: nothing, punctuation, or one of these words.
-const PLAIN_FOLLOWERS: [&str; 17] = [
-    "at", "is", "or", "and", "this", "next", "until", "till", "from", "to", "on", "in", "fall",
-    "falls", "come", "comes", "already",
-];
-/// A preposition of time before a day of the month, `on the 14th`, `by the twenty second`.
-const TIME_LEADS: [&str; 10] = [
-    "on", "for", "by", "until", "till", "from", "before", "after", "since", "of",
-];
-
 /// A date: a day word, a weekday with the word before it, a weekday joined to a day, a day or weeks ahead, an
 /// ISO or slashed date, a month and a day with a year or not, a day of the month. A recurrence, a plural
 /// weekday, a period, an ambiguous slashed date and a day no calendar has are refused whole.
-fn date(chars: &[char], i: usize) -> Scan {
+fn date(lexicon: &Lexicon, chars: &[char], i: usize) -> Scan {
     if !boundary(chars, i) {
         return Scan::Nothing;
     }
-    day_word(chars, i)
-        .or_else(|| recurrence(chars, i))
-        .or_else(|| weekday(chars, i))
-        .or_else(|| ahead(chars, i))
+    day_word(lexicon, chars, i)
+        .or_else(|| recurrence(lexicon, chars, i))
+        .or_else(|| weekday(lexicon, chars, i))
+        .or_else(|| ahead(lexicon, chars, i))
         .or_else(|| numeric(chars, i))
-        .or_else(|| month_first(chars, i))
-        .or_else(|| day_first(chars, i))
+        .or_else(|| month_first(lexicon, chars, i))
+        .or_else(|| day_first(lexicon, chars, i))
         .unwrap_or(Scan::Nothing)
 }
 
@@ -761,57 +640,61 @@ fn dated(start: usize, end: usize, day: Option<Day>) -> Scan {
     day.map_or(Scan::Nothing, |day| found(start, end, Read::Date(day)))
 }
 
-/// `today`, `tonight`, `tomorrow`, `yesterday`, a possessive left outside the span; `the day after tomorrow`.
-fn day_word(chars: &[char], i: usize) -> Option<Scan> {
-    for (word, days) in DAY_WORDS {
-        let plural = format!("{word}s");
-        if let Some(end) = phrase(chars, i, word).or_else(|| phrase(chars, i, &plural)) {
+/// A relative day, `today`, `tonight`, `tomorrow`, `yesterday`, `the day after tomorrow`, a plural's ending
+/// read with it and a possessive left outside the span.
+fn day_word(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
+    let plurals = lexicon.phrases(|pack| &pack.endings.plural);
+    for (word, form) in lexicon.named(|pack| &pack.days.relative) {
+        let days: i32 = form.parse().ok()?;
+        let end = phrase(chars, i, word).or_else(|| {
+            plurals
+                .iter()
+                .find_map(|ending| phrase(chars, i, &format!("{word}{ending}")))
+        });
+        if let Some(end) = end {
             return Some(dated(i, end, Day::offset(days)));
         }
     }
-    DAY_PHRASES.into_iter().find_map(|(words, days)| {
-        phrase(chars, i, words).map(|end| dated(i, end, Day::offset(days)))
-    })
+    None
 }
 
 /// `every monday`, `each sunday`, `everyday`: passed over whole, hiding what they name.
-fn recurrence(chars: &[char], i: usize) -> Option<Scan> {
-    for each in ["every", "each"] {
+fn recurrence(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
+    let plurals = lexicon.phrases(|pack| &pack.endings.plural);
+    let weekday = |word: &str| lexicon.form_of(|pack| &pack.days.weekdays, word).is_some();
+    for each in lexicon.phrases(|pack| &pack.days.every) {
         if let Some(end) = phrase(chars, i, each)
             && chars.get(end) == Some(&' ')
             && let Some((word, wend)) = word_at(chars, end + 1)
         {
-            let named = WEEKDAYS.contains(&word.as_str())
-                || word
-                    .strip_suffix('s')
-                    .is_some_and(|day| WEEKDAYS.contains(&day))
-                || RECURRING.contains(&word.as_str())
-                || DAY_WORDS.iter().any(|(day, _)| *day == word)
-                || ordinal_at(chars, end + 1).is_some();
+            let named = weekday(&word)
+                || plurals
+                    .iter()
+                    .any(|ending| word.strip_suffix(ending).is_some_and(weekday))
+                || lexicon.holds(|pack| &pack.days.recurring, &word)
+                || lexicon.form_of(|pack| &pack.days.relative, &word).is_some()
+                || ordinal_at(lexicon, chars, end + 1).is_some();
             if named {
                 return Some(Scan::Hide(wend));
             }
         }
     }
-    ["everyday", "weekly", "daily", "monthly"]
+    lexicon
+        .phrases(|pack| &pack.days.recurrences)
         .into_iter()
         .find_map(|word| phrase(chars, i, word).map(Scan::Hide))
 }
 
 /// `friday`, `next monday`, `this wednesday`, `last tuesday`; a plural, `mondays`, and a period, `next month`,
 /// read as nothing, whole. A bare weekday may join a day: `friday the 14th`, `tuesday 21 march 2017`.
-fn weekday(chars: &[char], i: usize) -> Option<Scan> {
+fn weekday(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
     let mut which = None;
     let mut j = i;
-    for (word, said) in [
-        ("next", Which::Next),
-        ("this", Which::This),
-        ("last", Which::Last),
-    ] {
+    for (word, form) in lexicon.named(|pack| &pack.days.which) {
         if let Some(end) = phrase(chars, i, word)
             && chars.get(end) == Some(&' ')
         {
-            which = Some(said);
+            which = pack::which(form);
             j = end + 1;
             break;
         }
@@ -820,81 +703,86 @@ fn weekday(chars: &[char], i: usize) -> Option<Scan> {
         return None;
     }
     let (word, end) = word_at(chars, j)?;
-    if let Some(at) = WEEKDAYS.iter().position(|day| *day == word) {
+    let named = |word: &str| lexicon.form_of(|pack| &pack.days.weekdays, word);
+    if let Some(weekday) = named(&word).and_then(pack::weekday) {
         if which.is_none()
-            && let Some(joined) = weekday_day(chars, i, end)
+            && let Some(joined) = weekday_day(lexicon, chars, i, end)
         {
             return Some(joined);
         }
-        let weekday = Weekday::ALL[at];
         return Some(found(i, end, Read::Date(Day::Weekday { weekday, which })));
     }
-    if word
-        .strip_suffix('s')
-        .is_some_and(|day| WEEKDAYS.contains(&day))
-        || (which.is_some() && PERIODS.contains(&word.as_str()))
-    {
+    let plural = lexicon
+        .phrases(|pack| &pack.endings.plural)
+        .iter()
+        .any(|ending| {
+            word.strip_suffix(ending)
+                .is_some_and(|day| named(day).is_some())
+        });
+    if plural || (which.is_some() && lexicon.holds(|pack| &pack.days.periods, &word)) {
         return Some(Scan::Hide(end));
     }
     None
 }
 
 /// The day a weekday joins, one candidate: `friday the 14th`, `tuesday 21 march 2017`.
-fn weekday_day(chars: &[char], i: usize, after: usize) -> Option<Scan> {
+fn weekday_day(lexicon: &Lexicon, chars: &[char], i: usize, after: usize) -> Option<Scan> {
     let k = skip_space(chars, after);
-    let the = phrase(chars, k, "the");
+    let the = phrase_in(chars, k, &lexicon.phrases(|pack| &pack.days.the));
     let k = the.map_or(k, |end| skip_space(chars, end));
-    if the.is_none() && digit_run(chars, k).is_none() && ordinal_at(chars, k).is_none() {
+    if the.is_none() && digit_run(chars, k).is_none() && ordinal_at(lexicon, chars, k).is_none() {
         return None;
     }
-    let (day, dend) = day_number_at(chars, k)?;
-    if let Some(scan) = named_month_after(chars, i, day, dend) {
+    let (day, dend) = day_number_at(lexicon, chars, k)?;
+    if let Some(scan) = named_month_after(lexicon, chars, i, day, dend) {
         return Some(scan);
     }
-    (ordinal_at(chars, k).is_some() && followed_plainly(chars, dend))
+    (ordinal_at(lexicon, chars, k).is_some() && followed_plainly(lexicon, chars, dend))
         .then(|| dated(i, dend, Day::nth(day)))
 }
 
 /// A month after a day, `21 march 2017`, `the 14th of march`: the calendar day, or nothing when none follows.
-fn named_month_after(chars: &[char], i: usize, day: u8, dend: usize) -> Option<Scan> {
+fn named_month_after(
+    lexicon: &Lexicon,
+    chars: &[char],
+    i: usize,
+    day: u8,
+    dend: usize,
+) -> Option<Scan> {
     let k = skip_space(chars, dend);
-    let of = phrase(chars, k, "of");
+    let of = phrase_in(chars, k, &lexicon.phrases(|pack| &pack.days.of));
     let k = of.map_or(k, |end| skip_space(chars, end));
-    let (month, mend) = month_at(chars, k)?;
+    let (month, mend) = month_at(lexicon, chars, k)?;
     if day > days_in(month, None) {
         return None;
     }
-    Some(match year_at(chars, mend) {
+    Some(match year_at(lexicon, chars, mend) {
         Some((year, yend)) => dated(i, yend, Day::calendar(Some(year), month, day)),
         None => dated(i, mend, Day::calendar(None, month, day)),
     })
 }
 
 /// `in three days`, `in 2 weeks`, `three days from now`, `a week from today`: read as days ahead.
-fn ahead(chars: &[char], i: usize) -> Option<Scan> {
-    if let Some(end) = phrase(chars, i, "in")
+fn ahead(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
+    let units = lexicon.named(|pack| &pack.days.units);
+    let unit_at = |k: usize| {
+        units.iter().find_map(|(unit, form)| {
+            let end = phrase(chars, k, unit)?;
+            Some((end, form.parse::<i32>().ok()?))
+        })
+    };
+    if let Some(end) = phrase_in(chars, i, &lexicon.phrases(|pack| &pack.days.ahead))
         && chars.get(end) == Some(&' ')
-        && let Some((count, cend)) = count_at(chars, end + 1)
+        && let Some((count, cend)) = count_at(lexicon, chars, end + 1)
+        && let Some((e, days)) = unit_at(skip_space(chars, cend))
     {
-        let k = skip_space(chars, cend);
-        for (unit, days) in DAY_UNITS {
-            if let Some(e) = phrase(chars, k, unit) {
-                return Some(dated(i, e, days_ahead(count, days)));
-            }
-        }
+        return Some(dated(i, e, days_ahead(count, days)));
     }
-    let (count, cend) = count_at(chars, i)?;
-    let k = skip_space(chars, cend);
-    for (unit, days) in &DAY_UNITS[..4] {
-        if let Some(e) = phrase(chars, k, unit) {
-            for tail in ["from now", "from today"] {
-                if let Some(t) = phrase(chars, skip_space(chars, e), tail) {
-                    return Some(dated(i, t, days_ahead(count, *days)));
-                }
-            }
-        }
-    }
-    None
+    let (count, cend) = count_at(lexicon, chars, i)?;
+    let (e, days) = unit_at(skip_space(chars, cend))?;
+    let from_now = lexicon.phrases(|pack| &pack.days.from_now);
+    let t = phrase_in(chars, skip_space(chars, e), &from_now)?;
+    Some(dated(i, t, days_ahead(count, days)))
 }
 
 fn days_ahead(count: u64, each: i32) -> Option<Day> {
@@ -902,17 +790,15 @@ fn days_ahead(count: u64, each: i32) -> Option<Day> {
     Day::offset(days)
 }
 
-/// A count: the number words the product reads, digits, or `a` and `an`.
-fn count_at(chars: &[char], i: usize) -> Option<(u64, usize)> {
-    if let Some(Words { end, value }) = words(chars, i) {
+/// A count: the number words the product reads, digits, or an article, `a`, `an`.
+fn count_at(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(u64, usize)> {
+    if let Some(Words { end, value }) = words(lexicon, chars, i) {
         return value.and_then(|value| whole(value).map(|count| (count, end)));
     }
     if let Some(found) = digits_at(chars, i) {
         return Some(found);
     }
-    phrase(chars, i, "a")
-        .or_else(|| phrase(chars, i, "an"))
-        .map(|end| (1, end))
+    phrase_in(chars, i, &lexicon.phrases(|pack| &pack.numbers.article)).map(|end| (1, end))
 }
 
 /// A whole number as its count.
@@ -1009,16 +895,16 @@ fn short_digits(chars: &[char], at: usize, least: usize, most: usize) -> Option<
 
 /// `march 7`, `March 6th`, `may fifth`, `mar. 4th, 2020`, `march the seventh`; a day the month lacks, `february
 /// 30`, is refused whole; a month alone is nothing.
-fn month_first(chars: &[char], i: usize) -> Option<Scan> {
-    let (month, mend) = month_at(chars, i)?;
+fn month_first(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
+    let (month, mend) = month_at(lexicon, chars, i)?;
     let mut k = skip_space(chars, mend);
-    if let Some(end) = phrase(chars, k, "the") {
+    if let Some(end) = phrase_in(chars, k, &lexicon.phrases(|pack| &pack.days.the)) {
         k = skip_space(chars, end);
     }
-    let Some((day, dend)) = day_number_at(chars, k) else {
+    let Some((day, dend)) = day_number_at(lexicon, chars, k) else {
         return Some(Scan::Nothing);
     };
-    let (year, end) = match year_at(chars, dend) {
+    let (year, end) = match year_at(lexicon, chars, dend) {
         Some((year, yend)) => (Some(year), yend),
         None => (None, dend),
     };
@@ -1030,23 +916,23 @@ fn month_first(chars: &[char], i: usize) -> Option<Scan> {
 
 /// `7th march`, `the 7th of march`, `14 march 2020`; a day of the month, `on the 14th`, `by the twenty second`,
 /// `the 15th` followed plainly, never `the first alarm` or `on 6th ave`.
-fn day_first(chars: &[char], i: usize) -> Option<Scan> {
-    let the = phrase(chars, i, "the");
+fn day_first(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
+    let the = phrase_in(chars, i, &lexicon.phrases(|pack| &pack.days.the));
     let k = the.map_or(i, |end| skip_space(chars, end));
-    let (day, dend) = day_number_at(chars, k)?;
-    if let Some(scan) = named_month_after(chars, i, day, dend) {
+    let (day, dend) = day_number_at(lexicon, chars, k)?;
+    if let Some(scan) = named_month_after(lexicon, chars, i, day, dend) {
         return Some(scan);
     }
-    let plainly = ordinal_at(chars, k).is_some()
-        && followed_plainly(chars, dend)
-        && (the.is_some() || led_by_time(chars, i));
+    let plainly = ordinal_at(lexicon, chars, k).is_some()
+        && followed_plainly(lexicon, chars, dend)
+        && (the.is_some() || led_by_time(lexicon, chars, i));
     plainly.then(|| dated(i, dend, Day::nth(day)))
 }
 
 /// A day as an ordinal, a bare figure one to thirty-one that no colon or point continues, or a number word one
 /// to thirty-one.
-fn day_number_at(chars: &[char], i: usize) -> Option<(u8, usize)> {
-    if let Some(ordinal) = ordinal_at(chars, i) {
+fn day_number_at(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(u8, usize)> {
+    if let Some(ordinal) = ordinal_at(lexicon, chars, i) {
         return Some(ordinal);
     }
     if let Some((day, end)) = digits_at(chars, i)
@@ -1056,34 +942,42 @@ fn day_number_at(chars: &[char], i: usize) -> Option<(u8, usize)> {
     {
         return u8::try_from(day).ok().map(|day| (day, end));
     }
-    small_words(chars, i).filter(|(day, _)| (1..=31).contains(day))
+    small_words(lexicon, chars, i).filter(|(day, _)| (1..=31).contains(day))
 }
 
 /// `14th`, `1st`, `fourteenth`, `twenty-first`, `twenty first`: the day and where it ends.
-fn ordinal_at(chars: &[char], i: usize) -> Option<(u8, usize)> {
+fn ordinal_at(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(u8, usize)> {
     if let Some((day, end)) = digits_at(chars, i) {
-        let suffix: String = chars
-            .get(end..end + 2)?
+        let mut suffixes: Vec<&str> = lexicon
+            .packs()
             .iter()
-            .flat_map(|c| c.to_lowercase())
+            .flat_map(|pack| pack.ordinals.suffixes.all())
             .collect();
-        return (matches!(suffix.as_str(), "st" | "nd" | "rd" | "th")
-            && ends_word(chars, end + 2)
-            && (1..=31).contains(&day))
-        .then(|| u8::try_from(day).ok().map(|day| (day, end + 2)))
-        .flatten();
+        suffixes.sort_by_key(|suffix| Reverse(suffix.chars().count()));
+        let after = suffixes.iter().find_map(|suffix| {
+            lowered_end(chars, end, suffix).filter(|&at| ends_word(chars, at))
+        })?;
+        return (1..=31)
+            .contains(&day)
+            .then(|| u8::try_from(day).ok().map(|day| (day, after)))
+            .flatten();
     }
     let (word, end) = word_at(chars, i)?;
-    if let Some((_, day)) = ORDINALS.into_iter().find(|(ordinal, _)| *ordinal == word)
+    let rank = |word: &str| {
+        lexicon
+            .value(|pack| &pack.ordinals.words, word)
+            .and_then(|rank| u8::try_from(rank).ok())
+    };
+    if let Some(day) = rank(&word)
         && boundary(chars, i)
     {
         return Some((day, end));
     }
-    if let Some(tens) = tens(&word)
+    if let Some(tens) = tens(lexicon, &word)
         && tens <= 30
         && matches!(chars.get(end), Some(' ' | '-'))
         && let Some((next, nend)) = word_at(chars, end + 1)
-        && let Some((_, ones)) = ORDINALS.into_iter().find(|(ordinal, _)| *ordinal == next)
+        && let Some(ones) = rank(&next)
         && (1..=9).contains(&ones)
     {
         return Some((tens + ones, nend));
@@ -1091,17 +985,22 @@ fn ordinal_at(chars: &[char], i: usize) -> Option<(u8, usize)> {
     None
 }
 
-/// A month word at `i`, whole or short with an optional dot: `march`, `mar.`, `Sept`.
-fn month_at(chars: &[char], i: usize) -> Option<(u8, usize)> {
+/// A month word at `i`, whole, or a short form with an optional dot: `march`, `mar.`, `Sept`.
+fn month_at(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(u8, usize)> {
     if !boundary(chars, i) {
         return None;
     }
     let (word, end) = word_at(chars, i)?;
-    if let Some(at) = MONTHS.iter().position(|month| *month == word) {
-        return u8::try_from(at + 1).ok().map(|month| (month, end));
-    }
-    let (_, month) = MONTHS_SHORT.into_iter().find(|(short, _)| *short == word)?;
-    let end = if chars.get(end) == Some(&'.') {
+    let (form, pack) = lexicon
+        .packs()
+        .iter()
+        .find_map(|pack| pack.months.form_of(&word).map(|form| (form, *pack)))?;
+    let month: u8 = form.parse().ok()?;
+    let short = pack
+        .months
+        .shown(form)
+        .is_none_or(|shown| text::fold(shown) != word);
+    let end = if short && chars.get(end) == Some(&'.') {
         end + 1
     } else {
         end
@@ -1111,7 +1010,7 @@ fn month_at(chars: &[char], i: usize) -> Option<(u8, usize)> {
 
 /// A year after a day, joined by a comma or a space: `, 2020`, ` 2020`, ` twenty seventeen`, ` two thousand and
 /// seventeen`; 1900 to 2100 in figures.
-fn year_at(chars: &[char], i: usize) -> Option<(i32, usize)> {
+fn year_at(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(i32, usize)> {
     let mut j = i;
     if chars.get(j) == Some(&',') {
         j += 1;
@@ -1127,33 +1026,44 @@ fn year_at(chars: &[char], i: usize) -> Option<(i32, usize)> {
         return i32::try_from(year).ok().map(|year| (year, end));
     }
     let (word, wend) = word_at(chars, j)?;
-    if (word == "nineteen" || word == "twenty") && chars.get(wend) == Some(&' ') {
-        let base = if word == "nineteen" { 1900 } else { 2000 };
+    let head = lexicon
+        .value(|pack| &pack.numbers.ones, &word)
+        .or_else(|| lexicon.value(|pack| &pack.numbers.tens, &word));
+    // A year said in two pairs, «twenty seventeen», «nineteen oh five», where the pack says years so.
+    let pairs = lexicon
+        .packs()
+        .iter()
+        .any(|pack| pack.numbers.years_in_pairs);
+    if pairs
+        && let Some(head @ (19 | 20)) = head
+        && chars.get(wend) == Some(&' ')
+    {
+        let base = i32::try_from(head * 100).ok()?;
         let mut k = wend + 1;
-        let oh = phrase(chars, k, "oh");
+        let oh = phrase_in(chars, k, &lexicon.phrases(|pack| &pack.numbers.oh));
         if let Some(end) = oh {
             k = skip_space(chars, end);
         }
-        match small_words(chars, k) {
+        match small_words(lexicon, chars, k) {
             Some((rest, end)) if oh.is_none() || rest < 10 => {
                 return Some((base + i32::from(rest), end));
             }
             None => {
-                if let Some(end) = phrase(chars, k, "hundred") {
+                if let Some(end) = scale_at(lexicon, chars, k, 100) {
                     return Some((base, end));
                 }
             }
             Some(_) => {}
         }
     }
-    if word == "two"
-        && let Some(thousand) = phrase(chars, skip_space(chars, wend), "thousand")
+    if head == Some(2)
+        && let Some(thousand) = scale_at(lexicon, chars, skip_space(chars, wend), 1000)
     {
         let k = skip_space(chars, thousand);
-        let and = phrase(chars, k, "and");
+        let and = phrase_in(chars, k, &lexicon.phrases(|pack| &pack.numbers.and));
         let k = and.map_or(k, |end| skip_space(chars, end));
         return Some(
-            small_words(chars, k).map_or((2000, thousand), |(rest, end)| {
+            small_words(lexicon, chars, k).map_or((2000, thousand), |(rest, end)| {
                 (2000 + i32::from(rest), end)
             }),
         );
@@ -1163,20 +1073,19 @@ fn year_at(chars: &[char], i: usize) -> Option<(i32, usize)> {
 
 /// Whether what follows `j` is the end, punctuation, or a word that is not a noun's place: `the 14th`, `the 14th
 /// at three`, `the 14th is what day`; never `the first alarm`.
-fn followed_plainly(chars: &[char], j: usize) -> bool {
+fn followed_plainly(lexicon: &Lexicon, chars: &[char], j: usize) -> bool {
     let k = skip_space(chars, j);
     match chars.get(k) {
         None => true,
         Some(c) if !c.is_alphabetic() => true,
-        Some(_) => {
-            word_at(chars, k).is_some_and(|(word, _)| PLAIN_FOLLOWERS.contains(&word.as_str()))
-        }
+        Some(_) => word_at(chars, k)
+            .is_some_and(|(word, _)| lexicon.holds(|pack| &pack.days.followers, &word)),
     }
 }
 
 /// Whether the word before `i` is a preposition of time or a weekday: `on the 14th`, `friday the 14th`, never `the
 /// 13th president`.
-fn led_by_time(chars: &[char], i: usize) -> bool {
+fn led_by_time(lexicon: &Lexicon, chars: &[char], i: usize) -> bool {
     let mut end = i;
     while end > 0 && chars[end - 1] == ' ' {
         end -= 1;
@@ -1189,7 +1098,8 @@ fn led_by_time(chars: &[char], i: usize) -> bool {
         .iter()
         .flat_map(|c| fold_char(*c))
         .collect();
-    TIME_LEADS.contains(&word.as_str()) || WEEKDAYS.contains(&word.as_str())
+    lexicon.holds(|pack| &pack.days.leads, &word)
+        || lexicon.form_of(|pack| &pack.days.weekdays, &word).is_some()
 }
 
 // ---- a time ------------------------------------------------------------------------------------------------
@@ -1201,35 +1111,18 @@ enum Meridiem {
     Pm,
 }
 
-const NAMED_TIMES: [(&str, u8); 6] = [
-    ("noontime", 12),
-    ("noon", 12),
-    ("midday", 12),
-    ("midnight", 0),
-    ("twelve noon", 12),
-    ("twelve midnight", 0),
-];
-/// `half past five pm`, `quarter to six am`: the minutes each names, and whether they are past the hour.
-const PAST_OR_TO: [(&str, bool, u8); 5] = [
-    ("half past", true, 30),
-    ("quarter past", true, 15),
-    ("a quarter past", true, 15),
-    ("quarter to", false, 15),
-    ("a quarter to", false, 15),
-];
-
 /// A clock time with its half of the day, `5pm`, `5:30 pm`, `seven thirty am`, `six in the morning`, `5 o'clock
 /// in the afternoon`, `noon`; or a two-digit hour on the 24-hour clock, `13:00`, `09:30`. A bare hour is a
 /// number; `5:30`, `4 o'clock` and `half past five` with no half, and a time with seconds, are refused whole.
-fn time(chars: &[char], i: usize) -> Scan {
+fn time(lexicon: &Lexicon, chars: &[char], i: usize) -> Scan {
     if !boundary(chars, i) {
         return Scan::Nothing;
     }
-    named_time(chars, i)
-        .or_else(|| past_or_to(chars, i))
-        .or_else(|| minutes_past_or_to(chars, i))
-        .or_else(|| digital(chars, i))
-        .or_else(|| spoken(chars, i))
+    named_time(lexicon, chars, i)
+        .or_else(|| past_or_to(lexicon, chars, i))
+        .or_else(|| minutes_past_or_to(lexicon, chars, i))
+        .or_else(|| digital(lexicon, chars, i))
+        .or_else(|| spoken(lexicon, chars, i))
         .unwrap_or(Scan::Nothing)
 }
 
@@ -1243,20 +1136,34 @@ fn timed(start: usize, end: usize, hour: u8, minute: u8, meridiem: Option<Meridi
     Clock::new(hour, minute).map_or(Scan::Nothing, |clock| found(start, end, Read::Time(clock)))
 }
 
-fn named_time(chars: &[char], i: usize) -> Option<Scan> {
-    NAMED_TIMES
+/// A time named, `noon`, `midnight`, as the pack lists it with its hour.
+fn named_time(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
+    lexicon
+        .named(|pack| &pack.times.named)
         .into_iter()
-        .find_map(|(words, hour)| phrase(chars, i, words).map(|end| timed(i, end, hour, 0, None)))
+        .find_map(|(words, form)| {
+            let end = phrase(chars, i, words)?;
+            let clock: Clock = form.parse().ok()?;
+            Some(timed(i, end, clock.hour(), clock.minute(), None))
+        })
 }
 
 /// `half past five pm`, `a quarter to six am`; with no half, hidden.
-fn past_or_to(chars: &[char], i: usize) -> Option<Scan> {
-    for (lead, past, minutes) in PAST_OR_TO {
-        let Some(end) = phrase(chars, i, lead) else {
+fn past_or_to(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
+    let past = lexicon
+        .named(|pack| &pack.times.minutes_past)
+        .into_iter()
+        .map(|(lead, form)| (lead, form, true));
+    let to = lexicon
+        .named(|pack| &pack.times.minutes_to)
+        .into_iter()
+        .map(|(lead, form)| (lead, form, false));
+    for (lead, form, past) in past.chain(to) {
+        let (Some(end), Ok(minutes)) = (phrase(chars, i, lead), form.parse::<u8>()) else {
             continue;
         };
         let k = skip_space(chars, end);
-        let Some((hour, hend)) = hour_word(chars, k).or_else(|| {
+        let Some((hour, hend)) = hour_word(lexicon, chars, k).or_else(|| {
             digits_at(chars, k).and_then(|(hour, end)| {
                 Some((
                     u8::try_from(hour)
@@ -1268,13 +1175,16 @@ fn past_or_to(chars: &[char], i: usize) -> Option<Scan> {
         }) else {
             continue;
         };
-        return Some(past_or_to_read(chars, i, hour, hend, past, minutes));
+        return Some(past_or_to_read(
+            lexicon, chars, i, hour, hend, past, minutes,
+        ));
     }
     None
 }
 
 /// The hour before or after the minutes named, with its half of the day; hidden whole when none follows.
 fn past_or_to_read(
+    lexicon: &Lexicon,
     chars: &[char],
     i: usize,
     hour: u8,
@@ -1282,7 +1192,7 @@ fn past_or_to_read(
     past: bool,
     minutes: u8,
 ) -> Scan {
-    let Some((meridiem, mend)) = meridiem_at(chars, hend) else {
+    let Some((meridiem, mend)) = meridiem_at(lexicon, chars, hend) else {
         return Scan::Hide(hend);
     };
     let (hour, minute) = if past {
@@ -1293,24 +1203,36 @@ fn past_or_to_read(
     timed(i, mend, hour, minute, Some(meridiem))
 }
 
-/// `ten past nine pm`, `twenty five to six am`.
-fn minutes_past_or_to(chars: &[char], i: usize) -> Option<Scan> {
+/// `ten past nine pm`, `twenty five to six am`: the minutes, the word that says past or to between two spaces,
+/// the hour.
+fn minutes_past_or_to(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
     let Words {
         end: mend,
         value: Some(minutes),
-    } = words(chars, i)?
+    } = words(lexicon, chars, i)?
     else {
         return None;
     };
     let minutes = whole(minutes).filter(|minutes| (1..=59).contains(minutes))?;
-    for (lead, past) in [(" past ", true), (" to ", false)] {
-        let Some(after) = lowered_end(chars, mend, lead) else {
+    if chars.get(mend) != Some(&' ') {
+        return None;
+    }
+    for (leads, past) in [
+        (lexicon.phrases(|pack| &pack.times.past), true),
+        (lexicon.phrases(|pack| &pack.times.to), false),
+    ] {
+        let Some(after) = leads
+            .iter()
+            .find_map(|lead| lowered_end(chars, mend + 1, lead))
+            .filter(|&after| chars.get(after) == Some(&' '))
+        else {
             continue;
         };
-        let Some((hour, hend)) = hour_word(chars, after) else {
+        let Some((hour, hend)) = hour_word(lexicon, chars, after + 1) else {
             continue;
         };
         return Some(past_or_to_read(
+            lexicon,
             chars,
             i,
             hour,
@@ -1323,7 +1245,7 @@ fn minutes_past_or_to(chars: &[char], i: usize) -> Option<Scan> {
 }
 
 /// `5pm`, `5:30 pm`, `07:03 PM`, `17:30`, `13 o'clock`, `5 o'clock in the afternoon`.
-fn digital(chars: &[char], i: usize) -> Option<Scan> {
+fn digital(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
     let (hour, mut j) = digits_at(chars, i)?;
     if hour > 24 || j - i > 2 {
         return None;
@@ -1337,8 +1259,8 @@ fn digital(chars: &[char], i: usize) -> Option<Scan> {
     if matches!(chars.get(j), Some(':' | '.'))
         && let Some(read) = two_digit_minutes(chars, j + 1)
         && (chars[j] == ':'
-            || meridiem_at(chars, j + 3).is_some()
-            || oclock_at(chars, j + 3).is_some())
+            || meridiem_at(lexicon, chars, j + 3).is_some()
+            || oclock_at(lexicon, chars, j + 3).is_some())
     {
         minute = Some(read);
         j += 3;
@@ -1346,18 +1268,19 @@ fn digital(chars: &[char], i: usize) -> Option<Scan> {
             return Some(Scan::Hide((j + 3).min(chars.len())));
         }
     }
-    let mut meridiem = meridiem_at(chars, j);
+    let mut meridiem = meridiem_at(lexicon, chars, j);
+    // After the minutes, each half's first letter alone says it: «5:30a», «5:30p».
     if meridiem.is_none()
         && minute.is_some()
         && let Some(c) = chars.get(j)
-        && matches!(c, 'a' | 'A' | 'p' | 'P')
+        && let Some((a, p)) = half_letters(lexicon)
+        && let Some(half) = c.to_lowercase().next().and_then(|c| {
+            (c == a)
+                .then_some(Meridiem::Am)
+                .or((c == p).then_some(Meridiem::Pm))
+        })
         && ends_word(chars, j + 1)
     {
-        let half = if matches!(c, 'a' | 'A') {
-            Meridiem::Am
-        } else {
-            Meridiem::Pm
-        };
         meridiem = Some((half, j + 1));
     }
     if let Some((half, mend)) = meridiem
@@ -1366,10 +1289,10 @@ fn digital(chars: &[char], i: usize) -> Option<Scan> {
     {
         return Some(timed(i, mend, hour, minute.unwrap_or(0), Some(half)));
     }
-    if let Some(oc) = oclock_at(chars, j)
+    if let Some(oc) = oclock_at(lexicon, chars, j)
         && minute.is_none()
     {
-        if let Some((half, mend)) = meridiem_at(chars, oc)
+        if let Some((half, mend)) = meridiem_at(lexicon, chars, oc)
             && hour <= 12
         {
             return Some(timed(i, mend, hour, 0, Some(half)));
@@ -1409,167 +1332,151 @@ fn digits_follow(chars: &[char], at: usize) -> bool {
 
 /// `five pm`, `seven thirty am`, `six oh five pm`, `eight hundred am`, `six o'clock in the evening`, `three in
 /// the afternoon`.
-fn spoken(chars: &[char], i: usize) -> Option<Scan> {
-    let (hour, j) = hour_word(chars, i)?;
+fn spoken(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Scan> {
+    let (hour, j) = hour_word(lexicon, chars, i)?;
     if hour < 1 {
         return None;
     }
     let mut minute = 0;
     let mut k = j;
     if matches!(chars.get(k), Some(' ' | '-')) {
-        if let Some(hundred) = phrase(chars, k + 1, "hundred") {
-            return Some(match meridiem_at(chars, hundred) {
+        if let Some(hundred) = scale_at(lexicon, chars, k + 1, 100) {
+            return Some(match meridiem_at(lexicon, chars, hundred) {
                 Some((half, mend)) => timed(i, mend, hour, 0, Some(half)),
                 None => Scan::Nothing,
             });
         }
-        if let Some((read, mend)) = minute_words(chars, k + 1)
+        if let Some((read, mend)) = minute_words(lexicon, chars, k + 1)
             && read < 60
         {
             minute = read;
             k = mend;
         }
     }
-    if let Some((half, mend)) = meridiem_at(chars, k) {
+    if let Some((half, mend)) = meridiem_at(lexicon, chars, k) {
         return Some(timed(i, mend, hour, minute, Some(half)));
     }
-    let oc = oclock_at(chars, k)?;
-    Some(match meridiem_at(chars, oc) {
+    let oc = oclock_at(lexicon, chars, k)?;
+    Some(match meridiem_at(lexicon, chars, oc) {
         Some((half, mend)) => timed(i, mend, hour, minute, Some(half)),
         None => Scan::Nothing,
     })
 }
 
-/// `am`, `pm`, `a.m.`, `p.m.` in any case after one space at most; `in the morning`, `in the afternoon`, `in
-/// the evening`, `at night`.
-fn meridiem_at(chars: &[char], i: usize) -> Option<(Meridiem, usize)> {
+/// A half of the day as the packs write it, in any case, after one space at most: `am`, `pm`, `a.m.`, `p.m.`,
+/// `in the morning`, `at night`; the longest form first, so `a.m.` keeps its last point.
+fn meridiem_at(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(Meridiem, usize)> {
     let j = skip_space(chars, i);
-    for (form, half) in [
-        ("a.m.", Meridiem::Am),
-        ("p.m.", Meridiem::Pm),
-        ("a.m", Meridiem::Am),
-        ("p.m", Meridiem::Pm),
-        ("am", Meridiem::Am),
-        ("pm", Meridiem::Pm),
-    ] {
-        if let Some(end) = phrase_end(chars, j, form) {
-            return Some((half, end));
-        }
-    }
-    for (form, half) in [
-        ("in the morning", Meridiem::Am),
-        ("in the afternoon", Meridiem::Pm),
-        ("in the evening", Meridiem::Pm),
-        ("at night", Meridiem::Pm),
-    ] {
-        if let Some(end) = phrase(chars, j, form) {
-            return Some((half, end));
-        }
-    }
-    None
+    let am = lexicon
+        .phrases(|pack| &pack.times.am)
+        .into_iter()
+        .map(|form| (form, Meridiem::Am));
+    let pm = lexicon
+        .phrases(|pack| &pack.times.pm)
+        .into_iter()
+        .map(|form| (form, Meridiem::Pm));
+    let mut forms: Vec<(&str, Meridiem)> = am.chain(pm).collect();
+    forms.sort_by_key(|(form, _)| Reverse(form.chars().count()));
+    forms
+        .into_iter()
+        .find_map(|(form, half)| phrase_end(chars, j, form).map(|end| (half, end)))
+}
+
+/// The letter each half of the day is written as alone after the minutes: the first letter of its shortest word.
+fn half_letters(lexicon: &Lexicon) -> Option<(char, char)> {
+    let first = |table: fn(&'static Pack) -> &'static pack::Phrases| {
+        lexicon.phrases(table).last()?.chars().next()
+    };
+    Some((first(|pack| &pack.times.am)?, first(|pack| &pack.times.pm)?))
 }
 
 /// `o'clock` in its spellings, after one space at most.
-fn oclock_at(chars: &[char], i: usize) -> Option<usize> {
+fn oclock_at(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<usize> {
     let j = skip_space(chars, i);
-    ["o'clock", "o’clock", "oclock", "o clock"]
-        .into_iter()
-        .find_map(|form| phrase(chars, j, form))
+    phrase_in(chars, j, &lexicon.phrases(|pack| &pack.times.oclock))
 }
 
 /// An hour word, `one` to `twelve`, at a word boundary.
-fn hour_word(chars: &[char], i: usize) -> Option<(u8, usize)> {
+fn hour_word(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(u8, usize)> {
     let (word, end) = word_at(chars, i)?;
-    let hour = ones(&word)?;
+    let hour = ones(lexicon, &word)?;
     (hour <= 12 && boundary(chars, i)).then_some((hour, end))
 }
 
 /// `thirty`, `fifteen`, `forty five`, `oh five`: minutes after an hour word.
-fn minute_words(chars: &[char], i: usize) -> Option<(u8, usize)> {
+fn minute_words(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(u8, usize)> {
     let (word, end) = word_at(chars, i)?;
-    if (word == "oh" || word == "o")
+    if lexicon.holds(|pack| &pack.numbers.oh, &word)
         && let Some((next, nend)) = word_at(chars, skip_space(chars, end))
-        && let Some(minute) = ones(&next)
+        && let Some(minute) = ones(lexicon, &next)
         && minute < 10
     {
         return Some((minute, nend));
     }
-    if let Some(tens) = tens(&word) {
+    if let Some(tens) = tens(lexicon, &word) {
         if matches!(chars.get(end), Some(' ' | '-'))
             && let Some((next, nend)) = word_at(chars, end + 1)
-            && let Some(ones) = ones(&next)
+            && let Some(ones) = ones(lexicon, &next)
             && (1..=9).contains(&ones)
         {
             return Some((tens + ones, nend));
         }
         return Some((tens, end));
     }
-    ones(&word)
+    ones(lexicon, &word)
         .filter(|minute| (10..=19).contains(minute))
         .map(|minute| (minute, end))
 }
 
 /// At most a tens word and a ones word, `twenty four`, `seven`: as a day or a year reads them, never a longer run.
-fn small_words(chars: &[char], i: usize) -> Option<(u8, usize)> {
+fn small_words(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(u8, usize)> {
     if !boundary(chars, i) {
         return None;
     }
     let (word, end) = word_at(chars, i)?;
-    if let Some(tens) = tens(&word) {
+    if let Some(tens) = tens(lexicon, &word) {
         if matches!(chars.get(end), Some(' ' | '-'))
             && let Some((next, nend)) = word_at(chars, end + 1)
-            && let Some(ones) = ones(&next)
+            && let Some(ones) = ones(lexicon, &next)
             && (1..=9).contains(&ones)
         {
             return Some((tens + ones, nend));
         }
         return Some((tens, end));
     }
-    ones(&word).map(|ones| (ones, end))
+    ones(lexicon, &word).map(|ones| (ones, end))
 }
 
-fn ones(word: &str) -> Option<u8> {
-    ONES.iter()
-        .find(|(ones, _)| *ones == word)
-        .and_then(|(_, value)| u8::try_from(*value).ok())
+/// A number word to nineteen, as a small number reads it.
+fn ones(lexicon: &Lexicon, word: &str) -> Option<u8> {
+    lexicon
+        .value(|pack| &pack.numbers.ones, word)
+        .and_then(|value| u8::try_from(value).ok())
 }
 
-fn tens(word: &str) -> Option<u8> {
-    TENS.iter()
-        .find(|(tens, _)| *tens == word)
-        .and_then(|(_, value)| u8::try_from(*value).ok())
+/// A tens word, as a small number reads it.
+fn tens(lexicon: &Lexicon, word: &str) -> Option<u8> {
+    lexicon
+        .value(|pack| &pack.numbers.tens, word)
+        .and_then(|value| u8::try_from(value).ok())
+}
+
+/// A scale word of `value`, «hundred», «thousand», whole at `at`: where it ends.
+fn scale_at(lexicon: &Lexicon, chars: &[char], at: usize, value: i64) -> Option<usize> {
+    lexicon
+        .packs()
+        .iter()
+        .flat_map(|pack| pack.numbers.scale.iter())
+        .filter(|(_, scale)| *scale == value)
+        .find_map(|(word, _)| phrase(chars, at, word))
+}
+
+/// The first of the phrases that stands whole at `at`, at a word boundary: where it ends.
+fn phrase_in(chars: &[char], at: usize, phrases: &[&str]) -> Option<usize> {
+    phrases.iter().find_map(|words| phrase(chars, at, words))
 }
 
 // ---- a duration and a number, as before -------------------------------------------------------------------
-
-/// Unit forms in the order they are tried, with their seconds.
-const UNITS: [(&str, f64); 15] = [
-    ("seconds", 1.0),
-    ("second", 1.0),
-    ("secs", 1.0),
-    ("sec", 1.0),
-    ("minutes", 60.0),
-    ("minute", 60.0),
-    ("mins", 60.0),
-    ("min", 60.0),
-    ("hours", 3600.0),
-    ("hour", 3600.0),
-    ("hrs", 3600.0),
-    ("hr", 3600.0),
-    ("s", 1.0),
-    ("m", 60.0),
-    ("h", 3600.0),
-];
-
-/// The words that stand for an amount before a unit written out, and what they stand for.
-const ARTICLES: [(&str, f64); 6] = [
-    ("a quarter of an", 0.25),
-    ("a quarter of a", 0.25),
-    ("half an", 0.5),
-    ("half a", 0.5),
-    ("an", 1.0),
-    ("a", 1.0),
-];
 
 /// What stands before a unit: the count, where it ends, and whether a one-letter unit — `10m` — may follow it,
 /// which it may after a number and never after an article; a run of number words to pass over; or nothing.
@@ -1580,8 +1487,8 @@ enum Before {
 }
 
 /// The count at `i`: a number in words, an article's — «an hour», «half a minute» — or a number in digits.
-fn before_unit(chars: &[char], i: usize) -> Before {
-    match words(chars, i) {
+fn before_unit(lexicon: &Lexicon, chars: &[char], i: usize) -> Before {
+    match words(lexicon, chars, i) {
         Some(Words {
             end,
             value: Some(value),
@@ -1589,7 +1496,7 @@ fn before_unit(chars: &[char], i: usize) -> Before {
         Some(Words { end, value: None }) => return Before::Skip(end),
         None => {}
     }
-    if let Some((value, end)) = article(chars, i) {
+    if let Some((value, end)) = article(lexicon, chars, i) {
         return Before::Read(value, end, false);
     }
     // A minus the number's own — `-5 minutes` — makes no duration: the number stands alone, negative.
@@ -1602,22 +1509,22 @@ fn before_unit(chars: &[char], i: usize) -> Before {
     }
 }
 
-fn duration(chars: &[char], i: usize) -> Scan {
-    let (count, after, letters) = match before_unit(chars, i) {
+fn duration(lexicon: &Lexicon, chars: &[char], i: usize) -> Scan {
+    let (count, after, letters) = match before_unit(lexicon, chars, i) {
         Before::Read(value, end, letters) => (value, end, letters),
         Before::Skip(end) => return Scan::Skip(end),
         Before::Nothing => return Scan::Nothing,
     };
     // «and a half» adds a half, after the count — «two and a half hours» — or after the unit — «an hour and a
     // half».
-    let (count, after, halved) = match half_after(chars, after) {
+    let (count, after, halved) = match half_after(lexicon, chars, after) {
         Some(end) => (count + 0.5, end, true),
         None => (count, after, false),
     };
-    let Some((end, seconds_each)) = unit(chars, after_space(chars, after), letters) else {
+    let Some((end, seconds_each)) = unit(lexicon, chars, after_space(chars, after), letters) else {
         return Scan::Nothing;
     };
-    let (count, end) = match half_after(chars, end) {
+    let (count, end) = match half_after(lexicon, chars, end) {
         Some(end) if !halved => (count + 0.5, end),
         _ => (count, end),
     };
@@ -1627,8 +1534,8 @@ fn duration(chars: &[char], i: usize) -> Scan {
     found(i, end, Read::Seconds(seconds))
 }
 
-fn number(chars: &[char], i: usize) -> Scan {
-    let (value, after) = match words(chars, i) {
+fn number(lexicon: &Lexicon, chars: &[char], i: usize) -> Scan {
+    let (value, after) = match words(lexicon, chars, i) {
         Some(Words {
             end,
             value: Some(value),
@@ -1646,7 +1553,11 @@ fn number(chars: &[char], i: usize) -> Scan {
         }
     };
     let unit_at = after_space(chars, after);
-    let end = if let Some(end) = unit_end(chars, unit_at, "percent") {
+    let percent = lexicon
+        .phrases(|pack| &pack.numbers.percent)
+        .into_iter()
+        .find_map(|word| unit_end(chars, unit_at, word));
+    let end = if let Some(end) = percent {
         end
     } else if chars.get(unit_at) == Some(&'%') {
         unit_at + 1
@@ -1655,40 +1566,6 @@ fn number(chars: &[char], i: usize) -> Scan {
     };
     found(i, end, Read::Number(value))
 }
-
-/// The number words read, with their values: the ones to nineteen, then the tens.
-const ONES: [(&str, u32); 20] = [
-    ("zero", 0),
-    ("one", 1),
-    ("two", 2),
-    ("three", 3),
-    ("four", 4),
-    ("five", 5),
-    ("six", 6),
-    ("seven", 7),
-    ("eight", 8),
-    ("nine", 9),
-    ("ten", 10),
-    ("eleven", 11),
-    ("twelve", 12),
-    ("thirteen", 13),
-    ("fourteen", 14),
-    ("fifteen", 15),
-    ("sixteen", 16),
-    ("seventeen", 17),
-    ("eighteen", 18),
-    ("nineteen", 19),
-];
-const TENS: [(&str, u32); 8] = [
-    ("twenty", 20),
-    ("thirty", 30),
-    ("forty", 40),
-    ("fifty", 50),
-    ("sixty", 60),
-    ("seventy", 70),
-    ("eighty", 80),
-    ("ninety", 90),
-];
 
 /// A word of a run of number words.
 #[derive(Clone, Copy, PartialEq)]
@@ -1706,33 +1583,43 @@ enum Token {
     And,
 }
 
-fn token(word: &str) -> Option<Token> {
-    if let Some((_, value)) = ONES.iter().find(|(ones, _)| *ones == word) {
-        return Some(Token::Ones(*value));
+/// A word as a token of a run of number words, as the packs list the words: the ones, the tens, the scale words
+/// — a hundred, a thousand, and the words beyond them — the article, and the «and».
+fn token(lexicon: &Lexicon, word: &str) -> Option<Token> {
+    if let Some(value) = lexicon.value(|pack| &pack.numbers.ones, word) {
+        return u32::try_from(value).ok().map(Token::Ones);
     }
-    if let Some((_, value)) = TENS.iter().find(|(tens, _)| *tens == word) {
-        return Some(Token::Tens(*value));
+    if let Some(value) = lexicon.value(|pack| &pack.numbers.tens, word) {
+        return u32::try_from(value).ok().map(Token::Tens);
     }
-    match word {
-        "hundred" => Some(Token::Hundred),
-        "thousand" => Some(Token::Thousand),
-        "million" | "billion" => Some(Token::Beyond),
-        "a" => Some(Token::A),
-        "and" => Some(Token::And),
-        _ => None,
+    match lexicon.value(|pack| &pack.numbers.scale, word) {
+        Some(100) => return Some(Token::Hundred),
+        Some(1000) => return Some(Token::Thousand),
+        Some(_) => return Some(Token::Beyond),
+        None => {}
     }
+    if lexicon.holds(|pack| &pack.numbers.beyond, word) {
+        return Some(Token::Beyond);
+    }
+    if lexicon.holds(|pack| &pack.numbers.article, word) {
+        return Some(Token::A);
+    }
+    if lexicon.holds(|pack| &pack.numbers.and, word) {
+        return Some(Token::And);
+    }
+    None
 }
 
 /// The word at `at`, in any letter case, as a token, with where it ends.
-fn token_at(chars: &[char], at: usize) -> Option<(Token, usize)> {
+fn token_at(lexicon: &Lexicon, chars: &[char], at: usize) -> Option<(Token, usize)> {
     let (word, end) = word_at(chars, at)?;
-    token(&word).map(|token| (token, end))
+    token(lexicon, &word).map(|token| (token, end))
 }
 
 /// Whether one space or one hyphen at `at` is followed by a word that `fits`.
-fn follows(chars: &[char], at: usize, fits: impl Fn(Token) -> bool) -> bool {
+fn follows(lexicon: &Lexicon, chars: &[char], at: usize, fits: impl Fn(Token) -> bool) -> bool {
     matches!(chars.get(at), Some(' ' | '-'))
-        && token_at(chars, at + 1).is_some_and(|(token, _)| fits(token))
+        && token_at(lexicon, chars, at + 1).is_some_and(|(token, _)| fits(token))
 }
 
 /// A run of number words: where it ends, and its value when it is a form that is read.
@@ -1746,8 +1633,8 @@ struct Words {
 /// «tenant» and «one-off» hold none. It reads as one word to ninety, a tens word joined to a word from one to
 /// nine, and hundreds with what follows them, «a hundred», «two hundred ninety four», «a hundred and fifty»;
 /// any other run — «seven thirty», «two thousand» — reads as nothing, whole, so no part of it is a candidate.
-fn words(chars: &[char], i: usize) -> Option<Words> {
-    let (tokens, end) = run(chars, i)?;
+fn words(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<Words> {
+    let (tokens, end) = run(lexicon, chars, i)?;
     Some(Words {
         end,
         value: hundreds_or_small(&tokens),
@@ -1755,18 +1642,18 @@ fn words(chars: &[char], i: usize) -> Option<Words> {
 }
 
 /// The run's tokens and where it ends, whatever they add up to.
-fn run(chars: &[char], i: usize) -> Option<(Vec<Token>, usize)> {
+fn run(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(Vec<Token>, usize)> {
     if i > 0 && (is_word(chars[i - 1]) || i >= 2 && hyphen_binds(chars, i - 1, i - 2)) {
         return None;
     }
     let mut tokens: Vec<Token> = Vec::new();
     let mut end = i;
     let mut at = i;
-    while let Some((token, word_end)) = token_at(chars, at) {
+    while let Some((token, word_end)) = token_at(lexicon, chars, at) {
         let fits = match token {
             Token::A => {
                 tokens.is_empty()
-                    && follows(chars, word_end, |next| {
+                    && follows(lexicon, chars, word_end, |next| {
                         matches!(next, Token::Hundred | Token::Thousand | Token::Beyond)
                     })
             }
@@ -1774,7 +1661,7 @@ fn run(chars: &[char], i: usize) -> Option<(Vec<Token>, usize)> {
                 matches!(
                     tokens.last(),
                     Some(Token::Hundred | Token::Thousand | Token::Beyond)
-                ) && follows(chars, word_end, |next| {
+                ) && follows(lexicon, chars, word_end, |next| {
                     matches!(next, Token::Ones(_) | Token::Tens(_))
                 })
             }
@@ -1804,27 +1691,41 @@ fn hyphen_binds(chars: &[char], at: usize, other: usize) -> bool {
     chars.get(at) == Some(&'-') && chars.get(other).is_some_and(|c| c.is_alphabetic())
 }
 
-/// An article's count at `i`, at a word boundary and in any letter case: what it stands for, and where it ends.
-fn article(chars: &[char], i: usize) -> Option<(f64, usize)> {
+/// An article's count at `i`, at a word boundary and in any letter case, as the pack lists the words that stand
+/// for a count before a unit — «an», «half an», «a quarter of an»: what it stands for, and where it ends.
+fn article(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(f64, usize)> {
     if i > 0 && is_word(chars[i - 1]) {
         return None;
     }
-    ARTICLES
+    lexicon
+        .named(|pack| &pack.durations.articles)
         .into_iter()
-        .find_map(|(words, value)| phrase_end(chars, i, words).map(|end| (value, end)))
+        .find_map(|(words, form)| {
+            let end = phrase_end(chars, i, words)?;
+            Some((form.parse::<f64>().ok()?, end))
+        })
 }
 
 /// Where «and a half» ends when it follows what ends at `at`.
-fn half_after(chars: &[char], at: usize) -> Option<usize> {
-    phrase_end(chars, after_space(chars, at), "and a half")
+fn half_after(lexicon: &Lexicon, chars: &[char], at: usize) -> Option<usize> {
+    let after = after_space(chars, at);
+    lexicon
+        .phrases(|pack| &pack.numbers.and_a_half)
+        .into_iter()
+        .find_map(|words| phrase_end(chars, after, words))
 }
 
-/// The unit at `at` and its seconds; a one-letter form, `10m`, only after a number.
-fn unit(chars: &[char], at: usize, letters: bool) -> Option<(usize, f64)> {
-    UNITS
+/// The unit at `at`, as typed, and its seconds, the longest form first; a one-letter form, `10m`, only after a
+/// number.
+fn unit(lexicon: &Lexicon, chars: &[char], at: usize, letters: bool) -> Option<(usize, f64)> {
+    lexicon
+        .named(|pack| &pack.durations.units)
         .into_iter()
-        .filter(|(unit, _)| letters || unit.len() > 1)
-        .find_map(|(unit, seconds)| unit_end(chars, at, unit).map(|end| (end, seconds)))
+        .filter(|(unit, _)| letters || unit.chars().count() > 1)
+        .find_map(|(unit, form)| {
+            let end = unit_end(chars, at, unit)?;
+            Some((end, form.parse::<f64>().ok()?))
+        })
 }
 
 /// `\b\d+(\.\d+)?` at `i`: the number and where it ends; digits past what a number holds are no candidate, and
@@ -1983,6 +1884,7 @@ fn starts_with(chars: &[char], at: usize, text: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::calendar::{Weekday, Which};
 
     fn spans(text: &str) -> Vec<(usize, usize, PickValue)> {
         propose(&Input::new(text).unwrap())

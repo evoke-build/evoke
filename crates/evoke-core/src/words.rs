@@ -8,111 +8,12 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
 use crate::adapter::Key;
-use crate::calendar::{Day, Weekday, Which};
+use crate::calendar::Day;
 use crate::manifest::Recognizer;
+use crate::pack::{self, Lexicon};
 use crate::propose::{PickValue, Proposed, propose};
 use crate::spoken::Shape;
 use crate::text::{self, Clean, Input, Span, fold};
-
-/// The words that carry no value by themselves: articles, pronouns, prepositions, auxiliaries, a courtesy, a
-/// greeting. A run of them alone is no run, and none of them is a listed word misspelt or a word of a meaning.
-pub(crate) const FUNCTION: [&str; 83] = [
-    "a", "an", "the", "this", "that", "these", "those", "my", "your", "our", "his", "her", "its",
-    "their", "me", "i", "you", "we", "it", "to", "of", "in", "on", "at", "for", "from", "with",
-    "by", "as", "into", "onto", "and", "or", "then", "so", "but", "if", "is", "are", "was", "be",
-    "been", "am", "do", "does", "did", "can", "could", "will", "would", "shall", "should", "may",
-    "might", "must", "have", "has", "had", "not", "no", "please", "pls", "plz", "thanks", "thank",
-    "thx", "kindly", "hey", "hi", "hello", "ok", "okay", "just", "now", "some", "any", "there",
-    "here", "up", "out", "off", "over", "about",
-];
-
-/// The words of a meaning that say what kind of thing a listed word is, or join its clauses, and so name no one
-/// word of the list.
-const KIND: [&str; 7] = [
-    "also", "where", "team", "channel", "folder", "service", "region",
-];
-
-/// What a sign is called when a value is said aloud, and the sign it stands for.
-const SIGNS: [(&str, &str); 11] = [
-    ("at", "@"),
-    ("dot", "."),
-    ("point", "."),
-    ("dash", "-"),
-    ("hyphen", "-"),
-    ("minus", "-"),
-    ("underscore", "_"),
-    ("slash", "/"),
-    ("colon", ":"),
-    ("hashtag", "#"),
-    ("hash", "#"),
-];
-
-/// The number words a value said aloud holds, each with its figures: «oh» and the letter «o» stand for zero.
-const FIGURES: [(&str, &str); 22] = [
-    ("zero", "0"),
-    ("oh", "0"),
-    ("o", "0"),
-    ("one", "1"),
-    ("two", "2"),
-    ("three", "3"),
-    ("four", "4"),
-    ("five", "5"),
-    ("six", "6"),
-    ("seven", "7"),
-    ("eight", "8"),
-    ("nine", "9"),
-    ("ten", "10"),
-    ("eleven", "11"),
-    ("twelve", "12"),
-    ("thirteen", "13"),
-    ("fourteen", "14"),
-    ("fifteen", "15"),
-    ("sixteen", "16"),
-    ("seventeen", "17"),
-    ("eighteen", "18"),
-    ("nineteen", "19"),
-];
-
-/// The tens a value said aloud holds, each with its first figure.
-const TENS: [(&str, &str); 8] = [
-    ("twenty", "2"),
-    ("thirty", "3"),
-    ("forty", "4"),
-    ("fifty", "5"),
-    ("sixty", "6"),
-    ("seventy", "7"),
-    ("eighty", "8"),
-    ("ninety", "9"),
-];
-
-/// The word that closes a number said aloud with two noughts: «twenty three hundred» is 2300.
-const HUNDRED: &str = "hundred";
-
-/// The days of the week, as a misspelt one is held against them.
-const WEEKDAYS: [&str; 7] = [
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday",
-];
-
-/// The words before a day that make it a recurrence, which is no day.
-const EVERY: [&str; 2] = ["every", "each"];
-
-/// The words a courtesy is made of: a request's «please», a «thanks» at its end.
-const COURTESY: [&str; 10] = [
-    "please", "pls", "plz", "thanks", "thank", "you", "thx", "cheers", "ta", "kindly",
-];
-
-/// The words before a weekday that say which one: «next monday».
-const WHICH: [(&str, Which); 3] = [
-    ("next", Which::Next),
-    ("this", Which::This),
-    ("last", Which::Last),
-];
 
 /// How the input's words hold a listed word.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -185,9 +86,24 @@ pub(crate) struct Token {
     pub plain: String,
 }
 
-/// Whether a word carries no value by itself.
+/// Whether a word carries no value by itself: an article, a pronoun, a preposition, an auxiliary, a courtesy, a
+/// greeting. A run of them alone is no run, and none of them is a listed word misspelt or a word of a meaning.
 pub(crate) fn function(word: &str) -> bool {
-    FUNCTION.contains(&word)
+    pack::lexicon(word).holds(|pack| &pack.words.function, &fold(word))
+}
+
+/// The longest of `phrases` that stands at `at` among the words, each word as `fold` writes it: how many words it
+/// takes. The phrases come longest first, as a lexicon lists them.
+pub(crate) fn phrase_at(words: &[String], at: usize, phrases: &[&str]) -> Option<usize> {
+    phrases.iter().find_map(|phrase| {
+        let parts: Vec<&str> = phrase.split(' ').collect();
+        let fits = words
+            .get(at..at + parts.len())?
+            .iter()
+            .map(String::as_str)
+            .eq(parts.iter().copied());
+        fits.then_some(parts.len())
+    })
 }
 
 /// The input's words, each a run of characters no space divides.
@@ -237,15 +153,20 @@ fn token(chars: &[char], start: usize, end: usize) -> Token {
 #[must_use]
 pub fn listed(input: &Input, list: &IndexMap<Key, Clean>) -> Vec<Listed> {
     let tokens = tokens(input.as_str());
+    let lexicon = pack::lexicon(input.as_str());
     let words: Vec<String> = tokens
         .iter()
         .map(|token| named(&fold(&token.plain)))
         .collect();
     let keys: Vec<String> = list.keys().map(|key| named(&fold(key.as_str()))).collect();
     let mut found = Vec::new();
-    let meanings: Vec<Vec<String>> = list.values().map(said_of).collect();
+    let meanings: Vec<Vec<String>> = list
+        .values()
+        .map(|meaning| said_of(&lexicon, meaning))
+        .collect();
     for (at, (key, word)) in list.keys().zip(&keys).enumerate() {
-        let held = holding(word, &keys, &words).or_else(|| meant(at, &meanings, &words));
+        let held = holding(&lexicon, word, &keys, &words)
+            .or_else(|| meant(&lexicon, at, &meanings, &words));
         if let Some((from, to, how)) = held
             && let Some(span) = Span::of(input, tokens[from].from, tokens[to].to)
         {
@@ -265,7 +186,12 @@ pub(crate) fn named(word: &str) -> String {
 }
 
 /// The words that hold a listed word by what it is written as: from which to which, and how.
-fn holding(key: &str, keys: &[String], words: &[String]) -> Option<(usize, usize, How)> {
+fn holding(
+    lexicon: &Lexicon,
+    key: &str,
+    keys: &[String],
+    words: &[String],
+) -> Option<(usize, usize, How)> {
     let spaced = key.replace(['-', '_'], " ");
     let joined: String = key
         .chars()
@@ -284,14 +210,15 @@ fn holding(key: &str, keys: &[String], words: &[String]) -> Option<(usize, usize
                 Some((How::Same, 0))
             } else if run == spaced || tight == key || tight == joined || run == joined {
                 Some((How::Form, 0))
-            } else if n == 1 && stem(&run) == stem(key) {
+            } else if n == 1 && stem(lexicon, &run) == stem(lexicon, key) {
                 Some((How::Stem, 0))
             } else if n == 1
                 && radius > 0
                 && run.chars().all(char::is_alphabetic)
                 && !function(&run)
             {
-                let distance = distance(&run, key).min(distance(&stem(&run), &stem(key)));
+                let distance =
+                    distance(&run, key).min(distance(&stem(lexicon, &run), &stem(lexicon, key)));
                 (distance <= radius).then_some((How::Spelling, distance))
             } else {
                 None
@@ -308,10 +235,14 @@ fn holding(key: &str, keys: &[String], words: &[String]) -> Option<(usize, usize
 
 /// The words of a meaning that may name its listed word: longer than three letters, no function word and no
 /// word for a kind of thing.
-fn said_of(meaning: &Clean) -> Vec<String> {
+fn said_of(lexicon: &Lexicon, meaning: &Clean) -> Vec<String> {
     fold(meaning.as_str())
         .split(|c: char| !c.is_alphanumeric())
-        .filter(|word| word.chars().count() > 3 && !function(word) && !KIND.contains(word))
+        .filter(|word| {
+            word.chars().count() > 3
+                && !function(word)
+                && !lexicon.holds(|pack| &pack.words.kind, word)
+        })
         .map(str::to_owned)
         .collect()
 }
@@ -319,7 +250,12 @@ fn said_of(meaning: &Clean) -> Vec<String> {
 /// The word of the input that is a word of a listed word's meaning, when one is: the word itself, its stem, or,
 /// for a word of six letters or more, a spelling one step away. A word that another listed word's meaning holds
 /// too says what kind of thing the list holds, and names no one word of it.
-fn meant(at: usize, meanings: &[Vec<String>], words: &[String]) -> Option<(usize, usize, How)> {
+fn meant(
+    lexicon: &Lexicon,
+    at: usize,
+    meanings: &[Vec<String>],
+    words: &[String],
+) -> Option<(usize, usize, How)> {
     let shared = |word: &String| {
         meanings
             .iter()
@@ -335,7 +271,7 @@ fn meant(at: usize, meanings: &[Vec<String>], words: &[String]) -> Option<(usize
                 && !function(word)
                 && said.iter().any(|meant| {
                     *meant == word
-                        || stem(meant) == stem(word)
+                        || stem(lexicon, meant) == stem(lexicon, word)
                         || (length >= 6 && distance(meant, word) <= 1)
                 })
         })
@@ -364,29 +300,32 @@ fn by_length(word: &str) -> usize {
     }
 }
 
-/// A word without the ending a plural or a possessive adds.
-fn stem(word: &str) -> String {
-    let length = word.chars().count();
-    if let Some(head) = word.strip_suffix("sses") {
-        return format!("{head}ss");
+/// A word's stem, the same on both sides of a comparison, as the packs that read the word list the endings:
+/// `addresses` and `address` meet at `address`, `clients` and `client` at `client`.
+pub(crate) fn stem_of(word: &str) -> String {
+    stem(&pack::lexicon(word), word)
+}
+
+/// A word without the ending a plural or a possessive adds, as the pack lists the endings: a possessive's
+/// comes off first, and what is left may be a plural, «payments's»; then the first ending that fits, longest
+/// first, where what it leaves keeps three letters at least, and an ending of one letter never comes off the
+/// same letter doubled, «boss».
+pub(crate) fn stem(lexicon: &Lexicon, word: &str) -> String {
+    let possessive = lexicon
+        .phrases(|pack| &pack.endings.possessive)
+        .into_iter()
+        .find_map(|ending| word.strip_suffix(ending).filter(|head| !head.is_empty()));
+    if let Some(head) = possessive {
+        return stem(lexicon, head);
     }
-    if let Some(head) = word.strip_suffix("ies")
-        && length > 4
-    {
-        return format!("{head}y");
-    }
-    // A possessive's ending comes off first, and what is left may be a plural: «payments's».
-    if let Some(head) = word
-        .strip_suffix("'s")
-        .or_else(|| word.strip_suffix("\u{2019}s"))
-    {
-        return stem(head);
-    }
-    if let Some(head) = word.strip_suffix('s')
-        && !word.ends_with("ss")
-        && length > 3
-    {
-        return head.to_owned();
+    for (ending, leaves) in lexicon.stems() {
+        let Some(head) = word.strip_suffix(ending) else {
+            continue;
+        };
+        let doubled = ending.chars().count() == 1 && head.ends_with(ending);
+        if head.chars().count() + leaves.chars().count() >= 3 && !doubled {
+            return format!("{head}{leaves}");
+        }
     }
     word.to_owned()
 }
@@ -421,11 +360,12 @@ pub(crate) fn distance(a: &str, b: &str) -> usize {
 /// Whether words are politeness and nothing else: «thanks», «thank you», «please».
 #[must_use]
 pub(crate) fn courtesy(text: &str) -> bool {
+    let lexicon = pack::lexicon(text);
     let words: Vec<String> = tokens(text).into_iter().map(|token| token.plain).collect();
     !words.is_empty()
         && words
             .iter()
-            .all(|word| word.is_empty() || COURTESY.contains(&word.as_str()))
+            .all(|word| word.is_empty() || lexicon.holds(|pack| &pack.courtesy.words, &fold(word)))
 }
 
 /// Whether the words of a finding say what to do, and so support no value: the reflex's own name in any number or
@@ -441,6 +381,7 @@ pub(crate) fn says_what_to_do(held: &Listed, reflex: &str) -> bool {
 /// `download`, «notes» is `note`. Such a word says what to do, and supports no value.
 #[must_use]
 pub(crate) fn names(word: &str, reflex: &str) -> bool {
+    let lexicon = pack::lexicon(word);
     let word = fold(word)
         .trim_matches(|c: char| ".,;:!?\"'".contains(c))
         .to_owned();
@@ -448,22 +389,24 @@ pub(crate) fn names(word: &str, reflex: &str) -> bool {
     let forms = [
         word.clone(),
         word.trim_end_matches('e').to_owned(),
-        root(&word),
-        root(&word).trim_end_matches('e').to_owned(),
+        root(&lexicon, &word),
+        root(&lexicon, &word).trim_end_matches('e').to_owned(),
     ];
     forms.contains(&name)
         || forms.contains(&name.trim_end_matches('e').to_owned())
-        || word == root(&name)
+        || word == root(&lexicon, &name)
 }
 
-/// A word without what number or tense adds: notes, noted, noting are note.
-fn root(word: &str) -> String {
+/// A word without what number or tense adds, as the pack lists the endings: notes, noted, noting are note. What
+/// is left keeps three letters at least.
+fn root(lexicon: &Lexicon, word: &str) -> String {
     let length = word.chars().count();
-    ["ing", "ed", "es", "s", "d"]
+    lexicon
+        .phrases(|pack| &pack.endings.tense)
         .into_iter()
         .find_map(|ending| {
             word.strip_suffix(ending)
-                .filter(|_| length - ending.len() >= 3)
+                .filter(|_| length - ending.chars().count() >= 3)
         })
         .unwrap_or(word)
         .to_owned()
@@ -476,19 +419,22 @@ fn root(word: &str) -> String {
 #[must_use]
 pub fn spelled(input: &Input, kind: Recognizer, proposed: &[Proposed]) -> Vec<Spelled> {
     let tokens = tokens(input.as_str());
+    let lexicon = pack::lexicon(input.as_str());
     let mut found = match kind {
-        Recognizer::Email | Recognizer::Url | Recognizer::Number => aloud(input, &tokens, kind),
+        Recognizer::Email | Recognizer::Url | Recognizer::Number => {
+            aloud(&lexicon, input, &tokens, kind)
+        }
         Recognizer::Code => {
             let mut found = spaced(input, &tokens);
             // The same words read both ways are a code typed with spaces.
-            let again: Vec<Spelled> = aloud(input, &tokens, kind)
+            let again: Vec<Spelled> = aloud(&lexicon, input, &tokens, kind)
                 .into_iter()
                 .filter(|aloud| !found.iter().any(|spaced| spaced.span == aloud.span))
                 .collect();
             found.extend(again);
             found
         }
-        Recognizer::Date => misspelt(input, &tokens),
+        Recognizer::Date => misspelt(&lexicon, input, &tokens),
         Recognizer::Duration | Recognizer::Quoted | Recognizer::Time | Recognizer::Amount => {
             Vec::new()
         }
@@ -527,36 +473,53 @@ fn typed_word(word: &str) -> bool {
     !word.is_empty() && word.chars().all(|c| text::small(c) || text::figure(c))
 }
 
-fn sign(word: &str) -> Option<&'static str> {
-    SIGNS
-        .iter()
-        .find(|(name, _)| *name == word)
-        .map(|(_, sign)| *sign)
+/// The sign a word says, as the pack lists the signs said aloud: «at», «dot».
+fn sign(lexicon: &Lexicon, word: &str) -> Option<&'static str> {
+    lexicon.form_of(|pack| &pack.spoken.signs, &fold(word))
 }
 
-fn figures(word: &str) -> Option<&'static str> {
-    FIGURES
-        .iter()
-        .find(|(name, _)| *name == word)
-        .map(|(_, figures)| *figures)
+/// The figures a number word stands for: the words to nineteen, and nought said as «oh» or as a letter.
+fn figures(lexicon: &Lexicon, word: &str) -> Option<String> {
+    let word = fold(word);
+    if lexicon.holds(|pack| &pack.numbers.oh, &word) {
+        return Some(0.to_string());
+    }
+    lexicon
+        .value(|pack| &pack.numbers.ones, &word)
+        .map(|value| value.to_string())
 }
 
-fn tens(word: &str) -> Option<&'static str> {
-    TENS.iter()
-        .find(|(name, _)| *name == word)
-        .map(|(_, figure)| *figure)
+/// The first figure of a tens word: «twenty» is 2.
+fn tens(lexicon: &Lexicon, word: &str) -> Option<String> {
+    lexicon
+        .value(|pack| &pack.numbers.tens, &fold(word))
+        .map(|value| (value / 10).to_string())
 }
 
-fn said(word: &str) -> Said {
-    if sign(word).is_some() {
+/// Whether a word is the one that closes a number said aloud with two noughts: «twenty three hundred» is 2300.
+fn hundred(lexicon: &Lexicon, word: &str) -> bool {
+    lexicon.value(|pack| &pack.numbers.scale, &fold(word)) == Some(100)
+}
+
+/// Whether a word is nought said aloud: «zero», «oh», or the letter «o».
+fn nought(lexicon: &Lexicon, word: &str) -> bool {
+    let word = fold(word);
+    lexicon.holds(|pack| &pack.numbers.noughts, &word)
+        || lexicon.holds(|pack| &pack.numbers.oh, &word)
+}
+
+fn said(lexicon: &Lexicon, word: &str) -> Said {
+    // A nought said as a letter, «o», is a letter: a figure only in a run of figures.
+    let letter = word.chars().count() == 1;
+    if sign(lexicon, word).is_some() {
         Said::Sign
-    } else if (figures(word).is_some() && word != "o")
-        || tens(word).is_some()
-        || word == HUNDRED
+    } else if (figures(lexicon, word).is_some() && !letter)
+        || tens(lexicon, word).is_some()
+        || hundred(lexicon, word)
         || (!word.is_empty() && word.chars().all(text::figure))
     {
         Said::Number
-    } else if word.chars().count() == 1 && word.chars().all(text::small) {
+    } else if letter && word.chars().all(text::small) {
         Said::Letter
     } else if typed_word(word) {
         Said::Word
@@ -568,43 +531,44 @@ fn said(word: &str) -> Said {
 /// A run of words said aloud, written as it would be typed: «dana dot weiss at example dot org», «five dot oh
 /// dot two», «lh eleven sixty seven», «v x dash twenty three hundred». None when the run holds nothing said
 /// aloud, or a word that cannot stand in what is typed.
-fn typed(words: &[&str]) -> Option<String> {
+fn typed(lexicon: &Lexicon, words: &[&str]) -> Option<String> {
     let mut out = String::new();
     let mut spoke = false;
     let mut i = 0;
     while i < words.len() {
         let word = words[i];
-        if let Some(sign) = sign(word)
+        if let Some(sign) = sign(lexicon, word)
             && i > 0
             && i + 1 < words.len()
         {
             out.push_str(sign);
             spoke = true;
-        } else if let Some(ten) = tens(word) {
+        } else if let Some(ten) = tens(lexicon, word) {
             let unit = words
                 .get(i + 1)
-                .filter(|next| !matches!(**next, "zero" | "oh" | "o"))
-                .and_then(|next| figures(next))
-                .filter(|figures| figures.len() == 1);
-            out.push_str(ten);
+                .filter(|next| !nought(lexicon, next))
+                .and_then(|next| figures(lexicon, next))
+                .filter(|figures| figures.chars().count() == 1);
+            out.push_str(&ten);
             match unit {
                 Some(unit) => {
-                    out.push_str(unit);
+                    out.push_str(&unit);
                     i += 1;
                 }
                 None => out.push('0'),
             }
             spoke = true;
-        } else if let Some(figures) = figures(word).filter(|_| word != "o") {
-            out.push_str(figures);
+        } else if let Some(figures) = figures(lexicon, word).filter(|_| word.chars().count() > 1) {
+            out.push_str(&figures);
             spoke = true;
-        } else if word == HUNDRED {
+        } else if hundred(lexicon, word) {
             // Two noughts after a number, and only where the number ends there.
-            let after_number =
-                i > 0 && said(words[i - 1]) == Said::Number && words[i - 1] != HUNDRED;
+            let after_number = i > 0
+                && said(lexicon, words[i - 1]) == Said::Number
+                && !hundred(lexicon, words[i - 1]);
             let ends = words
                 .get(i + 1)
-                .is_none_or(|next| said(next) != Said::Number);
+                .is_none_or(|next| said(lexicon, next) != Said::Number);
             if !(after_number && ends) {
                 return None;
             }
@@ -623,9 +587,9 @@ fn typed(words: &[&str]) -> Option<String> {
 /// word only where a sign joins it to the run, so that two words side by side end a run; one number alone is
 /// no run. A short word before the numbers, «lh eleven sixty seven», is proposed both with and without. Kept
 /// where, written as typed, the recognizer of the kind reads it whole.
-fn aloud(input: &Input, tokens: &[Token], kind: Recognizer) -> Vec<Spelled> {
+fn aloud(lexicon: &Lexicon, input: &Input, tokens: &[Token], kind: Recognizer) -> Vec<Spelled> {
     let words: Vec<&str> = tokens.iter().map(|token| token.plain.as_str()).collect();
-    let kinds: Vec<Said> = words.iter().map(|word| said(word)).collect();
+    let kinds: Vec<Said> = words.iter().map(|word| said(lexicon, word)).collect();
     let mut runs: Vec<(usize, usize)> = Vec::new();
     let mut i = 0;
     while i < words.len() {
@@ -667,7 +631,7 @@ fn aloud(input: &Input, tokens: &[Token], kind: Recognizer) -> Vec<Spelled> {
             return;
         }
         tried.push((from, to));
-        let Some(form) = typed(&words[from..=to]) else {
+        let Some(form) = typed(lexicon, &words[from..=to]) else {
             return;
         };
         if let Some(value) = read_whole(&form, kind)
@@ -730,51 +694,64 @@ fn reads(kind: Recognizer, value: &PickValue) -> bool {
 /// counting as one step, and farther from every other day; «munday», as near to sunday, is none. The word before
 /// it that says which, «next monady», is part of it. A day in the plural with no apostrophe, «wednesdays
 /// meetings», is one step from its day and falls under the rule; a day after «every» or «each» is a recurrence.
-fn misspelt(input: &Input, tokens: &[Token]) -> Vec<Spelled> {
+fn misspelt(lexicon: &Lexicon, input: &Input, tokens: &[Token]) -> Vec<Spelled> {
+    // Every weekday word of every pack, with the pack that lists it and the day it names.
+    let weekdays: Vec<(&str, &str, &pack::Pack)> = lexicon
+        .packs()
+        .iter()
+        .flat_map(|pack| {
+            pack.days
+                .weekdays
+                .words()
+                .map(move |(word, form)| (word, form, *pack))
+        })
+        .collect();
     let mut found = Vec::new();
     for (i, token) in tokens.iter().enumerate() {
-        let word = token.plain.as_str();
-        let recurs = i > 0 && EVERY.contains(&tokens[i - 1].plain.as_str());
+        let word = fold(&token.plain);
+        let recurs = i > 0 && lexicon.holds(|pack| &pack.days.every, &fold(&tokens[i - 1].plain));
         if word.is_empty()
             || !word.chars().all(char::is_alphabetic)
-            || WEEKDAYS.contains(&word)
+            || weekdays.iter().any(|(day, ..)| *day == word)
             || recurs
         {
             continue;
         }
-        let mut near: Vec<(usize, usize)> = WEEKDAYS
+        let mut near: Vec<(usize, usize)> = weekdays
             .iter()
             .enumerate()
-            .map(|(at, day)| (distance(word, day), at))
+            .map(|(at, (day, ..))| (distance(&word, day), at))
             .collect();
         near.sort_unstable();
         let [(nearest, at), (next, _), ..] = near[..] else {
             continue;
         };
-        if nearest == 0 || nearest > by_length(WEEKDAYS[at]) || next == nearest {
+        let (day, form, pack) = weekdays[at];
+        let Some(weekday) = pack::weekday(form) else {
+            continue;
+        };
+        if nearest == 0 || nearest > by_length(day) || next == nearest {
             continue;
         }
         let which = i.checked_sub(1).and_then(|before| {
-            WHICH
-                .iter()
-                .find(|(word, _)| *word == tokens[before].plain)
-                .map(|(_, which)| (before, *which))
+            let form = pack.days.which.form_of(&fold(&tokens[before].plain))?;
+            Some((before, form, pack::which(form)?))
         });
-        let start = which.map_or(token.from, |(before, _)| tokens[before].from);
-        let which = which.map(|(_, which)| which);
+        let start = which.map_or(token.from, |(before, ..)| tokens[before].from);
+        let name = pack.days.weekdays.shown(form).unwrap_or(day);
         let shown = match which {
-            Some(which) => format!("{} {}", said_which(which), WEEKDAYS[at]),
-            None => WEEKDAYS[at].to_owned(),
+            Some((_, form, _)) => {
+                format!("{} {name}", pack.days.which.shown(form).unwrap_or_default())
+            }
+            None => name.to_owned(),
         };
+        let which = which.map(|(_, _, which)| which);
         if let (Some(span), Ok(typed)) = (Span::of(input, start, token.to), Clean::new(&shown)) {
             found.push(Spelled {
                 span,
                 typed,
                 value: PickValue::Date {
-                    value: Day::Weekday {
-                        weekday: Weekday::ALL[at],
-                        which,
-                    },
+                    value: Day::Weekday { weekday, which },
                 },
                 form: Form::Misspelt,
                 shape: None,
@@ -782,14 +759,6 @@ fn misspelt(input: &Input, tokens: &[Token]) -> Vec<Spelled> {
         }
     }
     found
-}
-
-/// The word that says which weekday, as it is typed.
-fn said_which(which: Which) -> &'static str {
-    WHICH
-        .iter()
-        .find(|(_, said)| *said == which)
-        .map_or("", |(word, _)| *word)
 }
 
 /// A part of a code typed with spaces, by its shape alone.

@@ -16,6 +16,7 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
 use crate::adapter::{Key, Prob};
+use crate::pack::{self, Lexicon};
 use crate::text::{Clean, Input, Span, fold};
 use crate::words::{self, Listed};
 
@@ -38,17 +39,11 @@ const PREFIXED: usize = 5;
 /// A listed word under this many letters proposes its spellings one edit away, which `words.rs` never reads.
 const SHORT: usize = 4;
 
-/// The endings a possessive adds to a word, dropped before it is compared: «Maira's», «Samuel’s», «Jonas'».
-const POSSESSIVE: [&str; 4] = ["'s", "\u{2019}s", "'", "\u{2019}"];
-
 /// The marks that join a word's parts, dropped before a slip beside them is compared: «eu-wwest».
 const JOINS: [char; 3] = ['-', '_', ' '];
 
 /// The marks after which `words.rs` compares no spelling: an apostrophe, a hyphen, an underscore.
 const MARKS: [char; 4] = ['\'', '\u{2019}', '-', '_'];
-
-/// The endings that make a plural of a listed word, and so no longer word: «sams», «boxes».
-const PLURAL: [&str; 2] = ["s", "es"];
 
 /// The pet and short forms of given names, a line a full name and its forms: a diminutive proposes the one listed
 /// name it shares a line with.
@@ -135,6 +130,7 @@ pub fn proposed(
     own: &[String],
 ) -> Vec<Proposal> {
     let tokens = words::tokens(input.as_str());
+    let lexicon = pack::lexicon(input.as_str());
     let keys: Vec<String> = list
         .keys()
         .map(|key| words::named(&fold(key.as_str())))
@@ -158,7 +154,9 @@ pub fn proposed(
         }
         let best = free
             .iter()
-            .filter_map(|token| Some((by(&token.plain, at, &keys)?, token.from, token.to)))
+            .filter_map(|token| {
+                Some((by(&lexicon, &token.plain, at, &keys)?, token.from, token.to))
+            })
             .min_by_key(|(by, from, _)| (*by, *from));
         if let Some((by, from, to)) = best
             && let Some(span) = Span::of(input, from, to)
@@ -175,9 +173,9 @@ pub fn proposed(
 
 /// How one word of the input proposes the listed word at `at`, if it does: the word as compared (`Token::plain`),
 /// and the list's words as `words.rs` names them.
-fn by(plain: &str, at: usize, keys: &[String]) -> Option<By> {
+fn by(lexicon: &Lexicon, plain: &str, at: usize, keys: &[String]) -> Option<By> {
     let key = &keys[at];
-    let word = bare(plain);
+    let word = bare(lexicon, plain);
     if word.is_empty() || word == *key {
         return None;
     }
@@ -212,7 +210,7 @@ fn by(plain: &str, at: usize, keys: &[String]) -> Option<By> {
             .chars()
             .last()
             .is_some_and(|last| rest == last.to_string());
-        if !PLURAL.contains(&rest) && !doubled {
+        if !lexicon.holds(|pack| &pack.endings.plural, rest) && !doubled {
             return Some(By::Longer);
         }
     }
@@ -241,9 +239,10 @@ fn diminutive(word: &str, keys: &[String]) -> Option<usize> {
 }
 
 /// A word as it is compared: lower case, a channel's `#` and a possessive's ending dropped.
-fn bare(word: &str) -> String {
+fn bare(lexicon: &Lexicon, word: &str) -> String {
     let lowered = words::named(&fold(word));
-    POSSESSIVE
+    lexicon
+        .phrases(|pack| &pack.endings.possessive)
         .iter()
         .find_map(|ending| lowered.strip_suffix(ending))
         .unwrap_or(&lowered)
@@ -253,14 +252,16 @@ fn bare(word: &str) -> String {
 /// Whether words are a given name.
 #[must_use]
 pub fn given(words: &str) -> bool {
-    given_names().binary_search(&bare(words).as_str()).is_ok()
+    given_names()
+        .binary_search(&bare(&pack::lexicon(words), words).as_str())
+        .is_ok()
 }
 
 /// Whether words that hold or propose a listed word are a given name that is not the listed word, nor a word of what
 /// it means: another person's name, which is never read as it.
 #[must_use]
 pub fn another(words: &str, key: &Key, meaning: &Clean) -> bool {
-    let word = bare(words);
+    let word = bare(&pack::lexicon(words), words);
     let listed = words::named(&fold(key.as_str()));
     let meant = fold(meaning.as_str())
         .split(|c: char| !c.is_alphanumeric())

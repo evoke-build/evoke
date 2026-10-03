@@ -18,6 +18,7 @@ use crate::name::{ArgName, ConfigKey, FieldName, OptionKey};
 use crate::needs::{self, Needs};
 use crate::text::identity;
 use crate::weave::reading;
+use crate::words;
 
 /// What changed in the contract from one version to the next, and how much it matters.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -709,7 +710,7 @@ fn lint_steps(findings: &mut Vec<Finding>, m: &Manifest) {
             });
         }
         // `check that writes land` names an earlier step by `that writes`, and would confirm as taking nothing.
-        if let Some(noun) = reading::checked_that(&text) {
+        if let Some(noun) = reading::that_after(&text, "check") {
             findings.push(Finding {
                 rule: LintRule::Reference,
                 path: at.clone(),
@@ -762,7 +763,7 @@ fn content(text: &str) -> Vec<String> {
     words(text)
         .into_iter()
         .filter(|word| !FUNCTION_WORDS.contains(&word.as_str()))
-        .map(|word| reading::stem_of(&word).to_owned())
+        .map(|word| words::stem_of(&word))
         .collect()
 }
 

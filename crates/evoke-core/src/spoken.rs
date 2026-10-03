@@ -16,271 +16,19 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::calendar::{Day, Weekday, Which};
+use crate::calendar::Day;
 use crate::decide::proposes;
 use crate::manifest::{Pick, Recognizer};
+use crate::pack::{self, Lexicon};
 use crate::propose::{PickValue, Proposed};
-use crate::text::{self, Clean, Input, Span};
+use crate::text::{self, Clean, Input, Span, fold};
 use crate::words::{self, Form, Spelled};
-
-/// The number words for one figure, each with it: «oh» stands for nought.
-const UNITS: [(&str, u64); 11] = [
-    ("zero", 0),
-    ("oh", 0),
-    ("one", 1),
-    ("two", 2),
-    ("three", 3),
-    ("four", 4),
-    ("five", 5),
-    ("six", 6),
-    ("seven", 7),
-    ("eight", 8),
-    ("nine", 9),
-];
-
-/// The number words from ten to nineteen, each with its number.
-const TEENS: [(&str, u64); 10] = [
-    ("ten", 10),
-    ("eleven", 11),
-    ("twelve", 12),
-    ("thirteen", 13),
-    ("fourteen", 14),
-    ("fifteen", 15),
-    ("sixteen", 16),
-    ("seventeen", 17),
-    ("eighteen", 18),
-    ("nineteen", 19),
-];
-
-/// The tens, each with its number.
-const TENS: [(&str, u64); 8] = [
-    ("twenty", 20),
-    ("thirty", 30),
-    ("forty", 40),
-    ("fifty", 50),
-    ("sixty", 60),
-    ("seventy", 70),
-    ("eighty", 80),
-    ("ninety", 90),
-];
-
-/// The words for nought, which a tens word does not take as its unit: «twenty oh» is 20, then 0.
-const NOUGHTS: [&str; 2] = ["zero", "oh"];
-
-/// Nought said as a letter: a figure in a run of figures, never a number by itself.
-const OH: &str = "oh";
-
-/// The word that makes a count of hundreds, and closes figures said in pairs with two noughts: «twenty three
-/// hundred» is 2300.
-const HUNDRED: &str = "hundred";
-
-/// The word that makes a count of thousands.
-const THOUSAND: &str = "thousand";
-
-/// The word that joins a count of hundreds or thousands to what follows it, and one count of a length to the next.
-const AND: &str = "and";
-
-/// The words that say the figure or the letter after them again, and how many times it stands: «double eight» is
-/// 88.
-const REPEAT: [(&str, usize); 2] = [("double", 2), ("triple", 3)];
-
-/// The words that say a dash inside a code.
-const DASH_SIGNS: [&str; 3] = ["dash", "hyphen", "minus"];
-
-/// The words that say a point between figures.
-const POINT_SIGNS: [&str; 2] = ["point", "dot"];
-
-/// The words that say a sign inside an address, each with the sign.
-const ADDRESS_SIGNS: [(&str, &str); 4] = [
-    ("dot", "."),
-    ("dash", "-"),
-    ("hyphen", "-"),
-    ("underscore", "_"),
-];
-
-/// The words that say a sign inside a link's host, each with the sign.
-const HOST_SIGNS: [(&str, &str); 3] = [("dot", "."), ("dash", "-"), ("hyphen", "-")];
-
-/// The words that say a sign inside a link's path, each with the sign.
-const PATH_SIGNS: [(&str, &str); 5] = [
-    ("dot", "."),
-    ("dash", "-"),
-    ("hyphen", "-"),
-    ("underscore", "_"),
-    ("slash", "/"),
-];
-
-/// The word that says a link's path goes on.
-const SLASH: &str = "slash";
-
-/// The words that may open a version and are no part of it: «v three point nine», «version two point one».
-const VERSION_WORDS: [&str; 2] = ["v", "version"];
-
-/// The word that joins an address's local part to its domain.
-const AT: &str = "at";
-
-/// The schemes a link said aloud opens with.
-const SCHEMES: [&str; 2] = ["https", "http"];
-
-/// What a scheme said whole is followed by: «h t t p s colon slash slash».
-const SCHEME_SIGNS: [&str; 3] = ["colon", "slash", "slash"];
 
 /// The most letters a scheme is said in, apart: «h t t p s».
 const SCHEME_LETTERS: usize = 5;
 
-/// The letters said apart that are words too, which may open a code and are no part of it: «a», «i».
-const LETTER_WORDS: [&str; 2] = ["a", "i"];
-
-/// The pronouns of two or three letters `words.rs`'s function words leave out, which are no code's letters either:
-/// «owes us two pallets».
-const PRONOUNS: [&str; 4] = ["us", "he", "him", "she"];
-
-/// The letter a lone «o» is, which reads as nought as well where the shape wants a figure.
-const LETTER_O: &str = "o";
-
-/// The days of the week, in the calendar's order.
-const WEEKDAYS: [&str; 7] = [
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday",
-];
-
-/// The day words a misspelt one is held against beside the weekdays, each with its distance from today.
-const DAY_WORDS: [(&str, i32); 4] = [
-    ("today", 0),
-    ("tonight", 0),
-    ("tomorrow", 1),
-    ("yesterday", -1),
-];
-
-/// The short forms of a weekday a person types, each with its place in the week.
-const SHORT_DAYS: [(&str, usize); 11] = [
-    ("mon", 0),
-    ("tue", 1),
-    ("tues", 1),
-    ("wed", 2),
-    ("weds", 2),
-    ("thu", 3),
-    ("thur", 3),
-    ("thurs", 3),
-    ("fri", 4),
-    ("sat", 5),
-    ("sun", 6),
-];
-
-/// The short forms of a day word a person types, each with its distance from today.
-const SHORT_DAY_WORDS: [(&str, i32); 9] = [
-    ("tmrw", 1),
-    ("tmr", 1),
-    ("tmw", 1),
-    ("tmrow", 1),
-    ("2moro", 1),
-    ("2morrow", 1),
-    ("2mrw", 1),
-    ("2day", 0),
-    ("tdy", 0),
-];
-
-/// The endings a day's name may carry that are no part of it: a possessive, a plural.
-const DAY_ENDINGS: [&str; 3] = ["\u{2019}s", "'s", "s"];
-
-/// The words before a weekday that say which one.
-const WHICH: [(&str, Which); 3] = [
-    ("this", Which::This),
-    ("next", Which::Next),
-    ("last", Which::Last),
-];
-
-/// The words before a day that make it a recurrence, which is no day.
-const EVERY: [&str; 2] = ["every", "each"];
-
-/// The words that make tomorrow the day after it: «day after tmrw».
-const DAY_AFTER: [&str; 3] = ["the", "day", "after"];
-
-/// The word an ordinal day follows: «the fourht».
-const THE: &str = "the";
-
-/// The ordinals of a day of the month, each with its day.
-const ORDINALS: [(&str, u8); 21] = [
-    ("first", 1),
-    ("second", 2),
-    ("third", 3),
-    ("fourth", 4),
-    ("fifth", 5),
-    ("sixth", 6),
-    ("seventh", 7),
-    ("eighth", 8),
-    ("ninth", 9),
-    ("tenth", 10),
-    ("eleventh", 11),
-    ("twelfth", 12),
-    ("thirteenth", 13),
-    ("fourteenth", 14),
-    ("fifteenth", 15),
-    ("sixteenth", 16),
-    ("seventeenth", 17),
-    ("eighteenth", 18),
-    ("nineteenth", 19),
-    ("twentieth", 20),
-    ("thirtieth", 30),
-];
-
-/// The endings of an ordinal day as it is written: 1st, 2nd, 3rd; every other, and eleven to thirteen, th.
-const ORDINAL_ENDINGS: [&str; 4] = ["th", "st", "nd", "rd"];
-
 /// The shortest word read as an ordinal misspelt.
 const ORDINAL_LEAST: usize = 6;
-
-/// The days as a day read aloud is written back: today, tomorrow, the day after tomorrow, yesterday.
-const DAYS_SHOWN: [(i32, &str); 5] = [
-    (0, "today"),
-    (1, "tomorrow"),
-    (2, "the day after tomorrow"),
-    (-1, "yesterday"),
-    (-2, "the day before yesterday"),
-];
-
-/// The units of a length of time, each in seconds.
-const DURATION_UNITS: [(&str, u64); 15] = [
-    ("hours", 3600),
-    ("hour", 3600),
-    ("hrs", 3600),
-    ("hr", 3600),
-    ("h", 3600),
-    ("minutes", 60),
-    ("minute", 60),
-    ("mins", 60),
-    ("min", 60),
-    ("m", 60),
-    ("seconds", 1),
-    ("second", 1),
-    ("secs", 1),
-    ("sec", 1),
-    ("s", 1),
-];
-
-/// The unit a bare count after a unit is read in: «one hr 30» is an hour and thirty minutes.
-const NEXT_UNIT: [(u64, u64); 2] = [(3600, 60), (60, 1)];
-
-/// The words that add half a unit after a count and its unit: «an hour and a half».
-const HALF_WORDS: [&str; 3] = ["and", "a", "half"];
-
-/// The word for half a unit: «half an hour», «a half hour».
-const HALF: &str = "half";
-
-/// The words that count one of a unit: «an hour».
-const ARTICLES: [&str; 2] = ["a", "an"];
-
-/// The unit words a length is written back in, one and more than one: «1 hour 30 minutes».
-const DURATION_SHOWN: [(u64, &str, &str); 3] = [
-    (3600, "hour", "hours"),
-    (60, "minute", "minutes"),
-    (1, "second", "seconds"),
-];
 
 /// The shortest word read as a number word misspelt, before a unit.
 const MISSPELT_LEAST: usize = 5;
@@ -344,15 +92,16 @@ pub struct Heard {
 #[must_use]
 pub fn heard(input: &Input, pick: &Pick, examples: &[Clean], proposed: &[Proposed]) -> Heard {
     let recognizer = pick.recognizer();
-    let words = words_of(input);
-    let shown = Examples::of(recognizer, examples, pick);
+    let lexicon = pack::lexicon(input.as_str());
+    let words = words_of(&lexicon, input);
+    let shown = Examples::of(&lexicon, recognizer, examples, pick);
     let (candidates, others): (Vec<&Proposed>, Vec<&Proposed>) = proposed
         .iter()
         .partition(|candidate| proposes(recognizer, &candidate.value));
     // A reading a candidate proposes whole stays with the argument's own question; one a candidate covers and
     // reaches beyond is a part of it: «sixty» inside «sixty percent». Words another kind's candidate holds, or
     // crosses, are that value's: «fifty minutes» is no number.
-    let own: Vec<Reading> = readings(&words, recognizer, &shown)
+    let own: Vec<Reading> = readings(&lexicon, &words, recognizer, &shown)
         .into_iter()
         .filter(|reading| {
             let part = candidates.iter().any(|candidate| {
@@ -378,7 +127,7 @@ pub fn heard(input: &Input, pick: &Pick, examples: &[Clean], proposed: &[Propose
         .collect();
     let mut decided: Vec<Decided> = runs(&own)
         .iter()
-        .filter_map(|run| decide(recognizer, run, &shown))
+        .filter_map(|run| decide(&lexicon, recognizer, run, &shown))
         .collect();
     // Two runs that share words are one stretch read across its middle: the one that starts first stands.
     let mut end = 0;
@@ -445,31 +194,33 @@ pub fn heard(input: &Input, pick: &Pick, examples: &[Clean], proposed: &[Propose
 
 // ---- the words ----------------------------------------------------------------------------------------------
 
-/// A word of the input as the reader takes it: as typed and lowered, the marks at its edges dropped but a leading
-/// `#` or `@` and a closing `%`, and where it stands in characters.
+/// A word of the input as the reader takes it: as typed, lowered, and as `fold` writes it for a lookup, the marks
+/// at its edges dropped but a leading `#` or `@` and a closing `%`, and where it stands in characters.
 #[derive(Clone, Debug)]
 struct Word {
     raw: String,
     plain: String,
+    folded: String,
     start: usize,
     end: usize,
 }
 
 /// The input's words as `words.rs` cuts them, number words joined by a hyphen cut into each, «eighty-five». A word
 /// of marks alone, «&», stays, empty: it joins nothing on either side of it.
-fn words_of(input: &Input) -> Vec<Word> {
+fn words_of(lexicon: &Lexicon, input: &Input) -> Vec<Word> {
     let chars: Vec<char> = input.as_str().chars().collect();
     let mut out = Vec::new();
     for token in words::tokens(input.as_str()) {
         let raw: String = chars[token.from..token.to].iter().collect();
         let parts: Vec<&str> = raw.split('-').collect();
-        if parts.len() > 1 && parts.iter().all(|part| number_word(&part.to_lowercase())) {
+        if parts.len() > 1 && parts.iter().all(|part| number_word(lexicon, &fold(part))) {
             let mut at = token.from;
             for part in parts {
                 let length = part.chars().count();
                 out.push(Word {
                     raw: part.to_owned(),
                     plain: part.to_lowercase(),
+                    folded: fold(part),
                     start: at,
                     end: at + length,
                 });
@@ -479,6 +230,7 @@ fn words_of(input: &Input) -> Vec<Word> {
         }
         out.push(Word {
             plain: raw.to_lowercase(),
+            folded: fold(&raw),
             raw,
             start: token.from,
             end: token.to,
@@ -487,35 +239,90 @@ fn words_of(input: &Input) -> Vec<Word> {
     out
 }
 
-fn listed<T: Copy>(list: &[(&str, T)], word: &str) -> Option<T> {
-    list.iter()
-        .find(|(name, _)| *name == word)
-        .map(|(_, value)| *value)
+/// A number word for one figure, as the packs list them: the words to nine, and nought's words, «zero», «oh».
+fn unit(lexicon: &Lexicon, word: &str) -> Option<u64> {
+    if lexicon.holds(|pack| &pack.numbers.noughts, word) {
+        return Some(0);
+    }
+    lexicon
+        .value(|pack| &pack.numbers.ones, word)
+        .filter(|value| (0..10).contains(value))
+        .and_then(|value| u64::try_from(value).ok())
 }
 
-fn unit(word: &str) -> Option<u64> {
-    listed(&UNITS, word)
+/// A number word from ten to nineteen.
+fn teen(lexicon: &Lexicon, word: &str) -> Option<u64> {
+    lexicon
+        .value(|pack| &pack.numbers.ones, word)
+        .filter(|value| (10..20).contains(value))
+        .and_then(|value| u64::try_from(value).ok())
 }
 
-fn teen(word: &str) -> Option<u64> {
-    listed(&TEENS, word)
+/// A tens word.
+fn ten(lexicon: &Lexicon, word: &str) -> Option<u64> {
+    lexicon
+        .value(|pack| &pack.numbers.tens, word)
+        .and_then(|value| u64::try_from(value).ok())
 }
 
-fn ten(word: &str) -> Option<u64> {
-    listed(&TENS, word)
+/// A word that says the figure or the letter after it again, and how many times it stands: «double eight» is 88.
+fn repeat(lexicon: &Lexicon, word: &str) -> Option<usize> {
+    lexicon
+        .value(|pack| &pack.numbers.repeat, word)
+        .and_then(|value| usize::try_from(value).ok())
 }
 
-fn repeat(word: &str) -> Option<usize> {
-    listed(&REPEAT, word)
+/// The word that makes a count of hundreds, and closes figures said in pairs with two noughts.
+fn hundred(lexicon: &Lexicon, word: &str) -> bool {
+    lexicon.value(|pack| &pack.numbers.scale, word) == Some(100)
+}
+
+/// The word that makes a count of thousands.
+fn thousand(lexicon: &Lexicon, word: &str) -> bool {
+    lexicon.value(|pack| &pack.numbers.scale, word) == Some(1000)
+}
+
+/// The word that joins a count of hundreds or thousands to what follows it, and one count of a length to the next.
+fn and(lexicon: &Lexicon, word: &str) -> bool {
+    lexicon.holds(|pack| &pack.numbers.and, word)
+}
+
+/// Nought said as a letter or as «oh»: a figure in a run of figures, never a number by itself.
+fn oh(lexicon: &Lexicon, word: &str) -> bool {
+    lexicon.holds(|pack| &pack.numbers.oh, word)
+}
+
+/// The sign a word says, as the packs list the signs said aloud: «at», «dot», «dash».
+fn sign(lexicon: &Lexicon, word: &str) -> Option<char> {
+    lexicon
+        .form_of(|pack| &pack.spoken.signs, word)
+        .and_then(|form| form.chars().next())
+}
+
+/// The sign a word says inside a host: a point or a dash.
+fn host_sign(lexicon: &Lexicon, word: &str) -> Option<&'static str> {
+    match sign(lexicon, word) {
+        Some('.') => Some("."),
+        Some('-') => Some("-"),
+        _ => None,
+    }
+}
+
+/// The sign a word says inside an address's local part or a link's path segment: a point, a dash, an underscore.
+fn address_sign(lexicon: &Lexicon, word: &str) -> Option<&'static str> {
+    match sign(lexicon, word) {
+        Some('_') => Some("_"),
+        _ => host_sign(lexicon, word),
+    }
 }
 
 /// Whether a word is a number word: a unit, a teen, a tens, «hundred», «thousand».
-fn number_word(word: &str) -> bool {
-    unit(word).is_some()
-        || teen(word).is_some()
-        || ten(word).is_some()
-        || word == HUNDRED
-        || word == THOUSAND
+fn number_word(lexicon: &Lexicon, word: &str) -> bool {
+    unit(lexicon, word).is_some()
+        || teen(lexicon, word).is_some()
+        || ten(lexicon, word).is_some()
+        || hundred(lexicon, word)
+        || thousand(lexicon, word)
 }
 
 fn figures(word: &str) -> bool {
@@ -523,9 +330,9 @@ fn figures(word: &str) -> bool {
 }
 
 /// A unit that a tens word takes after it: one to nine.
-fn unit_after_tens(word: Option<&&str>) -> Option<u64> {
-    word.filter(|word| !NOUGHTS.contains(*word))
-        .and_then(|word| unit(word))
+fn unit_after_tens(lexicon: &Lexicon, word: Option<&&str>) -> Option<u64> {
+    word.filter(|word| !lexicon.holds(|pack| &pack.numbers.noughts, word))
+        .and_then(|word| unit(lexicon, word))
 }
 
 /// How far a misspelling may stray from a day's name: none under four letters, one up to seven, two beyond
@@ -627,24 +434,29 @@ fn reading(words: &[Word], from: usize, to: usize, value: Value, marks: Marks) -
 }
 
 /// Every reading of the input's words in the argument's kind.
-fn readings(words: &[Word], recognizer: Recognizer, shown: &Examples) -> Vec<Reading> {
+fn readings(
+    lexicon: &Lexicon,
+    words: &[Word],
+    recognizer: Recognizer,
+    shown: &Examples,
+) -> Vec<Reading> {
     match recognizer {
-        Recognizer::Number => numbers(words),
+        Recognizer::Number => numbers(lexicon, words),
         Recognizer::Code => match shown.family {
             Some(Family::Version) => {
-                let mut read = codes(words, true);
+                let mut read = codes(lexicon, words, true);
                 for parts in &shown.parts {
-                    read.extend(pointless(words, *parts));
+                    read.extend(pointless(lexicon, words, *parts));
                 }
                 read
             }
-            Some(Family::Ticket | Family::Serial) => codes(words, false),
+            Some(Family::Ticket | Family::Serial) => codes(lexicon, words, false),
             None => Vec::new(),
         },
-        Recognizer::Email => emails(words),
-        Recognizer::Url => urls(words),
-        Recognizer::Date => days(words),
-        Recognizer::Duration => durations(words),
+        Recognizer::Email => emails(lexicon, words),
+        Recognizer::Url => urls(lexicon, words),
+        Recognizer::Date => days(lexicon, words),
+        Recognizer::Duration => durations(lexicon, words),
         Recognizer::Quoted | Recognizer::Time | Recognizer::Amount => Vec::new(),
     }
 }
@@ -652,19 +464,19 @@ fn readings(words: &[Word], recognizer: Recognizer, shown: &Examples) -> Vec<Rea
 // ---- numbers ------------------------------------------------------------------------------------------------
 
 /// A number under a hundred at `i`: a tens and its unit, a teen, a unit; never «oh» alone.
-fn small_at(words: &[&str], i: usize) -> Option<(u64, usize)> {
+fn small_at(lexicon: &Lexicon, words: &[&str], i: usize) -> Option<(u64, usize)> {
     let word = *words.get(i)?;
-    if let Some(tens) = ten(word) {
-        return Some(match unit_after_tens(words.get(i + 1)) {
+    if let Some(tens) = ten(lexicon, word) {
+        return Some(match unit_after_tens(lexicon, words.get(i + 1)) {
             Some(unit) => (tens + unit, i + 2),
             None => (tens, i + 1),
         });
     }
-    if let Some(teen) = teen(word) {
+    if let Some(teen) = teen(lexicon, word) {
         return Some((teen, i + 1));
     }
-    if word != OH
-        && let Some(unit) = unit(word)
+    if !oh(lexicon, word)
+        && let Some(unit) = unit(lexicon, word)
     {
         return Some((unit, i + 1));
     }
@@ -672,13 +484,17 @@ fn small_at(words: &[&str], i: usize) -> Option<(u64, usize)> {
 }
 
 /// A number under a thousand at `i`: a small number, then «hundred» and what follows it.
-fn below_thousand(words: &[&str], i: usize) -> Option<(u64, usize)> {
-    let (mut value, mut j) = small_at(words, i)?;
-    if words.get(j) == Some(&HUNDRED) {
+fn below_thousand(lexicon: &Lexicon, words: &[&str], i: usize) -> Option<(u64, usize)> {
+    let (mut value, mut j) = small_at(lexicon, words, i)?;
+    if words.get(j).is_some_and(|word| hundred(lexicon, word)) {
         value *= 100;
         j += 1;
-        let k = if words.get(j) == Some(&AND) { j + 1 } else { j };
-        if let Some((rest, end)) = small_at(words, k) {
+        let k = if words.get(j).is_some_and(|word| and(lexicon, word)) {
+            j + 1
+        } else {
+            j
+        };
+        if let Some((rest, end)) = small_at(lexicon, words, k) {
             value += rest;
             j = end;
         }
@@ -688,20 +504,20 @@ fn below_thousand(words: &[&str], i: usize) -> Option<(u64, usize)> {
 
 /// The number the whole run reads as by the number grammar: a small number, hundreds and what follows them, a count
 /// of thousands and what follows it; none where a word is left over.
-fn cardinal(words: &[&str]) -> Option<u64> {
+fn cardinal(lexicon: &Lexicon, words: &[&str]) -> Option<u64> {
     if words.is_empty() {
         return None;
     }
-    if let Some(at) = words.iter().position(|word| *word == THOUSAND) {
-        let (head, end) = below_thousand(&words[..at], 0)?;
+    if let Some(at) = words.iter().position(|word| thousand(lexicon, word)) {
+        let (head, end) = below_thousand(lexicon, &words[..at], 0)?;
         if end != at {
             return None;
         }
         let mut value = head * 1000;
         let j = at + 1;
         if j < words.len() {
-            let k = if words[j] == AND { j + 1 } else { j };
-            let (rest, end) = below_thousand(words, k)?;
+            let k = if and(lexicon, words[j]) { j + 1 } else { j };
+            let (rest, end) = below_thousand(lexicon, words, k)?;
             if end != words.len() {
                 return None;
             }
@@ -709,23 +525,23 @@ fn cardinal(words: &[&str]) -> Option<u64> {
         }
         return Some(value);
     }
-    let (value, end) = below_thousand(words, 0)?;
+    let (value, end) = below_thousand(lexicon, words, 0)?;
     (end == words.len()).then_some(value)
 }
 
 /// The run's figures, each word its own: a unit one figure, «oh» and «zero» 0, «double» and «triple» the figure
 /// after again, figures as typed; a teen or a tens (with its unit) two figures, and a closing «hundred» after a
 /// number 00, which make the reading pairs. None where a word is none of these.
-fn digits(words: &[&str]) -> Option<(String, bool)> {
+fn digits(lexicon: &Lexicon, words: &[&str]) -> Option<(String, bool)> {
     let mut out = String::new();
     let mut pairs = false;
     let mut i = 0;
     while i < words.len() {
         let word = words[i];
-        if let Some(times) = repeat(word) {
+        if let Some(times) = repeat(lexicon, word) {
             let next = words.get(i + 1);
             let figure = next
-                .and_then(|next| unit(next))
+                .and_then(|next| unit(lexicon, next))
                 .map(|figure| figure.to_string())
                 .or_else(|| {
                     next.filter(|next| figures(next) && next.chars().count() == 1)
@@ -738,15 +554,15 @@ fn digits(words: &[&str]) -> Option<(String, bool)> {
             }
             return None;
         }
-        if let Some(figure) = unit(word) {
+        if let Some(figure) = unit(lexicon, word) {
             out.push_str(&figure.to_string());
         } else if figures(word) {
             out.push_str(word);
-        } else if let Some(teen) = teen(word) {
+        } else if let Some(teen) = teen(lexicon, word) {
             out.push_str(&teen.to_string());
             pairs = true;
-        } else if let Some(tens) = ten(word) {
-            match unit_after_tens(words.get(i + 1)) {
+        } else if let Some(tens) = ten(lexicon, word) {
+            match unit_after_tens(lexicon, words.get(i + 1)) {
                 Some(unit) => {
                     out.push_str(&(tens + unit).to_string());
                     i += 1;
@@ -754,10 +570,10 @@ fn digits(words: &[&str]) -> Option<(String, bool)> {
                 None => out.push_str(&tens.to_string()),
             }
             pairs = true;
-        } else if word == HUNDRED
+        } else if hundred(lexicon, word)
             && !out.is_empty()
             && i == words.len() - 1
-            && words[i - 1] != HUNDRED
+            && !hundred(lexicon, words[i - 1])
         {
             out.push_str("00");
             pairs = true;
@@ -790,11 +606,11 @@ fn runs_of(words: &[Word], keep: impl Fn(&Word) -> bool) -> Vec<(usize, usize)> 
 
 /// The runs of number words, «double» and «triple» among them; «and» joins two of them only after «hundred» or
 /// «thousand», «two hundred and six», so «five oh two and five oh nine» is two runs.
-fn number_runs(words: &[Word]) -> Vec<(usize, usize)> {
+fn number_runs(lexicon: &Lexicon, words: &[Word]) -> Vec<(usize, usize)> {
     let counted = |at: usize| {
-        words
-            .get(at)
-            .is_some_and(|word| number_word(&word.plain) || repeat(&word.plain).is_some())
+        words.get(at).is_some_and(|word| {
+            number_word(lexicon, &word.folded) || repeat(lexicon, &word.folded).is_some()
+        })
     };
     let mut out = Vec::new();
     let mut i = 0;
@@ -807,8 +623,10 @@ fn number_runs(words: &[Word]) -> Vec<(usize, usize)> {
         loop {
             if counted(j + 1) {
                 j += 1;
-            } else if words.get(j + 1).is_some_and(|word| word.plain == AND)
-                && (words[j].plain == HUNDRED || words[j].plain == THOUSAND)
+            } else if words
+                .get(j + 1)
+                .is_some_and(|word| and(lexicon, &word.folded))
+                && (hundred(lexicon, &words[j].folded) || thousand(lexicon, &words[j].folded))
                 && counted(j + 2)
             {
                 j += 2;
@@ -824,15 +642,15 @@ fn number_runs(words: &[Word]) -> Vec<(usize, usize)> {
 
 /// The words of a version said aloud: number words joined by «point» or «dot» twice or more, «four point thirteen
 /// point one». No part of one is a number.
-fn versions(words: &[Word]) -> Vec<bool> {
+fn versions(lexicon: &Lexicon, words: &[Word]) -> Vec<bool> {
     let mut marked = vec![false; words.len()];
-    let runs = number_runs(words);
+    let runs = number_runs(lexicon, words);
     let mut r = 0;
     while r < runs.len() {
         let mut last = r;
         while let Some(next) = runs.get(last + 1)
             && next.0 == runs[last].1 + 2
-            && POINT_SIGNS.contains(&words[runs[last].1 + 1].plain.as_str())
+            && sign(lexicon, &words[runs[last].1 + 1].folded) == Some('.')
         {
             last += 1;
         }
@@ -850,33 +668,33 @@ fn versions(words: &[Word]) -> Vec<bool> {
 /// the run then «point» or «dot» and figures said. One number word alone is the recognizer's, which reads it or
 /// hides it as part of a form it refuses, «from six to nine»; «oh» alone is no number, «oh no»; no part of a
 /// version said aloud is one.
-fn numbers(words: &[Word]) -> Vec<Reading> {
+fn numbers(lexicon: &Lexicon, words: &[Word]) -> Vec<Reading> {
     let mut out = Vec::new();
     let mut consumed: Option<usize> = None;
-    let versioned = versions(words);
-    for (a, b) in number_runs(words) {
+    let versioned = versions(lexicon, words);
+    for (a, b) in number_runs(lexicon, words) {
         if consumed.is_some_and(|until| a <= until) || versioned[a] {
             continue;
         }
         let said: Vec<&str> = words[a..=b]
             .iter()
-            .map(|word| word.plain.as_str())
+            .map(|word| word.folded.as_str())
             .collect();
         let point = words
             .get(b + 1)
-            .is_some_and(|word| POINT_SIGNS.contains(&word.plain.as_str()));
+            .is_some_and(|word| sign(lexicon, &word.folded) == Some('.'));
         let after = words
             .get(b + 2)
-            .is_some_and(|word| unit(&word.plain).is_some());
+            .is_some_and(|word| unit(lexicon, &word.folded).is_some());
         if point && after {
             let mut k = b + 2;
             let mut fraction = String::new();
-            while let Some(figure) = words.get(k).and_then(|word| unit(&word.plain)) {
+            while let Some(figure) = words.get(k).and_then(|word| unit(lexicon, &word.folded)) {
                 fraction.push_str(&figure.to_string());
                 k += 1;
             }
-            let head = cardinal(&said)
-                .or_else(|| digits(&said).and_then(|(figures, _)| figures.parse().ok()));
+            let head = cardinal(lexicon, &said)
+                .or_else(|| digits(lexicon, &said).and_then(|(figures, _)| figures.parse().ok()));
             if let Some(head) = head
                 && let Ok(value) = format!("{head}.{fraction}").parse::<f64>()
             {
@@ -894,7 +712,7 @@ fn numbers(words: &[Word]) -> Vec<Reading> {
         if a == b {
             continue;
         }
-        if let Some(value) = cardinal(&said) {
+        if let Some(value) = cardinal(lexicon, &said) {
             out.push(reading(
                 words,
                 a,
@@ -902,7 +720,7 @@ fn numbers(words: &[Word]) -> Vec<Reading> {
                 Value::Number(float(value)),
                 Marks::default(),
             ));
-        } else if let Some((figures, pairs)) = digits(&said)
+        } else if let Some((figures, pairs)) = digits(lexicon, &said)
             && let Ok(value) = figures.parse::<u64>()
         {
             let marks = if pairs {
@@ -973,19 +791,18 @@ impl Piece {
 }
 
 /// What a word is inside a code; none for a word no code holds, a function word among them: it opens no code.
-fn piece(word: &Word, version: bool) -> Option<Piece> {
-    let (plain, raw) = (word.plain.as_str(), word.raw.as_str());
-    if number_word(plain) || repeat(plain).is_some() {
+fn piece(lexicon: &Lexicon, word: &Word, version: bool) -> Option<Piece> {
+    let (plain, folded, raw) = (word.plain.as_str(), word.folded.as_str(), word.raw.as_str());
+    if number_word(lexicon, folded) || repeat(lexicon, folded).is_some() {
         return Some(Piece::Number);
     }
     if figures(plain) {
         return Some(Piece::Figures);
     }
-    if DASH_SIGNS.contains(&plain) {
-        return Some(Piece::Dash);
-    }
-    if POINT_SIGNS.contains(&plain) {
-        return Some(Piece::Point);
+    match sign(lexicon, folded) {
+        Some('-') => return Some(Piece::Dash),
+        Some('.') => return Some(Piece::Point),
+        _ => {}
     }
     let length = raw.chars().count();
     if length == 1 && raw.chars().all(char::is_alphabetic) {
@@ -1001,11 +818,11 @@ fn piece(word: &Word, version: bool) -> Option<Piece> {
     if (2..=3).contains(&length)
         && raw.chars().all(text::small)
         && !words::function(plain)
-        && !PRONOUNS.contains(&plain)
+        && !lexicon.holds(|pack| &pack.spoken.pronouns, folded)
     {
         return Some(Piece::Short);
     }
-    if version && length > 1 && VERSION_WORDS.contains(&plain) {
+    if version && length > 1 && lexicon.holds(|pack| &pack.spoken.version, folded) {
         return Some(Piece::Version);
     }
     None
@@ -1013,12 +830,12 @@ fn piece(word: &Word, version: bool) -> Option<Piece> {
 
 /// Whether a piece may open a code and be no part of it: a short word, «version», a letter that is a word, and
 /// «v» before a version.
-fn opening(word: &Word, piece: Option<Piece>, version: bool) -> bool {
+fn opening(lexicon: &Lexicon, word: &Word, piece: Option<Piece>, version: bool) -> bool {
     match piece {
         Some(Piece::Short | Piece::Version) => true,
         Some(Piece::Letter) => {
-            LETTER_WORDS.contains(&word.plain.as_str())
-                || (version && VERSION_WORDS.contains(&word.plain.as_str()))
+            lexicon.holds(|pack| &pack.spoken.letters, &word.folded)
+                || (version && lexicon.holds(|pack| &pack.spoken.version, &word.folded))
         }
         _ => false,
     }
@@ -1029,6 +846,7 @@ fn opening(word: &Word, piece: Option<Piece>, version: bool) -> bool {
 /// pieces; a run holds a figure, a number word or a typed part. A run of typed parts alone, «HS 0409», is a code
 /// typed with spaces; one typed word alone, «eu261», is typed whole, which the recognizer reads or not.
 fn code_runs(
+    lexicon: &Lexicon,
     words: &[Word],
     pieces: &[Option<Piece>],
     version: bool,
@@ -1050,7 +868,7 @@ fn code_runs(
         let a = i;
         let mut j = i;
         while j + 1 < words.len()
-            && opening(&words[j], pieces[j], version)
+            && opening(lexicon, &words[j], pieces[j], version)
             && (core(j + 1) || matches!(pieces[j + 1], Some(Piece::Dash)))
         {
             j += 1;
@@ -1094,14 +912,17 @@ fn code_runs(
 /// the number grammar where that reads otherwise), «double» or «triple» before a letter the letter again, a lone
 /// «o» as the letter and as nought, signs as said; each opening kept and dropped; «v» and «version» dropped before
 /// a version only.
-fn codes(words: &[Word], version: bool) -> Vec<Reading> {
-    let pieces: Vec<Option<Piece>> = words.iter().map(|word| piece(word, version)).collect();
+fn codes(lexicon: &Lexicon, words: &[Word], version: bool) -> Vec<Reading> {
+    let pieces: Vec<Option<Piece>> = words
+        .iter()
+        .map(|word| piece(lexicon, word, version))
+        .collect();
     let letter = |at: usize| pieces.get(at).copied().flatten() == Some(Piece::Letter);
     // «double» before a letter says the letter again, and is no number word of the figures beside it
-    let doubled = |at: usize| repeat(&words[at].plain).is_some() && letter(at + 1);
+    let doubled = |at: usize| repeat(lexicon, &words[at].folded).is_some() && letter(at + 1);
     let plain = Marks::default();
     let mut out = Vec::new();
-    for (a, core, b, said) in code_runs(words, &pieces, version) {
+    for (a, core, b, said) in code_runs(lexicon, words, &pieces, version) {
         for start in a..=core {
             let mut segments: Vec<Vec<(String, Marks)>> = Vec::new();
             let mut broken = false;
@@ -1110,7 +931,7 @@ fn codes(words: &[Word], version: bool) -> Vec<Reading> {
                 let word = &words[x];
                 match pieces[x] {
                     Some(Piece::Number) if doubled(x) && x < b => {
-                        let times = repeat(&word.plain).unwrap_or(1);
+                        let times = repeat(lexicon, &word.folded).unwrap_or(1);
                         segments.push(vec![(words[x + 1].raw.repeat(times), plain)]);
                         x += 2;
                         continue;
@@ -1122,15 +943,15 @@ fn codes(words: &[Word], version: bool) -> Vec<Reading> {
                         }
                         let said: Vec<&str> = words[x..=y]
                             .iter()
-                            .map(|word| word.plain.as_str())
+                            .map(|word| word.folded.as_str())
                             .collect();
                         let mut alternatives = Vec::new();
-                        let read = digits(&said);
+                        let read = digits(lexicon, &said);
                         if let Some((figures, pairs)) = &read {
                             alternatives
                                 .push((figures.clone(), if *pairs { Marks::PAIRS } else { plain }));
                         }
-                        if let Some(value) = cardinal(&said)
+                        if let Some(value) = cardinal(lexicon, &said)
                             && read
                                 .as_ref()
                                 .is_none_or(|(figures, _)| *figures != value.to_string())
@@ -1146,12 +967,13 @@ fn codes(words: &[Word], version: bool) -> Vec<Reading> {
                         continue;
                     }
                     Some(Piece::Figures) => segments.push(vec![(word.raw.clone(), plain)]),
-                    Some(Piece::Letter) if word.plain == LETTER_O => {
+                    // A letter that is nought said as a letter, «o», reads as itself and as nought.
+                    Some(Piece::Letter) if oh(lexicon, &word.folded) => {
                         segments.push(vec![(word.raw.clone(), plain), ("0".to_owned(), plain)]);
                     }
                     Some(Piece::Letter)
                         if version
-                            && VERSION_WORDS.contains(&word.plain.as_str())
+                            && lexicon.holds(|pack| &pack.spoken.version, &word.folded)
                             && x == start
                             && x < core =>
                     {
@@ -1202,29 +1024,31 @@ fn product(segments: &[Vec<(String, Marks)>]) -> Vec<(String, Marks)> {
 
 /// A version said without «point»: a run of number words cut into `parts` parts, each word a part and a tens word
 /// joined to its unit one part: «four twelve oh» is 4.12.0.
-fn pointless(words: &[Word], parts: usize) -> Vec<Reading> {
+fn pointless(lexicon: &Lexicon, words: &[Word], parts: usize) -> Vec<Reading> {
     let mut out = Vec::new();
     let runs = runs_of(words, |word| {
-        unit(&word.plain).is_some() || teen(&word.plain).is_some() || ten(&word.plain).is_some()
+        unit(lexicon, &word.folded).is_some()
+            || teen(lexicon, &word.folded).is_some()
+            || ten(lexicon, &word.folded).is_some()
     });
     for (a, b) in runs {
         let said: Vec<&str> = words[a..=b]
             .iter()
-            .map(|word| word.plain.as_str())
+            .map(|word| word.folded.as_str())
             .collect();
         let mut groups: Vec<String> = Vec::new();
         let mut i = 0;
         while i < said.len() {
-            if let Some(tens) = ten(said[i])
-                && let Some(unit) = unit_after_tens(said.get(i + 1))
+            if let Some(tens) = ten(lexicon, said[i])
+                && let Some(unit) = unit_after_tens(lexicon, said.get(i + 1))
             {
                 groups.push((tens + unit).to_string());
                 i += 2;
                 continue;
             }
-            let value = unit(said[i])
-                .or_else(|| teen(said[i]))
-                .or_else(|| ten(said[i]));
+            let value = unit(lexicon, said[i])
+                .or_else(|| teen(lexicon, said[i]))
+                .or_else(|| ten(lexicon, said[i]));
             groups.push(value.map_or_else(String::new, |value| value.to_string()));
             i += 1;
         }
@@ -1241,12 +1065,12 @@ fn pointless(words: &[Word], parts: usize) -> Vec<Reading> {
 /// An address said aloud: a local part, then «at» and a domain said with «dot» and «dash»; or half typed, the @
 /// typed and the domain said. A word standing alone before number words, or letters said apart before them, is read
 /// with them and without.
-fn emails(words: &[Word]) -> Vec<Reading> {
+fn emails(lexicon: &Lexicon, words: &[Word]) -> Vec<Reading> {
     let mut out = Vec::new();
     for (i, word) in words.iter().enumerate() {
         let typed_at =
             word.raw.contains('@') && !word.raw.starts_with('@') && !whole_address(&word.raw);
-        if word.plain != AT && !typed_at {
+        if sign(lexicon, &word.folded) != Some('@') && !typed_at {
             continue;
         }
         let mut domain: Vec<String> = Vec::new();
@@ -1264,7 +1088,7 @@ fn emails(words: &[Word]) -> Vec<Reading> {
             j += 1;
         }
         while j + 1 < words.len()
-            && let Some(sign) = listed(&HOST_SIGNS, &words[j].plain)
+            && let Some(sign) = host_sign(lexicon, &words[j].folded)
             && host_word(&words[j + 1].plain, false)
         {
             domain.push(sign.to_owned());
@@ -1276,7 +1100,7 @@ fn emails(words: &[Word]) -> Vec<Reading> {
             continue;
         }
         let end = words[j - 1].end;
-        let locals = locals.unwrap_or_else(|| local_parts(words, i));
+        let locals = locals.unwrap_or_else(|| local_parts(lexicon, words, i));
         for (local, start) in locals {
             if local.is_empty() {
                 continue;
@@ -1340,9 +1164,9 @@ enum Local {
     Word,
 }
 
-fn local(word: &Word) -> Option<Local> {
+fn local(lexicon: &Lexicon, word: &Word) -> Option<Local> {
     let plain = word.plain.as_str();
-    if number_word(plain) {
+    if number_word(lexicon, &word.folded) {
         return Some(Local::Number);
     }
     let mut chars = plain.chars();
@@ -1360,11 +1184,11 @@ fn local(word: &Word) -> Option<Local> {
 }
 
 /// The group of an address's local part that ends at `k`: letters said apart, or one word; where it begins.
-fn group_ending(words: &[Word], k: usize) -> Option<usize> {
-    match local(&words[k])? {
+fn group_ending(lexicon: &Lexicon, words: &[Word], k: usize) -> Option<usize> {
+    match local(lexicon, &words[k])? {
         Local::Letter => {
             let mut from = k;
-            while from > 0 && local(&words[from - 1]) == Some(Local::Letter) {
+            while from > 0 && local(lexicon, &words[from - 1]) == Some(Local::Letter) {
                 from -= 1;
             }
             Some(from)
@@ -1377,29 +1201,29 @@ fn group_ending(words: &[Word], k: usize) -> Option<usize> {
 /// The local parts the words before «at» may read as, each with where it begins: groups of letters said apart or
 /// words, joined by a sign said, then number words; two groups side by side end it. Where number words follow a
 /// group no sign joins to another, the local part is read with the group and without it: «novak seventy two».
-fn local_parts(words: &[Word], at: usize) -> Vec<(String, usize)> {
+fn local_parts(lexicon: &Lexicon, words: &[Word], at: usize) -> Vec<(String, usize)> {
     let Some(last) = at.checked_sub(1) else {
         return Vec::new();
     };
-    if local(&words[last]).is_none() {
+    if local(lexicon, &words[last]).is_none() {
         return Vec::new();
     }
     let mut first_number = at;
-    while first_number > 0 && local(&words[first_number - 1]) == Some(Local::Number) {
+    while first_number > 0 && local(lexicon, &words[first_number - 1]) == Some(Local::Number) {
         first_number -= 1;
     }
     let numbers: Vec<&str> = words[first_number..at]
         .iter()
-        .map(|word| word.plain.as_str())
+        .map(|word| word.folded.as_str())
         .collect();
     let mut head: Option<usize> = None;
     let mut joined = false;
     if let Some(end) = first_number.checked_sub(1)
-        && let Some(mut from) = group_ending(words, end)
+        && let Some(mut from) = group_ending(lexicon, words, end)
     {
         while from >= 2
-            && listed(&ADDRESS_SIGNS, &words[from - 1].plain).is_some()
-            && let Some(before) = group_ending(words, from - 2)
+            && address_sign(lexicon, &words[from - 1].folded).is_some()
+            && let Some(before) = group_ending(lexicon, words, from - 2)
         {
             from = before;
             joined = true;
@@ -1409,9 +1233,9 @@ fn local_parts(words: &[Word], at: usize) -> Vec<(String, usize)> {
     let figures = if numbers.is_empty() {
         Some(String::new())
     } else {
-        digits(&numbers)
+        digits(lexicon, &numbers)
             .map(|(figures, _)| figures)
-            .or_else(|| cardinal(&numbers).map(|value| value.to_string()))
+            .or_else(|| cardinal(lexicon, &numbers).map(|value| value.to_string()))
     };
     let Some(figures) = figures else {
         return Vec::new();
@@ -1422,7 +1246,7 @@ fn local_parts(words: &[Word], at: usize) -> Vec<(String, usize)> {
             let text: String = words[from..first_number]
                 .iter()
                 .map(|word| {
-                    listed(&ADDRESS_SIGNS, &word.plain)
+                    address_sign(lexicon, &word.folded)
                         .unwrap_or(&word.plain)
                         .to_owned()
                 })
@@ -1440,12 +1264,13 @@ fn local_parts(words: &[Word], at: usize) -> Vec<(String, usize)> {
 
 /// A link said aloud: a scheme said or spelled, «colon slash slash» or not, a host and a path said with «dot»,
 /// «slash», «dash»; letters said apart in a path joined. No scheme, no reading.
-fn urls(words: &[Word]) -> Vec<Reading> {
+fn urls(lexicon: &Lexicon, words: &[Word]) -> Vec<Reading> {
+    let scheme_word = |word: &str| lexicon.holds(|pack| &pack.spoken.schemes, word);
     let mut out = Vec::new();
     let mut i = 0;
     while i < words.len() {
         let mut scheme: Option<(String, usize)> = None;
-        if SCHEMES.contains(&words[i].plain.as_str()) {
+        if scheme_word(&words[i].folded) {
             scheme = Some((words[i].plain.clone(), i + 1));
         } else {
             let mut letters = String::new();
@@ -1457,7 +1282,7 @@ fn urls(words: &[Word]) -> Vec<Reading> {
                 letters.push_str(&words[k].plain);
                 k += 1;
             }
-            if SCHEMES.contains(&letters.as_str()) {
+            if scheme_word(&fold(&letters)) {
                 scheme = Some((letters, k));
             }
         }
@@ -1465,13 +1290,16 @@ fn urls(words: &[Word]) -> Vec<Reading> {
             i += 1;
             continue;
         };
-        let said = words.get(j..j + SCHEME_SIGNS.len()).is_some_and(|next| {
-            next.iter()
-                .zip(SCHEME_SIGNS)
-                .all(|(word, sign)| word.plain == sign)
+        // «colon slash slash» after the scheme, said whole.
+        let said = words.get(j..j + 3).is_some_and(|next| {
+            next.iter().map(|word| sign(lexicon, &word.folded)).eq([
+                Some(':'),
+                Some('/'),
+                Some('/'),
+            ])
         });
         if said {
-            j += SCHEME_SIGNS.len();
+            j += 3;
         }
         let Some(first) = words.get(j) else {
             i += 1;
@@ -1480,21 +1308,26 @@ fn urls(words: &[Word]) -> Vec<Reading> {
         let mut host = first.plain.clone();
         j += 1;
         while j + 1 < words.len()
-            && let Some(sign) = listed(&HOST_SIGNS, &words[j].plain)
+            && let Some(sign) = host_sign(lexicon, &words[j].folded)
         {
             host.push_str(sign);
             host.push_str(&words[j + 1].plain);
             j += 2;
         }
+        let slash = |at: usize| {
+            words
+                .get(at)
+                .is_some_and(|word| sign(lexicon, &word.folded) == Some('/'))
+        };
         let mut path = String::new();
-        while j + 1 < words.len() && words[j].plain == SLASH {
+        while j + 1 < words.len() && slash(j) {
             let mut segment = words[j + 1].plain.clone();
             j += 2;
             while j + 1 < words.len()
-                && let Some(sign) = listed(&PATH_SIGNS, &words[j].plain).filter(|sign| *sign != "/")
+                && let Some(sign) = address_sign(lexicon, &words[j].folded)
             {
                 j += 1;
-                if words[j].plain == SLASH {
+                if slash(j) {
                     break;
                 }
                 let mut letters = String::new();
@@ -1550,31 +1383,51 @@ fn whole_link(host: &str, path: &str) -> bool {
 /// with «this», «next», «last» before a weekday and «the day after» before tomorrow; an ordinal misspelt after
 /// «the». A weekday misspelt is read by `words.rs` (`misspelt`), and a day after «every» or «each» is a
 /// recurrence.
-fn days(words: &[Word]) -> Vec<Reading> {
+fn days(lexicon: &Lexicon, words: &[Word]) -> Vec<Reading> {
+    let relative_short = |word: &str| {
+        lexicon
+            .form_of(|pack| &pack.days.relative_short, word)
+            .and_then(|form| form.parse::<i32>().ok())
+    };
+    let relative = |word: &str| {
+        lexicon
+            .form_of(|pack| &pack.days.relative, word)
+            .and_then(|form| form.parse::<i32>().ok())
+    };
+    let mut endings = lexicon.phrases(|pack| &pack.endings.possessive);
+    endings.extend(lexicon.phrases(|pack| &pack.endings.plural));
+    endings.sort_by_key(|ending| std::cmp::Reverse(ending.chars().count()));
+    let day_after: Vec<Vec<&str>> = lexicon
+        .phrases(|pack| &pack.days.day_after)
+        .into_iter()
+        .map(|phrase| phrase.split(' ').collect())
+        .collect();
     let mut out = Vec::new();
     for (i, word) in words.iter().enumerate() {
-        if i > 0 && EVERY.contains(&words[i - 1].plain.as_str()) {
+        if i > 0 && lexicon.holds(|pack| &pack.days.every, &words[i - 1].folded) {
             continue;
         }
-        let plain = word.plain.as_str();
-        let bare =
-            if listed(&SHORT_DAY_WORDS, plain).is_some() || listed(&DAY_WORDS, plain).is_some() {
-                plain
-            } else {
-                DAY_ENDINGS
-                    .iter()
-                    .find_map(|ending| plain.strip_suffix(ending))
-                    .unwrap_or(plain)
-            };
+        let folded = word.folded.as_str();
+        let bare = if relative_short(folded).is_some() || relative(folded).is_some() {
+            folded
+        } else {
+            endings
+                .iter()
+                .find_map(|ending| folded.strip_suffix(ending))
+                .unwrap_or(folded)
+        };
         let mut marks = Marks::default();
-        let day = if let Some(at) = listed(&SHORT_DAYS, bare) {
+        let day = if let Some(weekday) = lexicon
+            .form_of(|pack| &pack.days.short, bare)
+            .and_then(pack::weekday)
+        {
             Day::Weekday {
-                weekday: Weekday::ALL[at],
+                weekday,
                 which: None,
             }
-        } else if let Some(days) = listed(&SHORT_DAY_WORDS, bare) {
+        } else if let Some(days) = relative_short(bare) {
             Day::Offset { days }
-        } else if let Some(days) = misspelt_day(bare) {
+        } else if let Some(days) = misspelt_day(lexicon, bare) {
             marks = Marks::MISSPELT;
             Day::Offset { days }
         } else {
@@ -1582,10 +1435,11 @@ fn days(words: &[Word]) -> Vec<Reading> {
         };
         let mut start = word.start;
         let day = match day {
-            Day::Weekday { weekday, .. } => match i
-                .checked_sub(1)
-                .and_then(|before| listed(&WHICH, &words[before].plain))
-            {
+            Day::Weekday { weekday, .. } => match i.checked_sub(1).and_then(|before| {
+                lexicon
+                    .form_of(|pack| &pack.days.which, &words[before].folded)
+                    .and_then(pack::which)
+            }) {
                 Some(which) => {
                     start = words[i - 1].start;
                     Day::Weekday {
@@ -1598,14 +1452,17 @@ fn days(words: &[Word]) -> Vec<Reading> {
                     which: None,
                 },
             },
+            // «the day after tmrw» is the day after it.
             Day::Offset { days: 1 }
-                if i >= DAY_AFTER.len()
-                    && words[i - DAY_AFTER.len()..i]
-                        .iter()
-                        .zip(DAY_AFTER)
-                        .all(|(word, said)| word.plain == said) =>
+                if let Some(said) = day_after.iter().find(|said| {
+                    i >= said.len()
+                        && words[i - said.len()..i]
+                            .iter()
+                            .zip(said.iter())
+                            .all(|(word, said)| word.folded == *said)
+                }) =>
             {
-                start = words[i - DAY_AFTER.len()].start;
+                start = words[i - said.len()].start;
                 Day::Offset { days: 2 }
             }
             other => other,
@@ -1618,23 +1475,37 @@ fn days(words: &[Word]) -> Vec<Reading> {
             form: Form::Misspelt,
         });
     }
+    out.extend(misspelt_ordinals(lexicon, words));
+    out
+}
+
+/// A day of the month said as an ordinal misspelt after «the», «the fourht»: a word of six letters or more one
+/// step from one ordinal the packs list and farther from every other.
+fn misspelt_ordinals(lexicon: &Lexicon, words: &[Word]) -> Vec<Reading> {
+    let ordinals: Vec<(&str, i64)> = lexicon
+        .packs()
+        .iter()
+        .flat_map(|pack| pack.ordinals.words.iter())
+        .collect();
+    let mut out = Vec::new();
     for i in 1..words.len() {
-        let plain = words[i].plain.as_str();
-        if words[i - 1].plain != THE
-            || listed(&ORDINALS, plain).is_some()
-            || !plain.chars().all(char::is_alphabetic)
-            || plain.chars().count() < ORDINAL_LEAST
+        let folded = words[i].folded.as_str();
+        if !lexicon.holds(|pack| &pack.days.the, &words[i - 1].folded)
+            || lexicon.value(|pack| &pack.ordinals.words, folded).is_some()
+            || !folded.chars().all(char::is_alphabetic)
+            || folded.chars().count() < ORDINAL_LEAST
         {
             continue;
         }
-        let mut near: Vec<(usize, &str, u8)> = ORDINALS
+        let mut near: Vec<(usize, &str, i64)> = ordinals
             .iter()
-            .map(|(name, day)| (words::distance(plain, name), *name, *day))
+            .map(|(name, day)| (words::distance(folded, name), *name, *day))
             .collect();
         near.sort_unstable();
         if let [(nearest, _, day), (next, ..), ..] = near[..]
             && nearest == 1
             && next > nearest
+            && let Ok(day) = u8::try_from(day)
         {
             out.push(Reading {
                 start: words[i - 1].start,
@@ -1648,21 +1519,28 @@ fn days(words: &[Word]) -> Vec<Reading> {
     out
 }
 
-/// The day word a word of four letters or more misspells, within the radius its length allows and nearer than
+/// The relative day a word of four letters or more misspells, within the radius its length allows and nearer than
 /// every other day's name; none where the nearest is a weekday, which `words.rs` reads.
-fn misspelt_day(word: &str) -> Option<i32> {
+fn misspelt_day(lexicon: &Lexicon, word: &str) -> Option<i32> {
+    let relative: Vec<(&str, &str)> = lexicon
+        .named(|pack| &pack.days.relative)
+        .into_iter()
+        .filter(|(name, _)| !name.contains(' '))
+        .collect();
+    let weekdays = lexicon.named(|pack| &pack.days.weekdays);
     if !word.chars().all(char::is_alphabetic)
         || word.chars().count() < 4
         || words::function(word)
-        || WEEKDAYS.contains(&word)
-        || listed(&DAY_WORDS, word).is_some()
+        || weekdays.iter().any(|(name, _)| *name == word)
+        || relative.iter().any(|(name, _)| *name == word)
     {
         return None;
     }
-    let mut near: Vec<(usize, &str)> = WEEKDAYS
+    let mut near: Vec<(usize, &str)> = weekdays
         .iter()
-        .chain(DAY_WORDS.iter().map(|(name, _)| name))
-        .map(|name| (words::distance(word, name), *name))
+        .map(|(name, _)| *name)
+        .chain(relative.iter().map(|(name, _)| *name))
+        .map(|name| (words::distance(word, name), name))
         .collect();
     near.sort_unstable();
     let [(nearest, name), (next, _), ..] = near[..] else {
@@ -1671,40 +1549,35 @@ fn misspelt_day(word: &str) -> Option<i32> {
     if nearest == 0 || nearest > by_length(name) || next == nearest {
         return None;
     }
-    listed(&DAY_WORDS, name)
+    relative
+        .iter()
+        .find(|(listed, _)| *listed == name)
+        .and_then(|(_, form)| form.parse().ok())
 }
 
-/// A day as the reader writes it back: the weekday with its «this», a day word, the day of the month with its
-/// ending.
-fn shown_day(day: &Day) -> String {
+/// A day as the reader writes it back, in the lexicon's first pack: the weekday with its «this», a day word, the
+/// day of the month with its ending.
+fn shown_day(lexicon: &Lexicon, day: &Day) -> String {
+    let pack = lexicon.first();
     match day {
         Day::Weekday { weekday, which } => {
-            let name = WEEKDAYS[Weekday::ALL
-                .iter()
-                .position(|day| day == weekday)
-                .unwrap_or(0)];
-            match which.and_then(|which| WHICH.iter().find(|(_, said)| *said == which)) {
-                Some((word, _)) => format!("{word} {name}"),
+            let form = pack::weekday_form(*weekday);
+            let name = pack.days.weekdays.shown(&form).unwrap_or(&form);
+            match which.and_then(|which| pack.days.which.shown(&pack::which_form(which))) {
+                Some(word) => format!("{word} {name}"),
                 None => name.to_owned(),
             }
         }
         Day::Nth { day } => {
-            let ending = if (11..=13).contains(&(day % 100)) {
-                ORDINAL_ENDINGS[0]
-            } else {
-                match day % 10 {
-                    1 => ORDINAL_ENDINGS[1],
-                    2 => ORDINAL_ENDINGS[2],
-                    3 => ORDINAL_ENDINGS[3],
-                    _ => ORDINAL_ENDINGS[0],
-                }
-            };
-            format!("{THE} {day}{ending}")
+            let the = pack.days.the.iter().last().unwrap_or_default();
+            let ending = pack.ordinals.suffixes.of(*day);
+            format!("{the} {day}{ending}")
         }
-        Day::Offset { days } => DAYS_SHOWN
-            .iter()
-            .find(|(offset, _)| offset == days)
-            .map_or_else(|| days.to_string(), |(_, shown)| (*shown).to_owned()),
+        Day::Offset { days } => pack
+            .days
+            .relative
+            .shown(&days.to_string())
+            .map_or_else(|| days.to_string(), str::to_owned),
         Day::Calendar { .. } => String::new(),
     }
 }
@@ -1714,38 +1587,34 @@ fn shown_day(day: &Day) -> String {
 /// A length said in more words than a recognizer reads: counts with their units summed, «an hour and thirty
 /// minutes»; a bare count after a unit read in the next unit, «one hr 30», «1h30»; a count with a point, «one point
 /// five hours»; a number word misspelt before a unit.
-fn durations(words: &[Word]) -> Vec<Reading> {
+fn durations(lexicon: &Lexicon, words: &[Word]) -> Vec<Reading> {
+    let unit_at = |at: usize| {
+        words
+            .get(at)
+            .and_then(|word| duration_unit(lexicon, &word.folded))
+    };
     let mut out = Vec::new();
     let mut i = 0;
     while i < words.len() {
         let mut parts: Vec<f64> = Vec::new();
         let mut marks = Marks::default();
         let mut j = i;
-        while let Some((count, k, counted)) = count_at(words, j) {
-            let Some(unit) = words
-                .get(k)
-                .and_then(|word| listed(&DURATION_UNITS, &word.plain))
-            else {
+        while let Some((count, k, counted)) = count_at(lexicon, words, j) {
+            let Some(unit) = unit_at(k) else {
                 break;
             };
             let mut count = count;
             let mut k = k + 1;
-            if half_after(words, k) {
+            if let Some(taken) = half_after(lexicon, words, k) {
                 count += 0.5;
-                k += HALF_WORDS.len();
+                k += taken;
             }
             parts.push(count * float(unit));
             marks = marks.with(counted);
             j = k;
-            let next_unit = NEXT_UNIT
-                .iter()
-                .find(|(from, _)| *from == unit)
-                .map(|(_, to)| *to);
-            if let Some(next) = next_unit
-                && let Some((bare, end, flags)) = count_at(words, j)
-                && words
-                    .get(end)
-                    .is_none_or(|word| listed(&DURATION_UNITS, &word.plain).is_none())
+            if let Some(next) = next_unit(lexicon, unit)
+                && let Some((bare, end, flags)) = count_at(lexicon, words, j)
+                && unit_at(end).is_none()
                 && !flags.has(Marks::ARTICLE)
             {
                 parts.push(bare * float(next));
@@ -1753,11 +1622,9 @@ fn durations(words: &[Word]) -> Vec<Reading> {
                 j = end;
                 break;
             }
-            if words.get(j).is_some_and(|word| word.plain == AND)
-                && let Some((_, end, _)) = count_at(words, j + 1)
-                && words
-                    .get(end)
-                    .is_some_and(|word| listed(&DURATION_UNITS, &word.plain).is_some())
+            if words.get(j).is_some_and(|word| and(lexicon, &word.folded))
+                && let Some((_, end, _)) = count_at(lexicon, words, j + 1)
+                && unit_at(end).is_some()
             {
                 j += 1;
             }
@@ -1791,13 +1658,39 @@ fn durations(words: &[Word]) -> Vec<Reading> {
     out
 }
 
-/// Whether «and a half» stands at `k`.
-fn half_after(words: &[Word], k: usize) -> bool {
-    words.get(k..k + HALF_WORDS.len()).is_some_and(|next| {
-        next.iter()
-            .zip(HALF_WORDS)
-            .all(|(word, said)| word.plain == said)
-    })
+/// The unit of a length a word names, as the packs list the units with their seconds.
+fn duration_unit(lexicon: &Lexicon, word: &str) -> Option<u64> {
+    lexicon
+        .form_of(|pack| &pack.durations.units, word)
+        .and_then(|form| form.parse().ok())
+}
+
+/// The unit a bare count after a unit is read in: the largest unit the packs list that is smaller, «one hr 30» is
+/// an hour and thirty minutes.
+fn next_unit(lexicon: &Lexicon, unit: u64) -> Option<u64> {
+    lexicon
+        .packs()
+        .iter()
+        .flat_map(|pack| pack.durations.units.forms())
+        .filter_map(|form| form.parse::<u64>().ok())
+        .filter(|seconds| *seconds < unit)
+        .max()
+}
+
+/// Whether «and a half» stands at `k`: how many words it takes there.
+fn half_after(lexicon: &Lexicon, words: &[Word], k: usize) -> Option<usize> {
+    lexicon
+        .phrases(|pack| &pack.numbers.and_a_half)
+        .into_iter()
+        .find_map(|phrase| {
+            let said: Vec<&str> = phrase.split(' ').collect();
+            let fits = words
+                .get(k..k + said.len())?
+                .iter()
+                .zip(&said)
+                .all(|(word, said)| word.folded == *said);
+            fits.then_some(said.len())
+        })
 }
 
 /// A length typed together, `1h30` or `1h30m`: the hours, the minutes, and whether the minutes' unit is typed.
@@ -1816,80 +1709,71 @@ fn typed_length(word: &str) -> Option<(u64, u64, bool)> {
 /// A count at `i`: figures, number words by the number grammar, a count with a point said, «a» or «an» before a
 /// unit, «half» or «a half» before one, or a number word misspelt within a letter (five letters or more); with
 /// «and a half» after it before a unit. The count, where it ends, and what it carries.
-fn count_at(words: &[Word], i: usize) -> Option<(f64, usize, Marks)> {
+fn count_at(lexicon: &Lexicon, words: &[Word], i: usize) -> Option<(f64, usize, Marks)> {
     let word = words.get(i)?;
     let plain = word.plain.as_str();
+    let folded = word.folded.as_str();
     let unit_at = |at: usize| {
         words
             .get(at)
-            .is_some_and(|word| listed(&DURATION_UNITS, &word.plain).is_some())
+            .is_some_and(|word| duration_unit(lexicon, &word.folded).is_some())
     };
+    let article = |word: &str| lexicon.holds(|pack| &pack.numbers.article, word);
+    let half = |word: &str| lexicon.holds(|pack| &pack.numbers.half, word);
     if let Some(value) = typed_count(plain) {
         return Some((value, i + 1, Marks::default()));
     }
-    if ARTICLES.contains(&plain) && unit_at(i + 1) {
+    if article(folded) && unit_at(i + 1) {
         return Some((1.0, i + 1, Marks::ARTICLE));
     }
-    if plain == ARTICLES[0]
-        && words.get(i + 1).is_some_and(|word| word.plain == HALF)
-        && unit_at(i + 2)
+    if article(folded) && words.get(i + 1).is_some_and(|word| half(&word.folded)) && unit_at(i + 2)
     {
         return Some((0.5, i + 2, Marks::HALF));
     }
-    if plain == HALF && unit_at(i + 1) {
+    if half(folded) && unit_at(i + 1) {
         return Some((0.5, i + 1, Marks::HALF));
     }
     let mut j = i;
     let mut said: Vec<String> = Vec::new();
     while let Some(next) = words
         .get(j)
-        .filter(|next| number_word(&next.plain) && next.plain != OH)
+        .filter(|next| number_word(lexicon, &next.folded) && !oh(lexicon, &next.folded))
     {
-        said.push(next.plain.clone());
+        said.push(next.folded.clone());
         j += 1;
     }
     let mut marks = Marks::default();
     if said.is_empty()
-        && plain.chars().all(char::is_alphabetic)
-        && plain.chars().count() >= MISSPELT_LEAST
+        && let Some(name) = misspelt_number(lexicon, folded)
     {
-        let mut near: Vec<(usize, &str)> = TENS
-            .iter()
-            .chain(&TEENS)
-            .chain(&UNITS)
-            .map(|(name, _)| (words::distance(plain, name), *name))
-            .collect();
-        near.sort_unstable();
-        if let [(nearest, name), (next, _), ..] = near[..]
-            && nearest == 1
-            && next > nearest
+        said.push(name.to_owned());
+        j = i + 1;
+        marks = Marks::MISSPELT;
+        while let Some(next) = words
+            .get(j)
+            .filter(|next| unit(lexicon, &next.folded).is_some())
         {
-            said.push(name.to_owned());
-            j = i + 1;
-            marks = Marks::MISSPELT;
-            while let Some(next) = words.get(j).filter(|next| unit(&next.plain).is_some()) {
-                said.push(next.plain.clone());
-                j += 1;
-            }
+            said.push(next.folded.clone());
+            j += 1;
         }
     }
     if said.is_empty() {
         return None;
     }
     let said: Vec<&str> = said.iter().map(String::as_str).collect();
-    let whole = cardinal(&said)?;
+    let whole = cardinal(lexicon, &said)?;
     let mut value = float(whole);
     let point = words
         .get(j)
-        .is_some_and(|word| POINT_SIGNS.contains(&word.plain.as_str()));
+        .is_some_and(|word| sign(lexicon, &word.folded) == Some('.'));
     if point
         && words
             .get(j + 1)
-            .is_some_and(|word| unit(&word.plain).is_some())
+            .is_some_and(|word| unit(lexicon, &word.folded).is_some())
     {
         let mut k = j + 1;
         let mut fraction = String::new();
-        while let Some(figure) = words.get(k).and_then(|word| unit(&word.plain)) {
+        while let Some(figure) = words.get(k).and_then(|word| unit(lexicon, &word.folded)) {
             fraction.push_str(&figure.to_string());
             k += 1;
         }
@@ -1897,11 +1781,39 @@ fn count_at(words: &[Word], i: usize) -> Option<(f64, usize, Marks)> {
         j = k;
         marks = marks.with(Marks::DECIMAL);
     }
-    if half_after(words, j) && unit_at(j + HALF_WORDS.len()) {
+    if let Some(taken) = half_after(lexicon, words, j)
+        && unit_at(j + taken)
+    {
         value += 0.5;
-        j += HALF_WORDS.len();
+        j += taken;
     }
     Some((value, j, marks))
+}
+
+/// The number word a word of five letters or more misspells within a letter, held against every number word the
+/// packs list and farther from every other; none where it is one of them.
+fn misspelt_number(lexicon: &Lexicon, word: &str) -> Option<&'static str> {
+    if !word.chars().all(char::is_alphabetic) || word.chars().count() < MISSPELT_LEAST {
+        return None;
+    }
+    let mut near: Vec<(usize, &'static str)> = lexicon
+        .packs()
+        .iter()
+        .flat_map(|pack| {
+            pack.numbers
+                .tens
+                .iter()
+                .chain(pack.numbers.ones.iter())
+                .map(|(name, _)| name)
+                .chain(pack.numbers.noughts.iter())
+        })
+        .map(|name| (words::distance(word, name), name))
+        .collect();
+    near.sort_unstable();
+    match near[..] {
+        [(1, name), (next, _), ..] if next > 1 => Some(name),
+        _ => None,
+    }
 }
 
 /// Figures typed as a count, a point among them or not.
@@ -1913,14 +1825,29 @@ fn typed_count(word: &str) -> Option<f64> {
 }
 
 /// A length as it is written back: «1 hour 30 minutes»; none at all in the smallest unit, «0 seconds».
-fn shown_length(seconds: u64) -> String {
+fn shown_length(lexicon: &Lexicon, seconds: u64) -> String {
+    let units = &lexicon.first().durations.units;
+    // Each unit as the pack lists it: its seconds, its word for one, its word for more than one.
+    let mut shown: Vec<(u64, &str, &str)> = units
+        .forms()
+        .filter_map(|form| {
+            let words = units.words_of(form);
+            let one = words.first()?.as_str();
+            Some((
+                form.parse().ok()?,
+                one,
+                words.get(1).map_or(one, String::as_str),
+            ))
+        })
+        .collect();
+    shown.sort_by_key(|(unit, ..)| std::cmp::Reverse(*unit));
     if seconds == 0 {
-        let (_, _, more) = DURATION_SHOWN[DURATION_SHOWN.len() - 1];
+        let more = shown.last().map_or("", |(_, _, more)| more);
         return format!("0 {more}");
     }
     let mut rest = seconds;
     let mut parts = Vec::new();
-    for (unit, one, more) in DURATION_SHOWN {
+    for (unit, one, more) in shown {
         let count = rest / unit;
         rest %= unit;
         if count > 0 {
@@ -2002,7 +1929,7 @@ fn case_of(value: &str) -> Option<Case> {
 }
 
 impl Examples {
-    fn of(recognizer: Recognizer, examples: &[Clean], pick: &Pick) -> Self {
+    fn of(lexicon: &Lexicon, recognizer: Recognizer, examples: &[Clean], pick: &Pick) -> Self {
         let values: Vec<&str> = examples.iter().map(Clean::as_str).collect();
         let mut shown = Self {
             whole: true,
@@ -2043,11 +1970,13 @@ impl Examples {
                 (Recognizer::Number, _) => {
                     let lead: String = value.chars().take_while(|c| text::figure(*c)).collect();
                     let count = if lead.is_empty() {
-                        let said: Vec<&str> = value
-                            .split_whitespace()
-                            .filter(|word| number_word(word))
+                        let folded: Vec<String> = value.split_whitespace().map(fold).collect();
+                        let said: Vec<&str> = folded
+                            .iter()
+                            .map(String::as_str)
+                            .filter(|word| number_word(lexicon, word))
                             .collect();
-                        cardinal(&said).map(|number| number.to_string().chars().count())
+                        cardinal(lexicon, &said).map(|number| number.to_string().chars().count())
                     } else {
                         Some(lead.chars().count())
                     };
@@ -2270,7 +2199,11 @@ struct Decided {
 
 /// A reading held as a value of the kind: the value and its typed form, where the kind's recognizer reads that form
 /// whole (a code, an address, a link) or the value is read directly (a number, a day, a length).
-fn standing(recognizer: Recognizer, value: &Value) -> Option<(PickValue, String)> {
+fn standing(
+    lexicon: &Lexicon,
+    recognizer: Recognizer,
+    value: &Value,
+) -> Option<(PickValue, String)> {
     match value {
         Value::Number(number) => {
             Some((PickValue::Number { value: *number }, shown_number(*number)))
@@ -2279,10 +2212,13 @@ fn standing(recognizer: Recognizer, value: &Value) -> Option<(PickValue, String)
             let read = words::read_whole(text, recognizer)?;
             Some((read, text.clone()))
         }
-        Value::Day(day) => Some((PickValue::Date { value: day.clone() }, shown_day(day))),
+        Value::Day(day) => Some((
+            PickValue::Date { value: day.clone() },
+            shown_day(lexicon, day),
+        )),
         Value::Seconds(seconds) => Some((
             PickValue::Seconds { value: *seconds },
-            shown_length(*seconds),
+            shown_length(lexicon, *seconds),
         )),
     }
 }
@@ -2292,7 +2228,12 @@ fn standing(recognizer: Recognizer, value: &Value) -> Option<(PickValue, String)
 /// «point» and a number word misspelt in a length are asked; a case or a dash the examples do not settle, a decimal
 /// where every example is whole, a day misspelt and a count read by convention are shown; a reading of no example's
 /// length is asked with nothing offered.
-fn decide(recognizer: Recognizer, run: &Run, shown: &Examples) -> Option<Decided> {
+fn decide(
+    lexicon: &Lexicon,
+    recognizer: Recognizer,
+    run: &Run,
+    shown: &Examples,
+) -> Option<Decided> {
     let mut fitting: Vec<(Value, Marks, &Reading, PickValue, String)> = Vec::new();
     let mut off: Option<&Reading> = None;
     for reading in &run.readings {
@@ -2315,7 +2256,7 @@ fn decide(recognizer: Recognizer, run: &Run, shown: &Examples) -> Option<Decided
         };
         match fit {
             Fit::Fits => {
-                let Some((read, typed)) = standing(recognizer, &value) else {
+                let Some((read, typed)) = standing(lexicon, recognizer, &value) else {
                     continue;
                 };
                 if !fitting.iter().any(|(held, ..)| *held == value) {

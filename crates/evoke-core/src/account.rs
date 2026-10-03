@@ -10,37 +10,9 @@ use crate::adapter::{Choice, Key, Prob, Question, Text};
 use crate::hold;
 use crate::manifest::{Argument, Kind};
 use crate::name::ArgName;
-use crate::text::{Clean, Input, Span};
+use crate::pack;
+use crate::text::{Clean, Input, Span, fold};
 use crate::words::{self, Token};
-
-/// The words that join a value to what is asked: a run of words left over is cut before each.
-pub(crate) const INTRODUCES: [&str; 25] = [
-    "about",
-    "regarding",
-    "concerning",
-    "re",
-    "called",
-    "named",
-    "titled",
-    "labelled",
-    "labeled",
-    "entitled",
-    "subject",
-    "saying",
-    "that",
-    "for",
-    "to",
-    "from",
-    "into",
-    "in",
-    "on",
-    "at",
-    "with",
-    "by",
-    "as",
-    "until",
-    "till",
-];
 
 /// The marks that close a run and are no part of it.
 const CLOSING: [char; 6] = [',', '.', ';', ':', '!', '?'];
@@ -61,21 +33,12 @@ const RESULT: &str = "They say what is wanted from the result, or how it should 
 const COURTESY: &str = "They are politeness, a reason or an aside, and ask for nothing.";
 const MORE: &str = "They ask for another thing as well.";
 
-/// The words by which a run says the call is wanted once more, for another value or as well: «him too», «the
-/// same for the hall». Each is found as whole words, in the run or across it and the words beside it that carry
-/// nothing, which a run's ends leave out: «the same for the hall» is the run «same».
-pub(crate) const AGAIN: [&str; 5] = ["same for", "as well", "aswell", "too", "also"];
-
-/// The marks that open and close a text in quotes, each with its pair: double, single and typographic. A mark
-/// opens only at a word's start and closes only at a word's end, so an apostrophe inside a word, «Sam's», is none.
-const QUOTES: [(char, char); 6] = [
-    ('"', '"'),
-    ('\u{201c}', '\u{201d}'),
-    ('\u{2018}', '\u{2019}'),
-    ('\'', '\''),
-    ('\u{ab}', '\u{bb}'),
-    ('\u{201e}', '\u{201c}'),
-];
+/// The keys the answers go by, and the head of an argument's.
+const KEY_ACTION: &str = "action";
+const KEY_RESULT: &str = "result";
+const KEY_COURTESY: &str = "courtesy";
+const KEY_MORE: &str = "more";
+const KEY_ARG: &str = "arg:";
 
 /// A run of the input's words that no value holds: the places of its first and last word among the input's,
 /// and the words.
@@ -150,6 +113,9 @@ impl Left {
 /// left out.
 pub(crate) fn runs(input: &Input, held: &[&Span]) -> Vec<Run> {
     let tokens = words::tokens(input.as_str());
+    let lexicon = pack::lexicon(input.as_str());
+    let introduces =
+        |token: &Token| lexicon.holds(|pack| &pack.words.introduces, &fold(&token.plain));
     let covered = |token: &Token| {
         held.iter()
             .any(|span| token.start < span.end() && token.end > span.start())
@@ -165,7 +131,7 @@ pub(crate) fn runs(input: &Input, held: &[&Span]) -> Vec<Run> {
                 );
             }
             None => from = Some(i),
-            Some(open) if i > open && INTRODUCES.contains(&token.plain.as_str()) => {
+            Some(open) if i > open && introduces(token) => {
                 runs.extend(run(input, &tokens, open, i - 1));
                 from = Some(i);
             }
@@ -201,18 +167,18 @@ fn run(input: &Input, tokens: &[Token], from: usize, to: usize) -> Option<Run> {
 /// for nothing, and asking for another thing.
 pub(crate) fn question(run: &Run, args: &IndexMap<ArgName, Argument>, what: &str) -> Question {
     let mut options: IndexMap<Key, Text> = IndexMap::new();
-    options.insert(key("action"), plain(ACTION));
+    options.insert(key(KEY_ACTION), plain(ACTION));
     for (name, argument) in args {
         if argument.kind != Kind::Flag {
             options.insert(
-                key(&format!("arg:{name}")),
+                key(&format!("{KEY_ARG}{name}")),
                 plain(&format!("{ANSWER} {}", argument.ask)),
             );
         }
     }
-    options.insert(key("result"), plain(RESULT));
-    options.insert(key("courtesy"), plain(COURTESY));
-    options.insert(key("more"), plain(MORE));
+    options.insert(key(KEY_RESULT), plain(RESULT));
+    options.insert(key(KEY_COURTESY), plain(COURTESY));
+    options.insert(key(KEY_MORE), plain(MORE));
     let ask = format!(
         "{READ_AS} {} In the request, what do the words \u{ab}{}\u{bb} do?",
         described(what),
@@ -243,14 +209,19 @@ pub(crate) fn read(run: &Run, question: &Question, answer: &IndexMap<Key, Prob>)
         .keys()
         .map(|key| (key, answer.get(key).copied().unwrap_or(Prob::ZERO)))
         .reduce(|best, next| if next.1 > best.1 { next } else { best })?;
-    let does = match top.as_str() {
-        "action" => Does::Action,
-        "result" => Does::Result,
-        "courtesy" => Does::Nothing,
-        "more" => Does::More,
-        other => Does::Answers {
-            arg: ArgName::new(other.strip_prefix("arg:")?).ok()?,
-        },
+    let top = top.as_str();
+    let does = if top == KEY_ACTION {
+        Does::Action
+    } else if top == KEY_RESULT {
+        Does::Result
+    } else if top == KEY_COURTESY {
+        Does::Nothing
+    } else if top == KEY_MORE {
+        Does::More
+    } else {
+        Does::Answers {
+            arg: ArgName::new(top.strip_prefix(KEY_ARG)?).ok()?,
+        }
     };
     Some(Left {
         words: run.words.clone(),
@@ -281,14 +252,20 @@ pub(crate) fn again(input: &Input, held: &[&Span], run: &Run) -> bool {
     while to + 1 < tokens.len() && beside(&tokens[to + 1]) {
         to += 1;
     }
-    let words: Vec<&str> = tokens[from..=to]
+    let words: Vec<String> = tokens[from..=to]
         .iter()
-        .map(|token| token.plain.as_str())
+        .map(|token| fold(&token.plain))
         .collect();
-    AGAIN.iter().any(|phrase| {
-        let phrase: Vec<&str> = phrase.split(' ').collect();
-        words.windows(phrase.len()).any(|window| window == phrase)
-    })
+    let lexicon = pack::lexicon(input.as_str());
+    lexicon
+        .phrases(|pack| &pack.refer.again)
+        .iter()
+        .any(|phrase| {
+            let phrase: Vec<&str> = phrase.split(' ').collect();
+            words
+                .windows(phrase.len())
+                .any(|window| window.iter().map(String::as_str).eq(phrase.iter().copied()))
+        })
 }
 
 /// Whether a run stands right after a value's words: only words that carry nothing, and marks, between the two.
@@ -300,16 +277,18 @@ pub(crate) fn follows(input: &Input, value: &Span, run: &Span) -> bool {
             .all(|token| token.plain.is_empty() || words::function(&token.plain))
 }
 
-/// The texts the input puts in quotes that none of the spans holds whole, each with its marks: a mark of
-/// `QUOTES` at a word's start opens, its pair at a word's end closes, and the words between are the text.
+/// The texts the input puts in quotes that none of the spans holds whole, each with its marks: a mark that opens a
+/// text at a word's start opens, its pair at a word's end closes, and the words between are the text. A mark opens
+/// only at a word's start and closes only at a word's end, so an apostrophe inside a word, «Sam's», is none.
 pub(crate) fn quotes(input: &Input, held: &[&Span]) -> Vec<Span> {
     let chars: Vec<char> = input.as_str().chars().collect();
+    let quotes = pack::lexicon(input.as_str()).pairs(|pack| &pack.quotes.text);
     let letter = |i: usize| chars.get(i).is_some_and(|c| c.is_alphanumeric());
     let space = |i: usize| chars.get(i).is_none_or(|c| c.is_whitespace());
     let mut found = Vec::new();
     let mut i = 0;
     while i < chars.len() {
-        let opened = QUOTES
+        let opened = quotes
             .iter()
             .find(|(open, _)| *open == chars[i])
             .filter(|_| (i == 0 || !letter(i - 1)) && !space(i + 1));

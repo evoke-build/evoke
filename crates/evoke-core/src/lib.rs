@@ -26,6 +26,7 @@ pub mod name;
 pub mod needs;
 pub mod otherwise;
 pub mod overlay;
+pub mod pack;
 pub mod pins;
 pub mod plan;
 mod pointer;

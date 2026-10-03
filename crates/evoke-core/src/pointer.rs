@@ -3,27 +3,10 @@
 //! and the names a value goes by. Out: where the words stand, how many values they name, and whether they
 //! point at something.
 
+use crate::pack::{self, Lexicon};
 use crate::propose::{PickValue, Proposed};
-use crate::text::{Input, Span};
-use crate::weave::reading::stem_of;
+use crate::text::{Input, Span, fold};
 use crate::words::{self, Token};
-
-/// A pronoun that names one thing said before.
-const IT: &str = "it";
-/// A word that stands for a thing said before, or for one of several.
-const ONE: &str = "one";
-/// A determiner that points on its own: «that order», «this one».
-const POINTS: [&str; 2] = ["that", "this"];
-/// A determiner that points only with a word that orders: «the last order», «my latest order».
-const OWNS: [&str; 2] = ["the", "my"];
-/// A determiner that points at several: «those 2 orders».
-const POINTS_AT_SEVERAL: [&str; 2] = ["those", "these"];
-/// A word that orders what was said before, newest first.
-const ORDERS: [&str; 5] = ["last", "latest", "newest", "previous", "recent"];
-/// The word before `recent` in «the most recent order».
-const MOST: &str = "most";
-/// A word that names two: «both orders».
-const BOTH: &str = "both";
 
 /// Words that name a value said elsewhere, or count one: where they stand, how many values they name, and
 /// whether they point back at what was said.
@@ -42,7 +25,9 @@ pub(crate) struct Pointer {
 /// as itself, its plural by its stem. None where the words hold none.
 pub(crate) fn pointed(input: &Input, proposed: &[Proposed], names: &[&str]) -> Option<Pointer> {
     let tokens = words::tokens(input.as_str());
-    (0..tokens.len()).find_map(|i| at(input, &tokens, proposed, names, i))
+    let folded: Vec<String> = tokens.iter().map(|token| fold(&token.plain)).collect();
+    let lexicon = pack::lexicon(input.as_str());
+    (0..tokens.len()).find_map(|i| at(input, &tokens, &folded, proposed, names, &lexicon, i))
 }
 
 /// The spans of the numbers that count a value one of `names` goes by: a number right before the plural of a
@@ -60,22 +45,27 @@ pub(crate) fn counts(input: &Input, proposed: &[Proposed], names: &[&str]) -> Ve
 fn at(
     input: &Input,
     tokens: &[Token],
+    folded: &[String],
     proposed: &[Proposed],
     names: &[&str],
+    lexicon: &Lexicon,
     i: usize,
 ) -> Option<Pointer> {
     let plain = |j: usize| tokens.get(j).map(|token| token.plain.as_str());
+    let word = |j: usize| folded.get(j).map(String::as_str);
     let span = |from: usize, to: usize| Span::of(input, tokens[from].from, tokens[to].to);
-    let first = plain(i)?;
+    let first = word(i)?;
     // A pronoun, or «both orders».
-    if first == IT {
+    if lexicon.holds(|pack| &pack.recalled.it, first) {
         return Some(Pointer {
             words: span(i, i)?,
             count: 1,
             points: true,
         });
     }
-    if first == BOTH && plain(i + 1).is_some_and(|word| plural(word, names)) {
+    if lexicon.holds(|pack| &pack.recalled.both, first)
+        && plain(i + 1).is_some_and(|word| plural(word, names))
+    {
         return Some(Pointer {
             words: span(i, i + 1)?,
             count: 2,
@@ -84,19 +74,15 @@ fn at(
     }
     // A determiner, then a word that orders, then a count, then the name — each but the name optional, and the
     // name a plural where a count stands before it.
-    let determiner = POINTS
-        .iter()
-        .chain(&OWNS)
-        .chain(&POINTS_AT_SEVERAL)
-        .any(|det| *det == first);
+    let that = lexicon.holds(|pack| &pack.recalled.that, first);
+    let several = lexicon.holds(|pack| &pack.recalled.several, first);
+    let determiner = that || several || lexicon.holds(|pack| &pack.recalled.owns, first);
     let mut j = if determiner { i + 1 } else { i };
     let mut ordered = false;
-    if plain(j) == Some(MOST) && plain(j + 1) == Some("recent") {
+    if let Some(taken) = words::phrase_at(folded, j, &lexicon.phrases(|pack| &pack.recalled.orders))
+    {
         ordered = true;
-        j += 2;
-    } else if plain(j).is_some_and(|word| ORDERS.contains(&word)) {
-        ordered = true;
-        j += 1;
+        j += taken;
     }
     let count = tokens.get(j).and_then(|token| number(proposed, token));
     if count.is_some() {
@@ -107,15 +93,16 @@ fn at(
         if !plural(head, names) {
             return None;
         }
-        let points = ordered || POINTS_AT_SEVERAL.contains(&first);
+        let points = ordered || several;
         return Some(Pointer {
             words: span(i, j)?,
             count,
             points,
         });
     }
-    let is_name = names.contains(&head) || (head == ONE && (determiner || ordered));
-    let points = POINTS.contains(&first) || (ordered && (determiner || i + 1 == j));
+    let one = word(j).is_some_and(|word| lexicon.holds(|pack| &pack.recalled.one, word));
+    let is_name = names.contains(&head) || (one && (determiner || ordered));
+    let points = that || (ordered && (determiner || i + 1 == j));
     if !(is_name && points) {
         return None;
     }
@@ -128,7 +115,8 @@ fn at(
 
 /// Whether a word is the plural of one of the names: its stem is a name, and it is not the name itself.
 fn plural(word: &str, names: &[&str]) -> bool {
-    word != stem_of(word) && names.contains(&stem_of(word))
+    let stem = words::stem_of(word);
+    word != stem && names.contains(&stem.as_str())
 }
 
 /// The most things a count may name: a plan's own cap on its steps.

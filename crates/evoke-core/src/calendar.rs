@@ -364,6 +364,16 @@ impl Clock {
     pub fn new(hour: u8, minute: u8) -> Option<Self> {
         (hour <= 23 && minute <= 59).then_some(Self { hour, minute })
     }
+
+    #[must_use]
+    pub fn hour(self) -> u8 {
+        self.hour
+    }
+
+    #[must_use]
+    pub fn minute(self) -> u8 {
+        self.minute
+    }
 }
 
 impl fmt::Display for Clock {

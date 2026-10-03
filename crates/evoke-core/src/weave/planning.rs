@@ -19,6 +19,7 @@ use crate::decide::{
 };
 use crate::manifest::{self, Effect, Kind, MOST_STEPS, Recognizer, Source, Yield};
 use crate::name::{ArgName, FieldName, LocalName, Tag, VocabName, Word};
+use crate::pack;
 use crate::plan::{Active, Plan};
 use crate::propose::PickValue;
 use crate::text::{self, Clean, Input, Span};
@@ -3303,7 +3304,7 @@ impl<'a> Planner<'a> {
         let named: Vec<&Candidate> = r.noun.as_ref().map_or_else(Vec::new, |noun| {
             candidates
                 .iter()
-                .filter(|c| reading::stem_of(c.field.as_str()) == noun)
+                .filter(|c| crate::words::stem_of(c.field.as_str()) == *noun)
                 .collect()
         });
         let chosen: Vec<&Candidate> = if named.is_empty() {
@@ -3641,11 +3642,12 @@ fn beside(plan: &Plan, decision: Decision, named: &Day) -> (Decision, Vec<ArgNam
             if let Value::Pick {
                 value: PickValue::Date { value: day },
                 typed,
-                ..
+                span,
             } = value
                 && let Some(read) = day.beside(named)
             {
-                *typed = crate::propose::typed_calendar(&read);
+                *typed =
+                    crate::propose::typed_calendar(&pack::lexicon(span.text().as_str()), &read);
                 *day = read;
                 moved.push(arg.clone());
             }
@@ -3863,23 +3865,20 @@ const SHARE: f64 = 0.5;
 /// At this share a part is a remark; and under one less it, it asks for something.
 const ASIDE: f64 = 0.5;
 
-/// The words that point at something said elsewhere in the request.
-const POINTS: [&str; 16] = [
-    "it", "its", "them", "their", "they", "that", "this", "those", "these", "the same", "there",
-    "him", "her", "his", "both", "each",
-];
-
-/// The words by which a part says an earlier call is done again, with what the part changes.
-const REPEATS: [&str; 3] = ["the same", "likewise", "as before"];
-
 /// Whether a part's words point at something said elsewhere.
 fn pointing(text: &str) -> bool {
-    says(text, &POINTS)
+    says(
+        text,
+        &pack::lexicon(text).phrases(|pack| &pack.refer.points),
+    )
 }
 
 /// Whether a part's words say an earlier call is done again.
 fn repeating(text: &str) -> bool {
-    says(text, &REPEATS)
+    says(
+        text,
+        &pack::lexicon(text).phrases(|pack| &pack.refer.repeats),
+    )
 }
 
 /// Whether a text holds one of the phrases, word for word.
@@ -3932,32 +3931,16 @@ fn stated_of(value: &Value) -> Option<String> {
     value.text().map(str::to_lowercase)
 }
 
-/// The words that pick one of several: the place each names among them, from the first, or from the last.
-const ORDINALS: [(&str, isize); 11] = [
-    ("first", 0),
-    ("former", 0),
-    ("1st", 0),
-    ("second", 1),
-    ("2nd", 1),
-    ("third", 2),
-    ("3rd", 2),
-    ("fourth", 3),
-    ("4th", 3),
-    ("last", -1),
-    ("latter", -1),
-];
-
-/// Which of several a part's own words pick, by the one place they name, with the word that names it as
-/// typed; none where they name none, two, or one past the last.
+/// Which of several a part's own words pick, by the one place they name — the first, the second, the last,
+/// as the pack lists the words that pick — with the word that names it as typed; none where they name none, two,
+/// or one past the last.
 fn pointed(words: &str, of: usize) -> Option<(usize, String)> {
+    let lexicon = pack::lexicon(words);
     let mut places: Vec<(isize, &str)> = words
         .split(|c: char| !c.is_alphanumeric())
         .filter_map(|word| {
-            let lower = word.to_lowercase();
-            ORDINALS
-                .iter()
-                .find(|(named, _)| *named == lower)
-                .map(|(_, place)| (*place, word))
+            let place = lexicon.value(|pack| &pack.ordinals.picks, &text::fold(word))?;
+            Some((isize::try_from(place).ok()?, word))
         })
         .collect();
     places.sort_unstable_by_key(|(place, _)| *place);
@@ -4141,16 +4124,22 @@ pub(crate) fn args_of(decision: &Decision) -> Option<&IndexMap<ArgName, Value>> 
     }
 }
 
-/// A determiner — `the`, `a`, `an` — at the head of the words, and the whitespace after it: where the item begins.
+/// An article at the head of the words, and the whitespace after it: where the item begins.
 fn determined(chars: &[char]) -> Option<usize> {
-    ["the", "a", "an"].into_iter().find_map(|det| {
-        let head = text::fold(&chars.iter().take(det.len()).collect::<String>());
-        let mut end = det.len();
-        while end < chars.len() && chars[end].is_whitespace() {
-            end += 1;
-        }
-        (head == det && end > det.len()).then_some(end)
-    })
+    let text: String = chars.iter().collect();
+    let lexicon = pack::lexicon(&text);
+    lexicon
+        .phrases(|pack| &pack.words.articles)
+        .into_iter()
+        .find_map(|article| {
+            let length = article.chars().count();
+            let head = text::fold(&chars.iter().take(length).collect::<String>());
+            let mut end = length;
+            while end < chars.len() && chars[end].is_whitespace() {
+                end += 1;
+            }
+            (head == article && end > length).then_some(end)
+        })
 }
 
 /// The item the words name: what follows the determiner, lowered, the sentence's end mark aside.
@@ -4164,12 +4153,6 @@ fn item_of(chars: &[char]) -> String {
         .trim()
         .to_owned()
 }
-
-/// The words by which a part says the step before it is wanted once more, for other values: «2 more of
-/// BOK-603», «1004 too». None names an action.
-const ONCE_MORE: [&str; 9] = [
-    "too", "also", "well", "aswell", "more", "another", "again", "extra", "plus",
-];
 
 /// The words of a text that hold its decision's values: a typed value's span; a listed word's by what it
 /// stands on, else the word itself where the text holds it. None where the decision is no call, the text
@@ -4225,8 +4208,14 @@ fn values_alone(text: &str, decision: Option<&Decision>) -> Option<Vec<Span>> {
             held.push(proposed.span);
         }
     }
-    let idle =
-        |word: &str| word.is_empty() || crate::words::function(word) || ONCE_MORE.contains(&word);
+    // A word by which the part says the step before it is wanted once more, «2 more of BOK-603», «1004 too»,
+    // names no action.
+    let lexicon = pack::lexicon(input.as_str());
+    let idle = |word: &str| {
+        word.is_empty()
+            || crate::words::function(word)
+            || lexicon.holds(|pack| &pack.refer.once_more, &text::fold(word))
+    };
     let covered = crate::words::tokens(input.as_str()).iter().all(|token| {
         idle(&token.plain)
             || held

@@ -9,7 +9,9 @@ use serde::{Deserialize, Serialize};
 use crate::adapter::{Choice, Key, Prob, Question, QuestionId, Raw, Request, Scope, State, Text};
 use crate::decide::validated;
 use crate::name::{ArgName, LocalName, WeaveName};
+use crate::pack::{self, Lexicon};
 use crate::text::{Clean, Input, fold, fold_char};
+use crate::words;
 
 /// What a connective does: `then` orders what follows after what precedes; the rest coordinate.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -119,142 +121,6 @@ pub struct Ref {
     pub p: Option<Prob>,
 }
 
-/// Connectives that order, longest first so `and then` wins over `and`.
-const THEN: [&str; 11] = [
-    "and then",
-    "and after that",
-    "and afterwards",
-    "and afterward",
-    "and next",
-    "then",
-    "after that",
-    "afterwards",
-    "afterward",
-    "after which",
-    "next",
-];
-/// Connectives that coordinate — `meanwhile` and `at the same time` say what `and` already allows.
-const AND: [&str; 12] = [
-    "and also",
-    "and meanwhile",
-    "and in the meantime",
-    "and at the same time",
-    "meanwhile",
-    "in the meantime",
-    "at the same time",
-    "and",
-    "but",
-    "plus",
-    "as well as",
-    "also",
-];
-/// A segment that begins so is left out.
-const NEGATION: [&str; 6] = ["not", "don't", "do not", "never", "without", "nor"];
-/// A segment that begins so is a condition, which no step can judge: the whole request is refused.
-const CONDITION: [&str; 3] = ["if", "unless", "in case"];
-const PRONOUNS: [&str; 9] = [
-    "both of them",
-    "each of them",
-    "all of them",
-    "the two",
-    "it",
-    "them",
-    "those",
-    "these",
-    "both",
-];
-const DETERMINERS: [&str; 8] = [
-    "that", "this", "those", "these", "the", "its", "each", "every",
-];
-const ADJECTIVES: [&str; 3] = ["same", "resulting", "new"];
-/// A noun after a determiner that names no thing — and the words that follow `that` or `this` when it is a
-/// conjunction, «make sure that the timer is off», not a reference.
-const STOP: [&str; 34] = [
-    "one", "same", "other", "way", "time", "first", "second", "last", "next", "rest", "the", "a",
-    "an", "it", "is", "was", "are", "were", "will", "would", "can", "could", "should", "there",
-    "they", "we", "you", "i", "no", "not", "all", "any", "some", "of",
-];
-
-/// The words a subject may be written as before a `before` or `after` clause: `you`, `we`, `i`, with a tense.
-const YOU: [&str; 3] = ["you", "we", "i"];
-const TENSE: [&str; 4] = ["'ve", "'d", " have", " had"];
-
-/// The tokens that stand for «and» alone between two words, each a place of the cut, shown as typed.
-const JOINERS: [&str; 5] = ["+", "&", "n", "nd", "adn"];
-/// Number words: a joiner beside one joins a number said aloud or a spelled code, «six n v», and is no place.
-const NUMBER_WORDS: [&str; 31] = [
-    "zero",
-    "oh",
-    "one",
-    "two",
-    "three",
-    "four",
-    "five",
-    "six",
-    "seven",
-    "eight",
-    "nine",
-    "ten",
-    "eleven",
-    "twelve",
-    "thirteen",
-    "fourteen",
-    "fifteen",
-    "sixteen",
-    "seventeen",
-    "eighteen",
-    "nineteen",
-    "twenty",
-    "thirty",
-    "forty",
-    "fifty",
-    "sixty",
-    "seventy",
-    "eighty",
-    "ninety",
-    "hundred",
-    "thousand",
-];
-/// The words that open a clause of the person's own action, with a subject of `OWN`.
-const OWN_OPENS: [&str; 2] = ["before", "after"];
-/// The subjects of a clause that states the person's own action, «before I call him back».
-const OWN: [&str; 2] = ["i", "we"];
-/// A tense after such a subject, «before I've checked it».
-const OWN_TENSES: [&str; 6] = ["'ve", "'d", "'m", "'ll", " have", " had"];
-/// The head of a request's own clause, the person its subject: where a clause that leads without a mark ends,
-/// «Before I promise anyone a date I need to know …».
-const REQUEST_HEADS: [&str; 14] = [
-    "i need",
-    "i want",
-    "i'd like",
-    "i would like",
-    "i'd love",
-    "i would love",
-    "i must",
-    "i have to",
-    "we need",
-    "we want",
-    "we'd like",
-    "we would like",
-    "we must",
-    "we have to",
-];
-/// The connectives after which a clause leads, «…, and before I decide anything I'd like …», «and not the Pro, …».
-const LEADS: [&str; 7] = ["and", "but", "or", "then", "also", "so", "plus"];
-/// Courtesies that open with «if» and state no condition.
-const COURTESIES: [&str; 7] = [
-    "if it's not too much trouble",
-    "if it is not too much trouble",
-    "if you don't mind",
-    "if you do not mind",
-    "if you would",
-    "if possible",
-    "if so",
-];
-/// The word that opens a contrast, «not X, Y».
-const CONTRAST: &str = "not";
-/// The word that may end a contrast's X, «not X but Y».
-const CONTRAST_BUT: &str = "but";
 /// The marks that close a clause or a sentence.
 const MARKS: &str = ",;:.?!";
 /// The marks a word may carry that say nothing of it: stripped before a joiner's neighbour is read.
@@ -269,39 +135,62 @@ const ENDS: [char; 3] = ['.', '?', '!'];
 #[must_use]
 pub fn canonical(input: &str) -> String {
     let chars: Vec<char> = input.chars().collect();
-    if let Some((word, clause, rest)) = leading(&chars) {
-        return if word == "before" {
-            format!("{rest}, then {clause}")
+    let lexicon = pack::lexicon(input);
+    let joiner = lexicon
+        .first()
+        .clause
+        .joiner
+        .iter()
+        .next()
+        .unwrap_or_default();
+    if let Some((before, clause, rest)) = leading(&lexicon, &chars) {
+        return if before {
+            format!("{rest}, {joiner} {clause}")
         } else {
-            format!("{clause}, then {rest}")
+            format!("{clause}, {joiner} {rest}")
         };
     }
-    if let Some((first, word, clause)) = trailing(&chars) {
-        return if word == "before" {
-            format!("{first}, then {clause}")
+    if let Some((first, before, clause)) = trailing(&lexicon, &chars) {
+        return if before {
+            format!("{first}, {joiner} {clause}")
         } else {
-            format!("{clause}, then {first}")
+            format!("{clause}, {joiner} {first}")
         };
     }
     input.to_owned()
 }
 
-/// «before you X, Y»: the word, X and Y; the subject is optional, and a clause that begins `that`, `this` or
-/// `which` is a connective, not a clause.
-fn leading(chars: &[char]) -> Option<(&'static str, String, String)> {
-    let (word, after) = ["before", "after"]
+/// A «before» or an «after» at `at`: whether it is a «before», and where it ends.
+fn opens_clause(lexicon: &Lexicon, chars: &[char], at: usize) -> Option<(bool, usize)> {
+    let before = lexicon
+        .phrases(|pack| &pack.clause.before)
         .into_iter()
-        .find_map(|word| Some((word, word_end(chars, 0, word)?)))?;
+        .find_map(|word| word_end(chars, at, word))
+        .map(|end| (true, end));
+    before.or_else(|| {
+        lexicon
+            .phrases(|pack| &pack.clause.after)
+            .into_iter()
+            .find_map(|word| word_end(chars, at, word))
+            .map(|end| (false, end))
+    })
+}
+
+/// «before you X, Y»: whether the word is a «before», X and Y; the subject is optional, and a clause that begins
+/// with a conjunction, «that», «this», «which», is a connective, not a clause.
+fn leading(lexicon: &Lexicon, chars: &[char]) -> Option<(bool, String, String)> {
+    let (before, after) = opens_clause(lexicon, chars, 0)?;
     let mut i = spaces(chars, after)?;
-    if own_subject(chars, i).is_some() {
+    if own_subject(lexicon, chars, i).is_some() {
         return None;
     }
-    if let Some(after) = subject(chars, i)
+    if let Some(after) = subject(lexicon, chars, i)
         && let Some(spaced) = spaces(chars, after)
     {
         i = spaced;
     }
-    if ["that", "this", "which"]
+    if lexicon
+        .phrases(|pack| &pack.clause.conjunctions)
         .iter()
         .any(|w| whole_word(chars, i, w).is_some())
     {
@@ -318,7 +207,7 @@ fn leading(chars: &[char]) -> Option<(&'static str, String, String)> {
             if rest < chars.len() && !chars[rest..].contains(&'\n') {
                 let clause: String = chars[i..comma].iter().collect();
                 let after: String = chars[rest..].iter().collect();
-                return Some((word, clause, after));
+                return Some((before, clause, after));
             }
         }
         comma += 1;
@@ -326,8 +215,9 @@ fn leading(chars: &[char]) -> Option<(&'static str, String, String)> {
     None
 }
 
-/// «Y before you X»: the leftmost `\s+(before|after)\s+you\s+` with a character before and after.
-fn trailing(chars: &[char]) -> Option<(String, &'static str, String)> {
+/// «Y before you X»: the leftmost «before» or «after» with a subject after it and a character before and after;
+/// Y, whether the word is a «before», and X.
+fn trailing(lexicon: &Lexicon, chars: &[char]) -> Option<(String, bool, String)> {
     let mut i = 1;
     while i < chars.len() {
         if chars[i].is_whitespace() && !chars[..i].contains(&'\n') {
@@ -335,19 +225,17 @@ fn trailing(chars: &[char]) -> Option<(String, &'static str, String)> {
             while j < chars.len() && chars[j].is_whitespace() {
                 j += 1;
             }
-            if let Some((word, after_word)) = ["before", "after"]
-                .into_iter()
-                .find_map(|word| Some((word, word_end(chars, j, word)?)))
+            if let Some((before, after_word)) = opens_clause(lexicon, chars, j)
                 && let Some(after_word) = spaces(chars, after_word)
-                && let Some(after_subject) = subject(chars, after_word)
-                && own_subject(chars, after_word).is_none()
+                && let Some(after_subject) = subject(lexicon, chars, after_word)
+                && own_subject(lexicon, chars, after_word).is_none()
                 && let Some(rest) = spaces(chars, after_subject)
                 && rest < chars.len()
                 && !chars[rest..].contains(&'\n')
             {
                 let first: String = chars[..i].iter().collect();
                 let clause: String = chars[rest..].iter().collect();
-                return Some((first, word, clause));
+                return Some((first, before, clause));
             }
         }
         i += 1;
@@ -355,22 +243,31 @@ fn trailing(chars: &[char]) -> Option<(String, &'static str, String)> {
     None
 }
 
-/// `you`, `we` or `i`, with `'ve`, `'d`, ` have` or ` had` when one follows: where the subject ends.
-fn subject(chars: &[char], at: usize) -> Option<usize> {
-    let end = YOU.into_iter().find_map(|you| word_end(chars, at, you))?;
+/// A subject at `at`, «you», «we», «i», with a tense when one follows: where the subject ends.
+fn subject(lexicon: &Lexicon, chars: &[char], at: usize) -> Option<usize> {
+    let end = lexicon
+        .phrases(|pack| &pack.clause.subjects)
+        .into_iter()
+        .find_map(|you| word_end(chars, at, you))?;
     Some(
-        TENSE
+        lexicon
+            .phrases(|pack| &pack.clause.tenses)
             .into_iter()
             .find_map(|tense| word_end(chars, end, tense))
             .unwrap_or(end),
     )
 }
 
-/// `i` or `we` as a whole word at `at`, with a tense when one follows as a whole word: where the subject ends.
-fn own_subject(chars: &[char], at: usize) -> Option<usize> {
-    let end = OWN.into_iter().find_map(|own| whole_word(chars, at, own))?;
+/// The person as a whole word at `at`, «i», «we», with a tense when one follows as a whole word: where the subject
+/// ends.
+fn own_subject(lexicon: &Lexicon, chars: &[char], at: usize) -> Option<usize> {
+    let end = lexicon
+        .phrases(|pack| &pack.clause.own)
+        .into_iter()
+        .find_map(|own| whole_word(chars, at, own))?;
     Some(
-        OWN_TENSES
+        lexicon
+            .phrases(|pack| &pack.clause.own_tenses)
             .into_iter()
             .find_map(|tense| whole_word(chars, end, tense))
             .unwrap_or(end),
@@ -444,7 +341,8 @@ fn is_word(c: char) -> bool {
 #[must_use]
 pub fn splits(text: &str, commas: bool) -> Vec<Split> {
     let chars: Vec<char> = text.chars().collect();
-    let quoted = quoted(&chars);
+    let lexicon = pack::lexicon(text);
+    let quoted = quoted(&lexicon, &chars);
     let mut found: Vec<Split> = Vec::new();
     let mut add = |phrases: &[&str], order: Order, bare: Option<char>| {
         let mut i = 0;
@@ -474,8 +372,8 @@ pub fn splits(text: &str, commas: bool) -> Vec<Split> {
             });
         }
     };
-    add(&THEN, Order::Then, None);
-    add(&AND, Order::And, None);
+    add(&lexicon.phrases(|pack| &pack.cut.then), Order::Then, None);
+    add(&lexicon.phrases(|pack| &pack.cut.and), Order::And, None);
     add(&[], Order::And, Some(';'));
     if commas {
         add(&[], Order::And, Some(','));
@@ -530,20 +428,17 @@ fn connective(
     Some((end, chars[at..word_end].iter().collect()))
 }
 
-/// The quoted regions of the text: `"…"`, `“…”` and `‘…’`.
-fn quoted(chars: &[char]) -> Vec<(usize, usize)> {
+/// The quoted regions of the text: between the marks a value is quoted with.
+fn quoted(lexicon: &Lexicon, chars: &[char]) -> Vec<(usize, usize)> {
+    let pairs = lexicon.pairs(|pack| &pack.quotes.value);
     let mut regions = Vec::new();
     let mut i = 0;
     while i < chars.len() {
-        let close = match chars[i] {
-            '"' => '"',
-            '\u{201c}' => '\u{201d}',
-            '\u{2018}' => '\u{2019}',
-            _ => {
-                i += 1;
-                continue;
-            }
+        let Some((_, close)) = pairs.iter().find(|(open, _)| *open == chars[i]) else {
+            i += 1;
+            continue;
         };
+        let close = *close;
         match chars[i + 1..].iter().position(|c| *c == close) {
             Some(offset) => {
                 regions.push((i, i + 2 + offset));
@@ -561,8 +456,9 @@ fn quoted(chars: &[char]) -> Vec<(usize, usize)> {
 pub fn places(text: &str, commas: bool) -> Vec<Split> {
     let mut found = splits(text, commas);
     let chars: Vec<char> = text.chars().collect();
-    let quoted = quoted(&chars);
-    for split in joiners(&chars, &quoted) {
+    let lexicon = pack::lexicon(text);
+    let quoted = quoted(&lexicon, &chars);
+    for split in joiners(&lexicon, &chars, &quoted) {
         if !found
             .iter()
             .any(|s| split.start < s.end && split.end > s.start)
@@ -577,20 +473,32 @@ pub fn places(text: &str, commas: bool) -> Vec<Split> {
 /// Whether a place's word is a sign or a letter typed for «and».
 #[must_use]
 pub fn joins(word: &str) -> bool {
-    JOINERS.contains(&word)
+    pack::lexicon(word).typed(|pack| &pack.cut.signs, word)
+}
+
+/// Whether a word is a number word: a joiner beside one joins a number said aloud or a spelled code, «six n v»,
+/// and is no place.
+fn number_word(lexicon: &Lexicon, word: &str) -> bool {
+    let word = fold(word);
+    lexicon.value(|pack| &pack.numbers.ones, &word).is_some()
+        || lexicon.value(|pack| &pack.numbers.tens, &word).is_some()
+        || lexicon.value(|pack| &pack.numbers.scale, &word).is_some()
+        || lexicon.holds(|pack| &pack.numbers.oh, &word)
+        || lexicon.holds(|pack| &pack.numbers.noughts, &word)
 }
 
 /// Every joiner standing alone between two words, outside quotes, as a place: from the end of the word before to
 /// the start of the word after, its word as typed. Never after a mark («sam, n ana»), beside a number or a number
 /// word («2 + 2», «six n v»), beside a single letter («R & D», «with one n»), nor between two capitalised words,
 /// a name («Hartwell & Sons»).
-fn joiners(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Split> {
+fn joiners(lexicon: &Lexicon, chars: &[char], quoted: &[(usize, usize)]) -> Vec<Split> {
     let tokens = words_of(chars);
     let mut found = Vec::new();
     for k in 1..tokens.len().saturating_sub(1) {
         let (start, end) = tokens[k];
         let token: String = chars[start..end].iter().collect();
-        if !JOINERS.contains(&token.as_str()) || quoted.iter().any(|q| start >= q.0 && start < q.1)
+        if !lexicon.typed(|pack| &pack.cut.signs, &token)
+            || quoted.iter().any(|q| start >= q.0 && start < q.1)
         {
             continue;
         }
@@ -602,9 +510,7 @@ fn joiners(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Split> {
             bare_word(&chars[before.0..before.1]),
             bare_word(&chars[after.0..after.1]),
         ];
-        let number = |word: &str| {
-            word.starts_with(char::is_numeric) || NUMBER_WORDS.contains(&fold(word).as_str())
-        };
+        let number = |word: &str| word.starts_with(char::is_numeric) || number_word(lexicon, word);
         let capital = |word: &str| word.starts_with(char::is_uppercase);
         if neighbours
             .iter()
@@ -655,10 +561,11 @@ fn bare_word(chars: &[char]) -> String {
 #[must_use]
 pub fn stretches(text: &str, places: &[Split]) -> Vec<Apart> {
     let chars: Vec<char> = text.chars().collect();
-    let quoted = quoted(&chars);
-    let mut found = own_clauses(&chars, &quoted);
-    found.extend(courtesies(&chars, &quoted, places));
-    found.extend(contrasts(&chars, &quoted));
+    let lexicon = pack::lexicon(text);
+    let quoted = quoted(&lexicon, &chars);
+    let mut found = own_clauses(&lexicon, &chars, &quoted);
+    found.extend(courtesies(&lexicon, &chars, &quoted, places));
+    found.extend(contrasts(&lexicon, &chars, &quoted));
     let mut kept: Vec<Apart> = Vec::new();
     for apart in found {
         if !kept
@@ -682,12 +589,13 @@ fn trimmed_before(chars: &[char], at: usize) -> usize {
 }
 
 /// Whether the words before `at` end a clause or open one: nothing before, a mark («,», «;», «:», a sentence end,
-/// a dash), or a connective of `LEADS`.
-fn leads(chars: &[char], at: usize) -> bool {
+/// a dash), or a connective after which a clause leads.
+fn leads(lexicon: &Lexicon, chars: &[char], at: usize) -> bool {
     let end = trimmed_before(chars, at);
     end == 0
         || ".?!,;:-\u{2013}\u{2014}".contains(chars[end - 1])
-        || LEADS
+        || lexicon
+            .phrases(|pack| &pack.cut.leads)
             .iter()
             .any(|word| word_before(chars, end, word).is_some_and(|start| boundary(chars, start)))
 }
@@ -699,9 +607,10 @@ fn in_figure(chars: &[char], i: usize) -> bool {
 }
 
 /// Where a clause that opens at `from` ends: the first «,» «;» «:», a sentence end, a spaced dash, or the head of a
-/// request's own clause (`REQUEST_HEADS`); and whether that end is a sentence end or the text's own, which a
-/// leading clause may not reach.
-fn clause_end(chars: &[char], from: usize) -> (usize, bool) {
+/// request's own clause; and whether that end is a sentence end or the text's own, which a leading clause may not
+/// reach.
+fn clause_end(lexicon: &Lexicon, chars: &[char], from: usize) -> (usize, bool) {
+    let heads = lexicon.phrases(|pack| &pack.clause.heads);
     let mut i = from;
     while i < chars.len() {
         let c = chars[i];
@@ -720,7 +629,7 @@ fn clause_end(chars: &[char], from: usize) -> (usize, bool) {
             return (i, false);
         }
         if boundary(chars, i)
-            && REQUEST_HEADS
+            && heads
                 .iter()
                 .any(|head| whole_word(chars, i, head).is_some())
         {
@@ -735,18 +644,18 @@ fn clause_end(chars: &[char], from: usize) -> (usize, bool) {
 /// (nothing, a mark or a connective before it) ends at a mark, a spaced dash or a request's head, and one that
 /// reaches a sentence end or the text's end first is left as typed, since code cannot say where it ends; one that
 /// trails ends at the first mark, a request's head, or the end.
-fn own_clauses(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
+fn own_clauses(lexicon: &Lexicon, chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
     let mut found = Vec::new();
     let mut i = 0;
     while i < chars.len() {
-        let Some(opened) = OWN_OPENS
-            .into_iter()
-            .find_map(|word| whole_word(chars, i, word).filter(|_| boundary(chars, i)))
+        let Some((_, opened)) = opens_clause(lexicon, chars, i)
+            .filter(|(_, end)| boundary(chars, i) && ends_word(chars, *end))
         else {
             i += 1;
             continue;
         };
-        let Some(head) = spaces(chars, opened).and_then(|at| own_subject(chars, at)) else {
+        let Some(head) = spaces(chars, opened).and_then(|at| own_subject(lexicon, chars, at))
+        else {
             i += 1;
             continue;
         };
@@ -754,8 +663,8 @@ fn own_clauses(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
             i = head;
             continue;
         }
-        let (end, sentence) = clause_end(chars, head);
-        if leads(chars, i) && sentence {
+        let (end, sentence) = clause_end(lexicon, chars, head);
+        if leads(lexicon, chars, i) && sentence {
             i = head;
             continue;
         }
@@ -769,14 +678,20 @@ fn own_clauses(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
     found
 }
 
-/// Every courtesy of `COURTESIES` outside quotes that heads a part — nothing before it, or a place ending where
-/// it starts — or ends one — only marks after it, or a place starting where it ends.
-fn courtesies(chars: &[char], quoted: &[(usize, usize)], places: &[Split]) -> Vec<Apart> {
+/// Every courtesy phrase outside quotes that heads a part — nothing before it, or a place ending where it starts —
+/// or ends one — only marks after it, or a place starting where it ends.
+fn courtesies(
+    lexicon: &Lexicon,
+    chars: &[char],
+    quoted: &[(usize, usize)],
+    places: &[Split],
+) -> Vec<Apart> {
+    let phrases = lexicon.phrases(|pack| &pack.courtesy.phrases);
     let mut found = Vec::new();
     let mut i = 0;
     while i < chars.len() {
-        let Some(end) = COURTESIES
-            .into_iter()
+        let Some(end) = phrases
+            .iter()
             .find_map(|phrase| whole_word(chars, i, phrase).filter(|_| boundary(chars, i)))
         else {
             i += 1;
@@ -802,13 +717,21 @@ fn courtesies(chars: &[char], quoted: &[(usize, usize)], places: &[Split]) -> Ve
 /// Every «not X» that heads a clause (nothing, a mark, a dash or a connective before it) outside quotes, X up to
 /// the first «,», «:» or «but», holding no other mark, with more words after it: X is left out and what follows
 /// kept.
-fn contrasts(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
+fn contrasts(lexicon: &Lexicon, chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
+    let contrast = lexicon.phrases(|pack| &pack.cut.contrast);
+    let but = lexicon.phrases(|pack| &pack.cut.but);
     let mut found = Vec::new();
     let mut i = 0;
     while i < chars.len() {
-        let Some(from) = whole_word(chars, i, CONTRAST).filter(|_| {
-            boundary(chars, i) && leads(chars, i) && !quoted.iter().any(|q| i >= q.0 && i < q.1)
-        }) else {
+        let Some(from) = contrast
+            .iter()
+            .find_map(|word| whole_word(chars, i, word))
+            .filter(|_| {
+                boundary(chars, i)
+                    && leads(lexicon, chars, i)
+                    && !quoted.iter().any(|q| i >= q.0 && i < q.1)
+            })
+        else {
             i += 1;
             continue;
         };
@@ -826,7 +749,7 @@ fn contrasts(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
             }
             if boundary(chars, j)
                 && j > from
-                && let Some(but) = whole_word(chars, j, CONTRAST_BUT)
+                && let Some(but) = but.iter().find_map(|word| whole_word(chars, j, word))
             {
                 end = Some((j, but));
                 break;
@@ -858,6 +781,7 @@ fn contrasts(chars: &[char], quoted: &[(usize, usize)]) -> Vec<Apart> {
 #[must_use]
 pub fn set_apart(text: &str, places: Vec<Split>, stretches: &[Apart]) -> Vec<Split> {
     let chars: Vec<char> = text.chars().collect();
+    let lexicon = pack::lexicon(text);
     let first = chars.iter().position(|c| !c.is_whitespace()).unwrap_or(0);
     let mut places = places;
     for apart in stretches {
@@ -865,7 +789,7 @@ pub fn set_apart(text: &str, places: Vec<Split>, stretches: &[Apart]) -> Vec<Spl
         if apart.start > first {
             if let Some(place) = places.iter().find(|p| p.end == apart.start) {
                 sure.push(place.clone());
-            } else if let Some(place) = place_before(&chars, apart.start) {
+            } else if let Some(place) = place_before(&lexicon, &chars, apart.start) {
                 sure.push(place);
             } else {
                 continue;
@@ -904,17 +828,20 @@ pub fn set_apart(text: &str, places: Vec<Split>, stretches: &[Apart]) -> Vec<Spl
 }
 
 /// A place made before a stretch at `at`: the spaces before it, with the mark before them when there is one, or
-/// the connective of `LEADS` and the mark before it; none where no space stands before the stretch.
-fn place_before(chars: &[char], at: usize) -> Option<Split> {
+/// the connective a clause leads after and the mark before it; none where no space stands before the stretch.
+fn place_before(lexicon: &Lexicon, chars: &[char], at: usize) -> Option<Split> {
     let end = trimmed_before(chars, at);
     if end == at {
         return None;
     }
-    let lead = LEADS.iter().find_map(|word| {
-        word_before(chars, end, word)
-            .filter(|&start| boundary(chars, start))
-            .map(|start| (word, start))
-    });
+    let lead = lexicon
+        .phrases(|pack| &pack.cut.leads)
+        .into_iter()
+        .find_map(|word| {
+            word_before(chars, end, word)
+                .filter(|&start| boundary(chars, start))
+                .map(|start| (word, start))
+        });
     let start = match lead {
         Some((_, opens)) => {
             let mut start = trimmed_before(chars, opens);
@@ -933,7 +860,7 @@ fn place_before(chars: &[char], at: usize) -> Option<Split> {
                 .map(ToString::to_string)
                 .unwrap_or_default()
         },
-        |(word, _)| (*word).to_owned(),
+        |(word, _)| word.to_owned(),
     );
     (start > 0).then_some(Split {
         start,
@@ -996,20 +923,31 @@ pub fn segments(text: &str, taken: &[Split]) -> Vec<Segment> {
 /// Whether a segment begins with a negation: left out, never decided, never run.
 #[must_use]
 pub fn negated(text: &str) -> bool {
-    heads(text, &NEGATION)
+    heads(
+        text,
+        &pack::lexicon(text).phrases(|pack| &pack.cut.negation),
+    )
 }
 
 /// Whether a segment begins with a condition — `if`, `unless`, `in case` — which no step can judge.
 #[must_use]
 pub fn conditional(text: &str) -> bool {
-    heads(text, &CONDITION)
+    heads(
+        text,
+        &pack::lexicon(text).phrases(|pack| &pack.cut.condition),
+    )
 }
 
 /// Why a segment is no step, when it is not one.
 fn left(text: &str) -> Option<Left> {
     if negated(text) {
         Some(Left::Negated)
-    } else if conditional(text) && !heads(text, &COURTESIES) {
+    } else if conditional(text)
+        && !heads(
+            text,
+            &pack::lexicon(text).phrases(|pack| &pack.courtesy.phrases),
+        )
+    {
         // «if you would», «if so» state no condition: code sets them apart where they stand.
         Some(Left::Conditional)
     } else {
@@ -1030,18 +968,26 @@ fn heads(text: &str, words: &[&str]) -> bool {
 #[must_use]
 pub fn refers_back(text: &str) -> bool {
     let chars: Vec<char> = text.chars().collect();
-    (0..chars.len()).any(|i| pronoun_at(&chars, i).is_some())
+    let lexicon = pack::lexicon(text);
+    (0..chars.len()).any(|i| pronoun_at(&lexicon, &chars, i).is_some())
 }
 
-/// A pronoun at `i`, the longest alternative first: where it ends. A `#` before the word makes it a name —
-/// «#it» is a channel — never a pronoun.
-fn pronoun_at(chars: &[char], i: usize) -> Option<(usize, &'static str)> {
+/// A pronoun at `i`, the longest alternative first: where it ends, and whether it names several. A `#` before the
+/// word makes it a name — «#it» is a channel — never a pronoun.
+fn pronoun_at(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(usize, bool)> {
     if !boundary(chars, i) || (i > 0 && chars[i - 1] == '#') {
         return None;
     }
-    PRONOUNS
+    lexicon
+        .phrases(|pack| &pack.refer.many)
         .into_iter()
-        .find_map(|word| whole_word(chars, i, word).map(|end| (end, word)))
+        .find_map(|word| whole_word(chars, i, word).map(|end| (end, true)))
+        .or_else(|| {
+            lexicon
+                .phrases(|pack| &pack.refer.one)
+                .into_iter()
+                .find_map(|word| whole_word(chars, i, word).map(|end| (end, false)))
+        })
 }
 
 /// Code's reading of references in segment `k`: a pronoun names the step before, a plural one every earlier step;
@@ -1055,14 +1001,14 @@ pub fn refs_by_code(segs: &[Segment], k: usize, fields: &[Vec<String>]) -> Vec<R
         return Vec::new();
     }
     let chars: Vec<char> = segs[k].text.chars().collect();
+    let lexicon = pack::lexicon(&segs[k].text);
     let mut refs: Vec<Ref> = Vec::new();
     let mut i = 0;
     while i < chars.len() {
-        let Some((end, word)) = pronoun_at(&chars, i) else {
+        let Some((end, many)) = pronoun_at(&lexicon, &chars, i) else {
             i += 1;
             continue;
         };
-        let many = word != "it";
         refs.push(Ref {
             span: Where {
                 start: i,
@@ -1080,25 +1026,24 @@ pub fn refs_by_code(segs: &[Segment], k: usize, fields: &[Vec<String>]) -> Vec<R
     }
     let mut i = 0;
     while i < chars.len() {
-        let Some((end, det, noun)) = phrase_at(&chars, i) else {
+        let Some((end, det, noun)) = phrase_at(&lexicon, &chars, i) else {
             i += 1;
             continue;
         };
         let start = i;
         i = end;
-        if STOP.contains(&noun.as_str()) {
+        if lexicon.holds(|pack| &pack.refer.stop, &noun) {
             continue;
         }
-        let stem = stem_of(&noun).to_owned();
-        let weak = det == "the";
-        let from = earlier(segs, k, fields, &stem, weak);
+        let stem = words::stem(&lexicon, &noun);
+        let weak = lexicon.holds(|pack| &pack.refer.weak, det);
+        let from = earlier(&lexicon, segs, k, fields, &stem, weak);
         if from.is_empty() {
             continue;
         }
-        // Plural from the words: `each`, `every`, or a noun in `s` the source did not write that way — «the
-        // address» beside «look up dana's address» is that one thing.
-        let many = det == "each"
-            || det == "every"
+        // Plural from the words: a determiner that names each, or a noun in the plural the source did not write
+        // that way — «the address» beside «look up dana's address» is that one thing.
+        let many = lexicon.holds(|pack| &pack.refer.each, det)
             || (stem != noun && !attested(segs, fields, from[0], &noun));
         refs.push(Ref {
             span: Where {
@@ -1117,17 +1062,19 @@ pub fn refs_by_code(segs: &[Segment], k: usize, fields: &[Vec<String>]) -> Vec<R
     dedupe(refs)
 }
 
-/// `(that|this|those|these|the|its|each|every) [same|resulting|new] <noun>` at `i`: where it ends, the
-/// determiner and the noun, lowered.
-fn phrase_at(chars: &[char], i: usize) -> Option<(usize, &'static str, String)> {
+/// A determiner, an adjective that may follow it, «same», «resulting», «new», and a noun at `i`: where it ends,
+/// the determiner as the pack lists it and the noun, as `fold` writes it.
+fn phrase_at(lexicon: &Lexicon, chars: &[char], i: usize) -> Option<(usize, &'static str, String)> {
     if !boundary(chars, i) {
         return None;
     }
-    let (det, after) = DETERMINERS
+    let (det, after) = lexicon
+        .phrases(|pack| &pack.refer.determiners)
         .into_iter()
         .find_map(|det| Some((det, whole_word(chars, i, det)?)))?;
     let mut j = spaces(chars, after)?;
-    if let Some(after) = ADJECTIVES
+    if let Some(after) = lexicon
+        .phrases(|pack| &pack.refer.adjectives)
         .into_iter()
         .find_map(|adjective| whole_word(chars, j, adjective))
         && let Some(after) = spaces(chars, after)
@@ -1141,16 +1088,14 @@ fn phrase_at(chars: &[char], i: usize) -> Option<(usize, &'static str, String)> 
     if end == j || !ends_word(chars, end) {
         return None;
     }
-    let noun: String = chars[j..end]
-        .iter()
-        .flat_map(|c| c.to_lowercase())
-        .collect();
+    let noun: String = chars[j..end].iter().flat_map(|c| fold_char(*c)).collect();
     Some((end, det, noun))
 }
 
 /// The nearest earlier step a noun names: by its words — not their first word, its verb, for a weak determiner —
 /// by a field of its result, or by the first five letters of its verb for a demonstrative.
 fn earlier(
+    lexicon: &Lexicon,
     segs: &[Segment],
     k: usize,
     fields: &[Vec<String>],
@@ -1159,14 +1104,14 @@ fn earlier(
 ) -> Vec<usize> {
     for j in (0..k).rev() {
         let text = &segs[j].text;
-        if let Some(at) = word_at(text, stem)
+        if let Some(at) = word_at(lexicon, text, stem)
             && !(weak && at == 0)
         {
             return vec![j];
         }
         if fields
             .get(j)
-            .is_some_and(|fields| fields.iter().any(|f| stem_of(f) == stem))
+            .is_some_and(|fields| fields.iter().any(|f| words::stem(lexicon, f) == stem))
         {
             return vec![j];
         }
@@ -1182,18 +1127,6 @@ fn earlier(
     Vec::new()
 }
 
-/// A word's stem, the same on both sides of a comparison: `addresses` and `address` meet at `address`, `clients`
-/// and `client` at `client`; a word in `ss` stays as it is.
-pub(crate) fn stem_of(word: &str) -> &str {
-    if let Some(head) = word.strip_suffix("sses") {
-        &word[..head.len() + 2]
-    } else if word.ends_with('s') && !word.ends_with("ss") {
-        &word[..word.len() - 1]
-    } else {
-        word
-    }
-}
-
 /// Whether a noun, as written, stands whole among step `j`'s words or names a field of its result.
 fn attested(segs: &[Segment], fields: &[Vec<String>], j: usize, noun: &str) -> bool {
     let chars: Vec<char> = segs[j].text.chars().collect();
@@ -1203,17 +1136,18 @@ fn attested(segs: &[Segment], fields: &[Vec<String>], j: usize, noun: &str) -> b
             .is_some_and(|fields| fields.iter().any(|f| f == noun))
 }
 
-/// `\b<stem>s?\b` in the text, case aside: where the first one starts, in characters.
-fn word_at(text: &str, stem: &str) -> Option<usize> {
+/// The stem as a whole word in the text, or with a plural's ending, case aside: where the first one starts, in
+/// characters.
+fn word_at(lexicon: &Lexicon, text: &str, stem: &str) -> Option<usize> {
     let chars: Vec<char> = text.chars().collect();
+    let plurals = lexicon.phrases(|pack| &pack.endings.plural);
     (0..chars.len()).find(|&i| {
         boundary(&chars, i)
             && word_end(&chars, i, stem).is_some_and(|end| {
                 ends_word(&chars, end)
-                    || (chars
-                        .get(end)
-                        .is_some_and(|c| c.to_lowercase().eq("s".chars()))
-                        && ends_word(&chars, end + 1))
+                    || plurals
+                        .iter()
+                        .any(|ending| whole_word(&chars, end, ending).is_some())
             })
     })
 }
@@ -1296,6 +1230,9 @@ pub(crate) fn judging(
 
 /// The name of the question that rides the split points': how many things the request asks.
 const COUNT: &str = "count";
+
+/// The head of an earlier step's key among a reference's choices: `step0`, `step1`.
+const STEP: &str = "step";
 
 /// How many things a request asks, and its four answers.
 const HOW_MANY: &str = "How many separate things does the request ask to be done?";
@@ -1471,7 +1408,7 @@ pub(crate) fn referring(
             let mut options = IndexMap::new();
             for (j, earlier) in segs.iter().take(k).enumerate() {
                 let text = Clean::new(&format!("«{}»", earlier.text)).map_err(|_| Unclean)?;
-                options.insert(key(&format!("step{j}")), Text::Plain(text));
+                options.insert(key(&format!("{STEP}{j}")), Text::Plain(text));
             }
             let choice = Choice::new(ask, options, None).map_err(|_| Unclean)?;
             questions.insert(own(&format!("ref_{k}_{i}")), Question::Choice(choice));
@@ -1512,7 +1449,7 @@ pub(crate) fn referred(
                 continue;
             };
             if let Some(j) = best
-                .strip_prefix("step")
+                .strip_prefix(STEP)
                 .and_then(|j| j.parse::<usize>().ok())
             {
                 r.from = vec![j];
@@ -1543,17 +1480,18 @@ fn request_of(
     })
 }
 
-/// The noun a step opening with `check that <noun>` names — a reference to an earlier step by code, `check that
+/// The noun a step opening with `<verb> that <noun>` names — a reference to an earlier step by code, `check that
 /// writes land`, where `check whether` is meant — when it opens so: what a playbook's lint flags. A step that
-/// refers on purpose, `roll back that release`, is not opened by a check.
+/// refers on purpose, `roll back that release`, is not opened by the verb.
 #[must_use]
-pub(crate) fn checked_that(text: &str) -> Option<String> {
+pub(crate) fn that_after(text: &str, verb: &str) -> Option<String> {
     let chars: Vec<char> = text.chars().collect();
-    let after = spaces(&chars, word_end(&chars, 0, "check")?)?;
-    match phrase_at(&chars, after) {
-        Some((_, "that", noun)) if !STOP.contains(&noun.as_str()) => Some(noun),
-        _ => None,
-    }
+    let lexicon = pack::lexicon(text);
+    let after = spaces(&chars, word_end(&chars, 0, verb)?)?;
+    let (_, det, noun) = phrase_at(&lexicon, &chars, after)?;
+    let that = lexicon.holds(|pack| &pack.recalled.that, det)
+        && !lexicon.holds(|pack| &pack.refer.weak, det);
+    (that && !lexicon.holds(|pack| &pack.refer.stop, &noun)).then_some(noun)
 }
 
 /// `weave.<name>`: a question of the layer's own.
@@ -1572,6 +1510,7 @@ fn plain(text: &str) -> Clean {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::words::stem_of;
 
     fn words(splits: &[Split]) -> Vec<(&str, Order)> {
         splits.iter().map(|s| (s.word.as_str(), s.order)).collect()
@@ -1965,12 +1904,7 @@ mod tests {
             "queue the 80's r&b mix",
             "+ omar",
         ] {
-            assert!(
-                places(text, true)
-                    .iter()
-                    .all(|s| !JOINERS.contains(&s.word.as_str())),
-                "{text}"
-            );
+            assert!(places(text, true).iter().all(|s| !joins(&s.word)), "{text}");
         }
     }
 

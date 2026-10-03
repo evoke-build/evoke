@@ -18,6 +18,7 @@ What `evoke` must do is written down as examples a test can check, and it is bui
 | Wording      | The collection and the six example problems under [spec/transcripts](spec/transcripts) keep every rule [lint](https://evoke.build/manual/reference/diagnostics.html#what-lint-reports) reports: the effect written, three examples, a record that leaves out each option and pick, a confirm that reads the call back |
 | Pages        | The manual and the site are [built](mise-tasks/site) on every change, and each link between their pages must land on a page and an anchor that exist |
 | Code         | Rust code is formatted, and the workspace is held to the pedantic lints of clippy, Rust's linter, with every warning an error |
+| Languages    | The words `evoke` reads a request by live in a language pack under [data/](crates/evoke-core/data), one per language, and a [test](crates/evoke-core/tests/words.rs) holds the reader's code to zero words of any language, so a language is data and nothing else |
 | Arithmetic   | The release build keeps [overflow checks](Cargo.toml), so an overflow is reported as a bug instead of becoming a wrong number |
 | Dependencies | Each one the workspace uses has its reason [written beside it](Cargo.toml), and [an audit](deny.toml) checks their licences, known vulnerabilities and sources. The SDK depends on nothing at run time |
 | Tools        | Each is pinned to an exact version in [mise.toml](mise.toml)                                                    |
