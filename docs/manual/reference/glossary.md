@@ -7,7 +7,7 @@ adapter, and the words of a weave.
 | :--------------- | :-------------------------------------------------------------------------------------------------------- |
 | **Abstain**      | The outcome when *none* wins the route, or the winner is under the route floor. Exit 2                    |
 | **Account**      | What each run of the input's words that no value holds does: says what to do, answers an argument's ask, says what is wanted from the result, asks for nothing, or asks for another thing. `why` names the words that answer an ask, those a call leaves out and those about the result; the JSON line carries them as `left` |
-| **Adapter**      | The classifier behind a decision, as an object answering typed questions with probabilities. `jev` and `openjev` reach Jev, through TypeSafe AI's API or through OpenJEV; `replay` answers from a recording |
+| **Adapter**      | The classifier behind a decision, as an object answering typed questions with probabilities. `jev` and `openjev` reach Jev, through TypeSafe AI's API or through OpenJEV; `clef` and `clef_flash` reach Clef on Cloudflare's Workers AI; `replay` answers from a recording |
 | **Argument**     | A question about the input and a value for the body: `options`, `vocab`, `pick` or `flag`                 |
 | **Ask**          | The outcome when a required argument is missing: `evoke` asks the argument's own question                 |
 | **Binding**      | A value of one step's result taken by a later step, by kind: filled into a required argument, or written into the words for an optional one; or the whole result, by the name its source returns, handed beside the decision |

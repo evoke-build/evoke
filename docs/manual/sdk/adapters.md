@@ -3,7 +3,8 @@
 An adapter is the classifier behind a decision. It is an object that answers typed questions with probabilities.
 The core names no engine. A project names an adapter, and only your machine resolves the name. Two built-in
 adapters reach Jev: `jev()`, through TypeSafe AI's own API, and `openjev()`, through OpenJEV, an independent
-service. They send the same questions and ship the same bars.
+service. They send the same questions and ship the same bars. Two more reach Clef, Cloudflare's model: `clef()`
+and `clefFlash()`. They send the same questions and ship no bars.
 
 ## `jev()`: the first adapter
 
@@ -47,6 +48,35 @@ publishes no terms and no privacy policy, so weigh that before you choose it for
 is `jev()`'s, with 3 seconds once connected instead of 1.5, since the service forwards the request onward. It
 names the model by version, `jev-1.13.0`, as `jev()` does, so its `id` is Jev's own. No key is a
 `DiagnosticError` ending in `export OPENJEV_API_KEY=<value>`.
+
+## `clef()` and `clefFlash()`: Clef, on Cloudflare's Workers AI
+
+```ts
+import { clef, clefFlash } from "@evoke-build/evoke/clef"
+
+const project = await load({ reflexes, adapter: clef() })
+const project = await load({ reflexes, adapter: clefFlash({ key, account, gate }) })
+```
+
+| Option    | Meaning                                                                                              |
+| :-------- | :--------------------------------------------------------------------------------------------------- |
+| `key`     | The API token. Absent: `CLOUDFLARE_API_TOKEN` from the environment, read when the adapter is called    |
+| `account` | The account's id. Absent: `CLOUDFLARE_ACCOUNT_ID` from the environment, read at the same time          |
+| `gate`    | The floors `route`, `read` and `write`, with `fits` and `whole` if you want them. The same as `[adapters.clef] gate` or `[adapters.clef_flash] gate` in `evoke.toml` |
+
+[Clef](https://developers.cloudflare.com/workers-ai/models/clef/) and Clef-flash are Cloudflare's models, with
+weights published under Apache-2.0. `clef()` reaches Clef and `clefFlash()` the smaller Clef-flash. Both run on
+Cloudflare's Workers AI, in the account the token belongs to. Cloudflare's terms cover the token and each request.
+
+These adapters ship no floors, so every decision confirms. To let calls run, pass a `gate` with `route`, `read`
+and `write`, and measure the numbers you choose on your own records: [Calibrating](../use/calibrating.md). A
+`gate` that lacks one of the three is a `DiagnosticError`.
+
+The account's id goes into the address. So it must be 32 hex digits in lowercase, and anything else is refused
+before a request is made. The transport is `jev()`'s, with 6 seconds once connected for `clef()` and 3 for
+`clefFlash()`. Workers AI takes 64 questions a request, so a longer request is sent in parts and answered as one.
+It names no version of a model, so each `id` carries a date: `clef-2026-10-03` and `clef-flash-2026-10-03`. No
+token or no account is a `DiagnosticError` ending in the `export` line for its variable.
 
 ## The contract
 

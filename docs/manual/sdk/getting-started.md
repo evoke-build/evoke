@@ -14,13 +14,14 @@ npm install @evoke-build/evoke
 ```
 
 You need Node 24.5 or newer, and ES modules: `"type": "module"` in your `package.json`, or `.mts` files. The
-package ships four entries, so the main one imports no engine:
+package ships five entries, so the main one imports no engine:
 
 | Import                          | Holds                                                   |
 | :------------------------------ | :------------------------------------------------------ |
 | `@evoke-build/evoke`            | `load`, `reflex`, the types, the errors                  |
 | `@evoke-build/evoke/jev`        | `jev()`, the first adapter                               |
 | `@evoke-build/evoke/openjev`    | `openjev()`, the same model through OpenJEV, an independent service |
+| `@evoke-build/evoke/clef`       | `clef()` and `clefFlash()`, Cloudflare's Clef on Workers AI |
 | `@evoke-build/evoke/testing`    | `replay()`, the recorded adapter for tests               |
 
 ## The first hour

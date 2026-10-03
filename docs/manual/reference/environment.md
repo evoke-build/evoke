@@ -10,6 +10,8 @@ nothing is sent anywhere but the adapter you chose.
 | :------------------ | :----------------------------- | :----------------------------------------------------------------------- |
 | `TYPESAFE_API_KEY`  | The `jev` adapter, when deciding | The classifier's key, from typesafe.ai. Never written to a file        |
 | `OPENJEV_API_KEY`   | The `openjev` adapter, when deciding | The classifier's key, from openjev.sh. Never written to a file      |
+| `CLOUDFLARE_API_TOKEN` | The `clef` and `clef_flash` adapters, when deciding | The classifier's token, from dash.cloudflare.com. Never written to a file |
+| `CLOUDFLARE_ACCOUNT_ID` | The `clef` and `clef_flash` adapters, when deciding | The account the token belongs to: 32 hex digits in lowercase, which go into the address. Anything else is refused |
 | `EVOKE_ANSWERS`     | The `replay` adapter           | A recording to answer from, with `adapter = "replay"` in `evoke.toml`     |
 | `EVOKE_PLATFORM`    | Every decision, `add`, `show`, `test` | `linux` or `macos`: the platform a manifest's `platforms` is judged by, this machine's when unset. Set it to decide or test as another machine would; a body still runs here |
 | `EVOKE_TODAY`       | A body's run, `check`          | `YYYY-MM-DD`: the day a `date` argument resolves against, your machine's local day when unset. A value that is no day stops the run |
@@ -58,5 +60,5 @@ Secrets reach a body only this way, for the length of one run.
 
 One decision has 30 seconds, shared by the adapter's answer and the body's run. A prompt never counts. The `jev`
 adapter gives a request 1.5 seconds once connected, and `openjev` 3 seconds, since OpenJEV forwards the request
-onward. Each retries once after a connect error or a server error, and waits out a 429 that says how long to
-wait, within the deadline.
+onward. `clef` gives it 6 seconds and `clef_flash` 3. Each retries once after a connect error or a server error,
+and waits out a 429 that says how long to wait, within the deadline.

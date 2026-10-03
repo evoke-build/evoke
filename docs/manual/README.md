@@ -71,7 +71,7 @@ git. A **TypeScript SDK** that puts the same decisions inside your app. You invo
 | [Getting started](sdk/getting-started.md)   | The first hour: one file, one reflex, one decision                 |
 | [Projects in code](sdk/projects.md)         | `load()`, roots, reflexes as code, `with()`, generated types        |
 | [Decisions](sdk/decisions.md)               | The `Decision` union, `fill`, `run`, `handle`; `steps` and `weave`   |
-| [Adapters](sdk/adapters.md)                 | `jev()` and `openjev()`, thresholds, and writing an adapter of your own |
+| [Adapters](sdk/adapters.md)                 | `jev()`, `openjev()` and `clef()`, thresholds, and writing an adapter of your own |
 | [Testing](sdk/testing.md)                   | `replay()`: offline, deterministic tests over a recording           |
 | [Errors](sdk/errors.md)                     | The three errors, and what each asks of you                         |
 

@@ -96,9 +96,11 @@
         no telemetry.</p>
       <h3>When it decides</h3>
       <ul class="ticks">
-        <li><strong>Each decision is one request</strong>, through your project's adapter: <code>jev</code>, the default,
-          which reaches Jev at <a href="https://typesafe.ai">TypeSafe AI</a>, or <code>openjev</code>, which reaches Jev
-          through <a href="https://openjev.sh">OpenJEV</a>, an independent service that forwards the request. It carries
+        <li><strong>Each decision is one request</strong>, through your project's adapter. <code>jev</code>, the
+          default, reaches Jev at <a href="https://typesafe.ai">TypeSafe AI</a>. <code>openjev</code> reaches Jev
+          through <a href="https://openjev.sh">OpenJEV</a>, an independent service that forwards the request.
+          <code>clef</code> and <code>clef_flash</code> reach Clef, another classifier, at
+          <a href="https://www.cloudflare.com">Cloudflare</a>. The request carries
           your sentence and the questions built from the reflexes you installed. Each reflex adds its description, what
           it is not for, its examples, and each input's question and options. Your vocabulary adds its words, with the
           meaning you wrote for each.</li>
@@ -116,7 +118,14 @@
         <li><strong>With the <code>openjev</code> adapter, OpenJEV sees the request first.</strong> It is an
           independent service, not TypeSafe AI's. As of the date at the top of this page it publishes no privacy
           policy and no terms, so nothing states what it keeps. Weigh that before you choose it.</li>
-        <li><strong>What the classifier does with the request</strong> is set by TypeSafe AI's
+        <li><strong>With the <code>clef</code> or <code>clef_flash</code> adapter, the request goes to Cloudflare
+          instead.</strong> Clef is Cloudflare's model, served by its Workers AI, and TypeSafe AI sees nothing of such
+          a request. What Cloudflare does with it is set by its
+          <a href="https://www.cloudflare.com/privacypolicy/">privacy policy</a> and its
+          <a href="https://developers.cloudflare.com/workers-ai/platform/data-usage/">data usage page for Workers
+          AI</a>. As of the date at the top of this page, that page says your requests are not used to train its
+          models or to improve its services without your consent.</li>
+        <li><strong>What TypeSafe AI does with a request to Jev</strong> is set by its
           <a href="https://typesafe.ai/legal/privacy">privacy policy</a> and
           <a href="https://typesafe.ai/legal/mca">customer agreement</a>, which you accept when you take a key. As of
           the date at the top of this page, the customer agreement says your input is not used to train its models
@@ -180,6 +189,10 @@
         <li><strong>OpenJEV</strong> sees a decision's request when your project names <code>openjev</code>, and
           forwards it to Jev. It publishes no privacy policy and no terms, as of the date at the top of this
           page.</li>
+        <li><strong>Cloudflare</strong> sees a decision's request when your project names <code>clef</code> or
+          <code>clef_flash</code>. Its <a href="https://www.cloudflare.com/privacypolicy/">privacy policy</a> and its
+          <a href="https://developers.cloudflare.com/workers-ai/platform/data-usage/">data usage page for Workers
+          AI</a> apply.</li>
         <li><strong>GitHub</strong> sees a visit to this site, a download of a release, and a fetch from a repository
           it hosts. Its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy
           statement</a> applies.</li>

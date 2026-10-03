@@ -85,9 +85,11 @@ decisions. Everything below is what the tool guarantees around them, and what it
   them.
 - **Adapter names resolve on your machine only**, against the tool's built-ins, never from a project directory.
   So a cloned repository cannot point your decisions at a classifier of its choosing. The endpoint is built into
-  the adapter, whose id keys the cache and the lock, so no file and no variable moves it. A proxy named in your
-  environment carries the connection there and sees ciphertext: the CLI trusts Mozilla's roots, never your
-  platform's, and the SDK trusts what your Node trusts.
+  the adapter, whose id keys the cache and the lock, so no file and no variable moves it. The `clef` and
+  `clef_flash` adapters put one thing from a variable into their address, your account's id at Cloudflare. It must
+  be 32 hex digits and nothing else, so it picks an account at that one service and never another address. A proxy
+  named in your environment carries the connection there and sees ciphertext: the CLI trusts Mozilla's roots, never
+  your platform's, and the SDK trusts what your Node trusts.
 - **The SDK never searches.** `load` takes an explicit root, never fetches, and never writes. It hands each
   tenant their own vocabulary. So a server cannot be hijacked by whatever project a working directory holds.
 - **A plan file holds the sentence and the classifier's numbers, in clear**, and no setting's value, variable

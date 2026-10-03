@@ -44,6 +44,8 @@ gate = { write = 0.95 }
 - The built-in adapters are `jev`, TypeSafe AI's own API, `openjev`, the same model through OpenJEV, an
   independent service, and `replay`, a recording for tests. The first two each read their own key and take the
   same `gate` table under their own name: [Install](../start/install.md#the-key).
+- Two more adapters, `clef` and `clef_flash`, reach Clef, Cloudflare's model, on its Workers AI service. They read
+  a token and an account id, and ship no bars of their own: [Thresholds](tuning.md#thresholds).
 - An adapter name resolves only against `evoke`'s built-ins, never from the project directory. An adapter sees
   every input, so that matters. A table for an adapter you did not select is inert. So one file serves devices on
   different engines.

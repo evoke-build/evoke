@@ -41,8 +41,9 @@ token  = { env = "HUE_TOKEN" }     # from a variable; the only form a secret may
 gate = { route = 0.5, fits = 0.3, read = 0.8, write = 0.9, whole = 0.3 }   # each a probability; read ≤ write
 ```
 
-The built-in adapters are `jev`, `openjev` and `replay`; `[adapters.openjev]` takes the same `gate` table as
-`[adapters.jev]`. Local names match `[a-z][a-z0-9_]*`. The names `none`, `unstated`, `fits` and `weave` are reserved. A missing `evoke.toml`
+The built-in adapters are `jev`, `openjev`, `clef`, `clef_flash` and `replay`; `[adapters.openjev]` takes the same
+`gate` table as `[adapters.jev]`. `clef` and `clef_flash` ship no thresholds, so a `gate` table of theirs gives
+`route`, `read` and `write`. Local names match `[a-z][a-z0-9_]*`. The names `none`, `unstated`, `fits` and `weave` are reserved. A missing `evoke.toml`
 at a root means the default project: `adapter = "jev"`, nothing installed.
 
 ## `evoke.lock`

@@ -187,4 +187,10 @@ typed at `whole` or over; raise it and more calls wait for a yes with the words 
 and fewer do. Destructive reflexes always confirm. [Outcomes](outcomes.md#what-confidence-is) explains what the
 numbers gate, and [Calibrating](calibrating.md) measures each bar on your own records.
 
+The `clef` and `clef_flash` adapters reach Clef, Cloudflare's model. They ship no bars, so every call through
+them waits for a yes. To let calls run, give all three of `route`, `read` and `write` in the `gate` of
+`[adapters.clef]` or `[adapters.clef_flash]`. `whole` and `fits` are yours to add. Choose the numbers from your
+own records, which `evoke calibrate` measures. [Environment](../reference/environment.md) lists the two variables
+these adapters read.
+
 **Next:** [Calibrating](calibrating.md).

@@ -6,6 +6,11 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+- Two more adapters, `clef` and `clef_flash`, reach Clef and Clef-flash, Cloudflare's models, on Workers AI:
+  `adapter = "clef"` in `evoke.toml`, the token in `CLOUDFLARE_API_TOKEN`, the account's id in
+  `CLOUDFLARE_ACCOUNT_ID`, and `clef()` and `clefFlash()` from `@evoke-build/evoke/clef` in the SDK. They ship no
+  bars, so every call through them waits for a yes until `[adapters.clef] gate` gives `route`, `read` and `write`.
+
 ## [0.20.0] - 2026-10-03
 
 - A request typed in German, French or Spanish is read as an English one is: the words that join two steps, the
