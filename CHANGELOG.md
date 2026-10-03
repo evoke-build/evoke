@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-10-03
+
 - A request typed in German, French or Spanish is read as an English one is: the words that join two steps, the
   ones that ask for nothing, the pronouns that point back, the numbers, the days and months, the clock, the units
   and the currencies, the signs said aloud. Nothing is set: the words of the request show the language, a request
