@@ -1,0 +1,879 @@
+# French, as evoke reads it: the words each stage of the reader proposes from, written lower case as they are compared, each under the neutral form it stands for, the form shown first. A pack reads a sentence where the sentence shows its words; the core holds no word of any language, only how a table is read.
+tag  = "fr"
+name = "French"
+# A capital marks a name or a code, as in English.
+capitals_mark_names = true
+
+# Where a request may be cut, and the words that set a part apart.
+[cut]
+then = [
+  "et puis",
+  "puis",
+  "ensuite",
+  "et ensuite",
+  "après",
+  "et après",
+  "après ça",
+  "et après ça",
+  "enfin",
+  "et enfin",
+  "pour finir",
+]
+and = ["et", "ainsi que", "plus", "et aussi", "aussi"]
+signs = ["+", "&"]
+leads = ["et", "mais", "ou", "puis", "donc", "alors", "ensuite", "plus"]
+negation = ["ne", "n'", "pas", "jamais", "sans", "aucun", "aucune", "ni", "non"]
+condition = ["si", "au cas où", "dans le cas où", "sauf si", "à moins que"]
+contrast = ["pas", "non"]
+but = ["mais"]
+subordinators = [
+  "que",
+  "qu'",
+  "parce que",
+  "parce qu'",
+  "puisque",
+  "lorsque",
+  "quand",
+  "avant que",
+  "après que",
+  "pendant que",
+  "tant que",
+  "pour que",
+  "afin que",
+  "bien que",
+  "comme",
+  "si",
+  "dont",
+  "où",
+  "ce que",
+  "ce qui",
+  "quoi",
+  "pourquoi",
+  "comment",
+  "combien",
+  "lequel",
+  "laquelle",
+  "lesquels",
+  "lesquelles",
+]
+
+# A clause before or after another, read in the words' own order, and a clause of the person's own action.
+[clause]
+before = ["avant de", "avant que", "avant d'"]
+after = ["après avoir", "après", "une fois que", "dès que"]
+joiner = ["puis"]
+subjects = ["tu", "vous", "on", "nous", "je", "j'"]
+tenses = []
+own = ["je", "j'", "nous", "on"]
+own_tenses = []
+conjunctions = []
+heads = [
+  "j'ai besoin",
+  "il me faut",
+  "je veux",
+  "je voudrais",
+  "j'aimerais",
+  "je dois",
+  "il faut",
+  "nous avons besoin",
+  "on a besoin",
+  "nous voulons",
+  "on veut",
+  "il nous faut",
+]
+
+# Politeness, which asks for nothing.
+[courtesy]
+words = [
+  "merci",
+  "stp",
+  "svp",
+  "please",
+  "pls",
+  "thx",
+  "thanks",
+  "grazie",
+  "danke",
+  "obrigado",
+  "gracias",
+  "bonjour",
+  "salut",
+  "coucou",
+  "hello",
+  "cordialement",
+  "bisous",
+  "bise",
+  "bises",
+  "bonne",
+  "journée",
+  "bien",
+  "cdlt",
+  "ciao",
+]
+phrases = [
+  "s'il te plaît",
+  "s'il vous plaît",
+  "s'il te plait",
+  "s'il vous plait",
+  "merci beaucoup",
+  "merci d'avance",
+  "merci mille fois",
+  "mille mercis",
+  "un grand merci",
+  "pourrais-tu",
+  "pourriez-vous",
+  "peux-tu",
+  "pouvez-vous",
+  "tu peux",
+  "vous pouvez",
+  "est-ce que tu peux",
+  "est-ce que vous pouvez",
+  "si tu as un moment",
+  "si vous avez un moment",
+  "si tu as le temps",
+  "si tu peux",
+  "si vous pouvez",
+  "si possible",
+  "quand tu peux",
+  "quand tu as un moment",
+  "quand vous pouvez",
+  "dès que tu peux",
+  "dès que possible",
+  "si ça ne te dérange pas",
+  "si cela ne vous dérange pas",
+  "t'es le meilleur",
+  "t'es la meilleure",
+  "tu es le meilleur",
+  "bonne journée",
+  "bon courage",
+  "à plus",
+]
+
+# Words that point at an earlier step, or say one is done again.
+[refer]
+one = ["ça", "cela", "le même", "la même"]
+many = [
+  "les deux",
+  "tous les deux",
+  "toutes les deux",
+  "tous les trois",
+  "toutes les trois",
+  "chacun d'eux",
+  "chacune d'elles",
+  "chacun",
+  "chacune",
+  "eux",
+  "elles",
+]
+determiners = [
+  "ce",
+  "cet",
+  "cette",
+  "ces",
+  "le",
+  "la",
+  "les",
+  "l'",
+  "celui",
+  "celle",
+  "ceux",
+  "celles",
+  "chaque",
+  "ledit",
+  "ladite",
+  "lesdits",
+  "lesdites",
+]
+weak = ["le", "la", "les", "l'"]
+each = ["chaque", "chacun", "chacune"]
+adjectives = [
+  "même",
+  "mêmes",
+  "nouveau",
+  "nouvelle",
+  "nouveaux",
+  "nouvelles",
+  "créé",
+  "créée",
+  "créés",
+  "créées",
+  "généré",
+  "générée",
+  "obtenu",
+  "obtenue",
+]
+stop = [
+  "un",
+  "une",
+  "le",
+  "la",
+  "les",
+  "est",
+  "était",
+  "sont",
+  "sera",
+  "peut",
+  "pourrait",
+  "doit",
+  "devrait",
+  "il",
+  "elle",
+  "ils",
+  "elles",
+  "on",
+  "nous",
+  "vous",
+  "je",
+  "tu",
+  "pas",
+  "ne",
+  "aucun",
+  "aucune",
+  "tous",
+  "toutes",
+  "tout",
+  "toute",
+  "quelques",
+  "certains",
+  "premier",
+  "première",
+  "deuxième",
+  "dernier",
+  "dernière",
+  "prochain",
+  "prochaine",
+  "même",
+  "autre",
+  "reste",
+  "fois",
+  "temps",
+  "de",
+  "du",
+  "des",
+  "que",
+  "quoi",
+  "comment",
+  "pour",
+  "avec",
+  "chez",
+  "sur",
+  "dans",
+  "à",
+  "au",
+  "aux",
+  "en",
+]
+points = [
+  "ça",
+  "cela",
+  "celui-ci",
+  "celle-ci",
+  "celui-là",
+  "celle-là",
+  "ceux-là",
+  "celles-là",
+  "ceux-ci",
+  "celles-ci",
+  "le même",
+  "la même",
+  "les mêmes",
+  "la même chose",
+  "là",
+  "là-bas",
+  "y",
+  "les deux",
+  "chacun",
+  "chacune",
+  "chaque",
+  "eux",
+  "elles",
+  "lui",
+  "leur",
+  "son",
+  "sa",
+  "ses",
+  "en",
+  "celui",
+  "celle",
+  "ceux",
+  "celles",
+]
+repeats = ["la même chose", "le même", "la même", "les mêmes", "pareil", "idem", "de même", "même chose"]
+once_more = [
+  "aussi",
+  "également",
+  "encore",
+  "de plus",
+  "en plus",
+  "à nouveau",
+  "de nouveau",
+  "une autre",
+  "un autre",
+  "autre",
+  "autres",
+  "plus",
+  "supplémentaire",
+  "supplémentaires",
+]
+again = [
+  "aussi",
+  "également",
+  "pareil",
+  "idem",
+  "de même",
+  "la même chose",
+  "la même pour",
+  "le même pour",
+  "encore",
+  "à nouveau",
+  "de nouveau",
+  "en plus",
+  "de plus",
+]
+clitics = ["-le", "-la", "-les", "-moi", "-lui", "-leur", "-y", "-en", "-nous", "-toi"]
+
+# Words that recall a value of an earlier step.
+[recalled]
+it      = ["ça", "cela", "le", "la", "l'"]
+one     = ["celui", "celle", "en"]
+that    = ["ce", "cet", "cette", "ces", "celui-là", "celle-là", "ceux-là", "celles-là"]
+owns    = ["le", "la", "les", "l'", "mon", "ma", "mes", "notre", "nos"]
+several = ["ces", "ceux", "celles", "les deux", "tous", "toutes"]
+orders  = ["dernier", "dernière", "derniers", "dernières", "plus récent", "plus récente", "précédent", "précédente"]
+both    = ["les deux", "tous les deux", "toutes les deux"]
+
+# Words that carry no value by themselves, and words that introduce one.
+[words]
+function = [
+  "le",
+  "la",
+  "les",
+  "l'",
+  "un",
+  "une",
+  "des",
+  "du",
+  "de",
+  "d'",
+  "au",
+  "aux",
+  "à",
+  "a",
+  "en",
+  "et",
+  "ou",
+  "mais",
+  "donc",
+  "or",
+  "ni",
+  "que",
+  "qu'",
+  "qui",
+  "quoi",
+  "dont",
+  "où",
+  "ce",
+  "cet",
+  "cette",
+  "ces",
+  "ça",
+  "cela",
+  "il",
+  "elle",
+  "ils",
+  "elles",
+  "on",
+  "je",
+  "j'",
+  "tu",
+  "nous",
+  "vous",
+  "me",
+  "m'",
+  "te",
+  "t'",
+  "se",
+  "s'",
+  "lui",
+  "leur",
+  "y",
+  "ne",
+  "n'",
+  "pas",
+  "plus",
+  "jamais",
+  "rien",
+  "est",
+  "sont",
+  "été",
+  "être",
+  "ai",
+  "as",
+  "avons",
+  "avez",
+  "ont",
+  "avoir",
+  "fait",
+  "faire",
+  "peut",
+  "peux",
+  "pouvez",
+  "pouvons",
+  "pourrais",
+  "pourriez",
+  "veux",
+  "veut",
+  "voulez",
+  "voudrais",
+  "faut",
+  "dois",
+  "doit",
+  "devrait",
+  "va",
+  "vais",
+  "vas",
+  "allez",
+  "aller",
+  "pour",
+  "par",
+  "avec",
+  "sans",
+  "sur",
+  "sous",
+  "dans",
+  "chez",
+  "vers",
+  "entre",
+  "depuis",
+  "pendant",
+  "avant",
+  "après",
+  "contre",
+  "selon",
+  "très",
+  "trop",
+  "aussi",
+  "bien",
+  "encore",
+  "déjà",
+  "juste",
+  "vite",
+  "là",
+  "ici",
+  "alors",
+  "ainsi",
+  "comme",
+  "si",
+  "tout",
+  "tous",
+  "toute",
+  "toutes",
+  "même",
+  "mon",
+  "ma",
+  "mes",
+  "ton",
+  "ta",
+  "tes",
+  "son",
+  "sa",
+  "ses",
+  "notre",
+  "nos",
+  "votre",
+  "vos",
+  "leurs",
+  "quel",
+  "quelle",
+  "quels",
+  "quelles",
+  "stp",
+  "svp",
+  "vite",
+  "direct",
+  "directement",
+  "simplement",
+  "enfin",
+  "bref",
+  "voilà",
+  "voici",
+  "hop",
+  "allez",
+  "bon",
+  "ok",
+  "d'accord",
+]
+kind = ["aussi", "où", "équipe", "canal", "salon", "dossier", "service", "région", "zone"]
+introduces = [
+  "à",
+  "a",
+  "pour",
+  "sur",
+  "dans",
+  "en",
+  "de",
+  "d'",
+  "vers",
+  "chez",
+  "avec",
+  "nommé",
+  "nommée",
+  "intitulé",
+  "intitulée",
+  "appelé",
+  "appelée",
+  "objet",
+  "sujet",
+  "concernant",
+  "au sujet de",
+  "à propos de",
+  "que",
+  "qu'",
+  "disant",
+  "comme quoi",
+  "jusqu'à",
+  "jusqu'au",
+  "par",
+]
+articles = ["le", "la", "les", "l'", "un", "une", "des", "du", "de la", "de l'", "au", "aux"]
+after_name = ["que", "qu'", "ce", "ceci", "comme quoi"]
+to_self = ["à moi", "à moi-même", "pour moi", "me"]
+
+# The endings a word takes: a stem's, a plural's, a possessive's, a tense's.
+[endings]
+stem = [["aux", "al"], ["s", ""], ["x", ""], ["e", ""]]
+plural = ["s", "x"]
+possessive = ["'s", "’s"]
+tense = [
+  "ons",
+  "ez",
+  "ent",
+  "ais",
+  "ait",
+  "aient",
+  "era",
+  "erai",
+  "eras",
+  "ées",
+  "ée",
+  "és",
+  "é",
+  "es",
+  "e",
+  "s",
+  "er",
+  "ir",
+  "re",
+]
+
+# A number said in words: a tens word, «et» or a hyphen, and a ones word, «vingt et un», «vingt-deux»; a teen after sixty and eighty, «soixante-douze»; the comma before a fraction, «1,5».
+[numbers]
+ones             = { "zéro" = 0, zero = 0, un = 1, une = 1, deux = 2, trois = 3, quatre = 4, cinq = 5, six = 6, sept = 7, huit = 8, neuf = 9, dix = 10, onze = 11, douze = 12, treize = 13, quatorze = 14, quinze = 15, seize = 16, dix-sept = 17, dix-huit = 18, dix-neuf = 19 }
+tens             = { vingt = 20, trente = 30, quarante = 40, cinquante = 50, soixante = 60, soixante-dix = 70, quatre-vingt = 80, quatre-vingts = 80, quatre-vingt-dix = 90, septante = 70, huitante = 80, nonante = 90 }
+scale            = { cent = 100, cents = 100, mille = 1000 }
+beyond           = ["million", "millions", "milliard", "milliards"]
+article          = ["un", "une", "d'un", "d'une"]
+and              = ["et"]
+noughts          = ["zéro", "zero"]
+oh               = ["o"]
+repeat           = { double = 2, triple = 3 }
+half             = ["demi", "demie"]
+and_a_half       = ["et demi", "et demie"]
+compose          = "tens-ones"
+joiner           = "et"
+fused            = false
+teens_after_tens = true
+years_in_pairs   = false
+decimal_mark     = ","
+group_mark       = " "
+percent          = ["pour cent", "pourcent", "pourcents"]
+
+# An ordinal: a day of the month, a place among several.
+[ordinals]
+words    = { premier = 1, "première" = 1, premiere = 1, "deuxième" = 2, deuxieme = 2, second = 2, seconde = 2, "troisième" = 3, troisieme = 3, "quatrième" = 4, quatrieme = 4, "cinquième" = 5, cinquieme = 5, "sixième" = 6, sixieme = 6, "septième" = 7, septieme = 7, "huitième" = 8, huitieme = 8, "neuvième" = 9, neuvieme = 9, "dixième" = 10, dixieme = 10, "onzième" = 11, "douzième" = 12, "treizième" = 13, "quatorzième" = 14, "quinzième" = 15, "seizième" = 16, "dix-septième" = 17, "dix-huitième" = 18, "dix-neuvième" = 19, "vingtième" = 20, "vingt-et-unième" = 21, "vingt et unième" = 21, "vingt-deuxième" = 22, "vingt-troisième" = 23, "vingt-quatrième" = 24, "vingt-cinquième" = 25, "vingt-sixième" = 26, "vingt-septième" = 27, "vingt-huitième" = 28, "vingt-neuvième" = 29, "trentième" = 30, "trente-et-unième" = 31 }
+suffixes = { other = "e", 1 = "er" }
+picks    = { premier = 0, "première" = 0, "deuxième" = 1, second = 1, seconde = 1, "troisième" = 2, "quatrième" = 3, dernier = -1, "dernière" = -1 }
+
+# The days: recurrences, the words around a date, and the day words themselves.
+[days]
+every = ["chaque", "tous les", "toutes les"]
+recurring = [
+  "jour",
+  "semaine",
+  "mois",
+  "an",
+  "année",
+  "matin",
+  "soir",
+  "nuit",
+  "jour ouvré",
+  "week-end",
+  "weekend",
+  "trimestre",
+  "fin de mois",
+]
+recurrences = [
+  "quotidien",
+  "quotidiennement",
+  "hebdomadaire",
+  "mensuel",
+  "mensuellement",
+  "annuel",
+  "tous les jours",
+  "chaque jour",
+  "chaque semaine",
+  "chaque mois",
+]
+periods = [
+  "semaine",
+  "semaines",
+  "mois",
+  "an",
+  "ans",
+  "année",
+  "années",
+  "week-end",
+  "weekend",
+  "trimestre",
+  "quinzaine",
+]
+ahead = ["dans", "d'ici"]
+from_now = ["à partir d'aujourd'hui", "à partir de maintenant", "dès aujourd'hui", "dès maintenant"]
+the = ["le", "au", "du"]
+of = []
+day_after = ["le jour après", "le lendemain de"]
+noun_after = []
+never = ["marie", "maries", "mardis"]
+followers = [
+  "à",
+  "est",
+  "ou",
+  "et",
+  "ce",
+  "prochain",
+  "prochaine",
+  "jusqu'à",
+  "jusqu'au",
+  "de",
+  "du",
+  "au",
+  "en",
+  "dans",
+  "tombe",
+  "vient",
+  "déjà",
+  "puis",
+  "encore",
+  "pour",
+  "avec",
+  "chez",
+  "sur",
+  "stp",
+  "svp",
+  "merci",
+  "matin",
+  "soir",
+  "midi",
+  "après-midi",
+  "dernier",
+  "dernière",
+  "prochain",
+  "prochaine",
+  "inclus",
+  "compris",
+  "maximum",
+  "au plus tard",
+]
+leads = [
+  "le",
+  "au",
+  "du",
+  "jusqu'au",
+  "jusqu'à",
+  "à partir du",
+  "dès le",
+  "avant le",
+  "après le",
+  "pour le",
+  "depuis le",
+  "d'ici le",
+  "ce",
+  "vers le",
+]
+
+[days.which]
+next = ["prochain", "prochaine"]
+this = ["ce", "cet", "cette"]
+last = ["dernier", "dernière", "passé", "passée"]
+
+[days.weekdays]
+monday    = ["lundi"]
+tuesday   = ["mardi"]
+wednesday = ["mercredi"]
+thursday  = ["jeudi"]
+friday    = ["vendredi"]
+saturday  = ["samedi"]
+sunday    = ["dimanche"]
+
+[days.short]
+monday   = ["lun"]
+thursday = ["jeu"]
+friday   = ["ven"]
+
+[days.relative]
+0  = ["aujourd'hui", "aujourd’hui", "aujourdhui", "ce soir"]
+1  = ["demain"]
+-1 = ["hier"]
+2  = ["après-demain", "apres-demain"]
+-2 = ["avant-hier"]
+
+[days.relative_short]
+0 = ["auj", "ajd", "aujd"]
+1 = ["dem", "2main"]
+
+[days.units]
+1 = ["jours", "jour"]
+7 = ["semaines", "semaine"]
+
+# The months, by number.
+[months]
+1  = ["janvier", "janv"]
+2  = ["février", "fév", "fevrier"]
+3  = ["mars"]
+4  = ["avril", "avr"]
+5  = ["mai"]
+6  = ["juin"]
+7  = ["juillet", "juil"]
+8  = ["août", "aout"]
+9  = ["septembre", "sept"]
+10 = ["octobre", "oct"]
+11 = ["novembre", "nov"]
+12 = ["décembre", "déc", "decembre"]
+
+# A clock time.
+[times]
+hour_cycle = 24
+half_to = []
+oclock = ["h", "heures", "heure"]
+at = ["à", "a", "vers", "pour", "dès", "jusqu'à", "avant", "après", "entre", "et", "ou"]
+am = ["du matin", "le matin", "ce matin", "demain matin"]
+pm = [
+  "de l'après-midi",
+  "du soir",
+  "le soir",
+  "l'après-midi",
+  "cet après-midi",
+  "demain soir",
+  "de l'aprem",
+  "de l'après midi",
+]
+past = ["et"]
+to = ["moins"]
+
+[times.named]
+"12:00" = ["midi"]
+"00:00" = ["minuit"]
+
+[times.minutes_past]
+15 = ["et quart"]
+30 = ["et demie", "et demi"]
+
+[times.minutes_to]
+15 = ["moins le quart", "moins quart"]
+
+# A length of time, its units in seconds: the form shown for one, then for more than one, then the short forms.
+[durations.units]
+3600 = ["heure", "heures", "h", "hr", "hrs"]
+60   = ["minute", "minutes", "min", "mins", "mn", "m"]
+1    = ["seconde", "secondes", "sec", "secs", "s"]
+
+[durations.articles]
+"0.25" = ["un quart d'", "un quart de", "quart d'"]
+"0.5"  = ["une demi", "une demi-", "demi", "demie", "une demie"]
+"1.5"  = ["une et demie", "une heure et demie"]
+1      = ["une", "un", "d'une", "d'un"]
+"2.5"  = ["deux et demie", "deux et demi"]
+"0.75" = ["trois quarts d'", "trois quarts de"]
+
+# An amount in a currency.
+[amounts]
+symbol_after = true
+symbols = { "€" = "EUR", "$" = "USD", "£" = "GBP" }
+singular = ["livre"]
+codes = [
+  "USD",
+  "EUR",
+  "GBP",
+  "JPY",
+  "INR",
+  "CAD",
+  "AUD",
+  "CHF",
+  "CNY",
+  "SEK",
+  "NOK",
+  "DKK",
+  "NZD",
+  "MXN",
+  "BRL",
+  "ZAR",
+  "SGD",
+  "HKD",
+  "KRW",
+  "PLN",
+  "CZK",
+  "TRY",
+]
+
+[amounts.words]
+EUR = ["euro", "euros", "eur", "balles"]
+USD = ["dollar", "dollars"]
+GBP = ["livre", "livres", "livre sterling", "livres sterling"]
+CHF = ["franc", "francs", "franc suisse", "francs suisses"]
+JPY = ["yen", "yens"]
+
+# A value said aloud: the signs by their names, and the words a code or a link is said with.
+[spoken]
+version = ["v", "version"]
+schemes = ["https", "http"]
+letters = []
+pronouns = [
+  "il",
+  "on",
+  "tu",
+  "ou",
+  "où",
+  "si",
+  "ni",
+  "en",
+  "au",
+  "et",
+  "le",
+  "la",
+  "un",
+  "ce",
+  "sa",
+  "se",
+  "y",
+  "a",
+  "à",
+]
+
+[spoken.signs]
+"@" = ["arobase", "at", "arobas"]
+"." = ["point"]
+-   = ["tiret", "moins"]
+_   = ["underscore", "tiret du bas", "tiret bas"]
+"/" = ["slash", "barre oblique"]
+":" = ["deux points", "deux-points"]
+"#" = ["dièse", "hashtag", "hash", "croisillon"]
+
+# The marks around a value in quotes, and around a text in quotes.
+[quotes]
+value = [["«", "»"], ["“", "”"], ["‘", "’"], ["\"", "\""]]
+text  = [["«", "»"], ["“", "”"], ["‘", "’"], ["\"", "\""], ["'", "'"]]
+
+# The whole words a prompt takes for yes and for no.
+[prompt]
+yes = ["oui", "ouais", "ok", "d'accord", "yes", "yep"]
+no  = ["non", "nan", "nope"]

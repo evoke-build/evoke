@@ -214,17 +214,26 @@ fn words_of(lexicon: &Lexicon, input: &Input) -> Vec<Word> {
         let raw: String = chars[token.from..token.to].iter().collect();
         let parts: Vec<&str> = raw.split('-').collect();
         if parts.len() > 1 && parts.iter().all(|part| number_word(lexicon, &fold(part))) {
+            // Each part a word of its own, but a run of parts the tables write as one word, «quatre-vingt»,
+            // stays whole: the longest such run first.
             let mut at = token.from;
-            for part in parts {
+            let mut i = 0;
+            while i < parts.len() {
+                let taken = (1..=parts.len() - i)
+                    .rev()
+                    .find(|&n| n == 1 || number_word(lexicon, &fold(&parts[i..i + n].join("-"))))
+                    .unwrap_or(1);
+                let part = parts[i..i + taken].join("-");
                 let length = part.chars().count();
                 out.push(Word {
-                    raw: part.to_owned(),
                     plain: part.to_lowercase(),
-                    folded: fold(part),
+                    folded: fold(&part),
+                    raw: part,
                     start: at,
                     end: at + length,
                 });
                 at += length + 1;
+                i += taken;
             }
             continue;
         }
@@ -346,8 +355,9 @@ fn figures(word: &str) -> bool {
 
 /// A unit that a tens word takes after it: one to nine.
 fn unit_after_tens(lexicon: &Lexicon, word: Option<&&str>) -> Option<u64> {
-    word.filter(|word| !lexicon.holds(|pack| &pack.numbers.noughts, word))
-        .and_then(|word| unit(lexicon, word))
+    let word = word.filter(|word| !lexicon.holds(|pack| &pack.numbers.noughts, word))?;
+    // A teen after a tens word adds to it where the pack has it so: «soixante-douze».
+    unit(lexicon, word).or_else(|| teen(lexicon, word).filter(|_| lexicon.teens_after_tens()))
 }
 
 /// How far a misspelling may stray from a day's name: none under four letters, one up to seven, two beyond
@@ -501,9 +511,17 @@ fn small_at(lexicon: &Lexicon, words: &[&str], i: usize) -> Option<(u64, usize)>
 /// A number under a thousand at `i`: a small number, then «hundred» and what follows it.
 fn below_thousand(lexicon: &Lexicon, words: &[&str], i: usize) -> Option<(u64, usize)> {
     let (mut value, mut j) = small_at(lexicon, words, i)?;
-    if words.get(j).is_some_and(|word| hundred(lexicon, word)) {
-        value *= 100;
-        j += 1;
+    // A hundreds word of its own, «trescientos», stands for a count and «hundred» at once.
+    let hundreds = (200..=900).contains(&value)
+        && value % 100 == 0
+        && lexicon
+            .value(|pack| &pack.numbers.scale, words[i])
+            .is_some();
+    if hundreds || words.get(j).is_some_and(|word| hundred(lexicon, word)) {
+        if !hundreds {
+            value *= 100;
+            j += 1;
+        }
         let k = if words.get(j).is_some_and(|word| and(lexicon, word)) {
             j + 1
         } else {

@@ -455,6 +455,7 @@ again = [
   "erneut",
   "dazu",
 ]
+clitics = []
 
 # Words that point at a value this session returned, or count such values.
 [recalled]
@@ -803,24 +804,25 @@ tense      = ["en", "st", "te", "ten", "t", "e"]
 # A number said in words: a ones word, «und» and a tens word written as one, «einundzwanzig»; a count before a
 # scale word, «zweihundert»; the comma before a fraction, «1,5».
 [numbers]
-ones           = { null = 0, eins = 1, zwei = 2, zwo = 2, drei = 3, vier = 4, "fünf" = 5, fuenf = 5, funf = 5, sechs = 6, sieben = 7, acht = 8, neun = 9, zehn = 10, elf = 11, "zwölf" = 12, zwoelf = 12, zwolf = 12, dreizehn = 13, vierzehn = 14, "fünfzehn" = 15, fuenfzehn = 15, funfzehn = 15, sechzehn = 16, siebzehn = 17, achtzehn = 18, neunzehn = 19 }
-tens           = { zwanzig = 20, "dreißig" = 30, dreissig = 30, vierzig = 40, "fünfzig" = 50, fuenfzig = 50, funfzig = 50, fuffzig = 50, sechzig = 60, siebzig = 70, achtzig = 80, neunzig = 90 }
-scale          = { hundert = 100, tausend = 1000 }
-beyond         = ["million", "millionen", "milliarde", "milliarden"]
-article        = ["ein", "eine", "einen", "einem", "einer", "eines", "n", "ne", "nen", "nem", "ner"]
-and            = ["und"]
-noughts        = ["null"]
-oh             = ["o"]
-repeat         = { doppel = 2 }
-half           = ["halb", "halbe", "halben"]
-and_a_half     = ["und eine halbe", "und einen halben", "einhalb"]
-compose        = "ones-tens"
-joiner         = "und"
-fused          = true
-years_in_pairs = false
-decimal_mark   = ","
-group_mark     = "."
-percent        = ["prozent"]
+ones             = { null = 0, eins = 1, zwei = 2, zwo = 2, drei = 3, vier = 4, "fünf" = 5, fuenf = 5, funf = 5, sechs = 6, sieben = 7, acht = 8, neun = 9, zehn = 10, elf = 11, "zwölf" = 12, zwoelf = 12, zwolf = 12, dreizehn = 13, vierzehn = 14, "fünfzehn" = 15, fuenfzehn = 15, funfzehn = 15, sechzehn = 16, siebzehn = 17, achtzehn = 18, neunzehn = 19 }
+tens             = { zwanzig = 20, "dreißig" = 30, dreissig = 30, vierzig = 40, "fünfzig" = 50, fuenfzig = 50, funfzig = 50, fuffzig = 50, sechzig = 60, siebzig = 70, achtzig = 80, neunzig = 90 }
+scale            = { hundert = 100, tausend = 1000 }
+beyond           = ["million", "millionen", "milliarde", "milliarden"]
+article          = ["ein", "eine", "einen", "einem", "einer", "eines", "n", "ne", "nen", "nem", "ner"]
+and              = ["und"]
+noughts          = ["null"]
+oh               = ["o"]
+repeat           = { doppel = 2 }
+half             = ["halb", "halbe", "halben"]
+and_a_half       = ["und eine halbe", "und einen halben", "einhalb"]
+compose          = "ones-tens"
+joiner           = "und"
+fused            = true
+teens_after_tens = false
+years_in_pairs   = false
+decimal_mark     = ","
+group_mark       = "."
+percent          = ["prozent"]
 
 # An ordinal: a day of the month, a place among several. Written with a point after the number: «5.».
 [ordinals]
@@ -976,6 +978,7 @@ saturday  = ["sa"]
 hour_cycle = 24
 half_to    = ["halb"]
 oclock     = ["uhr"]
+at         = []
 am         = ["morgens", "vormittags", "früh", "am morgen", "am vormittag", "in der früh"]
 pm         = ["nachmittags", "abends", "mittags", "am nachmittag", "am abend"]
 past       = ["nach"]
@@ -1052,7 +1055,7 @@ letters  = []
 pronouns = ["er", "es", "du", "wo", "ja", "da", "so", "ab", "an", "am", "im", "um", "zu"]
 
 [spoken.signs]
-"@" = ["at", "ät", "et", "klammeraffe"]
+"@" = ["at", "ät", "klammeraffe"]
 "." = ["punkt", "dot"]
 "-" = ["bindestrich", "minus", "strich"]
 "_" = ["unterstrich", "underscore"]

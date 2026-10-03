@@ -17,9 +17,11 @@ use crate::digest::Digest;
 use crate::text::fold;
 
 /// The packs built in, in their order: the author's language first.
-const BUILT_IN: [&str; 2] = [
+const BUILT_IN: [&str; 4] = [
     include_str!("../data/en/pack.toml"),
     include_str!("../data/de/pack.toml"),
+    include_str!("../data/fr/pack.toml"),
+    include_str!("../data/es/pack.toml"),
 ];
 
 /// The built-in packs, read once.
@@ -34,15 +36,24 @@ pub fn packs() -> &'static [Pack] {
             .iter()
             .map(|text| Pack::read(text).expect("a built-in pack reads"))
             .collect();
-        // A pack's own words: three letters or more, no courtesy word, listed by no other pack.
+        // A pack's own words: two letters or more, listed by no other pack; not a courtesy word, not a yes or a
+        // no, not a word near a day's name that the pack lists as no day.
         let all: Vec<HashSet<String>> = packs.iter().map(|pack| pack.listed.clone()).collect();
         for (at, pack) in packs.iter_mut().enumerate() {
-            let courtesy: HashSet<String> = pack.courtesy.words.iter().map(str::to_owned).collect();
+            let aside: HashSet<String> = pack
+                .courtesy
+                .words
+                .iter()
+                .chain(pack.prompt.yes.iter())
+                .chain(pack.prompt.no.iter())
+                .chain(pack.days.never.iter())
+                .map(str::to_owned)
+                .collect();
             pack.own = pack
                 .listed
                 .iter()
-                .filter(|word| word.chars().count() > SHORT)
-                .filter(|word| !courtesy.contains(*word))
+                .filter(|word| word.chars().count() >= SHORT)
+                .filter(|word| !aside.contains(*word))
                 .filter(|word| {
                     all.iter()
                         .enumerate()
@@ -55,8 +66,8 @@ pub fn packs() -> &'static [Pack] {
     })
 }
 
-/// How many letters a word has at most to be short: a short word shows no pack, and a pack that the text does not
-/// show holds its short words back — the two-letter forms, «so», «do», «u».
+/// How many letters a word has at most to be short: a pack that the text does not show holds its short words back
+/// — the two-letter forms, «so», «do», «u» — and a short word shows a pack only where no longer word shows any.
 const SHORT: usize = 2;
 
 /// A list of phrases as a matcher tries them: the longest first, so «and then» wins over «and»; each as `fold`
@@ -256,6 +267,8 @@ pub struct Refer {
     pub repeats: Phrases,
     pub once_more: Phrases,
     pub again: Phrases,
+    /// The pronouns a verb carries at its end, «-le», «-lo»: split from a verb that names a reflex.
+    pub clitics: Phrases,
 }
 
 /// Words that point at a value this session returned, or count such values.
@@ -321,6 +334,8 @@ pub struct Numbers {
     pub joiner: String,
     /// Whether a number's words are written as one, «einundzwanzig», «zweihundert».
     pub fused: bool,
+    /// Whether a teen may follow a tens word and add to it, «soixante-douze».
+    pub teens_after_tens: bool,
     pub years_in_pairs: bool,
     pub decimal_mark: char,
     pub group_mark: char,
@@ -402,6 +417,9 @@ pub struct Times {
     /// The words before an hour that mean half an hour before it: «halb drei» is half past two.
     pub half_to: Phrases,
     pub oclock: Phrases,
+    /// The words before an hour that make it the clock's, «à», «a las», where the o'clock word is also a unit of
+    /// time («heures», «horas»): without one, «2 heures» is two hours.
+    pub at: Phrases,
     pub am: Phrases,
     pub pm: Phrases,
     pub past: Phrases,
@@ -748,7 +766,8 @@ pub struct Shown {
 /// The words the reader knows for one text: the packs that read it, in order, their tables joined. The first
 /// built-in pack, the author's language, reads every text; another pack reads a text where the text holds more of
 /// the pack's own words than of any other pack's, or as many as of another pack's that is not the first — a tie
-/// with the first pack is the first pack's. A text that shows no pack is read by every pack, but a pack other than
+/// with the first pack is the first pack's; the words of three letters or more count first, the two-letter words
+/// where no longer word shows any pack. A text that shows no pack is read by every pack, but a pack other than
 /// the first holds back its short forms there, and every word the first pack lists. A pack's grammar — its endings,
 /// how its numbers compose, its marks and its clock — applies only where the pack is shown, and the first pack's
 /// where none is.
@@ -779,17 +798,23 @@ pub fn lexicon(text: &str) -> Lexicon {
                     .any(|c| c.is_numeric() || matches!(c, '@' | '/' | ':'))
         })
         .collect();
-    let mut shown: Vec<Shown> = all
-        .iter()
-        .map(|pack| Shown {
-            pack,
-            words: tokens
-                .iter()
-                .filter(|token| pack.shows(token))
-                .cloned()
-                .collect(),
-        })
-        .collect();
+    // The words of three letters or more show a pack first; where none does, the two-letter words do.
+    let showing = |least: usize| -> Vec<Shown> {
+        all.iter()
+            .map(|pack| Shown {
+                pack,
+                words: tokens
+                    .iter()
+                    .filter(|token| token.chars().count() >= least && pack.shows(token))
+                    .cloned()
+                    .collect(),
+            })
+            .collect()
+    };
+    let mut shown = showing(SHORT + 1);
+    if shown.iter().all(|s| s.words.is_empty()) {
+        shown = showing(SHORT);
+    }
     let most = shown.iter().map(|s| s.words.len()).max().unwrap_or(0);
     if most == 0 {
         return Lexicon {
@@ -975,6 +1000,14 @@ impl Lexicon {
         let mut marks = self.grammar.iter().map(|pack| pack.numbers.decimal_mark);
         let first = marks.next()?;
         marks.all(|mark| mark == first).then_some(first)
+    }
+
+    /// Whether a teen may follow a tens word and add to it, as any pack whose grammar applies has it.
+    #[must_use]
+    pub fn teens_after_tens(&self) -> bool {
+        self.grammar
+            .iter()
+            .any(|pack| pack.numbers.teens_after_tens)
     }
 
     /// The hours a clock counts: 24 where every pack whose grammar applies counts so, else 12.

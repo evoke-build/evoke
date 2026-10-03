@@ -150,6 +150,7 @@ points = [
 repeats = ["the same", "likewise", "as before"]
 once_more = ["too", "also", "well", "aswell", "more", "another", "again", "extra", "plus"]
 again = ["same for", "as well", "aswell", "too", "also"]
+clitics = []
 
 # Words that point at a value this session returned, or count such values.
 [recalled]
@@ -289,24 +290,25 @@ tense      = ["ing", "ed", "es", "s", "d"]
 
 # A number said in words.
 [numbers]
-ones           = { zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5, six = 6, seven = 7, eight = 8, nine = 9, ten = 10, eleven = 11, twelve = 12, thirteen = 13, fourteen = 14, fifteen = 15, sixteen = 16, seventeen = 17, eighteen = 18, nineteen = 19 }
-tens           = { twenty = 20, thirty = 30, forty = 40, fifty = 50, sixty = 60, seventy = 70, eighty = 80, ninety = 90 }
-scale          = { hundred = 100, thousand = 1000 }
-beyond         = ["million", "billion"]
-article        = ["a", "an"]
-and            = ["and"]
-noughts        = ["zero", "oh"]
-oh             = ["oh", "o"]
-repeat         = { double = 2, triple = 3 }
-half           = ["half"]
-and_a_half     = ["and a half"]
-compose        = "tens-ones"
-joiner         = ""
-years_in_pairs = true
-fused          = false
-decimal_mark   = "."
-group_mark     = ","
-percent        = ["percent"]
+ones             = { zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5, six = 6, seven = 7, eight = 8, nine = 9, ten = 10, eleven = 11, twelve = 12, thirteen = 13, fourteen = 14, fifteen = 15, sixteen = 16, seventeen = 17, eighteen = 18, nineteen = 19 }
+tens             = { twenty = 20, thirty = 30, forty = 40, fifty = 50, sixty = 60, seventy = 70, eighty = 80, ninety = 90 }
+scale            = { hundred = 100, thousand = 1000 }
+beyond           = ["million", "billion"]
+article          = ["a", "an"]
+and              = ["and"]
+noughts          = ["zero", "oh"]
+oh               = ["oh", "o"]
+repeat           = { double = 2, triple = 3 }
+half             = ["half"]
+and_a_half       = ["and a half"]
+compose          = "tens-ones"
+joiner           = ""
+years_in_pairs   = true
+fused            = false
+teens_after_tens = false
+decimal_mark     = "."
+group_mark       = ","
+percent          = ["percent"]
 
 # An ordinal: a day of the month, a place among several.
 [ordinals]
@@ -410,6 +412,7 @@ sunday    = ["sun"]
 hour_cycle = 12
 half_to    = []
 oclock     = ["o'clock", "o’clock", "oclock", "o clock"]
+at         = []
 am         = ["a.m.", "a.m", "am", "in the morning"]
 pm         = ["p.m.", "p.m", "pm", "in the afternoon", "in the evening", "at night"]
 past       = ["past"]

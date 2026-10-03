@@ -1,0 +1,998 @@
+# Spanish, as evoke reads it: the words each stage of the reader proposes from, written lower case as they are compared, each under the neutral form it stands for, the form shown first. A pack reads a sentence where the sentence shows its words; the core holds no word of any language, only how a table is read.
+tag  = "es"
+name = "Spanish"
+# A capital marks a name or a code, as in English.
+capitals_mark_names = true
+
+# Where a request may be cut, and the words that set a part apart.
+[cut]
+then = [
+  "y luego",
+  "luego",
+  "después",
+  "y después",
+  "despues",
+  "y despues",
+  "a continuación",
+  "y a continuación",
+  "y al final",
+  "al final",
+  "por último",
+  "y por último",
+  "finalmente",
+  "y finalmente",
+  "y entonces",
+  "entonces",
+]
+and = ["y", "e", "además", "y también", "también", "tb", "y tb", "más", "junto con"]
+signs = ["+", "&"]
+leads = ["y", "e", "pero", "o", "u", "luego", "entonces", "pues", "además", "también"]
+negation = ["no", "nunca", "jamás", "jamas", "sin", "ningún", "ninguna", "ningun", "ni", "tampoco", "nada de"]
+condition = ["si", "en caso de que", "en caso de", "a menos que", "salvo que", "siempre que", "cuando"]
+contrast = ["no"]
+but = ["pero", "sino"]
+subordinators = [
+  "que",
+  "porque",
+  "para que",
+  "aunque",
+  "cuando",
+  "mientras",
+  "mientras que",
+  "hasta que",
+  "antes de que",
+  "después de que",
+  "despues de que",
+  "ya que",
+  "puesto que",
+  "como",
+  "si",
+  "donde",
+  "dónde",
+  "cuándo",
+  "cuanto",
+  "cuánto",
+  "cuanta",
+  "cuánta",
+  "cuántos",
+  "cuántas",
+  "quién",
+  "quien",
+  "quiénes",
+  "qué",
+  "cómo",
+  "por qué",
+  "cuál",
+  "cuáles",
+  "lo que",
+  "lo cual",
+  "cuyo",
+  "cuya",
+  "cuyos",
+  "cuyas",
+  "sobre todo",
+]
+
+# A clause before or after another, read in the words' own order, and a clause of the person's own action.
+[clause]
+before = ["antes de", "antes de que"]
+after = ["después de", "despues de", "después de que", "una vez que", "en cuanto", "tras"]
+joiner = ["luego"]
+subjects = ["tú", "tu", "usted", "ustedes", "vosotros", "nosotros", "yo"]
+tenses = []
+own = ["yo", "nosotros"]
+own_tenses = []
+conjunctions = []
+heads = [
+  "necesito",
+  "quiero",
+  "me gustaría",
+  "me gustaria",
+  "querría",
+  "quisiera",
+  "tengo que",
+  "debo",
+  "necesitamos",
+  "queremos",
+  "nos gustaría",
+  "tenemos que",
+  "hace falta",
+  "me hace falta",
+  "nos hace falta",
+]
+
+# Politeness, which asks for nothing.
+[courtesy]
+words = [
+  "gracias",
+  "porfa",
+  "porfi",
+  "porfis",
+  "pf",
+  "please",
+  "pls",
+  "thx",
+  "thanks",
+  "grazie",
+  "merci",
+  "danke",
+  "obrigado",
+  "hola",
+  "buenas",
+  "hello",
+  "saludos",
+  "abrazo",
+  "besos",
+  "chao",
+  "chau",
+  "adiós",
+  "adios",
+  "venga",
+  "vale",
+  "ok",
+  "crack",
+  "genial",
+  "perfecto",
+  "guay",
+  "ciao",
+]
+phrases = [
+  "por favor",
+  "muchas gracias",
+  "mil gracias",
+  "muchísimas gracias",
+  "muchisimas gracias",
+  "gracias de antemano",
+  "gracias mil",
+  "podrías",
+  "podrías por favor",
+  "podría",
+  "puedes",
+  "puede",
+  "me puedes",
+  "me podrías",
+  "me podría",
+  "me puede",
+  "sería posible",
+  "seria posible",
+  "si puedes",
+  "si puede",
+  "si podés",
+  "si tienes un momento",
+  "si tiene un momento",
+  "si tienes un segundo",
+  "si tienes tiempo",
+  "si tenés tiempo",
+  "cuando puedas",
+  "cuando pueda",
+  "cuando tengas un momento",
+  "cuando tengas tiempo",
+  "en cuanto puedas",
+  "si no es mucha molestia",
+  "si no es molestia",
+  "si es posible",
+  "eres el mejor",
+  "eres la mejor",
+  "eres un crack",
+  "buen día",
+  "buenos días",
+  "buenas tardes",
+  "buenas noches",
+  "un saludo",
+  "hasta luego",
+]
+
+# Words that point at an earlier step, or say one is done again.
+[refer]
+one = ["eso", "esto", "aquello", "lo mismo"]
+many = [
+  "ambos",
+  "ambas",
+  "los dos",
+  "las dos",
+  "los tres",
+  "las tres",
+  "todos ellos",
+  "todas ellas",
+  "cada uno",
+  "cada una",
+  "cada uno de ellos",
+  "cada una de ellas",
+  "ellos",
+  "ellas",
+]
+determiners = [
+  "este",
+  "esta",
+  "estos",
+  "estas",
+  "ese",
+  "esa",
+  "esos",
+  "esas",
+  "aquel",
+  "aquella",
+  "aquellos",
+  "aquellas",
+  "el",
+  "la",
+  "los",
+  "las",
+  "cada",
+  "dicho",
+  "dicha",
+  "dichos",
+  "dichas",
+]
+weak = ["el", "la", "los", "las"]
+each = ["cada", "cada uno", "cada una"]
+adjectives = [
+  "mismo",
+  "misma",
+  "mismos",
+  "mismas",
+  "nuevo",
+  "nueva",
+  "nuevos",
+  "nuevas",
+  "creado",
+  "creada",
+  "generado",
+  "generada",
+  "obtenido",
+  "obtenida",
+  "resultante",
+]
+stop = [
+  "un",
+  "una",
+  "el",
+  "la",
+  "los",
+  "las",
+  "es",
+  "era",
+  "son",
+  "será",
+  "puede",
+  "podría",
+  "debe",
+  "debería",
+  "él",
+  "ella",
+  "ellos",
+  "ellas",
+  "nosotros",
+  "ustedes",
+  "yo",
+  "tú",
+  "no",
+  "ningún",
+  "ninguna",
+  "todos",
+  "todas",
+  "todo",
+  "toda",
+  "algunos",
+  "algunas",
+  "primero",
+  "primera",
+  "segundo",
+  "último",
+  "última",
+  "próximo",
+  "próxima",
+  "mismo",
+  "misma",
+  "otro",
+  "otra",
+  "resto",
+  "vez",
+  "tiempo",
+  "de",
+  "del",
+  "que",
+  "qué",
+  "cómo",
+  "para",
+  "con",
+  "sobre",
+  "en",
+  "a",
+  "al",
+  "por",
+]
+points = [
+  "eso",
+  "esto",
+  "aquello",
+  "ese",
+  "esa",
+  "esos",
+  "esas",
+  "éste",
+  "ésta",
+  "éstos",
+  "éstas",
+  "ése",
+  "ésa",
+  "lo mismo",
+  "la misma",
+  "el mismo",
+  "los mismos",
+  "las mismas",
+  "ahí",
+  "allí",
+  "allá",
+  "ambos",
+  "ambas",
+  "los dos",
+  "las dos",
+  "cada uno",
+  "cada una",
+  "cada",
+  "ellos",
+  "ellas",
+  "le",
+  "les",
+  "su",
+  "sus",
+  "lo",
+  "la",
+  "los",
+  "las",
+]
+repeats = [
+  "lo mismo",
+  "la misma",
+  "el mismo",
+  "los mismos",
+  "las mismas",
+  "igual",
+  "idem",
+  "ídem",
+  "lo mismo que antes",
+]
+once_more = [
+  "también",
+  "tb",
+  "tmb",
+  "además",
+  "otra vez",
+  "de nuevo",
+  "nuevamente",
+  "otro",
+  "otra",
+  "otros",
+  "otras",
+  "más",
+  "mas",
+  "adicional",
+  "adicionales",
+  "extra",
+  "asimismo",
+]
+again = [
+  "también",
+  "tb",
+  "tmb",
+  "igual",
+  "idem",
+  "ídem",
+  "lo mismo",
+  "lo mismo para",
+  "lo mismo con",
+  "otra vez",
+  "de nuevo",
+  "nuevamente",
+  "además",
+  "asimismo",
+]
+clitics = [
+  "lo",
+  "la",
+  "los",
+  "las",
+  "le",
+  "les",
+  "me",
+  "se",
+  "nos",
+  "selo",
+  "sela",
+  "selos",
+  "selas",
+  "melo",
+  "mela",
+  "melos",
+  "melas",
+  "telo",
+  "tela",
+  "noslo",
+  "nosla",
+]
+
+# Words that recall a value of an earlier step.
+[recalled]
+it = ["eso", "esto", "lo", "la"]
+one = ["uno", "una", "ello"]
+that = ["ese", "esa", "esos", "esas", "aquel", "aquella", "aquellos", "aquellas", "este", "esta", "estos", "estas"]
+owns = ["el", "la", "los", "las", "mi", "mis", "nuestro", "nuestra", "nuestros", "nuestras"]
+several = ["esos", "esas", "estos", "estas", "ambos", "ambas", "todos", "todas"]
+orders = [
+  "último",
+  "última",
+  "últimos",
+  "últimas",
+  "ultimo",
+  "ultima",
+  "más reciente",
+  "mas reciente",
+  "anterior",
+  "anteriores",
+  "previo",
+  "previa",
+]
+both = ["ambos", "ambas", "los dos", "las dos"]
+
+# Words that carry no value by themselves, and words that introduce one.
+[words]
+function = [
+  "el",
+  "la",
+  "los",
+  "las",
+  "un",
+  "una",
+  "unos",
+  "unas",
+  "al",
+  "del",
+  "de",
+  "a",
+  "en",
+  "y",
+  "e",
+  "o",
+  "u",
+  "pero",
+  "sino",
+  "que",
+  "qué",
+  "quien",
+  "quién",
+  "cual",
+  "cuál",
+  "donde",
+  "dónde",
+  "cuando",
+  "cuándo",
+  "como",
+  "cómo",
+  "por",
+  "para",
+  "con",
+  "sin",
+  "sobre",
+  "bajo",
+  "entre",
+  "hacia",
+  "hasta",
+  "desde",
+  "durante",
+  "según",
+  "tras",
+  "ante",
+  "contra",
+  "este",
+  "esta",
+  "estos",
+  "estas",
+  "ese",
+  "esa",
+  "esos",
+  "esas",
+  "eso",
+  "esto",
+  "aquel",
+  "aquella",
+  "aquello",
+  "él",
+  "ella",
+  "ellos",
+  "ellas",
+  "yo",
+  "tú",
+  "tu",
+  "usted",
+  "ustedes",
+  "nosotros",
+  "vosotros",
+  "me",
+  "te",
+  "se",
+  "nos",
+  "os",
+  "le",
+  "les",
+  "lo",
+  "la",
+  "no",
+  "ni",
+  "nunca",
+  "nada",
+  "es",
+  "son",
+  "está",
+  "están",
+  "estar",
+  "ser",
+  "fue",
+  "era",
+  "hay",
+  "ha",
+  "han",
+  "he",
+  "has",
+  "haber",
+  "tener",
+  "tiene",
+  "tengo",
+  "tienes",
+  "hacer",
+  "hace",
+  "haz",
+  "puede",
+  "puedes",
+  "pueden",
+  "podría",
+  "podrías",
+  "quiero",
+  "quieres",
+  "quiere",
+  "queremos",
+  "debe",
+  "debes",
+  "debo",
+  "hace falta",
+  "va",
+  "voy",
+  "vas",
+  "vamos",
+  "ir",
+  "muy",
+  "mucho",
+  "mucha",
+  "muchos",
+  "muchas",
+  "poco",
+  "poca",
+  "más",
+  "mas",
+  "menos",
+  "también",
+  "tampoco",
+  "ya",
+  "aún",
+  "aun",
+  "todavía",
+  "solo",
+  "sólo",
+  "ahora",
+  "luego",
+  "entonces",
+  "pues",
+  "así",
+  "si",
+  "sí",
+  "todo",
+  "toda",
+  "todos",
+  "todas",
+  "mismo",
+  "misma",
+  "mi",
+  "mis",
+  "tus",
+  "su",
+  "sus",
+  "nuestro",
+  "nuestra",
+  "nuestros",
+  "nuestras",
+  "vuestro",
+  "vuestra",
+  "porfa",
+  "porfi",
+  "ya",
+  "directamente",
+  "simplemente",
+  "rápido",
+  "rapido",
+  "venga",
+  "vale",
+  "ok",
+  "bueno",
+  "pues",
+  "oye",
+  "mira",
+  "a ver",
+  "dale",
+  "ahí",
+  "aquí",
+  "allí",
+]
+kind = ["también", "dónde", "donde", "equipo", "canal", "carpeta", "servicio", "región", "region", "zona"]
+introduces = [
+  "a",
+  "para",
+  "en",
+  "sobre",
+  "de",
+  "del",
+  "hacia",
+  "con",
+  "por",
+  "llamado",
+  "llamada",
+  "titulado",
+  "titulada",
+  "asunto",
+  "acerca de",
+  "respecto a",
+  "sobre todo",
+  "que",
+  "diciendo",
+  "hasta",
+  "vía",
+]
+articles = ["el", "la", "los", "las", "un", "una", "unos", "unas", "al", "del"]
+after_name = ["que", "esto", "lo siguiente"]
+to_self = ["a mí", "a mí mismo", "a mi", "para mí", "para mi", "me"]
+
+# The endings a word takes: a stem's, a plural's, a possessive's, a tense's.
+[endings]
+stem = [["ción", "ción"], ["ces", "z"], ["es", ""], ["s", ""]]
+plural = ["s", "es"]
+possessive = ["'s", "’s"]
+tense = [
+  "amos",
+  "emos",
+  "imos",
+  "aron",
+  "ieron",
+  "ando",
+  "iendo",
+  "ado",
+  "ido",
+  "ada",
+  "ida",
+  "ados",
+  "idos",
+  "adas",
+  "idas",
+  "ar",
+  "er",
+  "ir",
+  "an",
+  "en",
+  "as",
+  "es",
+  "a",
+  "e",
+  "o",
+  "ó",
+  "é",
+  "í",
+]
+
+# A number said in words: a tens word, «y» and a ones word, «treinta y uno»; the twenties as one word, «veintiuno»; the hundreds as one word, «doscientos»; the comma before a fraction, «1,5».
+[numbers]
+ones             = { cero = 0, uno = 1, un = 1, una = 1, dos = 2, tres = 3, cuatro = 4, cinco = 5, seis = 6, siete = 7, ocho = 8, nueve = 9, diez = 10, once = 11, doce = 12, trece = 13, catorce = 14, quince = 15, "dieciséis" = 16, dieciseis = 16, diecisiete = 17, dieciocho = 18, diecinueve = 19, veintiuno = 21, veintiuna = 21, "veintidós" = 22, veintidos = 22, "veintitrés" = 23, veintitres = 23, veinticuatro = 24, veinticinco = 25, "veintiséis" = 26, veintiseis = 26, veintisiete = 27, veintiocho = 28, veintinueve = 29 }
+tens             = { veinte = 20, treinta = 30, cuarenta = 40, cincuenta = 50, sesenta = 60, setenta = 70, ochenta = 80, noventa = 90 }
+scale            = { cien = 100, ciento = 100, doscientos = 200, trescientos = 300, cuatrocientos = 400, quinientos = 500, seiscientos = 600, setecientos = 700, ochocientos = 800, novecientos = 900, mil = 1000 }
+beyond           = ["millón", "millon", "millones", "mil millones", "billón", "billones"]
+article          = ["un", "una", "uno"]
+and              = ["y"]
+noughts          = ["cero"]
+oh               = ["o"]
+repeat           = { doble = 2, triple = 3 }
+half             = ["medio", "media"]
+and_a_half       = ["y medio", "y media"]
+compose          = "tens-ones"
+joiner           = "y"
+fused            = false
+teens_after_tens = false
+years_in_pairs   = false
+decimal_mark     = ","
+group_mark       = "."
+percent          = ["por ciento", "porciento"]
+
+# An ordinal: a day of the month, a place among several.
+[ordinals]
+words    = { primero = 1, primera = 1, primer = 1, segundo = 2, segunda = 2, tercero = 3, tercera = 3, tercer = 3, cuarto = 4, cuarta = 4, quinto = 5, quinta = 5, sexto = 6, sexta = 6, "séptimo" = 7, "séptima" = 7, octavo = 8, octava = 8, noveno = 9, novena = 9, "décimo" = 10, "décima" = 10, "undécimo" = 11, undecimo = 11, "duodécimo" = 12, duodecimo = 12, decimotercero = 13, decimocuarto = 14, decimoquinto = 15, "vigésimo" = 20, vigesimo = 20, "trigésimo" = 30, trigesimo = 30 }
+suffixes = { other = "º", 1 = "º" }
+picks    = { primero = 0, primera = 0, primer = 0, segundo = 1, segunda = 1, tercero = 2, tercera = 2, tercer = 2, cuarto = 3, cuarta = 3, "último" = -1, "última" = -1, ultimo = -1, ultima = -1 }
+
+# The days: recurrences, the words around a date, and the day words themselves.
+[days]
+every = ["cada", "todos los", "todas las"]
+recurring = [
+  "día",
+  "dia",
+  "semana",
+  "mes",
+  "año",
+  "mañana",
+  "tarde",
+  "noche",
+  "día laborable",
+  "fin de semana",
+  "finde",
+  "trimestre",
+  "fin de mes",
+]
+recurrences = [
+  "diario",
+  "diariamente",
+  "a diario",
+  "semanal",
+  "semanalmente",
+  "mensual",
+  "mensualmente",
+  "anual",
+  "anualmente",
+  "todos los días",
+  "cada día",
+  "cada semana",
+  "cada mes",
+]
+periods = ["semana", "semanas", "mes", "meses", "año", "años", "fin de semana", "finde", "trimestre", "quincena"]
+ahead = ["en", "dentro de"]
+from_now = ["a partir de hoy", "a partir de ahora", "desde hoy", "desde ahora"]
+the = ["el", "al", "del"]
+of = ["de"]
+day_after = ["el día después de", "el día siguiente a", "al día siguiente de"]
+noun_after = ["por la", "esta", "mañana por la", "cada", "de la"]
+never = ["mañanas", "marte", "martas", "lune", "lunas"]
+followers = [
+  "a",
+  "es",
+  "o",
+  "y",
+  "este",
+  "esta",
+  "próximo",
+  "próxima",
+  "que viene",
+  "hasta",
+  "desde",
+  "de",
+  "del",
+  "al",
+  "en",
+  "cae",
+  "viene",
+  "ya",
+  "luego",
+  "también",
+  "para",
+  "con",
+  "sobre",
+  "porfa",
+  "por favor",
+  "gracias",
+  "por la mañana",
+  "por la tarde",
+  "por la noche",
+  "pasado",
+  "pasada",
+  "inclusive",
+  "incluido",
+  "máximo",
+  "como máximo",
+  "como tarde",
+  "a más tardar",
+]
+leads = [
+  "el",
+  "al",
+  "del",
+  "hasta el",
+  "desde el",
+  "a partir del",
+  "antes del",
+  "después del",
+  "para el",
+  "hacia el",
+  "este",
+  "en",
+]
+
+[days.which]
+next = ["próximo", "próxima", "proximo", "proxima", "que viene", "siguiente"]
+this = ["este", "esta", "esté"]
+last = ["pasado", "pasada", "último", "última", "anterior"]
+
+[days.weekdays]
+monday    = ["lunes"]
+tuesday   = ["martes"]
+wednesday = ["miércoles", "miercoles"]
+thursday  = ["jueves"]
+friday    = ["viernes"]
+saturday  = ["sábado", "sabado"]
+sunday    = ["domingo"]
+
+[days.short]
+monday    = ["lun"]
+wednesday = ["mié"]
+thursday  = ["jue"]
+saturday  = ["sáb"]
+
+[days.relative]
+0  = ["hoy", "esta noche"]
+1  = ["mañana", "manana"]
+-1 = ["ayer"]
+2  = ["pasado mañana", "pasado manana"]
+-2 = ["anteayer", "antes de ayer", "antier"]
+
+[days.relative_short]
+1 = ["mñn", "mñna", "mnn"]
+
+[days.units]
+1 = ["días", "dias", "día", "dia"]
+7 = ["semanas", "semana"]
+
+# The months, by number.
+[months]
+1  = ["enero", "ene"]
+2  = ["febrero", "feb"]
+3  = ["marzo"]
+4  = ["abril", "abr"]
+5  = ["mayo"]
+6  = ["junio", "jun"]
+7  = ["julio", "jul"]
+8  = ["agosto"]
+9  = ["septiembre", "setiembre", "sep", "sept"]
+10 = ["octubre", "oct"]
+11 = ["noviembre", "nov"]
+12 = ["diciembre", "dic"]
+
+# A clock time.
+[times]
+hour_cycle = 24
+half_to = []
+oclock = ["h", "horas", "hora", "hs"]
+at = [
+  "a las",
+  "a la",
+  "sobre las",
+  "sobre la",
+  "hacia las",
+  "para las",
+  "hasta las",
+  "desde las",
+  "entre las",
+  "y las",
+  "a eso de las",
+  "a",
+  "las",
+]
+am = ["de la mañana", "por la mañana", "de la madrugada", "am", "a.m."]
+pm = ["de la tarde", "por la tarde", "de la noche", "por la noche", "pm", "p.m."]
+past = ["y"]
+to = ["menos"]
+
+[times.named]
+"12:00" = ["mediodía", "mediodia"]
+"00:00" = ["medianoche"]
+
+[times.minutes_past]
+15 = ["y cuarto"]
+30 = ["y media"]
+
+[times.minutes_to]
+15 = ["menos cuarto"]
+
+# A length of time, its units in seconds: the form shown for one, then for more than one, then the short forms.
+[durations.units]
+3600 = ["hora", "horas", "h", "hr", "hrs", "hs"]
+60   = ["minuto", "minutos", "min", "mins", "m"]
+1    = ["segundo", "segundos", "seg", "segs", "s"]
+
+[durations.articles]
+"0.25" = ["un cuarto de", "cuarto de"]
+"0.5"  = ["media", "medio", "media hora de"]
+"1.5"  = ["una y media", "hora y media"]
+1      = ["una", "un"]
+"2.5"  = ["dos y media"]
+"0.75" = ["tres cuartos de"]
+
+# An amount in a currency.
+[amounts]
+symbol_after = true
+symbols = { "€" = "EUR", "$" = "USD", "£" = "GBP" }
+singular = ["libra"]
+codes = [
+  "USD",
+  "EUR",
+  "GBP",
+  "JPY",
+  "INR",
+  "CAD",
+  "AUD",
+  "CHF",
+  "CNY",
+  "SEK",
+  "NOK",
+  "DKK",
+  "NZD",
+  "MXN",
+  "BRL",
+  "ZAR",
+  "SGD",
+  "HKD",
+  "KRW",
+  "PLN",
+  "CZK",
+  "TRY",
+]
+
+[amounts.words]
+EUR = ["euro", "euros", "eur", "pavos"]
+USD = ["dólar", "dólares", "dolar", "dolares"]
+GBP = ["libra", "libras", "libra esterlina", "libras esterlinas"]
+CHF = ["franco", "francos", "franco suizo", "francos suizos"]
+JPY = ["yen", "yenes"]
+MXN = ["peso", "pesos", "peso mexicano", "pesos mexicanos"]
+
+# A value said aloud: the signs by their names, and the words a code or a link is said with.
+[spoken]
+version = ["v", "version", "versión"]
+schemes = ["https", "http"]
+letters = []
+pronouns = [
+  "él",
+  "yo",
+  "tú",
+  "tu",
+  "o",
+  "u",
+  "y",
+  "e",
+  "a",
+  "al",
+  "el",
+  "la",
+  "lo",
+  "le",
+  "en",
+  "un",
+  "se",
+  "si",
+  "sí",
+  "ya",
+  "no",
+  "me",
+  "te",
+  "mi",
+]
+
+[spoken.signs]
+"@" = ["arroba", "at"]
+"." = ["punto"]
+-   = ["guion", "guión", "menos", "raya"]
+_   = ["guion bajo", "guión bajo", "underscore"]
+"/" = ["barra", "slash"]
+":" = ["dos puntos"]
+"#" = ["almohadilla", "numeral", "hashtag", "hash"]
+
+# The marks around a value in quotes, and around a text in quotes.
+[quotes]
+value = [["«", "»"], ["“", "”"], ["‘", "’"], ["\"", "\""]]
+text  = [["«", "»"], ["“", "”"], ["‘", "’"], ["\"", "\""], ["'", "'"]]
+
+# The whole words a prompt takes for yes and for no.
+[prompt]
+yes = ["sí", "si", "vale", "ok", "dale", "claro", "yes"]
+no  = ["no", "nop", "nope", "nel"]

@@ -392,15 +392,29 @@ pub(crate) fn names(word: &str, reflex: &str) -> bool {
         .trim_matches(|c: char| ".,;:!?\"'".contains(c))
         .to_owned();
     let name = fold(reflex);
+    if names_as(&lexicon, &word, &name) {
+        return true;
+    }
+    // A verb carrying a pronoun at its end, «annule-la», «envíalo», names the reflex its verb names.
+    lexicon
+        .phrases(|pack| &pack.refer.clitics)
+        .into_iter()
+        .filter_map(|clitic| word.strip_suffix(clitic))
+        .filter(|verb| verb.chars().count() >= 3)
+        .any(|verb| names_as(&lexicon, verb, &name))
+}
+
+/// Whether a word, folded, is the reflex's name in some number or tense.
+fn names_as(lexicon: &Lexicon, word: &str, name: &str) -> bool {
     let forms = [
-        word.clone(),
+        word.to_owned(),
         word.trim_end_matches('e').to_owned(),
-        root(&lexicon, &word),
-        root(&lexicon, &word).trim_end_matches('e').to_owned(),
+        root(lexicon, word),
+        root(lexicon, word).trim_end_matches('e').to_owned(),
     ];
-    forms.contains(&name)
+    forms.contains(&name.to_owned())
         || forms.contains(&name.trim_end_matches('e').to_owned())
-        || word == root(&lexicon, &name)
+        || word == root(lexicon, name)
 }
 
 /// A word without what number or tense adds, as the pack lists the endings: notes, noted, noting are note. What
