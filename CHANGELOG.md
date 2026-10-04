@@ -6,6 +6,8 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-10-04
+
 - Two more adapters, `clef` and `clef_flash`, reach Clef and Clef-flash, Cloudflare's models, on Workers AI:
   `adapter = "clef"` in `evoke.toml`, the token in `CLOUDFLARE_API_TOKEN`, the account's id in
   `CLOUDFLARE_ACCOUNT_ID`, and `clef()` and `clefFlash()` from `@evoke-build/evoke/clef` in the SDK. They ship no
